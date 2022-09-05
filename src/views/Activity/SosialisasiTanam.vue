@@ -421,14 +421,14 @@
                             >
                               mdi-pencil
                             </v-icon>
-                            <v-icon
+                            <!-- <v-icon
                               v-if="RoleAccesCRUDShow == true"
                               @click="deleteDetailPohon(item)"
                               small
                               color="red"
                             >
                               mdi-delete
-                            </v-icon>
+                            </v-icon> -->
                           </template>
                         </v-data-table>
                       </h3>
