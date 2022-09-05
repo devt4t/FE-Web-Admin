@@ -253,7 +253,7 @@
                         Main Data
                       </v-stepper-step>
                       <v-divider></v-divider>
-                      <v-stepper-step editable :complete="e1 > 2" step="2">
+                      <v-stepper-step :editable="false" :complete="e1 > 2" step="2">
                         List Pohon
                       </v-stepper-step>
                       <v-divider></v-divider>
@@ -328,7 +328,7 @@
                             elevation="1"
                             outlined
                             color="primary"
-                            @click="e1 = 2"
+                            @click="e1 = 3"
                           >
                             <v-icon left>
                               mdi-chevron-right-circle-outline
