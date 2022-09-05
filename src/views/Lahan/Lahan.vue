@@ -1584,6 +1584,7 @@
                       outlined
                       color="green"
                       @click="showEditJumlahPohonModal"
+                      disabled
                     >
                       <v-icon left> mdi-lead-pencil </v-icon>
                       Jumlah Pohon</v-btn
