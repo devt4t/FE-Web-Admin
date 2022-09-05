@@ -413,7 +413,7 @@
                           </template> -->
                           <template v-slot:item.actions="{ item }">
                             <v-icon
-                              v-if="RoleAccesCRUDShow == true"
+                              v-if="RoleAccesCRUDShow == true && item.validation === 0"
                               class="mr-3"
                               @click="editDetailPohon(item)"
                               small
