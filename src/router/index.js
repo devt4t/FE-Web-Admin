@@ -19,6 +19,7 @@ import SosialisasiTanam from '../views/Activity/SosialisasiTanam.vue'
 import LubangTanam from '../views/Activity/LubangTanam.vue'
 import PenilikanTanam from '../views/Activity/PenilikanTanam.vue'
 import Monitoring2 from '../views/Activity/Monitoring2.vue'
+import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -117,6 +118,11 @@ const routes = [
     path: '/SosialisasiTanam',
     name: 'SosialisasiTanam',
     component: SosialisasiTanam
+  },
+  {
+    path: '/PelatihanPetani',
+    name: 'PelatihanPetani',
+    component: PelatihanPetani
   },
   {
     path: '/LubangTanam',
