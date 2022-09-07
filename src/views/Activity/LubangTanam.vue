@@ -1081,7 +1081,7 @@
           <v-dialog v-model="dialogDetail" max-width="800px">
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Sosialisasi Tanam</span>
+                <span class="headline">Detail Penilikan Lubang Tanam</span>
               </v-card-title>
               <v-divider></v-divider>
               <v-card-text>
