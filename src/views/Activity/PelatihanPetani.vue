@@ -748,7 +748,21 @@
                         <v-row class="mb-3">
                           <h4>List Peserta Pelatihan</h4>
                           <v-divider class="mx-2 mt-3"></v-divider>
-                          <h4>Checked: {{ listFarmerParticipantChecked.length }}</h4>
+                        </v-row>
+                        <v-row class="align-end">
+                          <!-- <v-col cols="12" sm="12" md="6" class="d-flex align-end"> -->
+                            <h4>Checked: {{ listFarmerParticipantChecked.length }}</h4>
+                          <!-- </v-col> -->
+                          <v-divider class="mx-2"></v-divider>
+                          <!-- <v-col cols="12" sm="12" md="6"> -->
+                            <v-text-field
+                              v-model="searchListPesertaPelatihan"
+                              append-icon="mdi-magnify"
+                              label="Search"
+                              single-line
+                              hide-details
+                            ></v-text-field>
+                          <!-- </v-col> -->
                         </v-row>
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
@@ -762,6 +776,7 @@
                               loading-text="Loading... Please wait"
                               v-model="listFarmerParticipantChecked"
                               show-select
+                              :search="searchListPesertaPelatihan"
                               :single-select="false"
                               :key="componentKey.listFarmerParticipantTable"
                               :footer-props="{
@@ -777,11 +792,11 @@
                               <template v-slot:item.index="{ index }">
                                 {{ index + 1 }}
                               </template>
-                              <template v-slot:item.status="{ index }">
+                              <template v-slot:item.actions="{ index, item }">
                                 <v-row class="">
                                   <v-col cols="6" class="d-inline-flex align-center">
                                     <v-icon
-                                      @click="deletePesertaPelatihan(index)"
+                                      @click="deletePesertaPelatihan(index, item)"
                                       color="red"
                                     >
                                       mdi-delete
@@ -1439,6 +1454,7 @@
 <script>
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
+import { truncate } from "fs";
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
@@ -1521,7 +1537,7 @@ export default {
       { text: "No Petani", value: "kode", width: "25%" },
       { text: "Nama Petani", value: "nama", width: "45%" },
       { text: "NIK", value: "nik", width: "20%" },
-      // { text: "Status", value: "status", sortable: false, width: "10%" },
+      { text: "Actions", value: "actions", sortable: false, width: "10%" },
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
@@ -1585,6 +1601,7 @@ export default {
     listFarmerParticipant: [],
     listFarmerParticipantChecked: [],
     addMoreFarmerParticipantSelectValue: null,
+    searchListPesertaPelatihan: "",
     itemslahan: [],
     itemsum: [],
     itemsfc: [],
@@ -2597,14 +2614,26 @@ export default {
     async addMoreFarmerParticipant(val) {
       if (val) {
         this.loadtabledetail = true
-        setTimeout(() => {
+        let same = 0
+        await this.listFarmerParticipant.forEach((participant) => {
+          if (participant.kode === val.kode) {
+            same += 1
+          } 
+        });
+
+        if (same === 0) {
           this.itemspetani.push(val)
           this.loadtabledetail = false
           this.addMoreFarmerParticipantSelectValue = null
           this.snackbar = true;
           this.colorsnackbar = "green";
           this.textsnackbar = "Petani berhasil ditambahkan";
-        }, 300);
+        } else {
+          this.loadtabledetail = false
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.textsnackbar = "Petani sudah ada.";
+        }
       }
     },
     saveFormFarmerTraining() {
@@ -2902,11 +2931,17 @@ export default {
         this.itemslahan = [];
       }
     },
-    deletePesertaPelatihan(index) {
-      alert(JSON.stringify(this.listFarmerParticipant[index]))
-      delete this.listFarmerParticipant[index]
-      this.componentKey.listFarmerParticipantTable += 1
+    async deletePesertaPelatihan(index, item) {
+      this.loadtabledetail = true
+      await this.listFarmerParticipantChecked.forEach((checkedParticipant, indexCP) => {
+        if (checkedParticipant.kode === item.kode) {
+          this.listFarmerParticipantChecked.splice(indexCP, 1);
+        }
+      })
+      await this.listFarmerParticipant.splice(index, 1);
       
+      this.componentKey.listFarmerParticipantTable += 1
+      this.loadtabledetail = false
     },
 
     async showFilterArea() {
