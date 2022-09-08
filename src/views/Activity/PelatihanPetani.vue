@@ -30,7 +30,8 @@
 
       <template v-slot:top>
         <v-toolbar flat>
-          <v-btn
+          <!-- FILTER BUTTON -->
+          <!-- <v-btn
             dark
             class="mx-3 mt-1 d-none d-md-block"
             @click="showFilterArea()"
@@ -48,7 +49,7 @@
           >
             <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
             Employee
-          </v-btn>
+          </v-btn> -->
           <!-- <v-select
             v-model="selectMU"
             :items="itemsMU"
@@ -146,7 +147,7 @@
                         item-value="area_code"
                         item-text="name"
                         v-on:change="selectedTA"
-                        label="Targer Area"
+                        label="Target Area"
                         clearable
                       ></v-select>
                     </v-col>
@@ -642,13 +643,22 @@
                               </v-col>
                               <!-- Absensi File -->
                               <v-col cols="12" sm="12" md="12">
-                                <v-text-field
-                                  v-model="defaultItem.total_holes"
-                                  label="Absensi File (IMG)"
+                                <v-file-input
+                                  accept="image/png, image/jpeg, image/bmp"
+                                  placeholder="Foto Absensi Tertulis"
+                                  prepend-icon="mdi-camera"
+                                  label="Foto Absensi Tertulis"
+                                  v-on:change="absensiFileChanged"
                                   outlined
-                                  type="file"
-                                  :rules="[(v) => !!v || 'Field is required']"
-                                ></v-text-field>
+                                ></v-file-input>
+                                <v-card elevation="2" height="300" v-if="dataToStore.absensi && dataToStore.absensi !== ''">
+                                  <v-img
+                                    height="300"
+                                    v-bind:src="dataToStore.absensi"
+                                    class="my-2 mb-4"
+                                    id="idFotoAbsensi"
+                                  ></v-img
+                                ></v-card>
                               </v-col>
                             </v-row>
                           </v-col>
@@ -770,7 +780,7 @@
                               :headers="headerListProduct"
                               :items="listFarmerParticipant"
                               class="elevation-3"
-                              :items-per-page="25"
+                              :items-per-page="-1"
                               item-key="kode"
                               :loading="loadtabledetail"
                               loading-text="Loading... Please wait"
@@ -779,6 +789,7 @@
                               :search="searchListPesertaPelatihan"
                               :single-select="false"
                               :key="componentKey.listFarmerParticipantTable"
+                              hide-default-footer
                               :footer-props="{
                                 itemsPerPageOptions: [10, 25, 40, -1]
                               }"
@@ -832,7 +843,7 @@
                               </v-list-item-avatar>
                               <v-list-item-content>
                                 <v-list-item-title v-html="data.item.nama"></v-list-item-title>
-                                <v-list-item-subtitle v-html="data.item.kode"></v-list-item-subtitle>
+                                <v-list-item-subtitle>{{ data.item.kode }} - {{ data.item.nik }}</v-list-item-subtitle>
                               </v-list-item-content>
                             </template>
                           </v-autocomplete>
@@ -1461,6 +1472,9 @@ export default {
   name: "LubangTanam",
   authtoken: "",
   data: () => ({
+    dataToStore: {
+      absensi: ""
+    },
     componentKey: {
       listFarmerParticipantTable: 0
     },
@@ -1534,10 +1548,10 @@ export default {
     // headers table list peserta pelatihan di form tambah pelatihan petani 
     headerListProduct: [
       { text: "No", value: "index", width: "10%" },
-      { text: "No Petani", value: "kode", width: "25%" },
+      { text: "No Petani", value: "kode", width: "20%" },
       { text: "Nama Petani", value: "nama", width: "45%" },
       { text: "NIK", value: "nik", width: "20%" },
-      { text: "Actions", value: "actions", sortable: false, width: "10%" },
+      { text: "Del", value: "actions", sortable: false, width: "10%" },
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
@@ -1713,6 +1727,13 @@ export default {
   },
 
   methods: {
+    absensiFileChanged (event) {
+      if (event) {
+        this.dataToStore.absensi = URL.createObjectURL(event)
+      } else {
+        this.dataToStore.absensi = ""
+      }
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
@@ -2911,7 +2932,7 @@ export default {
         this.valueFFForm = a.ff_no;
         this.loadtabledetail = true
         await this.getPetani();
-        await this.getPetaniByMU('019');
+        await this.getPetaniByMU(a.mu_no);
         this.loadtabledetail = false
         this.listFarmerParticipant = this.itemspetani
       } else {
