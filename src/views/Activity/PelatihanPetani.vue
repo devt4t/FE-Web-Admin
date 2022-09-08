@@ -2630,6 +2630,7 @@ export default {
           this.textsnackbar = "Petani berhasil ditambahkan";
         } else {
           this.loadtabledetail = false
+          this.addMoreFarmerParticipantSelectValue = null
           this.snackbar = true;
           this.colorsnackbar = "red";
           this.textsnackbar = "Petani sudah ada.";
