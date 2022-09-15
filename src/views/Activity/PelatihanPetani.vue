@@ -3364,6 +3364,9 @@ export default {
       this.addMoreFarmerParticipantSelectValue= null
       this.searchListPesertaPelatihan= ""
       this.itemspetaniallmu= []
+      this.selectUM = null
+      this.selectFC = null
+      this.selectFF = null
     },
     closeDelete() {
       this.dialogDelete = false;
