@@ -19,7 +19,7 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-lg elevation-6 mx-3 pa-1"
     >
       <!-- Color Status -->
       <template v-slot:item.status="{ item }">
@@ -29,7 +29,7 @@
       </template>
 
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar class="rounded-lg" flat>
           <!-- FILTER BUTTON -->
           <!-- <v-btn
             dark
@@ -94,7 +94,6 @@
           ></v-text-field>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-btn
-            v-if="RoleAccesIT == true"
             dark
             class="mb-2 mr-1"
             @click="showAddModal()"
@@ -556,8 +555,8 @@
           </v-dialog>
 
           <!-- Modal Create Form Pelatihan Petani -->
-          <v-dialog v-model="dialogAddonly" max-width="800px" persistent>
-            <v-card>
+          <v-dialog v-model="dialogAddonly" max-width="1200px" persistent content-class="rounded-lg">
+            <v-card class="rounded-lg">
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">{{ formTitle }}</span>
               </v-card-title>
@@ -585,7 +584,7 @@
                       Main Data
                     </v-stepper-step>
                     <v-divider></v-divider>
-                    <v-stepper-step editable :complete="e1 > 2" step="2">
+                    <v-stepper-step :editable="selectFF ? true : false" :complete="e1 > 2" step="2">
                       Peserta Pelatihan 
                     </v-stepper-step>
                   </v-stepper-header>
@@ -607,6 +606,7 @@
                                   item-text="name"
                                   v-on:change="selectedUM"
                                   label="Unit Manager"
+                                  :loading="loading.um"
                                   outlined
                                   :rules="[(v) => !!v || 'Field is required']"
                                   clearable
@@ -622,6 +622,7 @@
                                   v-on:change="selectedFC"
                                   label="Pilih Field Coordinator"
                                   :rules="[(v) => !!v || 'Field is required']"
+                                  :loading="loading.fc"
                                   outlined
                                   clearable
                                 ></v-autocomplete>
@@ -633,6 +634,7 @@
                                   :items="itemsff"
                                   item-text="name"
                                   label="Field Facilitator"
+                                  :loading="loading.ff"
                                   outlined
                                   clearable
                                   return-object
@@ -742,6 +744,7 @@
                           outlined
                           color="primary"
                           @click="e1 = 2"
+                          :disabled="!selectFF"
                         >
                           <v-icon left>
                             mdi-chevron-right-circle-outline
@@ -803,6 +806,14 @@
                               <template v-slot:item.index="{ index }">
                                 {{ index + 1 }}
                               </template>
+                              <template v-slot:item.photo="{item}">
+                                <v-avatar color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = item;preview.petani.modal = true;}" >
+                                  <img
+                                    :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
+                                    :alt="`Foto petani ${item.nama}`"
+                                  >
+                                </v-avatar>
+                              </template>
                               <template v-slot:item.actions="{ index, item }">
                                 <v-row class="">
                                   <v-col cols="6" class="d-inline-flex align-center">
@@ -836,6 +847,7 @@
                               outlined
                               return-object
                               clearable
+                              :loading="loading.farmer"
                             >
                             <template v-slot:item="data">
                               <v-list-item-avatar>
@@ -908,6 +920,116 @@
                     Save
                   </v-btn>
                 </v-card-actions> -->
+            </v-card>
+          </v-dialog>
+
+          <!-- Preview Petani Modal -->
+          <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl">
+            <v-card class="rounded-xl">
+              <v-card-title>
+                {{ preview.petani.data.kode }} -
+                {{ preview.petani.data.nama }}
+              </v-card-title>
+              <v-card-text class="pa-1 fontall">
+                <v-container>
+                  <v-img
+                    class="w-100 rounded-lg"
+                    :lazy-src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.petani.data.nik}.jpg`"
+                    :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.petani.data.nik}.jpg`"
+                  ></v-img>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="red"
+                  elevation="1"
+                  outlined
+                  class="rounded-lg"
+                  @click="preview.petani.modal = false"
+                >
+                  <v-icon left> mdi-close-circle-outline </v-icon>
+                  Close
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <!-- Preview Petani Modal ~ before adding to participant list -->
+          <v-dialog v-model="preview.addParticipant.modal" max-width="800px" content-class="rounded-xl" persistent>
+            <v-card class="rounded-xl">
+              <v-card-title class="headermodalstyle mb-0 rounded-none">Konfirmasi Petani</v-card-title>
+              <v-card-text class="pa-1 fontall">
+                <v-container>
+                  <v-row>
+                    <v-col lg="6" style="display: inline-flex;justify-content: start;align-items: start;">
+                      <table>
+                        <tr>
+                          <td>No Petani</td>
+                        </tr>
+                        <tr>
+                          <td><h3 class="mb-2">{{ preview.addParticipant.data.kode }}</h3></td>
+                        </tr>
+                        <tr>
+                          <td>Nama</td>
+                        </tr>
+                        <tr>
+                          <td><h3 class="mb-2">{{ preview.addParticipant.data.nama }}</h3></td>
+                        </tr>
+                        <tr>
+                          <td>NIK / No KTP</td>
+                        </tr>
+                        <tr>
+                          <td><h3 class="mb-2">{{ preview.addParticipant.data.nik }}</h3></td>
+                        </tr>
+                        <tr>
+                          <td>Desa</td>
+                        </tr>
+                        <tr>
+                          <td><h3 class="mb-2">{{ preview.addParticipant.data.desa }}</h3></td>
+                        </tr>
+                        <tr>
+                          <td>FF <small>(Field Facilitator)</small></td>
+                        </tr>
+                        <tr>
+                          <td><h3 class="mb-2">{{ preview.addParticipant.data.user }}</h3></td>
+                        </tr>
+                      </table>
+                    </v-col>
+                    <v-col lg="6">
+                      <v-img
+                        class="w-100 rounded-lg"
+                        :lazy-src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.addParticipant.data.nik}.jpg`"
+                        :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.addParticipant.data.nik}.jpg`"
+                      ></v-img>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="green"
+                  elevation="1"
+                  outlined
+                  class="rounded-lg"
+                  @click="() => {addingToTableFarmerParticipant(preview.addParticipant.data)}"
+                >
+                  <v-icon left> mdi-checkbox-marked-circle-outline </v-icon>
+                  Tambah
+                </v-btn>
+                <v-btn
+                  color="red"
+                  elevation="1"
+                  outlined
+                  class="rounded-lg"
+                  @click="() => {preview.addParticipant.modal = false;addMoreFarmerParticipantSelectValue = null}"
+                >
+                  <v-icon left> mdi-close-circle-outline </v-icon>
+                  Tidak Jadi
+                </v-btn>
+                <v-spacer></v-spacer>
+              </v-card-actions>
             </v-card>
           </v-dialog>
 
@@ -1547,9 +1669,10 @@ export default {
     ],
     // headers table list peserta pelatihan di form tambah pelatihan petani 
     headerListProduct: [
-      { text: "No", value: "index", width: "10%" },
+      { text: "No", value: "index", width: "5%" },
+      { text: "Foto", value: "photo", width: "10%" },
       { text: "No Petani", value: "kode", width: "20%" },
-      { text: "Nama Petani", value: "nama", width: "45%" },
+      { text: "Nama Petani", value: "nama", width: "40%" },
       { text: "NIK", value: "nik", width: "20%" },
       { text: "Del", value: "actions", sortable: false, width: "10%" },
     ],
@@ -1621,6 +1744,7 @@ export default {
     itemsfc: [],
     itemsff: [],
     itemspetani: [],
+    itemspetaniallmu: [],
     itemsethnic: [],
     itemsjob: [],
     itemstrees: [],
@@ -1715,6 +1839,22 @@ export default {
     },
 
     ph_form_no_temp: "",
+    preview: {
+      petani: {
+        modal: false,
+        data: {},
+      },
+      addParticipant: {
+        modal: false,
+        data: {},
+      }
+    },
+    loading: {
+      um: false,
+      fc: false,
+      ff: false,
+      farmer: false
+    }
   }),
   computed: {
     // formTitle() {
@@ -2188,6 +2328,7 @@ export default {
       //   this.fc_no_global = this.User.fc.fc;
       // }
       try {
+        this.loading.um = true
         const response = await axios.get(
           this.BaseUrlGet + "GetEmployeebyPosition?position_code=20",
           {
@@ -2200,10 +2341,13 @@ export default {
         if (response.data.length != 0) {
           this.itemsum = response.data.data.result.data;
           // this.dataobject = response.data.data.result;
+          this.loading.um = false
         } else {
           console.log("Kosong");
+          this.loading.um = false
         }
       } catch (error) {
+        this.loading.um = false
         console.error(error.response);
         if (error.response.status == 401) {
           localStorage.removeItem("token");
@@ -2271,7 +2415,6 @@ export default {
           this.$router.push("/");
         }
       }
-      console.log(this.valueFFcode);
     },
 
     async addData() {
@@ -2643,12 +2786,9 @@ export default {
         });
 
         if (same === 0) {
-          this.itemspetani.push(val)
+          this.preview.addParticipant.data = val
+          this.preview.addParticipant.modal = true
           this.loadtabledetail = false
-          this.addMoreFarmerParticipantSelectValue = null
-          this.snackbar = true;
-          this.colorsnackbar = "green";
-          this.textsnackbar = "Petani berhasil ditambahkan";
         } else {
           this.loadtabledetail = false
           this.addMoreFarmerParticipantSelectValue = null
@@ -2657,6 +2797,15 @@ export default {
           this.textsnackbar = "Petani sudah ada.";
         }
       }
+    },
+    async addingToTableFarmerParticipant(val) {
+      this.listFarmerParticipant.push(val)
+      this.addMoreFarmerParticipantSelectValue = null
+      this.preview.addParticipant.data = {}
+      this.preview.addParticipant.modal = false
+      this.colorsnackbar = "green";
+      this.textsnackbar = "Petani berhasil ditambahkan";
+      this.snackbar = true;
     },
     saveFormFarmerTraining() {
       alert('yey')
@@ -2835,11 +2984,13 @@ export default {
       console.log(a);
       this.valueUM = a;
       if (a != null) {
+        this.loading.fc = true
         this.getEmpFCbyManager(a);
         this.GetFFbyUMandFC("UM", a);
         this.valueFC = "";
         this.selectFC = "";
         this.typegetdata = "several";
+        this.loading.fc = false
       } else {
         this.valueUM = "";
         this.valueFC = "";
@@ -2852,6 +3003,7 @@ export default {
     },
     selectedFC(a) {
       console.log(a);
+      this.loading.ff = true
       this.valueFC = a;
       this.GetFFbyUMandFC("FC", a);
       this.typegetdata = "several";
@@ -2861,8 +3013,10 @@ export default {
         this.selectFF = "";
         this.itemsff = [];
         this.typegetdata = this.User.ff.value_data;
+        this.loading.ff = false
       } else {
         this.getFF(a)
+        this.loading.ff = false
       }
     },
     showDetail(item) {
@@ -2930,16 +3084,27 @@ export default {
     async selectPetaniWithMUScope(a) {
       if (a != null) {
         this.valueFFForm = a.ff_no;
+        this.loading.farmer = true
         this.loadtabledetail = true
         await this.getPetani();
         await this.getPetaniByMU(a.mu_no);
         this.loadtabledetail = false
-        this.listFarmerParticipant = this.itemspetani
+        console.log(this.itemspetani.length)
+        this.listFarmerParticipant = []
+        await this.itemspetani.forEach((val, index) => {
+          let programYearPetani = this.getProgramYearPetani(val.mou_no)
+          if (programYearPetani == 2022) {
+            this.listFarmerParticipant.push(val)
+          }
+        });
+        console.log('items participant' + this.listFarmerParticipant.length)
+        this.loading.farmer = false
       } else {
         this.defaultItem.ff_no = "";
         this.defaultItem.kode = "";
         this.itemspetani = [];
       }
+      this.listFarmerParticipantChecked = []
     },
     selectLahan(a) {
       console.log(a);
@@ -3193,6 +3358,12 @@ export default {
       this.dialogAddProduct = false;
       this.dialogdownload = false;
       this.dialogAddonly = false;
+      // reset data
+      this.listFarmerParticipant= []
+      this.listFarmerParticipantChecked= []
+      this.addMoreFarmerParticipantSelectValue= null
+      this.searchListPesertaPelatihan= ""
+      this.itemspetaniallmu= []
     },
     closeDelete() {
       this.dialogDelete = false;
@@ -3560,6 +3731,13 @@ export default {
           "&max_crops=" +
           this.max_crops
       );
+    },
+    getProgramYearPetani(text) {
+        if (text.slice(13, 14) === '_') {
+            return text.slice(9, 13)
+        } else {
+            return text.slice(4, 8)
+        }
     },
   },
 };

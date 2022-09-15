@@ -82,3 +82,7 @@ body {
 }
 
 .invGmbr {}
+
+.cursor-pointer {
+    cursor: pointer;
+}
