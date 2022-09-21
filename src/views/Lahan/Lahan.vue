@@ -18,6 +18,9 @@
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded elevation-6 mx-3 pa-1"
+      :footer-props="{
+        itemsPerPageOptions: [10, 20, 30, 40, 50, -1]
+      }"
     >
       <!-- Color Status -->
       <template v-slot:item.status="{ item }">
@@ -1654,6 +1657,16 @@
           mdi-delete
         </v-icon>
       </template>
+
+      <!-- Tutupan table -->
+      <template v-slot:item.tutupan_lahan="{ item }">
+        {{ item.tutupan_lahan.replace('-', '') }}{{ item.tutupan_lahan.includes('%') ? '' : '%' }}
+      </template>
+
+      <!-- Luas Lahan table -->
+      <template v-slot:item.luas_lahan="{ item }">
+        {{ item.luas_lahan }}m<sup>2</sup>
+      </template>
     </v-data-table>
     <v-snackbar
       v-model="snackbar"
@@ -1736,11 +1749,12 @@ export default {
         value: "lahanNo",
         width: "10%",
       },
-      { text: "Coordinate", value: "coordinate", width: "20%" },
       { text: "Desa", value: "desa", width: "15%" },
       { text: "Petani", value: "petani", width: "15%" },
       { text: "Field Facilitator", value: "user", width: "10%" },
-      { text: "Tipe", value: "lahan_type", width: "10%" },
+      { text: "Luas Lahan", value: "luas_lahan", width: "10%" },
+      { text: "Tutupan", value: "tutupan_lahan", width: "7%" },
+      { text: "Pola Tanam", value: "pola_tanam", width: "10%" },
       { text: "Status", value: "status", width: "12%" },
       { text: "Actions", value: "actions", sortable: false, width: "15%" },
     ],
