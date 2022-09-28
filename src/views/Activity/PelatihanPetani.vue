@@ -562,10 +562,10 @@
                       @click="e1 = 2"
                       :disabled="!selectFF || !dataToStore.program_year || e1 == 2"
                     >
-                      <v-icon left>
+                      Next
+                      <v-icon right>
                         mdi-chevron-right-circle-outline
                       </v-icon>
-                      Next
                     </v-btn>
                   </v-col>
                   <v-col align="end">
@@ -612,12 +612,19 @@
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">Detail Pelatihan Petani</span>
                 <v-spacer></v-spacer>
-                <v-btn
-                  dark
-                  color="blue lighten-1"
-                >
-                  <v-icon class="mr-1" small>mdi-printer</v-icon> Export
-                </v-btn>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-bind="attrs"
+                      v-on="on"
+                      dark
+                      color="blue lighten-1"
+                    >
+                      <v-icon class="mr-1" small>mdi-printer</v-icon> Export
+                    </v-btn>
+                  </template>
+                  <span>Export to .pdf</span>
+                </v-tooltip>
               </v-card-title>
               <v-card-text class="pa-0 fontall">
                 <v-container v-if="dialogDetailData">
