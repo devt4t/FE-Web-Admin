@@ -188,6 +188,7 @@ export default {
       if (this.listValMenu) {
         if (this.listValMenu.length > 0) {
           itemroutecheck = this.listValMenu;
+          itemroutecheck.push('Dashboard')
         }
 
         var rslt = itemroutecheck.includes(this.$route.name);
@@ -251,6 +252,28 @@ export default {
     this.User = JSON.parse(localStorage.getItem("User"));
     if (this.User) {
       this.items = this.User.list_menu;
+      this.items.forEach((valMenu, indexMenu) => {
+        // rearrange activities list menu
+        if (valMenu.title == 'Activities') {
+          let activitiesRearrange = []
+          valMenu.items.forEach((valMenuItem, indexMenuItem) => {
+            if (activitiesRearrange.includes(valMenuItem) == false) {
+              if (valMenuItem.title === 'Sosialisasi Tanam') {
+                activitiesRearrange[0] = valMenuItem
+              } else if (valMenuItem.title === 'Pelatihan Petani') { 
+                activitiesRearrange[1] = valMenuItem
+              } else if (valMenuItem.title === 'Lubang Tanam') { 
+                activitiesRearrange[2] = valMenuItem
+              } else if (valMenuItem.title === 'Realisasi Tanam') { 
+                activitiesRearrange[3] = valMenuItem
+              } else if (valMenuItem.title === 'Monitoring 2') { 
+                activitiesRearrange[4] = valMenuItem
+              }
+            }
+          })
+          this.items[indexMenu].items = activitiesRearrange.filter(Object);
+        }
+      })
       this.listValMenu = this.User.list_val_menu;
       var name = this.User.name;
       const arrayname = name.split(" ");
@@ -258,7 +281,6 @@ export default {
       // this.nameadmin = this.User.name;
       this.statusadmin = this.User.role_name;
     }
-    console.log(this.User.list_menu);
   },
   methods: {
     async cekLogout() {

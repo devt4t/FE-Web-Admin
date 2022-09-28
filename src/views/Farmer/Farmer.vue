@@ -20,14 +20,13 @@
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded elevation-6 mx-3 pa-1"
+      :items-per-page="20"
+      :footer-props="{
+        itemsPerPageOptions: [10, 20, 30, 40, 50, -1]
+      }"
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
 
+      <!-- Modals -->
       <template v-slot:top>
         <v-toolbar flat>
           <v-btn
@@ -259,6 +258,14 @@
                           :rules="rules"
                         ></v-text-field>
                       </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model="defaultItem.nickname"
+                          label="Nama Panggilan"
+                          outlined
+                          :rules="rules"
+                        ></v-text-field>
+                      </v-col>
                       <v-col cols="12" sm="4" md="4">
                         <v-menu v-model="menu2" transition="scale-transition">
                           <template v-slot:activator="{ on, attrs }">
@@ -318,7 +325,6 @@
                           label="Rt"
                           outlined
                           type="number"
-                          :rules="rules"
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="2" md="2">
@@ -327,7 +333,6 @@
                           label="Rw"
                           outlined
                           type="number"
-                          :rules="rules"
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="4" md="4">
@@ -637,10 +642,16 @@
                         </v-col>
                       </v-row>
                       <v-row>
-                        <v-col cols="12" sm="12" md="12">
+                        <v-col cols="12" sm="12" md="6">
                           <div>
                             <h5>Nama</h5>
                             <h3 class="ml-2">{{ defaultItem.nama }}</h3>
+                          </div>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="6">
+                          <div>
+                            <h5>Nama Panggilan</h5>
+                            <h3 class="ml-2">{{ defaultItem.nickname }}</h3>
                           </div>
                         </v-col>
                       </v-row>
@@ -901,14 +912,33 @@
           </v-dialog>
         </v-toolbar>
       </template>
-
-      <!-- Action table -->
+      <!-- /.Modals END -->
+      
+      <!-- Index -->
+      <template v-slot:item.index="{index}">
+        {{ index + 1 }}
+      </template>
+      <!-- Program Year Column -->
+      <template v-slot:item.mou_no="{item}">
+        {{ getProgramYear(item.mou_no) }}
+      </template>
+      <!-- Join Date Column -->
+      <template v-slot:item.join_date="{item}">
+        {{ item.join_date.slice(0, 4) }}
+      </template>
+      <!-- Status Column -->
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="getColorStatus(item.status)" dark>
+          {{ item.status }}
+        </v-chip>
+      </template>
+      <!-- Action table Column -->
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-3" @click="showDetail(item)" small color="info">
           mdi-information-outline
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           class="mr-3"
           @click="showEditModal(item)"
           small
@@ -917,7 +947,7 @@
           mdi-pencil
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           @click="showDeleteModal(item)"
           small
           color="red"
@@ -978,18 +1008,16 @@ export default {
     search: "",
     type: "",
     headers: [
-      {
-        text: "Kode",
-        align: "start",
-        value: "kode",
-        width: "10%",
-      },
+      { text: "No", value: "index", width: "5%" },
+      { text: "Kode", align: "start", value: "kode", width: "10%" },
       { text: "Nama", value: "nama", width: "20%" },
-      { text: "NIK", value: "nik", width: "15%" },
-      { text: "Desa", value: "desa", width: "15%" },
-      { text: "Field Facilitator", value: "user", width: "15%" },
-      { text: "Status", value: "status", width: "13%" },
-      { text: "Actions", value: "actions", sortable: false, width: "15%" },
+      { text: "NIK", value: "nik", width: "10%" },
+      { text: "Desa", value: "desa", width: "10%" },
+      { text: "Field Facilitator", value: "user", width: "20%" },
+      { text: "Tahun Program", value: "mou_no", width: "10%" },
+      { text: "Tahun Bergabung", value: "join_date", width: "10%" },
+      { text: "Status", value: "status", width: "10%" },
+      { text: "Actions", value: "actions", sortable: false, width: "5%" },
     ],
     dataobject: [],
     editedItem: {
@@ -1003,6 +1031,7 @@ export default {
       imagesSignature: "",
       nama: "",
       name: "",
+      nickname: "",
       ktp_no: "",
       farmer_no: "",
       birthday: "",
@@ -1809,6 +1838,7 @@ export default {
       const datapost = {
         ktp_no: this.defaultItem.ktp_no,
         name: this.defaultItem.name,
+        nickname: this.defaultItem.nickname,
         birthday: this.datepicker,
         religion: this.defaultItem.religion,
         rt: this.defaultItem.rt,
@@ -1877,6 +1907,7 @@ export default {
         farmer_no: this.defaultItem.farmer_no,
         ktp_no: this.defaultItem.ktp_no,
         name: this.defaultItem.name,
+        nickname: this.defaultItem.nickname,
         birthday: this.datepicker,
         religion: this.defaultItem.religion,
         rt: this.defaultItem.rt,
@@ -2100,6 +2131,7 @@ export default {
       this.defaultItem.imagesSignature = "";
       this.defaultItem.nama = "";
       this.defaultItem.name = "";
+      this.defaultItem.nickname = "";
       this.defaultItem.ktp_no = "";
       this.defaultItem.farmer_no = "";
       this.defaultItem.birthday = "";
@@ -2183,6 +2215,7 @@ export default {
       if (
         this.defaultItem.ktp_no.length != 0 &&
         this.defaultItem.name.length != 0 &&
+        this.defaultItem.nickname.length != 0 &&
         // this.defaultItem.birthday.length != 0 &&
         this.defaultItem.religion != null &&
         this.defaultItem.rt.length != 0 &&
@@ -2389,6 +2422,13 @@ export default {
           };
         };
       });
+    },
+    getProgramYear(text) {
+        if (text.slice(13, 14) === '_') {
+            return text.slice(9, 13)
+        } else {
+            return text.slice(4, 8)
+        }
     },
   },
 };

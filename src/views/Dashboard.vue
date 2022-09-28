@@ -357,7 +357,6 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
-        console.log(response.data.data.result);
         if (response.data.length != 0) {
           // this.loadtable = false;
           this.greeting = response.data.data.result.greeting;

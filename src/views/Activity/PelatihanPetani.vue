@@ -15,19 +15,12 @@
 
     <v-data-table
       :headers="headers"
-      :items="dataobject"
+      :items="temporaryTableDatas"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded-lg elevation-6 mx-3 pa-1"
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-
       <template v-slot:top>
         <v-toolbar class="rounded-lg" flat>
           <!-- FILTER BUTTON -->
@@ -83,7 +76,6 @@
             class="mx-3 mt-7 d-none d-md-block"
             style="max-width: 225px"
           ></v-select> -->
-          <v-divider class="mx-4 d-none d-md-block" inset vertical></v-divider>
           <v-spacer class="d-none d-md-block"></v-spacer>
           <v-text-field
             v-model="search"
@@ -101,24 +93,6 @@
           >
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn>
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-          </v-btn> -->
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
-          </v-btn> -->
           <!-- Modal Filter Area -->
           <v-dialog v-model="dialogFilterArea" max-width="500px">
             <v-card>
@@ -222,362 +196,14 @@
             </v-card>
           </v-dialog>
 
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text class="pa-0 fontall">
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-stepper v-if="load == false" v-model="e1">
-                    <v-stepper-header>
-                      <v-stepper-step editable :complete="e1 > 1" step="1">
-                        Main Data
-                      </v-stepper-step>
-                      <v-divider></v-divider>
-                      <v-stepper-step :editable="false" :complete="e1 > 2" step="2">
-                        Peserta Petani
-                      </v-stepper-step>
-                    </v-stepper-header>
-
-                    <v-stepper-items>
-                      <v-stepper-content class="pa-3" step="1">
-                        <v-container class="mb-2">
-                          <v-row>
-                            <v-col cols="12" sm="12" md="12">
-                              <v-select
-                                v-model="defaultItem.user_id"
-                                :items="itemsff"
-                                item-text="name"
-                                item-value="ff_no"
-                                label="Pilih Field Facilitator"
-                                outlined
-                                clearable
-                                type="string"
-                                v-on:change="selectPetani"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-select>
-                            </v-col>
-                            <v-col cols="12" sm="12" md="12">
-                              <v-text-field
-                                v-model="defaultItem.lahan_no"
-                                label="No Lahan"
-                                outlined
-                                type="string"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-select
-                                v-model="defaultItem.planting_year"
-                                :items="itemsTahun"
-                                item-text="text"
-                                item-value="value"
-                                label="Pilih Tahun Program"
-                                outlined
-                                clearable
-                                type="string"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-text-field
-                                v-model="defaultItem.total_holes"
-                                label="Total Lubang"
-                                outlined
-                                type="number"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-text-field>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-
-                        <v-row class="ma-2">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            elevation="1"
-                            outlined
-                            color="primary"
-                            @click="e1 = 3"
-                          >
-                            <v-icon left>
-                              mdi-chevron-right-circle-outline
-                            </v-icon>
-                            Next
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-
-                      <v-stepper-content class="pa-3" step="2">
-                        <v-container class="mb-2">
-                          <v-row class="mb-3">
-                            <h4>Pilih Pohon</h4>
-                            <v-divider class="mx-2 mt-3"></v-divider>
-                          </v-row>
-                          <v-row>
-                            <v-col class="px-1 py-0" cols="12" sm="12" md="12">
-                              <v-combobox
-                                :items="itemstrees"
-                                item-value="tree_code"
-                                item-text="tree_name"
-                                label="Pilih Pohon"
-                                v-on:change="changeBarangSelected"
-                                outlined
-                                clearable
-                              ></v-combobox>
-                            </v-col>
-                          </v-row>
-                          <v-row class="mb-3">
-                            <h4>List Pohon</h4>
-                            <v-divider class="mx-2 mt-3"></v-divider>
-                          </v-row>
-                          <v-row>
-                            <v-col cols="12" sm="12" md="12">
-                              <v-data-table
-                                :headers="headerListProduct"
-                                :items="defaultItem.list_detail"
-                                class="elevation-3"
-                                append-icon="mdi-magnify"
-                                :items-per-page="20"
-                                :loading="loadtabledetail"
-                                loading-text="Loading... Please wait"
-                              >
-                                <template v-slot:item.actions="{ item }">
-                                  <v-icon
-                                    class="mr-2"
-                                    @click="deletelistitemproduct(item)"
-                                    color="red"
-                                  >
-                                    mdi-delete
-                                  </v-icon>
-                                  <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
-                                </template>
-                              </v-data-table>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-
-                        <v-row class="ma-2">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            elevation="1"
-                            outlined
-                            color="primary"
-                            @click="e1 = 3"
-                          >
-                            <v-icon left>
-                              mdi-chevron-right-circle-outline
-                            </v-icon>
-                            Next
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-
-                      <v-stepper-content class="pa-3" step="3">
-                        <v-container class="mb-2">
-                          <v-row>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Gambar Signature"
-                                outlined
-                                v-model="gambarinput1"
-                                v-on:change="pilihgambar1"
-                              ></v-file-input>
-                            </v-col>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Pilih Gambar1"
-                                outlined
-                                v-model="gambarinput2"
-                                v-on:change="pilihgambar2"
-                              ></v-file-input>
-                            </v-col>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Pilih Gambar2"
-                                outlined
-                                v-model="gambarinput3"
-                                v-on:change="pilihgambar3"
-                              ></v-file-input>
-                            </v-col>
-                            <v-container>
-                              <v-row>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow1"
-                                      class="my-2 mb-4"
-                                      contain
-                                      max-height="225"
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow2"
-                                      class="my-2 mb-4"
-                                      max-height="225"
-                                      contain
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow3"
-                                      class="my-2 mb-4"
-                                      max-height="225"
-                                      contain
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                              </v-row>
-                            </v-container>
-                          </v-row>
-                        </v-container>
-                        <v-row class="ma-2">
-                          <v-spacer> </v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            color="success"
-                            elevation="1"
-                            outlined
-                            @click="save"
-                          >
-                            <v-progress-circular
-                              v-if="loadsave == true"
-                              :size="25"
-                              :width="5"
-                              indeterminate
-                              color="green"
-                            >
-                            </v-progress-circular>
-                            <v-icon v-if="loadsave == false" left>
-                              mdi-checkbox-marked-circle-outline
-                            </v-icon>
-                            <h4 v-if="loadsave == false">Save</h4>
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-                    </v-stepper-items>
-                  </v-stepper>
-                </v-card-text>
-
-                <!-- <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" outlined @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" outlined @click="save">
-                    Save
-                  </v-btn>
-                </v-card-actions> -->
-              </v-form>
-            </v-card>
-          </v-dialog>
-
           <!-- Modal Create Form Pelatihan Petani -->
-          <v-dialog v-model="dialogAddonly" max-width="1200px" persistent content-class="rounded-lg">
+          <v-dialog v-model="dialogAddonly" max-width="1000px" persistent content-class="rounded-lg" scrollable>
             <v-card class="rounded-lg">
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">{{ formTitle }}</span>
               </v-card-title>
 
               <v-card-text class="pa-0 fontall">
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
                 <v-stepper v-if="load == false" v-model="e1">
                   <v-stepper-header>
                     <v-stepper-step editable :complete="e1 > 1" step="1">
@@ -593,7 +219,7 @@
                     <!-- Main Data -->
                     <v-stepper-content class="pa-3" step="1">
                       <!-- Content -->
-                      <v-container class="mb-2">
+                      <v-container>
                         <v-row>
                           <v-col cols="12" sm="12" md="12" lg="6">
                             <v-row>
@@ -623,6 +249,7 @@
                                   label="Pilih Field Coordinator"
                                   :rules="[(v) => !!v || 'Field is required']"
                                   :loading="loading.fc"
+                                  :no-data-text="loading.fc ? 'Loading...' : 'Pilih UM'"
                                   outlined
                                   clearable
                                 ></v-autocomplete>
@@ -633,8 +260,10 @@
                                   v-model="selectFF"
                                   :items="itemsff"
                                   item-text="name"
+                                  item-value="ff_no"
                                   label="Field Facilitator"
                                   :loading="loading.ff"
+                                  :no-data-text="loading.ff ? 'Loading...' : 'Pilih FC'"
                                   outlined
                                   clearable
                                   return-object
@@ -653,10 +282,10 @@
                                   v-on:change="absensiFileChanged"
                                   outlined
                                 ></v-file-input>
-                                <v-card elevation="2" height="300" v-if="dataToStore.absensi && dataToStore.absensi !== ''">
+                                <v-card elevation="2" height="300" v-if="dataToStore.absensi_img && dataToStore.absensi_img !== ''">
                                   <v-img
                                     height="300"
-                                    v-bind:src="dataToStore.absensi"
+                                    v-bind:src="dataToStore.absensi_img"
                                     class="my-2 mb-4"
                                     id="idFotoAbsensi"
                                   ></v-img
@@ -664,41 +293,39 @@
                               </v-col>
                             </v-row>
                           </v-col>
-                          <v-col cols="12" sm="12" md="12" lg="6">
+                          <v-col cols="12" sm="12" md="6" lg="6">
                             <v-row>
                               <!-- Materi Pelatihan 1 -->
                               <v-col cols="12" sm="12" md="12">
-                                <v-select
-                                  v-model="defaultItem.planting_year"
-                                  :items="itemsTahun"
-                                  item-text="text"
-                                  item-value="value"
+                                <v-autocomplete
+                                  v-model="dataToStore.materi_1"
+                                  :items="options.materiPelatihan"
+                                  item-text="materi"
+                                  item-value="id"
                                   label="Materi Pelatihan 1"
                                   outlined
-                                  clearable
+                                  readonly
                                   type="string"
                                   :rules="[(v) => !!v || 'Field is required']"
-                                ></v-select>
+                                ></v-autocomplete>
                               </v-col>
                               <!-- Materi Pelatihan 2 -->
                               <v-col cols="12" sm="12" md="12">
-                                <v-select
-                                  v-model="defaultItem.planting_year"
-                                  :items="itemsTahun"
-                                  item-text="text"
-                                  item-value="value"
+                                <v-autocomplete
+                                  v-model="dataToStore.materi_2"
+                                  :items="options.materiPelatihan"
+                                  item-text="materi"
+                                  item-value="id"
                                   label="Materi Pelatihan 2"
                                   outlined
-                                  clearable
                                   type="string"
-                                  :rules="[(v) => !!v || 'Field is required']"
-                                ></v-select>
+                                ></v-autocomplete>
                               </v-col>
                               <!-- Material Organik -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-select
-                                  v-model="defaultItem.planting_year"
-                                  :items="itemsTahun"
+                                  v-model="dataToStore.material_organic"
+                                  :items="options.material_organic"
                                   item-text="text"
                                   item-value="value"
                                   label="Material Organik"
@@ -711,47 +338,69 @@
                               <!-- Program year -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-select
-                                  v-model="defaultItem.planting_year"
+                                  v-model="dataToStore.program_year"
                                   :items="itemsTahun"
                                   item-text="text"
                                   item-value="value"
                                   label="Tahun Program"
                                   outlined
-                                  clearable
                                   type="string"
                                   :rules="[(v) => !!v || 'Field is required']"
                                 ></v-select>
+                              </v-col>
+                              <!-- Date -->
+                              <v-col cols="12" sm="12" md="12" lg="12">
+                                <p class="mb-1">Date</p>
+                                    <v-menu 
+                                      rounded="lg"
+                                      v-model="datePickerMenu"
+                                      transition="slide-x-transition"
+                                      bottom
+                                      right
+                                      offset-x
+                                      :close-on-content-click="false"
+                                    >
+                                      <template v-slot:activator="{ on: menu, attrs }">
+                                        <v-tooltip top>
+                                          <template v-slot:activator="{ on: tooltip }">
+                                            <v-btn
+                                              color="green lighten-1"
+                                              v-bind="attrs"
+                                              v-on="{...menu, ...tooltip}"
+                                            >
+                                              <v-icon left> mdi-calendar </v-icon>
+                                              {{ dataToStore.date }}
+                                            </v-btn>
+                                          </template>
+                                          <span>Klik untuk memunculkan datepicker</span>
+                                        </v-tooltip>
+                                      </template>
+                                      <v-list>
+                                        <v-list-item>
+                                          <v-date-picker 
+                                            color="green lighten-1" 
+                                            v-model="dataToStore.date"
+                                          ></v-date-picker>
+                                          <br>
+                                        </v-list-item>
+                                        <v-list-item>
+                                          <v-spacer></v-spacer>
+                                          <v-btn
+                                            color="green lighten-1"
+                                            center
+                                            @click="datePickerMenu = false"
+                                          >
+                                            Ok
+                                          </v-btn>
+                                          <v-spacer></v-spacer>
+                                        </v-list-item>
+                                      </v-list>
+                                    </v-menu>
                               </v-col>
                             </v-row>
                           </v-col>
                         </v-row>
                       </v-container>
-                      <!-- Footer Button -->
-                      <v-row class="ma-2">
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          class="mr-1"
-                          color="red"
-                          elevation="1"
-                          @click="close"
-                          outlined
-                        >
-                          <v-icon left> mdi-close-circle-outline </v-icon>
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          elevation="1"
-                          outlined
-                          color="primary"
-                          @click="e1 = 2"
-                          :disabled="!selectFF"
-                        >
-                          <v-icon left>
-                            mdi-chevron-right-circle-outline
-                          </v-icon>
-                          Next
-                        </v-btn>
-                      </v-row>
                     </v-stepper-content>
                     <!-- Peserta Pelatihan -->
                     <v-stepper-content class="pa-3" step="2">
@@ -761,6 +410,9 @@
                         <v-row class="mb-3">
                           <h4>List Peserta Pelatihan</h4>
                           <v-divider class="mx-2 mt-3"></v-divider>
+                        </v-row>
+                        <v-row v-if="selectFF" class="">
+                          <h3>{{ selectFF.ff_no }} - {{ selectFF.name }}</h3>
                         </v-row>
                         <v-row class="align-end">
                           <!-- <v-col cols="12" sm="12" md="6" class="d-flex align-end"> -->
@@ -779,11 +431,11 @@
                         </v-row>
                         <v-row>
                           <v-col cols="12" sm="12" md="12">
+                            <!-- Table List Petani Peserta Pelatihan -->
                             <v-data-table
                               :headers="headerListProduct"
                               :items="listFarmerParticipant"
                               class="elevation-3"
-                              :items-per-page="-1"
                               item-key="kode"
                               :loading="loadtabledetail"
                               loading-text="Loading... Please wait"
@@ -793,6 +445,7 @@
                               :single-select="false"
                               :key="componentKey.listFarmerParticipantTable"
                               hide-default-footer
+                              :items-per-page="-1"
                               :footer-props="{
                                 itemsPerPageOptions: [10, 25, 40, -1]
                               }"
@@ -807,12 +460,17 @@
                                 {{ index + 1 }}
                               </template>
                               <template v-slot:item.photo="{item}">
-                                <v-avatar color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = item;preview.petani.modal = true;}" >
-                                  <img
-                                    :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
-                                    :alt="`Foto petani ${item.nama}`"
-                                  >
-                                </v-avatar>
+                                <v-tooltip top>
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-avatar v-bind="attrs" v-on="on" color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = item;preview.petani.modal = true;}" >
+                                      <img
+                                        :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
+                                        :alt="`Foto petani ${item.nama}`"
+                                      >
+                                    </v-avatar>
+                                  </template>
+                                  <span>Klik untuk preview</span>
+                                </v-tooltip>
                               </template>
                               <template v-slot:item.actions="{ index, item }">
                                 <v-row class="">
@@ -862,54 +520,79 @@
                           </v-col>
                         </v-row>
                       </v-container>
-                      <!-- Footer Button -->
-                      <v-row class="ma-2">
-                        <v-btn
-                          elevation="1"
-                          outlined
-                          color="primary"
-                          @click="e1 = 1"
-                        >
-                          <v-icon left>
-                            mdi-chevron-left-circle-outline
-                          </v-icon>
-                          Back
-                        </v-btn>
-                        <v-spacer> </v-spacer>
-                        <v-btn
-                          class="mr-1"
-                          color="red"
-                          elevation="1"
-                          @click="close"
-                          outlined
-                        >
-                          <v-icon left> mdi-close-circle-outline </v-icon>
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          color="success"
-                          elevation="1"
-                          outlined
-                          @click="saveFormFarmerTraining"
-                        >
-                          <v-progress-circular
-                            v-if="loadsave == true"
-                            :size="25"
-                            :width="5"
-                            indeterminate
-                            color="green"
-                          >
-                          </v-progress-circular>
-                          <v-icon v-if="loadsave == false" left>
-                            mdi-checkbox-marked-circle-outline
-                          </v-icon>
-                          <h4 v-if="loadsave == false">Save</h4>
-                        </v-btn>
-                      </v-row>
                     </v-stepper-content>
                   </v-stepper-items>
                 </v-stepper>
               </v-card-text>
+              <v-card-actions class="ma-2">
+                <!-- Footer Button -->
+                <v-row>
+                  <v-col>
+                    <v-btn
+                      class="mr-1 rounded-lg"
+                      color="red"
+                      elevation="1"
+                      @click="close"
+                      outlined
+                    >
+                      <v-icon left> mdi-close-circle-outline </v-icon>
+                      Cancel
+                    </v-btn>
+
+                  </v-col>
+                  <v-col align="center">
+                    <v-btn
+                      :disabled="e1 == 1"
+                      elevation="1"
+                      outlined
+                      color="primary"
+                      class="rounded-lg mr-1"
+                      @click="e1 = 1"
+                    >
+                      <v-icon left>
+                        mdi-chevron-left-circle-outline
+                      </v-icon>
+                      Back
+                    </v-btn>
+                    <v-btn
+                      class="rounded-lg ml-1"
+                      elevation="1"
+                      outlined
+                      color="primary"
+                      @click="e1 = 2"
+                      :disabled="!selectFF || !dataToStore.program_year || e1 == 2"
+                    >
+                      <v-icon left>
+                        mdi-chevron-right-circle-outline
+                      </v-icon>
+                      Next
+                    </v-btn>
+                  </v-col>
+                  <v-col align="end">
+                    <v-btn
+                      class="rounded-lg"
+                      color="success"
+                      elevation="1"
+                      outlined
+                      @click="saveFormFarmerTraining"
+                      :disabled="e1 == 1 || listFarmerParticipantChecked.length == 0"
+                    >
+                      <v-progress-circular
+                        v-if="loadsave == true"
+                        :size="25"
+                        :width="5"
+                        indeterminate
+                        color="green"
+                      >
+                      </v-progress-circular>
+                      <v-icon v-if="loadsave == false" left>
+                        mdi-checkbox-marked-circle-outline
+                      </v-icon>
+                      <h4 v-if="loadsave == false">Save</h4>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
 
               <!-- <v-card-actions v-if="load == false">
                   <v-spacer></v-spacer>
@@ -923,8 +606,155 @@
             </v-card>
           </v-dialog>
 
+          <!-- Modal Detail Farmer Participant -->
+          <v-dialog v-model="dialogDetail" max-width="900px" content-class="rounded-lg" scrollable>
+            <v-card class="rounded-lg">
+              <v-card-title class="mb-1 headermodalstyle">
+                <span class="headline">Detail Pelatihan Petani</span>
+                <v-spacer></v-spacer>
+                <v-btn
+                  dark
+                  color="blue lighten-1"
+                >
+                  <v-icon class="mr-1" small>mdi-printer</v-icon> Export
+                </v-btn>
+              </v-card-title>
+              <v-card-text class="pa-0 fontall">
+                <v-container v-if="dialogDetailData">
+                  <div class="mb-2">
+                    <h2 class="text-center">{{ dialogDetailData.form_no }}</h2>
+                    <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
+                  </div>
+                  <v-row class="mt-2">
+                    <v-col lg="6" class="mb-2">
+                      <table>
+                        <tr>
+                          <td>UM</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.um_no }}</td>
+                        </tr>
+                        <tr>
+                          <td>FC</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.fc_no }}</td>
+                        </tr>
+                        <tr>
+                          <td>FF</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.ff_no }}</td>
+                        </tr>
+                        <tr>
+                          <td>Tgl Pelatihan</td>
+                          <td>:</td>
+                          <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                        </tr>
+                        <tr>
+                          <td>Jml Kehadiran</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.farmers.length }}</td>
+                        </tr>
+                      </table>
+                    </v-col>
+                    <v-col lg="6" class="mb-2">
+                      <table>
+                        <tr>
+                          <td>MU</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.mu_no }}</td>
+                        </tr>
+                        <tr>
+                          <td>TA</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.target_area }}</td>
+                        </tr>
+                        <tr>
+                          <td>Desa</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.working_area }}</td>
+                        </tr>
+                        <tr>
+                          <td>Organik</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.material_organic }}</td>
+                        </tr>
+                      </table>
+                    </v-col>
+                    <v-col lg="8">
+                      <!-- Table List Petani Peserta Pelatihan -->
+                      <v-data-table
+                        :headers="tables.farmerListDetailModal.headers"
+                        :items="dialogDetailData.farmers"
+                        class="elevation-3"
+                        item-key="kode"
+                        :loading="tables.farmerListDetailModal.loading"
+                        loading-text="Loading... Please wait"
+                        :search="tables.farmerListDetailModal.search"
+                        :items-per-page="10"
+                        :footer-props="{
+                          itemsPerPageOptions: [10, 25, 40, -1]
+                        }"
+                      >
+                        <template v-slot:item.index="{ index }">
+                          {{ index + 1 }}
+                        </template>
+                        <template v-slot:item.photo="{item}">
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-avatar color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = item;preview.petani.modal = true;}" v-bind="attrs" v-on="on" >
+                                <img
+                                  :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
+                                  :alt="`Foto petani ${item.nama}`"
+                                >
+                              </v-avatar>
+                            </template>
+                            <span>Klik untuk preview</span>
+                          </v-tooltip>
+                        </template>
+                      </v-data-table>
+                    </v-col>
+                    <v-col lg="4">
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-img
+                            aspect-ratio="1"
+                            lazy-src=""
+                            class="rounded-lg cursor-pointer"
+                            transition="fade-transition"
+                            :src="'https://picsum.photos/500'"
+                            @click="() => {preview.absensi.url = 'https://picsum.photos/500'; preview.absensi.modal = true}"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            <template v-slot:placeholder>
+                              <v-skeleton-loader
+                                class="mx-auto"
+                                type="image"
+                              ></v-skeleton-loader>
+                            </template>
+                          </v-img>
+                        </template>
+                        <span>Klik untuk preview</span>
+                      </v-tooltip>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col align="end">
+                      <v-btn
+                        outlined
+                        color="red lighten-1"
+                        @click="dialogDetail = false"
+                      >
+                        <v-icon class="mr-1" small>mdi-close</v-icon> Close
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
           <!-- Preview Petani Modal -->
-          <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl">
+          <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl" scrollable>
             <v-card class="rounded-xl">
               <v-card-title>
                 {{ preview.petani.data.kode }} -
@@ -955,8 +785,46 @@
             </v-card>
           </v-dialog>
 
+          <!-- Preview Absensi Modal -->
+          <v-dialog v-model="preview.absensi.modal" max-width="500px" content-class="rounded-xl" scrollable>
+            <v-card class="rounded-xl">
+              <v-card-title>
+                Preview Absensi Photo
+              </v-card-title>
+              <v-card-text class="pa-1 fontall">
+                <v-container>
+                  <v-img
+                    class="w-100 rounded-lg"
+                    :lazy-src="`${preview.absensi.url}`"
+                    :src="`${preview.absensi.url}`"
+                  >
+                    <template v-slot:placeholder>
+                      <v-skeleton-loader
+                        class="mx-auto"
+                        type="image"
+                      ></v-skeleton-loader>
+                    </template>
+                  </v-img>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="red"
+                  elevation="1"
+                  outlined
+                  class="rounded-lg"
+                  @click="preview.absensi.modal = false"
+                >
+                  <v-icon left> mdi-close-circle-outline </v-icon>
+                  Close
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
           <!-- Preview Petani Modal ~ before adding to participant list -->
-          <v-dialog v-model="preview.addParticipant.modal" max-width="800px" content-class="rounded-xl" persistent>
+          <v-dialog v-model="preview.addParticipant.modal" max-width="800px" content-class="rounded-xl" persistent scrollable>
             <v-card class="rounded-xl">
               <v-card-title class="headermodalstyle mb-0 rounded-none">Konfirmasi Petani</v-card-title>
               <v-card-text class="pa-1 fontall">
@@ -1033,355 +901,6 @@
             </v-card>
           </v-dialog>
 
-          <!-- Modal Add Product -->
-          <v-dialog v-model="dialogAddProduct" max-width="500px">
-            <v-card>
-              <v-card-text class="pa-1 fontall">
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <div>
-                        <h5>Nama Pohon</h5>
-                        <h3 class="ml-2">
-                          {{ tree_name_temp }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <div>
-                        <h5>Kategori Pohon</h5>
-                        <h3 class="ml-2">
-                          {{ tree_category_temp }}
-                        </h3>
-                      </div>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col class="pb-1" cols="12" sm="12" md="12">
-                      <v-text-field
-                        v-model="jumlah_temp"
-                        label="Jumlah"
-                        outlined
-                        type="number"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="red"
-                  elevation="1"
-                  outlined
-                  @click="canceladdproduk"
-                >
-                  <v-icon left> mdi-close-circle-outline </v-icon>
-                  Cancel
-                </v-btn>
-                <v-btn
-                  color="success"
-                  elevation="1"
-                  outlined
-                  @click="addProduct"
-                >
-                  <v-icon left> mdi-plus-circle-outline </v-icon>
-                  Add
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogShowEdit" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to edit?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showEditModal"
-                  >Edit Sosialisasi</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showEditJumlahPohonModal"
-                  >Jumlah Pohon</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohon" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                ><span class="headline">Detail Pohon Lahan</span></v-card-title
-              >
-              <v-card-text>
-                <v-row class="mt-3">
-                  <v-col cols="12" sm="12" md="12">
-                    <div>
-                      <h3 class="ml-1">
-                        <v-data-table
-                          :headers="headersdetaileditjumlah"
-                          :items="DetailTreesLahanTemp"
-                          class="elevation-1"
-                        >
-                          <!-- <template v-slot:item.tree_category="{ item }">
-                            {{ gettype(item.tree_category) }}
-                          </template> -->
-                          <template v-slot:item.actions="{ item }">
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              class="mr-3"
-                              @click="editDetailPohon(item)"
-                              small
-                              color="warning"
-                            >
-                              mdi-pencil
-                            </v-icon>
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              @click="deleteDetailPohon(item)"
-                              small
-                              color="red"
-                            >
-                              mdi-delete
-                            </v-icon>
-                          </template>
-                        </v-data-table>
-                      </h3>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohon"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
-            <v-card>
-              <v-card-text>
-                <v-row class="mt-7">
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field
-                      v-model="editedItemPohon.amount"
-                      label="Jumlah Pohon"
-                      outlined
-                      type="number"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailEditPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Detail -->
-          <v-dialog v-model="dialogDetail" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Sosialisasi Tanam</span>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-row>
-                    <v-col cols="12" sm="4" md="4">
-                      <div>Foto Signature</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow1"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <div>Foto Foto</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow2"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow3"
-                        class="my-1 mb-4"
-                      ></v-img>
-                    </v-col>
-                    <v-col cols="12" sm="8" md="8">
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                      <v-simple-table>
-                        <template v-slot:default>
-                          <tbody>
-                            <tr>
-                              <th
-                                class="text-left"
-                                style="width: 200px; font-size: 14px"
-                              >
-                                Tahun Program
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.planting_year }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Nama Petani
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_petani }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Nama FF
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_ff }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                No Lahan
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.lahan_no }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Jumlah Lubang
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.total_holes }}
-                              </th>
-                            </tr>
-                          </tbody>
-                        </template>
-                      </v-simple-table>
-
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                      <div>
-                        <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
-                        <h3 class="ml-1">
-                          <v-data-table
-                            :headers="headersdetail"
-                            :items="defaultItem.list_detail"
-                            class="elevation-1"
-                          >
-                            <!-- <template v-slot:item.tree_category="{ item }">
-                                  {{ gettype(item.tree_category) }}
-                                </template> -->
-                          </v-data-table>
-                        </h3>
-                      </div>
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions v-if="defaultItem.waitingapproval == true">
-                <v-spacer></v-spacer>
-                <v-btn
-                  v-if="RoleAccesCRUDShow == true"
-                  color="green"
-                  text
-                  @click="verifSubmit()"
-                  outlined
-                  elevation="1"
-                >
-                  Verifikasi
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogCetakPilihan" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to print?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showPrintLabel()"
-                  >Print Label</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showPrintTandaTerima()"
-                  >Tanda Terima</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Verification -->
-          <v-dialog v-model="dialogVerification" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to Verification?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeVerification"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="VerificationItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
           <!-- Modal Delete -->
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
@@ -1400,177 +919,56 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-
-          <v-dialog v-model="dialogdownload" max-width="600px">
-            <v-card class="fontall">
-              <v-card-title class="mb-0 headermodalstyle"
-                >Pilih Tipe Download</v-card-title
-              >
-              <v-card-text class="pa-0 fontall">
-                <v-container>
-                  <v-row>
-                    <v-col class="pb-0" cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="valuedownloadselected"
-                        :items="itemsdownload"
-                        item-value="value"
-                        item-text="text"
-                        label="Pilih Download"
-                        outlined
-                        :rules="[(v) => !!v || 'Field is required']"
-                        v-on:change="pilihtipedownload"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="loaddownload == false">
-                    <v-col
-                      v-if="downloadvalueff == true"
-                      cols="12"
-                      sm="12"
-                      md="12"
-                    >
-                      <v-combobox
-                        v-model="selectFFdownload"
-                        :items="itemsff"
-                        item-value="ff_no"
-                        item-text="name"
-                        outlined
-                        label="Pilih FF"
-                        clearable
-                      ></v-combobox>
-                    </v-col>
-                    <v-col
-                      v-if="downloadvaluepetani == true"
-                      cols="12"
-                      sm="12"
-                      md="12"
-                    >
-                      <v-combobox
-                        v-model="selectpetanidownload"
-                        :items="itemspetanidownload"
-                        item-value="kodePetani"
-                        item-text="namaPetani"
-                        outlined
-                        label="Pilih Petani"
-                        clearable
-                      ></v-combobox>
-                    </v-col>
-                    <v-col
-                      v-if="downloadvaluetime == true"
-                      cols="12"
-                      sm="12"
-                      md="12"
-                    >
-                      <v-select
-                        v-model="selectdistribusitimedownload"
-                        :items="itemsdistribusidownload"
-                        item-value="distribution_time"
-                        item-text="distribution_time"
-                        outlined
-                        label="Pilih Waktu Distribusi"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="RoleAccesIT == true">
-                    <v-col class="pb-1" cols="12" sm="4" md="4">
-                      <v-text-field
-                        v-model="max_kayu"
-                        label="Jumlah Kayu"
-                        outlined
-                        type="number"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col class="pb-1" cols="12" sm="4" md="4">
-                      <v-text-field
-                        v-model="max_mpts"
-                        label="Jumlah MPTS"
-                        outlined
-                        type="number"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col class="pb-1" cols="12" sm="4" md="4">
-                      <v-text-field
-                        v-model="max_crops"
-                        label="Jumlah Crops"
-                        outlined
-                        type="number"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-                <v-container
-                  v-if="loaddownload == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                  class="mb-5"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-              </v-card-text>
-              <v-card-actions v-if="loaddownload == false">
-                <v-spacer></v-spacer>
-                <v-btn color="red" elevation="1" outlined @click="close">
-                  <v-icon left> mdi-close-circle-outline </v-icon> Cancel</v-btn
-                >
-                <v-btn
-                  color="success"
-                  elevation="1"
-                  outlined
-                  @click="verifytipedownload"
-                >
-                  <v-icon left>mdi-download-circle </v-icon>Download</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
       </template>
 
+      <!-- Date -->
+      <template v-slot:item.date="{ item }">
+        {{ item.date }}
+      </template>
+      <!-- Color Status -->
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="getColorStatus(item.status)" dark>
+          {{ item.status }}
+        </v-chip>
+      </template>
       <!-- Action table -->
-      <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          class="mr-2"
-          @click="showEditModal(item)"
-          small
-          color="warning"
-        >
-          mdi-pencil
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesPrintLabelShow == true"
-          class="mr-2"
-          @click="showPrintModal(item)"
-          small
-          color="green"
-        >
-          mdi-printer
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          @click="showDeleteModal(item)"
-          small
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+      <template v-slot:item.actions="{ item, index }">
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="showDetailFarmerTraining(index)" small color="info">
+              mdi-information-outline
+            </v-icon>
+          </template>
+          <span>Detail</span>
+        </v-tooltip>
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on"
+              v-if="RoleAccesCRUDShow == true"
+              class="mr-2"
+              @click="showDetailFarmerTraining(index)"
+              small
+              color="warning"
+            >
+              mdi-pencil
+            </v-icon>
+          </template>
+          <span>Edit</span>
+        </v-tooltip>
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on"
+              v-if="RoleAccesCRUDShow == true"
+              @click="showDeleteModal(item)"
+              small
+              color="red"
+            >
+              mdi-delete
+            </v-icon>
+          </template>
+          <span>Hapus</span>
+        </v-tooltip>
       </template>
     </v-data-table>
 
@@ -1588,23 +986,111 @@
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
 import { truncate } from "fs";
+import { randomInt } from 'crypto';
 // import BaseUrl from "../../services/BaseUrl.js";
+import moment from 'moment'
 
 export default {
   name: "LubangTanam",
   authtoken: "",
   data: () => ({
+    datePickerMenu: false,
     dataToStore: {
-      absensi: ""
+      um_no: "",
+      fc_no: "",
+      ff_no: "",
+      absensi_img: "",
+      materi_1: 10,
+      materi_2: 0,
+      material_organic: '',
+      program_year: '2022',
+      date: '',
+      farmers: []
+    },
+    // temporary
+    temporaryTableDatas: [
+      {"um_no":"04-0006","fc_no":"1200","ff_no":"FF00000959","absensi_img":"","materi_1":10,"materi_2":0,"material_organic":"Pupuk","program_year":"2022","date":"2022-09-28","farmers":[{"idTblPetani":10103,"kode":"F00009677","nama":"Ade Sujana","nik":"3204351204580007","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"15082022_3204351204580007","join_date":"2022-08-15"},{"idTblPetani":10099,"kode":"F00009673","nama":"Adis","nik":"3204351102490001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"15082022_3204351102490001","join_date":"2022-08-15"},{"idTblPetani":11778,"kode":"F00011351","nama":"AGA","nik":"3204352806650004","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204352806650004","join_date":"2022-08-19"},{"idTblPetani":11772,"kode":"F00011345","nama":"Ai Warliah","nik":"3204334908730007","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204334908730007","join_date":"2022-08-15"},{"idTblPetani":21343,"kode":"F00020916","nama":"Ai Yuyu","nik":"3204354604820024","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204354604820024","join_date":"2022-09-05"},{"idTblPetani":23151,"kode":"F00022723","nama":"Amih","nik":"3204354606450002","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"11092022_3204354606450002","join_date":"2022-09-11"},{"idTblPetani":11781,"kode":"F00011354","nama":"ATE","nik":"3204350107750004","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350107750004","join_date":"2022-08-21"},{"idTblPetani":21357,"kode":"F00020930","nama":"Atep","nik":"3204350306870001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204350306870001","join_date":"2022-09-05"},{"idTblPetani":11775,"kode":"F00011348","nama":"ATET MOMON","nik":"3204351207670001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204351207670001","join_date":"2022-08-18"},{"idTblPetani":11779,"kode":"F00011352","nama":"EDEN","nik":"3204350203720013","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350203720013","join_date":"2022-08-19"},{"idTblPetani":21342,"kode":"F00020915","nama":"Eman Sulaeman","nik":"3204351101710003","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204351101710003","join_date":"2022-09-05"},{"idTblPetani":11773,"kode":"F00011346","nama":"Endang","nik":"3204350105670002","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350105670002","join_date":"2022-08-15"},{"idTblPetani":11776,"kode":"F00011349","nama":"Eneng","nik":"3204355703820001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204351801640001","join_date":"2022-08-18"},{"idTblPetani":21331,"kode":"F00020904","nama":"Eutik","nik":"3204354303580006","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204354303580006","join_date":"2022-09-05"},{"idTblPetani":21457,"kode":"F00021030","nama":"Hj Iis Sa'Adah Abdulah","nik":"3204334308760005","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204334308760005","join_date":"2022-09-05"},{"idTblPetani":11774,"kode":"F00011347","nama":"MOMON","nik":"3204352511731001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204352511731001","join_date":"2022-08-18"},{"idTblPetani":11777,"kode":"F00011350","nama":"Rika Ningrum","nik":"3204354708770001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350601750007","join_date":"2022-08-19"},{"idTblPetani":10095,"kode":"F00009669","nama":"Roni Fajri","nik":"3204350407830004","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"15082022_3204350407830004","join_date":"2022-08-15"},{"idTblPetani":21337,"kode":"F00020910","nama":"Sobar","nik":"3204262306950001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204262306950001","join_date":"2022-09-05"},{"idTblPetani":11780,"kode":"F00011353","nama":"TUTI","nik":"3204355507950003","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204355507950003","join_date":"2022-08-21"}],"form_no":"FT1664352911","mu_no":"022","target_area":"022006","working_area":"32.04.35.02"}
+    ],
+    dialogDetailData: null,
+
+    tables: {
+      farmerListDetailModal: {
+        headers: [
+        { text: "No", value: "index", width: "15%" },
+        { text: "Foto", value: "photo", width: "20%" },
+        { text: "No Petani", value: "kode", width: "30%" },
+        { text: "Nama Petani", value: "nama", width: "40%" },
+        ],
+        items: [],
+        loading: false,
+        search: ''
+      }
+    },
+
+    options: {
+      materiPelatihan: [
+        {
+          id: 0,
+          materi:"Tidak Ada"
+        },
+        {
+          id: 1,
+          materi:"Pembuatan dan Cara Penggunaan/Aplikasi Pupuk Organik Cair (POC)",
+        },
+        {
+          id: 2,
+          materi:"Pembuatan dan Cara Penggunaan/Aplikasi Pestisida Organik",
+        },
+        {
+          id: 3,
+          materi:"Pembuatan dan Cara Penggunaan/Aplikasi Herbisida Organik",
+        },
+        {
+          id: 4,
+          materi:"Pemanfaatan Limbah Padat dan Cair sebagai Pupuk Organik",
+        },
+        {
+          id: 5,
+          materi:"Teknik Perbanyakan Bibit dengan Stek dan Cangkok",
+        },
+        {
+          id: 6,
+          materi:"Teknik Perbanyakan Bibit dengan Okulasi, Tempel dan Sambung",
+        },
+        {
+          id: 7,
+          materi:"Pencegahan dan Penanganan Hama Penyakit Pohon Kayu/MPTS (Buah)",
+        },
+        {
+          id: 8,
+          materi:"Pencegahan dan Penanganan Hama Penyakit Tanaman Crops (Pertanian)",
+        },
+        {
+          id: 9,
+          materi:"Pengolahan Lahan Yang Baik mencegah Serangan Hama Penyakit",
+        },
+        {
+          id: 10,
+          materi:"Budidaya Pohon Kayu untuk meningkatkan Produksi Kayu (volume)",
+          disabled: true
+        },
+        {
+          id: 11,
+          materi:"Budidaya Pohon Buah untuk meningkatkan Produksi Buah (pengaturan pembuangan)",
+        },
+        {
+          id: 12,
+          materi:"Mengenal Jenis Pohon Pakan Ternak dan Pengolahan Pakan Ternak",
+        },
+      ],
+      material_organic: [
+
+      ]
     },
     componentKey: {
       listFarmerParticipantTable: 0
     },
     alerttoken: false,
-    datepicker1: new Date().toISOString().substr(0, 10),
-    datepicker2: new Date().toISOString().substr(0, 10),
-    datepicker3: new Date().toISOString().substr(0, 10),
-    elevations: [6, 12, 18],
     itemsbr: [
       {
         text: "Activities",
@@ -1618,11 +1104,7 @@ export default {
       },
     ],
     e1: 1,
-    stepperdone: false,
     User: [],
-    menu1: "",
-    menu2: "",
-    menu3: "",
     dialogAddonly: false,
     dialog: false,
     dialogDelete: false,
@@ -1648,11 +1130,11 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Form No", value: "", width: "18%" },
-      { text: "Nama FC", value: "", width: "18%" },
-      { text: "Nama FF", value: "", align: "start", width: "10%" },
-      { text: "Tanggal", value: "", width: "13%" },
-      { text: "Tahun Tanam", value: "", width: "15%" },
+      { text: "Form No", value: "form_no", width: "18%" },
+      { text: "Nama FC", value: "fc_no", width: "18%" },
+      { text: "Nama FF", value: "ff_no", align: "start", width: "10%" },
+      { text: "Tanggal", value: "date", width: "13%" },
+      { text: "Tahun Tanam", value: "program_year", width: "15%" },
       { text: "Actions", value: "actions", sortable: false, width: "20%" },
     ],
 
@@ -1669,10 +1151,10 @@ export default {
     ],
     // headers table list peserta pelatihan di form tambah pelatihan petani 
     headerListProduct: [
-      { text: "No", value: "index", width: "5%" },
+      { text: "No", value: "index", width: "7%" },
       { text: "Foto", value: "photo", width: "10%" },
       { text: "No Petani", value: "kode", width: "20%" },
-      { text: "Nama Petani", value: "nama", width: "40%" },
+      { text: "Nama Petani", value: "nama", width: "30%" },
       { text: "NIK", value: "nik", width: "20%" },
       { text: "Del", value: "actions", sortable: false, width: "10%" },
     ],
@@ -1817,32 +1299,15 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
-
     employee_no: "",
-    itemTemp: "",
-
-    max_kayu: 15,
-    max_mpts: 6,
-    max_crops: 5,
-
-    jumlahPohonTemp: 0,
-    idPohonTemp: 0,
-    editedIndexPohon: -1,
-    editedItemPohon: {
-      amount: "",
-      detail_year: "",
-      id: "",
-      lahan_no: "",
-      tree_category: "",
-      tree_code: "",
-      tree_name: "",
-    },
-
-    ph_form_no_temp: "",
     preview: {
       petani: {
         modal: false,
         data: {},
+      },
+      absensi: {
+        modal: false,
+        url: '',
       },
       addParticipant: {
         modal: false,
@@ -1864,14 +1329,54 @@ export default {
 
   created() {
     this.firstAccessPage();
+    this.dataToStore.program_year = new Date().getFullYear().toString()
+    this.dataToStore.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
   },
 
   methods: {
-    absensiFileChanged (event) {
-      if (event) {
-        this.dataToStore.absensi = URL.createObjectURL(event)
-      } else {
-        this.dataToStore.absensi = ""
+    async initialize() {
+      this.loadtable = true;
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetFarmerTraining?mu=" +
+            this.valueMU +
+            "&ta=" +
+            this.valueTA +
+            "&village=" +
+            this.valueVillage +
+            "&typegetdata=" +
+            this.typegetdata +
+            "&ff=" +
+            this.valueFFcode,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.dataobject = response.data.data.result.data;
+          this.valueMUExcel = this.valueMU;
+          this.valueTAExcel = this.valueTA;
+          this.valueVillageExcel = this.valueVillage;
+          this.typegetdataExcel = this.typegetdata;
+          this.valueFFcodeExcel = this.valueFFcode;
+          this.loadtable = false;
+        } else {
+          this.dataobject = [];
+          this.loadtable = false;
+        }
+      } catch (error) {
+        console.error(error);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+          this.loadtable = false;
+        } else {
+          this.dataobject = [];
+          this.loadtable = false;
+        }
       }
     },
     firstAccessPage() {
@@ -1886,12 +1391,733 @@ export default {
       this.checkRoleAccess();
       this.initialize();
       this.getMU();
-      this.getEthnic();
-      this.getJob();
       this.getFF();
       this.getUMAll();
-      this.getTrees();
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
+    },
+
+    async getMU() {
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + "GetManagementUnit",
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemsMU = response.data.data.result;
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async getTA(val) {
+      var valparam = "";
+      if (val == "table") {
+        valparam = this.valueMU;
+      } else {
+        valparam = this.valueMUForm;
+      }
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          if (val == "table") {
+            this.itemsTA = response.data.data.result;
+          } else {
+            this.itemsTAForm = response.data.data.result;
+          }
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async getVillage(val) {
+      var valparam = "";
+      if (val == "table") {
+        valparam = this.valueTA;
+      } else {
+        valparam = this.valueTAForm;
+      }
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          if (val == "table") {
+            this.itemsVillage = response.data.data.result;
+          } else {
+            this.itemsVillageForm = response.data.data.result;
+          }
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async getFF(fc_no) {
+      let fcNo = fc_no ? fc_no : null
+      if (this.User.fc.fc && fcNo == null) {
+        this.fc_no_global = this.User.fc.fc;
+        fcNo = this.User.fc.fc
+      }
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + "GetFieldFacilitatorAll?fc_no=" + fcNo,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemsff = response.data.data.result.data;
+          this.loaddownload = false;
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+          this.loaddownload = false;
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+        this.loaddownload = false;
+      }
+    },
+    async verif() {
+      const datapost = {
+        ph_form_no: this.defaultItem.ph_form_no,
+        validate_by: this.employee_no,
+      };
+      // this.dialogDetail = false;
+      try {
+        const response = await axios.post(
+          this.BaseUrlGet + "ValidatePlantingHole",
+          datapost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.data.result == "success") {
+          this.dialogDetail = false;
+          this.dialogVerification = false;
+          this.initialize();
+        } else {
+          this.dialogDetail = false;
+          this.dialogVerification = false;
+          this.alerttoken = true;
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          this.dialogDetail = false;
+          this.dialogVerification = false;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async verifDelete() {
+      const datapost = {
+        ph_form_no: this.defaultItem.ph_form_no,
+      };
+      // this.dialogDetail = false;
+      try {
+        const response = await axios.post(
+          this.BaseUrlGet + "SoftDeletePlantingHole",
+          datapost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.data.result == "success") {
+          this.dialogDelete = false;
+          this.initialize();
+        } else {
+          this.dialogDelete = false;
+          this.alerttoken = true;
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          this.dialogDelete = false;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+
+    async getUMAll() {
+      // if (this.User.fc.fc) {
+      //   this.fc_no_global = this.User.fc.fc;
+      // }
+      try {
+        this.loading.um = true
+        const response = await axios.get(
+          this.BaseUrlGet + "GetEmployeebyPosition?position_code=20",
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemsum = response.data.data.result.data;
+          // this.dataobject = response.data.data.result;
+          this.loading.um = false
+        } else {
+          alert('data kosong')
+          this.loading.um = false
+        }
+      } catch (error) {
+        this.loading.um = false
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async getEmpFCbyManager(valcodeum) {
+      // if (this.User.fc.fc) {
+      //   this.fc_no_global = this.User.fc.fc;
+      // }
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetEmployeebyManager?manager_code=" +
+            valcodeum +
+            "&position=19",
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemsfc = response.data.data.result.data;
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async GetFFbyUMandFC(position, valcode) {
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetFFbyUMandFC?position=" +
+            position +
+            "&code=" +
+            valcode,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.valueFFcode = response.data.data.result.data;
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+        }
+      } catch (error) {
+        this.valueFFcode = "";
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async getPetani() {
+      // if (this.User.fc.fc) {
+      //   this.fc_no_global = this.User.fc.fc;
+      // }
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetFarmerAllAdmin?typegetdata=several&ff=" +
+            this.valueFFForm,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemspetani = response.data.data.result.data;
+          // this.dataobject = response.data.data.result;
+        } else {
+          this.itemspetani = [];
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+        this.itemspetani = [];
+        this.defaultItem.farmer_no = "";
+      }
+    },
+    async getPetaniByMU(mu_no) {
+      // if (this.User.fc.fc) {
+      //   this.fc_no_global = this.User.fc.fc;
+      // }
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetFarmerAllAdmin?typegetdata=all&mu=" +
+            mu_no,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemspetaniallmu = response.data.data.result.data;
+          // this.dataobject = response.data.data.result;
+        } else {
+          this.itemspetaniallmu = [];
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+        this.itemspetaniallmu = [];
+        this.defaultItem.farmer_no = "";
+      }
+    },
+    async addMoreFarmerParticipant(val) {
+      if (val) {
+        this.loadtabledetail = true
+        let same = 0
+        await this.listFarmerParticipant.forEach((participant) => {
+          if (participant.kode === val.kode) {
+            same += 1
+          } 
+        });
+
+        if (same === 0) {
+          this.preview.addParticipant.data = val
+          this.preview.addParticipant.modal = true
+          this.loadtabledetail = false
+        } else {
+          this.loadtabledetail = false
+          this.addMoreFarmerParticipantSelectValue = null
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.textsnackbar = "Petani sudah ada.";
+        }
+      }
+    },
+    async addingToTableFarmerParticipant(val) {
+      this.listFarmerParticipant.push(val)
+      this.addMoreFarmerParticipantSelectValue = null
+      this.preview.addParticipant.data = {}
+      this.preview.addParticipant.modal = false
+      this.colorsnackbar = "green";
+      this.textsnackbar = "Petani berhasil ditambahkan";
+      this.snackbar = true;
+    },
+    async saveFormFarmerTraining() {
+      this.loadsave = true
+      // insert UM FC FF data
+      this.dataToStore.um_no = this.selectUM
+      this.dataToStore.fc_no = this.selectFC
+      this.dataToStore.ff_no = this.selectFF.ff_no
+      this.dataToStore.farmers = this.listFarmerParticipantChecked
+      console.log(this.selectFF)
+
+      // temporary
+      this.dataToStore.form_no = 'FT'+ Math.floor(Date.now() / 1000)
+      this.dataToStore.material_organic = 'Pupuk'
+      this.dataToStore.mu_no = this.selectFF.mu_no
+      this.dataToStore.target_area = this.selectFF.target_area
+      this.dataToStore.working_area = this.selectFF.working_area
+      // let bannerImage = document.getElementById('idFotoAbsensi')
+      // let imgData = this.getBase64Image(bannerImage)
+      // this.dataToStore.absensi_img = imgData
+
+      // insert list farmer participant
+      // await this.listFarmerParticipantChecked.forEach((farmerParticipant) => {
+      //   this.dataToStore.farmers.push(farmerParticipant.kode)
+      // })
+      this.temporaryTableDatas.push(this.dataToStore)
+      
+      console.log(JSON.stringify(this.dataToStore))
+
+      // try {
+      //   const response = await axios.post(
+      //     this.BaseUrlGet + "AddFarmerTraining",
+      //     {
+      //       training_no: this.dataToStore.form_no,
+      //       training_date: this.dataToStore.date,
+      //       first_material: this.dataToStore.materi_1,
+      //       second_material: this.dataToStore.materi_2,
+      //       organic_material: this.dataToStore.material_organic,
+      //       program_year: this.dataToStore.program_year,
+      //       absent: this.dataToStore.absensi_img,
+      //       mu_no: this.selectFF.mu_no,
+      //       target_area: this.selectFF.target_area,
+      //       village: this.selectFF.working_area,
+      //       field_coordinator: this.dataToStore.fc_no,
+      //       ff_no: this.dataToStore.ff_no,
+      //       user_id: this.User.employee_no,
+      //       status: 1,
+      //     },
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ` + this.authtoken,
+      //       },
+      //     }
+      //   )
+      //   if (response) {
+      //     console.log(response)
+      //   } else {
+      //     console.log('failed')
+      //   }
+      // } catch(error) {
+      //   console.log(error.response.data.data);
+      // }
+
+      setTimeout(() => {
+        this.close()
+        this.resetvalue()
+        this.textsnackbar = "Berhasil menambah data pelatihan"
+        this.snackbar = true
+        this.colorsnackbar = 'green lighten-1'
+        this.loadsave = false
+      }, 2000);
+    },
+
+    showDetailFarmerTraining(index) {
+      this.dialogDetail = true
+      this.dialogDetailData = this.temporaryTableDatas[index]
+      console.log(this.temporaryTableDatas[index])
+    },
+
+    selectedMU(a) {
+      this.valueMU = a;
+      if (a != null) {
+        this.getTA("table");
+        this.valueTA = "";
+        this.selectTA = "";
+        this.selectVillage = "";
+        this.valueVillage = "";
+      } else {
+        this.valueMU = "";
+        this.valueTA = "";
+        this.itemsTA = [];
+        this.valueVillage = "";
+        this.itemsVillage = [];
+      }
+      // this.initialize();
+    },
+    selectedTA(a) {
+      this.valueTA = a;
+      if (a != null) {
+        this.getVillage("table");
+        this.valueVillage = "";
+        this.selectVillage = "";
+      } else {
+        this.valueTA = "";
+        this.valueVillage = "";
+        this.itemsVillage = [];
+      }
+      // this.initialize();
+    },
+    selectedVillage(a) {
+      this.valueVillage = a;
+      if (a == null) {
+        this.valueVillage = "";
+      }
+      // this.initialize();
+    },
+    async selectedUM(a) {
+      this.valueUM = a;
+      if (a != null) {
+        this.loading.fc = true
+        await this.getEmpFCbyManager(a);
+        await this.GetFFbyUMandFC("UM", a);
+        this.valueFC = "";
+        this.selectFC = "";
+        this.typegetdata = "several";
+        this.loading.fc = false
+      } else {
+        this.valueUM = "";
+        this.valueFC = "";
+        this.itemsfc = [];
+        this.typegetdata = this.User.ff.value_data;
+      }
+        this.selectFF = "";
+        this.itemsff = [];
+      // this.initialize();
+    },
+    async selectedFC(a) {
+      this.loading.ff = true
+      this.valueFC = a;
+      await this.GetFFbyUMandFC("FC", a);
+      this.typegetdata = "several";
+      if (a == null) {
+        this.valueFC = "";
+        this.selectFC = "";
+        this.selectFF = "";
+        this.itemsff = [];
+        this.typegetdata = this.User.ff.value_data;
+        this.loading.ff = false
+      } else {
+        this.getFF(a)
+        this.loading.ff = false
+      }
+    },
+
+    selectedMUForm(a) {
+      this.valueMUForm = a;
+      if (a != null) {
+        this.getTA("form");
+        this.getFarmerGroup();
+        this.valueTAForm = "";
+        this.selectTAForm = "";
+        this.selectVillageForm = "";
+        this.valueVillageForm = "";
+      } else {
+        this.valueMUForm = "";
+        this.valueTAForm = "";
+        this.itemsTAForm = [];
+        this.valueVillageForm = "";
+        this.itemsVillageForm = [];
+        this.defaultItem.mu_no = a;
+      }
+    },
+    selectedTAForm(a) {
+      this.valueTAForm = a;
+      if (a != null) {
+        this.getVillage("form");
+        this.valueVillageForm = "";
+        this.selectVillageForm = "";
+        this.defaultItem.village = "";
+      } else {
+        this.valueTAForm = "";
+        this.valueVillageForm = "";
+        this.itemsVillageForm = [];
+        this.defaultItem.village = "";
+        this.defaultItem.kode_ta = a;
+      }
+    },
+    selectedVillageForm(a) {
+      this.valueVillageForm = a;
+      this.defaultItem.village = a;
+      if (a == null) {
+        this.valueVillageForm = "";
+        this.defaultItem.village = "";
+      }
+    },
+    selectPetani(a) {
+      // this.valueMUForm = a;
+      if (a != null) {
+        this.valueFFForm = a;
+        this.getPetani();
+      } else {
+        this.defaultItem.ff_no = "";
+        this.defaultItem.kode = "";
+        this.itemspetani = [];
+      }
+    },
+    async selectPetaniWithMUScope(a) {
+      if (a != null) {
+        this.valueFFForm = a.ff_no;
+        this.loading.farmer = true
+        this.loadtabledetail = true
+        await this.getPetani();
+        await this.getPetaniByMU(a.mu_no);
+        this.loadtabledetail = false
+        this.listFarmerParticipant = []
+        await this.itemspetani.forEach((val, index) => {
+          let programYearPetani = this.getProgramYearPetani(val.mou_no)
+          if (programYearPetani == 2022) {
+            this.listFarmerParticipant.push(val)
+          }
+        });
+        this.loading.farmer = false
+      } else {
+        this.defaultItem.ff_no = "";
+        this.defaultItem.kode = "";
+        this.itemspetani = [];
+      }
+      this.listFarmerParticipantChecked = []
+    },
+    async deletePesertaPelatihan(index, item) {
+      this.loadtabledetail = true
+      await this.listFarmerParticipantChecked.forEach((checkedParticipant, indexCP) => {
+        if (checkedParticipant.kode === item.kode) {
+          this.listFarmerParticipantChecked.splice(indexCP, 1);
+        }
+      })
+      await this.listFarmerParticipant.splice(index, 1);
+      
+      this.componentKey.listFarmerParticipantTable += 1
+      this.loadtabledetail = false
+    },
+
+    async showFilterArea() {
+      await this.resetFilter();
+      this.dialogFilterArea = true;
+    },
+    async showFilterEmployee() {
+      await this.resetFilter();
+      this.dialogFilterEmp = true;
+    },
+    resetFilter() {
+      this.valueMU = "";
+      this.valueFC = "";
+      this.valueVillage = "";
+      this.selectMU = "";
+      this.selectTA = "";
+      this.selectVillage = "";
+
+      this.valueUM = "";
+      this.valueFC = "";
+      this.selectUM = "";
+      this.selectFC = "";
+      this.valueFFcode = this.User.ff.ff;
+      this.typegetdata = this.User.ff.value_data;
+    },
+    async searchbyarea() {
+      this.valueFFcode = this.User.ff.ff;
+      this.typegetdata = this.User.ff.value_data;
+      await this.initialize();
+      await this.resetFilter();
+      this.dialogFilterArea = false;
+    },
+    async searchbyemp() {
+      await this.initialize();
+      await this.resetFilter();
+      this.dialogFilterEmp = false;
+    },
+
+    resetvalue() {
+      this.dataToStore = {
+        um_no: "",
+        fc_no: "",
+        ff_no: "",
+        absensi_img: "",
+        materi_1: 10,
+        materi_2: 0,
+        material_organic: '',
+        program_year: new Date().getFullYear().toString(),
+        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
+        farmers: []
+      }
+      this.e1 = 1;
+      this.load = false;
+    },
+    showAddModal() {
+      this.load = false;
+
+      if (this.$refs.form) {
+        this.$refs.form.reset();
+      }
+      this.itemsff = []
+      this.formTitle = "Form Pelatihan Petani";
+      this.dialogAddonly = true;
+
+      this.resetvalue();
+    },
+
+    showDeleteModal(item) {
+      this.defaultItem.form_no = item.form_no;
+      this.dialogDelete = true;
+    },
+
+    deleteItemConfirm() {
+      this.verifDelete();
+    },
+    close() {
+      this.dialog = false;
+      this.dialogAddProduct = false;
+      this.dialogdownload = false;
+      this.dialogAddonly = false;
+      // reset data
+      this.listFarmerParticipant= []
+      this.listFarmerParticipantChecked= []
+      this.addMoreFarmerParticipantSelectValue= null
+      this.searchListPesertaPelatihan= ""
+      this.itemspetaniallmu= []
+      this.selectUM = null
+      this.selectFC = null
+      this.selectFF = null
+    },
+    closeDelete() {
+      this.dialogDelete = false;
+    },
+    // Utilities Function
+    getProgramYearPetani(text) {
+        if (text.slice(13, 14) === '_') {
+            return text.slice(9, 13)
+        } else {
+            return text.slice(4, 8)
+        }
+    },
+    absensiFileChanged (event) {
+      if (event) {
+        this.dataToStore.absensi_img = URL.createObjectURL(event)
+      } else {
+        this.dataToStore.absensi_img = ""
+      }
     },
     checkRoleAccess() {
       if (this.User.role_group == "IT") {
@@ -1944,1803 +2170,21 @@ export default {
       if (status == "Belum Verifikasi") return "red";
       else return "green";
     },
-    async initialize() {
-      this.loadtable = true;
-      // console.log(this.User.ff.ff);
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetFarmerTraining?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result.data);
-        if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
-          this.valueMUExcel = this.valueMU;
-          this.valueTAExcel = this.valueTA;
-          this.valueVillageExcel = this.valueVillage;
-          this.typegetdataExcel = this.typegetdata;
-          this.valueFFcodeExcel = this.valueFFcode;
-          this.loadtable = false;
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
-        }
-      } catch (error) {
-        console.error(error);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-          this.loadtable = false;
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
-        }
-      }
-    },
-
-    async getMU() {
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet + "GetManagementUnit",
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsMU = response.data.data.result;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getTA(val) {
-      var valparam = "";
-      if (val == "table") {
-        valparam = this.valueMU;
-      } else {
-        valparam = this.valueMUForm;
-      }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          if (val == "table") {
-            this.itemsTA = response.data.data.result;
-          } else {
-            this.itemsTAForm = response.data.data.result;
-          }
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getVillage(val) {
-      var valparam = "";
-      if (val == "table") {
-        valparam = this.valueTA;
-      } else {
-        valparam = this.valueTAForm;
-      }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          if (val == "table") {
-            this.itemsVillage = response.data.data.result;
-          } else {
-            this.itemsVillageForm = response.data.data.result;
-          }
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getEthnic() {
-      try {
-        const response = await axios.get(this.BaseUrlGet + "GetSuku", {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        });
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsethnic = response.data.data.result;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getJob() {
-      try {
-        const response = await axios.get(this.BaseUrlGet + "GetPekerjaan", {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        });
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsjob = response.data.data.result;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getTrees() {
-      try {
-        const response = await axios.get(this.BaseUrlGet + "GetTreesAll", {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        });
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemstrees = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getFF(fc_no) {
-      let fcNo = fc_no ? fc_no : null
-      if (this.User.fc.fc && fcNo == null) {
-        this.fc_no_global = this.User.fc.fc;
-        fcNo = this.User.fc.fc
-      }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet + "GetFieldFacilitatorAll?fc_no=" + fcNo,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsff = response.data.data.result.data;
-          this.loaddownload = false;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-          this.loaddownload = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.loaddownload = false;
-      }
-    },
-    async getDetail(item) {
-      this.load = true;
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetPlantingHoleDetail?ph_form_no=" +
-            item.ph_form_no,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.defaultItem = Object.assign({}, response.data.data.result.data);
-          this.defaultItem.list_detail = response.data.data.result.list_detail;
-          this.defaultItem.waitingapproval = this.waitingapprovefunct(
-            response.data.data.result.data.is_validate
-          );
-
-          if (response.data.data.result.data.farmer_signature == "-") {
-            this.defaultItem.gambarshow1 = "/images/noimage.png";
-          } else {
-            this.defaultItem.gambarshow1 =
-              this.BaseUrl + response.data.data.result.data.farmer_signature;
-          }
-          console.log(this.defaultItem.gambarshow1);
-          if (response.data.data.result.data.gambar1 == "-") {
-            this.defaultItem.gambarshow2 = "/images/noimage.png";
-          } else {
-            this.defaultItem.gambarshow2 =
-              this.BaseUrl + response.data.data.result.data.gambar1;
-          }
-          if (response.data.data.result.data.gambar2 == "-") {
-            this.defaultItem.gambarshow3 = "/images/noimage.png";
-          } else {
-            this.defaultItem.gambarshow3 =
-              this.BaseUrl + response.data.data.result.data.gambar2;
-          }
-
-          this.load = false;
-
-          if (this.type == "Detail") {
-            this.load = false;
-          } else {
-          }
-
-          this.load = false;
-          //   this.defaultItem.kode = response.data.data.result.farmer_no;
-        } else {
-          console.log("Kosong");
-          this.load = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-          this.load = false;
-        }
-      }
-    },
-    async verif() {
-      console.log(this.defaultItem.id);
-      const datapost = {
-        ph_form_no: this.defaultItem.ph_form_no,
-        validate_by: this.employee_no,
-      };
-      console.log(datapost);
-      // this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "ValidatePlantingHole",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
-          this.initialize();
-        } else {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
-          this.alerttoken = true;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.dialogDetail = false;
-          this.dialogVerification = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async verifDelete() {
-      const datapost = {
-        ph_form_no: this.defaultItem.ph_form_no,
-      };
-      console.log(datapost);
-      // this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "SoftDeletePlantingHole",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.dialogDelete = false;
-          this.initialize();
-        } else {
-          this.dialogDelete = false;
-          this.alerttoken = true;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.dialogDelete = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-
-    async getUMAll() {
-      // if (this.User.fc.fc) {
-      //   this.fc_no_global = this.User.fc.fc;
-      // }
-      try {
-        this.loading.um = true
-        const response = await axios.get(
-          this.BaseUrlGet + "GetEmployeebyPosition?position_code=20",
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsum = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-          this.loading.um = false
-        } else {
-          console.log("Kosong");
-          this.loading.um = false
-        }
-      } catch (error) {
-        this.loading.um = false
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async getEmpFCbyManager(valcodeum) {
-      // if (this.User.fc.fc) {
-      //   this.fc_no_global = this.User.fc.fc;
-      // }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetEmployeebyManager?manager_code=" +
-            valcodeum +
-            "&position=19",
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsfc = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async GetFFbyUMandFC(position, valcode) {
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetFFbyUMandFC?position=" +
-            position +
-            "&code=" +
-            valcode,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.valueFFcode = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
-      } catch (error) {
-        this.valueFFcode = "";
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-
-    async addData() {
-      const datapost = {
-        user_id: this.defaultItem.user_id,
-        lahan_no: this.defaultItem.lahan_no,
-        total_holes: this.defaultItem.total_holes,
-        planting_year: this.defaultItem.planting_year,
-        farmer_signature: this.defaultItem.farmer_signature,
-        gambar1: this.defaultItem.gambar1,
-        gambar2: this.defaultItem.gambar2,
-        list_pohon: this.defaultItem.list_detail,
-      };
-      console.log(datapost);
-      this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "AddPlantingHole",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.loadsave = false;
-          this.dialogAddonly = false;
-          this.snackbar = true;
-          this.colorsnackbar = "green";
-          this.textsnackbar = "Sukses menambahkan data";
-          this.initialize();
-        } else {
-          this.dialogAddonly = true;
-          this.loadsave = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.dialogAddonly = true;
-          this.loadsave = false;
-        }
-        this.loadsave = false;
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal menambahkan data, no lahan sudah ada";
-      }
-    },
-
-    async updateData() {
-      const datapost = {
-        ph_form_no: this.defaultItem.ph_form_no,
-        user_id: this.defaultItem.user_id,
-        lahan_no: this.defaultItem.lahan_no,
-        total_holes: this.defaultItem.total_holes,
-        planting_year: this.defaultItem.planting_year,
-        farmer_signature: this.defaultItem.farmer_signature,
-        gambar1: this.defaultItem.gambar1,
-        gambar2: this.defaultItem.gambar2,
-        list_pohon: this.defaultItem.list_detail,
-      };
-      console.log(datapost);
-      this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "UpdatePlantingHoleAll",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.loadsave = false;
-          this.dialog = false;
-          this.snackbar = true;
-          this.colorsnackbar = "green";
-          this.textsnackbar = "Sukses mengubah data";
-          this.initialize();
-        } else {
-          this.dialog = true;
-          this.loadsave = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.dialog = true;
-          this.loadsave = false;
-        }
-        this.loadsave = false;
-      }
-    },
-    async updateDataPohon(datapost) {
-      this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "UpdatePohonSosisalisasiTanam",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.dialog = false;
-          this.snackbar = true;
-          this.colorsnackbar = "green";
-          this.textsnackbar = "Sukses mengubah data";
-          this.dialogDetailPohon = false;
-          this.initialize();
-        } else {
-          this.dialog = true;
-        }
-      } catch (error) {
-        console.error(error.response.data.data);
-        if (error.response.status == 401) {
-          this.dialog = true;
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = error.response.data.data.result;
-        }
-      }
-    },
-    async getPetani() {
-      // if (this.User.fc.fc) {
-      //   this.fc_no_global = this.User.fc.fc;
-      // }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetFarmerAllAdmin?typegetdata=several&ff=" +
-            this.valueFFForm,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemspetani = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-        } else {
-          this.itemspetani = [];
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.itemspetani = [];
-        this.defaultItem.farmer_no = "";
-      }
-    },
-    async getPetaniByMU(mu_no) {
-      // if (this.User.fc.fc) {
-      //   this.fc_no_global = this.User.fc.fc;
-      // }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetFarmerAllAdmin?typegetdata=all&mu=" +
-            mu_no,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemspetaniallmu = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-        } else {
-          this.itemspetaniallmu = [];
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.itemspetaniallmu = [];
-        this.defaultItem.farmer_no = "";
-      }
-    },
-    async getLahan() {
-      // if (this.User.fc.fc) {
-      //   this.fc_no_global = this.User.fc.fc;
-      // }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetLahanAll?farmer_no=" +
-            this.valuePetaniselected +
-            "&user_id=" +
-            this.valueFFForm,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemslahan = response.data.data.result.data;
-          // this.dataobject = response.data.data.result;
-        } else {
-          this.itemslahan = [];
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.itemslahan = [];
-        this.defaultItem.farmer_no = "";
-      }
-    },
-    async UploadData(val, type) {
-      console.log(this.BaseUrlUpload);
-      var dateConvert = Date.now();
-
-      const formData = new FormData();
-      formData.append("files", val);
-      var namafile = "PH_" + dateConvert;
-
-      // console.log(namafile);
-      try {
-        const response = await axios.post(
-          this.BaseUrlUpload + "?nama=" + namafile,
-          formData,
-          {
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log(response);
-        if (response.data.success == true) {
-          this.resultUpload = true;
-          if (type == "farmer_signature") {
-            this.defaultItem.farmer_signature = response.data.TempName;
-          }
-          if (type == "gambar1") {
-            this.defaultItem.gambar1 = response.data.TempName;
-          }
-          if (type == "gambar2") {
-            this.defaultItem.gambar2 = response.data.TempName;
-          }
-        } else {
-          this.resultUpload = false;
-          // this.dialog = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.resultUpload = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-          // this.dialog = false;
-        } else {
-          this.resultUpload = false;
-        }
-      }
-    },
-
-    changeBarangSelected(val) {
-      console.log(val);
-      this.tree_code_temp = val.tree_code;
-      this.tree_name_temp = val.tree_name;
-      this.tree_category_temp = val.tree_category;
-      //   this.satuan_temp = val.satuan;
-      this.dialogAddProduct = true;
-    },
-    async addProduct() {
-      if (this.jumlah_temp > 0) {
-        var newlist = [];
-        this.loadtabledetail = true;
-
-        var list = this.defaultItem.list_detail;
-        console.log(list);
-        var result = false;
-        for (let n = 0; n < list.length; n++) {
-          if (list[n].tree_code == this.tree_code_temp) {
-            result = true;
-            console.log(result);
-            // break;
-          } else {
-            var productold = {
-              tree_code: "",
-              tree_name: "",
-              amount: 0,
-              id: 0,
-              ph_form_no: "",
-              tree_category: "",
-            };
-
-            productold.tree_code = list[n].tree_code;
-            productold.tree_name = list[n].tree_name;
-            productold.tree_category = list[n].tree_category;
-            productold.amount = list[n].amount;
-
-            newlist.push(productold);
-          }
-        }
-
-        console.log(result);
-        if (result == false) {
-          var productset = {
-            tree_code: "",
-            tree_name: "",
-            amount: 0,
-            id: 0,
-            ph_form_no: "",
-            tree_category: "",
-          };
-
-          productset.tree_code = this.tree_code_temp;
-          productset.tree_name = this.tree_name_temp;
-          productset.tree_category = this.tree_category_temp;
-          productset.amount = Number(this.jumlah_temp);
-
-          this.defaultItem.list_detail = [];
-
-          newlist.push(productset);
-
-          // console.log(productset);
-          // console.log(this.defaultItem.list_order);
-
-          this.snackbar = true;
-          this.colorsnackbar = "green";
-          this.textsnackbar = "Product Berhasil ditambahkan..!!!";
-
-          this.dialogAddProduct = false;
-          this.loadtabledetail = false;
-
-          this.defaultItem.list_detail = newlist;
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Product Sudah Ada..!!!";
-
-          this.loadtabledetail = false;
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Jumlah Buku Tidak boleh 0..!!!";
-      }
-    },
-    async addMoreFarmerParticipant(val) {
-      if (val) {
-        this.loadtabledetail = true
-        let same = 0
-        await this.listFarmerParticipant.forEach((participant) => {
-          if (participant.kode === val.kode) {
-            same += 1
-          } 
-        });
-
-        if (same === 0) {
-          this.preview.addParticipant.data = val
-          this.preview.addParticipant.modal = true
-          this.loadtabledetail = false
-        } else {
-          this.loadtabledetail = false
-          this.addMoreFarmerParticipantSelectValue = null
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Petani sudah ada.";
-        }
-      }
-    },
-    async addingToTableFarmerParticipant(val) {
-      this.listFarmerParticipant.push(val)
-      this.addMoreFarmerParticipantSelectValue = null
-      this.preview.addParticipant.data = {}
-      this.preview.addParticipant.modal = false
-      this.colorsnackbar = "green";
-      this.textsnackbar = "Petani berhasil ditambahkan";
-      this.snackbar = true;
-    },
-    saveFormFarmerTraining() {
-      alert('yey')
-    },
-    
-    async deletelistitemproduct(item) {
-      console.log(item);
-      var newlist = [];
-      this.loadtabledetail = true;
-
-      var list = this.defaultItem.list_detail;
-      this.defaultItem.list_detail = [];
-      console.log(list);
-      var result = false;
-      for (let n = 0; n < list.length; n++) {
-        if (list[n].tree_code == item.tree_code) {
-          result = true;
-          console.log(result);
-          // break;
-        } else {
-          var productold = {
-            tree_code: "",
-            tree_name: "",
-            amount: 0,
-            id: 0,
-            ph_form_no: "",
-            tree_category: "",
-          };
-
-          productold.tree_code = list[n].tree_code;
-          productold.tree_name = list[n].tree_name;
-          productold.tree_category = list[n].tree_category;
-          productold.amount = list[n].amount;
-
-          newlist.push(productold);
-        }
-      }
-      this.defaultItem.list_detail = [];
-
-      this.snackbar = true;
-      this.colorsnackbar = "green";
-      this.textsnackbar = "Product Berhasil dihapus..!!!";
-
-      this.defaultItem.list_detail = newlist;
-
-      this.loadtabledetail = false;
-    },
-    async getPetaniDownload() {
-      if (this.User.fc.fc) {
-        this.fc_no_global = this.User.fc.fc;
-      }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetFarmerNoAll?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemspetanidownload = response.data.data.result.data;
-          this.loaddownload = false;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-          this.loaddownload = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.loaddownload = false;
-      }
-    },
-    async getDistribusiTimeDownload() {
-      if (this.User.fc.fc) {
-        this.fc_no_global = this.User.fc.fc;
-      }
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetSosisalisasiTanamTimeAll?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
-          this.itemsdistribusidownload = response.data.data.result.data;
-          this.loaddownload = false;
-          // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-          this.loaddownload = false;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.loaddownload = false;
-      }
-    },
-
-    canceladdproduk() {
-      this.dialogAddProduct = false;
-    },
-
-    selectedMU(a) {
-      console.log(a);
-      this.valueMU = a;
-      if (a != null) {
-        this.getTA("table");
-        this.valueTA = "";
-        this.selectTA = "";
-        this.selectVillage = "";
-        this.valueVillage = "";
-      } else {
-        this.valueMU = "";
-        this.valueTA = "";
-        this.itemsTA = [];
-        this.valueVillage = "";
-        this.itemsVillage = [];
-      }
-      // this.initialize();
-    },
-    selectedTA(a) {
-      console.log(a);
-      this.valueTA = a;
-      if (a != null) {
-        this.getVillage("table");
-        this.valueVillage = "";
-        this.selectVillage = "";
-      } else {
-        this.valueTA = "";
-        this.valueVillage = "";
-        this.itemsVillage = [];
-      }
-      // this.initialize();
-    },
-    selectedVillage(a) {
-      console.log(a);
-      this.valueVillage = a;
-      if (a == null) {
-        this.valueVillage = "";
-      }
-      // this.initialize();
-    },
-    selectedUM(a) {
-      console.log(a);
-      this.valueUM = a;
-      if (a != null) {
-        this.loading.fc = true
-        this.getEmpFCbyManager(a);
-        this.GetFFbyUMandFC("UM", a);
-        this.valueFC = "";
-        this.selectFC = "";
-        this.typegetdata = "several";
-        this.loading.fc = false
-      } else {
-        this.valueUM = "";
-        this.valueFC = "";
-        this.itemsfc = [];
-        this.typegetdata = this.User.ff.value_data;
-      }
-        this.selectFF = "";
-        this.itemsff = [];
-      // this.initialize();
-    },
-    selectedFC(a) {
-      console.log(a);
-      this.loading.ff = true
-      this.valueFC = a;
-      this.GetFFbyUMandFC("FC", a);
-      this.typegetdata = "several";
-      if (a == null) {
-        this.valueFC = "";
-        this.selectFC = "";
-        this.selectFF = "";
-        this.itemsff = [];
-        this.typegetdata = this.User.ff.value_data;
-        this.loading.ff = false
-      } else {
-        this.getFF(a)
-        this.loading.ff = false
-      }
-    },
-    showDetail(item) {
-      this.type = "Detail";
-      this.dialogDetail = true;
-      this.getDetail(item);
-    },
-
-    selectedMUForm(a) {
-      console.log(a);
-      this.valueMUForm = a;
-      if (a != null) {
-        this.getTA("form");
-        this.getFarmerGroup();
-        this.valueTAForm = "";
-        this.selectTAForm = "";
-        this.selectVillageForm = "";
-        this.valueVillageForm = "";
-      } else {
-        this.valueMUForm = "";
-        this.valueTAForm = "";
-        this.itemsTAForm = [];
-        this.valueVillageForm = "";
-        this.itemsVillageForm = [];
-        this.defaultItem.mu_no = a;
-      }
-    },
-    selectedTAForm(a) {
-      console.log(a);
-      this.valueTAForm = a;
-      if (a != null) {
-        this.getVillage("form");
-        this.valueVillageForm = "";
-        this.selectVillageForm = "";
-        this.defaultItem.village = "";
-      } else {
-        this.valueTAForm = "";
-        this.valueVillageForm = "";
-        this.itemsVillageForm = [];
-        this.defaultItem.village = "";
-        this.defaultItem.kode_ta = a;
-      }
-    },
-    selectedVillageForm(a) {
-      console.log(a);
-      this.valueVillageForm = a;
-      this.defaultItem.village = a;
-      if (a == null) {
-        this.valueVillageForm = "";
-        this.defaultItem.village = "";
-      }
-    },
-    selectPetani(a) {
-      console.log(a);
-      // this.valueMUForm = a;
-      if (a != null) {
-        this.valueFFForm = a;
-        this.getPetani();
-      } else {
-        this.defaultItem.ff_no = "";
-        this.defaultItem.kode = "";
-        this.itemspetani = [];
-      }
-    },
-    async selectPetaniWithMUScope(a) {
-      if (a != null) {
-        this.valueFFForm = a.ff_no;
-        this.loading.farmer = true
-        this.loadtabledetail = true
-        await this.getPetani();
-        await this.getPetaniByMU(a.mu_no);
-        this.loadtabledetail = false
-        console.log(this.itemspetani.length)
-        this.listFarmerParticipant = []
-        await this.itemspetani.forEach((val, index) => {
-          let programYearPetani = this.getProgramYearPetani(val.mou_no)
-          if (programYearPetani == 2022) {
-            this.listFarmerParticipant.push(val)
-          }
-        });
-        console.log('items participant' + this.listFarmerParticipant.length)
-        this.loading.farmer = false
-      } else {
-        this.defaultItem.ff_no = "";
-        this.defaultItem.kode = "";
-        this.itemspetani = [];
-      }
-      this.listFarmerParticipantChecked = []
-    },
-    selectLahan(a) {
-      console.log(a);
-      // this.valueMUForm = a;
-      if (a != null) {
-        this.valuePetaniselected = a;
-        this.getLahan();
-      } else {
-        // this.defaultItem.ff_no = "";
-        // this.defaultItem.kode = "";
-        this.itemslahan = [];
-      }
-    },
-    async deletePesertaPelatihan(index, item) {
-      this.loadtabledetail = true
-      await this.listFarmerParticipantChecked.forEach((checkedParticipant, indexCP) => {
-        if (checkedParticipant.kode === item.kode) {
-          this.listFarmerParticipantChecked.splice(indexCP, 1);
-        }
-      })
-      await this.listFarmerParticipant.splice(index, 1);
-      
-      this.componentKey.listFarmerParticipantTable += 1
-      this.loadtabledetail = false
-    },
-
-    async showFilterArea() {
-      // console.log(localStorage.getItem("token"));
-      await this.resetFilter();
-      this.dialogFilterArea = true;
-    },
-    async showFilterEmployee() {
-      await this.resetFilter();
-      this.dialogFilterEmp = true;
-    },
-    resetFilter() {
-      this.valueMU = "";
-      this.valueFC = "";
-      this.valueVillage = "";
-      this.selectMU = "";
-      this.selectTA = "";
-      this.selectVillage = "";
-
-      this.valueUM = "";
-      this.valueFC = "";
-      this.selectUM = "";
-      this.selectFC = "";
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
-    },
-    async searchbyarea() {
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
-      await this.initialize();
-      await this.resetFilter();
-      this.dialogFilterArea = false;
-    },
-    async searchbyemp() {
-      await this.initialize();
-      await this.resetFilter();
-      this.dialogFilterEmp = false;
-    },
-
-    resetvalue() {
-      this.defaultItem.id = "";
-      this.defaultItem.ph_form_no = "";
-      this.defaultItem.lahan_no = "";
-      this.defaultItem.total_holes = "";
-      this.defaultItem.planting_year = "";
-      this.defaultItem.user_id = "";
-      this.defaultItem.list_detail = [];
-
-      this.e1 = 1;
-
-      this.gambarinput1 = "";
-      this.gambarinput2 = "";
-      this.gambarinput3 = "";
-      this.defaultItem.farmer_signature = "/images/noimage.png";
-      this.defaultItem.gambar1 = "/images/noimage.png";
-      this.defaultItem.gambar2 = "/images/noimage.png";
-      this.defaultItem.gambar3 = "/images/noimage.png";
-      this.defaultItem.gambarshow1 = "/images/noimage.png";
-      this.defaultItem.gambarshow2 = "/images/noimage.png";
-      this.defaultItem.gambarshow3 = "/images/noimage.png";
-
-      this.load = false;
-    },
-    showAddModal() {
-      this.load = false;
-      // console.log(localStorage.getItem("token"));
-
-      if (this.$refs.form) {
-        this.$refs.form.reset();
-      }
-      this.itemsff = []
-      this.formTitle = "Form Pelatihan Petani";
-      this.dialogAddonly = true;
-
-      this.resetvalue();
-    },
-    async showEditModal(item) {
-      console.log("test");
-      this.type = "Edit";
-      this.resetvalue();
-      //   console.log(this.itemTemp);
-      this.dialog = true;
-      this.dialogShowEdit = false;
-      await this.getDetail(item);
-      //   await this.getPetani();
-      //   console.log(item.farmer_no);
-      //   console.log(item);
-      this.formTitle = "Edit data";
-      //   this.defaultItem.farmer_no = this.itemTemp.farmer_no;
-    },
-    async showEditJumlahPohonModal() {
-      // console.log(item.kode);
-      this.type = "Edit";
-      await this.getDetail(this.itemTemp);
-
-      this.DetailTreesLahanTemp = this.defaultItem.planting_details;
-      // await this.getTA("form");
-      // await this.getVillage("form");
-      // this.getPetani();
-      console.log(this.DetailTreesLahanTemp.length);
-      if (this.DetailTreesLahanTemp.length == 0) {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar =
-          "Tidak Bisa Edit, Jumlah Pohon Kosong. Harus di isi lewat aplikasi android";
-      } else {
-        this.dialogShowEdit = false;
-        this.dialogDetailPohon = true;
-      }
-    },
-    async showEditDetailModal(item) {
-      this.type = "Edit";
-      this.itemTemp = item;
-      // await this.getDetail(item);
-      console.log(this.itemTemp);
-      this.dialogShowEdit = true;
-    },
-    showPrintModal(item) {
-      if (item.is_validate == 1) {
-        this.type = "Detail";
-        // this.dialogDetail = true;
-        //   this.getDetail(item);
-        this.ph_form_no_temp = item.ph_form_no;
-
-        this.dialogCetakPilihan = true;
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Tidak Bisa Cetak. Status Belum Verifikasi";
-      }
-      //   var str = this.BaseUrlGet;
-      //   window.open(
-      //     str.substring(0, str.length - 4) +
-      //       "CetakLabelLubangTanam?ph_form_no=" +
-      //       item.ph_form_no
-      //   );
-    },
-    showPrintLabel() {
-      this.type = "Detail";
-      // this.dialogDetail = true;
-      //   this.getDetail(item);
-
-      this.dialogCetakPilihan = false;
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakLabelLubangTanamTemp?ph_form_no=" +
-          this.ph_form_no_temp
-      );
-    },
-    showPrintTandaTerima() {
-      this.dialogCetakPilihan = false;
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakBuktiPenyerahanTemp?ph_form_no=" +
-          this.ph_form_no_temp
-      );
-    },
-
-    saveEditPohon() {
-      const d = new Date();
-      var year = d.getFullYear();
-      var month = d.getMonth();
-      var date = d.getDate();
-
-      var datenow = year + "-" + month + "-" + date;
-
-      const datapost = {
-        form_no: this.defaultItem.form_no,
-        list_pohon: this.DetailTreesLahanTemp,
-        detail_year: datenow,
-      };
-
-      console.log(datapost);
-      this.updateDataPohon(datapost);
-    },
-    saveEditPohonTemp() {
-      Object.assign(
-        this.DetailTreesLahanTemp[this.editedIndexPohon],
-        this.editedItemPohon
-      );
-
-      console.log(this.DetailTreesLahanTemp);
-
-      this.dialogDetailPohonEdit = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.editedItemPohon);
-        this.editedIndex = -1;
-      });
-    },
-    editDetailPohon(item) {
-      console.log(item);
-      this.editedItemPohon.amount = item.amount;
-      this.idPohonTemp = item.id;
-      this.editedIndexPohon = this.DetailTreesLahanTemp.indexOf(item);
-      this.editedItemPohon = Object.assign({}, item);
-      this.dialogDetailPohonEdit = true;
-    },
-    deleteDetailPohon(item) {
-      console.log(item);
-      this.editedIndexPohon = this.DetailTreesLahanTemp.indexOf(item);
-      this.editedItemPohon = Object.assign({}, item);
-
-      this.DetailTreesLahanTemp.splice(this.editedIndexPohon, 1);
-
-      console.log(this.DetailTreesLahanTemp);
-
-      // this.dialogDetailPohonEdit = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.editedItemPohon);
-        this.editedIndex = -1;
-      });
-    },
-
-    showDeleteModal(item) {
-      console.log(item.form_no);
-      this.defaultItem.form_no = item.form_no;
-      this.dialogDelete = true;
-    },
+    getBase64Image(img) {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
 
-    deleteItemConfirm() {
-      this.verifDelete();
-    },
-    close() {
-      this.dialog = false;
-      this.dialogAddProduct = false;
-      this.dialogdownload = false;
-      this.dialogAddonly = false;
-      // reset data
-      this.listFarmerParticipant= []
-      this.listFarmerParticipantChecked= []
-      this.addMoreFarmerParticipantSelectValue= null
-      this.searchListPesertaPelatihan= ""
-      this.itemspetaniallmu= []
-      this.selectUM = null
-      this.selectFC = null
-      this.selectFF = null
-    },
-    closeDelete() {
-      this.dialogDelete = false;
-    },
-    closeDetailEditPohon() {
-      this.dialogDetailPohonEdit = false;
-    },
-    closeDetailDeletePohon() {
-      this.dialogDetailPohonEdit = false;
-    },
-    closeDetailPohon() {
-      this.dialogDetailPohon = false;
-    },
-
-    verifSubmit() {
-      this.dialogVerification = true;
-    },
-    VerificationItemConfirm() {
-      this.verif();
-    },
-    closeVerification() {
-      this.dialogVerification = false;
-    },
-
-    async SaveAdd() {
-      this.loadsave = true;
-      if (this.defaultItem.fileUploadReady_gambar1 == true) {
-        await this.UploadData(this.defaultItem.fileUpload1, "farmer_signature");
-      }
-      if (this.defaultItem.fileUploadReady_gambar2 == true) {
-        await this.UploadData(this.defaultItem.fileUpload2, "gambar1");
-      }
-      if (this.defaultItem.fileUploadReady_gambar3 == true) {
-        await this.UploadData(this.defaultItem.fileUpload3, "gambar2");
-      }
-
-      if (this.defaultItem.id) {
-        this.updateData();
-      } else {
-        this.addData();
-      }
-    },
-    async save() {
-      this.$refs.form.validate();
-
-      if (this.$refs.form.validate() == true) {
-        this.loadsave = true;
-        if (this.defaultItem.fileUploadReady_gambar1 == true) {
-          await this.UploadData(
-            this.defaultItem.fileUpload1,
-            "farmer_signature"
-          );
-        }
-        if (this.defaultItem.fileUploadReady_gambar2 == true) {
-          await this.UploadData(this.defaultItem.fileUpload2, "gambar1");
-        }
-        if (this.defaultItem.fileUploadReady_gambar3 == true) {
-          await this.UploadData(this.defaultItem.fileUpload3, "gambar2");
-        }
-
-        if (this.defaultItem.id) {
-          this.updateData();
-        } else {
-          this.addData();
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar =
-          "Gagal Simpan, Kolom required tidak boleh ada yang kosong";
-      }
-
-      // this.close();
-    },
-
-    capitalize(word) {
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    },
-    genderindo(val) {
-      if (val == "male") {
-        return "Laki-Laki";
-      } else {
-        return "Perempuan";
-      }
-    },
-    convertToRupiah(angka) {
-      var rupiah = "";
-      var angkarev = angka.toString().split("").reverse().join("");
-      for (var i = 0; i < angkarev.length; i++)
-        if (i % 3 == 0) rupiah += angkarev.substr(i, 3) + ".";
-      rupiah = rupiah
-        .split("", rupiah.length - 1)
-        .reverse()
-        .join("");
-      return "Rp. " + (rupiah.length < 1 ? "0" : rupiah) + ",-";
-    },
-    waitingapprovefunct(valapprove) {
-      if (valapprove == 0) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-
-    pilihgambar1(event) {
-      console.log(event);
-      if (event != null) {
-        this.defaultItem.gambarshow1 = URL.createObjectURL(event);
-        console.log(this.defaultItem.gambarshow1);
-        this.defaultItem.fileUpload1 = event;
-        this.defaultItem.fileUploadReady_gambar1 = true;
-        // this.filephotoarray.push("lahan1");
-      } else {
-        this.defaultItem.gambarshow1 = "/images/noimage.png";
-        this.defaultItem.fileUploadReady_gambar1 = false;
-        // this.defaultItem.photo1 = "";
-        // const index = this.filephotoarray.indexOf("lahan1");
-        // if (index > -1) {
-        //   this.filephotoarray.splice(index, 1);
-        // }
-      }
-    },
-    pilihgambar2(event) {
-      console.log(event);
-      if (event != null) {
-        this.defaultItem.gambarshow2 = URL.createObjectURL(event);
-        console.log(this.defaultItem.gambarshow2);
-        this.defaultItem.fileUpload2 = event;
-        this.defaultItem.fileUploadReady_gambar2 = true;
-        // this.filephotoarray.push("lahan1");
-      } else {
-        this.defaultItem.gambarshow2 = "/images/noimage.png";
-        this.defaultItem.fileUploadReady_gambar2 = false;
-        // this.defaultItem.photo1 = "";
-        // const index = this.filephotoarray.indexOf("lahan1");
-        // if (index > -1) {
-        //   this.filephotoarray.splice(index, 1);
-        // }
-      }
-    },
-    pilihgambar3(event) {
-      console.log(event);
-      if (event != null) {
-        this.defaultItem.gambarshow3 = URL.createObjectURL(event);
-        console.log(this.defaultItem.gambarshow3);
-        this.defaultItem.fileUpload3 = event;
-        this.defaultItem.fileUploadReady_gambar3 = true;
-        // this.filephotoarray.push("lahan1");
-      } else {
-        this.defaultItem.gambarshow3 = "/images/noimage.png";
-        this.defaultItem.fileUploadReady_gambar3 = false;
-        // this.defaultItem.photo1 = "";
-        // const index = this.filephotoarray.indexOf("lahan1");
-        // if (index > -1) {
-        //   this.filephotoarray.splice(index, 1);
-        // }
-      }
-    },
-
-    gettanggal(val) {
-      var bulanIndo = [
-        "",
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agust",
-        "Sept",
-        "Okt",
-        "Nov",
-        "Des",
-      ];
-
-      var date = val.split(" ")[0];
-
-      var tanggal = date.split("-")[2];
-      var bulan = date.split("-")[1];
-      var tahun = date.split("-")[0];
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
 
-      return tanggal + " " + bulanIndo[Math.abs(bulan)] + " " + tahun;
-    },
-
-    downloadSuperAdmin() {
-      this.dialogdownload = true;
-      this.downloadvalueff = false;
-      this.downloadvaluetime = false;
-      this.downloadvaluepetani = false;
-      this.loaddownload = false;
-      // console.log(this.valueMUExcel);
-      // console.log(this.valueTAExcel);
-      // console.log(this.valueVillageExcel);
-      // console.log(this.typegetdataExcel);
-      // console.log(this.valueFFcodeExcel);
-    },
-    pilihtipedownload(val) {
-      console.log(val);
-      if (val == "output_data") {
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      } else if (val == "loading_plan") {
-        this.loaddownload = true;
-        this.getFF();
-        console.log(this.itemsff);
-        this.downloadvalueff = true;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      } else if (val == "packing_plan") {
-        this.loaddownload = true;
-        this.getDistribusiTimeDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = true;
-        this.downloadvaluepetani = false;
-      } else if (val == "shipping_plan") {
-        this.loaddownload = true;
-        this.getDistribusiTimeDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = true;
-        this.downloadvaluepetani = false;
-      } else if (val == "farmer_receipt") {
-        this.loaddownload = true;
-        this.getPetaniDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = true;
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal tipe tidak tersedia";
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      }
-    },
-    verifytipedownload() {
-      console.log(this.selectFFdownload.ff_no);
-      console.log(this.selectpetanidownload.kodePetani);
-      console.log(this.selectdistribusitimedownload);
-      if (this.valuedownloadselected == "output_data") {
-        this.downloadall();
-      } else if (this.valuedownloadselected == "loading_plan") {
-        if (this.selectFFdownload.ff_no) {
-          this.downloadloadingplan(this.selectFFdownload.ff_no);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih ff terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "packing_plan") {
-        if (this.selectdistribusitimedownload) {
-          this.downloadpackingplan(this.selectdistribusitimedownload);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih waktu distribusi terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "shipping_plan") {
-        // this.downloadshippingplan();
-        if (this.selectdistribusitimedownload) {
-          this.downloadshippingplan(this.selectdistribusitimedownload);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih waktu distribusi terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "farmer_receipt") {
-        // this.downloadfarmerreceipt();
-        if (this.selectpetanidownload.kodePetani) {
-          this.downloadfarmerreceipt(this.selectpetanidownload.kodePetani);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih petani terlebih dahulu";
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal tipe tidak tersedia";
-      }
-    },
+        var dataURL = canvas.toDataURL("image/png");
 
-    downloadall() {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelPlantingHoleAll?mu=" +
-          this.valueMUExcel +
-          "&ta=" +
-          this.valueTAExcel +
-          "&village=" +
-          this.valueVillageExcel +
-          "&typegetdata=" +
-          this.typegetdataExcel +
-          "&ff=" +
-          this.valueFFcodeExcel +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-
-      this.valueMUExcel = "";
-      this.valueTAExcel = "";
-      this.valueVillageExcel = "";
-      this.typegetdataExcel = "";
-      this.valueFFcodeExcel = "";
-    },
-    downloadpackingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelPackingPlan?date=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadshippingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelShippingPlan?date=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadloadingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelLoadingPlan?typegetdatadownload=ff&ff=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadfarmerreceipt(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelLoadingPlan?typegetdatadownload=farmer&farmer_no=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
+        return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     },
-    getProgramYearPetani(text) {
-        if (text.slice(13, 14) === '_') {
-            return text.slice(9, 13)
-        } else {
-            return text.slice(4, 8)
-        }
+    // date format
+    dateFormat(date, format) {
+        return moment(date).format(format)
     },
   },
 };

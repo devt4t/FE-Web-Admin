@@ -18,6 +18,7 @@
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded elevation-6 mx-3 pa-1"
+      :items-per-page="30"
       :footer-props="{
         itemsPerPageOptions: [10, 20, 30, 40, 50, -1]
       }"
@@ -1640,7 +1641,7 @@
           mdi-information-outline
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           class="mr-1"
           @click="showEditDetailModal(item)"
           small
@@ -1649,13 +1650,18 @@
           mdi-lead-pencil
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true && crudLahanBasicShow == true"
+          v-if="RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi'"
           @click="showDeleteModal(item)"
           small
           color="red"
         >
           mdi-delete
         </v-icon>
+      </template>
+      
+      <!-- Index -->
+      <template v-slot:item.index="{index}">
+        {{ index + 1 }}
       </template>
 
       <!-- Tutupan table -->
@@ -1666,6 +1672,11 @@
       <!-- Luas Lahan table -->
       <template v-slot:item.luas_lahan="{ item }">
         {{ item.luas_lahan }}m<sup>2</sup>
+      </template>
+
+      <!-- Tahun Program -->
+      <template v-slot:item.created_at="{ item }">
+        {{ item.created_at.slice(0, 4) }}
       </template>
     </v-data-table>
     <v-snackbar
@@ -1743,18 +1754,15 @@ export default {
     type: "",
     dataobject: [],
     headers: [
-      {
-        text: "Kode",
-        align: "start",
-        value: "lahanNo",
-        width: "10%",
-      },
+      { text: "No", align: "center",value: "index",width: "5%"},
+      { text: "Kode", align: "start",value: "lahanNo",width: "10%"},
       { text: "Desa", value: "desa", width: "15%" },
       { text: "Petani", value: "petani", width: "15%" },
       { text: "Field Facilitator", value: "user", width: "10%" },
       { text: "Luas Lahan", value: "luas_lahan", width: "10%" },
       { text: "Tutupan", value: "tutupan_lahan", width: "7%" },
-      { text: "Pola Tanam", value: "pola_tanam", width: "10%" },
+      { text: "Pola Tanam", value: "pola_tanam", width: "20%" },
+      { text: "Tahun Program", value: "created_at", width: "10%" },
       { text: "Status", value: "status", width: "12%" },
       { text: "Actions", value: "actions", sortable: false, width: "15%" },
     ],
@@ -2272,7 +2280,7 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
 

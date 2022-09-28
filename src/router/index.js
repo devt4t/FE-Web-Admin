@@ -44,11 +44,12 @@ const routes = [
     path: '/',
     name: 'Login',
     component: Login
-  },{
-    path: '/Uploads',
-    name: 'Login',
-    component: Login
   },
+  // {
+  //   path: '/Uploads',
+  //   name: 'Login',
+  //   component: Login
+  // },
   {
     path: '/GantiPassword',
     name: 'GantiPassword',

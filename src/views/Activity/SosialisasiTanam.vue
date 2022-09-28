@@ -710,7 +710,7 @@
           mdi-information-outline
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           class="mr-2"
           @click="showEditDetailModal(item)"
           small
@@ -728,7 +728,7 @@
           mdi-printer
         </v-icon> -->
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           @click="showDeleteModal(item)"
           small
           color="red"
