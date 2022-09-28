@@ -611,22 +611,110 @@
             <v-card class="rounded-lg">
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">Detail Pelatihan Petani</span>
-                <v-spacer></v-spacer>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-bind="attrs"
-                      v-on="on"
-                      dark
-                      color="blue lighten-1"
-                    >
-                      <v-icon class="mr-1" small>mdi-printer</v-icon> Export
-                    </v-btn>
-                  </template>
-                  <span>Export to .pdf</span>
-                </v-tooltip>
               </v-card-title>
               <v-card-text class="pa-0 fontall">
+                <vue-html2pdf
+                    :show-layout="false"
+                    :float-layout="true"
+                    :enable-download="false"
+                    :preview-modal="true"
+                    :paginate-elements-by-height="1400"
+                    :filename="`Pelatihan petani - ${dialogDetailData ? dialogDetailData.form_no : ''}`"
+                    :pdf-quality="2"
+                    :manual-pagination="false"
+                    pdf-format="a4"
+                    pdf-orientation="portrait"
+                    pdf-content-width="800px"
+                    ref="html2Pdf"
+                >
+                  <section slot="pdf-content">
+                    <v-container v-if="dialogDetailData">
+                      <v-row>
+                        <v-col lg="12" class="mb-2">
+                          <center>
+                            <h2 class="text-center">{{ dialogDetailData.form_no }}</h2>
+                            <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
+                          </center>
+                        </v-col>
+                        <v-col lg="6" class="mb-2">
+                          <center>
+                            <table>
+                              <tr>
+                                <td>UM</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.um_no }}</td>
+                              </tr>
+                              <tr>
+                                <td>FC</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.fc_no }}</td>
+                              </tr>
+                              <tr>
+                                <td>FF</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.ff_no }}</td>
+                              </tr>
+                              <tr>
+                                <td>Tgl Pelatihan</td>
+                                <td>:</td>
+                                <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                              </tr>
+                            </table>
+                          </center>
+                        </v-col>
+                        <v-col lg="6" class="mb-2">
+                          <center>
+                            <table>
+                              <tr>
+                                <td>MU</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.mu_no }}</td>
+                              </tr>
+                              <tr>
+                                <td>TA</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.target_area }}</td>
+                              </tr>
+                              <tr>
+                                <td>Desa</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.working_area }}</td>
+                              </tr>
+                              <tr>
+                                <td>Organik</td>
+                                <td>:</td>
+                                <td>{{ dialogDetailData.material_organic }}</td>
+                              </tr>
+                            </table>
+                          </center>
+                        </v-col>
+                        <v-col lg="12">
+                          <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
+                          <center>
+                            <table border="1" style="border-collapse: collapse;width: 100%;">
+                              <thead>
+                                <tr>
+                                  <th>No</th>
+                                  <th>No Petani</th>
+                                  <th>Nama Petani</th>
+                                  <th>NIK</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="(farmer, fIndex) in dialogDetailData.farmers" :key="farmer.kode">
+                                  <td align="center">{{ fIndex + 1 }}</td>
+                                  <td align="center">{{ farmer.kode }}</td>
+                                  <td><span style="margin-left: 5px;">{{ farmer.nama }}</span></td>
+                                  <td align="center">{{ farmer.nik }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </center>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </section>
+                </vue-html2pdf>
                 <v-container v-if="dialogDetailData">
                   <div class="mb-2">
                     <h2 class="text-center">{{ dialogDetailData.form_no }}</h2>
@@ -634,59 +722,59 @@
                   </div>
                   <v-row class="mt-2">
                     <v-col lg="6" class="mb-2">
-                      <table>
-                        <tr>
-                          <td>UM</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.um_no }}</td>
-                        </tr>
-                        <tr>
-                          <td>FC</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.fc_no }}</td>
-                        </tr>
-                        <tr>
-                          <td>FF</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.ff_no }}</td>
-                        </tr>
-                        <tr>
-                          <td>Tgl Pelatihan</td>
-                          <td>:</td>
-                          <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
-                        </tr>
-                        <tr>
-                          <td>Jml Kehadiran</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.farmers.length }}</td>
-                        </tr>
-                      </table>
+                      <center>
+                        <table>
+                          <tr>
+                            <td>UM</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.um_no }}</td>
+                          </tr>
+                          <tr>
+                            <td>FC</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.fc_no }}</td>
+                          </tr>
+                          <tr>
+                            <td>FF</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.ff_no }}</td>
+                          </tr>
+                          <tr>
+                            <td>Tgl Pelatihan</td>
+                            <td>:</td>
+                            <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                          </tr>
+                        </table>
+                      </center>
                     </v-col>
                     <v-col lg="6" class="mb-2">
-                      <table>
-                        <tr>
-                          <td>MU</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.mu_no }}</td>
-                        </tr>
-                        <tr>
-                          <td>TA</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.target_area }}</td>
-                        </tr>
-                        <tr>
-                          <td>Desa</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.working_area }}</td>
-                        </tr>
-                        <tr>
-                          <td>Organik</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.material_organic }}</td>
-                        </tr>
-                      </table>
+                      <center>
+                        <table>
+                          <tr>
+                            <td>MU</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.mu_no }}</td>
+                          </tr>
+                          <tr>
+                            <td>TA</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.target_area }}</td>
+                          </tr>
+                          <tr>
+                            <td>Desa</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.working_area }}</td>
+                          </tr>
+                          <tr>
+                            <td>Organik</td>
+                            <td>:</td>
+                            <td>{{ dialogDetailData.material_organic }}</td>
+                          </tr>
+                        </table>
+                      </center>
                     </v-col>
                     <v-col lg="8">
+                      <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
                       <!-- Table List Petani Peserta Pelatihan -->
                       <v-data-table
                         :headers="tables.farmerListDetailModal.headers"
@@ -744,19 +832,37 @@
                       </v-tooltip>
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <v-col align="end">
-                      <v-btn
-                        outlined
-                        color="red lighten-1"
-                        @click="dialogDetail = false"
-                      >
-                        <v-icon class="mr-1" small>mdi-close</v-icon> Close
-                      </v-btn>
-                    </v-col>
-                  </v-row>
                 </v-container>
               </v-card-text>
+              <v-card-actions class="ma-2">
+                <v-row>
+                  <v-col>
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          dark
+                          color="blue lighten-1"
+                          @click="generateReport"
+                        >
+                          <v-icon class="mr-1" small>mdi-printer</v-icon> Export
+                        </v-btn>
+                      </template>
+                      <span>Export to .pdf</span>
+                    </v-tooltip>
+                  </v-col>
+                  <v-col align="end">
+                    <v-btn
+                      outlined
+                      color="red lighten-1"
+                      @click="dialogDetail = false"
+                    >
+                      <v-icon class="mr-1" small>mdi-close</v-icon> Close
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card-actions>
             </v-card>
           </v-dialog>
 
@@ -996,9 +1102,11 @@ import { truncate } from "fs";
 import { randomInt } from 'crypto';
 // import BaseUrl from "../../services/BaseUrl.js";
 import moment from 'moment'
+import VueHtml2pdf from 'vue-html2pdf'
 
 export default {
   name: "LubangTanam",
+  components: {VueHtml2pdf},
   authtoken: "",
   data: () => ({
     datePickerMenu: false,
@@ -2193,6 +2301,9 @@ export default {
     dateFormat(date, format) {
         return moment(date).format(format)
     },
+    generateReport () {
+        this.$refs.html2Pdf.generatePdf()
+    }
   },
 };
 </script>
