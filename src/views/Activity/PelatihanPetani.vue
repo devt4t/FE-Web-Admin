@@ -234,8 +234,8 @@
                                   label="Unit Manager"
                                   :loading="loading.um"
                                   outlined
+                                  :readonly="User.role_name === 'FIELD COORDINATOR' || User.role_name === 'UNIT MANAGER'"
                                   :rules="[(v) => !!v || 'Field is required']"
-                                  clearable
                                 ></v-autocomplete>
                               </v-col>
                               <!-- FC -->
@@ -251,7 +251,7 @@
                                   :loading="loading.fc"
                                   :no-data-text="loading.fc ? 'Loading...' : 'Pilih UM'"
                                   outlined
-                                  clearable
+                                  :readonly="User.role_name === 'FIELD COORDINATOR'"
                                 ></v-autocomplete>
                               </v-col>
                               <!-- FF -->
@@ -265,12 +265,18 @@
                                   :loading="loading.ff"
                                   :no-data-text="loading.ff ? 'Loading...' : 'Pilih FC'"
                                   outlined
-                                  clearable
                                   return-object
                                   type="string"
                                   v-on:change="selectPetaniWithMUScope"
                                   :rules="[(v) => !!v || 'Field is required']"
-                                ></v-autocomplete>
+                                >
+                                <template v-slot:item="data">
+                                  <v-list-item-content>
+                                    <v-list-item-title v-html="data.item.name"></v-list-item-title>
+                                    <v-list-item-subtitle>{{ data.item.ff_no }}</v-list-item-subtitle>
+                                  </v-list-item-content>
+                                </template>
+                                </v-autocomplete>
                               </v-col>
                               <!-- Absensi File -->
                               <v-col cols="12" sm="12" md="12">
@@ -1055,7 +1061,7 @@
           </template>
           <span>Detail</span>
         </v-tooltip>
-        <v-tooltip top>
+        <!-- <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"
               v-if="RoleAccesCRUDShow == true"
@@ -1068,12 +1074,12 @@
             </v-icon>
           </template>
           <span>Edit</span>
-        </v-tooltip>
+        </v-tooltip> -->
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"
               v-if="RoleAccesCRUDShow == true"
-              @click="showDeleteModal(item)"
+              @click="deleteTemporary(index)"
               small
               color="red"
             >
@@ -2180,7 +2186,7 @@ export default {
       this.e1 = 1;
       this.load = false;
     },
-    showAddModal() {
+    async showAddModal() {
       this.load = false;
 
       if (this.$refs.form) {
@@ -2191,6 +2197,19 @@ export default {
       this.dialogAddonly = true;
 
       this.resetvalue();
+
+      // field coordinator
+      if (this.User.role_name === "FIELD COORDINATOR") {
+        this.selectUM = this.User.EmployeeStructure.manager_code
+        await this.selectedUM(this.User.EmployeeStructure.manager_code)
+        this.selectFC = this.User.employee_no
+        await this.selectedFC(this.User.employee_no)
+      } 
+      // Unit Manager
+      if (this.User.role_name === "UNIT MANAGER") {
+        this.selectUM = this.User.employee_no
+        await this.selectedUM(this.User.employee_no)
+      }
     },
 
     showDeleteModal(item) {
@@ -2297,12 +2316,15 @@ export default {
 
         return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
     },
-    // date format
     dateFormat(date, format) {
         return moment(date).format(format)
     },
     generateReport () {
         this.$refs.html2Pdf.generatePdf()
+    },
+    // Temporary
+    deleteTemporary(index) {
+      this.temporaryTableDatas.splice(index, 1)
     }
   },
 };
