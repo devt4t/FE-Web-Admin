@@ -6,6 +6,15 @@
       divider=">"
       large
     ></v-breadcrumbs>
+    
+
+    <v-overlay :value="overlay">
+      <v-progress-circular
+        indeterminate
+        color="green"
+        size="64"
+      ></v-progress-circular>
+    </v-overlay>
 
     <div class="mx-9">
       <v-alert :value="alerttoken" color="red" elevation="24" type="error">
@@ -15,7 +24,7 @@
 
     <v-data-table
       :headers="headers"
-      :items="temporaryTableDatas"
+      :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
@@ -140,7 +149,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
+                <v-btn color="blue darken-1" text
                   >Cancel</v-btn
                 >
                 <v-btn color="blue darken-1" text @click="searchbyarea"
@@ -306,26 +315,38 @@
                                 <v-autocomplete
                                   v-model="dataToStore.materi_1"
                                   :items="options.materiPelatihan"
-                                  item-text="materi"
-                                  item-value="id"
+                                  item-text="material_name"
+                                  item-value="material_no"
                                   label="Materi Pelatihan 1"
                                   outlined
                                   readonly
                                   type="string"
                                   :rules="[(v) => !!v || 'Field is required']"
-                                ></v-autocomplete>
+                                >
+                                  <!-- <template v-slot:selection="data">
+                                    {{ data.item.material_no }} - {{ data.item.material_name}}
+                                  </template> -->
+                                </v-autocomplete>
                               </v-col>
                               <!-- Materi Pelatihan 2 -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
                                   v-model="dataToStore.materi_2"
                                   :items="options.materiPelatihan"
-                                  item-text="materi"
-                                  item-value="id"
+                                  item-text="material_name"
+                                  item-value="material_no"
                                   label="Materi Pelatihan 2"
                                   outlined
                                   type="string"
-                                ></v-autocomplete>
+                                  clearable
+                                >
+                                  <template v-slot:item="data">
+                                    <v-list-item-content>
+                                      <v-list-item-title v-html="data.item.material_no"></v-list-item-title>
+                                      <v-list-item-subtitle>{{ data.item.material_name }}</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                  </template>
+                                </v-autocomplete>
                               </v-col>
                               <!-- Material Organik -->
                               <v-col cols="12" sm="12" md="12">
@@ -581,7 +602,7 @@
                       elevation="1"
                       outlined
                       @click="saveFormFarmerTraining"
-                      :disabled="e1 == 1 || listFarmerParticipantChecked.length == 0"
+                      :disabled="listFarmerParticipantChecked.length == 0 || !dataToStore.absensi_img"
                     >
                       <v-progress-circular
                         v-if="loadsave == true"
@@ -625,7 +646,7 @@
                     :enable-download="false"
                     :preview-modal="true"
                     :paginate-elements-by-height="1400"
-                    :filename="`Pelatihan petani - ${dialogDetailData ? dialogDetailData.form_no : ''}`"
+                    :filename="`Pelatihan petani - ${dialogDetailData ? dialogDetailData.training_no : ''}`"
                     :pdf-quality="2"
                     :manual-pagination="false"
                     pdf-format="a4"
@@ -636,29 +657,29 @@
                   <section slot="pdf-content">
                     <v-container v-if="dialogDetailData">
                       <v-row>
-                        <v-col lg="12" class="mb-2">
+                        <v-col sm="12" class="mb-2">
                           <center>
-                            <h2 class="text-center">{{ dialogDetailData.form_no }}</h2>
+                            <h2 class="text-center">{{ dialogDetailData.training_no }}</h2>
                             <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
                           </center>
                         </v-col>
-                        <v-col lg="6" class="mb-2">
+                        <v-col sm="6" class="mb-2">
                           <center>
                             <table>
                               <tr>
                                 <td>UM</td>
                                 <td>:</td>
-                                <td>{{ dialogDetailData.um_no }}</td>
+                                <td>{{ dialogDetailData.um_name }}</td>
                               </tr>
                               <tr>
                                 <td>FC</td>
                                 <td>:</td>
-                                <td>{{ dialogDetailData.fc_no }}</td>
+                                <td>{{ dialogDetailData.fc_name }}</td>
                               </tr>
                               <tr>
                                 <td>FF</td>
                                 <td>:</td>
-                                <td>{{ dialogDetailData.ff_no }}</td>
+                                <td>{{ dialogDetailData.ff_name }}</td>
                               </tr>
                               <tr>
                                 <td>Tgl Pelatihan</td>
@@ -668,13 +689,13 @@
                             </table>
                           </center>
                         </v-col>
-                        <v-col lg="6" class="mb-2">
+                        <v-col sm="6" class="mb-2">
                           <center>
                             <table>
                               <tr>
                                 <td>MU</td>
                                 <td>:</td>
-                                <td>{{ dialogDetailData.mu_no }}</td>
+                                <td>{{ dialogDetailData.management_unit }}</td>
                               </tr>
                               <tr>
                                 <td>TA</td>
@@ -684,7 +705,7 @@
                               <tr>
                                 <td>Desa</td>
                                 <td>:</td>
-                                <td>{{ dialogDetailData.working_area }}</td>
+                                <td>{{ dialogDetailData.desa }}</td>
                               </tr>
                               <tr>
                                 <td>Organik</td>
@@ -694,7 +715,21 @@
                             </table>
                           </center>
                         </v-col>
-                        <v-col lg="12">
+                        <v-col sm="12">
+                          <table>
+                            <tr>
+                              <td>Materi Pelatihan 1</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.materi_1 }}</td>
+                            </tr>
+                            <tr>
+                              <td>Materi Pelatihan 2</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.materi_2 }}</td>
+                            </tr>
+                          </table>
+                        </v-col>
+                        <v-col sm="12">
                           <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
                           <center>
                             <table border="1" style="border-collapse: collapse;width: 100%;">
@@ -709,8 +744,8 @@
                               <tbody>
                                 <tr v-for="(farmer, fIndex) in dialogDetailData.farmers" :key="farmer.kode">
                                   <td align="center">{{ fIndex + 1 }}</td>
-                                  <td align="center">{{ farmer.kode }}</td>
-                                  <td><span style="margin-left: 5px;">{{ farmer.nama }}</span></td>
+                                  <td align="center">{{ farmer.farmer_no }}</td>
+                                  <td><span style="margin-left: 5px;">{{ farmer.name }}</span></td>
                                   <td align="center">{{ farmer.nik }}</td>
                                 </tr>
                               </tbody>
@@ -723,7 +758,7 @@
                 </vue-html2pdf>
                 <v-container v-if="dialogDetailData">
                   <div class="mb-2">
-                    <h2 class="text-center">{{ dialogDetailData.form_no }}</h2>
+                    <h2 class="text-center">{{ dialogDetailData.training_no }}</h2>
                     <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
                   </div>
                   <v-row class="mt-2">
@@ -733,17 +768,17 @@
                           <tr>
                             <td>UM</td>
                             <td>:</td>
-                            <td>{{ dialogDetailData.um_no }}</td>
+                            <td>{{ dialogDetailData.um_name }}</td>
                           </tr>
                           <tr>
                             <td>FC</td>
                             <td>:</td>
-                            <td>{{ dialogDetailData.fc_no }}</td>
+                            <td>{{ dialogDetailData.fc_name }}</td>
                           </tr>
                           <tr>
                             <td>FF</td>
                             <td>:</td>
-                            <td>{{ dialogDetailData.ff_no }}</td>
+                            <td>{{ dialogDetailData.ff_name }}</td>
                           </tr>
                           <tr>
                             <td>Tgl Pelatihan</td>
@@ -759,7 +794,7 @@
                           <tr>
                             <td>MU</td>
                             <td>:</td>
-                            <td>{{ dialogDetailData.mu_no }}</td>
+                            <td>{{ dialogDetailData.management_unit }}</td>
                           </tr>
                           <tr>
                             <td>TA</td>
@@ -769,7 +804,7 @@
                           <tr>
                             <td>Desa</td>
                             <td>:</td>
-                            <td>{{ dialogDetailData.working_area }}</td>
+                            <td>{{ dialogDetailData.desa }}</td>
                           </tr>
                           <tr>
                             <td>Organik</td>
@@ -778,6 +813,20 @@
                           </tr>
                         </table>
                       </center>
+                    </v-col>
+                    <v-col lg="12">
+                      <table>
+                        <tr>
+                          <td>Materi Pelatihan 1</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.materi_1 }}</td>
+                        </tr>
+                        <tr>
+                          <td>Materi Pelatihan 2</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.materi_2 }}</td>
+                        </tr>
+                      </table>
                     </v-col>
                     <v-col lg="8">
                       <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
@@ -801,7 +850,7 @@
                         <template v-slot:item.photo="{item}">
                           <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                              <v-avatar color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = item;preview.petani.modal = true;}" v-bind="attrs" v-on="on" >
+                              <v-avatar color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = {kode: item.farmer_no, nik: item.nik, nama: item.name};preview.petani.modal = true;}" v-bind="attrs" v-on="on" >
                                 <img
                                   :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
                                   :alt="`Foto petani ${item.nama}`"
@@ -1055,7 +1104,7 @@
       <template v-slot:item.actions="{ item, index }">
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="showDetailFarmerTraining(index)" small color="info">
+            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="showDetailFarmerTraining(item.training_no)" small color="info">
               mdi-information-outline
             </v-icon>
           </template>
@@ -1078,8 +1127,8 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"
-              v-if="RoleAccesCRUDShow == true"
-              @click="deleteTemporary(index)"
+              v-if="User.role_group == 'IT'"
+              @click="showDeleteModal(item.ft_id)"
               small
               color="red"
             >
@@ -1115,23 +1164,22 @@ export default {
   components: {VueHtml2pdf},
   authtoken: "",
   data: () => ({
+    overlay: false,
     datePickerMenu: false,
     dataToStore: {
       um_no: "",
       fc_no: "",
       ff_no: "",
       absensi_img: "",
-      materi_1: 10,
-      materi_2: 0,
+      materi_1: 'TR010',
+      materi_2: null,
       material_organic: '',
       program_year: '2022',
       date: '',
       farmers: []
     },
     // temporary
-    temporaryTableDatas: [
-      {"um_no":"04-0006","fc_no":"1200","ff_no":"FF00000959","absensi_img":"","materi_1":10,"materi_2":0,"material_organic":"Pupuk","program_year":"2022","date":"2022-09-28","farmers":[{"idTblPetani":10103,"kode":"F00009677","nama":"Ade Sujana","nik":"3204351204580007","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"15082022_3204351204580007","join_date":"2022-08-15"},{"idTblPetani":10099,"kode":"F00009673","nama":"Adis","nik":"3204351102490001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"15082022_3204351102490001","join_date":"2022-08-15"},{"idTblPetani":11778,"kode":"F00011351","nama":"AGA","nik":"3204352806650004","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204352806650004","join_date":"2022-08-19"},{"idTblPetani":11772,"kode":"F00011345","nama":"Ai Warliah","nik":"3204334908730007","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204334908730007","join_date":"2022-08-15"},{"idTblPetani":21343,"kode":"F00020916","nama":"Ai Yuyu","nik":"3204354604820024","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204354604820024","join_date":"2022-09-05"},{"idTblPetani":23151,"kode":"F00022723","nama":"Amih","nik":"3204354606450002","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"11092022_3204354606450002","join_date":"2022-09-11"},{"idTblPetani":11781,"kode":"F00011354","nama":"ATE","nik":"3204350107750004","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350107750004","join_date":"2022-08-21"},{"idTblPetani":21357,"kode":"F00020930","nama":"Atep","nik":"3204350306870001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204350306870001","join_date":"2022-09-05"},{"idTblPetani":11775,"kode":"F00011348","nama":"ATET MOMON","nik":"3204351207670001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204351207670001","join_date":"2022-08-18"},{"idTblPetani":11779,"kode":"F00011352","nama":"EDEN","nik":"3204350203720013","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350203720013","join_date":"2022-08-19"},{"idTblPetani":21342,"kode":"F00020915","nama":"Eman Sulaeman","nik":"3204351101710003","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204351101710003","join_date":"2022-09-05"},{"idTblPetani":11773,"kode":"F00011346","nama":"Endang","nik":"3204350105670002","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350105670002","join_date":"2022-08-15"},{"idTblPetani":11776,"kode":"F00011349","nama":"Eneng","nik":"3204355703820001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204351801640001","join_date":"2022-08-18"},{"idTblPetani":21331,"kode":"F00020904","nama":"Eutik","nik":"3204354303580006","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204354303580006","join_date":"2022-09-05"},{"idTblPetani":21457,"kode":"F00021030","nama":"Hj Iis Sa'Adah Abdulah","nik":"3204334308760005","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204334308760005","join_date":"2022-09-05"},{"idTblPetani":11774,"kode":"F00011347","nama":"MOMON","nik":"3204352511731001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204352511731001","join_date":"2022-08-18"},{"idTblPetani":11777,"kode":"F00011350","nama":"Rika Ningrum","nik":"3204354708770001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204350601750007","join_date":"2022-08-19"},{"idTblPetani":10095,"kode":"F00009669","nama":"Roni Fajri","nik":"3204350407830004","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"15082022_3204350407830004","join_date":"2022-08-15"},{"idTblPetani":21337,"kode":"F00020910","nama":"Sobar","nik":"3204262306950001","desa":"DRAWATI","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"05092022_3204262306950001","join_date":"2022-09-05"},{"idTblPetani":11780,"kode":"F00011353","nama":"TUTI","nik":"3204355507950003","desa":"LOA","user":"Ade Suryana","status":"Sudah Verifikasi","mou_no":"22082022_3204355507950003","join_date":"2022-08-21"}],"form_no":"FT1664352911","mu_no":"022","target_area":"022006","working_area":"32.04.35.02"}
-    ],
+    temporaryTableDatas: [],
     dialogDetailData: null,
 
     tables: {
@@ -1139,8 +1187,8 @@ export default {
         headers: [
         { text: "No", value: "index", width: "15%" },
         { text: "Foto", value: "photo", width: "20%" },
-        { text: "No Petani", value: "kode", width: "30%" },
-        { text: "Nama Petani", value: "nama", width: "40%" },
+        { text: "No Petani", value: "farmer_no", width: "30%" },
+        { text: "Nama Petani", value: "name", width: "40%" },
         ],
         items: [],
         loading: false,
@@ -1149,64 +1197,8 @@ export default {
     },
 
     options: {
-      materiPelatihan: [
-        {
-          id: 0,
-          materi:"Tidak Ada"
-        },
-        {
-          id: 1,
-          materi:"Pembuatan dan Cara Penggunaan/Aplikasi Pupuk Organik Cair (POC)",
-        },
-        {
-          id: 2,
-          materi:"Pembuatan dan Cara Penggunaan/Aplikasi Pestisida Organik",
-        },
-        {
-          id: 3,
-          materi:"Pembuatan dan Cara Penggunaan/Aplikasi Herbisida Organik",
-        },
-        {
-          id: 4,
-          materi:"Pemanfaatan Limbah Padat dan Cair sebagai Pupuk Organik",
-        },
-        {
-          id: 5,
-          materi:"Teknik Perbanyakan Bibit dengan Stek dan Cangkok",
-        },
-        {
-          id: 6,
-          materi:"Teknik Perbanyakan Bibit dengan Okulasi, Tempel dan Sambung",
-        },
-        {
-          id: 7,
-          materi:"Pencegahan dan Penanganan Hama Penyakit Pohon Kayu/MPTS (Buah)",
-        },
-        {
-          id: 8,
-          materi:"Pencegahan dan Penanganan Hama Penyakit Tanaman Crops (Pertanian)",
-        },
-        {
-          id: 9,
-          materi:"Pengolahan Lahan Yang Baik mencegah Serangan Hama Penyakit",
-        },
-        {
-          id: 10,
-          materi:"Budidaya Pohon Kayu untuk meningkatkan Produksi Kayu (volume)",
-          disabled: true
-        },
-        {
-          id: 11,
-          materi:"Budidaya Pohon Buah untuk meningkatkan Produksi Buah (pengaturan pembuangan)",
-        },
-        {
-          id: 12,
-          materi:"Mengenal Jenis Pohon Pakan Ternak dan Pengolahan Pakan Ternak",
-        },
-      ],
-      material_organic: [
-
-      ]
+      materiPelatihan: [],
+      material_organic: []
     },
     componentKey: {
       listFarmerParticipantTable: 0
@@ -1229,6 +1221,7 @@ export default {
     dialogAddonly: false,
     dialog: false,
     dialogDelete: false,
+    idDelete: null,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -1251,10 +1244,11 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Form No", value: "form_no", width: "18%" },
-      { text: "Nama FC", value: "fc_no", width: "18%" },
-      { text: "Nama FF", value: "ff_no", align: "start", width: "10%" },
-      { text: "Tanggal", value: "date", width: "13%" },
+      { text: "Form No", value: "training_no", width: "18%" },
+      { text: "Nama FC", value: "fc_name", width: "18%" },
+      { text: "Nama FF", value: "ff_name", align: "start", width: "10%" },
+      { text: "Desa", value: "desa", align: "start", width: "10%" },
+      { text: "Tanggal", value: "training_date", width: "13%" },
       { text: "Tahun Tanam", value: "program_year", width: "15%" },
       { text: "Actions", value: "actions", sortable: false, width: "20%" },
     ],
@@ -1418,8 +1412,8 @@ export default {
 
     snackbar: false,
     textsnackbar: "Test",
-    timeoutsnackbar: 2000,
     colorsnackbar: null,
+    timeoutsnackbar: 2000,
     employee_no: "",
     preview: {
       petani: {
@@ -1460,7 +1454,7 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetFarmerTraining?mu=" +
+            "GetFarmerTrainingAllAdmin?mu=" +
             this.valueMU +
             "&ta=" +
             this.valueTA +
@@ -1477,7 +1471,7 @@ export default {
           }
         );
         if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
+          this.dataobject = response.data.data.result;
           this.valueMUExcel = this.valueMU;
           this.valueTAExcel = this.valueTA;
           this.valueVillageExcel = this.valueVillage;
@@ -1491,9 +1485,7 @@ export default {
       } catch (error) {
         console.error(error);
         if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-          this.loadtable = false;
+          this.sessionEnd(error)
         } else {
           this.dataobject = [];
           this.loadtable = false;
@@ -1535,10 +1527,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
     async getTA(val) {
@@ -1569,10 +1558,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
     async getVillage(val) {
@@ -1603,10 +1589,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
     async getFF(fc_no) {
@@ -1634,10 +1617,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
         this.loaddownload = false;
       }
     },
@@ -1668,45 +1648,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.dialogDetail = false;
-          this.dialogVerification = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }
-    },
-    async verifDelete() {
-      const datapost = {
-        ph_form_no: this.defaultItem.ph_form_no,
-      };
-      // this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "SoftDeletePlantingHole",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        if (response.data.data.result == "success") {
-          this.dialogDelete = false;
-          this.initialize();
-        } else {
-          this.dialogDelete = false;
-          this.alerttoken = true;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.dialogDelete = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
 
@@ -1735,10 +1677,7 @@ export default {
       } catch (error) {
         this.loading.um = false
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
     async getEmpFCbyManager(valcodeum) {
@@ -1765,10 +1704,7 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
     async GetFFbyUMandFC(position, valcode) {
@@ -1794,10 +1730,7 @@ export default {
       } catch (error) {
         this.valueFFcode = "";
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
       }
     },
     async getPetani() {
@@ -1822,13 +1755,10 @@ export default {
           this.itemspetani = [];
         }
       } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-        this.itemspetani = [];
-        this.defaultItem.farmer_no = "";
+        console.error(error.response)
+        this.sessionEnd(error)
+        this.itemspetani = []
+        this.defaultItem.farmer_no = ""
       }
     },
     async getPetaniByMU(mu_no) {
@@ -1854,12 +1784,9 @@ export default {
         }
       } catch (error) {
         console.error(error.response);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
+        this.sessionEnd(error)
         this.itemspetaniallmu = [];
-        this.defaultItem.farmer_no = "";
+        this.defaultItem.farmer_no = ""
       }
     },
     async addMoreFarmerParticipant(val) {
@@ -1894,18 +1821,19 @@ export default {
       this.textsnackbar = "Petani berhasil ditambahkan";
       this.snackbar = true;
     },
+    // SAVING FARMER TRAINING
     async saveFormFarmerTraining() {
+      this.valueFFcode = this.User.ff.ff;
+      this.typegetdata = this.User.ff.value_data;
       this.loadsave = true
       // insert UM FC FF data
       this.dataToStore.um_no = this.selectUM
       this.dataToStore.fc_no = this.selectFC
       this.dataToStore.ff_no = this.selectFF.ff_no
-      this.dataToStore.farmers = this.listFarmerParticipantChecked
-      console.log(this.selectFF)
 
-      // temporary
-      this.dataToStore.form_no = 'FT'+ Math.floor(Date.now() / 1000)
       this.dataToStore.material_organic = 'Pupuk'
+
+      // insert MU TA DESA
       this.dataToStore.mu_no = this.selectFF.mu_no
       this.dataToStore.target_area = this.selectFF.target_area
       this.dataToStore.working_area = this.selectFF.working_area
@@ -1914,61 +1842,79 @@ export default {
       // this.dataToStore.absensi_img = imgData
 
       // insert list farmer participant
-      // await this.listFarmerParticipantChecked.forEach((farmerParticipant) => {
-      //   this.dataToStore.farmers.push(farmerParticipant.kode)
-      // })
+      await this.listFarmerParticipantChecked.forEach((farmerParticipant) => {
+        this.dataToStore.farmers.push(farmerParticipant.kode)
+      })
       this.temporaryTableDatas.push(this.dataToStore)
-      
-      console.log(JSON.stringify(this.dataToStore))
 
-      // try {
-      //   const response = await axios.post(
-      //     this.BaseUrlGet + "AddFarmerTraining",
-      //     {
-      //       training_no: this.dataToStore.form_no,
-      //       training_date: this.dataToStore.date,
-      //       first_material: this.dataToStore.materi_1,
-      //       second_material: this.dataToStore.materi_2,
-      //       organic_material: this.dataToStore.material_organic,
-      //       program_year: this.dataToStore.program_year,
-      //       absent: this.dataToStore.absensi_img,
-      //       mu_no: this.selectFF.mu_no,
-      //       target_area: this.selectFF.target_area,
-      //       village: this.selectFF.working_area,
-      //       field_coordinator: this.dataToStore.fc_no,
-      //       ff_no: this.dataToStore.ff_no,
-      //       user_id: this.User.employee_no,
-      //       status: 1,
-      //     },
-      //     {
-      //       headers: {
-      //         Authorization: `Bearer ` + this.authtoken,
-      //       },
-      //     }
-      //   )
-      //   if (response) {
-      //     console.log(response)
-      //   } else {
-      //     console.log('failed')
-      //   }
-      // } catch(error) {
-      //   console.log(error.response.data.data);
-      // }
-
-      setTimeout(() => {
-        this.close()
-        this.resetvalue()
-        this.textsnackbar = "Berhasil menambah data pelatihan"
-        this.snackbar = true
-        this.colorsnackbar = 'green lighten-1'
+      try {
+        const response = await axios.post(
+          this.BaseUrlGet + "AddFarmerTraining",
+          {
+            training_date: this.dataToStore.date,
+            first_material: this.dataToStore.materi_1,
+            second_material: this.dataToStore.materi_2 ? this.dataToStore.materi_2 : '-',
+            organic_material: this.dataToStore.material_organic,
+            program_year: this.dataToStore.program_year,
+            absent: this.dataToStore.absensi_img,
+            mu_no: this.selectFF.mu_no,
+            target_area: this.selectFF.target_area,
+            village: this.selectFF.working_area,
+            field_coordinator: this.dataToStore.fc_no,
+            ff_no: this.dataToStore.ff_no,
+            user_id: this.User.employee_no,
+            status: 1,
+            farmers: this.dataToStore.farmers
+          },
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        if (response) {
+          console.log(response)
+          await this.close()
+          await this.resetvalue()
+          this.textsnackbar = "Berhasil menambah data pelatihan"
+          this.snackbar = true
+          this.colorsnackbar = 'green lighten-1'
+          this.loadsave = false
+          await this.initialize()
+        } else {
+          console.log('failed')
+          this.loadsave = false
+        }
+      } catch(error) {
+        console.log(error.response.data.data);
+        this.sessionEnd(error)
         this.loadsave = false
-      }, 2000);
+      }
     },
 
-    showDetailFarmerTraining(index) {
-      this.dialogDetail = true
-      this.dialogDetailData = this.temporaryTableDatas[index]
-      console.log(this.temporaryTableDatas[index])
+    async showDetailFarmerTraining(training_no) {
+      this.overlay = true
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + "DetailFarmerTraining?training_no=" + training_no,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        if (response.data.data.result) {
+          this.dialogDetailData = response.data.data.result
+          this.dialogDetail = true
+        } else {
+          console.log(response.data);
+        }
+      }  catch (error) {
+        this.sessionEnd(error)
+        console.log(error.response.data.data);
+      } finally {
+        this.overlay = false
+      }
     },
 
     selectedMU(a) {
@@ -2169,30 +2115,20 @@ export default {
       await this.resetFilter();
       this.dialogFilterEmp = false;
     },
-
-    resetvalue() {
-      this.dataToStore = {
-        um_no: "",
-        fc_no: "",
-        ff_no: "",
-        absensi_img: "",
-        materi_1: 10,
-        materi_2: 0,
-        material_organic: '',
-        program_year: new Date().getFullYear().toString(),
-        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
-        farmers: []
-      }
-      this.e1 = 1;
-      this.load = false;
-    },
     async showAddModal() {
-      this.load = false;
-
+      this.overlay = true
       if (this.$refs.form) {
         this.$refs.form.reset();
       }
       this.itemsff = []
+
+      // Get Training Materi Options
+      if (this.options.materiPelatihan.length == 0) {
+        await this.getTrainingMateriOption()
+      }
+      console.log(this.options.materiPelatihan)
+      
+      this.overlay = false
       this.formTitle = "Form Pelatihan Petani";
       this.dialogAddonly = true;
 
@@ -2212,13 +2148,39 @@ export default {
       }
     },
 
-    showDeleteModal(item) {
-      this.defaultItem.form_no = item.form_no;
+    showDeleteModal(id) {
+      this.idDelete = id;
       this.dialogDelete = true;
     },
 
-    deleteItemConfirm() {
-      this.verifDelete();
+    async deleteItemConfirm() {
+      this.dialogDelete = false
+      this.overlay = true
+      try {
+        const response = await axios.post(
+          this.BaseUrlGet + 'DeleteFarmerTraining',
+          {
+            id: this.idDelete
+          },
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        if (response) {
+          this.snackbar = true
+          this.textsnackbar = "Berhasil menghapus data"
+          this.colorsnackbar = 'green lighten-1'
+          this.initialize()
+        }
+      }  catch (error) {
+        this.sessionEnd(error)
+        console.log(error.response.data.data);
+      } finally {
+        this.idDelete = null
+        this.overlay = false
+      }
     },
     close() {
       this.dialog = false;
@@ -2236,9 +2198,55 @@ export default {
       this.selectFF = null
     },
     closeDelete() {
+      this.idDelete = null
       this.dialogDelete = false;
     },
+    // get options
+    async getTrainingMateriOption() {
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + 'GetTrainingMaterials',
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        if (response.data.data.result) {
+          this.options.materiPelatihan = response.data.data.result
+          // set materi 10 disable
+          await this.options.materiPelatihan.forEach((maPel, index) => {
+            if (maPel.material_no == 'TR010') {
+              this.options.materiPelatihan[index] = {
+                ...this.options.materiPelatihan[index],
+                disabled: true
+              }
+            }
+          })
+        } else {
+          this.options.materiPelatihan = []
+        }
+      } catch (error) {
+        this.sessionEnd(error)
+        console.log(error.response.data.data);
+      }
+    },
     // Utilities Function
+    resetvalue() {
+      this.dataToStore = {
+        um_no: "",
+        fc_no: "",
+        ff_no: "",
+        absensi_img: "",
+        materi_1: 'TR010',
+        materi_2: null,
+        material_organic: '',
+        program_year: new Date().getFullYear().toString(),
+        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
+        farmers: []
+      }
+      this.e1 = 1;
+    },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
             return text.slice(9, 13)
@@ -2325,6 +2333,28 @@ export default {
     // Temporary
     deleteTemporary(index) {
       this.temporaryTableDatas.splice(index, 1)
+    },
+    sessionEnd(error) {
+        if (error.response.status == 401) {
+          this.alerttoken = true
+          this.dialogAddonly = false
+          this.dialog = false
+          this.dialogDelete = false
+          this.dialogDetail = false
+          this.dialogFilterArea = false
+          this.dialogFilterEmp = false
+          this.dialogShowEdit = false
+          this.dialogDetailPohon = false
+          this.dialogDetailPohonEdit = false
+          this.dialogAddProduct = false
+          this.dialogCetakPilihan = false
+          this.dialogdownload = false
+          this.preview.petani.modal = false
+          this.preview.absensi.modal = false
+          this.preview.addParticipant.modal = false
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
     }
   },
 };
