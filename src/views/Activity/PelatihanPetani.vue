@@ -296,11 +296,12 @@
                                   label="Foto Absensi Tertulis"
                                   v-on:change="absensiFileChanged"
                                   outlined
+                                  ref="absensiImageInput"
                                 ></v-file-input>
-                                <v-card elevation="2" height="300" v-if="dataToStore.absensi_img && dataToStore.absensi_img !== ''">
+                                <v-card elevation="2" height="300" v-if="absensiPreview && absensiPreview !== ''">
                                   <v-img
                                     height="300"
-                                    v-bind:src="dataToStore.absensi_img"
+                                    v-bind:src="absensiPreview"
                                     class="my-2 mb-4"
                                     id="idFotoAbsensi"
                                   ></v-img
@@ -554,20 +555,23 @@
               <v-card-actions class="ma-2">
                 <!-- Footer Button -->
                 <v-row>
-                  <v-col>
+                  <v-col cols="3">
                     <v-btn
-                      class="mr-1 rounded-lg"
+                      class="mr-0 mr-md-1 rounded-lg"
                       color="red"
                       elevation="1"
                       @click="close"
                       outlined
                     >
-                      <v-icon left> mdi-close-circle-outline </v-icon>
-                      Cancel
+                      <v-icon class="d-none d-md-inline" left> mdi-close-circle-outline </v-icon>
+                      <v-icon class="d-inline d-md-none" center> mdi-close-circle-outline </v-icon>
+                      <span class="d-none d-md-inline-block"> 
+                        Cancel
+                      </span>
                     </v-btn>
 
                   </v-col>
-                  <v-col align="center">
+                  <v-col cols="6" align="center">
                     <v-btn
                       :disabled="e1 == 1"
                       elevation="1"
@@ -576,10 +580,11 @@
                       class="rounded-lg mr-1"
                       @click="e1 = 1"
                     >
-                      <v-icon left>
-                        mdi-chevron-left-circle-outline
-                      </v-icon>
-                      Back
+                      <v-icon class="d-none d-md-inline" left> mdi-chevron-left-circle-outline </v-icon>
+                      <v-icon class="d-inline d-md-none" center> mdi-chevron-left-circle-outline </v-icon>
+                      <span class="d-none d-md-inline-block"> 
+                        Back
+                      </span>
                     </v-btn>
                     <v-btn
                       class="rounded-lg ml-1"
@@ -589,13 +594,14 @@
                       @click="e1 = 2"
                       :disabled="!selectFF || !dataToStore.program_year || e1 == 2"
                     >
-                      Next
-                      <v-icon right>
-                        mdi-chevron-right-circle-outline
-                      </v-icon>
+                      <span class="d-none d-md-inline-block"> 
+                        Next
+                      </span>
+                      <v-icon class="d-none d-md-inline" right> mdi-chevron-right-circle-outline </v-icon>
+                      <v-icon class="d-inline d-md-none" center> mdi-chevron-right-circle-outline </v-icon>
                     </v-btn>
                   </v-col>
-                  <v-col align="end">
+                  <v-col cols="3" align="end">
                     <v-btn
                       class="rounded-lg"
                       color="success"
@@ -612,10 +618,11 @@
                         color="green"
                       >
                       </v-progress-circular>
-                      <v-icon v-if="loadsave == false" left>
-                        mdi-checkbox-marked-circle-outline
-                      </v-icon>
-                      <h4 v-if="loadsave == false">Save</h4>
+                      <span v-if="loadsave == false" class="d-none d-md-inline-block"> 
+                        Save
+                      </span>
+                      <v-icon v-if="loadsave == false" class="d-none d-md-inline" right> mdi-checkbox-marked-circle-outline </v-icon>
+                      <v-icon v-if="loadsave == false" class="d-inline d-md-none" center> mdi-checkbox-marked-circle-outline </v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -633,7 +640,7 @@
             </v-card>
           </v-dialog>
 
-          <!-- Modal Detail Farmer Participant -->
+          <!-- Modal Detail Form Pelatihan Petani -->
           <v-dialog v-model="dialogDetail" max-width="900px" content-class="rounded-lg" scrollable>
             <v-card class="rounded-lg">
               <v-card-title class="mb-1 headermodalstyle">
@@ -762,57 +769,53 @@
                     <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
                   </div>
                   <v-row class="mt-2">
-                    <v-col lg="6" class="mb-2">
-                      <center>
-                        <table>
-                          <tr>
-                            <td>UM</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.um_name }}</td>
-                          </tr>
-                          <tr>
-                            <td>FC</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.fc_name }}</td>
-                          </tr>
-                          <tr>
-                            <td>FF</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.ff_name }}</td>
-                          </tr>
-                          <tr>
-                            <td>Tgl Pelatihan</td>
-                            <td>:</td>
-                            <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
-                          </tr>
-                        </table>
-                      </center>
+                    <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6" class="mb-2">
+                      <table>
+                        <tr>
+                          <td>UM</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.um_name }}</td>
+                        </tr>
+                        <tr>
+                          <td>FC</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.fc_name }}</td>
+                        </tr>
+                        <tr>
+                          <td>FF</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.ff_name }}</td>
+                        </tr>
+                        <tr>
+                          <td>Tgl Pelatihan</td>
+                          <td>:</td>
+                          <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                        </tr>
+                      </table>
                     </v-col>
-                    <v-col lg="6" class="mb-2">
-                      <center>
-                        <table>
-                          <tr>
-                            <td>MU</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.management_unit }}</td>
-                          </tr>
-                          <tr>
-                            <td>TA</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.target_area }}</td>
-                          </tr>
-                          <tr>
-                            <td>Desa</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.desa }}</td>
-                          </tr>
-                          <tr>
-                            <td>Organik</td>
-                            <td>:</td>
-                            <td>{{ dialogDetailData.material_organic }}</td>
-                          </tr>
-                        </table>
-                      </center>
+                    <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6" class="mb-2">
+                      <table>
+                        <tr>
+                          <td>MU</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.management_unit }}</td>
+                        </tr>
+                        <tr>
+                          <td>TA</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.target_area }}</td>
+                        </tr>
+                        <tr>
+                          <td>Desa</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.desa }}</td>
+                        </tr>
+                        <tr>
+                          <td>Organik</td>
+                          <td>:</td>
+                          <td>{{ dialogDetailData.material_organic }}</td>
+                        </tr>
+                      </table>
                     </v-col>
                     <v-col lg="12">
                       <table>
@@ -828,7 +831,7 @@
                         </tr>
                       </table>
                     </v-col>
-                    <v-col lg="8">
+                    <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8">
                       <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
                       <!-- Table List Petani Peserta Pelatihan -->
                       <v-data-table
@@ -862,7 +865,7 @@
                         </template>
                       </v-data-table>
                     </v-col>
-                    <v-col lg="4">
+                    <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="4">
                       <v-tooltip top>
                         <template v-slot:activator="{ on, attrs }">
                           <v-img
@@ -900,6 +903,7 @@
                           dark
                           color="blue lighten-1"
                           @click="generateReport"
+                          class="d-none d-lg-block"
                         >
                           <v-icon class="mr-1" small>mdi-printer</v-icon> Export
                         </v-btn>
@@ -1181,6 +1185,7 @@ export default {
     // temporary
     temporaryTableDatas: [],
     dialogDetailData: null,
+    absensiPreview: '',
 
     tables: {
       farmerListDetailModal: {
@@ -1849,8 +1854,7 @@ export default {
 
       try {
         const response = await axios.post(
-          this.BaseUrlGet + "AddFarmerTraining",
-          {
+          this.BaseUrlGet + "AddFarmerTraining",this.generateFormData({
             training_date: this.dataToStore.date,
             first_material: this.dataToStore.materi_1,
             second_material: this.dataToStore.materi_2 ? this.dataToStore.materi_2 : '-',
@@ -1865,15 +1869,15 @@ export default {
             user_id: this.User.employee_no,
             status: 1,
             farmers: this.dataToStore.farmers
-          },
+          }),
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
+              "Content-Type": "multipart/form-data"
             },
           }
         )
         if (response) {
-          console.log(response)
           await this.close()
           await this.resetvalue()
           this.textsnackbar = "Berhasil menambah data pelatihan"
@@ -2126,7 +2130,6 @@ export default {
       if (this.options.materiPelatihan.length == 0) {
         await this.getTrainingMateriOption()
       }
-      console.log(this.options.materiPelatihan)
       
       this.overlay = false
       this.formTitle = "Form Pelatihan Petani";
@@ -2256,9 +2259,12 @@ export default {
     },
     absensiFileChanged (event) {
       if (event) {
-        this.dataToStore.absensi_img = URL.createObjectURL(event)
+        this.dataToStore.absensi_img = event
+        console.log(event.name)
+        this.absensiPreview = URL.createObjectURL(event)
       } else {
         this.dataToStore.absensi_img = ""
+        this.absensiPreview = ""
       }
     },
     checkRoleAccess() {
@@ -2329,6 +2335,23 @@ export default {
     },
     generateReport () {
         this.$refs.html2Pdf.generatePdf()
+    },
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
     },
     // Temporary
     deleteTemporary(index) {
