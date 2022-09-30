@@ -2245,7 +2245,7 @@ export default {
     },
     async deleteExternalAbsensiImage(imagesName) {
       try {
-        const response = await axios.post(
+        await axios.post(
           'https://t4tadmin.kolaborasikproject.com/farmer-training/delete.php', this.generateFormData({
             nama: imagesName,
           }),
