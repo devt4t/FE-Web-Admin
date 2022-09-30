@@ -1111,16 +1111,27 @@
                         class="my-1 mb-4"
                       ></v-img>
                       <div>Foto Foto</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow2"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow3"
-                        class="my-1 mb-4"
-                      ></v-img>
+                      <v-carousel 
+                        cycle
+                        height="250" 
+                        v-model="carousel.photo"
+                        show-arrows-on-hover
+                        hide-delimiter-background
+                        class="rounded-lg"
+                      >
+                        <v-carousel-item>
+                          <v-img
+                            height="250"
+                            v-bind:src="defaultItem.gambarshow2"
+                          ></v-img>
+                        </v-carousel-item>
+                        <v-carousel-item>
+                          <v-img
+                            height="250"
+                            v-bind:src="defaultItem.gambarshow3"
+                          ></v-img>
+                        </v-carousel-item>
+                      </v-carousel>
                     </v-col>
                     <v-col cols="12" sm="8" md="8">
                       <v-divider
@@ -1170,6 +1181,14 @@
                               </th>
                               <th class="text-left" style="font-size: 14px">
                                 {{ defaultItem.total_holes }}
+                              </th>
+                            </tr>
+                            <tr>
+                              <th class="text-left" style="font-size: 14px">
+                                Catatan
+                              </th>
+                              <th class="text-left" style="font-size: 14px">
+                                {{ defaultItem.catatan }}
                               </th>
                             </tr>
                           </tbody>
@@ -1472,6 +1491,7 @@ export default {
   name: "LubangTanam",
   authtoken: "",
   data: () => ({
+    carousel:{photo: 0},
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
