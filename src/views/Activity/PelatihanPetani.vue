@@ -85,6 +85,14 @@
             class="mx-3 mt-7 d-none d-md-block"
             style="max-width: 225px"
           ></v-select> -->
+          <v-btn
+            dark
+            class="mb-2 mr-1"
+            @click="deleteExternalAbsensiImage('asd')"
+            color="green"
+          >
+            <v-icon small>mdi-plus</v-icon> Delete
+          </v-btn>
           <v-spacer class="d-none d-md-block"></v-spacer>
           <v-text-field
             v-model="search"
@@ -296,7 +304,7 @@
                                   label="Foto Absensi Tertulis"
                                   v-on:change="absensiFileChanged"
                                   outlined
-                                  ref="absensiImageInput"
+                                  :key="componentKey.absensiImageInput"
                                 ></v-file-input>
                                 <v-card elevation="2" height="300" v-if="absensiPreview && absensiPreview !== ''">
                                   <v-img
@@ -354,14 +362,20 @@
                                 <v-select
                                   v-model="dataToStore.material_organic"
                                   :items="options.material_organic"
-                                  item-text="text"
-                                  item-value="value"
                                   label="Material Organik"
+                                  item-text="organic_name"
+                                  item-value="organic_no"
                                   outlined
                                   clearable
                                   type="string"
                                   :rules="[(v) => !!v || 'Field is required']"
-                                ></v-select>
+                                >
+                                  <template v-slot:item="data">
+                                    <v-list-item-content>
+                                      <v-list-item-title v-html="data.item.organic_name"></v-list-item-title>
+                                    </v-list-item-content>
+                                  </template>
+                                </v-select>
                               </v-col>
                               <!-- Program year -->
                               <v-col cols="12" sm="12" md="12">
@@ -715,9 +729,9 @@
                                 <td>{{ dialogDetailData.desa }}</td>
                               </tr>
                               <tr>
-                                <td>Organik</td>
+                                <td>Material</td>
                                 <td>:</td>
-                                <td>{{ dialogDetailData.material_organic }}</td>
+                                <td>{{ dialogDetailData.organic_name }}</td>
                               </tr>
                             </table>
                           </center>
@@ -811,9 +825,9 @@
                           <td>{{ dialogDetailData.desa }}</td>
                         </tr>
                         <tr>
-                          <td>Organik</td>
+                          <td>Material</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.material_organic }}</td>
+                          <td>{{ dialogDetailData.organic_name }}</td>
                         </tr>
                       </table>
                     </v-col>
@@ -873,8 +887,8 @@
                             lazy-src=""
                             class="rounded-lg cursor-pointer"
                             transition="fade-transition"
-                            :src="'https://picsum.photos/500'"
-                            @click="() => {preview.absensi.url = 'https://picsum.photos/500'; preview.absensi.modal = true}"
+                            :src="('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+dialogDetailData.absent.replace('assets/images/farmer-training/', ''))"
+                            @click="() => {preview.absensi.url = ('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+dialogDetailData.absent.replace('assets/images/farmer-training/', '')); preview.absensi.modal = true}"
                             v-bind="attrs"
                             v-on="on"
                           >
@@ -1132,7 +1146,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"
               v-if="User.role_group == 'IT'"
-              @click="showDeleteModal(item.ft_id)"
+              @click="showDeleteModal(item)"
               small
               color="red"
             >
@@ -1165,7 +1179,9 @@ import VueHtml2pdf from 'vue-html2pdf'
 
 export default {
   name: "LubangTanam",
-  components: {VueHtml2pdf},
+  components: {
+    VueHtml2pdf
+  },
   authtoken: "",
   data: () => ({
     overlay: false,
@@ -1206,7 +1222,8 @@ export default {
       material_organic: []
     },
     componentKey: {
-      listFarmerParticipantTable: 0
+      listFarmerParticipantTable: 0,
+      absensiImageInput: 0
     },
     alerttoken: false,
     itemsbr: [
@@ -1227,6 +1244,7 @@ export default {
     dialog: false,
     dialogDelete: false,
     idDelete: null,
+    absensiDelete: null,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -1831,12 +1849,11 @@ export default {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
       this.loadsave = true
+      this.overlay = true
       // insert UM FC FF data
       this.dataToStore.um_no = this.selectUM
       this.dataToStore.fc_no = this.selectFC
       this.dataToStore.ff_no = this.selectFF.ff_no
-
-      this.dataToStore.material_organic = 'Pupuk'
 
       // insert MU TA DESA
       this.dataToStore.mu_no = this.selectFF.mu_no
@@ -1878,21 +1895,35 @@ export default {
           }
         )
         if (response) {
-          await this.close()
-          await this.resetvalue()
-          this.textsnackbar = "Berhasil menambah data pelatihan"
-          this.snackbar = true
-          this.colorsnackbar = 'green lighten-1'
-          this.loadsave = false
-          await this.initialize()
+          try {
+            await axios.post(
+              'https://t4tadmin.kolaborasikproject.com/farmer-training/upload.php', this.generateFormData({
+                nama: response.data.data.result.absensi_image_name,
+                image: this.dataToStore.absensi_img
+              }),
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                },
+              }
+            )
+          } finally {
+            this.textsnackbar = "Berhasil menambah data pelatihan"
+            this.snackbar = true
+            this.colorsnackbar = 'green lighten-1'
+            await this.close()
+            await this.resetvalue()
+            await this.initialize()
+          }
         } else {
           console.log('failed')
-          this.loadsave = false
         }
       } catch(error) {
-        console.log(error.response.data.data);
+        console.log(error);
         this.sessionEnd(error)
+      } finally {
         this.loadsave = false
+        this.overlay = false
       }
     },
 
@@ -1910,6 +1941,7 @@ export default {
         if (response.data.data.result) {
           this.dialogDetailData = response.data.data.result
           this.dialogDetail = true
+          console.log(this.dialogDetailData)
         } else {
           console.log(response.data);
         }
@@ -2130,6 +2162,11 @@ export default {
       if (this.options.materiPelatihan.length == 0) {
         await this.getTrainingMateriOption()
       }
+
+      // Get Organic Options
+      if (this.options.material_organic.length == 0) {
+        await this.getOrganicMaterialsOption()
+      }
       
       this.overlay = false
       this.formTitle = "Form Pelatihan Petani";
@@ -2151,8 +2188,9 @@ export default {
       }
     },
 
-    showDeleteModal(id) {
-      this.idDelete = id;
+    showDeleteModal(item) {
+      this.idDelete = item.ft_id;
+      this.absensiDelete = item.absensi_img;
       this.dialogDelete = true;
     },
 
@@ -2172,6 +2210,7 @@ export default {
           }
         )
         if (response) {
+          this.deleteExternalAbsensiImage(this.absensiDelete.replace('assets/images/farmer-training/', ''))
           this.snackbar = true
           this.textsnackbar = "Berhasil menghapus data"
           this.colorsnackbar = 'green lighten-1'
@@ -2179,7 +2218,7 @@ export default {
         }
       }  catch (error) {
         this.sessionEnd(error)
-        console.log(error.response.data.data);
+        console.log(error);
       } finally {
         this.idDelete = null
         this.overlay = false
@@ -2203,6 +2242,22 @@ export default {
     closeDelete() {
       this.idDelete = null
       this.dialogDelete = false;
+    },
+    async deleteExternalAbsensiImage(imagesName) {
+      try {
+        const response = await axios.post(
+          'https://t4tadmin.kolaborasikproject.com/farmer-training/delete.php', this.generateFormData({
+            nama: imagesName,
+          }),
+          {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            },
+          }
+        )
+      } catch(error) {
+        console.log(error)
+      }
     },
     // get options
     async getTrainingMateriOption() {
@@ -2234,6 +2289,27 @@ export default {
         console.log(error.response.data.data);
       }
     },
+    async getOrganicMaterialsOption() {
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + 'GetOrganicAll',
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        if (response.data.data.result) {
+          this.options.material_organic = response.data.data.result
+        } else {
+          this.options.material_organic = []
+        }
+      } catch (error) {
+        this.sessionEnd(error)
+        console.log(error.response.data.data);
+      }
+
+    },
     // Utilities Function
     resetvalue() {
       this.dataToStore = {
@@ -2248,7 +2324,11 @@ export default {
         date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
         farmers: []
       }
+      this.absensiPreview = ""
+      this.componentKey.absensiImageInput += 1
       this.e1 = 1;
+
+      this.absensiDelete = ''
     },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
