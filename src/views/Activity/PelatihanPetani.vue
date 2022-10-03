@@ -357,26 +357,6 @@
                                   </template>
                                 </v-autocomplete>
                               </v-col>
-                              <!-- Material Organik -->
-                              <v-col cols="12" sm="12" md="12">
-                                <v-select
-                                  v-model="dataToStore.material_organic"
-                                  :items="options.material_organic"
-                                  label="Material Organik"
-                                  item-text="organic_name"
-                                  item-value="organic_no"
-                                  outlined
-                                  clearable
-                                  type="string"
-                                  :rules="[(v) => !!v || 'Field is required']"
-                                >
-                                  <template v-slot:item="data">
-                                    <v-list-item-content>
-                                      <v-list-item-title v-html="data.item.organic_name"></v-list-item-title>
-                                    </v-list-item-content>
-                                  </template>
-                                </v-select>
-                              </v-col>
                               <!-- Program year -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-select
@@ -454,7 +434,30 @@
                           <v-divider class="mx-2 mt-3"></v-divider>
                         </v-row>
                         <v-row v-if="selectFF" class="">
-                          <h3>{{ selectFF.ff_no }} - {{ selectFF.name }}</h3>
+                          <v-col cols="12" sm="12" md="12" lg="6">
+                            <h3>{{ selectFF.ff_no }} - {{ selectFF.name }}</h3>
+                          </v-col>
+                          <!-- Material Organik -->
+                          <v-col cols="12" sm="12" md="12" lg="6">
+                            <v-select
+                              multiple
+                              v-model="dataToStore.material_organic"
+                              :items="options.material_organic"
+                              label="Material Organik"
+                              item-text="organic_name"
+                              item-value="organic_no"
+                              outlined
+                              readonly
+                              type="string"
+                              :rules="[(v) => !!v || 'Field is required']"
+                            >
+                              <template v-slot:item="data">
+                                <v-list-item-content>
+                                  <v-list-item-title v-html="data.item.organic_name"></v-list-item-title>
+                                </v-list-item-content>
+                              </template>
+                            </v-select>
+                          </v-col>
                         </v-row>
                         <v-row class="align-end">
                           <!-- <v-col cols="12" sm="12" md="6" class="d-flex align-end"> -->
@@ -685,56 +688,52 @@
                           </center>
                         </v-col>
                         <v-col sm="6" class="mb-2">
-                          <center>
-                            <table>
-                              <tr>
-                                <td>UM</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.um_name }}</td>
-                              </tr>
-                              <tr>
-                                <td>FC</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.fc_name }}</td>
-                              </tr>
-                              <tr>
-                                <td>FF</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.ff_name }}</td>
-                              </tr>
-                              <tr>
-                                <td>Tgl Pelatihan</td>
-                                <td>:</td>
-                                <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
-                              </tr>
-                            </table>
-                          </center>
+                          <table>
+                            <tr>
+                              <td>UM</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.um_name }}</td>
+                            </tr>
+                            <tr>
+                              <td>FC</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.fc_name }}</td>
+                            </tr>
+                            <tr>
+                              <td>FF</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.ff_name }}</td>
+                            </tr>
+                            <tr>
+                              <td>Tgl Pelatihan</td>
+                              <td>:</td>
+                              <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                            </tr>
+                          </table>
                         </v-col>
                         <v-col sm="6" class="mb-2">
-                          <center>
-                            <table>
-                              <tr>
-                                <td>MU</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.management_unit }}</td>
-                              </tr>
-                              <tr>
-                                <td>TA</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.target_area }}</td>
-                              </tr>
-                              <tr>
-                                <td>Desa</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.desa }}</td>
-                              </tr>
-                              <tr>
-                                <td>Material</td>
-                                <td>:</td>
-                                <td>{{ dialogDetailData.organic_name }}</td>
-                              </tr>
-                            </table>
-                          </center>
+                          <table>
+                            <tr>
+                              <td>Management Unit</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.management_unit }}</td>
+                            </tr>
+                            <tr>
+                              <td>Target Area</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.target_area }}</td>
+                            </tr>
+                            <tr>
+                              <td>Desa</td>
+                              <td>:</td>
+                              <td>{{ dialogDetailData.desa }}</td>
+                            </tr>
+                            <tr>
+                              <td>Material Organik</td>
+                              <td>:</td>
+                              <td>Pupuk, Pestisida</td>
+                            </tr>
+                          </table>
                         </v-col>
                         <v-col sm="12">
                           <table>
@@ -786,48 +785,48 @@
                     <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6" class="mb-2">
                       <table>
                         <tr>
-                          <td>UM</td>
+                          <td>Unit Manager</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.um_name }}</td>
+                          <td><strong>{{ dialogDetailData.um_name }}</strong></td>
                         </tr>
                         <tr>
-                          <td>FC</td>
+                          <td>Field Coordinator</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.fc_name }}</td>
+                          <td><strong>{{ dialogDetailData.fc_name }}</strong></td>
                         </tr>
                         <tr>
-                          <td>FF</td>
+                          <td>Field Facilitator</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.ff_name }}</td>
+                          <td><strong>{{ dialogDetailData.ff_name }}</strong></td>
                         </tr>
                         <tr>
                           <td>Tgl Pelatihan</td>
                           <td>:</td>
-                          <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                          <td><strong>{{ dateFormat(dialogDetailData.date, 'LL') }}</strong></td>
                         </tr>
                       </table>
                     </v-col>
                     <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6" class="mb-2">
                       <table>
                         <tr>
-                          <td>MU</td>
+                          <td>Management Unit</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.management_unit }}</td>
+                          <td><strong>{{ dialogDetailData.management_unit }}</strong></td>
                         </tr>
                         <tr>
-                          <td>TA</td>
+                          <td>Target Area</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.target_area }}</td>
+                          <td><strong>{{ dialogDetailData.target_area }}</strong></td>
                         </tr>
                         <tr>
                           <td>Desa</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.desa }}</td>
+                          <td><strong>{{ dialogDetailData.desa }}</strong></td>
                         </tr>
                         <tr>
-                          <td>Material</td>
+                          <td>Material Organik</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.organic_name }}</td>
+                          <td><strong>Pupuk, Pestisida</strong></td>
                         </tr>
                       </table>
                     </v-col>
@@ -836,12 +835,12 @@
                         <tr>
                           <td>Materi Pelatihan 1</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.materi_1 }}</td>
+                          <td><strong>{{ dialogDetailData.materi_1 }}</strong></td>
                         </tr>
                         <tr>
                           <td>Materi Pelatihan 2</td>
                           <td>:</td>
-                          <td>{{ dialogDetailData.materi_2 }}</td>
+                          <td><strong>{{ dialogDetailData.materi_2 }}</strong></td>
                         </tr>
                       </table>
                     </v-col>
@@ -1193,7 +1192,7 @@ export default {
       absensi_img: "",
       materi_1: 'TR010',
       materi_2: null,
-      material_organic: '',
+      material_organic: ['ORG22090001', 'ORG22090002'],
       program_year: '2022',
       date: '',
       farmers: []
@@ -2319,7 +2318,7 @@ export default {
         absensi_img: "",
         materi_1: 'TR010',
         materi_2: null,
-        material_organic: '',
+        material_organic: ['ORG22090001', 'ORG22090002'],
         program_year: new Date().getFullYear().toString(),
         date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
         farmers: []
