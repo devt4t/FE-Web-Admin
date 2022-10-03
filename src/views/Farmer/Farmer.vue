@@ -1921,6 +1921,7 @@ export default {
         gender: this.defaultItem.gender,
         number_family_member: this.defaultItem.number_family_member,
         mu_no: this.defaultItem.mu_no,
+        mou_no: this.defaultItem.mou_no,
         target_area: this.defaultItem.kode_ta,
         active: 1,
         user_id: this.defaultItem.ff_no,
