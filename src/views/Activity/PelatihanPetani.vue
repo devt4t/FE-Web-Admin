@@ -85,14 +85,6 @@
             class="mx-3 mt-7 d-none d-md-block"
             style="max-width: 225px"
           ></v-select> -->
-          <v-btn
-            dark
-            class="mb-2 mr-1"
-            @click="deleteExternalAbsensiImage('asd')"
-            color="green"
-          >
-            <v-icon small>mdi-plus</v-icon> Delete
-          </v-btn>
           <v-spacer class="d-none d-md-block"></v-spacer>
           <v-text-field
             v-model="search"
