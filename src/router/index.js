@@ -20,6 +20,7 @@ import LubangTanam from '../views/Activity/LubangTanam.vue'
 import PenilikanTanam from '../views/Activity/PenilikanTanam.vue'
 import Monitoring2 from '../views/Activity/Monitoring2.vue'
 import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
+import Progression from '../views/Activity/Progression.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -124,6 +125,11 @@ const routes = [
     path: '/PelatihanPetani',
     name: 'PelatihanPetani',
     component: PelatihanPetani
+  },
+  {
+    path: '/Progression',
+    name: 'Progression',
+    component: Progression
   },
   {
     path: '/LubangTanam',

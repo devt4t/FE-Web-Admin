@@ -134,45 +134,7 @@ export default {
     DashboardLink: "/Dashboard",
     itemsprofile: [{ title: "Ganti Password" }, { title: "Logout" }],
     User: [],
-    items: [
-      // {
-      //   icon: "mdi-account-group",
-      //   items: [{ title: "Field Facilitator", to: "/Home" }],
-      //   title: "Employee",
-      // },
-      // {
-      //   icon: "mdi-database",
-      //   active: false,
-      //   items: [
-      //     { title: "Form Minat", to: "/FormMinat" },
-      //     { title: "Farmer", to: "/Farmer" },
-      //     { title: "Lahan", to: "/Lahan" },
-      //     { title: "Activity", to: "/Activity" },
-      //   ],
-      //   title: "Main Data",
-      // },
-      // {
-      //   icon: "mdi-cogs",
-      //   active: false,
-      //   items: [
-      //     { title: "Provinsi", to: "/Provinsi" },
-      //     { title: "Kab/Kota", to: "/Kabupaten" },
-      //     { title: "Kecamatan", to: "/Kecamatan" },
-      //     { title: "Vilage", to: "/Vilage" },
-      //     { title: "Management Unit", to: "/ManagementUnit" },
-      //     { title: "Target Area", to: "/TargetArea" },
-      //     { title: "Pekerjaan", to: "/Pekerjaan" },
-      //     { title: "Suku", to: "/Suku" },
-      //     { title: "Trees", to: "/Trees" },
-      //   ],
-      //   title: "Utilities",
-      // },
-      // {
-      //   icon: "mdi-account",
-      //   items: [{ title: "Users", to: "/Users" }],
-      //   title: "Users",
-      // },
-    ],
+    items: [],
     elevations: [6, 12, 18],
     BaseUrlGet: "",
     authtoken: "",
@@ -258,16 +220,18 @@ export default {
           let activitiesRearrange = []
           valMenu.items.forEach((valMenuItem, indexMenuItem) => {
             if (activitiesRearrange.includes(valMenuItem) == false) {
-              if (valMenuItem.title === 'Sosialisasi Tanam') {
+              if (valMenuItem.title === 'Progression') {
                 activitiesRearrange[0] = valMenuItem
-              } else if (valMenuItem.title === 'Pelatihan Petani') { 
+              } else if (valMenuItem.title === 'Sosialisasi Tanam') {
                 activitiesRearrange[1] = valMenuItem
-              } else if (valMenuItem.title === 'Lubang Tanam') { 
+              } else if (valMenuItem.title === 'Pelatihan Petani') { 
                 activitiesRearrange[2] = valMenuItem
-              } else if (valMenuItem.title === 'Realisasi Tanam') { 
+              } else if (valMenuItem.title === 'Lubang Tanam') { 
                 activitiesRearrange[3] = valMenuItem
-              } else if (valMenuItem.title === 'Monitoring 2') { 
+              } else if (valMenuItem.title === 'Realisasi Tanam') { 
                 activitiesRearrange[4] = valMenuItem
+              } else if (valMenuItem.title === 'Monitoring 2') { 
+                activitiesRearrange[5] = valMenuItem
               }
             }
           })

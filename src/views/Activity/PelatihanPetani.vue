@@ -1841,6 +1841,7 @@ export default {
       this.typegetdata = this.User.ff.value_data;
       this.loadsave = true
       this.overlay = true
+      this.dialogAddonly = false
       // insert UM FC FF data
       this.dataToStore.um_no = this.selectUM
       this.dataToStore.fc_no = this.selectFC
@@ -1902,12 +1903,14 @@ export default {
             this.textsnackbar = "Berhasil menambah data pelatihan"
             this.snackbar = true
             this.colorsnackbar = 'green lighten-1'
-            await this.close()
             await this.resetvalue()
             await this.initialize()
           }
         } else {
           console.log('failed')
+          this.textsnackbar = "Gagal menambah data pelatihan"
+          this.snackbar = true
+          this.colorsnackbar = 'red lighten-1'
         }
       } catch(error) {
         console.log(error);
@@ -1915,6 +1918,7 @@ export default {
       } finally {
         this.loadsave = false
         this.overlay = false
+        this.close()
       }
     },
 
