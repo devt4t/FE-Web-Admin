@@ -699,7 +699,7 @@
                             <tr>
                               <td>Tgl Pelatihan</td>
                               <td>:</td>
-                              <td>{{ dateFormat(dialogDetailData.date, 'LL') }}</td>
+                              <td>{{ dateFormat(dialogDetailData.training_date, 'LL') }}</td>
                             </tr>
                           </table>
                         </v-col>
@@ -794,7 +794,7 @@
                         <tr>
                           <td>Tgl Pelatihan</td>
                           <td>:</td>
-                          <td><strong>{{ dateFormat(dialogDetailData.date, 'LL') }}</strong></td>
+                          <td><strong>{{ dateFormat(dialogDetailData.training_date, 'LL') }}</strong></td>
                         </tr>
                       </table>
                     </v-col>

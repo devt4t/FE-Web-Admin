@@ -366,82 +366,82 @@
       pdf-orientation="landscape"
       pdf-content-width="1125px"
       ref="html2Pdf"
-  >
-    <section slot="pdf-content">
-      <v-container>
-        <v-row>
-          <v-col sm="6" class="mb-2">
-            <table>
-              <tr>
-                <td>Unit Manager</td>
-                <td>:</td>
-                <td>{{ filters.UM }}</td>
-              </tr>
-              <tr>
-                <td>Field Coordinator</td>
-                <td>:</td>
-                <td>{{ filters.FC }}</td>
-              </tr>
-            </table>
-          </v-col>
-          <v-col sm="12">
-            <h3>Petani</h3>
-            <center>
-              <table border="1" style="border-collapse: collapse;width: 100%;">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Nama FF</th>
-                    <th>Petani {{ filters.dates.farmer.date1 }}</th>
-                    <th>Petani {{ filters.dates.farmer.date2 }}</th>
-                    <th>Petani Total</th>
-                    <th>Petani Progress</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
-                    <td align="center">{{ dIndex + 1 }}</td>
-                    <td style="padding-left: 5px">{{ data.ff }}</td>
-                    <td align="center">{{ data.petani1 }}</td>
-                    <td align="center">{{ data.petani2 }}</td>
-                    <td align="center">{{ data.total_petani }}</td>
-                    <td align="center">{{ data.progress_petani }}%</td>
-                  </tr>
-                </tbody>
+    >
+      <section slot="pdf-content">
+        <v-container>
+          <v-row>
+            <v-col sm="6" class="mb-2">
+              <table>
+                <tr>
+                  <td>Unit Manager</td>
+                  <td>:</td>
+                  <td>{{ filters.UM }}</td>
+                </tr>
+                <tr>
+                  <td>Field Coordinator</td>
+                  <td>:</td>
+                  <td>{{ filters.FC }}</td>
+                </tr>
               </table>
-            </center>
-          </v-col>
-          <v-col sm="12">
-            <h3>Lahan</h3>
-            <center>
-              <table border="1" style="border-collapse: collapse;width: 100%;">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Nama FF</th>
-                    <th>Lahan {{ filters.dates.land.date1 }}</th>
-                    <th>Lahan {{ filters.dates.land.date2 }}</th>
-                    <th>Lahan Total</th>
-                    <th>Lahan Progress</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
-                    <td align="center">{{ dIndex + 1 }}</td>
-                    <td style="padding-left: 5px">{{ data.ff }}</td>
-                    <td align="center">{{ data.lahan1 }}</td>
-                    <td align="center">{{ data.lahan2 }}</td>
-                    <td align="center">{{ data.total_lahan }}</td>
-                    <td align="center">{{ data.progress_lahan }}%</td>
-                  </tr>
-                </tbody>
-              </table>
-            </center>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
-  </vue-html2pdf>
+            </v-col>
+            <v-col sm="12">
+              <h3>Petani</h3>
+              <center>
+                <table border="1" style="border-collapse: collapse;width: 100%;">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama FF</th>
+                      <th>Petani {{ filters.dates.farmer.date1 }}</th>
+                      <th>Petani {{ filters.dates.farmer.date2 }}</th>
+                      <th>Petani Total</th>
+                      <th>Petani Progress</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
+                      <td align="center">{{ dIndex + 1 }}</td>
+                      <td style="padding-left: 5px">{{ data.ff }}</td>
+                      <td align="center">{{ data.petani1 }}</td>
+                      <td align="center">{{ data.petani2 }}</td>
+                      <td align="center">{{ data.total_petani }}</td>
+                      <td align="center">{{ data.progress_petani }}%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </center>
+            </v-col>
+            <v-col sm="12">
+              <h3>Lahan</h3>
+              <center>
+                <table border="1" style="border-collapse: collapse;width: 100%;">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama FF</th>
+                      <th>Lahan {{ filters.dates.land.date1 }}</th>
+                      <th>Lahan {{ filters.dates.land.date2 }}</th>
+                      <th>Lahan Total</th>
+                      <th>Lahan Progress</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
+                      <td align="center">{{ dIndex + 1 }}</td>
+                      <td style="padding-left: 5px">{{ data.ff }}</td>
+                      <td align="center">{{ data.lahan1 }}</td>
+                      <td align="center">{{ data.lahan2 }}</td>
+                      <td align="center">{{ data.total_lahan }}</td>
+                      <td align="center">{{ data.progress_lahan }}%</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </center>
+            </v-col>
+          </v-row>
+        </v-container>
+      </section>
+    </vue-html2pdf>
 
     <v-snackbar
       v-model="snackbar.show"
