@@ -709,139 +709,143 @@
     >
 
       <template v-slot:top>
-        <v-toolbar flat rounded="xl">
-          <!-- dropdown filter button -->
-          <v-menu
-            rounded="xl"
-            bottom
-            right
-            offset-y
-            transition="slide-y-transition"
-            :close-on-content-click="false"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                dark
-                class="d-none d-md-block"
-                color="warning"
-                v-bind="attrs"
-                v-on="on"
-                rounded
+          <v-row class="py-3 px-2">
+            <v-col cols="12" lg="3">
+              <!-- dropdown filter button -->
+              <v-menu
+                rounded="xl"
+                bottom
+                right
+                offset-y
+                transition="slide-y-transition"
+                :close-on-content-click="false"
               >
-                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
-              </v-btn>
-            </template>
-
-            <v-list class="d-flex flex-column align-center">
-              <v-list-item>
-                <v-btn
-                  rounded
-                  dark
-                  class="d-none d-md-block px-9"
-                  @click="showFilterArea()"
-                  color="green"
-                >
-                  <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
-                  by Area
-                </v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn
-                  v-if="RoleAccesFilterShow == true"
-                  rounded
-                  dark
-                  class="mx-3 mt-1 d-none d-md-block"
-                  @click="showFilterEmployee()"
-                  color="green"
-                >
-                  <v-icon class="mx-2" small>mdi-account-group</v-icon> 
-                  by Employee
-                </v-btn>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-          <!-- Program Year -->
-          <v-select
-            v-model="program_year"
-            :items="['all', 2021,2022]"
-            outlined
-            dense
-            hide-details
-            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-            rounded
-            label="Program Year"
-            class="mx-3 d-none d-md-block"
-            style="max-width: 200px"
-          ></v-select>
-          <v-spacer class="d-none d-md-block"></v-spacer>
-          <!-- Select Search Field -->
-          <v-select
-            v-model="table.search.field"
-            :items="headers"
-            item-value="value"
-            item-text="text"
-            hide-details
-            outlined
-            dense
-            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-            rounded
-            label="Kolom Search"
-            class="d-none d-md-flex centered-select"
-            style="max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
-          ></v-select>
-          <!-- Search Input -->
-          <v-text-field
-            v-model="table.search.value"
-            append-icon="mdi-magnify"
-            outlined
-            dense
-            rounded
-            label="Search"
-            hide-details
-            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
-          ></v-text-field>
-          <!-- dropdown export button -->
-          <v-menu
-            rounded="xl"
-            bottom
-            left
-            offset-y
-            transition="slide-y-transition"
-            :close-on-content-click="false"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon v-bind="attrs" v-on="on" color="dark">
-                mdi-dots-vertical
-              </v-icon>
-            </template>
-
-            <v-list class="d-flex flex-column align-center">
-              <v-list-item v-if="false">
-                <v-btn
-                  v-if="RoleAccesCRUDShow == true"
-                  dark
-                  class=""
-                  @click="showAddModal()"
-                  color="green"
-                >
-                  <v-icon small>mdi-plus</v-icon> Add
-                </v-btn>
-              </v-list-item>
-              <v-list-item>
-                <v-btn
-                  v-if="RoleAccesDownloadAllShow == true"
-                  dark
-                  rounded
-                  class="d-none d-md-block"
-                  @click="downloadSuperAdmin()"
-                  color="blue"
-                >
-                  <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-                </v-btn>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-toolbar>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    dark
+                    class=""
+                    color="warning"
+                    v-bind="attrs"
+                    v-on="on"
+                    rounded
+                  >
+                    <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+                  </v-btn>
+                </template>
+    
+                <v-list class="d-flex flex-column align-center">
+                  <v-list-item>
+                    <v-btn
+                      rounded
+                      dark
+                      class="px-9"
+                      @click="showFilterArea()"
+                      color="green"
+                    >
+                      <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
+                      by Area
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      v-if="RoleAccesFilterShow == true"
+                      rounded
+                      dark
+                      class="mx-3 mt-1"
+                      @click="showFilterEmployee()"
+                      color="green"
+                    >
+                      <v-icon class="mx-2" small>mdi-account-group</v-icon> 
+                      by Employee
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-col>
+            <v-col cols="12" lg="3" class="">
+              <!-- Program Year -->
+              <v-select
+                v-model="program_year"
+                :items="['all', 2021,2022]"
+                outlined
+                dense
+                hide-details
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Program Year"
+                class="mx-auto mx-lg-3"
+                style="max-width: 200px"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" lg="6" class="d-flex">
+              <!-- Select Search Field -->
+              <v-select
+                v-model="table.search.field"
+                :items="headers"
+                item-value="value"
+                item-text="text"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Kolom Search"
+                class="centered-select"
+                style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+              ></v-select>
+              <!-- Search Input -->
+              <v-text-field
+                v-model="table.search.value"
+                append-icon="mdi-magnify"
+                outlined
+                dense
+                rounded
+                label="Search"
+                hide-details
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+              ></v-text-field>
+              <!-- dropdown export button -->
+              <v-menu
+                rounded="xl"
+                bottom
+                left
+                offset-y
+                transition="slide-y-transition"
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-bind="attrs" v-on="on" color="dark">
+                    mdi-dots-vertical
+                  </v-icon>
+                </template>
+      
+                <v-list class="d-flex flex-column align-center">
+                  <v-list-item v-if="false">
+                    <v-btn
+                      v-if="RoleAccesCRUDShow == true"
+                      dark
+                      class=""
+                      @click="showAddModal()"
+                      color="green"
+                    >
+                      <v-icon small>mdi-plus</v-icon> Add
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      v-if="RoleAccesDownloadAllShow == true"
+                      dark
+                      rounded
+                      @click="downloadSuperAdmin()"
+                      color="blue"
+                    >
+                      <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-col>
+          </v-row>
       </template>
 
       <!-- Luas Lahan kolom -->
@@ -875,7 +879,7 @@
             <v-list-item>
               <v-btn
                 dark
-                class="w-100 d-none d-md-block"
+                class="w-100"
                 rounded
                 @click="showDetail(item)"
                 color="info"
@@ -889,7 +893,7 @@
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
-                class="px-7 d-none d-md-block"
+                class="px-7"
                 rounded
                 @click="showEditDetailModal(item)"
                 color="warning"
@@ -903,7 +907,6 @@
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
-                class="d-none d-md-block"
                 rounded
                 @click="showDeleteModal(item)"
                 color="red"

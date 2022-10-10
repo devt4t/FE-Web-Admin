@@ -1,16 +1,16 @@
 <template>
   <v-app id="Trees">
-    <v-navigation-drawer :width="230" v-if="isLogin" v-model="drawer" dark app>
+    <v-navigation-drawer :width="230" v-if="isLogin" v-model="drawer" dark app class="rounded-xl">
       <v-list-item>
-        <v-list-item-content>
+        <v-list-item-content class="text-center">
           <v-list-item-title
-            style="color: #00ffff; font-weight: 550; font-size: 125%"
+            style="color: #71AF34; font-weight: 550; font-size: 125%"
             class="fontall"
           >
-            Admin
+            GEKo
           </v-list-item-title>
-          <v-list-item-subtitle style="color: #00ffff"
-            >System Management</v-list-item-subtitle
+          <v-list-item-subtitle style="color: #fff"
+            >Green Earth Kontrol</v-list-item-subtitle
           >
         </v-list-item-content>
       </v-list-item>
@@ -61,13 +61,13 @@
 
       <h5
         class="fontall footernav"
-        style="color: #00ffff; font-weight: 550; font-size: 80%"
+        style="color: #71AF34; font-weight: 550; font-size: 80%"
       >
         © Dev Trees4Trees
       </h5>
     </v-navigation-drawer>
 
-    <v-app-bar class="mx-2 mt-1" v-if="isLogin" app>
+    <v-app-bar class="mx-2 mt-2 rounded-xl" v-if="isLogin" app>
       <v-app-bar-nav-icon
         style="color: black"
         @click="drawer = !drawer"

@@ -30,7 +30,6 @@ body {
 }
 
 .footernav {
-    position: fixed;
     left: 0;
     padding-left: 10px;
     bottom: 0;

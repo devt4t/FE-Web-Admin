@@ -28,10 +28,10 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded-lg elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
     >
       <template v-slot:top>
-        <v-toolbar class="rounded-lg" flat>
+        <v-toolbar class="rounded-xl" flat>
           <!-- FILTER BUTTON -->
           <!-- <v-btn
             dark
@@ -99,6 +99,7 @@
             class="mb-2 mr-1"
             @click="showAddModal()"
             color="green"
+            rounded
           >
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn>
@@ -207,7 +208,7 @@
 
           <!-- Modal Create Form Pelatihan Petani -->
           <v-dialog v-model="dialogAddonly" max-width="1000px" persistent content-class="rounded-lg" scrollable>
-            <v-card class="rounded-lg">
+            <v-card class="rounded-xl">
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">{{ formTitle }}</span>
               </v-card-title>
@@ -235,6 +236,7 @@
                               <!-- UM -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  rounded
                                   v-model="selectUM"
                                   :items="itemsum"
                                   item-value="nik"
@@ -250,6 +252,7 @@
                               <!-- FC -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  rounded
                                   v-model="selectFC"
                                   :items="itemsfc"
                                   item-value="nik"
@@ -266,6 +269,7 @@
                               <!-- FF -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  rounded
                                   v-model="selectFF"
                                   :items="itemsff"
                                   item-text="name"
@@ -290,6 +294,7 @@
                               <!-- Absensi File -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-file-input
+                                  rounded
                                   accept="image/png, image/jpeg, image/bmp"
                                   placeholder="Foto Absensi Tertulis"
                                   prepend-icon="mdi-camera"
@@ -298,11 +303,11 @@
                                   outlined
                                   :key="componentKey.absensiImageInput"
                                 ></v-file-input>
-                                <v-card elevation="2" height="300" v-if="absensiPreview && absensiPreview !== ''">
+                                <v-card elevation="2" class="rounded-xl" height="300" v-if="absensiPreview && absensiPreview !== ''">
                                   <v-img
                                     height="300"
                                     v-bind:src="absensiPreview"
-                                    class="my-2 mb-4"
+                                    class="my-2 mb-4 rounded-xl"
                                     id="idFotoAbsensi"
                                   ></v-img
                                 ></v-card>
@@ -314,6 +319,7 @@
                               <!-- Materi Pelatihan 1 -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  rounded
                                   v-model="dataToStore.materi_1"
                                   :items="options.materiPelatihan"
                                   item-text="material_name"
@@ -332,6 +338,7 @@
                               <!-- Materi Pelatihan 2 -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  rounded
                                   v-model="dataToStore.materi_2"
                                   :items="options.materiPelatihan"
                                   item-text="material_name"
@@ -352,6 +359,7 @@
                               <!-- Program year -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-select
+                                  rounded
                                   v-model="dataToStore.program_year"
                                   :items="itemsTahun"
                                   item-text="text"
@@ -366,7 +374,7 @@
                               <v-col cols="12" sm="12" md="12" lg="12">
                                 <p class="mb-1">Date</p>
                                     <v-menu 
-                                      rounded="lg"
+                                      rounded="xl"
                                       v-model="datePickerMenu"
                                       transition="slide-x-transition"
                                       bottom
@@ -378,6 +386,7 @@
                                         <v-tooltip top>
                                           <template v-slot:activator="{ on: tooltip }">
                                             <v-btn
+                                              rounded
                                               color="green lighten-1"
                                               v-bind="attrs"
                                               v-on="{...menu, ...tooltip}"
@@ -392,7 +401,7 @@
                                       <v-list>
                                         <v-list-item>
                                           <v-date-picker 
-                                            color="green lighten-1" 
+                                            color="green lighten-1 rounded-xl" 
                                             v-model="dataToStore.date"
                                           ></v-date-picker>
                                           <br>
@@ -402,6 +411,7 @@
                                           <v-btn
                                             color="green lighten-1"
                                             center
+                                            rounded
                                             @click="datePickerMenu = false"
                                           >
                                             Ok
@@ -432,6 +442,7 @@
                           <!-- Material Organik -->
                           <v-col cols="12" sm="12" md="12" lg="6">
                             <v-select
+                              rounded
                               multiple
                               v-model="dataToStore.material_organic"
                               :items="options.material_organic"
@@ -472,7 +483,7 @@
                             <v-data-table
                               :headers="headerListProduct"
                               :items="listFarmerParticipant"
-                              class="elevation-3"
+                              class="elevation-3 rounded-xl"
                               item-key="kode"
                               :loading="loadtabledetail"
                               loading-text="Loading... Please wait"
@@ -533,6 +544,7 @@
                         <v-row>
                           <v-col class="px-1 py-0" cols="12" sm="12" md="12">
                             <v-autocomplete
+                              rounded
                               :items="itemspetaniallmu"
                               v-model="addMoreFarmerParticipantSelectValue"
                               item-text="nama"
@@ -566,8 +578,9 @@
                 <v-row>
                   <v-col cols="3">
                     <v-btn
-                      class="mr-0 mr-md-1 rounded-lg"
+                      class="mr-0 mr-md-1"
                       color="red"
+                      rounded
                       elevation="1"
                       @click="close"
                       outlined
@@ -586,7 +599,8 @@
                       elevation="1"
                       outlined
                       color="primary"
-                      class="rounded-lg mr-1"
+                      class="mr-1"
+                      rounded
                       @click="e1 = 1"
                     >
                       <v-icon class="d-none d-md-inline" left> mdi-chevron-left-circle-outline </v-icon>
@@ -596,8 +610,9 @@
                       </span>
                     </v-btn>
                     <v-btn
-                      class="rounded-lg ml-1"
+                      class="ml-1"
                       elevation="1"
+                      rounded
                       outlined
                       color="primary"
                       @click="e1 = 2"
@@ -612,9 +627,9 @@
                   </v-col>
                   <v-col cols="3" align="end">
                     <v-btn
-                      class="rounded-lg"
                       color="success"
                       elevation="1"
+                      rounded
                       outlined
                       @click="saveFormFarmerTraining"
                       :disabled="listFarmerParticipantChecked.length == 0 || !dataToStore.absensi_img"
@@ -622,6 +637,7 @@
                       <v-progress-circular
                         v-if="loadsave == true"
                         :size="25"
+                        rounded
                         :width="5"
                         indeterminate
                         color="green"
