@@ -1136,7 +1136,7 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"
-              v-if="User.role_group == 'IT'"
+              v-if="User.role_group == 'IT' || User.role_name == 'UNIT MANAGER'"
               @click="showDeleteModal(item)"
               small
               color="red"
@@ -1258,13 +1258,14 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Form No", value: "training_no", width: "18%" },
-      { text: "Nama FC", value: "fc_name", width: "18%" },
-      { text: "Nama FF", value: "ff_name", align: "start", width: "10%" },
-      { text: "Desa", value: "desa", align: "start", width: "10%" },
-      { text: "Tanggal", value: "training_date", width: "13%" },
-      { text: "Tahun Tanam", value: "program_year", width: "15%" },
-      { text: "Actions", value: "actions", sortable: false, width: "20%" },
+      { text: "Form No", value: "training_no" },
+      { text: "Nama FC", value: "fc_name" },
+      { text: "Nama FF", value: "ff_name", align: "start" },
+      { text: "Desa", value: "desa", align: "start" },
+      { text: "Tanggal", value: "training_date" },
+      { text: "Tahun Tanam", value: "program_year" },
+      { text: "Created By", value: "created_by" },
+      { text: "Actions", value: "actions", sortable: false },
     ],
 
     headersdetail: [
@@ -1875,7 +1876,7 @@ export default {
             village: this.selectFF.working_area,
             field_coordinator: this.dataToStore.fc_no,
             ff_no: this.dataToStore.ff_no,
-            user_id: this.User.employee_no,
+            user_id: this.User.email,
             status: 1,
             farmers: this.dataToStore.farmers
           }),
@@ -2196,7 +2197,8 @@ export default {
         const response = await axios.post(
           this.BaseUrlGet + 'DeleteFarmerTraining',
           {
-            id: this.idDelete
+            id: this.idDelete,
+            user_email: this.User.email
           },
           {
             headers: {

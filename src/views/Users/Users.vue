@@ -28,6 +28,7 @@
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
 
+          <!-- Create Form Modal -->
           <v-dialog v-model="dialog" max-width="700px">
             <v-card>
               <v-form ref="form" v-model="valid" lazy-validation>
@@ -65,24 +66,24 @@
                       ></v-select>
                     </v-col>
                     <v-col v-if="typeselectedFF == true" cols="12" sm="8" md="8">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.employee_no"
                         :items="itemsFF"
                         item-value="ff_no"
                         item-text="namaFF"
                         label="Pilih FF"
                         clearable
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                     <v-col v-if="typeselectedFF == false" cols="12" sm="8" md="8">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.employee_no"
                         :items="itemsEmp"
                         item-value="nik"
                         item-text="name"
                         label="Pilih Employee"
                         clearable
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-container>
