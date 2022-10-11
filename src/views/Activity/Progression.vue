@@ -329,7 +329,14 @@
         <div class="py-3">
           <v-btn v-if="filters.UM" class="mx-2">UM - {{ filters.UM }}</v-btn>
           <v-btn class="mx-2" v-if="filters.FC">FC - {{ filters.FC }}</v-btn>
-          <v-btn @click="generateReport">Export</v-btn>
+          <v-btn 
+            @click="generateReport"
+            color="info"
+            class="ml-2"
+          >
+            <v-icon small class="mr-1">mdi-printer</v-icon>
+            Export
+          </v-btn>
         </div>
       </template>
       <template v-slot:header.petani1>
