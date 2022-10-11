@@ -347,6 +347,7 @@
                                   outlined
                                   type="string"
                                   clearable
+                                  :rules="[(v) => !!v || 'Field is required']"
                                 >
                                   <template v-slot:item="data">
                                     <v-list-item-content>
@@ -617,7 +618,7 @@
                       outlined
                       color="primary"
                       @click="e1 = 2"
-                      :disabled="!selectFF || !dataToStore.program_year || e1 == 2"
+                      :disabled="!selectFF || !dataToStore.program_year || e1 == 2 || !dataToStore.materi_2 || !dataToStore.absensi_img"
                     >
                       <span class="d-none d-md-inline-block"> 
                         Next
@@ -633,7 +634,7 @@
                       rounded
                       outlined
                       @click="saveFormFarmerTraining"
-                      :disabled="listFarmerParticipantChecked.length == 0 || !dataToStore.absensi_img"
+                      :disabled="listFarmerParticipantChecked.length == 0 || !dataToStore.absensi_img || !dataToStore.materi_2"
                     >
                       <v-progress-circular
                         v-if="loadsave == true"
@@ -667,7 +668,7 @@
           </v-dialog>
 
           <!-- Modal Detail Form Pelatihan Petani -->
-          <v-dialog v-model="dialogDetail" max-width="900px" content-class="rounded-lg" scrollable>
+          <v-dialog v-model="dialogDetail" max-width="900px" content-class="rounded-xl" scrollable>
             <v-card class="rounded-lg">
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">Detail Pelatihan Petani</span>
@@ -859,7 +860,7 @@
                       <v-data-table
                         :headers="tables.farmerListDetailModal.headers"
                         :items="dialogDetailData.farmers"
-                        class="elevation-3"
+                        class="elevation-3 rounded-xl"
                         item-key="kode"
                         :loading="tables.farmerListDetailModal.loading"
                         loading-text="Loading... Please wait"
@@ -893,7 +894,7 @@
                           <v-img
                             aspect-ratio="1"
                             lazy-src=""
-                            class="rounded-lg cursor-pointer"
+                            class="rounded-xl cursor-pointer"
                             transition="fade-transition"
                             :src="('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+dialogDetailData.absent.replace('assets/images/farmer-training/', ''))"
                             @click="() => {preview.absensi.url = ('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+dialogDetailData.absent.replace('assets/images/farmer-training/', '')); preview.absensi.modal = true}"
@@ -902,7 +903,7 @@
                           >
                             <template v-slot:placeholder>
                               <v-skeleton-loader
-                                class="mx-auto"
+                                class="mx-auto rounded-xl"
                                 type="image"
                               ></v-skeleton-loader>
                             </template>
@@ -925,6 +926,7 @@
                           dark
                           color="blue lighten-1"
                           @click="generateReport"
+                          rounded
                           class="d-none d-lg-block"
                         >
                           <v-icon class="mr-1" small>mdi-printer</v-icon> Export
@@ -935,6 +937,7 @@
                   </v-col>
                   <v-col align="end">
                     <v-btn
+                      rounded
                       outlined
                       color="red lighten-1"
                       @click="dialogDetail = false"
@@ -1153,7 +1156,7 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on"
-              v-if="User.role_group == 'IT' || User.role_name == 'UNIT MANAGER'"
+              v-if="getDeleteAccess(User, item)"
               @click="showDeleteModal(item)"
               small
               color="red"
@@ -1172,6 +1175,17 @@
       :timeout="timeoutsnackbar"
     >
       {{ textsnackbar }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="white"
+          outlined
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          <v-icon class="mr-1" small>mdi-close</v-icon>
+          Close
+        </v-btn>
+      </template>
     </v-snackbar>
   </div>
 </template>
@@ -1884,7 +1898,7 @@ export default {
           this.BaseUrlGet + "AddFarmerTraining",this.generateFormData({
             training_date: this.dataToStore.date,
             first_material: this.dataToStore.materi_1,
-            second_material: this.dataToStore.materi_2 ? this.dataToStore.materi_2 : '-',
+            second_material: this.dataToStore.materi_2,
             organic_material: this.dataToStore.material_organic,
             program_year: this.dataToStore.program_year,
             absent: this.dataToStore.absensi_img,
@@ -1931,7 +1945,10 @@ export default {
           this.colorsnackbar = 'red lighten-1'
         }
       } catch(error) {
-        console.log(error);
+          this.timeoutsnackbar = 10000
+          this.textsnackbar = error.response.data.data.status.code + ': ' +error.response.data.data.status.description
+          this.colorsnackbar = 'red lighten-1'
+          this.snackbar = true
         this.sessionEnd(error)
       } finally {
         this.loadsave = false
@@ -2447,9 +2464,11 @@ export default {
         })
         return formData
     },
-    // Temporary
-    deleteTemporary(index) {
-      this.temporaryTableDatas.splice(index, 1)
+    getDeleteAccess(user, item) {
+      if (user.role_group === 'IT') return true
+      else if (user.role_name === 'UNIT MANAGER') return true
+      else if (item.mu_name === 'CITARIK' && user.role_name === 'REGIONAL MANAGER') return true
+      else return false 
     },
     sessionEnd(error) {
         if (error.response.status == 401) {
@@ -2472,7 +2491,11 @@ export default {
           localStorage.removeItem("token");
           this.$router.push("/");
         }
-    }
+    },
+    // Temporary
+    deleteTemporary(index) {
+      this.temporaryTableDatas.splice(index, 1)
+    },
   },
 };
 </script>
