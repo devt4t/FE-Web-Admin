@@ -7,7 +7,7 @@
             style="color: #71AF34; font-weight: 550; font-size: 125%"
             class="fontall"
           >
-            GEKo
+            GEKO
           </v-list-item-title>
           <v-list-item-subtitle style="color: #fff"
             >Green Earth Kontrol</v-list-item-subtitle
