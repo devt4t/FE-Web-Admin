@@ -11,6 +11,7 @@
       :headers="headers"
       :items="dataobject"
       :search="search"
+      :loading="table.loading"
       class="rounded elevation-6 mx-3 pa-1"
     >
       <template v-slot:top>
@@ -221,6 +222,7 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    table: {loading: false}
   }),
   created() {
     this.authtoken = localStorage.getItem("token");
@@ -235,6 +237,7 @@ export default {
   methods: {
     async initialize() {
       try {
+        this.table.loading = true
         const response = await axios.get(this.BaseUrlGet + "GetUser", {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
@@ -256,6 +259,8 @@ export default {
         } else {
           this.dataobject = [];
         }
+      } finally {
+        this.table.loading = false
       }
     },
     async GetEmp() {
