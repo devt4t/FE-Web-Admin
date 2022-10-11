@@ -11,7 +11,7 @@
     <v-overlay :value="overlay">
       <v-progress-circular
         indeterminate
-        color="green"
+        color="white"
         size="64"
       ></v-progress-circular>
     </v-overlay>
