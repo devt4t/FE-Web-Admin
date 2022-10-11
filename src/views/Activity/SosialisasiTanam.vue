@@ -699,13 +699,14 @@
     <!-- END: MODAL -->
 
     <v-data-table
+      class="rounded-xl elevation-6 mx-3 pa-1 mb-5"
       :headers="headers"
       :items="dataobject"
       :loading="loadtable"
       :options.sync="table.options"
       :server-items-length="table.datas.total"
       loading-text="Loading... Please wait"
-      class="rounded-xl elevation-6 mx-3 pa-1 mb-5"
+      :page="table.pagination.current_page"
     >
 
       <template v-slot:top>
@@ -877,6 +878,21 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
+            </v-col>
+            <v-col cols="12">
+              <!-- Page Table -->
+              <v-select
+                v-model="table.pagination.current_page"
+                :items="table.pagination.page_options"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Page"
+                class="centered-select"
+                style="width: 50%;max-width: 200px;"
+              ></v-select>
             </v-col>
           </v-row>
       </template>
@@ -1182,6 +1198,7 @@ export default {
         current_page: 1,
         per_page: 10,
         length_page: 0,
+        page_options: []
       },
       options: {}
     },
@@ -1219,12 +1236,7 @@ export default {
     },
     program_year(newYear) {
       this.initialize()
-    }
-  },
-  computed: {
-    // formTitle() {
-    //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    // },
+    },
   },
 
   mounted() {
@@ -1307,6 +1319,13 @@ export default {
       await this.getTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total
+        this.table.pagination.current_page = data.current_page
+        this.table.pagination.length_page = data.last_page
+        const pageOptions = []
+        for (let index = 1; index <= data.last_page; index++) {
+          pageOptions.push(index)          
+        }
+        this.table.pagination.page_options = pageOptions
       })
       this.loadtable = false
     },
@@ -1338,12 +1357,16 @@ export default {
         ).then(res => {
           let items = res.data.data.result.data
           const total = res.data.data.result.total
+          const current_page = res.data.data.result.current_page
+          const last_page = res.data.data.result.last_page
           setTimeout(() => {
             resolve({
               items,
               total,
+              current_page,
+              last_page
             })
-          }, 1000)
+          }, 300)
         })
 
 
