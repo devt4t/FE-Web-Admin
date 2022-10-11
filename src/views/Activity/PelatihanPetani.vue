@@ -364,6 +364,7 @@
                                   :items="itemsTahun"
                                   item-text="text"
                                   item-value="value"
+                                  readonly
                                   label="Tahun Program"
                                   outlined
                                   type="string"
