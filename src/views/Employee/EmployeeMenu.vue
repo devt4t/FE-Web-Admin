@@ -327,6 +327,8 @@ export default {
           this.colorsnackbar = "red";
           this.textsnackbar = "Gagal mengubah data";
         }
+      } finally {
+        this.menudropdown = ""
       }
     },
 

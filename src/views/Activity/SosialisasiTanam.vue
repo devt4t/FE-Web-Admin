@@ -781,7 +781,7 @@
               <!-- Select Search Field -->
               <v-select
                 v-model="table.search.field"
-                :items="headers"
+                :items="table.search.options.column"
                 item-value="value"
                 item-text="text"
                 hide-details
@@ -795,6 +795,7 @@
               ></v-select>
               <!-- Search Input -->
               <v-text-field
+                v-if="table.search.field != 'opsi_pola_tanam' && table.search.field != 'validation'"
                 v-model="table.search.value"
                 append-icon="mdi-magnify"
                 outlined
@@ -803,7 +804,39 @@
                 label="Search"
                 hide-details
                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                :loading="table.search.options.column_loading"
               ></v-text-field>
+              <v-select
+                v-else-if="table.search.field == 'opsi_pola_tanam'"
+                v-model="table.search.value"
+                :items="table.search.options.pola_tanam"
+                placeholder="All"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                clearable
+                label="Pilih Opsi Pola Tanam"
+                class="centered-select"
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                :loading="table.search.options.pola_tanam_loading"
+              ></v-select>
+              <v-select
+                v-else
+                v-model="table.search.value"
+                :items="table.search.options.validation"
+                item-value="value"
+                item-text="text"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Status"
+                class="centered-select"
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+              ></v-select>
               <!-- dropdown export button -->
               <v-menu
                 rounded="xl"
@@ -1123,6 +1156,22 @@ export default {
     },
     table: {
       search: {
+        options: {
+          column: [],
+          column_loading: false,
+          pola_tanam: [],
+          pola_tanam_loading: false,
+          validation: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified FC',
+            value: 1
+          }]
+        },
         field: 'form_no',
         value: ''
       },
@@ -1161,6 +1210,13 @@ export default {
         },
         deep: true
     },
+    'table.search.field': {
+      handler(newValue) {
+        if (newValue == 'opsi_pola_tanam') {
+          this.getOpsiPolaTanamOptions()
+        }
+      }
+    },
     program_year(newYear) {
       this.initialize()
     }
@@ -1177,7 +1233,7 @@ export default {
   },
 
   methods: {
-    firstAccessPage() {
+    async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
@@ -1185,13 +1241,25 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
+
+      // get search options column
+      this.table.search.options.column_loading = true
+      let searchColumns = ['form_no', 'nama_ff', 'nama_petani', 'no_lahan', 'land_area', 'opsi_pola_tanam', 'validation']
+      // set search column options
+      await this.headers.forEach(val => {
+        if (searchColumns.includes(val.value)) {
+          this.table.search.options.column.push(val)
+        }
+      })
+      this.table.search.options.column_loading = false
+
       // this.fc_no_global = this.User.fc.fc;
-      this.checkRoleAccess();
-      this.getMU();
-      this.getEthnic();
-      this.getJob();
-      this.getFF();
-      this.getUMAll();
+      await this.checkRoleAccess();
+      await this.getMU();
+      await this.getEthnic();
+      await this.getJob();
+      await this.getFF();
+      await this.getUMAll();
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
     },
     checkRoleAccess() {
@@ -1250,8 +1318,8 @@ export default {
           per_page: this.table.pagination.per_page,
           sortBy: this.table.options.sortBy || '',
           sortDesc: this.table.options.sortDesc || '',
-          search_column: this.table.search.value.length >= 3 ? this.table.search.field : '',
-          search_value: this.table.search.value,
+          search_column: this.table.search.field || '',
+          search_value: this.table.search.value || '',
           mu: this.valueMU,
           ta: this.valueTA,
           village: this.valueVillage,
@@ -2253,6 +2321,25 @@ export default {
       if (status == 0) return "red";
       else return "green";
     },
+    async getOpsiPolaTanamOptions() {
+      try {
+        this.table.search.options.pola_tanam_loading = true
+        if (this.table.search.options.pola_tanam.length == 0) {
+          const res = await axios.get(
+            this.BaseUrlGet + "GetOpsiPolaTanamOptions",
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          )
+
+          this.table.search.options.pola_tanam = res.data.data.result
+        }
+      } finally {
+        this.table.search.options.pola_tanam_loading = false
+      }
+    }
   },
 };
 </script>
