@@ -18,7 +18,7 @@
       <v-divider style="background-color: white !important"></v-divider>
 
       <v-list color="transparent" shaped>
-        <v-list-item color="#00FFFF" :to="DashboardLink" link>
+        <v-list-item color="#71AF34" :to="DashboardLink" link>
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard</v-icon>
           </v-list-item-icon>
@@ -31,7 +31,7 @@
           v-model="item.active"
           :prepend-icon="item.icon"
           no-action
-          color="#00FFFF"
+          color="#71AF34"
           class="fontall"
         >
           <template v-slot:activator>
@@ -316,11 +316,11 @@ export default {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #71AF3455;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #71AF34;
 }
 </style>
