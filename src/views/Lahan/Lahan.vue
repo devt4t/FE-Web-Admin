@@ -38,24 +38,55 @@
 
       <template v-slot:top>
         <v-toolbar flat>
-          <v-btn
-            dark
-            class="mx-1 mt-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
+          <!-- dropdown filter button -->
+          <v-menu
+            rounded="xl"
+            bottom
+            right
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
           >
-            <v-icon class="mx-1" small>mdi-filter-variant</v-icon> Filter Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            class="mx-1 mt-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-1" small>mdi-image-filter-none</v-icon> Filter
-            Employee
-          </v-btn>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                dark
+                class=""
+                color="warning"
+                v-bind="attrs"
+                v-on="on"
+                rounded
+              >
+                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+              </v-btn>
+            </template>
+
+            <v-list class="d-flex flex-column align-center">
+              <v-list-item>
+                <v-btn
+                  dark
+                  class="mx-1 mt-1"
+                  rounded
+                  @click="showFilterArea()"
+                  color="green"
+                >
+                  <v-icon class="mx-1" small>mdi-filter-variant</v-icon> Filter Area
+                </v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn
+                  v-if="RoleAccesFilterShow == true"
+                  rounded
+                  dark
+                  class="mx-1 mt-1 d-none d-md-block"
+                  @click="showFilterEmployee()"
+                  color="green"
+                >
+                  <v-icon class="mx-1" small>mdi-image-filter-none</v-icon> Filter
+                  Employee
+                </v-btn>
+              </v-list-item>
+            </v-list>
+          </v-menu>
 
           <!-- <v-select
             v-model="selectMU"
