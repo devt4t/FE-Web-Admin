@@ -1939,6 +1939,7 @@ export default {
       this.loadsave = true
       this.overlay = true
       this.dialogAddonly = false
+      this.showedAbsensi2 = false
       // insert UM FC FF data
       this.dataToStore.um_no = this.selectUM
       this.dataToStore.fc_no = this.selectFC
@@ -2312,6 +2313,7 @@ export default {
       this.dialogAddProduct = false;
       this.dialogdownload = false;
       this.dialogAddonly = false;
+      this.showedAbsensi2 = false
       // reset data
       this.listFarmerParticipant= []
       this.listFarmerParticipantChecked= []
@@ -2535,6 +2537,7 @@ export default {
         if (error.response.status == 401) {
           this.alerttoken = true
           this.dialogAddonly = false
+          this.showedAbsensi2 = false
           this.dialog = false
           this.dialogDelete = false
           this.dialogDetail = false
