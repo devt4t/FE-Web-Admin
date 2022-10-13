@@ -22,6 +22,13 @@
       </v-alert>
     </div>
 
+    <vue-easy-lightbox
+      :visible="preview.lightbox.isVisible"
+      :imgs="preview.lightbox.imgs"
+      :index="preview.lightbox.index"
+      @hide="() => { preview.lightbox.isVisible = false; }"
+    ></vue-easy-lightbox>
+
     <v-data-table
       :headers="headers"
       :items="dataobject"
@@ -32,6 +39,14 @@
     >
       <template v-slot:top>
         <v-toolbar class="rounded-xl" flat>
+          <v-btn
+            dark
+            @click="initialize()"
+            color="info"
+            rounded
+          >
+            <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+          </v-btn>
           <!-- FILTER BUTTON -->
           <!-- <v-btn
             dark
@@ -312,6 +327,37 @@
                                   ></v-img
                                 ></v-card>
                               </v-col>
+                              <!-- Absensi File 2 -->
+                              <v-col cols="12" sm="12" md="12">
+                                <v-btn
+                                  v-if="dataToStore.absensi_img && showedAbsensi2 == false"
+                                  color="info"
+                                  rounded
+                                  @click="showedAbsensi2 = true"
+                                >
+                                  <v-icon>mdi-plus</v-icon>
+                                  Add more image
+                                </v-btn>
+                                <v-file-input
+                                  v-if="showedAbsensi2"
+                                  rounded
+                                  accept="image/png, image/jpeg, image/bmp"
+                                  placeholder="Foto Absensi Tertulis 2"
+                                  prepend-icon="mdi-camera"
+                                  label="Foto Absensi Tertulis 2"
+                                  v-on:change="absensiFileChanged2"
+                                  outlined
+                                  :key="componentKey.absensiImageInput2"
+                                ></v-file-input>
+                                <v-card elevation="2" class="rounded-xl" height="300" v-if="absensiPreview2 && absensiPreview2 !== ''">
+                                  <v-img
+                                    height="300"
+                                    v-bind:src="absensiPreview2"
+                                    class="my-2 mb-4 rounded-xl"
+                                    id="idFotoAbsensi2"
+                                  ></v-img
+                                ></v-card>
+                              </v-col>
                             </v-row>
                           </v-col>
                           <v-col cols="12" sm="12" md="6" lg="6">
@@ -365,7 +411,7 @@
                                   :items="itemsTahun"
                                   item-text="text"
                                   item-value="value"
-                                  readonly
+                                  disabled
                                   label="Tahun Program"
                                   outlined
                                   type="string"
@@ -452,7 +498,7 @@
                               item-text="organic_name"
                               item-value="organic_no"
                               outlined
-                              readonly
+                              disabled
                               type="string"
                               :rules="[(v) => !!v || 'Field is required']"
                             >
@@ -889,15 +935,15 @@
                       </v-data-table>
                     </v-col>
                     <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="4">
-                      <v-tooltip top>
+                      <h4>Foto Absensi</h4>
+                      <v-tooltip v-for="(absensiImg, aIIndex) in dialogDetailData.absent" :key="aIIndex"  top>
                         <template v-slot:activator="{ on, attrs }">
                           <v-img
                             aspect-ratio="1"
-                            lazy-src=""
-                            class="rounded-xl cursor-pointer"
+                            class="rounded-xl cursor-pointer mb-2"
                             transition="fade-transition"
-                            :src="('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+dialogDetailData.absent.replace('assets/images/farmer-training/', ''))"
-                            @click="() => {preview.absensi.url = ('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+dialogDetailData.absent.replace('assets/images/farmer-training/', '')); preview.absensi.modal = true}"
+                            :src="('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+absensiImg.replace('assets/images/farmer-training/', ''))"
+                            @click="() => {preview.lightbox.imgs = ('https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/'+absensiImg.replace('assets/images/farmer-training/', '')); preview.lightbox.isVisible = true}"
                             v-bind="attrs"
                             v-on="on"
                           >
@@ -909,7 +955,7 @@
                             </template>
                           </v-img>
                         </template>
-                        <span>Klik untuk preview</span>
+                        <span>Klik untuk preview Foto Absensi {{ aIIndex+1 }}</span>
                       </v-tooltip>
                     </v-col>
                   </v-row>
@@ -1077,17 +1123,17 @@
                   color="green"
                   elevation="1"
                   outlined
-                  class="rounded-lg"
+                  rounded
                   @click="() => {addingToTableFarmerParticipant(preview.addParticipant.data)}"
                 >
                   <v-icon left> mdi-checkbox-marked-circle-outline </v-icon>
                   Tambah
                 </v-btn>
                 <v-btn
+                  rounded
                   color="red"
                   elevation="1"
                   outlined
-                  class="rounded-lg"
                   @click="() => {preview.addParticipant.modal = false;addMoreFarmerParticipantSelectValue = null}"
                 >
                   <v-icon left> mdi-close-circle-outline </v-icon>
@@ -1099,18 +1145,22 @@
           </v-dialog>
 
           <!-- Modal Delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
+          <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+            <v-card class="rounded-xl pb-2">
               <v-card-title class="headline"
                 >Are you sure you want to delete this item?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+                <v-btn class="px-2 pr-4" color="red darken-1" dark rounded @click="closeDelete"
+                  >
+                  <v-icon class="mr-1">mdi-close</v-icon>
+                  Cancel</v-btn
                 >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
+                <v-btn class="px-2 pr-4" color="blue darken-1" dark rounded @click="deleteItemConfirm"
+                  >
+                  <v-icon class="mr-1">mdi-check</v-icon>
+                  OK</v-btn
                 >
                 <v-spacer></v-spacer>
               </v-card-actions>
@@ -1120,52 +1170,54 @@
       </template>
 
       <!-- Date -->
-      <template v-slot:item.date="{ item }">
-        {{ item.date }}
-      </template>
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
+      <template v-slot:item.training_date="{ item }">
+        {{ dateFormat(item.training_date, 'DD MMMM Y') }}
       </template>
       <!-- Action table -->
       <template v-slot:item.actions="{ item, index }">
-        <v-tooltip top>
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
+        >
           <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" class="mr-2" @click="showDetailFarmerTraining(item.training_no)" small color="info">
-              mdi-information-outline
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
             </v-icon>
           </template>
-          <span>Detail</span>
-        </v-tooltip>
-        <!-- <v-tooltip top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on"
-              v-if="RoleAccesCRUDShow == true"
-              class="mr-2"
-              @click="showDetailFarmerTraining(index)"
-              small
-              color="warning"
-            >
-              mdi-pencil
-            </v-icon>
-          </template>
-          <span>Edit</span>
-        </v-tooltip> -->
-        <v-tooltip top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on"
-              v-if="getDeleteAccess(User, item)"
-              @click="showDeleteModal(item)"
-              small
-              color="red"
-            >
-              mdi-delete
-            </v-icon>
-          </template>
-          <span>Hapus</span>
-        </v-tooltip>
+
+          <v-list class="d-flex flex-column align-center">
+            <v-list-item>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailFarmerTraining(item.training_no)" small color="info">
+                    <v-icon class="mr-1" small>
+                      mdi-information-outline
+                    </v-icon>
+                    Detail
+                  </v-btn>
+                </template>
+                <span>Detail</span>
+              </v-tooltip>
+            </v-list-item>
+            <v-list-item v-if="getDeleteAccess(User, item)">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn dark v-bind="attrs" v-on="on" rounded @click="showDeleteModal(item)" small color="red">
+                    <v-icon class="mr-1" small>
+                      mdi-delete
+                    </v-icon>
+                    Hapus
+                  </v-btn>
+                </template>
+                <span>Hapus</span>
+              </v-tooltip>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </v-data-table>
 
@@ -1206,6 +1258,7 @@ export default {
   },
   authtoken: "",
   data: () => ({
+    showedAbsensi2: false,
     overlay: false,
     datePickerMenu: false,
     dataToStore: {
@@ -1213,6 +1266,7 @@ export default {
       fc_no: "",
       ff_no: "",
       absensi_img: "",
+      absensi_img2: "",
       materi_1: 'TR010',
       materi_2: null,
       material_organic: ['ORG22090001', 'ORG22090002'],
@@ -1224,6 +1278,7 @@ export default {
     temporaryTableDatas: [],
     dialogDetailData: null,
     absensiPreview: '',
+    absensiPreview2: '',
 
     tables: {
       farmerListDetailModal: {
@@ -1296,7 +1351,7 @@ export default {
       { text: "Tanggal", value: "training_date" },
       { text: "Tahun Tanam", value: "program_year" },
       { text: "Created By", value: "created_by" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", align: 'right', value: "actions", sortable: false },
     ],
 
     headersdetail: [
@@ -1473,6 +1528,11 @@ export default {
       addParticipant: {
         modal: false,
         data: {},
+      },
+      lightbox: {
+        isVisible: false,
+        imgs: '',
+        index: 0
       }
     },
     loading: {
@@ -1480,7 +1540,7 @@ export default {
       fc: false,
       ff: false,
       farmer: false
-    }
+    },
   }),
   computed: {
     // formTitle() {
@@ -1864,6 +1924,7 @@ export default {
     },
     async addingToTableFarmerParticipant(val) {
       this.listFarmerParticipant.push(val)
+      this.listFarmerParticipantChecked.push(val)
       this.addMoreFarmerParticipantSelectValue = null
       this.preview.addParticipant.data = {}
       this.preview.addParticipant.modal = false
@@ -1887,9 +1948,6 @@ export default {
       this.dataToStore.mu_no = this.selectFF.mu_no
       this.dataToStore.target_area = this.selectFF.target_area
       this.dataToStore.working_area = this.selectFF.working_area
-      // let bannerImage = document.getElementById('idFotoAbsensi')
-      // let imgData = this.getBase64Image(bannerImage)
-      // this.dataToStore.absensi_img = imgData
 
       // insert list farmer participant
       await this.listFarmerParticipantChecked.forEach((farmerParticipant) => {
@@ -1897,9 +1955,7 @@ export default {
       })
       this.temporaryTableDatas.push(this.dataToStore)
 
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "AddFarmerTraining",this.generateFormData({
+      const dataForPost = {
             training_date: this.dataToStore.date,
             first_material: this.dataToStore.materi_1,
             second_material: this.dataToStore.materi_2,
@@ -1914,7 +1970,15 @@ export default {
             user_id: this.User.email,
             status: 1,
             farmers: this.dataToStore.farmers
-          }),
+      }
+      if (this.dataToStore.absensi_img2 != '' && typeof this.dataToStore.absensi_img2 !== 'undefined') {
+        dataForPost.absent2 = this.dataToStore.absensi_img2
+      }
+      console.log(dataForPost)
+      
+      try {
+        const response = await axios.post(
+          this.BaseUrlGet + "AddFarmerTraining",this.generateFormData(dataForPost),
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -1923,25 +1987,11 @@ export default {
           }
         )
         if (response) {
-          try {
-            await axios.post(
-              'https://t4tadmin.kolaborasikproject.com/farmer-training/upload.php', this.generateFormData({
-                nama: response.data.data.result.absensi_image_name,
-                image: this.dataToStore.absensi_img
-              }),
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data"
-                },
-              }
-            )
-          } finally {
             this.textsnackbar = "Berhasil menambah data pelatihan"
             this.snackbar = true
             this.colorsnackbar = 'green lighten-1'
             await this.resetvalue()
             await this.initialize()
-          }
         } else {
           console.log('failed')
           this.textsnackbar = "Gagal menambah data pelatihan"
@@ -2224,7 +2274,6 @@ export default {
 
     showDeleteModal(item) {
       this.idDelete = item.ft_id;
-      this.absensiDelete = item.absensi_img;
       this.dialogDelete = true;
     },
 
@@ -2245,7 +2294,6 @@ export default {
           }
         )
         if (response) {
-          this.deleteExternalAbsensiImage(this.absensiDelete.replace('assets/images/farmer-training/', ''))
           this.snackbar = true
           this.textsnackbar = "Berhasil menghapus data"
           this.colorsnackbar = 'green lighten-1'
@@ -2380,6 +2428,15 @@ export default {
       } else {
         this.dataToStore.absensi_img = ""
         this.absensiPreview = ""
+      }
+    },
+    absensiFileChanged2 (event) {
+      if (event) {
+        this.dataToStore.absensi_img2 = event
+        this.absensiPreview2 = URL.createObjectURL(event)
+      } else {
+        this.dataToStore.absensi_img2 = ""
+        this.absensiPreview2 = ""
       }
     },
     checkRoleAccess() {
