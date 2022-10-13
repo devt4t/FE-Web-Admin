@@ -33,8 +33,8 @@
     <!-- MODAL -->
     <!-- END: MODAL -->
 
-    <!-- Filters Panel -->
     <v-expansion-panels v-model="expansions.model" class="mb-6 px-3">
+      <!-- Filters Panel -->
       <v-expansion-panel class="rounded-xl ">
         <v-expansion-panel-header>
           <v-btn dark rounded color="info" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Set Progression Content</v-btn>
@@ -46,7 +46,7 @@
               <v-select
                 color="success"
                 item-color="success"
-                :menu-props="{rounded: 'xl'}"
+                :menu-props="{rounded: 'xl', offsetY: true}"
                 outlined
                 hide-details
                 rounded
@@ -117,12 +117,12 @@
             </v-col>
             <!-- Activities -->
             <v-col cols="12">
-              <v-autocomplete
+              <v-select
                 color="success"
                 item-color="success"
                 item-text="value"
                 item-value="value"
-                :menu-props="{rounded: 'xl'}"
+                :menu-props="{rounded: 'xl', offsetY: true}"
                 outlined
                 rounded
                 hide-details
@@ -148,7 +148,7 @@
                     {{ data.item.value }}
                   </v-chip>
                 </template>
-              </v-autocomplete>
+              </v-select>
             </v-col>
             <!-- Petani Range -->
             <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
@@ -271,6 +271,7 @@
           </v-row>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <!-- Pendataan Petani dan Lahan Panel -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.farmer.show">
         <v-expansion-panel-header>
           <h3 class="">Pendataan Petani & Lahan</h3>
