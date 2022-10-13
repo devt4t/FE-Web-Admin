@@ -1193,8 +1193,8 @@
             <v-list-item>
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailFarmerTraining(item.training_no)" small color="info">
-                    <v-icon class="mr-1" small>
+                  <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailFarmerTraining(item.training_no)" color="info">
+                    <v-icon class="mr-1">
                       mdi-information-outline
                     </v-icon>
                     Detail
@@ -1206,8 +1206,8 @@
             <v-list-item v-if="getDeleteAccess(User, item)">
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn dark v-bind="attrs" v-on="on" rounded @click="showDeleteModal(item)" small color="red">
-                    <v-icon class="mr-1" small>
+                  <v-btn dark v-bind="attrs" v-on="on" rounded @click="showDeleteModal(item)" color="red">
+                    <v-icon class="mr-1">
                       mdi-delete
                     </v-icon>
                     Hapus
