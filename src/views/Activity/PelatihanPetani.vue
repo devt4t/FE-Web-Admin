@@ -1516,7 +1516,7 @@ export default {
     snackbar: false,
     textsnackbar: "Test",
     colorsnackbar: null,
-    timeoutsnackbar: 2000,
+    timeoutsnackbar: 5000,
     employee_no: "",
     preview: {
       petani: {
