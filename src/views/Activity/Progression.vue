@@ -383,16 +383,20 @@
                       <table border="1" style="border-collapse: collapse;width: 100%;">
                         <thead>
                           <tr>
-                            <th>No</th>
-                            <th>Nama FF</th>
-                            <th>Petani ({{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }})</th>
-                            <th>Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})</th>
-                            <th>Petani Total</th>
-                            <th>Petani Progress</th>
-                            <th>Lahan ({{ dateFormat(filters.dates.land[0], 'DD MMM Y') }})</th>
-                            <th>Lahan ({{ dateFormat(filters.dates.land[1], 'DD MMM Y') }})</th>
-                            <th>Lahan Total</th>
-                            <th>Lahan Progress</th>
+                            <th rowspan="2">No</th>
+                            <th rowspan="2">Nama FF</th>
+                            <th colspan="4">Petani</th>
+                            <th colspan="4">Lahan</th>
+                          </tr>
+                          <tr>
+                            <th>{{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }}</th>
+                            <th>{{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }}</th>
+                            <th>Total</th>
+                            <th>Progress</th>
+                            <th>{{ dateFormat(filters.dates.land[0], 'DD MMM Y') }}</th>
+                            <th>{{ dateFormat(filters.dates.land[1], 'DD MMM Y') }}</th>
+                            <th>Total</th>
+                            <th>Progress</th>
                           </tr>
                         </thead>
                         <tbody>
