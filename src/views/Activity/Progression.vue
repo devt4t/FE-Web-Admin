@@ -34,223 +34,38 @@
     <!-- END: MODAL -->
 
     <!-- Filters Panel -->
-    <v-expansion-panels v-model="expansions.model" class="px-3">
-      <v-expansion-panel class="mb-6 rounded-lg ">
+    <v-expansion-panels v-model="expansions.model" class="mb-6 px-3">
+      <v-expansion-panel class="rounded-xl ">
         <v-expansion-panel-header>
-          Filters
+          <v-btn dark rounded color="info" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Set Progression Content</v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row class="mx-2 pt-2">
             <!-- Program year -->
-            <v-col cols="12" sm="12" md="12">
+            <v-col cols="12" sm="12" md="4">
               <v-select
+                color="success"
+                item-color="success"
+                :menu-props="{rounded: 'xl'}"
+                outlined
+                hide-details
+                rounded
                 v-model="options.programYear.model"
                 :items="options.programYear.items"
                 label="Tahun Program"
-                outlined
                 type="string"
                 :rules="[(v) => !!v || 'Field is required']"
               ></v-select>
             </v-col>
-            <!-- Date 1 -->
-            <v-col cols="12" sm="12" md="6" lg="3">
-              <p class="mb-1">Petani Date 1</p>
-                  <v-menu 
-                    rounded="lg"
-                    v-model="menus.farmer.date1"
-                    transition="slide-x-transition"
-                    bottom
-                    right
-                    offset-x
-                    :close-on-content-click="false"
-                  >
-                    <template v-slot:activator="{ on: menu, attrs }">
-                      <v-tooltip top>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn
-                            color="green lighten-1"
-                            v-bind="attrs"
-                            v-on="{...menu, ...tooltip}"
-                          >
-                            <v-icon left> mdi-calendar </v-icon>
-                            {{ dates.farmer.date1 }}
-                          </v-btn>
-                        </template>
-                        <span>Klik untuk memunculkan datepicker</span>
-                      </v-tooltip>
-                    </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-date-picker 
-                          color="green lighten-1" 
-                          v-model="dates.farmer.date1"
-                        ></v-date-picker>
-                        <br>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          color="green lighten-1"
-                          center
-                          @click="menus.farmer.date1 = false"
-                        >
-                          Ok
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-            </v-col>
-            <!-- Date 2 -->
-            <v-col cols="12" sm="12" md="6" lg="3">
-              <p class="mb-1">Petani Date 2</p>
-                  <v-menu 
-                    rounded="lg"
-                    v-model="menus.farmer.date2"
-                    transition="slide-x-transition"
-                    bottom
-                    right
-                    offset-x
-                    :close-on-content-click="false"
-                  >
-                    <template v-slot:activator="{ on: menu, attrs }">
-                      <v-tooltip top>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn
-                            color="green lighten-1"
-                            v-bind="attrs"
-                            v-on="{...menu, ...tooltip}"
-                          >
-                            <v-icon left> mdi-calendar </v-icon>
-                            {{ dates.farmer.date2 }}
-                          </v-btn>
-                        </template>
-                        <span>Klik untuk memunculkan datepicker</span>
-                      </v-tooltip>
-                    </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-date-picker 
-                          color="green lighten-1" 
-                          v-model="dates.farmer.date2"
-                        ></v-date-picker>
-                        <br>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          color="green lighten-1"
-                          center
-                          @click="menus.farmer.date2 = false"
-                        >
-                          Ok
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-            </v-col>
-            <!-- Date 3 -->
-            <v-col cols="12" sm="12" md="6" lg="3">
-              <p class="mb-1">Lahan Date 1</p>
-                  <v-menu 
-                    rounded="lg"
-                    v-model="menus.land.date1"
-                    transition="slide-x-transition"
-                    bottom
-                    right
-                    offset-x
-                    :close-on-content-click="false"
-                  >
-                    <template v-slot:activator="{ on: menu, attrs }">
-                      <v-tooltip top>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn
-                            color="green lighten-1"
-                            v-bind="attrs"
-                            v-on="{...menu, ...tooltip}"
-                          >
-                            <v-icon left> mdi-calendar </v-icon>
-                            {{ dates.land.date1 }}
-                          </v-btn>
-                        </template>
-                        <span>Klik untuk memunculkan datepicker</span>
-                      </v-tooltip>
-                    </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-date-picker 
-                          color="green lighten-1" 
-                          v-model="dates.land.date1"
-                        ></v-date-picker>
-                        <br>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          color="green lighten-1"
-                          center
-                          @click="menus.land.date1 = false"
-                        >
-                          Ok
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-            </v-col>
-            <!-- Date 4 -->
-            <v-col cols="12" sm="12" md="6" lg="3">
-              <p class="mb-1">Lahan Date 2</p>
-                  <v-menu 
-                    rounded="lg"
-                    v-model="menus.land.date2"
-                    transition="slide-x-transition"
-                    bottom
-                    right
-                    offset-x
-                    :close-on-content-click="false"
-                  >
-                    <template v-slot:activator="{ on: menu, attrs }">
-                      <v-tooltip top>
-                        <template v-slot:activator="{ on: tooltip }">
-                          <v-btn
-                            color="green lighten-1"
-                            v-bind="attrs"
-                            v-on="{...menu, ...tooltip}"
-                          >
-                            <v-icon left> mdi-calendar </v-icon>
-                            {{ dates.land.date2 }}
-                          </v-btn>
-                        </template>
-                        <span>Klik untuk memunculkan datepicker</span>
-                      </v-tooltip>
-                    </template>
-                    <v-list>
-                      <v-list-item>
-                        <v-date-picker 
-                          color="green lighten-1" 
-                          v-model="dates.land.date2"
-                        ></v-date-picker>
-                        <br>
-                      </v-list-item>
-                      <v-list-item>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          color="green lighten-1"
-                          center
-                          @click="menus.land.date2 = false"
-                        >
-                          Ok
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-            </v-col>
             <!-- Unit Manager Option -->
             <v-col cols="12" lg="4">
               <v-autocomplete
+                color="success"
+                item-color="success"
+                :menu-props="{rounded: 'xl'}"
+                outlined
+                hide-details
+                rounded
                 v-model="options.UM.model"
                 :items="options.UM.items"
                 :item-value="options.UM.itemValue"
@@ -260,7 +75,6 @@
                 :loading="options.UM.loading"
                 :no-data-text="options.UM.loading ? 'Loading...' : 'No Data'"
                 :placeholder="options.UM.loading ? 'Loading...' : 'Select UM'"
-                outlined
                 :readonly="!access.filterUM"
                 :rules="[(v) => !!v || 'Field is required']"
               >
@@ -275,6 +89,12 @@
             <!-- Field Coordinator Option -->
             <v-col cols="12" lg="4">
               <v-autocomplete
+                color="success"
+                item-color="success"
+                :menu-props="{rounded: 'xl'}"
+                outlined
+                hide-details
+                rounded
                 v-model="options.FC.model"
                 :items="options.FC.items"
                 :item-value="options.FC.itemValue"
@@ -284,7 +104,6 @@
                 :loading="options.FC.loading"
                 :no-data-text="options.FC.loading ? 'Loading...' : 'No Data'"
                 :placeholder="options.FC.loading ? 'Loading...' : 'Select FC'"
-                outlined
                 :readonly="!access.filterFC"
                 :rules="[(v) => !!v || 'Field is required']"
               >
@@ -296,13 +115,155 @@
                 </template>
               </v-autocomplete>
             </v-col>
+            <!-- Activities -->
+            <v-col cols="12">
+              <v-autocomplete
+                color="success"
+                item-color="success"
+                item-text="value"
+                item-value="value"
+                :menu-props="{rounded: 'xl'}"
+                outlined
+                rounded
+                hide-details
+                chips
+                multiple
+                v-model="options.activities.model"
+                :items="options.activities.items"
+                :label="options.activities.loading ? 'Getting activities data...' : options.activities.label"
+                :loading="options.activities.loading"
+                :no-data-text="options.activities.loading ? 'Loading...' : 'No Data'"
+                :placeholder="options.activities.loading ? 'Loading...' : 'Select activities'"
+                :rules="[(v) => !!v || 'Field is required']"
+              >
+                <template v-slot:selection="data">
+                  <v-chip
+                    v-bind="data.attrs"
+                    :input-value="data.selected"
+                    color="success"
+                    close
+                    @click="data.select"
+                    @click:close="removeFromActivitiesInput(data.item)"
+                  >
+                    {{ data.item.value }}
+                  </v-chip>
+                </template>
+              </v-autocomplete>
+            </v-col>
+            <!-- Petani Range -->
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
+              <p class="mb-1">Petani Date Range</p>
+                  <v-menu 
+                    rounded="xl"
+                    v-model="menus.farmer"
+                    transition="slide-x-transition"
+                    bottom
+                    right
+                    offset-x
+                    :close-on-content-click="false"
+                  >
+                    <template v-slot:activator="{ on: menu, attrs }">
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on: tooltip }">
+                          <v-btn
+                            rounded
+                            color="green lighten-1"
+                            v-bind="attrs"
+                            v-on="{...menu, ...tooltip}"
+                          >
+                            <v-icon left> mdi-calendar </v-icon>
+                            {{ dates.farmer.toString().replace(',', ' to ') }}
+                          </v-btn>
+                        </template>
+                        <span>Klik untuk memunculkan datepicker</span>
+                      </v-tooltip>
+                    </template>
+                    <v-list>
+                      <v-list-item>
+                        <v-date-picker 
+                          color="green lighten-1 rounded-xl" 
+                          range
+                          rounded
+                          v-model="dates.farmer"
+                        ></v-date-picker>
+                        <br>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="green lighten-1"
+                          center
+                          rounded
+                          @click="menus.farmer = false"
+                        >
+                          Ok
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+            </v-col>
+            <!-- Lahan Range -->
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
+              <p class="mb-1">Lahan Date Range</p>
+                  <v-menu 
+                    rounded="xl"
+                    v-model="menus.land"
+                    transition="slide-x-transition"
+                    bottom
+                    right
+                    offset-x
+                    :close-on-content-click="false"
+                  >
+                    <template v-slot:activator="{ on: menu, attrs }">
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on: tooltip }">
+                          <v-btn
+                            rounded
+                            color="green lighten-1"
+                            v-bind="attrs"
+                            v-on="{...menu, ...tooltip}"
+                          >
+                            <v-icon left> mdi-calendar </v-icon>
+                            {{ dates.land.toString().replace(',', ' to ') }}
+                          </v-btn>
+                        </template>
+                        <span>Klik untuk memunculkan datepicker</span>
+                      </v-tooltip>
+                    </template>
+                    <v-list>
+                      <v-list-item>
+                        <v-date-picker 
+                          color="green lighten-1 rounded-xl" 
+                          range
+                          rounded
+                          v-model="dates.land"
+                        ></v-date-picker>
+                        <br>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="green lighten-1"
+                          center
+                          rounded
+                          @click="menus.land = false"
+                        >
+                          Ok
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+            </v-col>
             <!-- Button -->
-            <v-col cols="12" lg="4" class="d-flex align-items-center">
+            <v-col cols="12" class="d-flex align-items-center">
               <v-btn
                 class="mr-1 mt-2 text--white"
                 @click="generateKPI()"
                 color="blue"
-                :disabled="!options.FC.model"
+                rounded
+                :disabled="!options.FC.model || options.FC.model == '' || options.activities.model.length < 1"
               >
                 <v-icon class="mr-1" small>mdi-check-circle</v-icon> Generate
               </v-btn>
@@ -310,145 +271,154 @@
           </v-row>
         </v-expansion-panel-content>
       </v-expansion-panel>
-    </v-expansion-panels>
-
-    <!-- Main Table -->
-    <v-data-table
-      :headers="tables.farmer.headers"
-      :items="tables.farmer.items"
-      :search="tables.farmer.search"
-      :loading="tables.farmer.loading"
-      loading-text="Loading... Please wait"
-      class="rounded-lg elevation-6 mx-3 pa-1 mb-5"
-      :items-per-page="15"
-      :footer-props="{
-        itemsPerPageOptions: [8, 15, 30, -1]
-      }"
-    >
-      <template v-slot:top>
-        <div class="py-3">
-          <v-btn v-if="filters.UM" class="mx-2">UM - {{ filters.UM }}</v-btn>
-          <v-btn class="mx-2" v-if="filters.FC">FC - {{ filters.FC }}</v-btn>
-          <v-btn 
-            @click="generateReport"
-            color="info"
-            class="ml-2"
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.farmer.show">
+        <v-expansion-panel-header>
+          <h3 class="">Pendataan Petani & Lahan</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            :headers="tables.farmer.headers"
+            :items="tables.farmer.items"
+            :search="tables.farmer.search"
+            :loading="tables.farmer.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
           >
-            <v-icon small class="mr-1">mdi-printer</v-icon>
-            Export
-          </v-btn>
-        </div>
-      </template>
-      <template v-slot:header.petani1>
-        Petani {{ filters.dates.farmer.date1 }}
-      </template>
-      <template v-slot:header.petani2>
-        Petani {{ filters.dates.farmer.date2 }}
-      </template>
-      <template v-slot:item.progress_petani="{item}">
-        {{ item.progress_petani }}%
-      </template>
-      <template v-slot:header.lahan1>
-        Lahan {{ filters.dates.land.date1 }}
-      </template>
-      <template v-slot:header.lahan2>
-        Lahan {{ filters.dates.land.date2 }}
-      </template>
-      <template v-slot:item.progress_lahan="{item}">
-        {{ item.progress_lahan }}%
-      </template>
-    </v-data-table>
+            <template v-slot:top>
+              <v-row class="py-3">
+                <v-chip v-if="filters.UM" class="mx-2 px-4" color="success">UM - {{ filters.UM }}</v-chip>
+                <v-chip v-if="filters.FC" class="mx-2 px-4" color="success">FC - {{ filters.FC }}</v-chip>
+                <v-spacer></v-spacer>
+                <v-btn 
+                  @click="generateReport"
+                  color="info"
+                  class="ml-2"
+                  rounded
+                >
+                  <v-icon small class="mr-1">mdi-printer</v-icon>
+                  Export
+                </v-btn>
+              </v-row>
+            </template>
+            <template v-slot:header.petani1>
+              Petani {{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }}
+            </template>
+            <template v-slot:header.petani2>
+              Petani {{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }}
+            </template>
+            <template v-slot:item.progress_petani="{item}">
+              {{ item.progress_petani }}%
+            </template>
+            <template v-slot:header.lahan1>
+              Lahan {{ dateFormat(filters.dates.land[0], 'DD MMM Y') }}
+            </template>
+            <template v-slot:header.lahan2>
+              Lahan {{ dateFormat(filters.dates.land[1], 'DD MMM Y') }}
+            </template>
+            <template v-slot:item.progress_lahan="{item}">
+              {{ item.progress_lahan }}%
+            </template>
+            <template v-slot:item.actions="{item, index}">
+              <v-btn
+                dark
+                color="red"
+                rounded
+                small
+                @click="() => { tables.farmer.items.splice(index, 1) }"
+              >
+                <v-icon small class="mr-1">mdi-close</v-icon>
+                Remove
+              </v-btn>
+            </template>
+          </v-data-table>
 
-    <!-- Export Template -->
-    <vue-html2pdf
-      :show-layout="false"
-      :float-layout="true"
-      :enable-download="false"
-      :preview-modal="true"
-      :paginate-elements-by-height="1400"
-      :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
-      :pdf-quality="2"
-      :manual-pagination="false"
-      pdf-format="a4"
-      pdf-orientation="landscape"
-      pdf-content-width="1125px"
-      ref="html2Pdf"
-    >
-      <section slot="pdf-content">
-        <v-container>
-          <v-row>
-            <v-col sm="6" class="mb-2">
-              <table>
-                <tr>
-                  <td>Unit Manager</td>
-                  <td>:</td>
-                  <td>{{ filters.UM }}</td>
-                </tr>
-                <tr>
-                  <td>Field Coordinator</td>
-                  <td>:</td>
-                  <td>{{ filters.FC }}</td>
-                </tr>
-              </table>
-            </v-col>
-            <v-col sm="12">
-              <h3>Petani</h3>
-              <center>
-                <table border="1" style="border-collapse: collapse;width: 100%;">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Nama FF</th>
-                      <th>Petani {{ filters.dates.farmer.date1 }}</th>
-                      <th>Petani {{ filters.dates.farmer.date2 }}</th>
-                      <th>Petani Total</th>
-                      <th>Petani Progress</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
-                      <td align="center">{{ dIndex + 1 }}</td>
-                      <td style="padding-left: 5px">{{ data.ff }}</td>
-                      <td align="center">{{ data.petani1 }}</td>
-                      <td align="center">{{ data.petani2 }}</td>
-                      <td align="center">{{ data.total_petani }}</td>
-                      <td align="center">{{ data.progress_petani }}%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </center>
-            </v-col>
-            <v-col sm="12">
-              <h3>Lahan</h3>
-              <center>
-                <table border="1" style="border-collapse: collapse;width: 100%;">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Nama FF</th>
-                      <th>Lahan {{ filters.dates.land.date1 }}</th>
-                      <th>Lahan {{ filters.dates.land.date2 }}</th>
-                      <th>Lahan Total</th>
-                      <th>Lahan Progress</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
-                      <td align="center">{{ dIndex + 1 }}</td>
-                      <td style="padding-left: 5px">{{ data.ff }}</td>
-                      <td align="center">{{ data.lahan1 }}</td>
-                      <td align="center">{{ data.lahan2 }}</td>
-                      <td align="center">{{ data.total_lahan }}</td>
-                      <td align="center">{{ data.progress_lahan }}%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </center>
-            </v-col>
-          </v-row>
-        </v-container>
-      </section>
-    </vue-html2pdf>
+          <!-- Export Template -->
+          <vue-html2pdf
+            :show-layout="false"
+            :float-layout="true"
+            :enable-download="false"
+            :preview-modal="true"
+            :paginate-elements-by-height="1400"
+            :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
+            :pdf-quality="2"
+            :manual-pagination="false"
+            pdf-format="a4"
+            pdf-orientation="landscape"
+            pdf-content-width="1125px"
+            ref="html2Pdf"
+          >
+            <section slot="pdf-content">
+              <v-container>
+                <center>
+                  <h2>Pendataan Petani & Lahan</h2>
+                  <h3>Activities Progress</h3>
+                </center>
+                <v-row>
+                  <v-col sm="6" class="mb-2">
+                    <table>
+                      <tr>
+                        <td>Unit Manager</td>
+                        <td>:</td>
+                        <td>{{ filters.UM }}</td>
+                      </tr>
+                      <tr>
+                        <td>Field Coordinator</td>
+                        <td>:</td>
+                        <td>{{ filters.FC }}</td>
+                      </tr>
+                      <tr>
+                        <td>Export Date</td>
+                        <td>:</td>
+                        <td>{{ dateFormat(new Date(), 'DD MMMM Y') }}</td>
+                      </tr>
+                    </table>
+                  </v-col>
+                  <v-col sm="12">
+                    <center>
+                      <table border="1" style="border-collapse: collapse;width: 100%;">
+                        <thead>
+                          <tr>
+                            <th>No</th>
+                            <th>Nama FF</th>
+                            <th>Petani ({{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }})</th>
+                            <th>Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})</th>
+                            <th>Petani Total</th>
+                            <th>Petani Progress</th>
+                            <th>Lahan ({{ dateFormat(filters.dates.land[0], 'DD MMM Y') }})</th>
+                            <th>Lahan ({{ dateFormat(filters.dates.land[1], 'DD MMM Y') }})</th>
+                            <th>Lahan Total</th>
+                            <th>Lahan Progress</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
+                            <td align="center">{{ dIndex + 1 }}</td>
+                            <td style="padding-left: 5px">{{ data.ff }}</td>
+                            <td align="center">{{ data.petani1 }}</td>
+                            <td align="center">{{ data.petani2 }}</td>
+                            <td align="center">{{ data.total_petani }}</td>
+                            <td align="center">{{ data.progress_petani }}%</td>
+                            <td align="center">{{ data.lahan1 }}</td>
+                            <td align="center">{{ data.lahan2 }}</td>
+                            <td align="center">{{ data.total_lahan }}</td>
+                            <td align="center">{{ data.progress_lahan }}%</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </center>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </section>
+          </vue-html2pdf>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
 
     <v-snackbar
       v-model="snackbar.show"
@@ -466,7 +436,7 @@ import axios from "axios";
 import { truncate } from "fs";
 import { randomInt } from 'crypto';
 // import BaseUrl from "../../services/BaseUrl.js";
-import moment from 'moment'
+import moment, { now } from 'moment'
 import VueHtml2pdf from 'vue-html2pdf'
 
 export default {
@@ -490,29 +460,19 @@ export default {
       typegetdata: '',
       user: '',
     },
+    checkedAvtivities: [],
     dates: {
-      farmer: {
-        date1: '2022-08-31',
-        date2: '2022-09-30',
-      },
-      land: {
-        date1: '2022-10-03',
-        date2: '2022-10-31',
-      },
+      farmer: ['2022-08-31','2022-09-30'],
+      land: ['2022-10-03','2022-10-31'],
     },
     expansions: {
       model: 0
     },
     filters: {
+      activities: [],
       dates: {
-        farmer: {
-          date1: '',
-          date2: ''
-        },
-        land: {
-          date1: '',
-          date2: ''
-        }
+        farmer: [],
+        land: []
       },
       programYear: '',
       UM: '',
@@ -520,14 +480,8 @@ export default {
       FF: '',
     },
     menus: {
-      farmer: {
-        date1: false,
-        date2: false,
-      },
-      land: {
-        date1: false,
-        date2: false,
-      },
+      farmer: false,
+      land: false,
     },
     options: {
       FC: {
@@ -550,6 +504,17 @@ export default {
         loading: false,
         model: '',
       },
+      activities: {
+        items: [
+          {value: "Pendataan Petani & Lahan", disabled: false},
+          {value: "Sosialisasi Tanam", disabled: true},
+          {value: "Penilikan Lubang", disabled: true},
+          {value: "Realisasi Tanam", disabled: true},
+        ],
+        label: 'Activities',
+        loading: false,
+        model: [],
+      }
     },
     overlay: false,
     snackbar: {
@@ -561,6 +526,7 @@ export default {
     tables: {
       farmer: {
         headers: [
+          { text: "Actions", value: "actions", align: 'center', sortable: false },
           { text: "Field Facilitator", value: "ff" },
           { text: "petani1", value: "petani1", align: 'center' },
           { text: "petani2", value: "petani2", align: 'center' },
@@ -573,7 +539,8 @@ export default {
         ],
         items: [],
         loading: false,
-        search: ''
+        search: '',
+        show: false
       },
       land: {
         headers: [],
@@ -588,6 +555,14 @@ export default {
     await this.firstAccessPage();
     this.options.programYear.model = new Date().getFullYear().toString()
     // this.filters.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
+  },
+
+  watch: {
+    'filters.activities': {
+      handler(newValue) {
+        console.log(newValue)
+      }
+    }
   },
 
   methods: {
@@ -651,7 +626,13 @@ export default {
         this.options.FC.loading = false
       }
     },
-    async generateKPI(){
+    async generateKPI() {
+      const activitiesActive = this.options.activities.model
+      if (activitiesActive.includes('Pendataan Petani & Lahan')) {
+        this.expansions.model = 1
+        this.tables.farmer.show = true
+      }
+
       if (this.options.FC.model) {
         await this.generateKPIbyFC(this.options.FC.model)
       }
@@ -660,7 +641,7 @@ export default {
       let params = new URLSearchParams({
         fc_no: fc_no,
         program_year: this.options.programYear.model,
-        dates: [this.dates.farmer.date1, this.dates.farmer.date2, this.dates.land.date1, this.dates.land.date2]
+        dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1]]
       })
       this.tables.farmer.loading = true
       try {
@@ -673,7 +654,6 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result)
         let datas = response.data.data.result
         let farmers = []
         let lands = []
@@ -693,13 +673,16 @@ export default {
         // set filter data
         await this.setFilterData(datas)
         // minimize expansions filter panel
-        this.expansions.model = 1
       } catch (error) {
         console.error(error.response);
         this.sessionEnd(error)
       } finally {
         this.tables.farmer.loading = false
       }
+    },
+    removeFromActivitiesInput (item) {
+      const index = this.options.activities.model.indexOf(item.value)
+      if (index >= 0) this.options.activities.model.splice(index, 1)
     },
     // Utilities Function
     setFilterData(datas) {
@@ -711,14 +694,10 @@ export default {
       
       
       // set date
-      this.filters.dates.farmer.date1 = this.dates.farmer.date1
-      this.filters.dates.farmer.date2 = this.dates.farmer.date2
-      this.dates.farmer.date1 = '2022-08-31'
-      this.dates.farmer.date2 = '2022-09-30'
-      this.filters.dates.land.date1 = this.dates.land.date1
-      this.filters.dates.land.date2 = this.dates.land.date2
-      this.dates.land.date1 = '2022-10-03'
-      this.dates.land.date2 = '2022-10-31'
+      this.filters.dates.farmer = this.dates.farmer
+      this.dates.farmer = ['2022-08-31', '2022-09-30']
+      this.filters.dates.land = this.dates.land
+      this.dates.land = ['2022-10-03' ,'2022-10-31']
     },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
