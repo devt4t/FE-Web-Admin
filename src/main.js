@@ -5,6 +5,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import { BootstrapVue } from 'bootstrap-vue'
 import VueGoogleCharts from 'vue-google-charts'
+import VueEasyLightbox from 'vue-easy-lightbox'
 
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
@@ -23,6 +24,8 @@ Vue.use(VueGoogleCharts)
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
+
+Vue.use(VueEasyLightbox)
 
 new Vue({
   router,
