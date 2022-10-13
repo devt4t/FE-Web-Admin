@@ -1807,15 +1807,19 @@ export default {
         this.defaultItem.farmer_no = ""
       }
     },
-    async getPetaniByMU(mu_no) {
+    async getPetaniByMU(mu_no, ta_no) {
       // if (this.User.fc.fc) {
       //   this.fc_no_global = this.User.fc.fc;
       // }
       try {
+        const params = new URLSearchParams({
+          typegetdata: 'all',
+          mu: mu_no,
+          ta: ta_no
+        })
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetFarmerAllAdmin?typegetdata=all&mu=" +
-            mu_no,
+            "GetFarmerAllAdmin?" + params,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2116,7 +2120,7 @@ export default {
         this.loading.farmer = true
         this.loadtabledetail = true
         await this.getPetani();
-        await this.getPetaniByMU(a.mu_no);
+        await this.getPetaniByMU(a.mu_no, a.target_area);
         this.loadtabledetail = false
         this.listFarmerParticipant = []
         await this.itemspetani.forEach((val, index) => {
