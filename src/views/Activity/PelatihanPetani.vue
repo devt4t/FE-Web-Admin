@@ -1225,12 +1225,14 @@
       v-model="snackbar"
       :color="colorsnackbar"
       :timeout="timeoutsnackbar"
+      rounded="xl"
     >
       {{ textsnackbar }}
       <template v-slot:action="{ attrs }">
         <v-btn
           color="white"
           outlined
+          rounded
           v-bind="attrs"
           @click="snackbar = false"
         >
