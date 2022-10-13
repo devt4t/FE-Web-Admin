@@ -11,7 +11,7 @@
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-card
         max-width="325"
-        class="mx-auto px-5 pb-2"
+        class="mx-auto px-5 pb-2 rounded-xl"
         style="margin-top: 50px"
         elevation="7"
       >
