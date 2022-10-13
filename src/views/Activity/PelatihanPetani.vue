@@ -231,11 +231,11 @@
               <v-card-text class="pa-0 fontall">
                 <v-stepper v-if="load == false" v-model="e1">
                   <v-stepper-header>
-                    <v-stepper-step editable :complete="e1 > 1" step="1">
+                    <v-stepper-step editable :complete="e1 > 1" step="1" color="success">
                       Main Data
                     </v-stepper-step>
                     <v-divider></v-divider>
-                    <v-stepper-step :editable="selectFF ? true : false" :complete="e1 > 2" step="2">
+                    <v-stepper-step :editable="selectFF ? true : false" :complete="e1 > 2" step="2" color="success">
                       Peserta Pelatihan 
                     </v-stepper-step>
                   </v-stepper-header>
@@ -251,7 +251,12 @@
                               <!-- UM -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   v-model="selectUM"
                                   :items="itemsum"
                                   item-value="nik"
@@ -259,7 +264,6 @@
                                   v-on:change="selectedUM"
                                   label="Unit Manager"
                                   :loading="loading.um"
-                                  outlined
                                   :readonly="User.role_name === 'FIELD COORDINATOR' || User.role_name === 'UNIT MANAGER'"
                                   :rules="[(v) => !!v || 'Field is required']"
                                 ></v-autocomplete>
@@ -267,7 +271,12 @@
                               <!-- FC -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   v-model="selectFC"
                                   :items="itemsfc"
                                   item-value="nik"
@@ -277,14 +286,18 @@
                                   :rules="[(v) => !!v || 'Field is required']"
                                   :loading="loading.fc"
                                   :no-data-text="loading.fc ? 'Loading...' : 'Pilih UM'"
-                                  outlined
                                   :readonly="User.role_name === 'FIELD COORDINATOR'"
                                 ></v-autocomplete>
                               </v-col>
                               <!-- FF -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   v-model="selectFF"
                                   :items="itemsff"
                                   item-text="name"
@@ -292,7 +305,6 @@
                                   label="Field Facilitator"
                                   :loading="loading.ff"
                                   :no-data-text="loading.ff ? 'Loading...' : 'Pilih FC'"
-                                  outlined
                                   return-object
                                   type="string"
                                   v-on:change="selectPetaniWithMUScope"
@@ -309,14 +321,18 @@
                               <!-- Absensi File -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-file-input
+                                  color="success"
+                                  item-color="success"
+                                  outlined
                                   rounded
+                                  hide-details
                                   accept="image/png, image/jpeg, image/bmp"
                                   placeholder="Foto Absensi Tertulis"
                                   prepend-icon="mdi-camera"
                                   label="Foto Absensi Tertulis"
                                   v-on:change="absensiFileChanged"
-                                  outlined
                                   :key="componentKey.absensiImageInput"
+                                  :rules="[(v) => !!v || 'Field is required']"
                                 ></v-file-input>
                                 <v-card elevation="2" class="rounded-xl" height="300" v-if="absensiPreview && absensiPreview !== ''">
                                   <v-img
@@ -340,13 +356,17 @@
                                 </v-btn>
                                 <v-file-input
                                   v-if="showedAbsensi2"
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   accept="image/png, image/jpeg, image/bmp"
                                   placeholder="Foto Absensi Tertulis 2"
                                   prepend-icon="mdi-camera"
                                   label="Foto Absensi Tertulis 2"
                                   v-on:change="absensiFileChanged2"
-                                  outlined
                                   :key="componentKey.absensiImageInput2"
                                 ></v-file-input>
                                 <v-card elevation="2" class="rounded-xl" height="300" v-if="absensiPreview2 && absensiPreview2 !== ''">
@@ -365,13 +385,17 @@
                               <!-- Materi Pelatihan 1 -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   v-model="dataToStore.materi_1"
                                   :items="options.materiPelatihan"
                                   item-text="material_name"
                                   item-value="material_no"
                                   label="Materi Pelatihan 1"
-                                  outlined
                                   readonly
                                   type="string"
                                   :rules="[(v) => !!v || 'Field is required']"
@@ -384,13 +408,17 @@
                               <!-- Materi Pelatihan 2 -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-autocomplete
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   v-model="dataToStore.materi_2"
                                   :items="options.materiPelatihan"
                                   item-text="material_name"
                                   item-value="material_no"
                                   label="Materi Pelatihan 2"
-                                  outlined
                                   type="string"
                                   clearable
                                   :rules="[(v) => !!v || 'Field is required']"
@@ -406,14 +434,18 @@
                               <!-- Program year -->
                               <v-col cols="12" sm="12" md="12">
                                 <v-select
+                                  color="success"
+                                  item-color="success"
+                                  :menu-props="{rounded: 'xl'}"
+                                  outlined
                                   rounded
+                                  hide-details
                                   v-model="dataToStore.program_year"
                                   :items="itemsTahun"
                                   item-text="text"
                                   item-value="value"
                                   disabled
                                   label="Tahun Program"
-                                  outlined
                                   type="string"
                                   :rules="[(v) => !!v || 'Field is required']"
                                 ></v-select>
@@ -592,14 +624,18 @@
                         <v-row>
                           <v-col class="px-1 py-0" cols="12" sm="12" md="12">
                             <v-autocomplete
+                              color="success"
+                              item-color="success"
+                              :menu-props="{rounded: 'xl'}"
+                              outlined
                               rounded
+                              hide-details
                               :items="itemspetaniallmu"
                               v-model="addMoreFarmerParticipantSelectValue"
                               item-text="nama"
                               item-value="kode"
                               label="Pilih Petani"
                               v-on:change="addMoreFarmerParticipant"
-                              outlined
                               return-object
                               clearable
                               :loading="loading.farmer"
