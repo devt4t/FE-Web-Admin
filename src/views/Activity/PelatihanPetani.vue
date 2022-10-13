@@ -1302,7 +1302,8 @@ export default {
     },
     componentKey: {
       listFarmerParticipantTable: 0,
-      absensiImageInput: 0
+      absensiImageInput: 100,
+      absensiImageInput2: 200,
     },
     alerttoken: false,
     itemsbr: [
@@ -2412,7 +2413,9 @@ export default {
         farmers: []
       }
       this.absensiPreview = ""
+      this.absensiPreview2 = ""
       this.componentKey.absensiImageInput += 1
+      this.componentKey.absensiImageInput2 += 1
       this.e1 = 1;
 
       this.absensiDelete = ''
