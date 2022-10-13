@@ -1553,7 +1553,7 @@ export default {
     snackbar: false,
     textsnackbar: "Test",
     colorsnackbar: null,
-    timeoutsnackbar: 5000,
+    timeoutsnackbar: 100000,
     employee_no: "",
     preview: {
       petani: {
@@ -2039,7 +2039,6 @@ export default {
           this.colorsnackbar = 'red lighten-1'
         }
       } catch(error) {
-          this.timeoutsnackbar = 10000
           this.textsnackbar = error.response.data.data.status.code + ': ' +error.response.data.data.status.description
           this.colorsnackbar = 'red lighten-1'
           this.snackbar = true
