@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-1">
+  <v-container class="mt-5">
     <v-row style="margin-top: -15px">
       <v-col cols="12" md="12">
         <!-- <v-card>
@@ -20,7 +20,7 @@
           </v-alert>
         </div> -->
 
-        <v-card>
+        <v-card rounded="xl">
           <v-card-title class="fontall" v-if="isMorning()">
             Good Morning, {{ fullnameadmin }}</v-card-title
           >
@@ -108,7 +108,7 @@
 
     <v-row dense class="mt-3">
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card class="d-none d-md-block" elevation="5">
+        <v-card class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -118,7 +118,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="d-sm-block d-md-none" elevation="5">
+        <v-card class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -129,7 +129,7 @@
         </v-card>
       </v-col>
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card class="d-none d-md-block" elevation="5">
+        <v-card class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -139,7 +139,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="d-sm-block d-md-none" elevation="5">
+        <v-card class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -150,7 +150,7 @@
         </v-card>
       </v-col>
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card class="d-none d-md-block" elevation="5">
+        <v-card class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -160,7 +160,7 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="d-sm-block d-md-none" elevation="5">
+        <v-card class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
