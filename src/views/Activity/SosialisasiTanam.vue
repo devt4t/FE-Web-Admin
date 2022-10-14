@@ -354,7 +354,7 @@
             <v-btn outlined color="red" text @click="closeDetailPohon"
               >Cancel</v-btn
             >
-            <v-btn outlined color="blue" text @click="saveEditPohon"
+            <v-btn outlined color="blue" disabled text @click="saveEditPohon"
               >Save</v-btn
             >
             <v-spacer></v-spacer>
