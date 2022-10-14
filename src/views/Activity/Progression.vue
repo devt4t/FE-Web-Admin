@@ -33,7 +33,7 @@
     <!-- MODAL -->
     <!-- END: MODAL -->
 
-    <v-expansion-panels v-model="expansions.model" class="mb-6 px-3">
+    <v-expansion-panels v-model="expansions.model" class="mb-6 px-3" multiple>
       <!-- Filters Panel -->
       <v-expansion-panel class="rounded-xl ">
         <v-expansion-panel-header>
@@ -257,18 +257,31 @@
                   </v-menu>
             </v-col>
             <!-- Button -->
-            <v-col cols="12" class="d-flex align-items-center">
+            <v-col cols="12" class="d-flex align-items-center justify-center">
               <v-btn
-                class="mr-1 mt-2 text--white"
+                class="mr-1 my-2 white--text px-10"
                 @click="generateKPI()"
                 color="blue"
                 rounded
-                :disabled="!options.FC.model || options.FC.model == '' || options.activities.model.length < 1"
+                :disabled="btn.generateButton.disabled"
+                x-large
+                :loading="btn.generateButton.loading"
               >
-                <v-icon class="mr-1" small>mdi-check-circle</v-icon> Generate
+                <v-icon class="mr-1 " small>mdi-calendar-start</v-icon> 
+                <span class="">Generate</span>
               </v-btn>
             </v-col>
           </v-row>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <!-- Filtered Panel -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="filters.showed">
+        <v-expansion-panel-header>
+          <h3 class="dark--text"><v-icon class="mr-1">mdi-filter</v-icon> Filtered Panel</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-chip v-if="filters.UM" class="mx-2 my-1 px-4" color="success">UM - {{ filters.UM }}</v-chip>
+          <v-chip v-if="filters.FC" class="mx-2 my-1  px-4" color="success">FC - {{ filters.FC }}</v-chip>
         </v-expansion-panel-content>
       </v-expansion-panel>
       <!-- Pendataan Petani dan Lahan Panel -->
@@ -291,14 +304,12 @@
             }"
           >
             <template v-slot:top>
-              <v-row class="py-3">
-                <v-chip v-if="filters.UM" class="mx-2 px-4" color="success">UM - {{ filters.UM }}</v-chip>
-                <v-chip v-if="filters.FC" class="mx-2 px-4" color="success">FC - {{ filters.FC }}</v-chip>
-                <v-spacer></v-spacer>
+              <v-row class="py-3 justify-center">
+                <v-spacer class="d-none d-md-inline-block"></v-spacer>
                 <v-btn 
                   @click="generateReport"
                   color="info"
-                  class="ml-2"
+                  class="mb-2 d-none d-md-inline-block"
                   rounded
                 >
                   <v-icon small class="mr-1">mdi-printer</v-icon>
@@ -465,15 +476,21 @@ export default {
       typegetdata: '',
       user: '',
     },
-    checkedAvtivities: [],
     dates: {
       farmer: ['2022-08-31','2022-09-30'],
       land: ['2022-10-03','2022-10-31'],
     },
+    btn: {
+      generateButton: {
+        loading: false,
+        disabled: true
+      }
+    },
     expansions: {
-      model: 0
+      model: [0]
     },
     filters: {
+      showed: false,
       activities: [],
       dates: {
         farmer: [],
@@ -567,7 +584,27 @@ export default {
       handler(newValue) {
         console.log(newValue)
       }
-    }
+    },
+    'options.FC.model': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
+      }
+    },
+    'options.activities.model': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
+      }
+    },
+    'dates.farmer': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
+      }
+    },
+    'dates.land': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
+      }
+    },
   },
 
   methods: {
@@ -632,15 +669,23 @@ export default {
       }
     },
     async generateKPI() {
+      this.btn.generateButton.loading = true
+      
       const activitiesActive = this.options.activities.model
+      let openedPanel = []
       if (activitiesActive.includes('Pendataan Petani & Lahan')) {
-        this.expansions.model = 1
+        openedPanel.push(2)
+        this.filters.activities.push('Pendataan Petani & Lahan')
         this.tables.farmer.show = true
       }
+      this.filters.showed = true
+      this.expansions.model = [1, ...openedPanel]
 
       if (this.options.FC.model) {
         await this.generateKPIbyFC(this.options.FC.model)
       }
+
+      this.btn.generateButton.loading = false
     },
     async generateKPIbyFC(fc_no) {
       let params = new URLSearchParams({
@@ -677,7 +722,6 @@ export default {
         this.tables.land.items = lands
         // set filter data
         await this.setFilterData(datas)
-        // minimize expansions filter panel
       } catch (error) {
         console.error(error.response);
         this.sessionEnd(error)
@@ -688,6 +732,34 @@ export default {
     removeFromActivitiesInput (item) {
       const index = this.options.activities.model.indexOf(item.value)
       if (index >= 0) this.options.activities.model.splice(index, 1)
+    },
+    getButtonGenerateKPIDisabledCondition() {
+      let requiredNull = 0
+      // required FC
+      if (!this.options.FC.model) requiredNull += 1
+      // required activities
+      if (this.options.activities.model.length < 1) requiredNull += 1
+      else {
+        // pendataan petani dan lahan
+        if (this.options.activities.model.includes('Pendataan Petani & Lahan')) {
+          if (this.dates.farmer.length < 2 || this.dates.land.length < 2) requiredNull += 1
+          else {
+            // fixing dates farmer
+            if (this.dates.farmer[0] > this.dates.farmer[1]) {
+              const reconstructionFarmerDate = [this.dates.farmer[1], this.dates.farmer[0]]
+              this.dates.farmer = reconstructionFarmerDate
+            }
+            // fixing dates lahan
+            if (this.dates.land[0] > this.dates.land[1]) {
+              const reconstructionLandDate = [this.dates.land[1], this.dates.land[0]]
+              this.dates.land = reconstructionLandDate
+            }
+          }
+        }
+      }
+      
+      if (requiredNull == 0) this.btn.generateButton.disabled = false
+      else this.btn.generateButton.disabled = true
     },
     // Utilities Function
     setFilterData(datas) {
