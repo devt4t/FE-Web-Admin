@@ -327,7 +327,7 @@
                                         <v-btn
                                           rounded
                                           large
-                                          color="green lighten-1 px-10"
+                                          color="green lighten-1"
                                           v-bind="attrs"
                                           v-on="{...menu, ...tooltip}"
                                         >
