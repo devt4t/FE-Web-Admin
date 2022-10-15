@@ -17,27 +17,14 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
       :items-per-page="30"
       :footer-props="{
         itemsPerPageOptions: [10, 20, 30, 40, 50, -1]
       }"
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-
-      <template v-slot:item.updated_gis="{ item }">
-        <v-chip :color="getColorStatusGIS(item.updated_gis)" dark>
-          {{ item.updated_gis }}
-        </v-chip>
-      </template>
-
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat rounded="xl">
           <!-- dropdown filter button -->
           <v-menu
             rounded="xl"
@@ -121,7 +108,6 @@
             class="mx-3 mt-7 d-none d-md-block"
             style="max-width: 225px"
           ></v-select> -->
-          <v-divider class="mx-2 d-none d-md-block" inset vertical></v-divider>
           <v-spacer class="d-none d-md-block"></v-spacer>
           <v-text-field
             v-model="search"
@@ -130,7 +116,6 @@
             single-line
             hide-details
           ></v-text-field>
-          <v-divider class="mx-2" inset vertical></v-divider>
           <!-- <v-btn
             v-if="RoleAccesCRUDShow == true && crudLahanBasicShow == true"
             dark
@@ -142,9 +127,10 @@
           </v-btn> -->
           <v-btn
             dark
-            class="mb-2 mr-1 d-none d-md-block"
+            class="mb-2 mr-1 ml-2 d-none d-md-block"
             @click="download()"
             color="blue"
+            rounded
           >
             <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
           </v-btn>
@@ -154,6 +140,7 @@
             class="mb-2 mr-1 d-none d-md-block"
             @click="downloadSuperAdmin()"
             color="blue"
+            rounded
           >
             <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
           </v-btn>
@@ -263,7 +250,7 @@
 
           <!-- Modal Add Edit -->
           <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
+            <v-card rounded="xl">
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-card-title class="mb-1 headermodalstyle">
                   <span class="headline">{{ formTitle }}</span>
@@ -1664,6 +1651,19 @@
               </v-card-actions>
             </v-card> </v-dialog
         ></v-toolbar>
+      </template>
+
+      <!-- Color Status -->
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="getColorStatus(item.status)" dark>
+          {{ item.status }}
+        </v-chip>
+      </template>
+
+      <template v-slot:item.updated_gis="{ item }">
+        <v-chip :color="getColorStatusGIS(item.updated_gis)" dark>
+          {{ item.updated_gis }}
+        </v-chip>
       </template>
 
       <!-- Action table -->
@@ -3312,9 +3312,7 @@ export default {
           this.defaultItem.dbsppt = "-";
         }
         var farmerno;
-        if (this.defaultItem.lahan_no) {
-          farmerno = this.defaultItem.farmer_no;
-        } else {
+        if (this.defaultItem.kode) {
           farmerno = this.defaultItem.kode;
         }
 
