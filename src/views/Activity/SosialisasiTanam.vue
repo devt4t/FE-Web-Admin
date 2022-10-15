@@ -939,8 +939,9 @@
                 Detail
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && User.role_name == 'UNIT MANAGER') || User.role_group == 'IT'">
               <v-btn
+                vi
                 dark
                 class="px-7"
                 rounded
