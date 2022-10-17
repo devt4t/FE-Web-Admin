@@ -607,12 +607,14 @@
             <v-spacer></v-spacer>
             <v-btn
               v-if="RoleAccesCRUDShow == true && defaultItem.waitingapproval == true"
+              dark
               color="green"
-              text
+              rounded
               @click="verifSubmit()"
-              outlined
               elevation="1"
+              class="px-5"
             >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
               Verifikasi
             </v-btn>
           </v-card-actions>
@@ -711,7 +713,7 @@
 
       <template v-slot:top>
           <v-row class="py-3 px-2">
-            <v-col cols="12" lg="3">
+            <v-col cols="12" lg="6" class="d-flex align-center">
               <!-- dropdown filter button -->
               <v-menu
                 rounded="xl"
@@ -762,8 +764,6 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-            </v-col>
-            <v-col cols="12" lg="3" class="">
               <!-- Program Year -->
               <v-select
                 v-model="program_year"
@@ -891,10 +891,15 @@
                 rounded
                 label="Page"
                 class="centered-select"
-                style="width: 50%;max-width: 200px;"
+                style="width: 50%;max-width: 100px;"
               ></v-select>
             </v-col>
           </v-row>
+      </template>
+
+      <!-- index column -->
+      <template v-slot:item.index="{item, index}">
+          {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
       </template>
 
       <!-- Luas Lahan kolom -->
@@ -1032,6 +1037,7 @@ export default {
     search: "",
     type: "",
     headers: [
+      { text: "No", value: "index"},
       { text: "No Form", value: "form_no"},
       { text: "Field Facilitator", value: "nama_ff"},
       { text: "Nama Petani", value: "nama_petani"},
@@ -1327,8 +1333,9 @@ export default {
           pageOptions.push(index)          
         }
         this.table.pagination.page_options = pageOptions
+      }).finally(() => {
+        this.loadtable = false
       })
-      this.loadtable = false
     },
     getTableData() {
       return new Promise((resolve, reject) => {
@@ -1356,21 +1363,23 @@ export default {
             },
           }
         ).then(res => {
-          let items = res.data.data.result.data
-          const total = res.data.data.result.total
-          const current_page = res.data.data.result.current_page
-          const last_page = res.data.data.result.last_page
-          setTimeout(() => {
+          if (typeof res.data.data.result !== 'undefined') {
+            let items = res.data.data.result.data
+            const total = res.data.data.result.total
+            const current_page = res.data.data.result.current_page
+            const last_page = res.data.data.result.last_page
             resolve({
               items,
               total,
               current_page,
               last_page
             })
-          }, 300)
+          } else {
+            reject('Error')
+          }
+        }).catch(err => {
+          reject(err)
         })
-
-
       })
     },
 
