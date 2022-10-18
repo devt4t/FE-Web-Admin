@@ -1,5 +1,6 @@
 <template>
   <v-app id="Trees">
+    <!-- Sidebar -->
     <v-navigation-drawer :width="230" v-if="isLogin" v-model="drawer" dark app class="rounded-xl">
       <v-list-item>
         <v-list-item-content class="text-center">
@@ -67,6 +68,7 @@
       </h5>
     </v-navigation-drawer>
 
+    <!-- TopBar -->
     <v-app-bar class="mx-2 mt-2 rounded-xl" v-if="isLogin" app>
       <v-app-bar-nav-icon
         style="color: black"
@@ -117,9 +119,19 @@
       </v-menu>
     </v-app-bar>
 
+    <!-- Main Content -->
     <v-main style="background-color: white" color="white lighten-1">
       <router-view></router-view>
     </v-main>
+    
+    <!-- loading overlay -->
+    <v-overlay :value="$store.state.loadingOverlay">
+        <v-progress-circular
+            indeterminate
+            color="white"
+            size="64"
+        ></v-progress-circular>
+    </v-overlay>
   </v-app>
 </template>
 
@@ -228,10 +240,12 @@ export default {
                 activitiesRearrange[2] = valMenuItem
               } else if (valMenuItem.title === 'Lubang Tanam') { 
                 activitiesRearrange[3] = valMenuItem
-              } else if (valMenuItem.title === 'Realisasi Tanam') { 
+              } else if (valMenuItem.title === 'Distribusi') { 
                 activitiesRearrange[4] = valMenuItem
-              } else if (valMenuItem.title === 'Monitoring 2') { 
+              } else if (valMenuItem.title === 'Realisasi Tanam') { 
                 activitiesRearrange[5] = valMenuItem
+              } else if (valMenuItem.title === 'Monitoring 2') { 
+                activitiesRearrange[6] = valMenuItem
               }
             }
           })

@@ -21,6 +21,7 @@ import PenilikanTanam from '../views/Activity/PenilikanTanam.vue'
 import Monitoring2 from '../views/Activity/Monitoring2.vue'
 import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
 import Progression from '../views/Activity/Progression.vue'
+import Distribusi from '../views/Activity/Distribusi.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -140,6 +141,11 @@ const routes = [
     path: '/PenilikanTanam',
     name: 'PenilikanTanam',
     component: PenilikanTanam
+  },
+  {
+    path: '/Distribusi',
+    name: 'Distribusi',
+    component: Distribusi
   },
   {
     path: '/Monitoring2',
