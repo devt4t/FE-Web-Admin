@@ -19,7 +19,7 @@
     <v-overlay :value="overlay">
       <v-progress-circular
         indeterminate
-        color="green"
+        color="white"
         size="64"
       ></v-progress-circular>
     </v-overlay>
@@ -529,7 +529,7 @@ export default {
       activities: {
         items: [
           {value: "Pendataan Petani & Lahan", disabled: false},
-          {value: "Sosialisasi Tanam", disabled: true},
+          {value: "Sosialisasi Tanam", disabled: false},
           {value: "Penilikan Lubang", disabled: true},
           {value: "Realisasi Tanam", disabled: true},
         ],
@@ -689,6 +689,7 @@ export default {
     },
     async generateKPIbyFC(fc_no) {
       let params = new URLSearchParams({
+        activities: this.options.activities.model.join(),
         fc_no: fc_no,
         program_year: this.options.programYear.model,
         dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1]]
@@ -707,8 +708,8 @@ export default {
         let datas = response.data.data.result
         let farmers = []
         let lands = []
-        if (datas.length > 0) {
-          await datas.forEach(val => {
+        if (datas.petani_lahan.length > 0) {
+          await datas.petani_lahan.forEach(val => {
             farmers.push({
               ff: val.ff,
               ...val.petani,
@@ -764,10 +765,8 @@ export default {
     // Utilities Function
     setFilterData(datas) {
       // set management
-      if (datas.length > 0) {
-        this.filters.UM = datas[0].um
-        this.filters.FC = datas[0].fc
-      }
+      this.filters.UM = datas.um
+      this.filters.FC = datas.fc
       
       
       // set date
