@@ -677,6 +677,8 @@ export default {
         openedPanel.push(2)
         this.filters.activities.push('Pendataan Petani & Lahan')
         this.tables.farmer.show = true
+      } else {
+        this.tables.farmer.show = false
       }
       this.filters.showed = true
       this.expansions.model = [1, ...openedPanel]
