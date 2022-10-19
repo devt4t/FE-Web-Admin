@@ -690,10 +690,12 @@ export default {
   }),
 
   async created() {
-    this.$store.state.maintenanceOverlay = true
     await this.firstAccessPage();
     this.options.programYear.model = new Date().getFullYear().toString()
     // this.filters.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
+  },
+  mounted() {
+    this.$store.state.maintenanceOverlay = true
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false

@@ -136,7 +136,7 @@
     <!-- Maintenance Overlay -->
     <v-overlay :value="$store.state.maintenanceOverlay">
       <div class="d-flex flex-column align-center">
-        <img class="rounded-xl" :src="require('@/assets/maintenance.gif')" alt="">
+        <img class="rounded-xl" width="700" :src="require('@/assets/maintenance.gif')" alt="">
         <h4 class="white--text mt-3">GEKO Maintenance...
           <v-progress-circular
               indeterminate
