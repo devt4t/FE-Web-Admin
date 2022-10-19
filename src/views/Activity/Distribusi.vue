@@ -58,14 +58,29 @@
                                 ref="calendar"
                                 v-model="calendar.focus"
                                 color="green"
+                                start="2022-11-24"
+                                end="2023-01-31"
+                                show-week
                                 class="rounded-xl overflow-hidden"
+                                :event-margin-bottom="5"
                                 :events="calendar.events"
                                 :event-color="calendarGetEventColor"
                                 :event-text-color="calendarGetEventTextColor"
                                 :type="calendar.type"
                                 @click:event="calendarShowEvent"
                                 @change="calendarUpdateRange"
-                            ></v-calendar>
+                            >
+                                <!-- <template v-slot:day-label="{day}">
+                                    {{ day }}
+                                </template> -->
+                                <template v-slot:event="{event}">
+                                    <h4 class="mx-1 text-center">
+                                        <v-icon v-if="event.color == 'green'" dark small>mdi-check-circle</v-icon>
+                                        <v-icon v-else-if="event.color == 'red'" dark small>mdi-close-circle</v-icon>
+                                        {{ event.name }} ~ {{ event.total_ff }} FF 
+                                    </h4>
+                                </template>
+                            </v-calendar>
                             <v-menu
                                 v-model="calendar.selectedOpen"
                                 :close-on-content-click="false"
@@ -246,12 +261,12 @@ export default {
             console.log(resData)
             await resData.forEach((evData, evIndex) => {
                 events.push({
-                    name: evData.nursery + ` (${evData.total} FF)`,
+                    name: evData.nursery,
                     start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
                     total_ff: evData.total,
                     total_bibit_sostam: evData.total_bibit_sostam,
                     color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
-                    details: evData.details
+                    details: evData.details,
                 })
             })
 
