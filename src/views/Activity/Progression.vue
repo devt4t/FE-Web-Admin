@@ -15,7 +15,14 @@
       large
     ></v-breadcrumbs>
     
-
+    <!-- Maintenance Overlay -->
+    <v-overlay :value="true">
+      <div class="d-flex flex-column align-center">
+        <img class="rounded-xl" :src="require('@/assets/maintenance.gif')" alt="">
+      </div>
+    </v-overlay>
+    
+    <!-- Loading Overlay -->
     <v-overlay :value="overlay">
       <v-progress-circular
         indeterminate
@@ -150,7 +157,7 @@
                 </template>
               </v-select>
             </v-col>
-            <!-- Petani Range -->
+            <!-- Petani Date Range -->
             <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
               <p class="mb-1">Petani Date Range</p>
                   <v-menu 
@@ -203,7 +210,7 @@
                     </v-list>
                   </v-menu>
             </v-col>
-            <!-- Lahan Range -->
+            <!-- Lahan Date Range -->
             <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
               <p class="mb-1">Lahan Date Range</p>
                   <v-menu 
@@ -248,6 +255,58 @@
                           center
                           rounded
                           @click="menus.land = false"
+                        >
+                          Ok
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+            </v-col>
+            <!-- Sostam Date -->
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Sosialisasi Tanam')">
+              <p class="mb-1">Sostam Date</p>
+                  <v-menu 
+                    rounded="xl"
+                    v-model="menus.sostam"
+                    transition="slide-x-transition"
+                    bottom
+                    right
+                    offset-x
+                    :close-on-content-click="false"
+                  >
+                    <template v-slot:activator="{ on: menu, attrs }">
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on: tooltip }">
+                          <v-btn
+                            rounded
+                            color="green lighten-1"
+                            v-bind="attrs"
+                            v-on="{...menu, ...tooltip}"
+                          >
+                            <v-icon left> mdi-calendar </v-icon>
+                            {{ dates.sostam }}
+                          </v-btn>
+                        </template>
+                        <span>Klik untuk memunculkan datepicker</span>
+                      </v-tooltip>
+                    </template>
+                    <v-list>
+                      <v-list-item>
+                        <v-date-picker 
+                          color="green lighten-1 rounded-xl" 
+                          rounded
+                          v-model="dates.sostam"
+                        ></v-date-picker>
+                        <br>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="green lighten-1"
+                          center
+                          rounded
+                          @click="menus.sostam = false"
                         >
                           Ok
                         </v-btn>
@@ -307,7 +366,7 @@
               <v-row class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
                 <v-btn 
-                  @click="generateReport"
+                  @click="generateReport('Pendataan Petani & Lahan')"
                   color="info"
                   class="mb-2 d-none d-md-inline-block"
                   rounded
@@ -434,6 +493,54 @@
           </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <!-- Sosialisasi Tanam -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.sostam.show">
+        <v-expansion-panel-header>
+          <h3 class="">Sosialisasi Tanam</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            :headers="tables.sostam.headers"
+            :items="tables.sostam.items"
+            :search="tables.sostam.search"
+            :loading="tables.sostam.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
+          >
+            <template v-slot:top>
+              <v-row class="py-3 justify-center">
+                <v-spacer class="d-none d-md-inline-block"></v-spacer>
+                <v-btn 
+                  @click="generateReport('Sosialisasi Tanam')"
+                  color="info"
+                  class="mb-2 d-none d-md-inline-block"
+                  rounded
+                >
+                  <v-icon small class="mr-1">mdi-printer</v-icon>
+                  Export
+                </v-btn>
+              </v-row>
+            </template>
+            <template v-slot:item.actions="{item, index}">
+              <v-btn
+                dark
+                color="red"
+                rounded
+                small
+                @click="() => { tables.sostam.items.splice(index, 1) }"
+              >
+                <v-icon small class="mr-1">mdi-close</v-icon>
+                Remove
+              </v-btn>
+            </template>
+          </v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <v-snackbar
@@ -479,6 +586,7 @@ export default {
     dates: {
       farmer: ['2022-08-31','2022-09-30'],
       land: ['2022-10-03','2022-10-31'],
+      sostam: '2022-10-17'
     },
     btn: {
       generateButton: {
@@ -494,7 +602,8 @@ export default {
       activities: [],
       dates: {
         farmer: [],
-        land: []
+        land: [],
+        sostam: ''
       },
       programYear: '',
       UM: '',
@@ -504,6 +613,7 @@ export default {
     menus: {
       farmer: false,
       land: false,
+      sostam: false,
     },
     options: {
       FC: {
@@ -569,6 +679,28 @@ export default {
         items: [],
         loading: false,
         search: ''
+      },
+      sostam: {
+        headers: [
+          { text: "Actions", value: "actions", align: 'center', sortable: false },
+          { text: "Field Facilitator", value: "ff" },
+          { text: "Total Lahan", value: "total_lahan", align: 'center' },
+          { text: "Sostam (30 Octo 2022)", value: "total_sostam", align: 'center' },
+          { text: "Sostam Progress", value: "progress_sostam", align: 'center' },
+          { text: "Total Bibit", value: "total_bibit", align: 'center' },
+        ],
+        items: [
+          {
+            ff: 'Asep',
+            total_lahan: 35,
+            total_sostam: 20,
+            progress_sostam: '57%',
+            total_bibit: '1900 Bibit'
+          }
+        ],
+        loading: false,
+        search: '',
+        show: false
       },
     }
   }),
@@ -673,13 +805,37 @@ export default {
       
       const activitiesActive = this.options.activities.model
       let openedPanel = []
+      // Pendataan Petani & Lahan
       if (activitiesActive.includes('Pendataan Petani & Lahan')) {
         openedPanel.push(2)
         this.filters.activities.push('Pendataan Petani & Lahan')
         this.tables.farmer.show = true
       } else {
+        openedPanel.forEach((val, index) => {
+          if (val == 'Pendataan Petani & Lahan') {
+            openedPanel.slice(index, 1)
+          }
+        });
         this.tables.farmer.show = false
       }
+      // Sosialisasi Tanam
+      if (activitiesActive.includes('Sosialisasi Tanam')) {
+        if (openedPanel.includes(2)) {
+          openedPanel.push(3)
+        } else {
+          openedPanel.push(2)
+        }
+        this.filters.activities.push('Sosialisasi Tanam')
+        this.tables.sostam.show = true
+      } else {
+        openedPanel.forEach((val, index) => {
+          if (val == 'Sosialisasi Tanam') {
+            openedPanel.slice(index, 1)
+          }
+        })
+        this.tables.sostam.show = false
+      }
+
       this.filters.showed = true
       this.expansions.model = [1, ...openedPanel]
 
@@ -694,7 +850,7 @@ export default {
         activities: this.options.activities.model.join(),
         fc_no: fc_no,
         program_year: this.options.programYear.model,
-        dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1]]
+        dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
       })
       this.tables.farmer.loading = true
       try {
@@ -794,8 +950,10 @@ export default {
     dateFormat(date, format) {
         return moment(date).format(format)
     },
-    generateReport () {
-        this.$refs.html2Pdf.generatePdf()
+    generateReport (activities) {
+       if (activities == 'Pendataan Petani & Lahan') {
+         this.$refs.html2Pdf.generatePdf()
+       }
     },
     generateFormData(data) {
         let formData= new FormData()
