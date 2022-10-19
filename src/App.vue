@@ -132,6 +132,20 @@
             size="64"
         ></v-progress-circular>
     </v-overlay>
+    
+    <!-- Maintenance Overlay -->
+    <v-overlay :value="$store.state.maintenanceOverlay">
+      <div class="d-flex flex-column align-center">
+        <img class="rounded-xl" :src="require('@/assets/maintenance.gif')" alt="">
+        <h4 class="white--text mt-3">GEKO Maintenance...
+          <v-progress-circular
+              indeterminate
+              color="white"
+              size="16"
+          ></v-progress-circular>
+        </h4>
+      </div>
+    </v-overlay>
   </v-app>
 </template>
 

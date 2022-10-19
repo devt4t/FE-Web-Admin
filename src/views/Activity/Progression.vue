@@ -14,22 +14,6 @@
       divider='>'
       large
     ></v-breadcrumbs>
-    
-    <!-- Maintenance Overlay -->
-    <v-overlay :value="true">
-      <div class="d-flex flex-column align-center">
-        <img class="rounded-xl" :src="require('@/assets/maintenance.gif')" alt="">
-      </div>
-    </v-overlay>
-    
-    <!-- Loading Overlay -->
-    <v-overlay :value="overlay">
-      <v-progress-circular
-        indeterminate
-        color="white"
-        size="64"
-      ></v-progress-circular>
-    </v-overlay>
 
     <div class="mx-9">
       <v-alert :value="auth.alertToken" color="red" elevation="24" type="error">
@@ -706,9 +690,13 @@ export default {
   }),
 
   async created() {
+    this.$store.state.maintenanceOverlay = true
     await this.firstAccessPage();
     this.options.programYear.model = new Date().getFullYear().toString()
     // this.filters.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
   },
 
   watch: {
