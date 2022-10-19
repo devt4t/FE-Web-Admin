@@ -127,11 +127,82 @@
         </v-card>
       </v-dialog>
 
-      <!-- Modal Add Edit -->
-      <v-dialog v-model="dialog" max-width="800px">
-        <v-card>
+      <!-- Modal Add -->
+      <v-dialog v-model="dialogAdd.show" max-width="1000px" content-class="rounded-xl" persistent scrollable>
+        <v-card rounded="xl" elevation="10">
+          <!-- Title -->
+          <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
+            <span class="headline">Add per~FF</span>
+            <v-spacer></v-spacer>
+            <v-icon color="red" @click="dialogAdd.show = false">mdi-close-circle</v-icon>
+          </v-card-title>
+
+          <v-card-text>
+            <!-- Loading -->
+            <v-container
+              v-if="dialogAdd.loading"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="white"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <!-- Content -->
+            <v-container v-if="dialogAdd.loading == false">
+              <v-row>
+                <v-col cols="12" class="d-flex justify-end">
+                  <v-btn color="info" rounded>
+                    <v-icon class="mr-1">mdi-refresh</v-icon>
+                    Refresh FF
+                  </v-btn>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    :menu-props="{rounded: 'xl'}"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    label="Pilih Field Facilitator"
+                    :items="options.ff.items"
+                    item-text="name"
+                    item-value="ff_no"
+                    v-model="options.ff.model"
+                    :loading="options.ff.loading"
+                    :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions v-if="dialogAdd.loading == false">
+            <v-btn color="red px-5" rounded dark @click="dialogAdd.show = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="green px-5" rounded dark @click="dialogAdd.show = false">
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Edit -->
+      <v-dialog v-model="dialog" max-width="800px" content-class="rounded-xl">
+        <v-card rounded="xl">
           <v-form ref="form" v-model="valid" lazy-validation>
-            <v-card-title class="mb-1 headermodalstyle">
+            <v-card-title class="mb-1 headermodalstyle rounded-xl">
               <span class="headline">{{ formTitle }}</span>
             </v-card-title>
 
@@ -700,6 +771,7 @@
       </v-dialog>
     <!-- END: MODAL -->
 
+    <!-- Main Table -->
     <v-data-table
       class="rounded-xl elevation-6 mx-3 pa-1 mb-5"
       :headers="headers"
@@ -867,7 +939,16 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      v-if="RoleAccesDownloadAllShow == true"
+                      dark
+                      rounded
+                      @click="showAddModal()"
+                      color="green"
+                    >
+                      <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add FF Sostam
+                    </v-btn>
+                  </v-list-item>
+                    <v-btn
+                      v-if="false"
                       dark
                       rounded
                       @click="downloadSuperAdmin()"
@@ -978,6 +1059,7 @@
       </template>
     </v-data-table>
 
+    <!-- Snackbar -->
     <v-snackbar
       v-model="snackbar"
       :color="colorsnackbar"
@@ -997,6 +1079,11 @@ export default {
   name: "SosialisasiTanam",
   authtoken: "",
   data: () => ({
+    dialogAdd: {
+      show: false,
+      loading: false,
+
+    },
     program_year: 2022,
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
@@ -1215,6 +1302,13 @@ export default {
         url: '',
       },
     },
+    options: {
+      ff: {
+        items: [],
+        loading: false,
+        model: ''
+      }
+    }
   }),
   watch: {
     'table.options': {
@@ -2076,30 +2170,6 @@ export default {
       await this.resetFilter();
       this.dialogFilterEmp = false;
     },
-
-    showAddModal() {
-      this.load = false;
-      // console.log(localStorage.getItem("token"));
-      this.defaultItem.id = "";
-      this.defaultItem.form_no = "";
-      this.defaultItem.nama = "";
-      this.defaultItem.name = "";
-      this.defaultItem.ktp_no = "";
-      this.defaultItem.farmer_no = "";
-      this.defaultItem.side_income = "";
-      this.defaultItem.ff_no = "";
-
-      this.defaultItem.no_lahan = "";
-      this.defaultItem.planting_year = "";
-      this.defaultItem.distribution_location = "";
-
-      this.datepicker1 = "";
-      this.datepicker2 = "";
-      this.datepicker3 = "";
-
-      this.formTitle = "Add data";
-      this.dialog = true;
-    },
     async showEditModal() {
       this.type = "Edit";
       console.log(this.itemTemp);
@@ -2372,6 +2442,14 @@ export default {
       } finally {
         this.table.search.options.pola_tanam_loading = false
       }
+    },
+    showAddModal() {
+      this.dialogAdd.show = true
+      console.log(this.valueFFcode.join())
+      console.log(this.typegetdata)
+    },
+    async getFFOptions() {
+      
     }
   },
 };
