@@ -128,7 +128,7 @@
       </v-dialog>
 
       <!-- Modal Add -->
-      <v-dialog v-model="dialogAdd.show" max-width="1000px" content-class="rounded-xl" persistent scrollable>
+      <v-dialog v-model="dialogAdd.show" max-width="1200px" content-class="rounded-xl" persistent scrollable>
         <v-card rounded="xl" elevation="10">
           <!-- Title -->
           <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
@@ -145,21 +145,23 @@
               fill-height
               style="background-color: rgba(255, 255, 255, 0.5)"
             >
-              <v-layout justify-center align-center>
+              <v-layout column justify-center align-center>
                 <v-progress-circular
-                  :size="80"
-                  :width="10"
+                  :size="100"
+                  :width="13"
                   indeterminate
-                  color="white"
+                  color="green"
+                  class="mb-2"
                 >
                 </v-progress-circular>
+                Getting FF data...
               </v-layout>
             </v-container>
             <!-- Content -->
             <v-container v-if="dialogAdd.loading == false">
               <v-row>
                 <v-col cols="12" class="d-flex justify-end">
-                  <v-btn color="info" rounded>
+                  <v-btn color="info" rounded @click="getFFOptions">
                     <v-icon class="mr-1">mdi-refresh</v-icon>
                     Refresh FF
                   </v-btn>
@@ -168,7 +170,8 @@
                   <v-autocomplete
                     outlined
                     rounded
-                    color="green"
+                    color="success"
+                    item-color="success"
                     :menu-props="{rounded: 'xl'}"
                     :rules="[(v) => !!v || 'Field is required']"
                     label="Pilih Field Facilitator"
@@ -178,21 +181,220 @@
                     v-model="options.ff.model"
                     :loading="options.ff.loading"
                     :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'"
+                    @change="getLahansFF()"
                   ></v-autocomplete>
+                </v-col>
+                <!-- Tanggal Distribusi -->
+                <!-- <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Distribusi</p>
+                    <v-menu 
+                      rounded="xl"
+                      transition="slide-x-transition"
+                      bottom
+                      right
+                      offset-x
+                      :close-on-content-click="false"
+                    >
+                      <template v-slot:activator="{ on: menu, attrs }">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on: tooltip }">
+                            <v-btn
+                              rounded
+                              large
+                              color="green lighten-1"
+                              v-bind="attrs"
+                              v-on="{...menu, ...tooltip}"
+                            >
+                              <v-icon left> mdi-calendar </v-icon>
+                              {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
+                            </v-btn>
+                          </template>
+                          <span>Klik untuk memunculkan datepicker</span>
+                        </v-tooltip>
+                      </template>
+                      <v-list>
+                        <v-list-item>
+                          <v-date-picker 
+                            color="green lighten-1 rounded-xl" 
+                            v-model="dataToStore.distribution_time"
+                          ></v-date-picker>
+                          <br>
+                        </v-list-item>
+                        <v-list-item>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="green lighten-1"
+                            center
+                            rounded
+                            @click="datePickerMenu = false"
+                          >
+                            Ok
+                          </v-btn>
+                          <v-spacer></v-spacer>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                </v-col> -->
+                <!-- Tanggal Penilikan Lubang -->
+                <!-- <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Penilikan Lubang</p>
+                  <v-btn
+                    rounded
+                    large
+                    color="green lighten-1"
+                    disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col> -->
+                <!-- Tanggal Realisasi Tanam -->
+                <!-- <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Realisasi Tanam</p>
+                  <v-btn
+                    rounded
+                    large
+                    disabled
+                    color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col> -->
+
+                <!-- Lahans Table -->
+                <v-col cols="12" sm="12" md="12">
+                  <v-data-table
+                    color="success"
+                    class="rounded-xl elevation-5 mb-2"
+                    :headers="table.lahans.header"
+                    :items="table.lahans.items"
+                    :loading="table.lahans.loading"
+                    loading-text="Loading... Please wait"
+                    hide-default-footer
+                    :items-per-page="-1"
+                  >
+                    <template v-slot:top>
+                      <!-- Trees Dialog -->
+                      <v-dialog v-model="table.lahans.dialogs.trees.show" max-width="700px" content-class="rounded-xl">
+                        <v-card>
+                          <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
+                            <span class="headline">Set Trees Amount</span>
+                            <v-spacer></v-spacer>
+                            <v-icon color="red" @click="table.lahans.dialogs.trees.show = false">mdi-close-circle</v-icon>
+                          </v-card-title>
+                          <v-card-content v-if="table.lahans.dialogs.trees.datas">
+                            <v-container class="py-2">
+                              <h4>Lahan</h4>
+                              <v-simple-table>
+                                <tbody>
+                                  <tr>
+                                    <td>Luas Lahan</td>
+                                    <td>:</td>
+                                    <td><strong>{{ numberFormat(table.lahans.dialogs.trees.datas.land_area) }}m<sup>2</sup></strong></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Opsi Pola Tanam</td>
+                                    <td>:</td>
+                                    <td><strong>{{ table.lahans.dialogs.trees.datas.opsi_pola_tanam }}</strong></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Region</td>
+                                    <td>:</td>
+                                    <td><strong>{{ table.lahans.dialogs.trees.datas.province == 'JB' ? 'Jawa Barat' : 'Jawa Tengah' }}</strong></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Max Bibit</td>
+                                    <td>:</td>
+                                    <td><strong>{{ numberFormat(getSeedCalculation(table.lahans.dialogs.trees.datas, 'total_max_trees')) }}</strong> Bibit</td>
+                                  </tr>
+                                </tbody>
+                              </v-simple-table>
+                              <!-- Trees -->
+                              <h4>Seeds List</h4>
+                              <v-simple-table class="rounded-xl elevation-2 overflow-hidden">
+                                <thead>
+                                  <tr>
+                                    <th>No</th>
+                                    <th>Category</th>
+                                    <th>Tree Name</th>
+                                    <th>Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr v-for="(tree, treeIndex) in table.lahans.dialogs.trees.datas.trees" :key="treeIndex">
+                                    <td>{{ treeIndex + 1 }}</td>
+                                    <td>{{ tree.category }}</td>
+                                    <td>{{ tree.tree_name }}</td>
+                                    <td>{{ tree.amount }}</td>
+                                  </tr>
+                                </tbody>
+                              </v-simple-table>
+                            </v-container>
+                          </v-card-content>
+                          <v-card-actions>
+                            <v-btn color="red px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
+                              <v-icon class="mr-1">mdi-close-circle</v-icon>
+                              Cancel
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn color="green px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
+                              <v-icon class="mr-1">mdi-check-circle</v-icon>
+                              Set
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </template>
+                    <template v-slot:item.index="{index}">
+                      {{ index + 1 }}
+                    </template>
+                    <template v-slot:item.land_area="{item}">
+                      {{ numberFormat(item.land_area) }}m<sup>2</sup>
+                    </template>
+                    <template v-slot:item.tutupan_lahan="{item}">
+                      {{ item.tutupan_lahan }}%
+                    </template>
+                    <template v-slot:item.trees="{ item, index }">
+                      <strong>{{ numberFormat(getSeedCalculation(item, 'setDataToStore', index)) }}</strong>
+                      <!-- <v-menu
+                        rounded="xl"
+                        bottom
+                        left
+                        offset-y
+                        transition="slide-y-transition"
+                        :close-on-content-click="false"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-icon v-bind="attrs" v-on="on" color="dark">
+                            mdi-dots-vertical
+                          </v-icon>
+                        </template>
+                        <v-list class="d-flex flex-column align-center">
+                          <v-list-item>
+                            <v-btn rounded dark small color="warning" @click="() => {table.lahans.dialogs.trees.show = true;table.lahans.dialogs.trees.datas = item}">
+                              <v-icon small class="mr-1">mdi-pencil-circle</v-icon>
+                              Set Amount
+                            </v-btn>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu> -->
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
 
-          <v-card-actions v-if="dialogAdd.loading == false">
+          <v-card-actions v-if="dialogAdd.loading == false" class="elevation-15 rounded-xl">
             <v-btn color="red px-5" rounded dark @click="dialogAdd.show = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Cancel
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="green px-5" rounded dark @click="dialogAdd.show = false">
+            <v-btn color="green px-5" rounded dark @click="createSostamByFF()">
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              Save
+              Create Sostam
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -397,7 +599,7 @@
                       </template> -->
                       <template v-slot:item.actions="{ item }">
                         <v-icon
-                          v-if="RoleAccesCRUDShow == true && item.validation === 0"
+                          v-if="true"
                           class="mr-3"
                           @click="editDetailPohon(item)"
                           small
@@ -500,9 +702,9 @@
                       >
                         Form No
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.form_no }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.form_no }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th
@@ -624,6 +826,7 @@
               ></v-divider>
               <div>
                 <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
+                <h4 class="mt-3">Max Bibit: {{ defaultItem.max_seed_amount }}</h4>
                 <h3 class="ml-1">
                   <v-data-table
                     :headers="headersdetail"
@@ -838,6 +1041,8 @@
               </v-menu>
               <!-- Program Year -->
               <v-select
+                color="success"
+                item-color="success"
                 v-model="program_year"
                 :items="['all', 2021,2022]"
                 outlined
@@ -853,6 +1058,8 @@
             <v-col cols="12" lg="6" class="d-flex">
               <!-- Select Search Field -->
               <v-select
+                color="success"
+                item-color="success"
                 v-model="table.search.field"
                 :items="table.search.options.column"
                 item-value="value"
@@ -868,6 +1075,8 @@
               ></v-select>
               <!-- Search Input -->
               <v-text-field
+                color="success"
+                item-color="success"
                 v-if="table.search.field != 'opsi_pola_tanam' && table.search.field != 'validation'"
                 v-model="table.search.value"
                 append-icon="mdi-magnify"
@@ -881,6 +1090,8 @@
               ></v-text-field>
               <v-select
                 v-else-if="table.search.field == 'opsi_pola_tanam'"
+                color="success"
+                item-color="success"
                 v-model="table.search.value"
                 :items="table.search.options.pola_tanam"
                 placeholder="All"
@@ -897,6 +1108,8 @@
               ></v-select>
               <v-select
                 v-else
+                color="success"
+                item-color="success"
                 v-model="table.search.value"
                 :items="table.search.options.validation"
                 item-value="value"
@@ -1064,6 +1277,7 @@
       v-model="snackbar"
       :color="colorsnackbar"
       :timeout="timeoutsnackbar"
+      rounded="xl"
     >
       {{ textsnackbar }}
     </v-snackbar>
@@ -1073,6 +1287,7 @@
 <script>
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
+import moment from "moment";
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
@@ -1179,6 +1394,7 @@ export default {
       validate_name: "",
       validation: "",
       waitingapproval: false,
+      max_seed_amount: '',
 
       planting_details: [],
     },
@@ -1294,7 +1510,28 @@ export default {
         length_page: 0,
         page_options: []
       },
-      options: {}
+      options: {},
+      lahans: {
+        expanded: [],
+        header: [
+          { text: "No", value: "index"},
+          { text: "Lahan No", value: "lahan_no"},
+          { text: "Petani", value: "farmer_name"},
+          { text: "Luas Lahan", value: "land_area"},
+          { text: "Tutupan", value: "tutupan_lahan"},
+          { text: "Pola Tanam", value: "opsi_pola_tanam"},
+          { text: "Max Bibit", value: "trees", align: 'right'},
+        ],
+        items: [],
+        loading: false,
+        dialogs: {
+          trees: {
+            show: false,
+            datas: null,
+            maxSeeds: {}
+          }
+        }
+      }
     },
     preview: {
       signature: {
@@ -1308,6 +1545,14 @@ export default {
         loading: false,
         model: ''
       }
+    },
+    dataToStore: {
+      selectedFF: {},
+      hasSostam: false,
+      distribution_time: '',
+      planting_time: '',
+      penlub_time: '',
+      lahans: []
     }
   }),
   watch: {
@@ -1338,11 +1583,23 @@ export default {
     program_year(newYear) {
       this.initialize()
     },
+    'dataToStore.distribution_time': {
+      handler(newValue) {
+        this.dataToStore.planting_time = moment(newValue).add(7, 'days')
+        this.dataToStore.penlub_time = moment(newValue).subtract(14, 'days')
+      }
+    }
   },
 
   mounted() {
     this.firstAccessPage();
     this.program_year = new Date().getFullYear()
+    if (this.User.role_group != 'IT') {
+      this.$store.state.maintenanceOverlay = true
+    }
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
   },
 
   methods: {
@@ -1475,6 +1732,40 @@ export default {
           reject(err)
         })
       })
+    },
+
+    async createSostamByFF() {
+      try {
+        this.dialogAdd.show = false
+        this.$store.state.loadingOverlay = true
+
+        let dataToStore = {
+          ff_no: this.options.ff.model,
+          lahans: this.table.lahans.items,
+          program_year: 2022,
+        }
+
+        console.log(dataToStore)
+
+        const res = await axios.post(
+          this.BaseUrlGet + "createSostamByFF",
+          dataToStore,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken
+            },
+          }
+        )
+        console.log(res.data.data)
+        this.colorsnackbar = 'green'
+        this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
+        this.timeoutsnackbar = 10000
+        this.snackbar = true
+      } catch (err) {
+        console.log(err.response)
+      } finally {
+        this.$store.state.loadingOverlay = false
+      }
     },
 
     async getMU() {
@@ -2443,14 +2734,209 @@ export default {
         this.table.search.options.pola_tanam_loading = false
       }
     },
-    showAddModal() {
-      this.dialogAdd.show = true
-      console.log(this.valueFFcode.join())
-      console.log(this.typegetdata)
+    async showAddModal() {
+      try {
+        this.dialogAdd.loading = true
+        this.dialogAdd.show = true
+        await this.getFFOptions()
+      } finally {
+        this.dialogAdd.loading = false
+      }
+    },
+    async getLahansFF() {
+      try {
+        this.table.lahans.loading = true
+
+        const params = new URLSearchParams({
+          ff_no: this.options.ff.model,
+          program_year: 2022
+        })
+        const res = await axios.get(
+          this.BaseUrlGet + `getFFLahanSostam?${params}`,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        this.dataToStore.selectedFF = res.data.data.result.ff
+        this.table.lahans.items = res.data.data.result.lahans
+        this.dataToStore.hasSostam = res.data.data.result.sostam > 0 ? true : false
+      } catch (err) {
+        console.log(err.response)
+      } finally {
+        this.table.lahans.loading = false
+      }
     },
     async getFFOptions() {
+      try {
+        this.options.ff.loading = true
+
+        const params = new URLSearchParams({
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode.join(),
+          program_year: 2022
+        })
+        
+        const res = await axios.get(
+          this.BaseUrlGet + `getFFOptionsSostam?${params}`,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        this.options.ff.items = res.data.data.result
+      } catch (err) {
+        console.log(err.response)
+      } finally {
+        this.options.ff.loading = false
+      }
+    },
+    // Utilities
+    dateFormat(date, format) {
+        return moment(date).format(format)
+    },
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
+    },
+    getSeedCalculation(lahan, typeReturn, indexLahan = null) {
+      const calculationAgroforestry = {
+        satu_jalur: {
+          300: [18, 12, 4],
+          400: [24, 16, 5],
+          500: [31, 20, 6],
+          600: [37, 24, 7],
+          700: [43, 29, 9],
+          800: [49, 33, 10],
+          900: [55, 37, 11],
+          1000: [61, 41, 12],
+          1100: [67, 45, 13],
+          1200: [73, 49, 15],
+          1300: [80, 53, 16],
+          1400: [86, 57, 17],
+          1500: [92, 61, 18],
+          1600: [98, 65, 20],
+          1700: [104, 69, 21],
+          1800: [110, 73, 22],
+          1900: [116, 78, 23],
+          2000: [122, 82, 24],
+        },
+        tepi: {
+          300: [6, 4, 1],
+          400: [8, 5, 2],
+          500: [10, 6, 2],
+          600: [12, 8, 2],
+          700: [13, 9, 3],
+          800: [15, 10, 3],
+          900: [17, 12, 3],
+          1000: [19, 13, 4],
+          1100: [21, 14, 4],
+          1200: [23, 15, 5],
+          1300: [25, 17, 5],
+          1400: [27, 18, 5],
+          1500: [29, 19, 6],
+          1600: [31, 20, 6],
+          1700: [33, 22, 7],
+          1800: [35, 23, 7],
+          1900: [36, 24, 7],
+          2000: [38, 26, 8],
+        },
+        acak: {
+          300: [4, 3, 1],
+          400: [6, 4, 1],
+          500: [7, 5, 1],
+          600: [9, 6, 2],
+          700: [10, 7, 2],
+          800: [12, 8, 2],
+          900: [13, 9, 3],
+          1000: [14, 10, 3],
+          1100: [16, 11, 3],
+          1200: [17, 12, 3],
+          1300: [19, 12, 4],
+          1400: [20, 13, 4],
+          1500: [22, 14, 4],
+          1600: [23, 15, 5],
+          1700: [24, 16, 5],
+          1800: [26, 17, 5],
+          1900: [27, 18, 5],
+          2000: [29, 19, 6],
+        },
+      }
+      let trees_max = {
+        kayu: 0,
+        mpts: 0,
+        crops: 0
+      }
+
+      let maxBibit = {
+        kayu: 0,
+        mpts: 0,
+        crops: 0
+      }
+
+      let totalBibitMax = 0
+
+      if (lahan.land_area < 10000) {
+        const luasLahan = Math.floor((lahan.land_area > 2000 ? 2000 : lahan.land_area) / 100) * 100
+  
+        if (lahan.opsi_pola_tanam == 'Pola Konservasi Pohon Kayu' ) {
+          maxBibit.kayu = luasLahan * .25
+        } else if (lahan.opsi_pola_tanam == 'Pola Konservasi Pohon Kayu + MPTS' ) {
+          maxBibit.kayu = (luasLahan * .25) * .6
+          maxBibit.mpts = (luasLahan * .25) * .4
+        } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Satu Jalur' ) {
+          if (luasLahan >= 300) {
+            maxBibit = {
+              kayu: calculationAgroforestry.satu_jalur[luasLahan][0],
+              mpts: calculationAgroforestry.satu_jalur[luasLahan][1],
+              crops: calculationAgroforestry.satu_jalur[luasLahan][2]
+            }
+          }
+        } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Tepi' ) {
+          if (luasLahan >= 300) {
+            maxBibit = {
+              kayu: calculationAgroforestry.tepi[luasLahan][0],
+              mpts: calculationAgroforestry.tepi[luasLahan][1],
+              crops: calculationAgroforestry.tepi[luasLahan][2]
+            }
+          }
+        } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Acak' ) {
+          if (luasLahan >= 300) {
+            maxBibit = {
+              kayu: calculationAgroforestry.acak[luasLahan][0],
+              mpts: calculationAgroforestry.acak[luasLahan][1],
+              crops: calculationAgroforestry.acak[luasLahan][2]
+            }
+          }
+        }
+        totalBibitMax = Math.round((maxBibit.kayu + maxBibit.mpts + maxBibit.crops) * (100 - lahan.tutupan_lahan) / 100)
+      }
       
-    }
+      if (typeReturn == 'total_max_trees') {
+        return totalBibitMax
+      } else if (typeReturn == 'setDataToStore') {
+        this.table.lahans.items[indexLahan].max_seed_amount = totalBibitMax
+        return totalBibitMax
+      } 
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
+    },
   },
 };
 </script>
