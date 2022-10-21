@@ -127,7 +127,7 @@
         </v-card>
       </v-dialog>
 
-      <!-- Modal Add -->
+      <!-- Modal Create Sostam Per~FF -->
       <v-dialog v-model="dialogAdd.show" max-width="1200px" content-class="rounded-xl" persistent scrollable>
         <v-card rounded="xl" elevation="10">
           <!-- Title -->
@@ -161,8 +161,8 @@
             <v-container v-if="dialogAdd.loading == false">
               <v-row>
                 <v-col cols="12" class="d-flex justify-end">
-                  <v-btn color="info" rounded @click="getFFOptions">
-                    <v-icon class="mr-1">mdi-refresh</v-icon>
+                  <v-btn small color="info" rounded @click="getFFOptions">
+                    <v-icon small class="mr-1">mdi-refresh</v-icon>
                     Refresh FF
                   </v-btn>
                 </v-col>
@@ -264,6 +264,19 @@
 
                 <!-- Lahans Table -->
                 <v-col cols="12" sm="12" md="12">
+                  <v-row class="align-center mb-4 px-5">
+                    <v-col cols="12" class="">
+                      <h4>List Lahan</h4>
+                      <v-divider class="mx-5"></v-divider>
+                      <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Lahan</p>
+                    </v-col>
+                    <v-col cols="12" class="d-flex justify-end">
+                      <v-btn :disabled="!options.ff.model" color="info" rounded @click="getLahansFF" small>
+                        <v-icon class="mr-1" small>mdi-refresh</v-icon>
+                        Refresh Lahan
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                   <v-data-table
                     color="success"
                     class="rounded-xl elevation-5 mb-2"
@@ -356,7 +369,7 @@
                       {{ item.tutupan_lahan }}%
                     </template>
                     <template v-slot:item.trees="{ item, index }">
-                      <strong>{{ numberFormat(getSeedCalculation(item, 'setDataToStore', index)) }}</strong>
+                      <strong>{{ numberFormat(getSeedCalculation(item, 'setDataToStore', index)) }} Bibit</strong>
                       <!-- <v-menu
                         rounded="xl"
                         bottom
@@ -379,6 +392,14 @@
                           </v-list-item>
                         </v-list>
                       </v-menu> -->
+                    </template>
+                    <template v-slot:item.actions="{index}">
+                      <v-icon 
+                        color="red" 
+                        @click="() => {table.lahans.items.splice(index, 1)}"
+                      >
+                        mdi-close-circle
+                      </v-icon>
                     </template>
                   </v-data-table>
                 </v-col>
@@ -429,6 +450,8 @@
                 <v-row>
                   <v-col cols="12" sm="12" md="12">
                     <v-select
+                      disabled
+                      rounded
                       v-model="defaultItem.ff_no"
                       :items="itemsff"
                       item-text="name"
@@ -442,6 +465,8 @@
                   </v-col>
                   <v-col cols="12" sm="12" md="12">
                     <v-select
+                      disabled
+                      rounded
                       v-model="defaultItem.farmer_no"
                       :items="itemspetani"
                       item-text="nama"
@@ -454,6 +479,8 @@
                   </v-col>
                   <v-col cols="12" sm="12" md="12">
                     <v-text-field
+                      disabled
+                      rounded
                       v-model="defaultItem.no_lahan"
                       label="No Lahan"
                       outlined
@@ -462,6 +489,8 @@
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
                     <v-select
+                      disabled
+                      rounded
                       v-model="defaultItem.planting_year"
                       :items="itemsTahun"
                       item-text="text"
@@ -474,71 +503,52 @@
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
                     <v-text-field
+                      rounded
                       v-model="defaultItem.distribution_location"
                       label="Tempat Distribusi Bibit"
                       outlined
                       :rules="rules"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-menu v-model="menu1" transition="scale-transition">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          v-model="datepicker1"
-                          slot="activator"
-                          label="Waktu Pembuatan Lubang Tanam"
-                          outlined
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          :rules="rules"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        v-model="datepicker1"
-                        @input="menu1 = false"
-                      ></v-date-picker>
-                    </v-menu>
+                  <v-col cols="12" lg="4" class="d-flex flex-column align-center">
+                    <p class="mb-0"><strong>Penilikan Lubang</strong></p>
+                    <v-btn 
+                      rounded disabled class="black--text"
+                    >
+                      {{ dateFormat(datepicker1, 'ddd, DD MMMM Y') }}
+                    </v-btn>
                   </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-menu v-model="menu2" transition="scale-transition">
+                  <v-col cols="12" lg="4">
+                    <v-menu v-model="menu2" offset-x transition="slide-x-transition" rounded="xl">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          v-model="datepicker2"
-                          slot="activator"
-                          label="Waktu Distribusi Bibit"
-                          outlined
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          :rules="rules"
-                        ></v-text-field>
+                        <div class="d-flex flex-column align-center">
+                          <p class="mb-0 mx-auto"><strong>Distribusi Bibit</strong></p>
+                          <v-btn 
+                            dark
+                            rounded class=""
+                            color="green"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            {{ dateFormat(datepicker2, 'ddd, DD MMMM Y') }}
+                          </v-btn>
+                        </div>
                       </template>
                       <v-date-picker
                         v-model="datepicker2"
                         @input="menu2 = false"
+                        color="green"
+                        class="rounded-xl"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-menu v-model="menu3" transition="scale-transition">
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          v-model="datepicker3"
-                          slot="activator"
-                          label="Waktu Penanaman"
-                          outlined
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          :rules="rules"
-                        ></v-text-field>
-                      </template>
-                      <v-date-picker
-                        v-model="datepicker3"
-                        @input="menu3 = false"
-                      ></v-date-picker>
-                    </v-menu>
+                  <v-col cols="12" lg="4" class="d-flex flex-column align-center">
+                    <p class="mb-0"><strong>Realisasi Tanam</strong></p>
+                    <v-btn 
+                      rounded disabled class="black--text"
+                    >
+                      {{ dateFormat(datepicker3, 'ddd, DD MMMM Y') }}
+                    </v-btn>
                   </v-col>
                 </v-row>
               </v-container>
@@ -546,10 +556,12 @@
 
             <v-card-actions v-if="load == false">
               <v-spacer></v-spacer>
-              <v-btn color="red darken-1" outlined @click="close">
+              <v-btn color="red darken-1" dark rounded class="px-5" @click="close">
+                <v-icon class="mr-1">mdi-close-circle</v-icon>
                 Cancel
               </v-btn>
-              <v-btn color="blue darken-1" outlined @click="save">
+              <v-btn color="green" dark rounded class="px-5" @click="save">
+                <v-icon class="mr-1">mdi-check-circle</v-icon>
                 Save
               </v-btn>
             </v-card-actions>
@@ -557,42 +569,51 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="dialogShowEdit" max-width="500px">
+      <!-- What do you want to edit? -->
+      <v-dialog v-model="dialogShowEdit" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline"
+          <v-card-title class="headline justify-center"
             >What you want to edit?</v-card-title
           >
-          <v-card-actions>
+          <v-card-actions class="pb-3">
             <v-spacer></v-spacer>
-            <v-btn outlined color="blue" text @click="showEditModal"
-              >Edit Sosialisasi</v-btn
+            <v-btn dark rounded color="blue" @click="showEditModal" class="px-5"
+              >
+              <v-icon class="mr-1">mdi-file-document-edit</v-icon>
+              Edit Sosialisasi</v-btn
             >
-            <v-btn
-              outlined
+            <v-btn dark
               color="green"
-              text
+              rounded
+              :disabled="User.role_group != 'IT' && User.role_name != 'UNIT MANAGER'"
               @click="showEditJumlahPohonModal"
-              >Jumlah Pohon</v-btn
+              class="px-5"
+              >
+              <v-icon class="mr-1">mdi-forest</v-icon>
+              Jumlah Pohon</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="dialogDetailPohon" max-width="500px">
+      <!-- List Edit Jumlah Pohon -->
+      <v-dialog v-model="dialogDetailPohon" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline"
-            ><span class="headline">Detail Pohon Lahan</span></v-card-title
+          <v-card-title class="headline justify-center align-center py-5"
+            ><span class="headline">
+              <v-icon class="mr-1">mdi-forest</v-icon>
+              List Pohon Lahan</span></v-card-title
           >
           <v-card-text>
-            <v-row class="mt-3">
+            <v-row class="">
               <v-col cols="12" sm="12" md="12">
                 <div>
                   <h3 class="ml-1">
                     <v-data-table
                       :headers="headersdetaileditjumlah"
                       :items="DetailTreesLahanTemp"
-                      class="elevation-1"
+                      class="elevation-5 rounded-xl"
                     >
                       <!-- <template v-slot:item.tree_category="{ item }">
                         {{ gettype(item.tree_category) }}
@@ -600,12 +621,10 @@
                       <template v-slot:item.actions="{ item }">
                         <v-icon
                           v-if="true"
-                          class="mr-3"
                           @click="editDetailPohon(item)"
-                          small
                           color="warning"
                         >
-                          mdi-pencil
+                          mdi-pencil-circle
                         </v-icon>
                         <!-- <v-icon
                           v-if="RoleAccesCRUDShow == true"
@@ -624,38 +643,65 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn outlined color="red" text @click="closeDetailPohon"
-              >Cancel</v-btn
+            <v-btn dark color="red" rounded @click="closeDetailPohon" class="px-5 mb-2"
+              >
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel</v-btn
             >
-            <v-btn outlined color="blue" disabled text @click="saveEditPohon"
-              >Save</v-btn
+            <v-btn dark color="green" rounded @click="saveEditPohon" class="px-5 mb-2"
+              >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Save</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
+      <!-- Edit Jumlah Pohon -->
+      <v-dialog v-model="dialogDetailPohonEdit" max-width="300px" content-class="rounded-xl">
         <v-card>
           <v-card-text>
-            <v-row class="mt-7">
+            <v-row class="pt-7">
+              <v-col cols="12">
+                <v-simple-table>
+                  <tbody>
+                    <tr>
+                      <td>Nama Pohon</td>
+                      <td>:</td>
+                      <td><strong>{{ editedItemPohon.tree_name }}</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Kategori</td>
+                      <td>:</td>
+                      <td><strong>{{ editedItemPohon.tree_category }}</strong></td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
+              </v-col>
               <v-col cols="12" sm="12" md="12">
                 <v-text-field
                   v-model="editedItemPohon.amount"
                   label="Jumlah Pohon"
+                  hide-details
+                  rounded
                   outlined
                   type="number"
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="pb-4">
             <v-spacer></v-spacer>
-            <v-btn outlined color="red" text @click="closeDetailEditPohon"
-              >Cancel</v-btn
+            <v-btn rounded small color="red" dark @click="closeDetailEditPohon" class="px-3"
+              >
+              <v-icon small class="mr-1">mdi-close</v-icon>
+              Cancel</v-btn
             >
-            <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-              >Save</v-btn
+            <v-btn rounded small color="green" dark @click="saveEditPohonTemp" class="px-3"
+              >
+              <v-icon small class="mr-1">mdi-check</v-icon>
+              Set</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -663,7 +709,7 @@
       </v-dialog>
 
       <!-- Modal Detail -->
-      <v-dialog v-model="dialogDetail" max-width="800px" scrollable>
+      <v-dialog v-model="dialogDetail" max-width="800px" scrollable persistent>
         <v-card rounded="xl">
           <v-card-title class="mb-1 headermodalstyle">
             <span class="headline">Detail Sosialisasi Tanam</span>
@@ -721,25 +767,25 @@
                       <th class="text-left" style="font-size: 14px">
                         Nama Petani
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.nama_petani }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.nama_petani }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         No Ktp
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.ktp_no }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.ktp_no }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         Alamat
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.alamat }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.alamat }}</strong>
+                      </td>
                     </tr>
                   </tbody>
                 </template>
@@ -757,9 +803,9 @@
                       >
                         Opsi Pola Tanam
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.opsi_pola_tanam }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.opsi_pola_tanam }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
@@ -773,50 +819,50 @@
                       <th class="text-left" style="font-size: 14px">
                         No Dokumen Lahan
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.document_no }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.document_no }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
-                        Luas Lahan dan Tanam
+                        Luas Lahan dan Tutupan Lahan
                       </th>
                       <th class="text-left" style="font-size: 14px">
                         {{ defaultItem.luas_lahan }}m<sup>2</sup> dan
-                        {{ defaultItem.luas_tanam }}m<sup>2</sup>
+                        {{ defaultItem.tutupan_lahan }}%
                       </th>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         Pembuatan Lubang Tanam
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ gettanggal(defaultItem.pembuatan_lubang_tanam) }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ gettanggal(defaultItem.pembuatan_lubang_tanam) }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         Waktu Distribusi Bibit
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ gettanggal(defaultItem.distribution_time) }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ gettanggal(defaultItem.distribution_time) }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         Lokasi Distribusi Bibit
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.distribution_location }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.distribution_location }}</strong>
+                      </td>
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         Waktu Penanaman Petani
                       </th>
-                      <th class="text-left" style="font-size: 14px">
-                        {{ gettanggal(defaultItem.planting_time) }}
-                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ gettanggal(defaultItem.planting_time) }}</strong>
+                      </td>
                     </tr>
                   </tbody>
                 </template>
@@ -826,7 +872,45 @@
               ></v-divider>
               <div>
                 <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
-                <h4 class="mt-3">Max Bibit: {{ defaultItem.max_seed_amount }}</h4>
+                <v-simple-table v-if="defaultItem.max_seed_amount && defaultItem.planting_details">
+                  <tbody>
+                    <tr>
+                      <td>Max Kayu 
+                        {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>:</td>
+                      <td><strong>{{ defaultItem.max_seed_amount }}</strong> Bibit</td>
+                    </tr>
+                    <tr>
+                      <td>Total Kayu {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>:</td>
+                      <td>
+                        <v-btn
+                          rounded
+                          dark
+                          :color="getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount)"
+                          class="pr-2"
+                        >
+                          {{ 
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +  
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'MPTS')
+                          }} Bibit
+                          <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
+                        </v-btn>
+                      </td>
+                    </tr>
+                    <tr v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'CROPS') > 0">
+                      <td>Total Crops</td>
+                      <td>:</td>
+                      <td>
+                        <strong>
+                          {{ 
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'CROPS')
+                          }}
+                        </strong> Bibit
+                      </td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
                 <h3 class="ml-1">
                   <v-data-table
                     :headers="headersdetail"
@@ -871,22 +955,22 @@
               color="red"
               class="px-5"
               rounded
-              @click="dialogDetail = false"
+              @click="() => {dialogDetail = false;disabledVerification = false}"
               outlined
               elevation="1"
             >
-              <v-icon small class="mr-1">mdi-close</v-icon>
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
               Close
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
               v-if="RoleAccesCRUDShow == true && defaultItem.waitingapproval == true"
-              dark
-              color="green"
+              color="success"
               rounded
               @click="verifSubmit()"
+              :disabled="disabledVerification"
               elevation="1"
-              class="px-5"
+              class="px-5 white--text"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Verifikasi
@@ -1358,10 +1442,10 @@ export default {
       { text: "Jumlah", value: "amount", width: "15%" },
     ],
     headersdetaileditjumlah: [
-      { text: "Nama Pohon", value: "tree_name", width: "20%" },
-      { text: "Kategori", value: "tree_category", width: "20%" },
-      { text: "Jumlah", value: "amount", width: "15%" },
-      { text: "Actions", value: "actions", sortable: false, width: "15%" },
+      { text: "Nama Pohon", value: "tree_name"},
+      { text: "Kategori", value: "tree_category"},
+      { text: "Jumlah", value: "amount", align: 'center' },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
@@ -1395,9 +1479,11 @@ export default {
       validation: "",
       waitingapproval: false,
       max_seed_amount: '',
+      tutupan_lahan: '',
 
       planting_details: [],
     },
+    disabledVerification: false,
     itemsTahun: [
       { text: "2019", value: "2019" },
       { text: "2020", value: "2020" },
@@ -1517,10 +1603,11 @@ export default {
           { text: "No", value: "index"},
           { text: "Lahan No", value: "lahan_no"},
           { text: "Petani", value: "farmer_name"},
-          { text: "Luas Lahan", value: "land_area"},
-          { text: "Tutupan", value: "tutupan_lahan"},
+          { text: "Luas Lahan", value: "land_area", align: 'center'},
+          { text: "Tutupan", value: "tutupan_lahan", align: 'center'},
           { text: "Pola Tanam", value: "opsi_pola_tanam"},
-          { text: "Max Bibit", value: "trees", align: 'right'},
+          { text: "Max Kayu (+ MPTS)", value: "trees", align: 'center'},
+          { text: "Remove", value: "actions", align: 'right', sortable: false},
         ],
         items: [],
         loading: false,
@@ -1585,8 +1672,14 @@ export default {
     },
     'dataToStore.distribution_time': {
       handler(newValue) {
-        this.dataToStore.planting_time = moment(newValue).add(7, 'days')
         this.dataToStore.penlub_time = moment(newValue).subtract(14, 'days')
+        this.dataToStore.planting_time = moment(newValue).add(7, 'days')
+      }
+    },
+    'datepicker2': {
+      handler(newValue) {
+        this.datepicker1 = moment(newValue).subtract(14, 'days')
+        this.datepicker3 = moment(newValue).add(7, 'days')
       }
     }
   },
@@ -1594,12 +1687,12 @@ export default {
   mounted() {
     this.firstAccessPage();
     this.program_year = new Date().getFullYear()
-    if (this.User.role_group != 'IT') {
-      this.$store.state.maintenanceOverlay = true
-    }
+    // if (this.User.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
   },
   destroyed() {
-    this.$store.state.maintenanceOverlay = false
+    // this.$store.state.maintenanceOverlay = false
   },
 
   methods: {
@@ -1756,7 +1849,7 @@ export default {
             },
           }
         )
-        console.log(res.data.data)
+        this.initialize()
         this.colorsnackbar = 'green'
         this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
         this.timeoutsnackbar = 10000
@@ -2365,6 +2458,7 @@ export default {
     async showDetail(item) {
       this.type = "Detail";
       this.dialogDetail = true;
+      this.disabledVerification = false
       await this.getDetail(item);
     },
 
@@ -2548,6 +2642,8 @@ export default {
     editDetailPohon(item) {
       console.log(item);
       this.editedItemPohon.amount = item.amount;
+      this.editedItemPohon.tree_name = item.tree_name;
+      this.editedItemPohon.tree_category = item.tree_category;
       this.idPohonTemp = item.id;
       this.editedIndexPohon = this.DetailTreesLahanTemp.indexOf(item);
       this.editedItemPohon = Object.assign({}, item);
@@ -2904,7 +3000,6 @@ export default {
             maxBibit = {
               kayu: calculationAgroforestry.satu_jalur[luasLahan][0],
               mpts: calculationAgroforestry.satu_jalur[luasLahan][1],
-              crops: calculationAgroforestry.satu_jalur[luasLahan][2]
             }
           }
         } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Tepi' ) {
@@ -2912,7 +3007,6 @@ export default {
             maxBibit = {
               kayu: calculationAgroforestry.tepi[luasLahan][0],
               mpts: calculationAgroforestry.tepi[luasLahan][1],
-              crops: calculationAgroforestry.tepi[luasLahan][2]
             }
           }
         } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Acak' ) {
@@ -2920,11 +3014,10 @@ export default {
             maxBibit = {
               kayu: calculationAgroforestry.acak[luasLahan][0],
               mpts: calculationAgroforestry.acak[luasLahan][1],
-              crops: calculationAgroforestry.acak[luasLahan][2]
             }
           }
         }
-        totalBibitMax = Math.round((maxBibit.kayu + maxBibit.mpts + maxBibit.crops) * (100 - lahan.tutupan_lahan) / 100)
+        totalBibitMax = Math.round((maxBibit.kayu + maxBibit.mpts) * (100 - lahan.tutupan_lahan) / 100)
       }
       
       if (typeReturn == 'total_max_trees') {
@@ -2933,6 +3026,39 @@ export default {
         this.table.lahans.items[indexLahan].max_seed_amount = totalBibitMax
         return totalBibitMax
       } 
+    },
+    getStatusTotalBibitInDetail(seeds, typeReturn, secParams = null) {
+      console.log(seeds)
+      let exists = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      let total = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      seeds.forEach((seed) => {
+        total[seed.tree_category] += seed.amount
+        exists[seed.tree_category] += 1
+      })
+
+      if (typeReturn == 'KAYU' || typeReturn == 'MPTS' || typeReturn == 'CROPS') {
+        return total[typeReturn]
+      } else if (typeReturn == 'ALL') {
+        return total.KAYU + total.MPTS + total.CROPS
+      } else if (typeReturn == 'COLOR') {
+        if (secParams >= (total.KAYU + total.MPTS) && (total.KAYU + total.MPTS) > 0) {
+          this.disabledVerification = false
+          return 'green'
+        } else {
+          this.disabledVerification = true
+          return 'red'
+        }
+      } else if(typeReturn == 'EXISTS' ) {
+        return exists[secParams]
+      }
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
