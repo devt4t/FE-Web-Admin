@@ -142,7 +142,7 @@
               </v-select>
             </v-col>
             <!-- Petani Date Range -->
-            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan') || options.activities.model.includes('Sosialisasi Tanam')">
               <p class="mb-1">Petani Date Range</p>
                   <v-menu 
                     rounded="xl"
@@ -195,7 +195,7 @@
                   </v-menu>
             </v-col>
             <!-- Lahan Date Range -->
-            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan')">
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan') || options.activities.model.includes('Sosialisasi Tanam')">
               <p class="mb-1">Lahan Date Range</p>
                   <v-menu 
                     rounded="xl"
@@ -361,19 +361,19 @@
               </v-row>
             </template>
             <template v-slot:header.petani1>
-              Petani {{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }}
+              Petani ({{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }})
             </template>
             <template v-slot:header.petani2>
-              Petani {{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }}
+              Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
             </template>
             <template v-slot:item.progress_petani="{item}">
               {{ item.progress_petani }}%
             </template>
             <template v-slot:header.lahan1>
-              Lahan {{ dateFormat(filters.dates.land[0], 'DD MMM Y') }}
+              Lahan ({{ dateFormat(filters.dates.land[0], 'DD MMM Y') }})
             </template>
             <template v-slot:header.lahan2>
-              Lahan {{ dateFormat(filters.dates.land[1], 'DD MMM Y') }}
+              Lahan ({{ dateFormat(filters.dates.land[1], 'DD MMM Y') }})
             </template>
             <template v-slot:item.progress_lahan="{item}">
               {{ item.progress_lahan }}%
@@ -405,7 +405,7 @@
             pdf-format="a4"
             pdf-orientation="landscape"
             pdf-content-width="1125px"
-            ref="html2Pdf"
+            ref="exportPDFPendataanPetaniLahan"
           >
             <section slot="pdf-content">
               <v-container>
@@ -522,7 +522,105 @@
                 Remove
               </v-btn>
             </template>
+            <template v-slot:header.total_petani>
+              Total Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.total_lahan>
+              Total Lahan ({{ dateFormat(filters.dates.land[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.total_sostam>
+              Total Sostam ({{ dateFormat(filters.dates.sostam, 'DD MMM Y') }})
+            </template>
+            <template v-slot:item.total_petani="{item}">
+              <strong>{{ item.total_petani }}</strong> Petani
+            </template>
+            <template v-slot:item.total_lahan="{item}">
+              <strong>{{ item.total_lahan }}</strong> Lahan
+            </template>
+            <template v-slot:item.total_sostam="{item}">
+              <strong>{{ item.total_sostam }}</strong> Sostam
+            </template>
+            <template v-slot:item.progress_sostam="{item}">
+              <strong>{{ item.progress_sostam }}</strong>%
+            </template>
+            <template v-slot:item.total_bibit="{item}">
+              <strong>{{ numberFormat(item.total_bibit) }}</strong> Bibit
+            </template>
           </v-data-table>
+          <!-- Export Template -->
+          <vue-html2pdf
+            :show-layout="false"
+            :float-layout="true"
+            :enable-download="false"
+            :preview-modal="true"
+            :paginate-elements-by-height="1400"
+            :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
+            :pdf-quality="2"
+            :manual-pagination="false"
+            pdf-format="a4"
+            pdf-orientation="landscape"
+            pdf-content-width="1125px"
+            ref="exportPDFSosialisasiTanam"
+          >
+            <section slot="pdf-content">
+              <v-container>
+                <center>
+                  <h2>Pendataan Sosialisasi Tanam</h2>
+                  <h3>Activities Progress</h3>
+                </center>
+                <v-row>
+                  <v-col sm="6" class="mb-2">
+                    <table>
+                      <tr>
+                        <td>Unit Manager</td>
+                        <td>:</td>
+                        <td>{{ filters.UM }}</td>
+                      </tr>
+                      <tr>
+                        <td>Field Coordinator</td>
+                        <td>:</td>
+                        <td>{{ filters.FC }}</td>
+                      </tr>
+                      <tr>
+                        <td>Export Date</td>
+                        <td>:</td>
+                        <td>{{ dateFormat(new Date(), 'DD MMMM Y') }}</td>
+                      </tr>
+                    </table>
+                  </v-col>
+                  <v-col sm="12">
+                    <center>
+                      <table border="1" style="border-collapse: collapse;width: 100%;">
+                        <thead>
+                          <tr>
+                            <th rowspan="2">No</th>
+                            <th rowspan="2">Nama FF</th>
+                            <th rowspan="2">Total Petani</th>
+                            <th rowspan="2">Total Lahan</th>
+                            <th colspan="2">Sosialisasi Tanam</th>
+                          </tr>
+                          <tr>
+                            <th>{{ dateFormat(filters.dates.sostam, 'DD MMM Y') }}</th>
+                            <th>Progress</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(data, dIndex) in tables.sostam.items" :key="dIndex">
+                            <td align="center">{{ dIndex + 1 }}</td>
+                            <td style="padding-left: 5px">{{ data.ff }}</td>
+                            <td align="center">{{ data.total_petani }}</td>
+                            <td align="center">{{ data.total_lahan }}</td>
+                            <td align="center">{{ data.total_sostam }}</td>
+                            <td align="center">{{ data.progress_sostam }}%</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </center>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </section>
+          </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -570,7 +668,7 @@ export default {
     dates: {
       farmer: ['2022-08-31','2022-09-30'],
       land: ['2022-10-03','2022-10-31'],
-      sostam: '2022-10-17'
+      sostam: '2022-11-15'
     },
     btn: {
       generateButton: {
@@ -668,8 +766,9 @@ export default {
         headers: [
           { text: "Actions", value: "actions", align: 'center', sortable: false },
           { text: "Field Facilitator", value: "ff" },
+          { text: "Total Petani", value: "total_petani", align: 'center' },
           { text: "Total Lahan", value: "total_lahan", align: 'center' },
-          { text: "Sostam (30 Octo 2022)", value: "total_sostam", align: 'center' },
+          { text: "Sostam", value: "total_sostam", align: 'center' },
           { text: "Sostam Progress", value: "progress_sostam", align: 'center' },
           { text: "Total Bibit", value: "total_bibit", align: 'center' },
         ],
@@ -695,10 +794,12 @@ export default {
     // this.filters.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
   },
   mounted() {
-    this.$store.state.maintenanceOverlay = true
+    // if (this.auth.user.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
   },
   destroyed() {
-    this.$store.state.maintenanceOverlay = false
+    // this.$store.state.maintenanceOverlay = false
   },
 
   watch: {
@@ -843,6 +944,7 @@ export default {
         dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
       })
       this.tables.farmer.loading = true
+      this.tables.sostam.loading = true
       try {
         const response = await axios.get(
           this.auth.baseUrlGet +
@@ -854,6 +956,8 @@ export default {
           }
         );
         let datas = response.data.data.result
+
+        // get farmer land data
         let farmers = []
         let lands = []
         if (datas.petani_lahan.length > 0) {
@@ -866,9 +970,11 @@ export default {
             lands.push(val.lahan)
           })
         }
+
         // set table data
         this.tables.farmer.items = farmers
         this.tables.land.items = lands
+        this.tables.sostam.items = datas.sostam
         // set filter data
         await this.setFilterData(datas)
       } catch (error) {
@@ -876,6 +982,7 @@ export default {
         this.sessionEnd(error)
       } finally {
         this.tables.farmer.loading = false
+        this.tables.sostam.loading = false
       }
     },
     removeFromActivitiesInput (item) {
@@ -922,6 +1029,8 @@ export default {
       this.dates.farmer = ['2022-08-31', '2022-09-30']
       this.filters.dates.land = this.dates.land
       this.dates.land = ['2022-10-03' ,'2022-10-31']
+      this.filters.dates.sostam = this.dates.sostam
+      this.dates.sostam = '2022-11-15'
     },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
@@ -942,7 +1051,9 @@ export default {
     },
     generateReport (activities) {
        if (activities == 'Pendataan Petani & Lahan') {
-         this.$refs.html2Pdf.generatePdf()
+         this.$refs.exportPDFPendataanPetaniLahan.generatePdf()
+       } else if (activities == 'Sosialisasi Tanam') {
+         this.$refs.exportPDFSosialisasiTanam.generatePdf()
        }
     },
     generateFormData(data) {
@@ -961,6 +1072,9 @@ export default {
             }
         })
         return formData
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
     },
     sessionEnd(error) {
         if (error.response.status == 401) {
