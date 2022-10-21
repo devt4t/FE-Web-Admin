@@ -968,7 +968,7 @@
               color="success"
               rounded
               @click="verifSubmit()"
-              :disabled="disabledVerification"
+              :disabled="disabledVerification || getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0"
               elevation="1"
               class="px-5 white--text"
             >
