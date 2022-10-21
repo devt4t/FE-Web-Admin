@@ -86,7 +86,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-menu offset-y open-on-hover>
+      <v-menu offset-y open-on-hover rounded="xl">
         <template v-slot:activator="{ on }">
           <v-btn class="px-1 mr-1" text color="black" size="200" v-on="on">
             <div style="text-align: right" class="mr-2">
@@ -103,7 +103,7 @@
             </v-avatar>
           </v-btn>
         </template>
-        <v-list rounded style="overflow-y: hidden !important">
+        <v-list rounded="xl" style="overflow: hidden !important">
           <v-list-item
             v-for="(item, index) in itemsprofile"
             :key="index"
