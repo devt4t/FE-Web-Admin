@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     loadingOverlay: false,
+    loadingOverlayText: null,
     maintenanceOverlay: false,
   },
   mutations: {

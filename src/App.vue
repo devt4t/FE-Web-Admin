@@ -126,11 +126,14 @@
     
     <!-- loading overlay -->
     <v-overlay :value="$store.state.loadingOverlay">
+      <div class="d-flex flex-column align-center justify-center">
         <v-progress-circular
             indeterminate
             color="white"
             size="64"
         ></v-progress-circular>
+        <p class="mt-2 mb-0" v-if="$store.state.loadingOverlayText" v-html="$store.state.loadingOverlayText"></p>
+      </div>
     </v-overlay>
     
     <!-- Maintenance Overlay -->

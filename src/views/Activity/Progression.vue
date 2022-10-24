@@ -85,6 +85,7 @@
                 :menu-props="{rounded: 'xl'}"
                 outlined
                 hide-details
+                clearable
                 rounded
                 v-model="options.FC.model"
                 :items="options.FC.items"
@@ -96,7 +97,6 @@
                 :no-data-text="options.FC.loading ? 'Loading...' : 'No Data'"
                 :placeholder="options.FC.loading ? 'Loading...' : 'Select FC'"
                 :readonly="!access.filterFC"
-                :rules="[(v) => !!v || 'Field is required']"
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
@@ -347,7 +347,7 @@
             }"
           >
             <template v-slot:top>
-              <v-row class="py-3 justify-center">
+              <v-row v-if="filters.FC" class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
                 <v-btn 
                   @click="generateReport('Pendataan Petani & Lahan')"
@@ -383,11 +383,10 @@
                 dark
                 color="red"
                 rounded
-                small
+                icon
                 @click="() => { tables.farmer.items.splice(index, 1) }"
               >
-                <v-icon small class="mr-1">mdi-close</v-icon>
-                Remove
+                <v-icon class="">mdi-close-circle</v-icon>
               </v-btn>
             </template>
           </v-data-table>
@@ -497,7 +496,7 @@
             }"
           >
             <template v-slot:top>
-              <v-row class="py-3 justify-center">
+              <v-row v-if="filters.FC" class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
                 <v-btn 
                   @click="generateReport('Sosialisasi Tanam')"
@@ -515,11 +514,10 @@
                 dark
                 color="red"
                 rounded
-                small
+                icon
                 @click="() => { tables.sostam.items.splice(index, 1) }"
               >
-                <v-icon small class="mr-1">mdi-close</v-icon>
-                Remove
+                <v-icon>mdi-close-circle</v-icon>
               </v-btn>
             </template>
             <template v-slot:header.total_petani>
@@ -638,10 +636,8 @@
 <script>
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
-import { truncate } from "fs";
-import { randomInt } from 'crypto';
 // import BaseUrl from "../../services/BaseUrl.js";
-import moment, { now } from 'moment'
+import moment from 'moment'
 import VueHtml2pdf from 'vue-html2pdf'
 
 export default {
@@ -740,7 +736,6 @@ export default {
     tables: {
       farmer: {
         headers: [
-          { text: "Actions", value: "actions", align: 'center', sortable: false },
           { text: "Field Facilitator", value: "ff" },
           { text: "petani1", value: "petani1", align: 'center' },
           { text: "petani2", value: "petani2", align: 'center' },
@@ -750,6 +745,7 @@ export default {
           { text: "lahan2", value: "lahan2", align: 'center' },
           { text: "Lahan Total", value: "total_lahan", align: 'center' },
           { text: "Lahan Progress", value: "progress_lahan", align: 'center' },
+          { text: "Actions", value: "actions", align: 'center', sortable: false },
         ],
         items: [],
         loading: false,
@@ -764,13 +760,13 @@ export default {
       },
       sostam: {
         headers: [
-          { text: "Actions", value: "actions", align: 'center', sortable: false },
           { text: "Field Facilitator", value: "ff" },
           { text: "Total Petani", value: "total_petani", align: 'center' },
           { text: "Total Lahan", value: "total_lahan", align: 'center' },
           { text: "Sostam", value: "total_sostam", align: 'center' },
           { text: "Sostam Progress", value: "progress_sostam", align: 'center' },
           { text: "Total Bibit", value: "total_bibit", align: 'center' },
+          { text: "Actions", value: "actions", align: 'center', sortable: false },
         ],
         items: [
           {
@@ -788,12 +784,10 @@ export default {
     }
   }),
 
-  async created() {
+  async mounted() {
     await this.firstAccessPage();
     this.options.programYear.model = new Date().getFullYear().toString()
     // this.filters.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
-  },
-  mounted() {
     // if (this.auth.user.role_group != 'IT') {
     //   this.$store.state.maintenanceOverlay = true
     // }
@@ -806,6 +800,11 @@ export default {
     'filters.activities': {
       handler(newValue) {
         console.log(newValue)
+      }
+    },
+    'options.UM.model': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
       }
     },
     'options.FC.model': {
@@ -930,22 +929,38 @@ export default {
       this.filters.showed = true
       this.expansions.model = [1, ...openedPanel]
 
-      if (this.options.FC.model) {
+      if (this.options.UM.model && this.options.FC.model) {
         await this.generateKPIbyFC(this.options.FC.model)
+      } else if (this.options.UM.model) {
+        await this.generateKPIbyUM()
       }
 
       this.btn.generateButton.loading = false
     },
     async generateKPIbyFC(fc_no) {
-      let params = new URLSearchParams({
-        activities: this.options.activities.model.join(),
-        fc_no: fc_no,
-        program_year: this.options.programYear.model,
-        dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
-      })
-      this.tables.farmer.loading = true
-      this.tables.sostam.loading = true
       try {
+        // remove FC in table farmer
+        this.tables.farmer.headers.forEach((farmerHeader, farmerHeaderIndex) => {
+          if (farmerHeader.text == 'FC') {
+            this.tables.farmer.headers.splice(farmerHeaderIndex, 1)
+          }
+        })
+        // remove FC in table sostam
+        this.tables.sostam.headers.forEach((sostamHeader, sostamHeaderIndex) => {
+          if (sostamHeader.text == 'FC') {
+            this.tables.sostam.headers.splice(sostamHeaderIndex, 1)
+          }
+        })
+
+        let params = new URLSearchParams({
+          activities: this.options.activities.model.join(),
+          fc_no: fc_no,
+          program_year: this.options.programYear.model,
+          dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
+        })
+        this.tables.farmer.loading = true
+        this.tables.sostam.loading = true
+
         const response = await axios.get(
           this.auth.baseUrlGet +
             "KPIFC?" + params,
@@ -959,7 +974,6 @@ export default {
 
         // get farmer land data
         let farmers = []
-        let lands = []
         if (datas.petani_lahan.length > 0) {
           await datas.petani_lahan.forEach(val => {
             farmers.push({
@@ -967,13 +981,11 @@ export default {
               ...val.petani,
               ...val.lahan
             })
-            lands.push(val.lahan)
           })
         }
 
         // set table data
         this.tables.farmer.items = farmers
-        this.tables.land.items = lands
         this.tables.sostam.items = datas.sostam
         // set filter data
         await this.setFilterData(datas)
@@ -985,14 +997,109 @@ export default {
         this.tables.sostam.loading = false
       }
     },
+    async generateKPIbyUM() {
+      try {
+        this.tables.farmer.loading = true
+        this.tables.sostam.loading = true
+        this.$store.state.loadingOverlay = true
+
+        // add FC in table farmer
+        this.tables.farmer.headers = [
+          { text: "FC", value: "fc" },
+          ...this.tables.farmer.headers
+        ]
+        // add FC in table sostam
+        this.tables.sostam.headers = [
+          { text: "FC", value: "fc" },
+          ...this.tables.sostam.headers
+        ]
+
+        const fieldCoordinators = this.options.FC.items || [] 
+
+        let farmers = []
+        let sostams = []
+        
+        let totalFC = fieldCoordinators.length
+        let generatedFC = 0
+
+        this.$store.state.loadingOverlayText = `Getting KPI FC (<strong>${generatedFC} / ${totalFC}</strong>) datas...`
+
+        await Promise.all(fieldCoordinators.map(async (fcVal, fcIndex) => {
+          let params = new URLSearchParams({
+            activities: this.options.activities.model.join(),
+            fc_no: fcVal.nik,
+            program_year: this.options.programYear.model,
+            dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
+          })
+  
+          axios.get(
+            this.auth.baseUrlGet +
+              "KPIFC?" + params,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.auth.token,
+              },
+            }
+          ).then(response => {
+            let datas = response.data.data.result
+            // get farmer & land data
+            if (datas.petani_lahan.length > 0) {
+              datas.petani_lahan.forEach(plVal => {
+                farmers.push({
+                  fc: fcVal.name,
+                  ff: plVal.ff,
+                  ...plVal.petani,
+                  ...plVal.lahan
+                })
+              })
+            }
+  
+            // get sostam
+            if (datas.sostam.length > 0) {
+              datas.sostam.forEach(sosVal => {
+                sostams.push({
+                  fc: fcVal.name,
+                  ...sosVal
+                })
+              })
+            }
+  
+            // set filter data
+            if (fcIndex == 0) {
+              this.setFilterData({um: datas.um})
+            } 
+  
+            // update progress text
+            this.$store.state.loadingOverlayText = `Getting KPI FC (<strong>${generatedFC += 1} / ${totalFC}</strong>) datas...`
+          }).catch(err => {
+            console.error(err)
+            this.sessionEnd(err)
+            generatedFC += 1
+          }).finally(() => {
+            if (generatedFC == totalFC) {
+              this.$store.state.loadingOverlay = false
+  
+              this.tables.farmer.loading = false
+              this.tables.sostam.loading = false
+            }
+          })
+        }))
+        
+        // set datas to tables
+        this.tables.farmer.items = farmers
+        this.tables.sostam.items = sostams
+      } catch (error) {
+        console.error(error)
+      }
+    },
     removeFromActivitiesInput (item) {
       const index = this.options.activities.model.indexOf(item.value)
       if (index >= 0) this.options.activities.model.splice(index, 1)
     },
     getButtonGenerateKPIDisabledCondition() {
       let requiredNull = 0
-      // required FC
-      if (!this.options.FC.model) requiredNull += 1
+      // required UM
+      if (!this.options.UM.model) requiredNull += 1
       // required activities
       if (this.options.activities.model.length < 1) requiredNull += 1
       else {
@@ -1020,8 +1127,8 @@ export default {
     // Utilities Function
     setFilterData(datas) {
       // set management
-      this.filters.UM = datas.um
-      this.filters.FC = datas.fc
+      this.filters.UM = datas.um || ''
+      this.filters.FC = datas.fc || ''
       
       
       // set date
@@ -1077,10 +1184,12 @@ export default {
         return new Intl.NumberFormat('id-ID').format(num)
     },
     sessionEnd(error) {
+      if (typeof error.response.status != 'undefined') {
         if (error.response.status == 401) {
           localStorage.removeItem("token");
           this.$router.push("/");
         }
+      }
     }
   },
 };
