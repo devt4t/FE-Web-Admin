@@ -120,7 +120,7 @@
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main style="background-color: white" color="white lighten-1">
+    <v-main class="green lighten-4">
       <router-view></router-view>
     </v-main>
     

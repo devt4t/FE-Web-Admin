@@ -940,17 +940,17 @@ export default {
     async generateKPIbyFC(fc_no) {
       try {
         // remove FC in table farmer
-        this.tables.farmer.headers.forEach((farmerHeader, farmerHeaderIndex) => {
+        await Promise.all(this.tables.farmer.headers.map(async (farmerHeader, farmerHeaderIndex) => {
           if (farmerHeader.text == 'FC') {
-            this.tables.farmer.headers.splice(farmerHeaderIndex, 1)
+            await this.tables.farmer.headers.splice(farmerHeaderIndex, 1)
           }
-        })
+        })) 
         // remove FC in table sostam
-        this.tables.sostam.headers.forEach((sostamHeader, sostamHeaderIndex) => {
+        await Promise.all(this.tables.sostam.headers.map(async (sostamHeader, sostamHeaderIndex) => {
           if (sostamHeader.text == 'FC') {
-            this.tables.sostam.headers.splice(sostamHeaderIndex, 1)
+            await this.tables.sostam.headers.splice(sostamHeaderIndex, 1)
           }
-        })
+        })) 
 
         let params = new URLSearchParams({
           activities: this.options.activities.model.join(),
@@ -1004,15 +1004,31 @@ export default {
         this.$store.state.loadingOverlay = true
 
         // add FC in table farmer
-        this.tables.farmer.headers = [
-          { text: "FC", value: "fc" },
-          ...this.tables.farmer.headers
-        ]
+        let checkFarmerHeaderContainFC = 0
+        await Promise.all(this.tables.farmer.headers.map(async (farmerHeader, farmerHeaderIndex) => {
+          if (farmerHeader.text == 'FC') {
+            checkFarmerHeaderContainFC += 1
+          }
+        })) 
+        if (checkFarmerHeaderContainFC == 0) {
+          this.tables.farmer.headers = [
+            { text: "FC", value: "fc" },
+            ...this.tables.farmer.headers
+          ]
+        }
         // add FC in table sostam
-        this.tables.sostam.headers = [
-          { text: "FC", value: "fc" },
-          ...this.tables.sostam.headers
-        ]
+        let checkSostamHeaderContainFC = 0
+        await Promise.all(this.tables.sostam.headers.map(async (sostamHeader, sostamHeaderIndex) => {
+          if (sostamHeader.text == 'FC') {
+            checkSostamHeaderContainFC += 1
+          }
+        })) 
+        if (checkSostamHeaderContainFC == 0) {
+          this.tables.sostam.headers = [
+            { text: "FC", value: "fc" },
+            ...this.tables.sostam.headers
+          ]
+        }
 
         const fieldCoordinators = this.options.FC.items || [] 
 
@@ -1032,7 +1048,7 @@ export default {
             dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
           })
   
-          axios.get(
+          await axios.get(
             this.auth.baseUrlGet +
               "KPIFC?" + params,
             {
