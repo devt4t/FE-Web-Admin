@@ -1071,7 +1071,7 @@
     >
 
       <template v-slot:top>
-          <v-row class="py-3 px-2">
+          <v-row class="pt-3 px-2">
             <v-col cols="12" lg="6" class="d-flex align-center">
               <!-- dropdown filter button -->
               <v-menu
@@ -1137,6 +1137,75 @@
                 label="Program Year"
                 class="mx-auto mx-lg-3"
                 style="max-width: 200px"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" lg="6" class="d-flex align-center justify-end">
+              <v-btn
+                dark
+                rounded
+                @click="showAddModal()"
+                color="green"
+              >
+                <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add FF Sostam
+              </v-btn>
+              <!-- dropdown export button -->
+              <!-- <v-menu
+                rounded="xl"
+                bottom
+                left
+                offset-y
+                transition="slide-y-transition"
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-bind="attrs" v-on="on" color="dark">
+                    mdi-dots-vertical
+                  </v-icon>
+                </template>
+      
+                <v-list class="d-flex flex-column align-center">
+                  <v-list-item v-if="false">
+                    <v-btn
+                      v-if="RoleAccesCRUDShow == true"
+                      dark
+                      class=""
+                      @click="showAddModal()"
+                      color="green"
+                    >
+                      <v-icon small>mdi-plus</v-icon> Add
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      v-if="false"
+                      dark
+                      rounded
+                      @click="downloadSuperAdmin()"
+                      color="blue"
+                    >
+                      <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu> -->
+            </v-col>
+          </v-row>
+          <v-row class="pb-4 px-2">
+            <v-col cols="12" lg="6">
+              <!-- Page Table -->
+              <v-select
+                v-model="table.pagination.current_page"
+                :items="table.pagination.page_options"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Page"
+                class="centered-select"
+                style="width: 50%;max-width: 100px;"
               ></v-select>
             </v-col>
             <v-col cols="12" lg="6" class="d-flex">
@@ -1206,70 +1275,6 @@
                 label="Status"
                 class="centered-select"
                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
-              ></v-select>
-              <!-- dropdown export button -->
-              <v-menu
-                rounded="xl"
-                bottom
-                left
-                offset-y
-                transition="slide-y-transition"
-                :close-on-content-click="false"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon v-bind="attrs" v-on="on" color="dark">
-                    mdi-dots-vertical
-                  </v-icon>
-                </template>
-      
-                <v-list class="d-flex flex-column align-center">
-                  <v-list-item v-if="false">
-                    <v-btn
-                      v-if="RoleAccesCRUDShow == true"
-                      dark
-                      class=""
-                      @click="showAddModal()"
-                      color="green"
-                    >
-                      <v-icon small>mdi-plus</v-icon> Add
-                    </v-btn>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-btn
-                      dark
-                      rounded
-                      @click="showAddModal()"
-                      color="green"
-                    >
-                      <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add FF Sostam
-                    </v-btn>
-                  </v-list-item>
-                    <v-btn
-                      v-if="false"
-                      dark
-                      rounded
-                      @click="downloadSuperAdmin()"
-                      color="blue"
-                    >
-                      <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-                    </v-btn>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-col>
-            <v-col cols="12">
-              <!-- Page Table -->
-              <v-select
-                v-model="table.pagination.current_page"
-                :items="table.pagination.page_options"
-                hide-details
-                outlined
-                dense
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-                rounded
-                label="Page"
-                class="centered-select"
-                style="width: 50%;max-width: 100px;"
               ></v-select>
             </v-col>
           </v-row>
