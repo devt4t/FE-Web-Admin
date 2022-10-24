@@ -1612,7 +1612,7 @@ export default {
           { text: "Tutupan", value: "tutupan_lahan", align: 'center'},
           { text: "Pola Tanam", value: "opsi_pola_tanam"},
           { text: "Max Kayu (+ MPTS)", value: "trees", align: 'center'},
-          { text: "Remove", value: "actions", align: 'right', sortable: false},
+          // { text: "Remove", value: "actions", align: 'right', sortable: false},
         ],
         items: [],
         loading: false,
