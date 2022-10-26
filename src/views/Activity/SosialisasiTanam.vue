@@ -615,7 +615,7 @@
                     <tr>
                       <td>Luas Lahan</td>
                       <td>:</td>
-                      <td><strong>{{ DetailTreesLahanTempData.land_area || 0 }}</strong>m<sup>2</sup></td>
+                      <td><strong>{{ numberFormat(DetailTreesLahanTempData.land_area || 0) }}</strong>m<sup>2</sup></td>
                     </tr>
                     <tr>
                       <td>Tutupan Lahan</td>
@@ -3168,7 +3168,7 @@ export default {
         CROPS: 0
       }
       seeds.forEach((seed) => {
-        total[seed.tree_category] += seed.amount
+        total[seed.tree_category] += parseInt(seed.amount)
         exists[seed.tree_category] += 1
       })
 
