@@ -13,8 +13,12 @@ body * {
     font-family: "Poppins", sans-serif;
 }
 
+.v-application .headline {
+    font-family: "Poppins", sans-serif!important;
+}
+
 .headermodalstyle {
-    font-family: "Poppins", sans-serif;
+    font-family: "Poppins", sans-serif!important;
     font-size: 50px;
     margin-bottom: 15px;
     /* text-shadow: 3px 3px 3px #aaa9a9; */

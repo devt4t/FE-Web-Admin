@@ -185,7 +185,7 @@
                   ></v-autocomplete>
                 </v-col>
                 <!-- Tanggal Distribusi -->
-                <!-- <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                   <p class="mb-1">Tanggal Distribusi</p>
                     <v-menu 
                       rounded="xl"
@@ -193,7 +193,7 @@
                       bottom
                       right
                       offset-x
-                      :close-on-content-click="false"
+                      :close-on-content-click="true"
                     >
                       <template v-slot:activator="{ on: menu, attrs }">
                         <v-tooltip top>
@@ -220,23 +220,11 @@
                           ></v-date-picker>
                           <br>
                         </v-list-item>
-                        <v-list-item>
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="green lighten-1"
-                            center
-                            rounded
-                            @click="datePickerMenu = false"
-                          >
-                            Ok
-                          </v-btn>
-                          <v-spacer></v-spacer>
-                        </v-list-item>
                       </v-list>
                     </v-menu>
-                </v-col> -->
+                </v-col>
                 <!-- Tanggal Penilikan Lubang -->
-                <!-- <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                   <p class="mb-1">Tanggal Penilikan Lubang</p>
                   <v-btn
                     rounded
@@ -247,9 +235,9 @@
                     <v-icon left> mdi-calendar </v-icon>
                     {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
                   </v-btn>
-                </v-col> -->
+                </v-col>
                 <!-- Tanggal Realisasi Tanam -->
-                <!-- <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                   <p class="mb-1">Tanggal Realisasi Tanam</p>
                   <v-btn
                     rounded
@@ -260,7 +248,16 @@
                     <v-icon left> mdi-calendar </v-icon>
                     {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
                   </v-btn>
-                </v-col> -->
+                </v-col>
+                <!-- Lokasi Distribusi -->
+                <v-col cols="12">
+                  <v-text-field
+                    outlined
+                    rounded
+                    v-model="dataToStore.distribution_location"
+                    label="Distribution Location"
+                  ></v-text-field>
+                </v-col>
 
                 <!-- Lahans Table -->
                 <v-col cols="12" sm="12" md="12">
@@ -413,7 +410,12 @@
               Cancel
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="green px-5" rounded dark @click="createSostamByFF()">
+            <v-btn 
+              color="green px-5 white--text" 
+              rounded 
+              @click="createSostamByFF()"
+              :disabled="!dataToStore.distribution_time || !dataToStore.distribution_location || table.lahans.items.length == 0"
+            >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Create Sostam
             </v-btn>
@@ -607,6 +609,27 @@
           >
           <v-card-text>
             <v-row class="">
+              <v-col cols="12">
+                <v-simple-table>
+                  <tbody>
+                    <tr>
+                      <td>Luas Lahan</td>
+                      <td>:</td>
+                      <td><strong>{{ DetailTreesLahanTempData.land_area || 0 }}</strong>m<sup>2</sup></td>
+                    </tr>
+                    <tr>
+                      <td>Tutupan Lahan</td>
+                      <td>:</td>
+                      <td><strong>{{ DetailTreesLahanTempData.tutupan_lahan || 0 }}</strong>%</td>
+                    </tr>
+                    <tr v-if="DetailTreesLahanTempData.planting_details && DetailTreesLahanTempData.land_area < 10000">
+                      <td>Max Bibit Kayu {{ getStatusTotalBibitInDetail(DetailTreesLahanTempData.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>:</td>
+                      <td><strong>{{ DetailTreesLahanTempData.max_seed_amount || getSeedCalculation(DetailTreesLahanTempData, 'total_max_trees') }}</strong> Bibit</td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
+              </v-col>
               <v-col cols="12" sm="12" md="12">
                 <div>
                   <h3 class="ml-1">
@@ -623,6 +646,7 @@
                           v-if="true"
                           @click="editDetailPohon(item)"
                           color="warning"
+                          :disabled="disabledEditPohon(DetailTreesLahanTemp, item.tree_category, DetailTreesLahanTempData)"
                         >
                           mdi-pencil-circle
                         </v-icon>
@@ -648,7 +672,8 @@
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Cancel</v-btn
             >
-            <v-btn dark color="green" rounded @click="saveEditPohon" class="px-5 mb-2"
+            <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
+              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 || getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (DetailTreesLahanTempData.max_seed_amount * 60 / 100)"
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Save</v-btn
@@ -659,13 +684,18 @@
       </v-dialog>
 
       <!-- Edit Jumlah Pohon -->
-      <v-dialog v-model="dialogDetailPohonEdit" max-width="300px" content-class="rounded-xl">
+      <v-dialog v-model="dialogDetailPohonEdit" max-width="450px" content-class="rounded-xl">
         <v-card>
           <v-card-text>
             <v-row class="pt-7">
               <v-col cols="12">
                 <v-simple-table>
                   <tbody>
+                    <tr v-if="DetailTreesLahanTempData.planting_details && DetailTreesLahanTempData.land_area < 10000">
+                      <td>Total Available</td>
+                      <td>:</td>
+                      <td><strong> {{ getAvailableBibit(DetailTreesLahanTemp, (DetailTreesLahanTempData.max_seed_amount || getSeedCalculation(DetailTreesLahanTempData, 'total_max_trees')), editedItemPohon) }}</strong> Bibit</td>
+                    </tr>
                     <tr>
                       <td>Nama Pohon</td>
                       <td>:</td>
@@ -698,8 +728,8 @@
               <v-icon small class="mr-1">mdi-close</v-icon>
               Cancel</v-btn
             >
-            <v-btn rounded small color="green" dark @click="saveEditPohonTemp" class="px-3"
-              >
+            <v-btn rounded small color="green" :disabled="(DetailTreesLahanTempData.land_area < 10000 && getDisabledSaveItemPohon(DetailTreesLahanTemp, DetailTreesLahanTempData, editedItemPohon)) || editedItemPohon.amount < 0" @click="saveEditPohonTemp" class="px-3 white--text"
+            >
               <v-icon small class="mr-1">mdi-check</v-icon>
               Set</v-btn
             >
@@ -828,7 +858,7 @@
                         Luas Lahan dan Tutupan Lahan
                       </th>
                       <th class="text-left" style="font-size: 14px">
-                        {{ defaultItem.luas_lahan }}m<sup>2</sup> dan
+                        {{ defaultItem.land_area }}m<sup>2</sup> dan
                         {{ defaultItem.tutupan_lahan }}%
                       </th>
                     </tr>
@@ -980,21 +1010,28 @@
       </v-dialog>
 
       <!-- Modal Verification -->
-      <v-dialog v-model="dialogVerification" max-width="500px">
+      <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline"
-            >Are you sure you want to Verification?</v-card-title
+          <v-card-title class="headline justify-center"
+            >Are you sure you want to <strong>Verification</strong>?
+            <small>this cant be undo</small>
+            </v-card-title
           >
-          <v-card-actions>
+          <v-card-actions class="pb-3">
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeVerification"
-              >Cancel</v-btn
+            <v-btn color="red white--text" class="px-4" rounded @click="closeVerification"
+              >
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel</v-btn
             >
             <v-btn
-              color="blue darken-1"
-              text
+              color="success"
+              class="px-4"
+              rounded
               @click="VerificationItemConfirm"
-              >OK</v-btn
+              >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1287,7 +1324,12 @@
 
       <!-- Luas Lahan kolom -->
       <template v-slot:item.land_area="{ item }">
-        {{ item.land_area }} m<sup>2</sup>
+        {{ numberFormat(item.land_area) }} m<sup>2</sup>
+      </template>
+
+      <!-- Total Bibit kolom -->
+      <template v-slot:item.trees_total="{ item }">
+        {{ numberFormat(item.trees_total) }}
       </template>
 
       <!-- Color Status -->
@@ -1453,6 +1495,7 @@ export default {
       { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     DetailTreesLahanTemp: [],
+    DetailTreesLahanTempData: {},
     dataobject: [],
     editedItem: {
       name: "",
@@ -1471,6 +1514,7 @@ export default {
       form_no: "",
       ktp_no: "",
       luas_lahan: "",
+      land_area: "",
       luas_tanam: "",
       nama_petani: "",
       no_lahan: "",
@@ -1612,7 +1656,7 @@ export default {
           { text: "Tutupan", value: "tutupan_lahan", align: 'center'},
           { text: "Pola Tanam", value: "opsi_pola_tanam"},
           { text: "Max Kayu (+ MPTS)", value: "trees", align: 'center'},
-          // { text: "Remove", value: "actions", align: 'right', sortable: false},
+          { text: "Remove", value: "actions", align: 'right', sortable: false},
         ],
         items: [],
         loading: false,
@@ -1642,6 +1686,7 @@ export default {
       selectedFF: {},
       hasSostam: false,
       distribution_time: '',
+      distribution_location: '',
       planting_time: '',
       penlub_time: '',
       lahans: []
@@ -1692,12 +1737,12 @@ export default {
   mounted() {
     this.firstAccessPage();
     this.program_year = new Date().getFullYear()
-    // if (this.User.role_group != 'IT') {
-    //   this.$store.state.maintenanceOverlay = true
-    // }
+    if (this.User.role_group != 'IT') {
+      this.$store.state.maintenanceOverlay = true
+    }
   },
   destroyed() {
-    // this.$store.state.maintenanceOverlay = false
+    this.$store.state.maintenanceOverlay = false
   },
 
   methods: {
@@ -1802,7 +1847,6 @@ export default {
           typegetdata: this.typegetdata,
           ff: this.valueFFcode,
         })
-        // console.log(params.toString())
         axios.get(
           this.BaseUrlGet +
             "GetSosisalisasiTanamAdminLimit?" + params,
@@ -1841,9 +1885,12 @@ export default {
           ff_no: this.options.ff.model,
           lahans: this.table.lahans.items,
           program_year: 2022,
+          distribution_time: this.dataToStore.distribution_time,
+          distribution_location: this.dataToStore.distribution_location,
+          distribution_location: this.dataToStore.distribution_location,
+          planting_time: this.dataToStore.planting_time,
+          penlub_time: this.dataToStore.penlub_time,
         }
-
-        console.log(dataToStore)
 
         const res = await axios.post(
           this.BaseUrlGet + "createSostamByFF",
@@ -1876,7 +1923,6 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemsMU = response.data.data.result;
           // this.dataobject = response.data.data.result;
@@ -1907,7 +1953,6 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsTA = response.data.data.result;
@@ -2049,6 +2094,19 @@ export default {
         console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
+          this.defaultItem.land_area = response.data.data.result.luas_lahan
+          if (this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') {
+            let maxSeedTrue = parseInt(this.getSeedCalculation(this.defaultItem, 'total_max_trees'))
+            let totalBibitMPTSKAYU = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
+            let separator = maxSeedTrue - totalBibitMPTSKAYU
+            console.log('separator = ' + separator)
+            if (separator < 0) {
+              this.disabledVerification = true
+            }
+
+            // set max_seed_amount
+            this.defaultItem.max_seed_amount = maxSeedTrue
+          }
           this.defaultItem.waitingapproval = this.waitingapprovefunct(
             response.data.data.result.validation
           );
@@ -2578,10 +2636,8 @@ export default {
       await this.getDetail(this.itemTemp);
 
       this.DetailTreesLahanTemp = this.defaultItem.planting_details;
-      // await this.getTA("form");
-      // await this.getVillage("form");
-      // this.getPetani();
-      console.log(this.DetailTreesLahanTemp.length);
+      this.DetailTreesLahanTempData = this.defaultItem
+      
       if (this.DetailTreesLahanTemp.length == 0) {
         this.snackbar = true;
         this.colorsnackbar = "red";
@@ -2898,6 +2954,33 @@ export default {
     dateFormat(date, format) {
         return moment(date).format(format)
     },
+    disabledEditPohon(trees = [], category = '', sostam) {
+      let maxBibit = sostam.max_seed_amount || this.getSeedCalculation(sostam, 'total_max_trees')
+      let minKayu = Math.round(maxBibit * 60/100)
+      
+      let total = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      
+      trees.forEach(treeData => {
+        total[treeData.tree_category] += parseInt(treeData.amount)
+      })
+
+      let totalBibitNow = total.KAYU + total.MPTS + total.CROPS
+
+      console.log('disable edit pohon : ' + total.KAYU )
+
+      if (category != '') {
+        if (category == 'MPTS') {
+          if (total.KAYU < minKayu) {
+            return true
+          } else return false
+        } else return false
+      } else return false
+
+    },
     generateFormData(data) {
         let formData= new FormData()
 
@@ -2914,6 +2997,47 @@ export default {
             }
         })
         return formData
+    },
+    getAvailableBibit(trees = [], maxSeed = 0, item = null) {
+      let total = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+
+      trees.forEach(val => {
+        if (item.tree_name != val.tree_name) {
+          total[val.tree_category] += parseInt(val.amount)
+        }
+      })
+
+      if (item.tree_category == 'CROPS') {
+        return Math.round(total.KAYU * 20 / 100) - item.amount
+      } else if (item.tree_category == 'KAYU') {
+        return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
+      } else if(item.tree_category == 'MPTS') {
+        return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
+      }
+    },
+    getDisabledSaveItemPohon(listEditPohon, dataSostamEditPohon, editPohon) {
+      let getAvailableBibit = this.getAvailableBibit(listEditPohon, (dataSostamEditPohon.max_seed_amount || this.getSeedCalculation(dataSostamEditPohon, 'total_max_trees')), editPohon)
+      let totalNow = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      listEditPohon.forEach(treeNow => {
+        totalNow[treeNow.tree_category] += parseInt(treeNow.amount)
+      })
+
+      let disabled = 0
+      if (getAvailableBibit < 0) {
+        disabled += 1
+      }
+
+      if (disabled > 0) {
+        return true
+      } else return false
     },
     getSeedCalculation(lahan, typeReturn, indexLahan = null) {
       const calculationAgroforestry = {
@@ -3033,7 +3157,6 @@ export default {
       } 
     },
     getStatusTotalBibitInDetail(seeds, typeReturn, secParams = null) {
-      console.log(seeds)
       let exists = {
         KAYU: 0,
         MPTS: 0,
