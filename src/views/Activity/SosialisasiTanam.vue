@@ -184,81 +184,6 @@
                     @change="getLahansFF()"
                   ></v-autocomplete>
                 </v-col>
-                <!-- Tanggal Distribusi -->
-                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Distribusi</p>
-                    <v-menu 
-                      rounded="xl"
-                      transition="slide-x-transition"
-                      bottom
-                      right
-                      offset-x
-                      :close-on-content-click="true"
-                    >
-                      <template v-slot:activator="{ on: menu, attrs }">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on: tooltip }">
-                            <v-btn
-                              rounded
-                              large
-                              color="green lighten-1"
-                              v-bind="attrs"
-                              v-on="{...menu, ...tooltip}"
-                            >
-                              <v-icon left> mdi-calendar </v-icon>
-                              {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
-                            </v-btn>
-                          </template>
-                          <span>Klik untuk memunculkan datepicker</span>
-                        </v-tooltip>
-                      </template>
-                      <v-list>
-                        <v-list-item>
-                          <v-date-picker 
-                            color="green lighten-1 rounded-xl" 
-                            v-model="dataToStore.distribution_time"
-                          ></v-date-picker>
-                          <br>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                </v-col>
-                <!-- Tanggal Penilikan Lubang -->
-                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Penilikan Lubang</p>
-                  <v-btn
-                    rounded
-                    large
-                    color="green lighten-1"
-                    disabled
-                  >
-                    <v-icon left> mdi-calendar </v-icon>
-                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
-                  </v-btn>
-                </v-col>
-                <!-- Tanggal Realisasi Tanam -->
-                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Realisasi Tanam</p>
-                  <v-btn
-                    rounded
-                    large
-                    disabled
-                    color="green lighten-1"
-                  >
-                    <v-icon left> mdi-calendar </v-icon>
-                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
-                  </v-btn>
-                </v-col>
-                <!-- Lokasi Distribusi -->
-                <v-col cols="12">
-                  <v-text-field
-                    outlined
-                    rounded
-                    v-model="dataToStore.distribution_location"
-                    label="Distribution Location"
-                  ></v-text-field>
-                </v-col>
-
                 <!-- Lahans Table -->
                 <v-col cols="12" sm="12" md="12">
                   <v-row class="align-center mb-4 px-5">
@@ -399,6 +324,103 @@
                       </v-icon>
                     </template>
                   </v-data-table>
+                </v-col>
+                <!-- Lokasi Distribusi -->
+                <v-col cols="12">
+                  <v-text-field
+                    outlined
+                    rounded
+                    v-model="dataToStore.distribution_location"
+                    label="Distribution Location"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <!-- Tanggal Distribusi -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Distribusi</p>
+                    <v-menu 
+                      rounded="xl"
+                      transition="slide-x-transition"
+                      bottom
+                      right
+                      offset-x
+                      :close-on-content-click="false"
+                      v-model="datepicker2Show"
+                    >
+                      <template v-slot:activator="{ on: menu, attrs }">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on: tooltip }">
+                            <v-btn
+                              rounded
+                              large
+                              :disabled="!options.ff.model || !dataToStore.distribution_location"
+                              color="green lighten-1"
+                              v-bind="attrs"
+                              v-on="{...menu, ...tooltip}"
+                            >
+                              <v-icon left> mdi-calendar </v-icon>
+                              {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
+                            </v-btn>
+                          </template>
+                          <span>Klik untuk memunculkan datepicker</span>
+                        </v-tooltip>
+                      </template>
+                      <v-list>
+                        <v-overlay :value="datepicker2Loading">
+                          <div class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="white"
+                                size="64"
+                            ></v-progress-circular>
+                            <p class="mt-2 mb-0">Updating available dates...</p>
+                          </div>
+                        </v-overlay>
+                        <v-list-item>
+                          <div class="d-flex flex-column align-center">
+                            <v-date-picker 
+                              color="green lighten-1 rounded-xl" 
+                              v-model="dataToStore.distribution_time"
+                              min="2022-11-24"
+                              max="2023-01-31"
+                              :allowed-dates="showingAvailableDates"
+                              :key="datepicker2Key"
+                            ></v-date-picker>
+                            <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                              <v-icon small class="mr-1">mdi-check-circle</v-icon>
+                              Set
+                            </v-btn>
+                          </div>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                </v-col>
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Penilikan Lubang</p>
+                  <v-btn
+                    rounded
+                    large
+                    color="green lighten-1"
+                    disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+                <!-- Tanggal Realisasi Tanam -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Realisasi Tanam</p>
+                  <v-btn
+                    rounded
+                    large
+                    disabled
+                    color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-container>
@@ -1434,6 +1456,10 @@ export default {
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
+    datepicker2Show: false,
+    datepicker2Loading: false,
+    datepicker2NotAvailable: [],
+    datepicker2Key: 101,
     datepicker3: new Date().toISOString().substr(0, 10),
     rules: [
       (value) => !!value || "Required.",
@@ -1731,6 +1757,13 @@ export default {
         this.datepicker1 = moment(newValue).subtract(14, 'days')
         this.datepicker3 = moment(newValue).add(7, 'days')
       }
+    },
+    'datepicker2Show': {
+      handler(newValue) {
+        if (newValue == true) {
+          this.getAvailableDistributionDates()
+        }
+      }
     }
   },
 
@@ -1888,8 +1921,8 @@ export default {
           distribution_time: this.dataToStore.distribution_time,
           distribution_location: this.dataToStore.distribution_location,
           distribution_location: this.dataToStore.distribution_location,
-          planting_time: this.dataToStore.planting_time,
-          penlub_time: this.dataToStore.penlub_time,
+          planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
+          penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
         }
 
         const res = await axios.post(
@@ -1901,6 +1934,11 @@ export default {
             },
           }
         )
+        // reset form create value
+        this.options.ff.model = ''
+        this.table.lahans.items = []
+        this.dataToStore.distribution_location
+        
         this.initialize()
         this.colorsnackbar = 'green'
         this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
@@ -3190,6 +3228,119 @@ export default {
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    showingAvailableDates(val) {
+      return this.datepicker2NotAvailable.includes(val) == false
+    },
+    async getAvailableDistributionDates() {
+      this.datepicker2Loading = true
+      const distributionDateRange = [
+        {
+          month: '11',
+          year: '2022',
+          program_year: 2022
+        },
+        {
+          month: '12',
+          year: '2022',
+          program_year: 2022
+        },
+        {
+          month: '01',
+          year: '2023',
+          program_year: 2022
+        },
+      ]
+      // get FF MU no
+      let ff_mu_no = ''
+      await this.options.ff.items.forEach((ffVal) => {
+        if (ffVal.ff_no == this.options.ff.model) {
+          ff_mu_no = ffVal.mu_no
+        } 
+      })
+
+      // get ff nursery
+      let ff_nursery = this.getNurseryAlocation(ff_mu_no) 
+
+      let ffDatesFull = []
+      let ffDatesAvailable = []
+
+      await Promise.all(distributionDateRange.map(async (dDate, dIndex) => {
+        let params = new URLSearchParams(dDate)
+        await axios.get(
+          localStorage.getItem("BaseUrlGet") + 'DistributionCalendar?' + params,
+          {
+            headers: {
+              Authorization: `Bearer ` + localStorage.getItem("token")
+            },
+          }
+        ).then(res => {
+          const resData = res.data.data.result.datas || []
+          resData.forEach((avData, avIndex) => {
+            if (avData.nursery == ff_nursery) {
+              avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total, avData.date)
+              if (avData.color == 'yellow') {
+                ffDatesAvailable.push(this.dateFormat(avData.date, 'Y-MM-DD'))
+              } else {
+                ffDatesFull.push(this.dateFormat(avData.date, 'Y-MM-DD'))
+              }
+            }
+          })
+        }).catch(err => {
+          console.log(err)
+        }).finally(() => {
+          if (dIndex == 2) {
+            this.datepicker2NotAvailable = ffDatesFull
+            this.datepicker2Loading = false
+          }
+        })
+      }))
+    },
+    getNurseryAlocation(mu_no) {
+        const ciminyak   = ['023', '026', '027', '021', '029']
+        const arjasari   = ['022', '024', '025', '020']
+        const kebumen    = ['019']
+        const pati       = ['015']
+        
+        let nursery = 'Tidak Ada'
+
+        if (ciminyak.includes(mu_no)) {
+            nursery = 'Ciminyak'
+        } else if (arjasari.includes(mu_no)) {
+            nursery = 'Arjasari'
+        } else if (kebumen.includes(mu_no)) {
+            nursery = 'Kebumen'
+        } else if (pati.includes(mu_no)) {
+            nursery = 'Pati'
+        }
+        
+        return nursery;
+    },
+    calendarGetNurseryColor(n, total, date) {
+        let maxFF = this.calendarGetMaxFF(n, date)
+        
+        if (total === maxFF) {
+            return 'green'
+        } else if (total > maxFF) {
+            return 'red'
+        } else {
+            return 'yellow'
+        }
+    },
+    calendarGetMaxFF(n, date) {
+        if (n == 'Arjasari') {
+            if (date >= '2022-12-21' && date <= '2022-12-31') {
+                return 8
+            } else if (date >= '2023-01-01' && date <= '2023-01-31') {
+                return 5
+            } else return 4
+        } else if (n == 'Ciminyak') {
+            if (date >= '2022-12-21' && date <= '2022-12-31') {
+                return 8
+            } else return 4
+        } else if (n == 'Kebumen' || n == 'Pati') {
+            return 1
+        } else return 4
     },
   },
 };
