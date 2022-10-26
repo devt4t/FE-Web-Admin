@@ -17,7 +17,7 @@
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px">
         <v-card rounded="xl">
-          <v-card-title class="headline"
+          <v-card-title class=""
             >Filter Pencarian Area</v-card-title
           >
           <v-card-text>
@@ -79,7 +79,7 @@
       <!-- Modal Filter Emp -->
       <v-dialog v-model="dialogFilterEmp" max-width="500px">
         <v-card rounded="xl">
-          <v-card-title class="headline"
+          <v-card-title class=""
             >Filter Pencarian By Emp</v-card-title
           >
           <v-card-text>
@@ -132,7 +132,7 @@
         <v-card rounded="xl" elevation="10">
           <!-- Title -->
           <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
-            <span class="headline">Add per~FF</span>
+            <span class="">Add per~FF</span>
             <v-spacer></v-spacer>
             <v-icon color="red" @click="dialogAdd.show = false">mdi-close-circle</v-icon>
           </v-card-title>
@@ -289,7 +289,7 @@
                       <v-dialog v-model="table.lahans.dialogs.trees.show" max-width="700px" content-class="rounded-xl">
                         <v-card>
                           <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
-                            <span class="headline">Set Trees Amount</span>
+                            <span class="">Set Trees Amount</span>
                             <v-spacer></v-spacer>
                             <v-icon color="red" @click="table.lahans.dialogs.trees.show = false">mdi-close-circle</v-icon>
                           </v-card-title>
@@ -428,7 +428,7 @@
         <v-card rounded="xl">
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card-title class="mb-1 headermodalstyle rounded-xl">
-              <span class="headline">{{ formTitle }}</span>
+              <span class="">{{ formTitle }}</span>
             </v-card-title>
 
             <v-card-text>
@@ -574,7 +574,7 @@
       <!-- What do you want to edit? -->
       <v-dialog v-model="dialogShowEdit" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline justify-center"
+          <v-card-title class=" justify-center"
             >What you want to edit?</v-card-title
           >
           <v-card-actions class="pb-3">
@@ -602,8 +602,8 @@
       <!-- List Edit Jumlah Pohon -->
       <v-dialog v-model="dialogDetailPohon" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline justify-center align-center py-5"
-            ><span class="headline">
+          <v-card-title class=" justify-center align-center py-5"
+            ><span class="">
               <v-icon class="mr-1">mdi-forest</v-icon>
               List Pohon Lahan</span></v-card-title
           >
@@ -742,7 +742,7 @@
       <v-dialog v-model="dialogDetail" max-width="800px" scrollable persistent>
         <v-card rounded="xl">
           <v-card-title class="mb-1 headermodalstyle">
-            <span class="headline">Detail Sosialisasi Tanam</span>
+            <span class="">Detail Sosialisasi Tanam</span>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
@@ -1012,9 +1012,9 @@
       <!-- Modal Verification -->
       <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline justify-center"
-            >Are you sure you want to <strong>Verification</strong>?
-            <small>this cant be undo</small>
+          <v-card-title class=" justify-center"
+            >Are you sure you want to <strong> Verification</strong>?
+            <small class="red--text">this can't be undo</small>
             </v-card-title
           >
           <v-card-actions class="pb-3">
@@ -1041,7 +1041,7 @@
       <!-- Modal Delete -->
       <v-dialog v-model="dialogDelete" max-width="500px">
         <v-card>
-          <v-card-title class="headline"
+          <v-card-title class=""
             >Are you sure you want to delete this item?</v-card-title
           >
           <v-card-actions>
