@@ -653,36 +653,38 @@
                 </v-simple-table>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <div>
-                  <h3 class="ml-1">
-                    <v-data-table
-                      :headers="headersdetaileditjumlah"
-                      :items="DetailTreesLahanTemp"
-                      class="elevation-5 rounded-xl"
-                    >
-                      <!-- <template v-slot:item.tree_category="{ item }">
-                        {{ gettype(item.tree_category) }}
-                      </template> -->
-                      <template v-slot:item.actions="{ item }">
-                        <v-icon
-                          v-if="true"
-                          @click="editDetailPohon(item)"
-                          color="warning"
-                          :disabled="disabledEditPohon(DetailTreesLahanTemp, item.tree_category, DetailTreesLahanTempData)"
-                        >
-                          mdi-pencil-circle
-                        </v-icon>
-                        <!-- <v-icon
-                          v-if="RoleAccesCRUDShow == true"
-                          @click="deleteDetailPohon(item)"
-                          small
-                          color="red"
-                        >
-                          mdi-delete
-                        </v-icon> -->
-                      </template>
-                    </v-data-table>
-                  </h3>
+                <div class="d-flex flex-column align-center">
+                  <v-btn color="red white--text mb-2" small v-if="DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))" rounded @click="resetJumlahBibit()">
+                    <v-icon small class="mr-1">mdi-refresh</v-icon>
+                    Reset Jumlah Bibit
+                  </v-btn>
+                  <v-data-table
+                    :headers="headersdetaileditjumlah"
+                    :items="DetailTreesLahanTemp"
+                    class="elevation-5 rounded-xl"
+                  >
+                    <!-- <template v-slot:item.tree_category="{ item }">
+                      {{ gettype(item.tree_category) }}
+                    </template> -->
+                    <template v-slot:item.actions="{ item }">
+                      <v-icon
+                        v-if="true"
+                        @click="editDetailPohon(item)"
+                        color="warning"
+                        :disabled="disabledEditPohon(DetailTreesLahanTemp, item.tree_category, DetailTreesLahanTempData)"
+                      >
+                        mdi-pencil-circle
+                      </v-icon>
+                      <!-- <v-icon
+                        v-if="RoleAccesCRUDShow == true"
+                        @click="deleteDetailPohon(item)"
+                        small
+                        color="red"
+                      >
+                        mdi-delete
+                      </v-icon> -->
+                    </template>
+                  </v-data-table>
                 </div>
               </v-col>
             </v-row>
@@ -3345,6 +3347,11 @@ export default {
             return 1
         } else return 4
     },
+    resetJumlahBibit() {
+      this.DetailTreesLahanTemp.forEach((seed, seedIndex) => {
+        this.DetailTreesLahanTemp[seedIndex].amount = 0
+      })
+    }
   },
 };
 </script>
