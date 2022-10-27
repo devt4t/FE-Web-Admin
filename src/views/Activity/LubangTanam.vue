@@ -20,6 +20,7 @@
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded elevation-6 mx-3 pa-1"
+      multi-sort
     >
       <!-- Color Status -->
       <template v-slot:item.status="{ item }">
