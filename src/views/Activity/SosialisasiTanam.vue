@@ -695,7 +695,7 @@
               Cancel</v-btn
             >
             <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
-              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 || getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (DetailTreesLahanTempData.max_seed_amount * 60 / 100)"
+              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 || getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (Math.round(DetailTreesLahanTempData.max_seed_amount * 60 / 100))"
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Save</v-btn
@@ -1015,12 +1015,15 @@
               Close
             </v-btn>
             <v-spacer></v-spacer>
+            <p class="red--text small mb-0" v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < (Math.round(defaultItem.max_seed_amount * 60 / 100))">
+              Minimal total kayu = {{Math.round(defaultItem.max_seed_amount * 60 / 100)}}!
+            </p>
             <v-btn
               v-if="RoleAccesCRUDShow == true && defaultItem.waitingapproval == true"
               color="success"
               rounded
               @click="verifSubmit()"
-              :disabled="disabledVerification || getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0"
+              :disabled="disabledVerification || getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0 || getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0 || getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < (Math.round(defaultItem.max_seed_amount * 60 / 100))"
               elevation="1"
               class="px-5 white--text"
             >
