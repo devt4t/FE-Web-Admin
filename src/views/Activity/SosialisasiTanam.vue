@@ -166,6 +166,7 @@
                     Refresh FF
                   </v-btn>
                 </v-col>
+                <!-- Select FF -->
                 <v-col cols="12" sm="12" md="12">
                   <v-autocomplete
                     outlined
@@ -183,6 +184,103 @@
                     :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'"
                     @change="getLahansFF()"
                   ></v-autocomplete>
+                </v-col>
+                <!-- Tanggal Distribusi -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Distribusi</p>
+                    <v-menu 
+                      rounded="xl"
+                      transition="slide-x-transition"
+                      bottom
+                      right
+                      offset-x
+                      :close-on-content-click="false"
+                      v-model="datepicker2Show"
+                    >
+                      <template v-slot:activator="{ on: menu, attrs }">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on: tooltip }">
+                            <v-btn
+                              rounded
+                              large
+                              :disabled="!options.ff.model"
+                              color="green lighten-1"
+                              v-bind="attrs"
+                              v-on="{...menu, ...tooltip}"
+                            >
+                              <v-icon left> mdi-calendar </v-icon>
+                              {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
+                            </v-btn>
+                          </template>
+                          <span>Klik untuk memunculkan datepicker</span>
+                        </v-tooltip>
+                      </template>
+                      <v-list>
+                        <v-overlay :value="datepicker2Loading">
+                          <div class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="white"
+                                size="64"
+                            ></v-progress-circular>
+                            <p class="mt-2 mb-0">Updating available dates...</p>
+                          </div>
+                        </v-overlay>
+                        <v-list-item>
+                          <div class="d-flex flex-column align-center">
+                            <v-date-picker 
+                              color="green lighten-1 rounded-xl" 
+                              v-model="dataToStore.distribution_time"
+                              min="2022-11-24"
+                              max="2023-01-31"
+                              :allowed-dates="showingAvailableDates"
+                              :key="datepicker2Key"
+                            ></v-date-picker>
+                            <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                              <v-icon small class="mr-1">mdi-check-circle</v-icon>
+                              Set
+                            </v-btn>
+                          </div>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                </v-col>
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Penilikan Lubang</p>
+                  <v-btn
+                    rounded
+                    large
+                    color="green lighten-1"
+                    disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+                <!-- Tanggal Realisasi Tanam -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Realisasi Tanam</p>
+                  <v-btn
+                    rounded
+                    large
+                    disabled
+                    color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+                <!-- Lokasi Distribusi -->
+                <v-col cols="12">
+                  <v-text-field
+                    outlined
+                    rounded
+                    v-model="dataToStore.distribution_location"
+                    label="Distribution Location"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                  ></v-text-field>
                 </v-col>
                 <!-- Lahans Table -->
                 <v-col cols="12" sm="12" md="12">
@@ -324,103 +422,6 @@
                       </v-icon>
                     </template>
                   </v-data-table>
-                </v-col>
-                <!-- Lokasi Distribusi -->
-                <v-col cols="12">
-                  <v-text-field
-                    outlined
-                    rounded
-                    v-model="dataToStore.distribution_location"
-                    label="Distribution Location"
-                    :rules="[(v) => !!v || 'Field is required']"
-                    hide-details
-                  ></v-text-field>
-                </v-col>
-                <!-- Tanggal Distribusi -->
-                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Distribusi</p>
-                    <v-menu 
-                      rounded="xl"
-                      transition="slide-x-transition"
-                      bottom
-                      right
-                      offset-x
-                      :close-on-content-click="false"
-                      v-model="datepicker2Show"
-                    >
-                      <template v-slot:activator="{ on: menu, attrs }">
-                        <v-tooltip top>
-                          <template v-slot:activator="{ on: tooltip }">
-                            <v-btn
-                              rounded
-                              large
-                              :disabled="!options.ff.model || !dataToStore.distribution_location"
-                              color="green lighten-1"
-                              v-bind="attrs"
-                              v-on="{...menu, ...tooltip}"
-                            >
-                              <v-icon left> mdi-calendar </v-icon>
-                              {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
-                            </v-btn>
-                          </template>
-                          <span>Klik untuk memunculkan datepicker</span>
-                        </v-tooltip>
-                      </template>
-                      <v-list>
-                        <v-overlay :value="datepicker2Loading">
-                          <div class="d-flex flex-column align-center justify-center">
-                            <v-progress-circular
-                                indeterminate
-                                color="white"
-                                size="64"
-                            ></v-progress-circular>
-                            <p class="mt-2 mb-0">Updating available dates...</p>
-                          </div>
-                        </v-overlay>
-                        <v-list-item>
-                          <div class="d-flex flex-column align-center">
-                            <v-date-picker 
-                              color="green lighten-1 rounded-xl" 
-                              v-model="dataToStore.distribution_time"
-                              min="2022-11-24"
-                              max="2023-01-31"
-                              :allowed-dates="showingAvailableDates"
-                              :key="datepicker2Key"
-                            ></v-date-picker>
-                            <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
-                              <v-icon small class="mr-1">mdi-check-circle</v-icon>
-                              Set
-                            </v-btn>
-                          </div>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                </v-col>
-                <!-- Tanggal Penilikan Lubang -->
-                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Penilikan Lubang</p>
-                  <v-btn
-                    rounded
-                    large
-                    color="green lighten-1"
-                    disabled
-                  >
-                    <v-icon left> mdi-calendar </v-icon>
-                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
-                  </v-btn>
-                </v-col>
-                <!-- Tanggal Realisasi Tanam -->
-                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Realisasi Tanam</p>
-                  <v-btn
-                    rounded
-                    large
-                    disabled
-                    color="green lighten-1"
-                  >
-                    <v-icon left> mdi-calendar </v-icon>
-                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
-                  </v-btn>
                 </v-col>
               </v-row>
             </v-container>
@@ -1437,7 +1438,12 @@
       :timeout="timeoutsnackbar"
       rounded="xl"
     >
-      {{ textsnackbar }}
+      <div class="d-flex justify-between">
+        <p class="mb-0">
+          {{ textsnackbar }}
+        </p>
+        <v-icon small class="pl-1" @click="snackbar = false">mdi-close-circle</v-icon>
+      </div>
     </v-snackbar>
   </div>
 </template>
@@ -1687,7 +1693,7 @@ export default {
           { text: "Tutupan", value: "tutupan_lahan", align: 'center'},
           { text: "Pola Tanam", value: "opsi_pola_tanam"},
           { text: "Max Kayu (+ MPTS)", value: "trees", align: 'center'},
-          { text: "Remove", value: "actions", align: 'right', sortable: false},
+          // { text: "Remove", value: "actions", align: 'right', sortable: false},
         ],
         items: [],
         loading: false,
@@ -1764,9 +1770,9 @@ export default {
       }
     },
     'datepicker2Show': {
-      handler(newValue) {
+      async handler(newValue) {
         if (newValue == true) {
-          this.getAvailableDistributionDates()
+          await this.setUnavailableDistributionDates()
         }
       }
     }
@@ -1916,6 +1922,7 @@ export default {
 
     async createSostamByFF() {
       try {
+
         this.dialogAdd.show = false
         this.$store.state.loadingOverlay = true
 
@@ -1930,27 +1937,37 @@ export default {
           penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
         }
 
-        const res = await axios.post(
-          this.BaseUrlGet + "createSostamByFF",
-          dataToStore,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken
-            },
-          }
-        )
-        // reset form create value
-        this.options.ff.model = ''
-        this.table.lahans.items = []
-        this.dataToStore.distribution_location
-        
-        this.initialize()
-        this.colorsnackbar = 'green'
-        this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
-        this.timeoutsnackbar = 10000
-        this.snackbar = true
+        await this.setUnavailableDistributionDates()
+        const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
+        if (isUnavailableDate == true) {
+          this.dataToStore.distribution_time = ''
+          this.colorsnackbar = 'red'
+          this.textsnackbar = `Tanggal distribusi sudah penuh!`
+          this.timeoutsnackbar = 10000
+          this.snackbar = true
+        } else {
+          const res = await axios.post(
+            this.BaseUrlGet + "createSostamByFF",
+            dataToStore,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken
+              },
+            }
+          )
+          // reset form create value
+          this.options.ff.model = ''
+          this.table.lahans.items = []
+          this.dataToStore.distribution_location
+          
+          this.initialize()
+          this.colorsnackbar = 'green'
+          this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
+          this.timeoutsnackbar = 10000
+          this.snackbar = true
+        }
       } catch (err) {
-        console.log(err.response)
+        console.log(err)
       } finally {
         this.$store.state.loadingOverlay = false
       }
@@ -3237,7 +3254,7 @@ export default {
     showingAvailableDates(val) {
       return this.datepicker2NotAvailable.includes(val) == false
     },
-    async getAvailableDistributionDates() {
+    async setUnavailableDistributionDates() {
       this.datepicker2Loading = true
       const distributionDateRange = [
         {
@@ -3295,11 +3312,12 @@ export default {
           console.log(err)
         }).finally(() => {
           if (dIndex == 2) {
-            this.datepicker2NotAvailable = ffDatesFull
-            this.datepicker2Loading = false
           }
         })
       }))
+      this.datepicker2NotAvailable = ffDatesFull
+      this.datepicker2Loading = false
+      this.datepicker2Key += 1
     },
     getNurseryAlocation(mu_no) {
         const ciminyak   = ['023', '026', '027', '021', '029']
