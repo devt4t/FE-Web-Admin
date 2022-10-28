@@ -603,6 +603,7 @@
           <v-card-actions class="pb-3">
             <v-spacer></v-spacer>
             <v-btn dark rounded color="blue" @click="showEditModal" class="px-5"
+              :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
               >
               <v-icon class="mr-1">mdi-file-document-edit</v-icon>
               Edit Sosialisasi</v-btn
@@ -3320,8 +3321,8 @@ export default {
       this.datepicker2Key += 1
     },
     getNurseryAlocation(mu_no) {
-        const ciminyak   = ['023', '026', '027', '021', '029']
-        const arjasari   = ['022', '024', '025', '020']
+        const ciminyak   = ['023', '026', '027', '021' ]
+        const arjasari   = ['022', '024', '025', '020', '029']
         const kebumen    = ['019']
         const pati       = ['015']
         
@@ -3362,7 +3363,7 @@ export default {
                 return 8
             } else return 4
         } else if (n == 'Kebumen' || n == 'Pati') {
-            return 1
+            return 2
         } else return 4
     },
     resetJumlahBibit() {
