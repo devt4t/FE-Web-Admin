@@ -2231,6 +2231,7 @@ export default {
       const datapost = {
         form_no: this.defaultItem.form_no,
         validate_by: this.employee_no,
+        max_seed_amount: this.defaultItem.max_seed_amount
       };
       console.log(datapost);
       // this.dialogDetail = false;
@@ -3274,7 +3275,7 @@ export default {
       } else if (typeReturn == 'ALL') {
         return total.KAYU + total.MPTS + total.CROPS
       } else if (typeReturn == 'COLOR') {
-        if (secParams >= (total.KAYU + total.MPTS) && (total.KAYU + total.MPTS) > 0 && total.KAYU >= (60 / 100 * total.KAYU + total.MPTS)) {
+        if (secParams >= (total.KAYU + total.MPTS) && (total.KAYU + total.MPTS) > 0 && ((total.KAYU + total.MPTS) >= (60 / 100 * total.KAYU + total.MPTS))) {
           this.disabledVerification = false
           return 'green'
         } else {
