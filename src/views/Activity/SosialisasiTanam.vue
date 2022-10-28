@@ -616,14 +616,14 @@
           >
           <v-card-actions class="pb-3">
             <v-spacer></v-spacer>
-            <v-btn dark rounded color="blue" @click="showEditModal" class="px-5"
+            <v-btn rounded color="blue white--text" @click="showEditModal" class="px-5"
               :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
               >
               <v-icon class="mr-1">mdi-file-document-edit</v-icon>
               Edit Sosialisasi</v-btn
             >
-            <v-btn dark
-              color="green"
+            <v-btn
+              color="green white--text"
               rounded
               :disabled="User.role_group != 'IT' && User.role_name != 'UNIT MANAGER'"
               @click="showEditJumlahPohonModal"
