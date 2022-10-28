@@ -670,7 +670,7 @@
               </v-col>
               <v-col cols="12" sm="12" md="12">
                 <div class="d-flex flex-column align-center">
-                  <v-btn color="red white--text mb-2" small v-if="DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))" rounded @click="resetJumlahBibit()">
+                  <v-btn color="red white--text mb-2" small v-if="DetailTreesLahanTempData.land_area < 10000 && (DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS')))" rounded @click="resetJumlahBibit()">
                     <v-icon small class="mr-1">mdi-refresh</v-icon>
                     Reset Jumlah Bibit
                   </v-btn>
@@ -713,9 +713,13 @@
               Cancel</v-btn
             >
             <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
-              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 || 
-              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (Math.round(DetailTreesLahanTempData.max_seed_amount * 60 / 100)) ||
-              DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))
+              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 
+                || 
+                DetailTreesLahanTempData.land_area < 10000 && (
+                getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (Math.round(DetailTreesLahanTempData.max_seed_amount * 60 / 100)) 
+                ||
+                DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))
+                )
               "
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
