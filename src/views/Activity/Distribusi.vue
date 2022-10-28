@@ -300,7 +300,7 @@ export default {
                     return 8
                 } else return 4
             } else if (n == 'Kebumen' || n == 'Pati') {
-                return 1
+                return 2
             } else return 4
         },
         dateFormat(date, format) {
