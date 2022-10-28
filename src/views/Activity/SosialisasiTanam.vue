@@ -559,11 +559,25 @@
                           </v-btn>
                         </div>
                       </template>
+                      <v-overlay :value="datepicker2Loading">
+                        <div class="d-flex flex-column align-center justify-center">
+                          <v-progress-circular
+                              indeterminate
+                              color="white"
+                              size="64"
+                          ></v-progress-circular>
+                          <p class="mt-2 mb-0">Updating available dates...</p>
+                        </div>
+                      </v-overlay>
                       <v-date-picker
                         v-model="datepicker2"
+                        min="2022-11-24"
+                        max="2023-01-31"
+                        :allowed-dates="showingAvailableDates"
                         @input="menu2 = false"
                         color="green"
                         class="rounded-xl"
+                        :key="datepicker2Key2"
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
@@ -699,7 +713,10 @@
               Cancel</v-btn
             >
             <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
-              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 || getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (Math.round(DetailTreesLahanTempData.max_seed_amount * 60 / 100))"
+              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 || 
+              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (Math.round(DetailTreesLahanTempData.max_seed_amount * 60 / 100)) ||
+              DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))
+              "
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Save</v-btn
@@ -1472,6 +1489,7 @@ export default {
     datepicker2Loading: false,
     datepicker2NotAvailable: [],
     datepicker2Key: 101,
+    datepicker2Key2: 1011,
     datepicker3: new Date().toISOString().substr(0, 10),
     rules: [
       (value) => !!value || "Required.",
@@ -1776,18 +1794,25 @@ export default {
           await this.setUnavailableDistributionDates()
         }
       }
+    },
+    'menu2': {
+      async handler(newValue) {
+        if (newValue == true) {
+          await this.setUnavailableDistributionDates()
+        }
+      }
     }
   },
 
   mounted() {
     this.firstAccessPage();
     this.program_year = new Date().getFullYear()
-    if (this.User.role_group != 'IT') {
-      this.$store.state.maintenanceOverlay = true
-    }
+    // if (this.User.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
   },
   destroyed() {
-    this.$store.state.maintenanceOverlay = false
+    // this.$store.state.maintenanceOverlay = false
   },
 
   methods: {
@@ -2409,7 +2434,7 @@ export default {
         ff_no: this.defaultItem.ff_no,
         farmer_no: this.defaultItem.farmer_no,
         no_lahan: this.defaultItem.no_lahan,
-        planting_year: this.defaultItem.planting_year,
+        program_year: this.defaultItem.planting_year,
         pembuatan_lubang_tanam: this.datepicker1,
         distribution_time: this.datepicker2,
         planting_time: this.datepicker3,
@@ -2417,9 +2442,11 @@ export default {
       };
       console.log(datapost);
       this.dialogDetail = false;
+      this.dialog = false;
       try {
+        this.$store.state.loadingOverlay = true
         const response = await axios.post(
-          this.BaseUrlGet + "UpdateSosisalisasiTanam",
+          this.BaseUrlGet + "UpdateSosialisasiTanamPeriod",
           datapost,
           {
             headers: {
@@ -2429,6 +2456,7 @@ export default {
         );
         console.log(response.data.data.result);
         if (response.data.data.result == "success") {
+          this.$store.state.loadingOverlay = false
           this.dialog = false;
           this.snackbar = true;
           this.colorsnackbar = "green";
@@ -2436,11 +2464,13 @@ export default {
           this.initialize();
         } else {
           this.dialog = true;
+          this.$store.state.loadingOverlay = false
         }
       } catch (error) {
         console.error(error.response);
         if (error.response.status == 401) {
           this.dialog = true;
+          this.$store.state.loadingOverlay = false
         }
       }
     },
@@ -2742,7 +2772,9 @@ export default {
         form_no: this.defaultItem.form_no,
         list_pohon: this.DetailTreesLahanTemp,
         detail_year: datenow,
+        max_seed_amount: this.defaultItem.max_seed_amount,
       };
+
 
       console.log(datapost);
       this.updateDataPohon(datapost);
@@ -3238,7 +3270,7 @@ export default {
       } else if (typeReturn == 'ALL') {
         return total.KAYU + total.MPTS + total.CROPS
       } else if (typeReturn == 'COLOR') {
-        if (secParams >= (total.KAYU + total.MPTS) && (total.KAYU + total.MPTS) > 0) {
+        if (secParams >= (total.KAYU + total.MPTS) && (total.KAYU + total.MPTS) > 0 && total.KAYU >= (60 / 100 * total.KAYU + total.MPTS)) {
           this.disabledVerification = false
           return 'green'
         } else {
@@ -3282,6 +3314,11 @@ export default {
         } 
       })
 
+      // set mu ff in edit sostam
+      if (ff_mu_no == '') {
+        if (this.defaultItem.mu_no) ff_mu_no = this.defaultItem.mu_no
+      }
+
       // get ff nursery
       let ff_nursery = this.getNurseryAlocation(ff_mu_no) 
 
@@ -3319,6 +3356,7 @@ export default {
       this.datepicker2NotAvailable = ffDatesFull
       this.datepicker2Loading = false
       this.datepicker2Key += 1
+      this.datepicker2Key2 += 1
     },
     getNurseryAlocation(mu_no) {
         const ciminyak   = ['023', '026', '027', '021' ]
