@@ -183,7 +183,14 @@
                     :loading="options.ff.loading"
                     :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'"
                     @change="getLahansFF()"
-                  ></v-autocomplete>
+                  >
+                    <template v-slot:item="data">
+                      <v-list-item-content>
+                        <v-list-item-title v-html="data.item.name"></v-list-item-title>
+                        <v-list-item-subtitle>{{ data.item.ff_no }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </v-autocomplete>
                 </v-col>
                 <!-- Tanggal Distribusi -->
                 <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
@@ -715,11 +722,10 @@
             <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
               :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 
                 || 
-                DetailTreesLahanTempData.land_area < 10000 && (
-                getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') < (Math.round(DetailTreesLahanTempData.max_seed_amount * 60 / 100)) 
+                getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS') > Math.round(40/60 * getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU')) 
                 ||
-                DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))
-                )
+                (DetailTreesLahanTempData.land_area < 10000 && 
+                DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS')))
               "
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
@@ -1040,15 +1046,22 @@
               Close
             </v-btn>
             <v-spacer></v-spacer>
-            <p class="red--text small mb-0" v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < (Math.round(defaultItem.max_seed_amount * 60 / 100))">
-              Minimal total kayu = {{Math.round(defaultItem.max_seed_amount * 60 / 100)}}!
+            <p class="red--text small mb-0" v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < 1">
+              Kayu masih 0!
             </p>
             <v-btn
               v-if="RoleAccesCRUDShow == true && defaultItem.waitingapproval == true"
               color="success"
               rounded
               @click="verifSubmit()"
-              :disabled="disabledVerification || getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0 || getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0 || getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < (Math.round(defaultItem.max_seed_amount * 60 / 100))"
+              :disabled="
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0 
+                || 
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0 
+                ||
+                (defaultItem.land_area < 10000 
+                &&
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'red')"
               elevation="1"
               class="px-5 white--text"
             >
@@ -2185,7 +2198,7 @@ export default {
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
           this.defaultItem.land_area = response.data.data.result.luas_lahan
-          if (this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') {
+          if ((this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') && this.defaultItem.land_area < 10000) {
             let maxSeedTrue = parseInt(this.getSeedCalculation(this.defaultItem, 'total_max_trees'))
             let totalBibitMPTSKAYU = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
             let separator = maxSeedTrue - totalBibitMPTSKAYU
@@ -3054,7 +3067,7 @@ export default {
     },
     disabledEditPohon(trees = [], category = '', sostam) {
       let maxBibit = sostam.max_seed_amount || this.getSeedCalculation(sostam, 'total_max_trees')
-      let minKayu = Math.round(maxBibit * 60/100)
+      let minKayu = 1
       
       let total = {
         KAYU: 0,
@@ -3114,7 +3127,11 @@ export default {
       } else if (item.tree_category == 'KAYU') {
         return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
       } else if(item.tree_category == 'MPTS') {
-        return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
+        if (total.KAYU < Math.round(parseInt(maxSeed) * 60 / 100)) {
+          return Math.round(40/60 * total.KAYU) - item.amount - total.MPTS
+        } else {
+          return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
+        }
       }
     },
     getDisabledSaveItemPohon(listEditPohon, dataSostamEditPohon, editPohon) {
@@ -3269,17 +3286,14 @@ export default {
         total[seed.tree_category] += parseInt(seed.amount)
         exists[seed.tree_category] += 1
       })
-
       if (typeReturn == 'KAYU' || typeReturn == 'MPTS' || typeReturn == 'CROPS') {
         return total[typeReturn]
       } else if (typeReturn == 'ALL') {
         return total.KAYU + total.MPTS + total.CROPS
       } else if (typeReturn == 'COLOR') {
-        if (secParams >= (total.KAYU + total.MPTS) && (total.KAYU + total.MPTS) > 0 && ((total.KAYU + total.MPTS) >= (60 / 100 * total.KAYU + total.MPTS))) {
-          this.disabledVerification = false
+        if (total.KAYU > 0 && (total.KAYU >= (Math.round(60 / 100 * (total.KAYU + total.MPTS)))) && (total.MPTS <= (Math.round(40/100 * (total.KAYU + total.MPTS))))) {
           return 'green'
         } else {
-          this.disabledVerification = true
           return 'red'
         }
       } else if(typeReturn == 'EXISTS' ) {
