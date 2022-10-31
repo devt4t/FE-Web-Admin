@@ -53,7 +53,7 @@
                             </v-btn>
                             <v-spacer></v-spacer>
                         </v-row>
-                        <v-sheet height="600">
+                        <v-sheet height="750">
                             <v-calendar
                                 ref="calendar"
                                 v-model="calendar.focus"
