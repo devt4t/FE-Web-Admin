@@ -1808,14 +1808,14 @@ export default {
     'datepicker2Show': {
       async handler(newValue) {
         if (newValue == true) {
-          await this.setUnavailableDistributionDates()
+          // await this.setUnavailableDistributionDates()
         }
       }
     },
     'menu2': {
       async handler(newValue) {
         if (newValue == true) {
-          await this.setUnavailableDistributionDates()
+          // await this.setUnavailableDistributionDates()
         }
       }
     }
@@ -1980,7 +1980,7 @@ export default {
           penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
         }
 
-        await this.setUnavailableDistributionDates()
+        // await this.setUnavailableDistributionDates()
         const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
         if (isUnavailableDate == true) {
           this.dataToStore.distribution_time = ''
@@ -2198,12 +2198,12 @@ export default {
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
           this.defaultItem.land_area = response.data.data.result.luas_lahan
-          if ((this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') && this.defaultItem.land_area < 10000) {
+          if (this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') {
             let maxSeedTrue = parseInt(this.getSeedCalculation(this.defaultItem, 'total_max_trees'))
             let totalBibitMPTSKAYU = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
             let separator = maxSeedTrue - totalBibitMPTSKAYU
             console.log('separator = ' + separator)
-            if (separator < 0) {
+            if (separator < 0 && this.defaultItem.land_area < 10000) {
               this.disabledVerification = true
             }
 
