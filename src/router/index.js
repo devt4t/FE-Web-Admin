@@ -12,6 +12,7 @@ import EmployeePosition from '../views/Employee/EmployeePosition.vue'
 import MainPage from '../views/MainPage.vue'
 import Farmer from '../views/Farmer/Farmer.vue'
 import Lahan from '../views/Lahan/Lahan.vue'
+import LahanUmum from '../views/Lahan/LahanUmum.vue'
 import Trees from '../views/Trees/Trees.vue'
 import FormMinat from '../views/FormMinat/FormMinat.vue'
 import Activity from '../views/Activity/Activity.vue'
@@ -101,6 +102,11 @@ const routes = [
     path: '/Lahan',
     name: 'Lahan',
     component: Lahan
+  },
+  {
+    path: '/LahanUmum',
+    name: 'LahanUmum',
+    component: LahanUmum
   },
   {
     path: '/Trees',
