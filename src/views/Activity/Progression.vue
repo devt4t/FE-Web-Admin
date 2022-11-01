@@ -509,17 +509,6 @@
                 </v-btn>
               </v-row>
             </template>
-            <template v-slot:item.actions="{item, index}">
-              <v-btn
-                dark
-                color="red"
-                rounded
-                icon
-                @click="() => { tables.sostam.items.splice(index, 1) }"
-              >
-                <v-icon>mdi-close-circle</v-icon>
-              </v-btn>
-            </template>
             <template v-slot:header.total_petani>
               Total Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
             </template>
@@ -542,7 +531,22 @@
               <strong>{{ item.progress_sostam }}</strong>%
             </template>
             <template v-slot:item.total_bibit="{item}">
-              <strong>{{ numberFormat(item.total_bibit) }}</strong> Bibit
+              <strong>{{ numberFormat(item.total_bibit) }}</strong>
+            </template>
+            <template v-slot:item.distribution_time="{item}">
+              <strong v-if="item.distribution_time != '-'">{{ dateFormat(item.distribution_time, 'DD-MM-Y') }}</strong>
+              <span v-else>-</span>
+            </template>
+            <template v-slot:item.actions="{item, index}">
+              <v-btn
+                dark
+                color="red"
+                rounded
+                icon
+                @click="removeSostamItem(index)"
+              >
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
             </template>
           </v-data-table>
           <!-- Export Template -->
@@ -567,7 +571,7 @@
                   <h3>Activities Progress</h3>
                 </center>
                 <v-row>
-                  <v-col sm="6" class="mb-2">
+                  <v-col sm="6">
                     <table>
                       <tr>
                         <td>Unit Manager</td>
@@ -595,11 +599,13 @@
                             <th rowspan="2">Nama FF</th>
                             <th rowspan="2">Total Petani</th>
                             <th rowspan="2">Total Lahan</th>
-                            <th colspan="2">Sosialisasi Tanam</th>
+                            <th colspan="4">Sosialisasi Tanam</th>
                           </tr>
                           <tr>
                             <th>{{ dateFormat(filters.dates.sostam, 'DD MMM Y') }}</th>
                             <th>Progress</th>
+                            <th>Total Bibit</th>
+                            <th>Tanggal Distribusi</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -610,10 +616,80 @@
                             <td align="center">{{ data.total_lahan }}</td>
                             <td align="center">{{ data.total_sostam }}</td>
                             <td align="center">{{ data.progress_sostam }}%</td>
+                            <td align="center">{{ numberFormat(data.total_bibit) }}</td>
+                            <td align="center">
+                              <span v-if="data.distribution_time != '-'">{{dateFormat(data.distribution_time, 'DD MMMM Y') }}</span>
+                              <span v-else>-</span>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
                     </center>
+                  </v-col>
+                </v-row>
+                <v-row class="html2pdf__page-break">
+                  <v-col sm="12" md="4">
+                    <table border="1" style="border-collapse: collapse;width: 100%;">
+                      <thead>
+                        <tr>
+                          <th colspan="3">KAYU ({{ getTotalBibitPerCategory('KAYU') }})</th>
+                        </tr>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.KAYU" :key="treeIndex">
+                          <td align="center">{{ treeIndex += 1 }}</td>
+                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
+                          <td align="center">{{ numberFormat(tree.amount) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <table border="1" style="border-collapse: collapse;width: 100%;">
+                      <thead>
+                        <tr>
+                          <th colspan="3">MPTS ({{ getTotalBibitPerCategory('MPTS') }})</th>
+                        </tr>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.MPTS" :key="treeIndex">
+                          <td align="center">{{ treeIndex += 1 }}</td>
+                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
+                          <td align="center">{{ numberFormat(tree.amount) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <table border="1" style="border-collapse: collapse;width: 100%;">
+                      <thead>
+                        <tr>
+                          <th colspan="3">CROPS ({{ getTotalBibitPerCategory('CROPS') }})</th>
+                        </tr>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.CROPS" :key="treeIndex">
+                          <td align="center">{{ treeIndex += 1 }}</td>
+                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
+                          <td align="center">{{ numberFormat(tree.amount) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </v-col>
                 </v-row>
               </v-container>
@@ -766,20 +842,18 @@ export default {
           { text: "Sostam", value: "total_sostam", align: 'center' },
           { text: "Sostam Progress", value: "progress_sostam", align: 'center' },
           { text: "Total Bibit", value: "total_bibit", align: 'center' },
-          { text: "Actions", value: "actions", align: 'center', sortable: false },
+          { text: "Tanggal Distribusi", value: "distribution_time", align: 'center' },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
         ],
-        items: [
-          {
-            ff: 'Asep',
-            total_lahan: 35,
-            total_sostam: 20,
-            progress_sostam: '57%',
-            total_bibit: '1900 Bibit'
-          }
-        ],
+        items: [],
         loading: false,
         search: '',
-        show: false
+        show: false,
+        totalBibitDetails: {
+          KAYU: [],
+          MPTS: [],
+          CROPS: []
+        }
       },
     }
   }),
@@ -987,10 +1061,13 @@ export default {
         // set table data
         this.tables.farmer.items = farmers
         this.tables.sostam.items = datas.sostam
+
+        this.generateTotalBibitSostamDetails(datas.sostam)
+
         // set filter data
         await this.setFilterData(datas)
       } catch (error) {
-        console.error(error.response);
+        console.error(error);
         this.sessionEnd(error)
       } finally {
         this.tables.farmer.loading = false
@@ -1141,7 +1218,7 @@ export default {
       else this.btn.generateButton.disabled = true
     },
     // Utilities Function
-    setFilterData(datas) {
+    async setFilterData(datas) {
       // set management
       this.filters.UM = datas.um || ''
       this.filters.FC = datas.fc || ''
@@ -1196,8 +1273,39 @@ export default {
         })
         return formData
     },
+    generateTotalBibitSostamDetails(datas) {
+      this.tables.sostam.totalBibitDetails = {
+        KAYU: [],
+        MPTS: [],
+        CROPS: []
+      }
+      datas.forEach((val, index) => {
+        val.total_bibit_details.forEach((val2, index2) => {
+          let exists = 0
+          this.tables.sostam.totalBibitDetails[val2.category].forEach((val3, index3) => {
+            if (val3.tree_code == val2.tree_code) {
+              this.tables.sostam.totalBibitDetails[val2.category][index3].amount += val2.amount
+              exists += 1
+            }
+          })
+          if (exists == 0 && val2.amount > 0) {
+            this.tables.sostam.totalBibitDetails[val2.category].push(val2)
+          }
+        })
+      })
+    },
+    getTotalBibitPerCategory(category) {
+      let total = 0
+      this.tables.sostam.totalBibitDetails[category].forEach(val => {
+        total += val.amount
+      })
+      return this.numberFormat(total)
+    },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    async removeSostamItem(index) {
+      this.tables.sostam.items.splice(index, 1)
     },
     sessionEnd(error) {
       if (typeof error.response.status != 'undefined') {
