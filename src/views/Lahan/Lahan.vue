@@ -134,16 +134,6 @@
           >
             <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
           </v-btn>
-          <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-            rounded
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-          </v-btn>
 
           <!-- Modal Filter Area -->
           <v-dialog v-model="dialogFilterArea" max-width="500px">
