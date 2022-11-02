@@ -1117,18 +1117,22 @@
       </v-dialog>
 
       <!-- Modal Delete -->
-      <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class=""
+          <v-card-title class="d-flex justify-center"
             >Are you sure you want to delete this item?</v-card-title
           >
-          <v-card-actions>
+          <v-card-actions class="pb-4">
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeDelete"
-              >Cancel</v-btn
+            <v-btn color="orange white--text" rounded small @click="closeDelete" class="px-4">
+              <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
             >
-            <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-              >OK</v-btn
+            <v-btn color="red white--text" rounded small @click="deleteItemConfirm" class="px-4">
+              <v-icon class="mr-1" small>mdi-delete</v-icon>
+              OK
+            </v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1971,6 +1975,7 @@ export default {
             reject('Error')
           }
         }).catch(err => {
+          this.sessionEnd(err)
           reject(err)
         })
       })
@@ -3435,7 +3440,14 @@ export default {
       this.DetailTreesLahanTemp.forEach((seed, seedIndex) => {
         this.DetailTreesLahanTemp[seedIndex].amount = 0
       })
-    }
+    },
+    sessionEnd(error) {
+        if (error.response.status == 401) {
+          this.alerttoken = true
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+    },
   },
 };
 </script>
