@@ -1291,15 +1291,17 @@
             class="mx-3 mt-7 d-none d-md-block"
             style="max-width: 225px"
           ></v-select> -->
-          <v-spacer class="d-none d-md-block"></v-spacer>
+          <v-divider class="d-none d-md-block mx-2"></v-divider>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            outlined
+            rounded
+            class="mr-2"
+            dense
             hide-details
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
           <v-btn
             dark
             class="mb-2 mr-1"
