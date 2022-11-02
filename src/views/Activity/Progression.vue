@@ -1310,6 +1310,7 @@ export default {
     sessionEnd(error) {
       if (typeof error.response.status != 'undefined') {
         if (error.response.status == 401) {
+          this.auth.alertToken = true
           localStorage.removeItem("token");
           this.$router.push("/");
         }
