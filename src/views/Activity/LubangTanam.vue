@@ -13,87 +13,181 @@
       </v-alert>
     </div>
 
+    <!-- lightbox ~ image preview -->
+    <vue-easy-lightbox
+      :visible="preview.lightbox.isVisible"
+      :imgs="preview.lightbox.imgs"
+      :index="preview.lightbox.index"
+      @hide="() => { preview.lightbox.isVisible = false; }"
+    ></vue-easy-lightbox>
+
+    <!-- Modal Filter Area -->
+    <v-dialog v-model="dialogFilterArea" max-width="500px">
+      <v-card rounded="xl">
+        <v-card-title class="">
+          <v-spacer></v-spacer>
+          Filter Pencarian Area
+          <v-spacer></v-spacer>
+        </v-card-title
+        >
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectMU"
+                  :items="itemsMU"
+                  item-value="mu_no"
+                  item-text="name"
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                  v-on:change="selectedMU"
+                  label="Management Unit"
+                  clearable
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectTA"
+                  :items="itemsTA"
+                  item-value="area_code"
+                  item-text="name"
+                  v-on:change="selectedTA"
+                  label="Target Area"
+                  clearable
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectVillage"
+                  :items="itemsVillage"
+                  item-value="kode_desa"
+                  item-text="name"
+                  v-on:change="selectedVillage"
+                  label="Desa"
+                  clearable
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-spacer></v-spacer>
+          <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+            <v-icon small class="mr-1">mdi-close</v-icon>
+            Cancel
+          </v-btn
+          >
+          <v-btn dark color="warning" rounded class="px-5" @click="searchbyarea">
+            <v-icon small class="mr-1">mdi-filter</v-icon>
+            Cari
+          </v-btn
+          >
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-data-table
       :headers="headers"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded elevation-6 mx-3 pa-1 rounded-xl mb-4"
       multi-sort
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-
       <template v-slot:top>
-        <v-toolbar flat>
-          <v-btn
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
+        <v-toolbar flat rounded="xl">
+          <!-- dropdown filter button -->
+          <v-menu
+            rounded="xl"
+            bottom
+            right
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
           >
-            <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
-            Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
-            Employee
-          </v-btn>
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                dark
+                class=""
+                color="warning"
+                v-bind="attrs"
+                v-on="on"
+                rounded
+              >
+                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+              </v-btn>
+            </template>
+
+            <v-list class="d-flex flex-column align-center">
+              <v-list-item>
+                <v-btn
+                  rounded
+                  dark
+                  class="px-9"
+                  @click="showFilterArea()"
+                  color="green"
+                >
+                  <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
+                  by Area
+                </v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn
+                  v-if="RoleAccesFilterShow == true"
+                  rounded
+                  dark
+                  class="mx-3 mt-1"
+                  @click="showFilterEmployee()"
+                  color="green"
+                >
+                  <v-icon class="mx-2" small>mdi-account-group</v-icon> 
+                  by Employee
+                </v-btn>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <!-- Program Year -->
+          <v-select
+            color="success"
+            item-color="success"
+            v-model="program_year"
+            :items="['2021','2022']"
+            outlined
+            dense
+            hide-details
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Program Year"
+            class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
-          <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select>
-          <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
-          <v-divider class="mx-4 d-none d-md-block" inset vertical></v-divider>
-          <v-spacer class="d-none d-md-block"></v-spacer>
+          <v-divider class="mx-4 d-none d-md-block" inset></v-divider>
+          <!-- Search Input -->
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            color="green"
             label="Search"
-            single-line
             hide-details
+            outlined
+            rounded
+            dense
+            class="mr-2"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-btn
+          <!-- <v-btn
             v-if="RoleAccesIT == true"
             dark
             class="mb-2 mr-1"
@@ -101,82 +195,36 @@
             color="green"
           >
             <v-icon small>mdi-plus</v-icon> Add
-          </v-btn>
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
           </v-btn> -->
-          <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
+          <!-- dropdown export button -->
+          <v-menu
+            rounded="xl"
+            bottom
+            left
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
           >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
-          </v-btn>
-          <!-- Modal Filter Area -->
-          <v-dialog v-model="dialogFilterArea" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian Area</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectMU"
-                        :items="itemsMU"
-                        item-value="mu_no"
-                        item-text="name"
-                        v-on:change="selectedMU"
-                        label="Management Unit"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectTA"
-                        :items="itemsTA"
-                        item-value="area_code"
-                        item-text="name"
-                        v-on:change="selectedTA"
-                        label="Targer Area"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectVillage"
-                        :items="itemsVillage"
-                        item-value="kode_desa"
-                        item-text="name"
-                        v-on:change="selectedVillage"
-                        label="Desa"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on" color="dark">
+                mdi-dots-vertical
+              </v-icon>
+            </template>
+  
+            <v-list class="d-flex flex-column align-center">
+              <v-list-item>
+                <v-btn
+                  v-if="RoleAccesDownloadAllShow == true"
+                  :disabled="!valueMU"
+                  rounded
+                  @click="downloadSuperAdmin()"
+                  color="blue white--text"
                 >
-                <v-btn color="blue darken-1" text @click="searchbyarea"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
+                  <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
+                </v-btn>
+              </v-list-item>
+            </v-list>
+          </v-menu>
           <!-- Modal Filter Emp -->
           <v-dialog v-model="dialogFilterEmp" max-width="500px">
             <v-card>
@@ -1079,10 +1127,10 @@
           </v-dialog>
 
           <!-- Modal Detail -->
-          <v-dialog v-model="dialogDetail" max-width="800px">
+          <v-dialog v-model="dialogDetail" max-width="800px" content-class="rounded-xl" scrollable>
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Penilikan Lubang Tanam</span>
+                <span class="">Detail Penilikan Lubang Tanam</span>
               </v-card-title>
               <v-divider></v-divider>
               <v-card-text>
@@ -1109,7 +1157,8 @@
                       <v-img
                         height="250"
                         v-bind:src="defaultItem.gambarshow1"
-                        class="my-1 mb-4"
+                        class="my-1 mb-4 cursor-pointer"
+                            @click="() => {preview.lightbox.imgs = defaultItem.gambarshow1; preview.lightbox.index = 0; preview.lightbox.isVisible = true}"
                       ></v-img>
                       <div>Foto Foto</div>
                       <v-carousel 
@@ -1118,18 +1167,20 @@
                         v-model="carousel.photo"
                         show-arrows-on-hover
                         hide-delimiter-background
-                        class="rounded-lg"
+                        class="rounded-xl cursor-pointer"
                       >
                         <v-carousel-item>
                           <v-img
                             height="250"
                             v-bind:src="defaultItem.gambarshow2"
+                            @click="() => {preview.lightbox.imgs = [defaultItem.gambarshow2, defaultItem.gambarshow3]; preview.lightbox.index = 0; preview.lightbox.isVisible = true}"
                           ></v-img>
                         </v-carousel-item>
                         <v-carousel-item>
                           <v-img
                             height="250"
                             v-bind:src="defaultItem.gambarshow3"
+                            @click="() => {preview.lightbox.imgs = [defaultItem.gambarshow2, defaultItem.gambarshow3]; preview.lightbox.index = 1; preview.lightbox.isVisible = true}"
                           ></v-img>
                         </v-carousel-item>
                       </v-carousel>
@@ -1225,12 +1276,12 @@
                 <v-spacer></v-spacer>
                 <v-btn
                   v-if="RoleAccesCRUDShow == true"
-                  color="green"
-                  text
+                  color="green white--text"
                   @click="verifSubmit()"
-                  outlined
+                  rounded
                   elevation="1"
                 >
+                  <v-icon class="mr-1">mdi-check-circle</v-icon>
                   Verifikasi
                 </v-btn>
               </v-card-actions>
@@ -1282,18 +1333,22 @@
           </v-dialog>
 
           <!-- Modal Delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
+          <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
             <v-card>
-              <v-card-title class="headline"
+              <v-card-title class="d-flex justify-center"
                 >Are you sure you want to delete this item?</v-card-title
               >
-              <v-card-actions>
+              <v-card-actions class="pb-4">
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+                <v-btn color="orange white--text" rounded small @click="closeDelete" class="px-4">
+                  <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+                  Cancel
+                </v-btn
                 >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
+                <v-btn color="red white--text" rounded small @click="deleteItemConfirm" class="px-4">
+                  <v-icon class="mr-1" small>mdi-delete</v-icon>
+                  OK
+                </v-btn
                 >
                 <v-spacer></v-spacer>
               </v-card-actions>
@@ -1439,21 +1494,82 @@
         </v-toolbar>
       </template>
 
+      <!-- Total Lubang -->
+      <template v-slot:item.total_holes="{ item }">
+          {{ numberFormat(item.total_holes) }}
+      </template>
+      <!-- Total Bibit -->
+      <template v-slot:item.total_bibit="{ item }">
+          {{ numberFormat(item.total_bibit) }}
+      </template>
+      <!-- Color Status -->
+      <template v-slot:item.is_validate="{ item }">
+        <v-chip :color="getColorStatus(item.is_validate)" dark>
+          {{ item.is_validate ? 'Verified' : 'Unverified'  }}
+        </v-chip>
+      </template>
       <!-- Action table -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
-          class="mr-2"
-          @click="showEditModal(item)"
-          small
-          color="warning"
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
         >
-          mdi-pencil
-        </v-icon>
-        <v-icon
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-list class="d-flex flex-column align-center">
+            <v-list-item>
+              <v-btn
+                dark
+                class="w-100"
+                rounded
+                @click="showDetail(item)"
+                color="info"
+              >
+              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                  mdi-information-outline
+              </v-icon>
+                Detail
+              </v-btn>
+            </v-list-item>
+            <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.is_validate != 1 && User.role_name == 'UNIT MANAGER') || User.role_group == 'IT'">
+              <v-btn
+                vi
+                dark
+                class="px-7"
+                rounded
+                @click="showEditModal(item)"
+                color="warning"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+                Edit
+              </v-btn>
+            </v-list-item> -->
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+              <v-btn
+                dark
+                rounded
+                @click="showDeleteModal(item)"
+                color="red"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-delete
+              </v-icon>
+                Delete
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <!-- <v-icon
           v-if="RoleAccesPrintLabelShow == true"
           class="mr-2"
           @click="showPrintModal(item)"
@@ -1461,15 +1577,7 @@
           color="green"
         >
           mdi-printer
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
-          @click="showDeleteModal(item)"
-          small
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+        </v-icon> -->
       </template>
     </v-data-table>
 
@@ -1484,9 +1592,10 @@
 </template>
 
 <script>
-// import ModalFarmer from "./ModalFarmer";
-import axios from "axios";
-// import BaseUrl from "../../services/BaseUrl.js";
+// import ModalFarmer from "./ModalFarmer"
+import axios from "axios"
+import moment from 'moment'
+// import BaseUrl from "../../services/BaseUrl.js"
 
 export default {
   name: "LubangTanam",
@@ -1541,18 +1650,14 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Nama Petani", value: "nama_petani", width: "18%" },
-      {
-        text: "No Lahan",
-        align: "start",
-        value: "lahan_no",
-        width: "10%",
-      },
-      { text: "Total Lubang", value: "total_holes", width: "15%" },
-      { text: "Tahun Tanam", value: "planting_year", width: "15%" },
-      { text: "Field Facilitator", value: "nama_ff", width: "15%" },
-      { text: "Status", value: "status", width: "13%" },
-      { text: "Actions", value: "actions", sortable: false, width: "20%" },
+      { text: "Field Facilitator", value: "nama_ff"},
+      { text: "Nama Petani", value: "nama_petani"},
+      { text: "No Lahan", align: "start", value: "lahan_no"},
+      { text: "Total Lubang", value: "total_holes", align: 'center' },
+      { text: "Total Bibit", value: "total_bibit", align: 'center' },
+      { text: "Tahun Tanam", value: "planting_year", align: 'center'},
+      { text: "Status", value: "is_validate", align: 'center' },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
 
     headersdetail: [
@@ -1730,14 +1835,25 @@ export default {
     },
 
     ph_form_no_temp: "",
+
+    program_year: '',
+    preview: {
+      lightbox: {
+        isVisible: false,
+        imgs: '',
+        index: 0
+      }
+    },
   }),
-  computed: {
-    // formTitle() {
-    //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    // },
+  watch: {
+    'program_year': {
+      handler(newValue) {
+        this.initialize()
+      }
+    }
   },
 
-  created() {
+  mounted() {
     this.firstAccessPage();
   },
 
@@ -1750,6 +1866,7 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
+      this.program_year = moment().format('YYYY')
       // this.fc_no_global = this.User.fc.fc;
       this.checkRoleAccess();
       this.initialize();
@@ -1809,25 +1926,25 @@ export default {
       }
     },
     getColorStatus(status) {
-      if (status == "Belum Verifikasi") return "red";
-      else return "green";
+      if (status == 0) return "red"
+      else return "green"
     },
     async initialize() {
       this.loadtable = true;
+      let params = {
+        program_year: this.program_year,
+        mu: this.valueMU,
+        ta: this.valueTA,
+        village: this.valueVillage,
+        typegetdata: this.typegetdata,
+        ff: this.valueFFcode
+      }
       // console.log(this.User.ff.ff);
+      const UrlParams = new URLSearchParams(params)
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetPlantingHoleAdmin?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
+            "GetPlantingHoleAdmin?" + UrlParams,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2889,9 +3006,9 @@ export default {
       this.dialogFilterEmp = true;
     },
     resetFilter() {
-      this.valueMU = "";
-      this.valueFC = "";
-      this.valueVillage = "";
+      // this.valueMU = "";
+      // this.valueFC = "";
+      // this.valueVillage = "";
       this.selectMU = "";
       this.selectTA = "";
       this.selectVillage = "";
@@ -3473,6 +3590,9 @@ export default {
           "&max_crops=" +
           this.max_crops
       );
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
     },
   },
 };
