@@ -41,7 +41,7 @@
                     item-value="area_code"
                     item-text="name"
                     v-on:change="selectedTA"
-                    label="Targer Area"
+                    label="Target Area"
                     clearable
                   ></v-select>
                 </v-col>
@@ -1249,7 +1249,7 @@
                 <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add FF Sostam
               </v-btn>
               <!-- dropdown export button -->
-              <!-- <v-menu
+              <v-menu
                 rounded="xl"
                 bottom
                 left
@@ -1276,20 +1276,17 @@
                     </v-btn>
                   </v-list-item>
                   <v-list-item>
-                  </v-list-item>
-                  <v-list-item>
                     <v-btn
-                      v-if="false"
-                      dark
+                      :disabled="!valueMU"
                       rounded
                       @click="downloadSuperAdmin()"
-                      color="blue"
+                      color="blue white--text"
                     >
                       <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
                     </v-btn>
                   </v-list-item>
                 </v-list>
-              </v-menu> -->
+              </v-menu>
             </v-col>
           </v-row>
           <v-row class="pb-4 px-2">
@@ -2701,9 +2698,9 @@ export default {
       this.dialogFilterEmp = true;
     },
     resetFilter() {
-      this.valueMU = "";
-      this.valueTA = "";
-      this.valueVillage = "";
+      // this.valueMU = "";
+      // this.valueTA = "";
+      // this.valueVillage = "";
       this.selectMU = "";
       this.selectTA = "";
       this.selectVillage = "";
@@ -2953,24 +2950,19 @@ export default {
     },
 
     downloadSuperAdmin() {
-      console.log(this.valueMUExcel);
-      console.log(this.valueTAExcel);
-      console.log(this.valueVillageExcel);
-      console.log(this.typegetdataExcel);
-      console.log(this.valueFFcodeExcel);
       var str = this.BaseUrlGet;
       window.open(
         str.substring(0, str.length - 4) +
           "ExportSostamAllSuperAdmin?mu=" +
-          this.valueMUExcel +
+          this.valueMU +
           "&ta=" +
-          this.valueTAExcel +
+          this.valueTA +
           "&village=" +
-          this.valueVillageExcel +
+          this.valueVillage +
           "&typegetdata=" +
-          this.typegetdataExcel +
+          this.User.ff.value_data +
           "&ff=" +
-          this.valueFFcodeExcel
+          this.User.ff.ff
       );
 
       // this.valueMUExcel = "";
