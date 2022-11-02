@@ -17,25 +17,32 @@
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px">
         <v-card rounded="xl">
-          <v-card-title class=""
-            >Filter Pencarian Area</v-card-title
+          <v-card-title class="">
+            <v-spacer></v-spacer>
+            Filter Pencarian Area
+            <v-spacer></v-spacer>
+          </v-card-title
           >
           <v-card-text>
             <v-container>
               <v-row>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
+                  <v-autocomplete
                     v-model="selectMU"
                     :items="itemsMU"
                     item-value="mu_no"
                     item-text="name"
+                    :menu-props="{rounded: 'xl', offsetY: true}"
+                    outlined
+                    rounded
+                    hide-details
                     v-on:change="selectedMU"
                     label="Management Unit"
                     clearable
-                  ></v-select>
+                  ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
+                  <v-autocomplete
                     v-model="selectTA"
                     :items="itemsTA"
                     item-value="area_code"
@@ -43,10 +50,14 @@
                     v-on:change="selectedTA"
                     label="Target Area"
                     clearable
-                  ></v-select>
+                    :menu-props="{rounded: 'xl', offsetY: true}"
+                    outlined
+                    rounded
+                    hide-details
+                  ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
+                  <v-autocomplete
                     v-model="selectVillage"
                     :items="itemsVillage"
                     item-value="kode_desa"
@@ -54,7 +65,11 @@
                     v-on:change="selectedVillage"
                     label="Desa"
                     clearable
-                  ></v-select>
+                    :menu-props="{rounded: 'xl', offsetY: true}"
+                    outlined
+                    rounded
+                    hide-details
+                  ></v-autocomplete>
                 </v-col>
               </v-row>
             </v-container>
@@ -792,7 +807,7 @@
       </v-dialog>
 
       <!-- Modal Detail -->
-      <v-dialog v-model="dialogDetail" max-width="800px" scrollable persistent>
+      <v-dialog v-model="dialogDetail" max-width="800px" scrollable persistent content-class="rounded-xl">
         <v-card rounded="xl">
           <v-card-title class="mb-1 headermodalstyle">
             <span class="">Detail Sosialisasi Tanam</span>
@@ -1277,6 +1292,7 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
+                      v-if="RoleAccesDownloadAllShow == true"
                       :disabled="!valueMU"
                       rounded
                       @click="downloadSuperAdmin()"
