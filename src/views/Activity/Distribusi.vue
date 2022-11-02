@@ -15,6 +15,136 @@
           divider='>'
           large
         ></v-breadcrumbs>
+        <!-- MODAL -->
+        <!-- Detail Seed Modal -->
+        <v-dialog 
+            content-class="rounded-xl elevation-0" 
+            hide-overlay top
+            max-width="1000px" 
+            scrollable 
+            transition="dialog-top-transition"
+            v-model="calendar.detailBibit.show" 
+        >
+            <v-card class="elevation-5 rounded-xl ma-2">
+                <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                    <span class="d-flex align-center">
+                        <v-icon color="white" class="mr-1">
+                            mdi-sprout
+                        </v-icon>
+                        Seed Details
+                    </span>
+                    <v-divider class="mx-2" dark></v-divider>
+                    <v-icon color="white" @click="calendar.detailBibit.show = false">
+                        mdi-close-circle
+                    </v-icon>
+                </v-card-title>
+                <v-card-text>
+                    <!-- loading -->
+                    <div v-if="calendar.detailBibit.loading" class="d-flex flex-column align-center justify-center">
+                        <v-progress-circular
+                            indeterminate
+                            color="green"
+                            size="64"
+                        ></v-progress-circular>
+                    </div>
+                    <div v-else>
+                        <v-row v-if="calendar.detailBibit.datas">
+                            <!-- Desc -->
+                            <v-col cols="12">
+                                <v-simple-table>
+                                    <tbody>
+                                        <tr>
+                                            <td>Program Year</td>
+                                            <td>:</td>
+                                            <td>{{ calendar.detailBibit.datas.program_year }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Field Facilitators</td>
+                                            <td>:</td>
+                                            <td>{{ calendar.detailBibit.datas.FF.length }} FF ({{ calendar.detailBibit.datas.FF.toString() }})</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Bibit</td>
+                                            <td>:</td>
+                                            <td>{{ numberFormat(calendar.detailBibit.datas.total_bibit) }} Bibit</td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-col>
+                            <!-- KAYU -->
+                            <v-col>
+                                <v-simple-table >
+                                    <thead>
+                                        <tr>
+                                            <th colspan="3" class="text-center">KAYU</th>
+                                        </tr>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['KAYU']" :key="treeIndex">
+                                            <td>{{ treeIndex += 1 }}</td>
+                                            <td>{{ tree.tree_name }}</td>
+                                            <td>{{ numberFormat(tree.amount) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-col>
+                            <!-- MPTS -->
+                            <v-col>
+                                <v-simple-table >
+                                    <thead>
+                                        <tr>
+                                            <th colspan="3" class="text-center">MPTS</th>
+                                        </tr>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['MPTS']" :key="treeIndex">
+                                            <td>{{ treeIndex += 1 }}</td>
+                                            <td>{{ tree.tree_name }}</td>
+                                            <td>{{ numberFormat(tree.amount) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-col>
+                            <!-- CROPS -->
+                            <v-col v-if="calendar.detailBibit.datas.total_bibit_details['CROPS'].length > 0">
+                                <v-simple-table >
+                                    <thead>
+                                        <tr>
+                                            <th colspan="3" class="text-center">CROPS</th>
+                                        </tr>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['CROPS']" :key="treeIndex">
+                                            <td>{{ treeIndex += 1 }}</td>
+                                            <td>{{ tree.tree_name }}</td>
+                                            <td>{{ numberFormat(tree.amount) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
+        <!-- END: MODAL -->
+
+        <!-- MAIN Calendar -->
         <v-container fluid>
             <!-- Expansions Panels -->
             <v-expansion-panels multiple v-model="expansions.model">
@@ -84,8 +214,10 @@
                             <v-menu
                                 v-model="calendar.selectedOpen"
                                 :close-on-content-click="false"
+                                :close-on-click="false"
                                 :activator="calendar.selectedElement"
-                                offset-x
+                                transition="scale-transition"
+                                offset-y
                                 rounded="xl"
                             >
                             <v-card
@@ -105,6 +237,10 @@
                                     <v-toolbar-title>
                                         <strong>{{ calendar.selectedEvent.name }}</strong>
                                     </v-toolbar-title>
+                                    <v-divider class="mx-2"></v-divider>
+                                    <v-btn icon @click="calendar.selectedOpen = false">
+                                        <v-icon>mdi-close-circle</v-icon>
+                                    </v-btn>
                                 </v-toolbar>
                                 <v-card-text class="white">
                                     <v-simple-table class="rounded-xl">
@@ -117,7 +253,21 @@
                                             <tr>
                                                 <td>Total Bibit</td>
                                                 <td>:</td>
-                                                <td>{{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit</td>
+                                                <td>    
+                                                    <v-tooltip top>
+                                                        Click for preview detailed seed
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <strong 
+                                                                v-bind="attrs"
+                                                                v-on="on"
+                                                                class="cursor-pointer" 
+                                                                @click="showDetailTotalBibit(calendar.selectedEvent, 'nursery')"
+                                                            >
+                                                                {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
+                                                            </strong>
+                                                        </template>
+                                                    </v-tooltip>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td>Total FF</td>
@@ -141,7 +291,19 @@
                                                 <td>{{ detailIndex + 1 }}</td>
                                                 <td>{{ detailData.mu_name }}</td>
                                                 <td>{{ detailData.ff_name }}</td>
-                                                <td align="center">{{ numberFormat(detailData.total_bibit_sostam) }}</td>
+                                                <td align="center">
+                                                    <v-tooltip top>
+                                                        Click for preview detailed seed
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <strong 
+                                                                v-on="on"
+                                                                v-bind="attrs"
+                                                                @click="showDetailTotalBibit(detailData, 'ff')"
+                                                                class="cursor-pointer"
+                                                            >{{ numberFormat(detailData.total_bibit_sostam) }}</strong>
+                                                        </template>
+                                                    </v-tooltip>
+                                                </td>
                                                 <td>{{ detailData.distribution_location }}</td>
                                             </tr>
                                         </tbody>
@@ -177,6 +339,11 @@ export default {
     data: () => ({
         calendar: {
             colors: ['green', 'teal'],
+            detailBibit: {
+                show: false,
+                loading: false,
+                datas : null
+            },
             events: [],
             focus: '',
             names: ['Arjasari', 'Ciminyak'],
@@ -312,6 +479,40 @@ export default {
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
         },
+        async showDetailTotalBibit(datas, type) {
+            let ff_no = []
+            let program_year = ''
+            if (type == 'nursery') {
+                await datas.details.forEach(val => {
+                    ff_no.push(val.ff_no)
+                    if (program_year == '') {
+                        program_year = val.planting_year
+                    }
+                })
+            } else if (type == 'ff') {
+                ff_no.push(datas.ff_no)
+                program_year = datas.planting_year
+            }
+            this.calendar.detailBibit.show = true
+            this.calendar.detailBibit.loading = true
+            
+            let url = localStorage.getItem("BaseUrlGet") + 'DistributionSeedDetail?' + new URLSearchParams({
+                ff_no: ff_no.toString(),
+                program_year: program_year
+            })
+            await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ` + localStorage.getItem("token")
+                },
+            }).then(res => {
+                this.calendar.detailBibit.datas = res.data.data.result
+            }).catch(err => {
+                console.log(err.response)
+            }).finally(() => {
+                this.calendar.detailBibit.loading = false
+                console.log('finish')
+            })
+        }
     }
 }
 </script>
