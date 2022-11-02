@@ -73,7 +73,7 @@
                             </v-col>
                             <!-- KAYU -->
                             <v-col>
-                                <v-simple-table >
+                                <v-simple-table dense>
                                     <thead>
                                         <tr>
                                             <th colspan="3" class="text-center">KAYU</th>
@@ -95,7 +95,7 @@
                             </v-col>
                             <!-- MPTS -->
                             <v-col>
-                                <v-simple-table >
+                                <v-simple-table dense>
                                     <thead>
                                         <tr>
                                             <th colspan="3" class="text-center">MPTS</th>
@@ -117,7 +117,7 @@
                             </v-col>
                             <!-- CROPS -->
                             <v-col v-if="calendar.detailBibit.datas.total_bibit_details['CROPS'].length > 0">
-                                <v-simple-table >
+                                <v-simple-table dense>
                                     <thead>
                                         <tr>
                                             <th colspan="3" class="text-center">CROPS</th>
@@ -276,7 +276,7 @@
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
-                                    <v-simple-table class="my-1" >
+                                    <v-simple-table class="my-1" dense>
                                         <thead>
                                             <tr>
                                                 <td>No</td>
