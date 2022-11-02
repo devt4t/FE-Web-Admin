@@ -365,6 +365,9 @@ export default {
     async mounted() {
         await this.firstAccessPage()
     },
+    destroyed() {
+        this.$store.state.loadingOverlay = false
+    },
     watch: {
         'calendar.events': {
             handler(newValue) {
