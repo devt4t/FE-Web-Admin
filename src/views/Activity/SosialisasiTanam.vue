@@ -3324,23 +3324,6 @@ export default {
     },
     async setUnavailableDistributionDates() {
       this.datepicker2Loading = true
-      const distributionDateRange = [
-        {
-          month: '11',
-          year: '2022',
-          program_year: 2022
-        },
-        {
-          month: '12',
-          year: '2022',
-          program_year: 2022
-        },
-        {
-          month: '01',
-          year: '2023',
-          program_year: 2022
-        },
-      ]
       // get FF MU no
       let ff_mu_no = ''
       await this.options.ff.items.forEach((ffVal) => {
@@ -3359,6 +3342,27 @@ export default {
 
       let ffDatesFull = []
       let ffDatesAvailable = []
+
+      const distributionDateRange = [
+        {
+          month: '11',
+          year: '2022',
+          program_year: 2022,
+          nursery: ff_nursery
+        },
+        {
+          month: '12',
+          year: '2022',
+          program_year: 2022,
+          nursery: ff_nursery
+        },
+        {
+          month: '01',
+          year: '2023',
+          program_year: 2022,
+          nursery: ff_nursery
+        },
+      ]
 
       await Promise.all(distributionDateRange.map(async (dDate, dIndex) => {
         let params = new URLSearchParams(dDate)
@@ -3399,7 +3403,7 @@ export default {
         const kebumen    = ['019']
         const pati       = ['015']
         
-        let nursery = 'Tidak Ada'
+        let nursery = 'All'
 
         if (ciminyak.includes(mu_no)) {
             nursery = 'Ciminyak'
