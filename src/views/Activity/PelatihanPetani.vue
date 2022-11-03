@@ -749,17 +749,17 @@
                     <v-col sm="6" class="mb-2">
                       <table>
                         <tr>
-                          <td>UM</td>
+                          <td>Unit Manager</td>
                           <td>:</td>
                           <td>{{ dialogDetailData.um_name }}</td>
                         </tr>
                         <tr>
-                          <td>FC</td>
+                          <td>Field Coordinator</td>
                           <td>:</td>
                           <td>{{ dialogDetailData.fc_name }}</td>
                         </tr>
                         <tr>
-                          <td>FF</td>
+                          <td>Field Facilitator</td>
                           <td>:</td>
                           <td>{{ dialogDetailData.ff_name }}</td>
                         </tr>
@@ -826,9 +826,9 @@
                           <tbody>
                             <tr v-for="(farmer, fIndex) in dialogDetailData.farmers" :key="farmer.kode">
                               <td align="center">{{ fIndex + 1 }}</td>
-                              <td align="center">{{ farmer.farmer_no }}</td>
+                              <td><span style="margin-left: 5px;">{{ farmer.farmer_no }}</span></td>
                               <td><span style="margin-left: 5px;">{{ farmer.name }}</span></td>
-                              <td align="center">{{ farmer.nik }}</td>
+                              <td><span style="margin-left: 5px;">{{ farmer.nik }}</span></td>
                             </tr>
                           </tbody>
                         </table>
