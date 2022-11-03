@@ -16,136 +16,171 @@
           large
         ></v-breadcrumbs>
         <!-- MODAL -->
-        <!-- Detail Seed Modal -->
-        <v-dialog 
-            content-class="rounded-xl elevation-0" 
-            hide-overlay top
-            max-width="1000px" 
-            scrollable 
-            transition="dialog-top-transition"
-            v-model="calendar.detailBibit.show" 
-        >
-            <v-card class="elevation-5 rounded-xl ma-2">
-                <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
-                    <span class="d-flex align-center">
-                        <v-icon color="white" class="mr-1">
-                            mdi-sprout
+            <!-- Detail Seed Modal -->
+            <v-dialog 
+                content-class="rounded-xl elevation-0" 
+                top
+                max-width="1000px" 
+                scrollable 
+                transition="dialog-top-transition"
+                v-model="calendar.detailBibit.show" 
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-sprout
+                            </v-icon>
+                            Seed Details
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="calendar.detailBibit.show = false">
+                            mdi-close-circle
                         </v-icon>
-                        Seed Details
-                    </span>
-                    <v-divider class="mx-2" dark></v-divider>
-                    <v-icon color="white" @click="calendar.detailBibit.show = false">
-                        mdi-close-circle
-                    </v-icon>
-                </v-card-title>
-                <v-card-text>
-                    <!-- loading -->
-                    <div v-if="calendar.detailBibit.loading" class="d-flex flex-column align-center justify-center">
-                        <v-progress-circular
-                            indeterminate
-                            color="green"
-                            size="64"
-                        ></v-progress-circular>
-                    </div>
-                    <div v-else>
-                        <v-row v-if="calendar.detailBibit.datas">
-                            <!-- Desc -->
-                            <v-col cols="12">
-                                <v-simple-table>
-                                    <tbody>
-                                        <tr>
-                                            <td>Program Year</td>
-                                            <td>:</td>
-                                            <td>{{ calendar.detailBibit.datas.program_year }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Field Facilitators</td>
-                                            <td>:</td>
-                                            <td>{{ calendar.detailBibit.datas.FF.length }} FF ({{ calendar.detailBibit.datas.FF.toString() }})</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total Bibit</td>
-                                            <td>:</td>
-                                            <td>{{ numberFormat(calendar.detailBibit.datas.total_bibit) }} Bibit</td>
-                                        </tr>
-                                    </tbody>
-                                </v-simple-table>
-                            </v-col>
-                            <!-- KAYU -->
-                            <v-col>
-                                <v-simple-table dense>
-                                    <thead>
-                                        <tr>
-                                            <th colspan="3" class="text-center">KAYU</th>
-                                        </tr>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['KAYU']" :key="treeIndex">
-                                            <td>{{ treeIndex += 1 }}</td>
-                                            <td>{{ tree.tree_name }}</td>
-                                            <td>{{ numberFormat(tree.amount) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </v-simple-table>
-                            </v-col>
-                            <!-- MPTS -->
-                            <v-col>
-                                <v-simple-table dense>
-                                    <thead>
-                                        <tr>
-                                            <th colspan="3" class="text-center">MPTS</th>
-                                        </tr>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['MPTS']" :key="treeIndex">
-                                            <td>{{ treeIndex += 1 }}</td>
-                                            <td>{{ tree.tree_name }}</td>
-                                            <td>{{ numberFormat(tree.amount) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </v-simple-table>
-                            </v-col>
-                            <!-- CROPS -->
-                            <v-col v-if="calendar.detailBibit.datas.total_bibit_details['CROPS'].length > 0">
-                                <v-simple-table dense>
-                                    <thead>
-                                        <tr>
-                                            <th colspan="3" class="text-center">CROPS</th>
-                                        </tr>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['CROPS']" :key="treeIndex">
-                                            <td>{{ treeIndex += 1 }}</td>
-                                            <td>{{ tree.tree_name }}</td>
-                                            <td>{{ numberFormat(tree.amount) }}</td>
-                                        </tr>
-                                    </tbody>
-                                </v-simple-table>
-                            </v-col>
-                        </v-row>
-                    </div>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- loading -->
+                        <div v-if="calendar.detailBibit.loading" class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="green"
+                                size="64"
+                            ></v-progress-circular>
+                        </div>
+                        <div v-else>
+                            <v-row v-if="calendar.detailBibit.datas">
+                                <!-- Desc -->
+                                <v-col cols="12">
+                                    <v-simple-table>
+                                        <tbody>
+                                            <tr>
+                                                <td>Program Year</td>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailBibit.datas.program_year }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Field Facilitators</td>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailBibit.datas.FF.length }} FF ({{ calendar.detailBibit.datas.FF.toString() }})</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Bibit</td>
+                                                <td>:</td>
+                                                <td>{{ numberFormat(calendar.detailBibit.datas.total_bibit) }} Bibit</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-col>
+                                <!-- KAYU -->
+                                <v-col>
+                                    <v-simple-table dense>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3" class="text-center">KAYU</th>
+                                            </tr>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['KAYU']" :key="treeIndex">
+                                                <td>{{ treeIndex += 1 }}</td>
+                                                <td>{{ tree.tree_name }}</td>
+                                                <td>{{ numberFormat(tree.amount) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-col>
+                                <!-- MPTS -->
+                                <v-col v-if="calendar.detailBibit.datas.total_bibit_details['MPTS'].length > 0">
+                                    <v-simple-table dense>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3" class="text-center">MPTS</th>
+                                            </tr>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['MPTS']" :key="treeIndex">
+                                                <td>{{ treeIndex += 1 }}</td>
+                                                <td>{{ tree.tree_name }}</td>
+                                                <td>{{ numberFormat(tree.amount) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-col>
+                                <!-- CROPS -->
+                                <v-col v-if="calendar.detailBibit.datas.total_bibit_details['CROPS'].length > 0">
+                                    <v-simple-table dense>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3" class="text-center">CROPS</th>
+                                            </tr>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(tree, treeIndex) in calendar.detailBibit.datas.total_bibit_details['CROPS']" :key="treeIndex">
+                                                <td>{{ treeIndex += 1 }}</td>
+                                                <td>{{ tree.tree_name }}</td>
+                                                <td>{{ numberFormat(tree.amount) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-col>
+                            </v-row>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         <!-- END: MODAL -->
-
+        
+        
         <!-- MAIN Calendar -->
         <v-container fluid>
+            <v-toolbar rounded="xl" class="mb-2">
+                <v-divider class="mx-2"></v-divider>
+                <!-- Program Year -->
+                <v-select
+                    color="success"
+                    item-color="success"
+                    v-model="generalSettings.programYear"
+                    :items="['2021','2022','2023']"
+                    outlined
+                    dense
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    rounded
+                    label="Program Year"
+                    class="mx-auto mx-lg-3"
+                    style="max-width: 200px"
+                ></v-select>
+                <!-- Nursery -->
+                <v-select
+                    color="success"
+                    item-color="success"
+                    v-model="generalSettings.nursery.model"
+                    :items="generalSettings.nursery.options"
+                    outlined
+                    dense
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    rounded
+                    label="Nursery"
+                    class="mx-auto mx-lg-3"
+                    style="max-width: 200px"
+                ></v-select>
+                <v-divider class="mx-2"></v-divider>
+            </v-toolbar>
             <!-- Expansions Panels -->
             <v-expansion-panels multiple v-model="expansions.model">
                 <!-- Calendar Panel -->
@@ -154,6 +189,17 @@
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon> Distribution Calendar</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
+                        <!-- loading overlay -->
+                        <v-overlay :value="calendar.loading" absolute class="rounded-xl" color="white">
+                            <div class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="green"
+                                    size="108"
+                                ></v-progress-circular>
+                                <p class="mt-2 mb-0 green--text">Getting distribution per-Nursery datas...</p>
+                            </div>
+                        </v-overlay>
                         <v-row class="mb-3 align-center">
                             <v-spacer></v-spacer>
                             <v-btn
@@ -188,8 +234,8 @@
                                 ref="calendar"
                                 v-model="calendar.focus"
                                 color="green"
-                                start="2022-11-24"
-                                end="2023-01-31"
+                                :start="calendar.range[0]"
+                                :end="calendar.range[1]"
                                 show-week
                                 class="rounded-xl overflow-hidden"
                                 :event-margin-bottom="5"
@@ -310,7 +356,6 @@
                                     </v-simple-table>
                                 </v-card-text>
                                 <v-card-actions class="white">
-                                    <v-spacer></v-spacer>
                                     <v-btn
                                         outlined
                                         color="red"
@@ -320,10 +365,74 @@
                                         <v-icon class="mr-1">mdi-close</v-icon>
                                         Close
                                     </v-btn>
+                                    <v-divider class="mx-2"></v-divider>
                                 </v-card-actions>
                             </v-card>
                             </v-menu>
                         </v-sheet>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+                <!-- Packing Label Panel -->
+                <v-expansion-panel class="rounded-xl">
+                    <v-expansion-panel-header>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-label-multiple</v-icon> Packing Label</h3>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <!-- loading overlay -->
+                        <v-overlay :value="packingLabel.loading" absolute class="rounded-xl">
+                            <div class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="white"
+                                    size="64"
+                                ></v-progress-circular>
+                            </div>
+                        </v-overlay>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-tabs
+                                    active-class="green rounded-xl"
+                                    background-color="green lighten-3"
+                                    class="rounded-xl"
+                                    color="white"
+                                    grow
+                                    height="50"
+                                    hide-slider
+                                    slider-size="50"
+                                    slider-color="green rounded-xl"
+                                    v-model="packingLabel.tabs.model"
+                                >
+                                    <v-tab>By Lahan</v-tab>
+                                    <v-tab>By Field Facilitator</v-tab>
+                                </v-tabs>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-tabs-items v-model="packingLabel.tabs.model">
+                                    <v-tab-item>
+                                        <v-data-table
+                                            :footer-props="{
+                                                itemsPerPageOptions: [10, 25, 40, -1]
+                                            }"
+                                            :headers="packingLabel.tables.byLahan.headers"
+                                            :items="packingLabel.tables.byLahan.items"
+                                            :loading="packingLabel.tables.byLahan.loading"
+                                            multi-sort
+                                        >
+                                            <template v-slot:item.actions="{item}">
+                                                <v-btn color="blue white--text" rounded small>
+                                                    <v-icon class="mr-1" small>mdi-printer</v-icon>
+                                                    Print
+                                                </v-btn>
+                                            </template>
+                                        </v-data-table>
+                                    </v-tab-item>
+                                    <v-tab-item>
+                                        <v-data-table
+                                        ></v-data-table>
+                                    </v-tab-item>
+                                </v-tabs-items>
+                            </v-col>
+                        </v-row>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -346,7 +455,9 @@ export default {
             },
             events: [],
             focus: '',
+            loading: false,
             names: ['Arjasari', 'Ciminyak'],
+            range: [ '2022-11-24', '2023-01-31'],
             selectedElement: null,
             selectedEvent: {},
             selectedOpen: false,
@@ -359,8 +470,39 @@ export default {
             },
         },
         expansions: {
-            model: [0]
+            model: [0,1]
         },
+        generalSettings: {
+            nursery: {
+                model: 'All',
+                options: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati'],
+            },
+            programYear: '2022',
+        },
+        packingLabel: {
+            loading: false,
+            tables: {
+                byLahan: {
+                    headers: [
+                        { text: 'No', value: 'no', align: 'center'},
+                        { text: "Management Unit", value: "mu_name"},
+                        { text: "Field Facilitator", value: "nama_ff"},
+                        { text: "Nama Petani", value: "nama_petani"},
+                        { text: "No Lahan", align: "start", value: "lahan_no"},
+                        { text: "Total Lubang", value: "total_holes", align: 'center' },
+                        { text: "Total Bibit", value: "total_bibit", align: 'center' },
+                        { text: "Tahun Tanam", value: "planting_year", align: 'center'},
+                        { text: "Actions", value: "actions", sortable: false, align: 'right' },
+                    ],
+                    items: [],
+                    loading: false,
+                }
+            },
+            tabs: {
+                model: 0
+            },
+        },
+        User: JSON.parse(localStorage.getItem("User"))
     }),
     async mounted() {
         await this.firstAccessPage()
@@ -371,8 +513,41 @@ export default {
     watch: {
         'calendar.events': {
             handler(newValue) {
-                console.log(newValue)
+                // console.log(newValue)
             }
+        },
+        'generalSettings.nursery.model': {
+            async handler(newValue, oldValue) {
+                if (newValue != oldValue) {
+                    const calendar = {
+                        start: this.$refs.calendar.renderProps.start.date,
+                        end: this.$refs.calendar.renderProps.end.date,
+                    }
+                    // refresh calendar
+                    await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    // refresh packing label table
+                    await this.getPackingLabelTableData()
+                }
+            }
+        },
+        'generalSettings.programYear': {
+            handler(newValue) {
+                if (newValue == '2022') {
+                    this.calendar.range = [ '2022-11-24', '2023-01-31']
+                } else if (newValue == '2023') {
+                    this.calendar.range = [ '2023-11-24', '2024-01-31']
+                } else {
+                    this.calendar.range = ['', '']
+                }
+                this.calendar.focus = this.calendar.range[0]
+            }
+        },
+        'packingLabel.tabs.model': {
+            async handler(newValue) {
+                if (newValue == 0 && this.packingLabel.tables.byLahan.items.length == 0) {
+                    await this.getPackingLabelTableData()
+                }
+            }  
         }
     },
     methods: {
@@ -410,11 +585,11 @@ export default {
             nativeEvent.stopPropagation()
         },
         async calendarUpdateRange ({ start, end }) {
-            this.$store.state.loadingOverlay = true
+            this.calendar.loading = true
             const params = new URLSearchParams({
                 month: this.dateFormat(start.date, 'MM'),
                 year: this.dateFormat(start.date, 'Y'),
-                program_year: 2022
+                program_year: this.generalSettings.programYear
             })
 
             const res = await axios.get(
@@ -430,22 +605,70 @@ export default {
 
             console.log(resData)
             await resData.forEach((evData, evIndex) => {
-                events.push({
-                    name: evData.nursery,
-                    start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
-                    total_ff: evData.total,
-                    total_bibit_sostam: evData.total_bibit_sostam,
-                    color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
-                    details: evData.details,
-                })
+                if (this.generalSettings.nursery.model != 'All') {
+                    if (evData.nursery == this.generalSettings.nursery.model) {
+                        events.push({
+                            name: evData.nursery,
+                            start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
+                            total_ff: evData.total,
+                            total_bibit_sostam: evData.total_bibit_sostam,
+                            color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
+                            details: evData.details,
+                        })
+                    }
+                } else {
+                    events.push({
+                        name: evData.nursery,
+                        start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
+                        total_ff: evData.total,
+                        total_bibit_sostam: evData.total_bibit_sostam,
+                        color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
+                        details: evData.details,
+                    })
+                }
             })
 
             this.calendar.events = events
-            this.$store.state.loadingOverlay = false
+            this.calendar.loading = false
+        },
+        async getPackingLabelTableData() {
+            let url = ''
+            let params = {
+                typegetdata: this.User.ff.value_data,
+                ff: this.User.ff.ff,
+                program_year: this.generalSettings.programYear,
+                nursery: this.generalSettings.nursery.model
+            }
+            if (this.packingLabel.tabs.model == 0) {
+                this.packingLabel.tables.byLahan.loading = true
+                url = 'GetPackingLabelByLahan?'
+            }
+
+            if (url && params) {
+                const urlParams = new URLSearchParams(params)
+                // call api
+                await axios.get(
+                    localStorage.getItem("BaseUrlGet") + url + urlParams,
+                    {
+                        headers: {
+                            Authorization: `Bearer ` + localStorage.getItem("token")
+                        },
+                    }
+                ).then(res => {
+                    this.packingLabel.tables.byLahan.items = res.data.data.result.data
+                }).catch(err => {
+                    if (err.response.status == 404) {
+                        this.packingLabel.tables.byLahan.items = []
+                    }
+                }).finally(() => {
+                    this.packingLabel.tables.byLahan.loading = false
+                })
+            }
         },
         // Utilities
         async firstAccessPage() {
             this.$refs.calendar.checkChange()
+            await this.getPackingLabelTableData()
         },
         calendarGetNurseryColor(n, total, date) {
             let maxFF = this.calendarGetMaxFF(n, date)
