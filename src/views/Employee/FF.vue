@@ -13,22 +13,24 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1 mb-4"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat rounded="xl">
           <v-text-field
+            outlined
+            rounded
+            dense
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
             hide-details
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
+          <v-divider class="mx-4" inset></v-divider>
           <v-btn
             v-if="RoleAccesCRUDShow == true"
             dark
+            rounded
             class="mb-2"
             @click="showAddModal()"
             color="green"
@@ -36,11 +38,11 @@
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
           <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
+          <v-dialog v-model="dialog" max-width="800px" content-class="rounded-xl">
             <v-card>
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
+                  <span class="">{{ formTitle }}</span>
                 </v-card-title>
 
                 <v-card-text>
@@ -279,10 +281,10 @@
             </v-card>
           </v-dialog>
           <!-- dialog detail -->
-          <v-dialog v-model="dialogdetail" max-width="700px">
+          <v-dialog v-model="dialogdetail" max-width="700px" content-class="rounded-xl" scrollable>
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail FF</span>
+                <span class="">Detail FF</span>
               </v-card-title>
               <v-card-text>
                 <v-container
@@ -438,6 +440,13 @@
                   </v-row>
                 </v-container>
               </v-card-text>
+              <v-card-actions>
+                  <v-divider class="mx-2"></v-divider>
+                  <v-btn rounded color="red white--text" class="px-5">
+                    <v-icon class="mr-1">mdi-account-off</v-icon>
+                    Nonactivate
+                  </v-btn>
+              </v-card-actions>
             </v-card>
           </v-dialog>
           <!-- dialog delete -->
@@ -460,6 +469,13 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <!-- Status Column -->
+      <template v-slot:item.active="{item}">
+        <v-chip :color="`${item.active ? 'green' : 'red'} white--text`">
+          {{ item.active ? 'Active' : 'Nonactive' }}
+        </v-chip>
+      </template>
+      <!-- Actions Column -->
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-3" @click="showDetail(item)" small color="info">
           mdi-information-outline
@@ -534,6 +550,7 @@ export default {
       { text: "Nama FC", value: "namaFC" },
       { text: "Desa", value: "village" },
       { text: "Kecamatan", value: "kecamatan" },
+      { text: "Status", value: "active", align: 'center' },
       { text: "Actions", value: "actions", sortable: false },
     ],
     dataobject: [],
