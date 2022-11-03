@@ -198,7 +198,7 @@
                                     size="123"
                                     width="7"
                                 ></v-progress-circular>
-                                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting distribution in <strong>{{ generalSettings.nursery.model }}</strong> Nursery datas...</p>
+                                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting distribution datas in <strong>{{ generalSettings.nursery.model }}</strong> Nursery...</p>
                             </div>
                         </v-overlay>
                         <v-row class="mb-3 align-center">
@@ -419,11 +419,51 @@
                                             :loading="packingLabel.tables.byLahan.loading"
                                             multi-sort
                                         >
+                                            <!-- Total Bibit Column -->
+                                            <template v-slot:item.total_holes="{item}">
+                                                {{ numberFormat(item.total_holes) }}
+                                            </template>
+                                            <!-- Total Bibit Column -->
+                                            <template v-slot:item.total_bibit="{item}">
+                                                {{ numberFormat(item.total_bibit) }}
+                                            </template>
+                                            <!-- Actions Column -->
                                             <template v-slot:item.actions="{item}">
-                                                <v-btn color="blue white--text" rounded small>
-                                                    <v-icon class="mr-1" small>mdi-printer</v-icon>
-                                                    Print
-                                                </v-btn>
+                                                <v-menu
+                                                    rounded="xl"
+                                                    bottom
+                                                    left
+                                                    offset-y
+                                                    transition="slide-y-transition"
+                                                    :close-on-content-click="false"
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-icon v-bind="attrs" v-on="on" color="dark">
+                                                        mdi-arrow-down-drop-circle
+                                                        </v-icon>
+                                                    </template>
+
+                                                    <v-list class="d-flex flex-column align-stretch">
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="blue white--text" rounded 
+                                                                @click="printByLahan('label', item.ph_form_no)"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-printer</v-icon>
+                                                                Label
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                color="green white--text" rounded
+                                                                @click="printByLahan('tanda_terima', item.ph_form_no)"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-printer</v-icon>
+                                                                Tanda Terima
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                    </v-list>
+                                                </v-menu>
                                             </template>
                                         </v-data-table>
                                     </v-tab-item>
@@ -447,6 +487,10 @@ import moment from 'moment'
 
 export default {
     data: () => ({
+        apiConfig: {
+            baseUrl: localStorage.getItem('BaseUrlGet'),
+            token: localStorage.getItem('token'),
+        },
         calendar: {
             colors: ['green', 'teal'],
             detailBibit: {
@@ -485,7 +529,7 @@ export default {
             tables: {
                 byLahan: {
                     headers: [
-                        { text: 'No', value: 'no', align: 'center'},
+                        { text: 'Check', value: 'no', align: 'center'},
                         { text: "Management Unit", value: "mu_name"},
                         { text: "Field Facilitator", value: "nama_ff"},
                         { text: "Nama Petani", value: "nama_petani"},
@@ -595,13 +639,15 @@ export default {
             })
 
             const res = await axios.get(
-                localStorage.getItem("BaseUrlGet") + 'DistributionCalendar?' + params,
+                this.apiConfig.baseUrl + 'DistributionCalendar?' + params,
                 {
                     headers: {
-                        Authorization: `Bearer ` + localStorage.getItem("token")
+                        Authorization: `Bearer ` + this.apiConfig.token
                     },
                 }
-            )
+            ).catch(err => {
+                this.sessionEnd(err)
+            })
             const resData = res.data.data.result.datas
             const events = []
 
@@ -637,10 +683,10 @@ export default {
                 const urlParams = new URLSearchParams(params)
                 // call api
                 await axios.get(
-                    localStorage.getItem("BaseUrlGet") + url + urlParams,
+                    this.apiConfig.baseUrl + url + urlParams,
                     {
                         headers: {
-                            Authorization: `Bearer ` + localStorage.getItem("token")
+                            Authorization: `Bearer ` + this.apiConfig.token
                         },
                     }
                 ).then(res => {
@@ -649,15 +695,26 @@ export default {
                     if (err.response.status == 404) {
                         this.packingLabel.tables.byLahan.items = []
                     }
+                    this.sessionEnd(err)
                 }).finally(() => {
                     this.packingLabel.tables.byLahan.loading = false
                 })
             }
         },
-        // Utilities
-        async firstAccessPage() {
-            await this.getPackingLabelTableData()
+        printByLahan(type, form_no) {
+            if (type == 'label') {
+                window.open(
+                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
+                    "CetakLabelLubangTanamTemp?ph_form_no=" + form_no
+                )
+            } else if (type == 'tanda_terima') {
+                window.open(
+                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
+                    "CetakBuktiPenyerahanTemp?ph_form_no=" + form_no
+                )
+            }
         },
+        // Utilities
         calendarGetNurseryColor(n, total, date) {
             let maxFF = this.calendarGetMaxFF(n, date)
             
@@ -687,11 +744,22 @@ export default {
         dateFormat(date, format) {
             return moment(date).format(format)
         },
+        async firstAccessPage() {
+            await this.getPackingLabelTableData()
+        },
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
         },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
+        },
+        sessionEnd(error) {
+            if (typeof error.response.status != 'undefined') {
+                if (error.response.status == 401) {
+                    localStorage.removeItem("token")
+                    this.$router.push("/")
+                }
+            }
         },
         async showDetailTotalBibit(datas, type) {
             let ff_no = []
