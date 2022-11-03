@@ -1187,6 +1187,9 @@
       :server-items-length="table.datas.total"
       loading-text="Loading... Please wait"
       :page="table.pagination.current_page"
+      :footer-props="{
+        itemsPerPageOptions: [10, 25, 40, -1]
+      }"
     >
 
       <template v-slot:top>
