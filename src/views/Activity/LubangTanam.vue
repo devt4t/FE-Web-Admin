@@ -106,6 +106,9 @@
       loading-text="Loading... Please wait"
       class="rounded elevation-6 mx-3 pa-1 rounded-xl mb-4"
       multi-sort
+      :footer-props="{
+        itemsPerPageOptions: [10, 25, 40, -1]
+      }"
     >
       <template v-slot:top>
         <v-toolbar flat rounded="xl">
