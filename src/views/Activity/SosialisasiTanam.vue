@@ -1300,7 +1300,7 @@
                   <v-list-item>
                     <v-btn
                       v-if="RoleAccesDownloadAllShow == true"
-                      :disabled="!valueMU"
+                      :disabled="!valueMU && User.ff.value_data == 'all'"
                       rounded
                       @click="downloadSuperAdmin()"
                       color="blue white--text"
