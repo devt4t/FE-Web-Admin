@@ -520,8 +520,8 @@ export default {
             async handler(newValue, oldValue) {
                 if (newValue != oldValue) {
                     const calendar = {
-                        start: this.$refs.calendar.renderProps.start.date,
-                        end: this.$refs.calendar.renderProps.end.date,
+                        start: this.$refs.calendar.renderProps.start,
+                        end: this.$refs.calendar.renderProps.end,
                     }
                     // refresh calendar
                     await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
@@ -537,7 +537,7 @@ export default {
                 } else if (newValue == '2023') {
                     this.calendar.range = [ '2023-11-24', '2024-01-31']
                 } else {
-                    this.calendar.range = ['', '']
+                    this.calendar.range = ['2021-11-24', '2022-01-31']
                 }
                 this.calendar.focus = this.calendar.range[0]
             }
@@ -589,7 +589,8 @@ export default {
             const params = new URLSearchParams({
                 month: this.dateFormat(start.date, 'MM'),
                 year: this.dateFormat(start.date, 'Y'),
-                program_year: this.generalSettings.programYear
+                program_year: this.generalSettings.programYear,
+                nursery: this.generalSettings.nursery.model
             })
 
             const res = await axios.get(
@@ -605,27 +606,14 @@ export default {
 
             console.log(resData)
             await resData.forEach((evData, evIndex) => {
-                if (this.generalSettings.nursery.model != 'All') {
-                    if (evData.nursery == this.generalSettings.nursery.model) {
-                        events.push({
-                            name: evData.nursery,
-                            start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
-                            total_ff: evData.total,
-                            total_bibit_sostam: evData.total_bibit_sostam,
-                            color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
-                            details: evData.details,
-                        })
-                    }
-                } else {
-                    events.push({
-                        name: evData.nursery,
-                        start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
-                        total_ff: evData.total,
-                        total_bibit_sostam: evData.total_bibit_sostam,
-                        color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
-                        details: evData.details,
-                    })
-                }
+                events.push({
+                    name: evData.nursery,
+                    start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
+                    total_ff: evData.total,
+                    total_bibit_sostam: evData.total_bibit_sostam,
+                    color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
+                    details: evData.details,
+                })
             })
 
             this.calendar.events = events
@@ -667,7 +655,6 @@ export default {
         },
         // Utilities
         async firstAccessPage() {
-            this.$refs.calendar.checkChange()
             await this.getPackingLabelTableData()
         },
         calendarGetNurseryColor(n, total, date) {
