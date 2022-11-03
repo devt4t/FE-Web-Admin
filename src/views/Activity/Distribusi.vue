@@ -195,9 +195,10 @@
                                 <v-progress-circular
                                     indeterminate
                                     color="green"
-                                    size="108"
+                                    size="123"
+                                    width="7"
                                 ></v-progress-circular>
-                                <p class="mt-2 mb-0 green--text">Getting distribution per-Nursery datas...</p>
+                                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting distribution in <strong>{{ generalSettings.nursery.model }}</strong> Nursery datas...</p>
                             </div>
                         </v-overlay>
                         <v-row class="mb-3 align-center">
