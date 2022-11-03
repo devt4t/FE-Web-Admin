@@ -868,6 +868,8 @@ export default {
   },
   destroyed() {
     // this.$store.state.maintenanceOverlay = false
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
 
   watch: {
@@ -1171,6 +1173,7 @@ export default {
           }).finally(() => {
             if (generatedFC == totalFC) {
               this.$store.state.loadingOverlay = false
+              this.$store.state.loadingOverlayText = null
   
               this.tables.farmer.loading = false
               this.tables.sostam.loading = false
