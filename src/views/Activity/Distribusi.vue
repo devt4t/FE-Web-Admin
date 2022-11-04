@@ -147,6 +147,7 @@
         
         <!-- MAIN Calendar -->
         <v-container fluid>
+            <!-- General Settings -->
             <v-toolbar rounded="xl" class="mb-2">
                 <v-divider class="mx-2"></v-divider>
                 <!-- Program Year -->
@@ -183,7 +184,7 @@
             </v-toolbar>
             <!-- Expansions Panels -->
             <v-expansion-panels multiple v-model="expansions.model">
-                <!-- Calendar Panel -->
+                <!-- Calendar Section -->
                 <v-expansion-panel class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon> Distribution Calendar</h3>
@@ -373,7 +374,7 @@
                         </v-sheet>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
-                <!-- Packing Label Panel -->
+                <!-- Packing Label Section -->
                 <v-expansion-panel class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-label-multiple</v-icon> Packing Label</h3>
@@ -390,6 +391,7 @@
                             </div>
                         </v-overlay>
                         <v-row>
+                            <!-- Packing Label Tabs -->
                             <v-col cols="12">
                                 <v-tabs
                                     active-class="green rounded-xl"
@@ -409,6 +411,7 @@
                             </v-col>
                             <v-col cols="12">
                                 <v-tabs-items v-model="packingLabel.tabs.model">
+                                    <!-- Packing Label Table 1 ~ Per Lahan -->
                                     <v-tab-item>
                                         <v-data-table
                                             :footer-props="{
@@ -419,6 +422,20 @@
                                             :loading="packingLabel.tables.byLahan.loading"
                                             multi-sort
                                         >
+                                            <!-- Check Column -->
+                                            <template v-slot:item.check="{item}">
+                                                <v-checkbox
+                                                    v-model="item.is_printed"
+                                                    :background-color="`${item.is_printed ? 'green' : 'grey darken-1'} rounded-xl px-2 py-1`"
+                                                    dark
+                                                    color="white"
+                                                    class="mt-0"
+                                                    hide-details
+                                                    :label="`${item.is_printed ? 'Printed' : 'Nope'}`"
+                                                    off-icon="mdi-circle-outline"
+                                                    on-icon="mdi-check-circle"
+                                                ></v-checkbox>
+                                            </template>
                                             <!-- Total Bibit Column -->
                                             <template v-slot:item.total_holes="{item}">
                                                 {{ numberFormat(item.total_holes) }}
@@ -467,11 +484,171 @@
                                             </template>
                                         </v-data-table>
                                     </v-tab-item>
+                                    <!-- Packing Label Table 2 ~ Per FF -->
                                     <v-tab-item>
                                         <v-data-table
                                         ></v-data-table>
                                     </v-tab-item>
                                 </v-tabs-items>
+                            </v-col>
+                        </v-row>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+                <!-- Loading Line Section -->
+                <v-expansion-panel class="rounded-xl">
+                    <v-expansion-panel-header>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-human-dolly</v-icon> Loading Line</h3>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <!-- loading overlay -->
+                        <v-overlay :value="loadingLine.loading" absolute class="rounded-xl">
+                            <div class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="white"
+                                    size="64"
+                                ></v-progress-circular>
+                            </div>
+                        </v-overlay>
+                        <v-row>
+                            <!-- Select Date Input -->
+                            <v-col cols="12">
+                                <v-toolbar flat>
+                                    <v-menu 
+                                        rounded="xl"
+                                        transition="slide-x-transition"
+                                        bottom
+                                        min-width="100"
+                                        offset-y
+                                        :close-on-content-click="false"
+                                        v-model="loadingLine.datePicker.show"
+                                    >
+                                        <template v-slot:activator="{ on: menu, attrs }">
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on: tooltip }">
+                                                    <v-text-field
+                                                        dense
+                                                        color="green"
+                                                        hide-details
+                                                        outlined
+                                                        label="Select Date"
+                                                        rounded
+                                                        v-bind="attrs"
+                                                        v-on="{...menu, ...tooltip}"
+                                                        readonly
+                                                        v-model="loadingLine.datePicker.model"
+                                                    ></v-text-field>
+                                                </template>
+                                                <span>Klik untuk memunculkan datepicker</span>
+                                            </v-tooltip>
+                                        </template>
+                                        <div class="rounded-xl pb-2 white">
+                                            <v-overlay :value="loadingLine.datePicker.loading">
+                                                <div class="d-flex flex-column align-center justify-center">
+                                                    <v-progress-circular
+                                                        indeterminate
+                                                        color="white"
+                                                        size="64"
+                                                    ></v-progress-circular>
+                                                    <p class="mt-2 mb-0">Updating available dates...</p>
+                                                </div>
+                                            </v-overlay>
+                                            <div class="d-flex flex-column align-center rounded-xl">
+                                                <v-date-picker 
+                                                    color="green lighten-1 rounded-xl" 
+                                                    v-model="loadingLine.datePicker.model"
+                                                    min="2022-11-24"
+                                                    max="2023-01-31"
+                                                ></v-date-picker>
+                                                <v-btn color="green" class="white--text px-4" small rounded @click="loadingLine.datePicker.show = false">
+                                                    <v-icon small class="mr-1">mdi-check-circle</v-icon>
+                                                    Set
+                                                </v-btn>
+                                            </div>
+                                        </div>
+                                    </v-menu>
+                                    <v-divider class="ml-2"></v-divider>
+                                    <v-divider></v-divider>
+                                    <v-divider></v-divider>
+                                    <v-divider></v-divider>
+                                    <v-divider></v-divider>
+                                    <v-divider></v-divider>
+                                </v-toolbar>
+                            </v-col>
+                            <!-- Loading Line Table -->
+                            <v-col cols="12">
+                                <v-data-table
+                                    :headers="loadingLine.table.headers"
+                                    :items="loadingLine.table.items"
+                                >
+                                    <!-- Check Column -->
+                                    <template v-slot:item.check="{item}">
+                                        <v-checkbox
+                                            v-model="item.check"
+                                            :background-color="`${item.check ? 'green' : 'grey darken-1'} rounded-xl px-3 py-1`"
+                                            dark
+                                            color="white"
+                                            class="mt-0"
+                                            hide-details
+                                            :label="`${item.check ? 'Loaded' : 'Nope'}`"
+                                            off-icon="mdi-truck-alert"
+                                            on-icon="mdi-truck-check"
+                                        ></v-checkbox>
+                                    </template>
+                                    <!-- Date Column -->
+                                    <template v-slot:item.date="{item}">
+                                        {{ dateFormat(item.date, 'DD MMMM Y') }}
+                                    </template>
+                                    <!-- Seeds Total Column -->
+                                    <template v-slot:item.seeds_total="{item}">
+                                        {{ numberFormat(item.seeds_total) }}
+                                    </template>
+                                    <!-- Bags Total Column -->
+                                    <template v-slot:item.bags_total="{item}">
+                                        {{ numberFormat(item.bags_total) }}
+                                    </template>
+                                </v-data-table>
+                            </v-col>
+                        </v-row>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+                <!-- Distribution Report Section -->
+                <v-expansion-panel class="rounded-xl">
+                    <v-expansion-panel-header>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-nature-people</v-icon> Distribution Report</h3>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <!-- loading overlay -->
+                        <v-overlay :value="distributionReport.loading" absolute class="rounded-xl">
+                            <div class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="white"
+                                    size="64"
+                                ></v-progress-circular>
+                            </div>
+                        </v-overlay>
+                        <v-row>
+                            <!-- Distribution Report Table -->
+                            <v-col cols="12">
+                                <v-data-table
+                                    :headers="distributionReport.table.headers"
+                                    :items="distributionReport.table.items"
+                                >
+                                    <template v-slot:item.check="{item}">
+                                        <v-checkbox
+                                            v-model="item.check"
+                                            :background-color="`${item.check ? 'green' : 'grey darken-1'} rounded-xl px-3 py-1`"
+                                            dark
+                                            color="white"
+                                            class="mt-0"
+                                            hide-details
+                                            :label="`${item.check ? 'Loaded' : 'Nope'}`"
+                                            off-icon="mdi-truck-alert"
+                                            on-icon="mdi-truck-check"
+                                        ></v-checkbox>
+                                    </template>
+                                </v-data-table>
                             </v-col>
                         </v-row>
                     </v-expansion-panel-content>
@@ -514,8 +691,16 @@ export default {
                 '4day': '4 Days',
             },
         },
+        distributionReport: {
+            loading: false,
+            table: {
+                headers: [],
+                items: [],
+                loading: false,
+            }
+        },
         expansions: {
-            model: [0,1]
+            model: [0,1,2,3]
         },
         generalSettings: {
             nursery: {
@@ -524,19 +709,40 @@ export default {
             },
             programYear: '2022',
         },
+        loadingLine: {
+            datePicker: {
+                loading: false,
+                model: moment().format('Y-MM-DD'),
+                show: false,
+            },
+            loading: false,
+            table: {
+                headers: [
+                    { text: 'Check', value: 'check', align: 'center', width: '100'},
+                    { text: 'Date', value: 'date'},
+                    { text: 'Field Facilitator', value: 'ff_name'},
+                    { text: 'Seeds Total', value: 'seeds_total', align: 'center'},
+                    { text: 'Bags Total', value: 'bags_total', align: 'center'},
+                    { text: 'Actions', value: 'actions', align: 'right'},
+                ],
+                items: [
+                    { check: 0, date: '2022-12-12', ff_name: 'T4T Devs', seeds_total: '5500', bags_total: Math.ceil(5500/15)}
+                ],
+                loading: false,
+            }
+        },
         packingLabel: {
             loading: false,
             tables: {
                 byLahan: {
                     headers: [
-                        { text: 'Check', value: 'no', align: 'center'},
-                        { text: "Management Unit", value: "mu_name"},
-                        { text: "Field Facilitator", value: "nama_ff"},
-                        { text: "Nama Petani", value: "nama_petani"},
+                        { text: 'Check', value: 'check', align: 'center'},
                         { text: "No Lahan", align: "start", value: "lahan_no"},
-                        { text: "Total Lubang", value: "total_holes", align: 'center' },
-                        { text: "Total Bibit", value: "total_bibit", align: 'center' },
-                        { text: "Tahun Tanam", value: "planting_year", align: 'center'},
+                        { text: "Management Unit", value: "mu_name"},
+                        { text: "Target Area", value: "ta_name"},
+                        { text: "Field Facilitator", value: "nama_ff"},
+                        { text: "Farmer", value: "nama_petani"},
+                        { text: "Seeds Total", value: "total_bibit", align: 'center' },
                         { text: "Actions", value: "actions", sortable: false, align: 'right' },
                     ],
                     items: [],
@@ -576,7 +782,7 @@ export default {
             }
         },
         'generalSettings.programYear': {
-            handler(newValue) {
+            async handler(newValue) {
                 if (newValue == '2022') {
                     this.calendar.range = [ '2022-11-24', '2023-01-31']
                 } else if (newValue == '2023') {
@@ -585,6 +791,8 @@ export default {
                     this.calendar.range = ['2021-11-24', '2022-01-31']
                 }
                 this.calendar.focus = this.calendar.range[0]
+                // refresh packing label table
+                await this.getPackingLabelTableData()
             }
         },
         'packingLabel.tabs.model': {
