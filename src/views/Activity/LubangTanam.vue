@@ -147,9 +147,8 @@
                   by Area
                 </v-btn>
               </v-list-item>
-              <v-list-item>
+              <v-list-item v-if="RoleAccesFilterShow == true">
                 <v-btn
-                  v-if="RoleAccesFilterShow == true"
                   rounded
                   dark
                   class="mx-3 mt-1"
@@ -200,7 +199,7 @@
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn> -->
           <!-- dropdown export button -->
-          <v-menu
+          <!-- <v-menu
             rounded="xl"
             bottom
             left
@@ -218,7 +217,7 @@
               <v-list-item>
                 <v-btn
                   v-if="RoleAccesDownloadAllShow == true"
-                  :disabled="!valueMU"
+                  :disabled="!valueMU && User.role_group == 'IT'"
                   rounded
                   @click="downloadSuperAdmin()"
                   color="blue white--text"
@@ -227,7 +226,7 @@
                 </v-btn>
               </v-list-item>
             </v-list>
-          </v-menu>
+          </v-menu> -->
           <!-- Modal Filter Emp -->
           <v-dialog v-model="dialogFilterEmp" max-width="500px">
             <v-card>
@@ -1956,12 +1955,13 @@ export default {
         );
         // console.log(response.data.data.result.data);
         if (response.data.length != 0) {
+          const USER = JSON.parse(localStorage.getItem('User'));
           this.dataobject = response.data.data.result.data;
           this.valueMUExcel = this.valueMU;
           this.valueTAExcel = this.valueTA;
           this.valueVillageExcel = this.valueVillage;
-          this.typegetdataExcel = this.typegetdata;
-          this.valueFFcodeExcel = this.valueFFcode;
+          this.typegetdataExcel = USER.ff.value_data
+          this.valueFFcodeExcel = USER.ff.ff
           this.loadtable = false;
         } else {
           this.dataobject = [];
@@ -3512,6 +3512,8 @@ export default {
 
     downloadall() {
       var str = this.BaseUrlGet;
+      const USER = JSON.parse(localStorage.getItem('User'));
+
       window.open(
         str.substring(0, str.length - 4) +
           "CetakExcelPlantingHoleAll?mu=" +
@@ -3521,9 +3523,9 @@ export default {
           "&village=" +
           this.valueVillageExcel +
           "&typegetdata=" +
-          this.typegetdataExcel +
+          USER.ff.value_data +
           "&ff=" +
-          this.valueFFcodeExcel +
+          USER.ff.ff +
           "&max_kayu=" +
           this.max_kayu +
           "&max_mpts=" +
