@@ -1828,14 +1828,14 @@ export default {
     'datepicker2Show': {
       async handler(newValue) {
         if (newValue == true) {
-          // await this.setUnavailableDistributionDates()
+          await this.setUnavailableDistributionDates()
         }
       }
     },
     'menu2': {
       async handler(newValue) {
         if (newValue == true) {
-          // await this.setUnavailableDistributionDates()
+          await this.setUnavailableDistributionDates()
         }
       }
     }
