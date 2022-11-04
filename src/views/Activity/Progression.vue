@@ -1243,7 +1243,7 @@ export default {
         }
     },
     checkRoleAccess() {
-      if (this.auth.user.role_group == "IT") {
+      if (this.auth.user.role_group == "IT" || this.auth.user.role_name == 'PROGRAM MANAGER') {
         this.access.filterUM = true
         this.access.filterFC = true
         this.access.filterFF = true
