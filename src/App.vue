@@ -1,7 +1,7 @@
 <template>
   <v-app id="Trees">
     <!-- Sidebar -->
-    <v-navigation-drawer :width="230" v-if="isLogin" v-model="drawer" dark app class="rounded-xl">
+    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" dark app class="rounded-xl ml-2 mt-2 mb-2" style="height: auto">
       <v-list-item>
         <v-list-item-content class="text-center">
           <v-list-item-title
@@ -16,9 +16,9 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-divider style="background-color: white !important"></v-divider>
+      <!-- <v-divider style="background-color: white !important"></v-divider> -->
 
-      <v-list color="transparent" shaped>
+      <v-list color="transparent" rounded>
         <v-list-item color="#71AF34" :to="DashboardLink" link>
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard</v-icon>
@@ -49,6 +49,7 @@
             :key="child.title"
             :to="child.to"
             link
+            dense
           >
             <v-list-item-content>
               <v-list-item-title
@@ -60,16 +61,21 @@
         </v-list-group>
       </v-list>
 
-      <h5
-        class="fontall footernav"
+      <div class="text-center pb-3">
+        <v-btn color="red" fab small class="" @click="logout()">
+          <v-icon>mdi-power</v-icon>
+        </v-btn>
+      </div>
+      <!-- <h5
+        class="text-center pb-2"
         style="color: #71AF34; font-weight: 550; font-size: 80%"
       >
         © Dev Trees4Trees
-      </h5>
+      </h5> -->
     </v-navigation-drawer>
 
     <!-- TopBar -->
-    <v-app-bar class="mx-2 mt-2 rounded-xl" v-if="isLogin" app>
+    <v-app-bar class="mx-2 ml-4 mt-2 rounded-xl" v-if="isLogin" app>
       <v-app-bar-nav-icon
         style="color: black"
         @click="drawer = !drawer"
@@ -119,9 +125,18 @@
       </v-menu>
     </v-app-bar>
 
+    <v-app-bar color="white green--text" bottom class="mx-10 mt-2 mb-2 rounded-xl" app dense inverted-scroll>
+      <v-col
+        class="text-center"
+        cols="12"
+      >
+        GEKOWeb V0.7.8 © Trees4Trees
+      </v-col>
+    </v-app-bar>
+
     <!-- Main Content -->
     <v-main class="green lighten-4">
-      <router-view></router-view>
+      <router-view class="pl-2"></router-view>
     </v-main>
     
     <!-- loading overlay -->
