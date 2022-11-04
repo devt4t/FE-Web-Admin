@@ -426,7 +426,7 @@
                                             <template v-slot:item.check="{item}">
                                                 <v-checkbox
                                                     v-model="item.is_printed"
-                                                    :background-color="`${item.is_printed ? 'green' : 'grey darken-1'} rounded-xl px-2 py-1`"
+                                                    :background-color="`${item.is_printed ? 'green' : 'grey darken-1'} rounded-xl px-2 pr-3 py-1`"
                                                     dark
                                                     color="white"
                                                     class="mt-0"
@@ -736,7 +736,7 @@ export default {
             tables: {
                 byLahan: {
                     headers: [
-                        { text: 'Check', value: 'check', align: 'center'},
+                        { text: 'Check', value: 'check', align: 'center', width: '100'},
                         { text: "No Lahan", align: "start", value: "lahan_no"},
                         { text: "Management Unit", value: "mu_name"},
                         { text: "Target Area", value: "ta_name"},
