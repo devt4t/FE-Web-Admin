@@ -125,7 +125,8 @@
       </v-menu>
     </v-app-bar>
 
-    <v-app-bar color="white green--text" bottom class="mx-10 mt-2 mb-2 rounded-xl" app dense inverted-scroll>
+    <!-- footer -->
+    <v-app-bar v-if="isLogin" color="white green--text" class="mx-10 mb-2 rounded-xl" app dense bottom absolute>
       <v-col
         class="text-center"
         cols="12"
@@ -136,7 +137,7 @@
 
     <!-- Main Content -->
     <v-main class="green lighten-4">
-      <router-view class="pl-2"></router-view>
+      <router-view class="pl-2 pb-4"></router-view>
     </v-main>
     
     <!-- loading overlay -->
