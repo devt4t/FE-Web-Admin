@@ -144,7 +144,7 @@
     <!-- footer -->
     <v-app-bar v-if="isLogin" class="mx-5 mr-3 mb-2 rounded-xl" app dense bottom absolute :dark="$store.state.theme == 'dark'" >
       <v-col
-        class="text-center green--text"
+        :class="`text-center green--text ${$store.state.theme == 'dark' ? 'text--lighten-4' : 'text--darken-1'}`"
         cols="12"
       >
         GEKOWeb V{{ $store.state.packageVersion }} © Trees4Trees
@@ -152,7 +152,7 @@
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main class="green lighten-4">
+    <v-main :class="`green ${$store.state.theme == 'dark' ? 'lighten-4' : 'lighten-4'}`">
       <router-view class="pb-4 pl-0 pl-lg-3"></router-view>
     </v-main>
     
