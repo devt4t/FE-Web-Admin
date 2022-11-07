@@ -1,7 +1,7 @@
 <template>
   <v-app id="Trees">
     <!-- Sidebar -->
-    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" dark app class="rounded-xl ml-2 mt-2 mb-2" style="height: auto">
+    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="sidebarTheme == 'dark'" app class="rounded-xl ml-2 mt-2" style="height: auto">
       <v-list-item>
         <v-list-item-content class="text-center">
           <v-list-item-title
@@ -10,7 +10,7 @@
           >
             GEKO
           </v-list-item-title>
-          <v-list-item-subtitle style="color: #fff"
+          <v-list-item-subtitle
             >Green Earth Kontrol</v-list-item-subtitle
           >
         </v-list-item-content>
@@ -62,8 +62,14 @@
       </v-list>
 
       <div class="text-center pb-3">
-        <v-btn color="red" fab small class="" @click="logout()">
+        <v-btn :color="`${sidebarTheme == 'light' ? 'yellow white--text' : 'yellow--text'} darken-2`" fab x-small class="mr-1" @click="sidebarTheme = 'light'">
+          <v-icon>mdi-weather-sunny</v-icon>
+        </v-btn>
+        <v-btn color="red white--text" fab small class="" @click="logout()">
           <v-icon>mdi-power</v-icon>
+        </v-btn>
+        <v-btn :color="`${sidebarTheme == 'dark' ? 'blue' : 'blue--text'} darken-2`" fab x-small class="ml-1" @click="sidebarTheme = 'dark'">
+          <v-icon>mdi-weather-night</v-icon>
         </v-btn>
       </div>
       <!-- <h5
@@ -194,7 +200,8 @@ export default {
     authtoken: "",
     listValMenu: [],
     logoutvalue: false,
-    isFullScreen: false
+    isFullScreen: false,
+    sidebarTheme: 'dark'
   }),
   computed: {
     isLogin() {
