@@ -711,7 +711,7 @@
           </v-dialog>
 
           <!-- Modal Edit GIS -->
-          <v-dialog v-model="dialogGIS" max-width="800px">
+          <v-dialog v-model="dialogGIS" max-width="800px" content-class="rounded-xl">
             <v-card>
               <v-form ref="form" v-model="valid" lazy-validation>
                 <v-card-title class="mb-1 headermodalstyle">
@@ -1565,9 +1565,9 @@
             </v-card>
           </v-dialog>
 
-          <v-dialog v-model="dialogShowEdit" max-width="400px">
+          <v-dialog v-model="dialogShowEdit" max-width="400px" content-class="rounded-xl">
             <v-card>
-              <v-card-title class="headline"
+              <v-card-title class="d-flex justify-center"
                 >What you want to edit?</v-card-title
               >
               <v-container>
@@ -1603,7 +1603,7 @@
                     >
                   </v-col>
                 </v-row>
-                <v-row v-if="updateGisShow == true">
+                <v-row v-if="updateGisShow == true || User.role_name == 'GIS STAFF'">
                   <v-col
                     cols="12"
                     sm="12"
@@ -1611,7 +1611,7 @@
                     class="px-3"
                     style="text-align: center"
                   >
-                    <v-btn block outlined color="orange" @click="showEditGIS">
+                    <v-btn block outlined color="orange" @click="showEditGIS" rounded>
                       <v-icon left> mdi-lead-pencil </v-icon>
                       Data GIS</v-btn
                     >
@@ -1662,7 +1662,7 @@
           mdi-information-outline
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
+          v-if="(RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT' || User.role_name == 'GIS STAFF'"
           class="mr-1"
           @click="showEditDetailModal(item)"
           small
@@ -1671,7 +1671,7 @@
           mdi-lead-pencil
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi'"
+          v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
           @click="showDeleteModal(item)"
           small
           color="red"
