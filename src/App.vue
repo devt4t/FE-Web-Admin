@@ -147,7 +147,7 @@
         :class="`text-center green--text ${$store.state.theme == 'dark' ? 'text--lighten-4' : 'text--darken-1'}`"
         cols="12"
       >
-        GEKOWeb V{{ $store.state.packageVersion }} © Trees4Trees
+        GEKOWeb v{{ $store.state.packageVersion }} © Trees4Trees
       </v-col>
     </v-app-bar>
 
