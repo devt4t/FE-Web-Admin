@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-5 ml-2">
+  <v-container class="mt-5 pl-5" fluid>
     <v-row style="margin-top: -15px">
       <v-col cols="12" md="12">
         <!-- <v-card>
