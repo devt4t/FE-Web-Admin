@@ -83,7 +83,7 @@
     </v-navigation-drawer>
 
     <!-- TopBar -->
-    <v-app-bar class="mx-2 ml-4 mt-2 rounded-xl" v-if="isLogin" app>
+    <v-app-bar class="mx-2 ml-2 ml-lg-5 mt-2 rounded-xl" v-if="isLogin" app>
       <v-app-bar-nav-icon
         @click="drawer = !drawer"
         
