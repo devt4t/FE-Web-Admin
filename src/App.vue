@@ -92,6 +92,15 @@
 
       <v-spacer></v-spacer>
 
+      <v-tooltip bottom>
+        {{ isFullScreen ? 'Close' : 'Go' }} FullScreen {{ isFullScreen ? '(esc)' : '' }}
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on" icon color="gray darken-1" @click="toggleFullScreen">
+            <v-icon v-if="isFullScreen">mdi-arrow-collapse-all</v-icon>
+            <v-icon v-else>mdi-arrow-expand-all</v-icon>
+          </v-btn>
+        </template>
+      </v-tooltip>
       <v-menu offset-y open-on-hover rounded="xl">
         <template v-slot:activator="{ on }">
           <v-btn class="px-1 mr-1" text color="black" size="200" v-on="on" rounded>
@@ -131,7 +140,7 @@
         class="text-center"
         cols="12"
       >
-        GEKOWeb V0.7.8 © Trees4Trees
+        GEKOWeb V{{ $store.state.packageVersion }} © Trees4Trees
       </v-col>
     </v-app-bar>
 
@@ -185,6 +194,7 @@ export default {
     authtoken: "",
     listValMenu: [],
     logoutvalue: false,
+    isFullScreen: false
   }),
   computed: {
     isLogin() {
@@ -293,6 +303,15 @@ export default {
       this.statusadmin = this.User.role_name;
     }
   },
+  mounted() {
+  },
+  watch: {
+    'document.fullscreenElement': {
+      handler(newVal) {
+        console.log(newVal)
+      }
+    }
+  },
   methods: {
     async cekLogout() {
       const datapost = {};
@@ -346,6 +365,38 @@ export default {
           this.logout();
       }
     },
+    toggleFullScreen() {
+      var elem = document.documentElement
+      if (this.isFullScreen == false) {
+        this.openFullscreen(elem)
+      } else {
+        this.closeFullscreen()
+      }
+    },
+    /* View in fullscreen */
+    openFullscreen(elem) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        elem.msRequestFullscreen();
+      }
+      this.isFullScreen = true
+    },
+    /* Close fullscreen */
+    closeFullscreen() {
+      if (this.isFullScreen && document.fullscreenElement) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+          document.msExitFullscreen();
+        }
+      }
+      this.isFullScreen = false
+    }
   },
 };
 </script>
