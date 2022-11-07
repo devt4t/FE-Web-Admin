@@ -9,7 +9,8 @@ export default new Vuex.Store({
     loadingOverlay: false,
     loadingOverlayText: null,
     maintenanceOverlay: false,
-    packageVersion: version || '0'
+    packageVersion: version || '0',
+    theme: 'dark'
   },
   mutations: {
   },

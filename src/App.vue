@@ -1,22 +1,22 @@
 <template>
   <v-app id="Trees">
     <!-- Sidebar -->
-    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="sidebarTheme == 'dark'" app class="rounded-xl ml-2 mt-2" style="height: auto">
-      <v-list-item>
-        <v-list-item-content class="text-center">
-          <v-list-item-title
-            style="color: #71AF34; font-weight: 550; font-size: 125%"
-            class="fontall"
-          >
-            GEKO
-          </v-list-item-title>
-          <v-list-item-subtitle
-            >Green Earth Kontrol</v-list-item-subtitle
-          >
-        </v-list-item-content>
-      </v-list-item>
-
-      <!-- <v-divider style="background-color: white !important"></v-divider> -->
+    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="$store.state.theme == 'dark'" app :class="`${$store.state.theme == 'dark' ? 'grey darken-4' : ''} rounded-xl ml-2 mt-2`" style="height: auto;max-height: 97.5vh;">
+      <template v-slot:prepend>
+        <v-list-item>
+          <v-list-item-content class="text-center">
+            <v-list-item-title
+              style="color: #71AF34; font-weight: 550; font-size: 125%"
+              class="fontall"
+            >
+              GEKO
+            </v-list-item-title>
+            <v-list-item-subtitle
+              >Green Earth Kontrol</v-list-item-subtitle
+            >
+          </v-list-item-content>
+        </v-list-item>
+      </template>
 
       <v-list color="transparent" rounded>
         <v-list-item color="#71AF34" :to="DashboardLink" link>
@@ -61,17 +61,19 @@
         </v-list-group>
       </v-list>
 
-      <div class="text-center pb-3">
-        <v-btn :color="`${sidebarTheme == 'light' ? 'yellow white--text' : 'yellow--text'} darken-2`" fab x-small class="mr-1" @click="sidebarTheme = 'light'">
-          <v-icon>mdi-weather-sunny</v-icon>
-        </v-btn>
-        <v-btn color="red white--text" fab small class="" @click="logout()">
-          <v-icon>mdi-power</v-icon>
-        </v-btn>
-        <v-btn :color="`${sidebarTheme == 'dark' ? 'blue' : 'blue--text'} darken-2`" fab x-small class="ml-1" @click="sidebarTheme = 'dark'">
-          <v-icon>mdi-weather-night</v-icon>
-        </v-btn>
-      </div>
+      <template v-slot:append>
+        <div class="text-center pa-2">
+          <v-btn :color="`${$store.state.theme == 'light' ? 'yellow white--text' : 'yellow--text'} darken-2`" fab x-small class="mr-1" @click="$store.state.theme = 'light'">
+            <v-icon>mdi-weather-sunny</v-icon>
+          </v-btn>
+          <v-btn color="red white--text" fab small class="" @click="logout()">
+            <v-icon>mdi-power</v-icon>
+          </v-btn>
+          <v-btn :color="`${$store.state.theme == 'dark' ? 'blue' : 'blue--text'} darken-2`" fab x-small class="ml-1" @click="$store.state.theme = 'dark'">
+            <v-icon>mdi-weather-night</v-icon>
+          </v-btn>
+        </div>
+      </template>
       <!-- <h5
         class="text-center pb-2"
         style="color: #71AF34; font-weight: 550; font-size: 80%"
@@ -83,15 +85,14 @@
     <!-- TopBar -->
     <v-app-bar class="mx-2 ml-4 mt-2 rounded-xl" v-if="isLogin" app>
       <v-app-bar-nav-icon
-        style="color: black"
         @click="drawer = !drawer"
+        
       ></v-app-bar-nav-icon>
 
       <v-toolbar-title
-        style="color: black; font-weight: bold"
         class="pl-1 fontall"
       >
-        <a href="/" style="text-decoration: none; color: black">
+        <a href="/" style="text-decoration: none;" :class="'green--text'">
           Trees4trees
         </a>
       </v-toolbar-title>
@@ -109,7 +110,7 @@
       </v-tooltip>
       <v-menu offset-y open-on-hover rounded="xl">
         <template v-slot:activator="{ on }">
-          <v-btn class="px-1 mr-1" text color="black" size="200" v-on="on" rounded>
+          <v-btn class="px-1 mr-1" text size="200" v-on="on" rounded>
             <div style="text-align: right" class="mr-2">
               <p style="font-weight: bold" class="font-weight-bolder mb-0">
                 {{ nameadmin }}
@@ -120,7 +121,7 @@
               <!-- <span style="font-size: 9px">{{ statusadmin }}</span> -->
             </div>
             <v-avatar size="35">
-              <v-icon x-large color="black">mdi-account-circle</v-icon>
+              <v-icon x-large>mdi-account-circle</v-icon>
             </v-avatar>
           </v-btn>
         </template>
@@ -141,9 +142,9 @@
     </v-app-bar>
 
     <!-- footer -->
-    <v-app-bar v-if="isLogin" color="white green--text" class="mx-10 mb-2 rounded-xl" app dense bottom absolute>
+    <v-app-bar v-if="isLogin" class="mx-5 mr-3 mb-2 rounded-xl" app dense bottom absolute :dark="$store.state.theme == 'dark'" >
       <v-col
-        class="text-center"
+        class="text-center green--text"
         cols="12"
       >
         GEKOWeb V{{ $store.state.packageVersion }} © Trees4Trees
@@ -152,7 +153,7 @@
 
     <!-- Main Content -->
     <v-main class="green lighten-4">
-      <router-view class="pl-2 pb-4"></router-view>
+      <router-view class="pb-4 pl-0 pl-lg-3"></router-view>
     </v-main>
     
     <!-- loading overlay -->
@@ -200,8 +201,7 @@ export default {
     authtoken: "",
     listValMenu: [],
     logoutvalue: false,
-    isFullScreen: false,
-    sidebarTheme: 'dark'
+    isFullScreen: false
   }),
   computed: {
     isLogin() {
@@ -411,17 +411,19 @@ export default {
 <style>
 /* width */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 10px;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #71AF3455;
+  border-radius: 10px;
+  background: #71AF34aa;
 }
 
 /* Handle on hover */
