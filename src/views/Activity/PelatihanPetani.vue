@@ -1226,92 +1226,41 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded-xl elevation-6 mx-3 pa-1"
+      :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
     >
       <template v-slot:top>
-        <v-toolbar class="rounded-xl" flat>
-          <v-btn
-            dark
-            @click="initialize()"
-            color="info"
-            rounded
-          >
-            <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
-          </v-btn>
-          <!-- FILTER BUTTON -->
-          <!-- <v-btn
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
-            Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
-            Employee
-          </v-btn> -->
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 200px"
-          ></v-select>
-          <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select>
-          <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
-          <v-divider class="d-none d-md-block mx-2"></v-divider>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            outlined
-            rounded
-            class="mr-2"
-            dense
-            hide-details
-          ></v-text-field>
-          <v-btn
-            dark
-            class="mb-2 mr-1"
-            @click="showAddModal()"
-            color="green"
-            rounded
-          >
-            <v-icon small>mdi-plus</v-icon> Add
-          </v-btn>
-        </v-toolbar>
+          <v-row class="pa-4 align-center px-5 justify-center">
+            <!-- Refresh Button -->
+            <v-btn
+              dark
+              @click="initialize()"
+              color="info"
+              rounded
+              class="mb-2 mb-lg-0"
+            >
+              <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+            </v-btn>
+            <v-divider class="d-none d-md-block mx-2"></v-divider>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              outlined
+              rounded
+              class="mr-2"
+              dense
+              hide-details
+            ></v-text-field>
+            <v-btn
+              dark
+              class="mb-2 mr-1 mt-2 mt-lg-0"
+              @click="showAddModal()"
+              color="green"
+              rounded
+            >
+              <v-icon small>mdi-plus</v-icon> Add
+            </v-btn>
+          </v-row>
       </template>
 
       <!-- Date -->
