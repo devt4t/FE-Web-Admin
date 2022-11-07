@@ -1658,26 +1658,72 @@
 
       <!-- Action table -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-1" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="(RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT' || User.role_name == 'GIS STAFF'"
-          class="mr-1"
-          @click="showEditDetailModal(item)"
-          small
-          color="warning"
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
         >
-          mdi-lead-pencil
-        </v-icon>
-        <v-icon
-          v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
-          @click="showDeleteModal(item)"
-          small
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-list class="d-flex flex-column align-stretch">
+            <v-list-item>
+              <v-btn
+                dark
+                class="w-100"
+                rounded
+                @click="showDetail(item)"
+                color="info"
+                block
+              >
+              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                  mdi-information-outline
+              </v-icon>
+                Detail
+              </v-btn>
+            </v-list-item>
+            <v-list-item
+              v-if="(RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT' || User.role_name == 'GIS STAFF'"
+            >
+              <v-btn
+                dark
+                class="w-100"
+                rounded
+                @click="showEditDetailModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" @click="showEditDetailModal(item)" small color="white">
+                mdi-lead-pencil
+              </v-icon>
+                Edit
+              </v-btn>
+            </v-list-item>
+            <v-list-item
+              v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
+            >
+              <v-btn
+                dark
+                class="w-100"
+                rounded
+                @click="showDeleteModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" @click="showDeleteModal(item)" small color="white">
+                mdi-delete
+              </v-icon>
+                Delete
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
       
       <!-- Index -->
@@ -1785,7 +1831,7 @@ export default {
       { text: "Pola Tanam", value: "pola_tanam", width: "20%" },
       { text: "Tahun Program", value: "created_at", width: "10%" },
       { text: "Status", value: "status", width: "12%" },
-      { text: "Actions", value: "actions", sortable: false, width: "15%" },
+      { text: "Actions", value: "actions", sortable: false, width: "15%", align: 'right' },
     ],
     headersgis: [
       {
