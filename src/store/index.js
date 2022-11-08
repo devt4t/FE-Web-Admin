@@ -1,3 +1,4 @@
+import moment from 'moment/moment'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {version} from '../../package.json'
@@ -10,7 +11,11 @@ export default new Vuex.Store({
     loadingOverlayText: null,
     maintenanceOverlay: false,
     packageVersion: version || '0',
-    theme: 'dark'
+    theme: 'dark',
+    programYear: {
+      model: '2022',
+      options: ['2021', '2022', '2023']
+    }
   },
   mutations: {
   },
