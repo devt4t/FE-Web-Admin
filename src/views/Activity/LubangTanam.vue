@@ -1857,6 +1857,12 @@ export default {
 
   mounted() {
     this.firstAccessPage();
+    if (this.User.role_group != 'IT') {
+      this.$store.state.maintenanceOverlay = true
+    }
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
   },
 
   methods: {
