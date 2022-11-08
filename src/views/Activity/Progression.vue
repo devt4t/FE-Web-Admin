@@ -66,8 +66,8 @@
                 :loading="options.UM.loading"
                 :no-data-text="options.UM.loading ? 'Loading...' : 'No Data'"
                 :placeholder="options.UM.loading ? 'Loading...' : 'Select UM'"
-                :readonly="!access.filterUM"
                 :rules="[(v) => !!v || 'Field is required']"
+                :disabled="options.UM.disabled"
               >
               <template v-slot:item="data">
                 <v-list-item-content>
@@ -96,7 +96,6 @@
                 :loading="options.FC.loading"
                 :no-data-text="options.FC.loading ? 'Loading...' : 'No Data'"
                 :placeholder="options.FC.loading ? 'Loading...' : 'Select FC'"
-                :readonly="!access.filterFC"
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
@@ -722,11 +721,6 @@ export default {
     VueHtml2pdf
   },
   data: () => ({
-    access: {
-      filterUM: false,
-      filterFC: false,
-      filterFF: false,
-    },
     auth: {
       alertToken: false,
       baseUrl: '',
@@ -783,6 +777,7 @@ export default {
         model: ''
       },
       UM: {
+        disabled: false,
         itemText: 'name',
         itemValue: 'nik',
         items: [],
@@ -821,7 +816,7 @@ export default {
           { text: "lahan2", value: "lahan2", align: 'center' },
           { text: "Lahan Total", value: "total_lahan", align: 'center' },
           { text: "Lahan Progress", value: "progress_lahan", align: 'center' },
-          { text: "Actions", value: "actions", align: 'center', sortable: false },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
         ],
         items: [],
         loading: false,
@@ -860,7 +855,6 @@ export default {
 
   async mounted() {
     await this.firstAccessPage();
-    this.options.programYear.model = new Date().getFullYear().toString()
     // this.filters.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
     // if (this.auth.user.role_group != 'IT') {
     //   this.$store.state.maintenanceOverlay = true
@@ -914,7 +908,14 @@ export default {
       this.auth.baseUrlGet = localStorage.getItem("BaseUrlGet")
       this.auth.baseUrl = localStorage.getItem("BaseUrl")
       this.auth.baseUrlUpload = localStorage.getItem("BaseUrlUpload")
-      await this.checkRoleAccess()
+      // set program year
+      this.options.programYear.model = new Date().getFullYear().toString()
+      // set UM model if User == 'UNIT MANAGER'
+      if (this.auth.user.role_name == 'UNIT MANAGER') {
+        this.options.UM.model = this.auth.user.employee_no
+        this.options.UM.disabled = true
+        this.optionsChanged('UM')
+      }
       await this.getUMAll()
     },
     optionsChanged(type) {
@@ -1241,13 +1242,6 @@ export default {
         } else {
             return text.slice(4, 8)
         }
-    },
-    checkRoleAccess() {
-      if (this.auth.user.role_group == "IT" || this.auth.user.role_name == 'PROGRAM MANAGER') {
-        this.access.filterUM = true
-        this.access.filterFC = true
-        this.access.filterFF = true
-      }
     },
     dateFormat(date, format) {
         return moment(date).format(format)
