@@ -179,6 +179,7 @@
                     label="Nursery"
                     class="mx-auto mx-lg-3"
                     style="max-width: 200px"
+                    :disabled="User.role_name == 'UNIT MANAGER' || calendar.loading"
                 ></v-select>
                 <v-divider class="mx-2"></v-divider>
             </v-toolbar>
@@ -839,6 +840,12 @@ export default {
         },
         async calendarUpdateRange ({ start, end }) {
             this.calendar.loading = true
+            if (this.User.role_name == 'UNIT MANAGER') {
+                if (typeof this.User.ff.ff[0] != 'undefined') {
+                    const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
+                    this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
+                }
+            }
             const params = new URLSearchParams({
                 month: this.dateFormat(start.date, 'MM'),
                 year: this.dateFormat(start.date, 'Y'),
@@ -873,6 +880,25 @@ export default {
 
             this.calendar.events = events
             this.calendar.loading = false
+        },
+        async getFFMUNo(ff_no) {
+            let mu_no = ''
+            await axios.get(
+                this.apiConfig.baseUrl + 'GetFieldFacilitatorDetail?id=999&ff_no=' + ff_no,
+                {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.token
+                    },
+                }
+            ).then(result => {
+                const res = result.data.data.result
+                if (typeof res.mu_no != 'undefined') {
+                    mu_no = res.mu_no
+                }
+            }).catch(err => {
+                console.error(err)
+            })
+            return mu_no
         },
         async getPackingLabelTableData() {
             let url = ''
@@ -953,7 +979,33 @@ export default {
             return moment(date).format(format)
         },
         async firstAccessPage() {
+            if (this.User.role_name == 'UNIT MANAGER') {
+                if (typeof this.User.ff.ff[0] != 'undefined') {
+                    const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
+                    this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
+                }
+            }
             await this.getPackingLabelTableData()
+        },
+        getNurseryAlocation(mu_no) {
+            const ciminyak   = ['023', '026', '027', '021' ]
+            const arjasari   = ['022', '024', '025', '020', '029']
+            const kebumen    = ['019']
+            const pati       = ['015']
+            
+            let nursery = 'All'
+
+            if (ciminyak.includes(mu_no)) {
+                nursery = 'Ciminyak'
+            } else if (arjasari.includes(mu_no)) {
+                nursery = 'Arjasari'
+            } else if (kebumen.includes(mu_no)) {
+                nursery = 'Kebumen'
+            } else if (pati.includes(mu_no)) {
+                nursery = 'Pati'
+            }
+            
+            return nursery;
         },
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
