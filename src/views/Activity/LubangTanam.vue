@@ -1498,7 +1498,7 @@
 
       <!-- Total Lubang -->
       <template v-slot:item.total_holes="{ item }">
-          {{ numberFormat(item.total_holes) }}
+          {{ numberFormat(item.total_holes) }} / 0
       </template>
       <!-- Total Bibit -->
       <template v-slot:item.total_bibit="{ item }">
@@ -1655,7 +1655,7 @@ export default {
       { text: "Field Facilitator", value: "nama_ff"},
       { text: "Nama Petani", value: "nama_petani"},
       { text: "No Lahan", align: "start", value: "lahan_no"},
-      { text: "Total Lubang", value: "total_holes", align: 'center' },
+      { text: "Total Lubang / Standar", value: "total_holes", align: 'center' },
       { text: "Total Bibit", value: "total_bibit", align: 'center' },
       { text: "Tahun Tanam", value: "planting_year", align: 'center'},
       { text: "Status", value: "is_validate", align: 'center' },
