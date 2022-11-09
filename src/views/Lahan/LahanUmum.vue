@@ -23,26 +23,46 @@
                     <v-icon color="red lighten-1" class="ml-auto" @click="dialogActions('createData', false)">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text class="pa-0">
-                    <v-stepper class="rounded-xl" v-model="dialogs.createData.step">
+                    <v-stepper v-model="dialogs.createData.step">
                         <!-- Stepper Header -->
-                        <v-stepper-header class="rounded-xl">
+                        <v-stepper-header class="rounded-xl mx-2 my-2">
                             <v-stepper-step editable :complete="dialogs.createData.step > 1" step="1" color="success" class="rounded-xl">
-                                Administration
+                                Main Data
                             </v-stepper-step>
                             <v-divider></v-divider>
                             <v-stepper-step editable :complete="dialogs.createData.step > 2" step="2" color="success" class="rounded-xl">
-                                Locations & Period
+                                Seeds
                             </v-stepper-step>
                             <v-divider></v-divider>
                             <v-stepper-step editable :complete="dialogs.createData.step > 3" step="3" color="success" class="rounded-xl">
+                                Coordinates & Period
+                            </v-stepper-step>
+                            <v-divider></v-divider>
+                            <v-stepper-step editable :complete="dialogs.createData.step > 4" step="4" color="success" class="rounded-xl">
                                 Photos
                             </v-stepper-step>
                         </v-stepper-header>
                         <!-- Stepper Content -->
                         <v-stepper-items>
-                            <!-- Administration -->
-                            <v-stepper-content step="1">
-                                <v-row class="pt-2">
+                            <!-- Main Data -->
+                            <v-stepper-content step="1" class="pt-0">
+                                <v-row class="my-0">
+                                    <!-- MOU -->
+                                    <v-col cols="12" sm="12" md="12" lg="8">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.mou.label"
+                                            :loading="inputs.mou.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.mou.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.mou.model"
+                                        ></v-text-field>
+                                    </v-col>
                                     <!-- Employee -->
                                     <v-col cols="12" sm="12" md="6" lg="4">
                                         <v-autocomplete
@@ -64,8 +84,148 @@
                                         ></v-autocomplete>
                                     </v-col>
                                 </v-row>
-                            </v-stepper-content>
-                            <v-stepper-content step="2">
+                                <div class="pb-2 d-flex align-center">
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-clipboard-account</v-icon>PIC</p>
+                                    <v-divider class="mx-2"></v-divider>
+                                </div>
+                                <v-row class="my-0">
+                                    <!-- PIC -->
+                                    <v-col cols="12" sm="12" md="12" lg="6">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.pic.label"
+                                            :loading="inputs.pic.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.pic.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.pic.model"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <!-- PIC KTP -->
+                                    <v-col cols="12" sm="12" md="12" lg="6">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.picKtp.label"
+                                            :loading="inputs.picKtp.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.picKtp.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.picKtp.model"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <div class="pb-2 d-flex align-center">
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-island</v-icon>Land</p>
+                                    <v-divider class="mx-2"></v-divider>
+                                </div>
+                                <v-row class="my-0">
+                                    <!-- Land Area -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.landArea.label"
+                                            :loading="inputs.landArea.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.landArea.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.landArea.model"
+                                            type="number"
+                                        >
+                                            <v-btn slot="append" text class="text-lowercase" rounded>
+                                                m<sup>2</sup>
+                                            </v-btn>
+                                        </v-text-field>
+                                    </v-col>
+                                    <!-- Cropping Pattern -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="name"
+                                            item-value="province_code"
+                                            :items="inputs.croppingPattern.items"
+                                            :label="inputs.croppingPattern.label"
+                                            :loading="inputs.croppingPattern.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.croppingPattern.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.croppingPattern.model"
+                                            v-on:change="getOptionsData({type: 'regency'})"
+                                        ></v-autocomplete>
+                                    </v-col>
+                                    <!-- Land Status -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.landStatus.label"
+                                            :loading="inputs.landStatus.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.landStatus.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.landStatus.model"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <!-- Land Distance -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.landDistance.label"
+                                            :loading="inputs.landDistance.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.landDistance.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.landDistance.model"
+                                            type="number"
+                                        >
+                                            <v-btn slot="append" text class="text-lowercase" rounded>
+                                                m<sup>2</sup>
+                                            </v-btn>
+                                        </v-text-field>
+                                    </v-col>
+                                    <!-- Land Access -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="name"
+                                            item-value="province_code"
+                                            :items="inputs.landAccess.items"
+                                            :label="inputs.landAccess.label"
+                                            :loading="inputs.landAccess.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.landAccess.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.landAccess.model"
+                                            v-on:change="getOptionsData({type: 'regency'})"
+                                        ></v-autocomplete>
+                                    </v-col>
+                                </v-row>
                                 <div class="pb-2 d-flex align-center">
                                     <p class="mb-0"><v-icon class="mr-2">mdi-map-marker</v-icon>Location</p>
                                     <v-divider class="mx-2"></v-divider>
@@ -167,11 +327,16 @@
                                         ></v-text-field>
                                     </v-col>
                                 </v-row>
+                                <v-row class="pt-2">
+                                </v-row>
+                            </v-stepper-content>
+                            <!-- Coordinates + Period -->
+                            <v-stepper-content step="3" class="pt-0">
                                 <div class="py-2 d-flex align-center">
                                     <p class="mb-0"><v-icon class="mr-2">mdi-crosshairs-gps</v-icon>Coordinates</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
-                                <v-row>
+                                <v-row class="my-0">
                                     <!-- Latitude -->
                                     <v-col cols="12" sm="12" md="6" lg="6">
                                         <v-text-field
@@ -217,11 +382,81 @@
                                         </v-tooltip>
                                     </v-col>
                                 </v-row>
+                                <div class="py-2 d-flex align-center">
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-timeline-clock</v-icon>Period</p>
+                                    <v-divider class="mx-2"></v-divider>
+                                </div>
+                                <v-row class="my-0">
+                                    <!-- Hole Surveillance Date -->
+                                    <v-col cols="12" lg="4" class="text-center">
+                                        <p class="mb-0"><strong>{{ inputs.dateHoleSurveillance.label }}</strong></p>
+                                        <v-btn 
+                                            disabled
+                                            rounded class=""
+                                            color="green white--text"
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        >
+                                            {{ dateFormat(inputs.dateHoleSurveillance.model, 'ddd, DD MMMM Y') }}
+                                        </v-btn>
+                                    </v-col>
+                                    <!-- Distribution Date -->
+                                    <v-col cols="12" lg="4" class="text-center">
+                                        <v-menu v-model="inputs.dateDistribution.datepicker.show" offset-x transition="slide-x-transition" rounded="xl">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <p class="mb-0"><strong>{{ inputs.dateDistribution.label }}</strong></p>
+                                                <v-btn 
+                                                    dark
+                                                    rounded class=""
+                                                    color="green"
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                >
+                                                    {{ dateFormat(inputs.dateDistribution.model, 'ddd, DD MMMM Y') }}
+                                                </v-btn>
+                                            </template>
+                                            <div>
+                                                <v-overlay :value="inputs.dateDistribution.loading">
+                                                    <div class="d-flex flex-column align-center justify-center">
+                                                    <v-progress-circular
+                                                        indeterminate
+                                                        color="white"
+                                                        size="64"
+                                                    ></v-progress-circular>
+                                                    <p class="mt-2 mb-0">Updating dates...</p>
+                                                    </div>
+                                                </v-overlay>
+                                                <v-date-picker
+                                                    v-model="inputs.dateDistribution.model"
+                                                    min="2022-11-24"
+                                                    max="2023-01-31"
+                                                    @input="inputs.dateDistribution.datepicker.show = false"
+                                                    color="green"
+                                                    class="rounded-xl"
+                                                    :key="inputs.dateDistribution.datepicker.key"
+                                                ></v-date-picker>
+                                            </div>
+                                        </v-menu>
+                                    </v-col>
+                                    <!-- Planting Realization Date -->
+                                    <v-col cols="12" lg="4" class="text-center">
+                                        <p class="mb-0"><strong>{{ inputs.dateRealization.label }}</strong></p>
+                                        <v-btn 
+                                            rounded class=""
+                                            color="green white--text"
+                                            disabled
+                                            v-bind="attrs"
+                                            v-on="on"
+                                        >
+                                            {{ dateFormat(inputs.dateRealization.model, 'ddd, DD MMMM Y') }}
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
                             </v-stepper-content>
                         </v-stepper-items>
                     </v-stepper>
                 </v-card-text>
-                <v-card-actions class="ma-2">
+                <v-card-actions class="ma-2 elevation-5 rounded-xl">
                     <!-- Footer Button -->
                     <v-row>
                         <v-col cols="3">
@@ -242,7 +477,7 @@
                         </v-col>
                         <v-col cols="6" align="center">
                             <v-btn
-                                :disabled="e1 == 1"
+                                :disabled="dialogs.createData.step == 1"
                                 elevation="1"
                                 outlined
                                 color="primary"
@@ -263,7 +498,7 @@
                                 outlined
                                 color="primary"
                                 @click="stepperMove('+')"
-                                :disabled="false"
+                                :disabled="dialogs.createData.step == 4"
                             >
                                 <span class="d-none d-md-inline-block"> 
                                     Next
@@ -316,6 +551,7 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 export default {
     data: () => ({
         breadcrumbs: [
@@ -343,6 +579,37 @@ export default {
                 model: '',
                 loading: false
             },
+            croppingPattern: {
+                label: 'Cropping Pattern',
+                model: '',
+                items: [
+                    'Pola Agroforestry Acak',
+                    'Pola Agroforestry Lajur',
+                    'Pola Agroforestry Tepi',
+                    'Pola Konservasi Pohon Kayu',
+                    'Pola Konservasi Pohon Kayu + MPTS',
+                ],
+                loading: false
+            },
+            dateDistribution: {
+                datepicker: {
+                    show: false,
+                    key: 1315432
+                },
+                label: 'Distribution Date',
+                loading: false,
+                model: ''
+            },
+            dateHoleSurveillance: {
+                label: 'Hole Surveillance Date',
+                loading: false,
+                model: ''
+            },
+            dateRealization: {
+                label: 'Planting Realization Date',
+                loading: false,
+                model: ''
+            },
             district: {
                 label: 'District',
                 model: '',
@@ -350,9 +617,34 @@ export default {
                 loading: false
             },
             employee: {
-                label: 'Employee',
+                label: 'T4T Employee',
                 model: '',
                 items: [],
+                loading: false
+            },
+            landAccess: {
+                label: 'Land Access',
+                model: '',
+                items: [
+                    'Jalan Kaki',
+                    'Motor',
+                    'Mobil',
+                ],
+                loading: false
+            },
+            landArea: {
+                label: 'Land Area',
+                model: '',
+                loading: false
+            },
+            landDistance: {
+                label: 'Land Distance from Home',
+                model: '',
+                loading: false
+            },
+            landStatus: {
+                label: 'Land Status',
+                model: '',
                 loading: false
             },
             latitude: {
@@ -362,6 +654,21 @@ export default {
             },
             longitude: {
                 label: 'Longitude',
+                model: '',
+                loading: false
+            },
+            mou: {
+                label: 'MoU Number',
+                model: '',
+                loading: false
+            },
+            pic: {
+                label: 'PIC Name',
+                model: '',
+                loading: false
+            },
+            picKtp: {
+                label: 'PIC NIK / Ktp No',
                 model: '',
                 loading: false
             },
@@ -405,6 +712,16 @@ export default {
         },
         User: {}
     }),
+    watch: {
+        'inputs.dateDistribution.model': {
+            handler(newVal) {
+                if (newVal) {
+                    this.inputs.dateHoleSurveillance.model = moment(newVal).subtract(14, 'days')
+                    this.inputs.dateRealization.model = moment(newVal).add(7, 'days')
+                }
+            }
+        }
+    },
     mounted() {
         this.User = JSON.parse(localStorage.getItem('User'))
     },
@@ -474,6 +791,9 @@ export default {
             }
         },
         // Utilities
+        dateFormat(date, format) {
+            return moment(date).format(format)
+        },
         forceLogout(response) {
             if (response.status == 401) {
                 localStorage.removeItem("token")
@@ -482,6 +802,13 @@ export default {
         },
         openGoogleMap() {
             window.open(`http://maps.google.co.id/maps?q=${this.inputs.latitude.model},${this.inputs.longitude.model}`)
+        },
+        stepperMove(type) {
+            if (type == '+') {
+                this.dialogs.createData.step += 1
+            } else if (type == '-') {
+                this.dialogs.createData.step -= 1
+            }
         }
     }
 }
