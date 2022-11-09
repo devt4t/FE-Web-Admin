@@ -32,7 +32,9 @@
                     :items="itemsMU"
                     item-value="mu_no"
                     item-text="name"
-                    :menu-props="{rounded: 'xl', offsetY: true}"
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
                     outlined
                     rounded
                     hide-details
@@ -50,7 +52,9 @@
                     v-on:change="selectedTA"
                     label="Target Area"
                     clearable
-                    :menu-props="{rounded: 'xl', offsetY: true}"
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
                     outlined
                     rounded
                     hide-details
@@ -65,7 +69,9 @@
                     v-on:change="selectedVillage"
                     label="Desa"
                     clearable
-                    :menu-props="{rounded: 'xl', offsetY: true}"
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
                     outlined
                     rounded
                     hide-details
@@ -94,14 +100,19 @@
       <!-- Modal Filter Emp -->
       <v-dialog v-model="dialogFilterEmp" max-width="500px">
         <v-card rounded="xl">
-          <v-card-title class=""
-            >Filter Pencarian By Emp</v-card-title
-          >
+          <v-card-title class="d-flex justify-center">
+            Filter Pencarian By Emp
+          </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
                     v-model="selectUM"
                     :items="itemsum"
                     item-value="nik"
@@ -109,10 +120,15 @@
                     v-on:change="selectedUM"
                     label="Pilih Unit Manager"
                     clearable
-                  ></v-select>
+                  ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
                     v-model="selectFC"
                     :items="itemsfc"
                     item-value="nik"
@@ -120,7 +136,7 @@
                     v-on:change="selectedFC"
                     label="Pilih Field Coordinator"
                     clearable
-                  ></v-select>
+                  ></v-autocomplete>
                 </v-col>
               </v-row>
             </v-container>
@@ -1299,7 +1315,7 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      :disabled="!valueMU && User.ff.value_data == 'all'"
+                      :disabled="!valueMU && typegetdata == 'all'"
                       rounded
                       @click="downloadSuperAdmin()"
                       color="blue white--text"
@@ -2422,7 +2438,6 @@ export default {
           this.$router.push("/");
         }
       }
-      console.log(this.valueFFcode);
     },
 
     async addData() {
@@ -2732,8 +2747,8 @@ export default {
       this.valueFC = "";
       this.selectUM = "";
       this.selectFC = "";
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
+      // this.valueFFcode = this.User.ff.ff;
+      // this.typegetdata = this.User.ff.value_data;
     },
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;
@@ -2983,9 +2998,11 @@ export default {
           "&village=" +
           this.valueVillage +
           "&typegetdata=" +
-          this.User.ff.value_data +
+          this.typegetdata +
           "&ff=" +
-          this.User.ff.ff
+          this.valueFFcode +
+          "&program_year=" +
+          this.program_year
       );
 
       // this.valueMUExcel = "";
