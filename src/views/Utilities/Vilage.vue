@@ -36,7 +36,7 @@
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="6" md="6">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.kode_kecamatan"
                         :items="itemsKab"
                         item-value="kode_kecamatan"
@@ -44,10 +44,10 @@
                         label="Pilih Kecamatan"
                         clearable
                         :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                     <v-col cols="12" sm="6" md="6">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.area_code"
                         :items="itemsTa"
                         item-value="area_code"
@@ -55,7 +55,7 @@
                         label="Pilih Target Area"
                         clearable
                         :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row>

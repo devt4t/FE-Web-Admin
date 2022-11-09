@@ -36,7 +36,7 @@
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.kabupaten_no"
                         :items="itemsKab"
                         item-value="kabupaten_no"
@@ -44,7 +44,7 @@
                         label="Pilih Kabupaten"
                         clearable
                         :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row>
