@@ -1,7 +1,7 @@
 <template>
   <v-app id="Trees">
     <!-- Sidebar -->
-    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="$store.state.theme == 'dark'" app :class="`${$store.state.theme == 'dark' ? 'grey darken-4' : ''} rounded-xl ml-2 mt-2`" style="height: auto;max-height: 97.5vh;">
+    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="$store.state.theme == 'dark'" app :class="`${$store.state.theme == 'dark' ? 'grey darken-4' : ''} rounded-xl ml-2 mt-2 elevation-5`" style="height: auto;max-height: 97.5vh;">
       <template v-slot:prepend>
         <v-list-item>
           <v-list-item-content class="text-center">
@@ -152,8 +152,13 @@
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main :class="`green ${$store.state.theme == 'dark' ? 'lighten-4' : 'lighten-4'}`">
-      <router-view class="pb-4 pl-0 pl-lg-3"></router-view>
+    <v-main :class="`gradient-animate`">
+      <div class="waves">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
+      <router-view class="pb-4 pl-0 pl-lg-3" style="z-index: 1;position: relative"></router-view>
     </v-main>
     
     <!-- loading overlay -->
@@ -430,4 +435,72 @@ export default {
 ::-webkit-scrollbar-thumb:hover {
   background: #71AF34;
 }
+
+/* Gradient Animate */
+.gradient-animate {
+  background: linear-gradient(315deg, #3D6036 3%, #70A14F 38%, #a7ea7b 68%, #76d239 98%);
+  animation: gradient 15s ease infinite;
+  background-size: 400% 400%;
+  background-attachment: fixed;
+}
+@keyframes gradient {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+.waves .wave {
+    background: rgb(255 255 255 / 25%);
+    border-radius: 1000% 1000% 0 0;
+    position: fixed;
+    width: 200%;
+    height: 12em;
+    animation: wave 10s -3s linear infinite;
+    transform: translate3d(0, 0, 0);
+    opacity: 0.8;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.waves .wave:nth-of-type(2) {
+    bottom: -1.25em;
+    animation: wave 18s linear reverse infinite;
+    opacity: 0.8;
+}
+
+.waves .wave:nth-of-type(3) {
+    bottom: -2.5em;
+    animation: wave 20s -1s reverse infinite;
+    opacity: 0.9;
+}
+
+@keyframes wave {
+    2% {
+        transform: translateX(1);
+    }
+
+    25% {
+        transform: translateX(-25%);
+    }
+
+    50% {
+        transform: translateX(-50%);
+    }
+
+    75% {
+        transform: translateX(-25%);
+    }
+
+    100% {
+        transform: translateX(1);
+    }
+}
+
 </style>
