@@ -168,7 +168,7 @@
             <v-icon color="red" @click="dialogAdd.show = false">mdi-close-circle</v-icon>
           </v-card-title>
 
-          <v-card-text>
+          <v-card-text class="px-0 px-lg-5">
             <!-- Loading -->
             <v-container
               v-if="dialogAdd.loading"
@@ -253,7 +253,7 @@
                           <span>Klik untuk memunculkan datepicker</span>
                         </v-tooltip>
                       </template>
-                      <v-list>
+                      <v-card class="rounded-xl pb-2">
                         <v-overlay :value="datepicker2Loading">
                           <div class="d-flex flex-column align-center justify-center">
                             <v-progress-circular
@@ -264,23 +264,21 @@
                             <p class="mt-2 mb-0">Updating available dates...</p>
                           </div>
                         </v-overlay>
-                        <v-list-item>
-                          <div class="d-flex flex-column align-center">
-                            <v-date-picker 
-                              color="green lighten-1 rounded-xl" 
-                              v-model="dataToStore.distribution_time"
-                              min="2022-11-24"
-                              max="2023-01-31"
-                              :allowed-dates="showingAvailableDates"
-                              :key="datepicker2Key"
-                            ></v-date-picker>
-                            <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
-                              <v-icon small class="mr-1">mdi-check-circle</v-icon>
-                              Set
-                            </v-btn>
-                          </div>
-                        </v-list-item>
-                      </v-list>
+                        <div class="d-flex flex-column align-center">
+                          <v-date-picker 
+                            color="green lighten-1 rounded-xl" 
+                            v-model="dataToStore.distribution_time"
+                            min="2022-11-24"
+                            max="2023-01-31"
+                            :allowed-dates="showingAvailableDates"
+                            :key="datepicker2Key"
+                          ></v-date-picker>
+                          <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                            <v-icon small class="mr-1">mdi-check-circle</v-icon>
+                            Set
+                          </v-btn>
+                        </div>
+                      </v-card>
                     </v-menu>
                 </v-col>
                 <!-- Tanggal Penilikan Lubang -->
