@@ -1195,7 +1195,7 @@
 
     <!-- Main Table -->
     <v-data-table
-      class="rounded-xl elevation-6 mx-3 pa-1 mb-5"
+      class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
       :headers="headers"
       :items="dataobject"
       :loading="loadtable"
@@ -1277,7 +1277,7 @@
                 style="max-width: 200px"
               ></v-select>
             </v-col>
-            <v-col cols="12" lg="6" class="d-flex align-center justify-end">
+            <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
               <v-btn
                 dark
                 rounded
@@ -1326,6 +1326,20 @@
                 </v-list>
               </v-menu>
             </v-col>
+            <v-fab-transition>
+              <v-btn
+                class="d-lg-none mb-16"
+                color="green"
+                dark
+                fixed
+                bottom
+                right
+                fab
+                @click="showAddModal()"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </v-fab-transition>
           </v-row>
           <v-row class="pb-4 px-2">
             <v-col cols="12" lg="6">
@@ -1865,6 +1879,10 @@ export default {
   },
   destroyed() {
     // this.$store.state.maintenanceOverlay = false
+    
+    // reset loading overlay
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
 
   methods: {
@@ -1939,6 +1957,8 @@ export default {
     },
     async initialize() {
       this.loadtable = true;
+      this.$store.state.loadingOverlayText = 'Getting sostam datas...'
+      this.$store.state.loadingOverlay = true
       await this.getTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total
@@ -1950,6 +1970,8 @@ export default {
         }
         this.table.pagination.page_options = pageOptions
       }).finally(() => {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
         this.loadtable = false
       })
     },
