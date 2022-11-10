@@ -348,9 +348,15 @@ export default {
     }
     this.initialize();
   },
+  destroyed() {
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
+  },
   methods: {
     async initialize() {
       this.loadtable = true;
+      this.$store.state.loadingOverlayText = 'Getting Dashboard datas...'
+      this.$store.state.loadingOverlay = true
       try {
         const response = await axios.get(this.BaseUrlGet + "Dashboard", {
           headers: {
@@ -384,6 +390,9 @@ export default {
           this.loadtable = false;
           this.dataobject = [];
         }
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
       }
     },
   },
