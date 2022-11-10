@@ -1,5 +1,5 @@
 <template>
-  <v-content
+  <v-main
     style="
       background-image: url('/images/BG_Login.jpg');
       background-repeat: no-repeat;
@@ -99,7 +99,7 @@
     >
       {{ text }}
     </v-snackbar>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
