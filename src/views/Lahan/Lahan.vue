@@ -1537,7 +1537,7 @@
       }"
     >
       <template v-slot:top>
-        <v-toolbar flat rounded="xl">
+        <v-row class="mx-2 my-0 mt-2 align-center">
           <!-- dropdown filter button -->
           <v-menu
             rounded="xl"
@@ -1599,7 +1599,7 @@
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
             label="Program Year"
-            class="mx-auto mx-lg-3"
+            class="ml-1 ml-lg-2"
             style="max-width: 200px"
           ></v-select>
 
@@ -1636,8 +1636,9 @@
             class="mx-3 mt-7 d-none d-md-block"
             style="max-width: 225px"
           ></v-select> -->
-          <v-spacer class="d-none d-md-block"></v-spacer>
+          <v-divider class="d-none d-md-block mx-2"></v-divider>
           <v-text-field
+            class="mt-2 mt-lg-0"
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
@@ -1664,7 +1665,7 @@
           >
             <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
           </v-btn>
-        </v-toolbar>
+        </v-row>
       </template>
 
       <!-- Color Status -->
