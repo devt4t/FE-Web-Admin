@@ -132,7 +132,9 @@
       <v-dialog v-model="dialogAddonly" max-width="1000px" persistent content-class="rounded-lg" scrollable>
         <v-card class="rounded-xl">
           <v-card-title class="mb-1 headermodalstyle">
-            <span class="headline">{{ formTitle }}</span>
+            <span>{{ formTitle }}</span>
+            <v-divider dark class="mx-2"></v-divider>
+            <v-icon color="red" @click="close">mdi-close-circle</v-icon>
           </v-card-title>
 
           <v-card-text class="pa-0 fontall">
@@ -153,7 +155,7 @@
 
               <v-stepper-items>
                 <!-- Main Data -->
-                <v-stepper-content class="pa-3" step="1">
+                <v-stepper-content class="pa-0 pa-lg-3" step="1">
                   <!-- Content -->
                   <v-container>
                     <v-row>
@@ -324,7 +326,7 @@
                                           v-on="{...menu, ...tooltip}"
                                         >
                                           <v-icon left> mdi-calendar </v-icon>
-                                          {{ dateFormat(dataToStore.date, 'dddd, DD MMMM Y') }}
+                                          {{ dateFormat(dataToStore.date, 'DD MMMM Y') }}
                                         </v-btn>
                                       </template>
                                       <span>Klik untuk memunculkan datepicker</span>
@@ -612,88 +614,81 @@
               </v-stepper-items>
             </v-stepper>
           </v-card-text>
-          <v-card-actions class="ma-2">
-            <!-- Footer Button -->
-            <v-row>
-              <v-col cols="3">
-                <v-btn
-                  class="mr-0 mr-md-1"
-                  color="red"
-                  rounded
-                  elevation="1"
-                  @click="close"
-                  outlined
-                >
-                  <v-icon class="d-none d-md-inline" left> mdi-close-circle-outline </v-icon>
-                  <v-icon class="d-inline d-md-none" center> mdi-close-circle-outline </v-icon>
-                  <span class="d-none d-md-inline-block"> 
-                    Cancel
-                  </span>
-                </v-btn>
-
-              </v-col>
-              <v-col cols="6" align="center">
-                <v-btn
-                  :disabled="e1 == 1"
-                  elevation="1"
-                  outlined
-                  color="primary"
-                  class="mr-1"
-                  rounded
-                  @click="stepperMove('-')"
-                >
-                  <v-icon class="d-none d-md-inline" left> mdi-chevron-left-circle-outline </v-icon>
-                  <v-icon class="d-inline d-md-none" center> mdi-chevron-left-circle-outline </v-icon>
-                  <span class="d-none d-md-inline-block"> 
-                    Back
-                  </span>
-                </v-btn>
-                <v-btn
-                  class="ml-1"
-                  elevation="1"
-                  rounded
-                  outlined
-                  color="primary"
-                  @click="stepperMove('+')"
-                  :disabled="
-                    (e1 == 1 && (!selectFF || !dataToStore.materi_2) ) || 
-                    (e1 == 2 && listFarmerParticipantChecked.length == 0) ||
-                    e1 == 3
-                  "
-                >
-                  <span class="d-none d-md-inline-block"> 
-                    Next
-                  </span>
-                  <v-icon class="d-none d-md-inline" right> mdi-chevron-right-circle-outline </v-icon>
-                  <v-icon class="d-inline d-md-none" center> mdi-chevron-right-circle-outline </v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="3" align="end">
-                <v-btn
-                  color="success"
-                  elevation="1"
-                  rounded
-                  outlined
-                  @click="saveFormFarmerTraining"
-                  :disabled="listFarmerParticipantChecked.length == 0 || !dataToStore.absensi_img || !dataToStore.materi_2 ||!dataToStore.dokumentasi_img"
-                >
-                  <v-progress-circular
-                    v-if="loadsave == true"
-                    :size="25"
-                    rounded
-                    :width="5"
-                    indeterminate
-                    color="green"
-                  >
-                  </v-progress-circular>
-                  <span v-if="loadsave == false" class="d-none d-md-inline-block"> 
-                    Save
-                  </span>
-                  <v-icon v-if="loadsave == false" class="d-none d-md-inline" right> mdi-checkbox-marked-circle-outline </v-icon>
-                  <v-icon v-if="loadsave == false" class="d-inline d-md-none" center> mdi-checkbox-marked-circle-outline </v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
+          <v-card-actions class="justify-space-between">
+          <!-- Footer Button -->
+            <v-btn
+              class="mr-0 mr-md-1"
+              color="red"
+              rounded
+              elevation="1"
+              @click="close"
+              outlined
+            >
+              <v-icon class="d-none d-md-inline" left> mdi-close-circle-outline </v-icon>
+              <v-icon class="d-inline d-md-none" center> mdi-close-circle-outline </v-icon>
+              <span class="d-none d-md-inline-block"> 
+                Cancel
+              </span>
+            </v-btn>
+            <div class="d-flex align-center justify-center">
+              <v-btn
+                :disabled="e1 == 1"
+                elevation="1"
+                outlined
+                color="primary"
+                class="mr-1"
+                rounded
+                @click="stepperMove('-')"
+              >
+                <v-icon class="d-none d-md-inline" left> mdi-chevron-left-circle-outline </v-icon>
+                <v-icon class="d-inline d-md-none" center> mdi-chevron-left-circle-outline </v-icon>
+                <span class="d-none d-md-inline-block"> 
+                  Back
+                </span>
+              </v-btn>
+              <v-btn
+                class="ml-1"
+                elevation="1"
+                rounded
+                outlined
+                color="primary"
+                @click="stepperMove('+')"
+                :disabled="
+                  (e1 == 1 && (!selectFF || !dataToStore.materi_2) ) || 
+                  (e1 == 2 && listFarmerParticipantChecked.length == 0) ||
+                  e1 == 3
+                "
+              >
+                <span class="d-none d-md-inline-block"> 
+                  Next
+                </span>
+                <v-icon class="d-none d-md-inline" right> mdi-chevron-right-circle-outline </v-icon>
+                <v-icon class="d-inline d-md-none" center> mdi-chevron-right-circle-outline </v-icon>
+              </v-btn>
+            </div>
+            <v-btn
+              color="success"
+              elevation="1"
+              rounded
+              outlined
+              @click="saveFormFarmerTraining"
+              :disabled="listFarmerParticipantChecked.length == 0 || !dataToStore.absensi_img || !dataToStore.materi_2 ||!dataToStore.dokumentasi_img"
+            >
+              <v-progress-circular
+                v-if="loadsave == true"
+                :size="25"
+                rounded
+                :width="5"
+                indeterminate
+                color="green"
+              >
+              </v-progress-circular>
+              <span v-if="loadsave == false" class="d-none d-md-inline-block"> 
+                Save
+              </span>
+              <v-icon v-if="loadsave == false" class="d-none d-md-inline" right> mdi-checkbox-marked-circle-outline </v-icon>
+              <v-icon v-if="loadsave == false" class="d-inline d-md-none" center> mdi-checkbox-marked-circle-outline </v-icon>
+            </v-btn>
           </v-card-actions>
 
           <!-- <v-card-actions v-if="load == false">
@@ -1245,13 +1240,27 @@
             ></v-text-field>
             <v-btn
               dark
-              class="mb-2 mr-1 mt-2 mt-lg-0"
+              class="mb-2 mr-1 mt-2 mt-lg-0 d-none d-lg-inline-block"
               @click="showAddModal()"
               color="green"
               rounded
             >
               <v-icon small>mdi-plus</v-icon> Add
             </v-btn>
+            <v-fab-transition>
+              <v-btn
+                class="d-lg-none mb-16"
+                color="green"
+                dark
+                fixed
+                bottom
+                right
+                fab
+                @click="showAddModal()"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </v-fab-transition>
           </v-row>
       </template>
 
