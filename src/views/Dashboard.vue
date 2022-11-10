@@ -55,7 +55,7 @@
                     {{ data1.Judul }}
                   </p>
                   <h3 class="fontall">
-                    {{ data1.Count }}
+                    {{ numberFormat(data1.Count) }}
                   </h3>
                 </div>
               </v-col>
@@ -71,7 +71,7 @@
                     {{ data2.Judul }}
                   </p>
                   <h3 class="fontall">
-                    {{ data2.Count }}
+                    {{ numberFormat(data2.Count) }}
                   </h3>
                 </div>
               </v-col>
@@ -87,7 +87,7 @@
                     {{ data3.Judul }}
                   </p>
                   <h3 class="fontall">
-                    {{ data3.Count }}
+                    {{ numberFormat(data3.Count) }}
                   </h3>
                 </div>
               </v-col>
@@ -336,7 +336,7 @@ export default {
     fullnameadmin: "",
     nameadmin: "",
   }),
-  created() {
+  mounted() {
     this.authtoken = localStorage.getItem("token");
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
     this.User = JSON.parse(localStorage.getItem("User"));
@@ -394,6 +394,9 @@ export default {
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
       }
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
     },
   },
 };
