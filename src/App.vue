@@ -186,6 +186,14 @@
         </h4>
       </div>
     </v-overlay>
+
+    <!-- lightbox ~ image preview -->
+    <vue-easy-lightbox
+      :visible="$store.state.lightbox.show"
+      :imgs="$store.state.lightbox.imgs"
+      :index="$store.state.lightbox.index"
+      @hide="() => { $store.state.lightbox.show = false; }"
+    ></vue-easy-lightbox>
   </v-app>
 </template>
 

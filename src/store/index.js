@@ -7,6 +7,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    lightbox: {
+      imgs: '',
+      index: 0,
+      show: false,
+    },
     loadingOverlay: false,
     loadingOverlayText: null,
     maintenanceOverlay: false,

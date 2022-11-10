@@ -13,14 +13,6 @@
       </v-alert>
     </div>
 
-    <!-- lightbox ~ image preview -->
-    <vue-easy-lightbox
-      :visible="preview.lightbox.isVisible"
-      :imgs="preview.lightbox.imgs"
-      :index="preview.lightbox.index"
-      @hide="() => { preview.lightbox.isVisible = false; }"
-    ></vue-easy-lightbox>
-
     <!-- Modal Filter Area -->
     <v-dialog v-model="dialogFilterArea" max-width="500px">
       <v-card rounded="xl">
@@ -1160,7 +1152,7 @@
                         height="250"
                         v-bind:src="defaultItem.gambarshow1"
                         class="my-1 mb-4 cursor-pointer"
-                            @click="() => {preview.lightbox.imgs = defaultItem.gambarshow1; preview.lightbox.index = 0; preview.lightbox.isVisible = true}"
+                            @click="() => {showLightbox(defaultItem.gambarshow1, 0)}"
                       ></v-img>
                       <div>Foto Foto</div>
                       <v-carousel 
@@ -1175,14 +1167,14 @@
                           <v-img
                             height="250"
                             v-bind:src="defaultItem.gambarshow2"
-                            @click="() => {preview.lightbox.imgs = [defaultItem.gambarshow2, defaultItem.gambarshow3]; preview.lightbox.index = 0; preview.lightbox.isVisible = true}"
+                            @click="() => {showLightbox([defaultItem.gambarshow2, defaultItem.gambarshow3], 0)}"
                           ></v-img>
                         </v-carousel-item>
                         <v-carousel-item>
                           <v-img
                             height="250"
                             v-bind:src="defaultItem.gambarshow3"
-                            @click="() => {preview.lightbox.imgs = [defaultItem.gambarshow2, defaultItem.gambarshow3]; preview.lightbox.index = 1; preview.lightbox.isVisible = true}"
+                            @click="() => {showLightbox([defaultItem.gambarshow2, defaultItem.gambarshow3], 1)}"
                           ></v-img>
                         </v-carousel-item>
                       </v-carousel>
@@ -1839,13 +1831,6 @@ export default {
     ph_form_no_temp: "",
 
     program_year: '',
-    preview: {
-      lightbox: {
-        isVisible: false,
-        imgs: '',
-        index: 0
-      }
-    },
   }),
   watch: {
     'program_year': {
@@ -3604,6 +3589,15 @@ export default {
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    // Showing Lightbox
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs
+      
+      if (index) this.$store.state.lightbox.index = index
+      else this.$store.state.lightbox.index = 0
+
+      this.$store.state.lightbox.show = true
     },
   },
 };

@@ -24,14 +24,6 @@
       </v-alert>
     </div>
 
-    <!-- lightbox ~ image preview -->
-    <vue-easy-lightbox
-      :visible="preview.lightbox.isVisible"
-      :imgs="preview.lightbox.imgs"
-      :index="preview.lightbox.index"
-      @hide="() => { preview.lightbox.isVisible = false; }"
-    ></vue-easy-lightbox>
-
     <!-- MODAL -->
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px">
@@ -970,7 +962,7 @@
                             class="rounded-xl cursor-pointer"
                             transition="fade-transition"
                             :src="absensiImg"
-                            @click="() => {preview.lightbox.imgs = dialogDetailData.absent; preview.lightbox.index = aIIndex; preview.lightbox.isVisible = true}"
+                            @click="() => {showLightbox(dialogDetailData.absent, aIIndex);}"
                             v-bind="attrs"
                             v-on="on"
                           >
@@ -994,7 +986,7 @@
                         class="rounded-xl cursor-pointer mb-2 elevation-5"
                         transition="fade-transition"
                         :src="(dokumentasiFTUrl+dialogDetailData.documentation_photo)"
-                        @click="() => {preview.lightbox.imgs = (dokumentasiFTUrl+dialogDetailData.documentation_photo); preview.lightbox.index = 0; preview.lightbox.isVisible = true}"
+                        @click="() => {showLightbox((dokumentasiFTUrl+dialogDetailData.documentation_photo), 0);}"
                         v-bind="attrs"
                         v-on="on"
                       >
@@ -1592,11 +1584,6 @@ export default {
       addParticipant: {
         modal: false,
         data: {},
-      },
-      lightbox: {
-        isVisible: false,
-        imgs: '',
-        index: 0
       }
     },
     loading: {
@@ -2646,6 +2633,15 @@ export default {
       let step = parseInt(this.e1)
       if (type == '+') this.e1 = step += 1
       else if (type == '-') this.e1 = step -= 1
+    },
+    // Showing Lightbox
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs
+      
+      if (index) this.$store.state.lightbox.index = index
+      else this.$store.state.lightbox.index = 0
+
+      this.$store.state.lightbox.show = true
     },
     // Temporary
     deleteTemporary(index) {
