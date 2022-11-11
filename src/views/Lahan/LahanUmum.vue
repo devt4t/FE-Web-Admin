@@ -700,7 +700,6 @@ export default {
                     {text: 'FC', value: 'fc_name'},
                     {text: 'PIC', value: 'pic_lahan'},
                     {text: 'Luas Lahan', value: 'luas_lahan'},
-                    {text: 'Tutupan', value: 'tutupan_lahan'},
                     {text: 'Pola Tanam', value: 'pattern_planting'},
                     {text: 'Tahun Program', value: 'created_at'},
                     {text: 'Status', value: 'is_verified'},

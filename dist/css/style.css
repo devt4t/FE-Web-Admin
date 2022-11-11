@@ -1,0 +1,87 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body * {
+  font-family: 'Poppins', sans-serif;
+}
+
+.fontall {
+    font-family: "Poppins", sans-serif;
+}
+
+.v-application .headline {
+    font-family: "Poppins", sans-serif!important;
+}
+
+.headermodalstyle {
+    font-family: "Poppins", sans-serif!important;
+    font-size: 50px;
+    margin-bottom: 15px;
+    /* text-shadow: 3px 3px 3px #aaa9a9; */
+    background-color: rgb(67, 68, 68);
+    color: rgb(252, 247, 247);
+}
+
+.footernav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    /* color: white; */
+    text-align: center;
+}
+
+.v-sheet--offset {
+    top: -29px;
+    position: relative;
+}
+
+.apexcharts-legend {
+    padding-left: 2px !important;
+    margin-left: 1px !important;
+}
+
+.apexcharts-legend-text {
+    /* font-size: 10px !important; */
+}
+
+.apexcharts-graphical {
+    margin-right: 30px !important;
+}
+
+.v-list-item__icon {
+    margin-right: 20px !important;
+}
+
+.v-list-group__header__append-icon {
+    margin-left: 2px !important;
+}
+
+.v-list-item {
+    padding-left: 10px !important;
+    padding-right: 8px !important;
+
+}
+
+.itemparent {
+    font-size: 14px !important;
+}
+
+.itemchild {
+    padding-left: 45px !important;
+    font-size: 14px !important;
+}
+
+.invGmbr {}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.v-dialog.v-dialog--active.v-dialog--scrollable {
+    box-shadow: unset!important;
+}
