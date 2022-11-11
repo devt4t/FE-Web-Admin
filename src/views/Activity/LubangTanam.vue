@@ -1201,33 +1201,41 @@
                               <th class="text-left" style="font-size: 14px">
                                 Nama Petani
                               </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_petani }}
-                              </th>
+                              <td class="text-left" style="font-size: 14px">
+                                <strong>{{ defaultItem.nama_petani }}</strong>
+                              </td>
                             </tr>
                             <tr>
                               <th class="text-left" style="font-size: 14px">
                                 Nama FF
                               </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_ff }}
-                              </th>
+                              <td class="text-left" style="font-size: 14px">
+                                <strong>{{ defaultItem.nama_ff }}</strong>
+                              </td>
                             </tr>
                             <tr>
                               <th class="text-left" style="font-size: 14px">
                                 No Lahan
                               </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.lahan_no }}
-                              </th>
+                              <td class="text-left" style="font-size: 14px">
+                                <strong>{{ defaultItem.lahan_no }}</strong>
+                              </td>
                             </tr>
                             <tr>
                               <th class="text-left" style="font-size: 14px">
                                 Jumlah Lubang
                               </th>
+                              <td class="text-left" style="font-size: 14px">
+                                <strong>{{ numberFormat(defaultItem.total_holes) }}</strong>
+                              </td>
+                            </tr>
+                            <tr>
                               <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.total_holes }}
+                                Jumlah Lubang Standar
                               </th>
+                              <td class="text-left" style="font-size: 14px">
+                                <strong>{{ numberFormat(defaultItem.counter_hole_standard) }}</strong>
+                              </td>
                             </tr>
                             <tr>
                               <th class="text-left" style="font-size: 14px">
@@ -1490,7 +1498,11 @@
 
       <!-- Total Lubang -->
       <template v-slot:item.total_holes="{ item }">
-          {{ numberFormat(item.total_holes) }} / 0
+          {{ numberFormat(item.total_holes) }}
+      </template>
+      <!-- Total Lubang Standard -->
+      <template v-slot:item.counter_hole_standard="{ item }">
+          {{ numberFormat(item.counter_hole_standard) }}
       </template>
       <!-- Total Bibit -->
       <template v-slot:item.total_bibit="{ item }">
@@ -1647,7 +1659,8 @@ export default {
       { text: "Field Facilitator", value: "nama_ff"},
       { text: "Nama Petani", value: "nama_petani"},
       { text: "No Lahan", align: "start", value: "lahan_no"},
-      { text: "Total Lubang / Standar", value: "total_holes", align: 'center' },
+      { text: "Total Lubang", value: "total_holes", align: 'center' },
+      { text: "Total Lubang Standar", value: "counter_hole_standard", align: 'center' },
       { text: "Total Bibit", value: "total_bibit", align: 'center' },
       { text: "Tahun Tanam", value: "planting_year", align: 'center'},
       { text: "Status", value: "is_validate", align: 'center' },
