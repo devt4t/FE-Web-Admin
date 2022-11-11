@@ -2249,7 +2249,7 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result.data);
+        // console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result.data;
           this.valueMUExcel = this.valueMU;

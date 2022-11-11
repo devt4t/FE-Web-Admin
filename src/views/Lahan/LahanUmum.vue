@@ -394,8 +394,6 @@
                                             disabled
                                             rounded class=""
                                             color="green white--text"
-                                            v-bind="attrs"
-                                            v-on="on"
                                         >
                                             {{ dateFormat(inputs.dateHoleSurveillance.model, 'ddd, DD MMMM Y') }}
                                         </v-btn>
@@ -445,8 +443,6 @@
                                             rounded class=""
                                             color="green white--text"
                                             disabled
-                                            v-bind="attrs"
-                                            v-on="on"
                                         >
                                             {{ dateFormat(inputs.dateRealization.model, 'ddd, DD MMMM Y') }}
                                         </v-btn>
@@ -465,7 +461,7 @@
                                 color="red"
                                 rounded
                                 elevation="1"
-                                @click="close"
+                                @click="closeActions('dialogs', 'createData')"
                                 outlined
                             >
                                 <v-icon class="d-none d-md-inline" left> mdi-close-circle-outline </v-icon>
@@ -790,6 +786,9 @@ export default {
             }
         },
         // Utilities
+        closeActions(type, name) {
+            this[type][name].show = false
+        },
         dateFormat(date, format) {
             return moment(date).format(format)
         },
