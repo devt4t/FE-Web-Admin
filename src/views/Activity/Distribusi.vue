@@ -40,12 +40,14 @@
                     </v-card-title>
                     <v-card-text>
                         <!-- loading -->
-                        <div v-if="calendar.detailBibit.loading" class="d-flex flex-column align-center justify-center">
+                        <div v-if="calendar.detailBibit.loading" class="d-flex flex-column align-center justify-center" style="min-height: 250px">
                             <v-progress-circular
                                 indeterminate
                                 color="green"
-                                size="64"
+                                size="76"
+                                width="7"
                             ></v-progress-circular>
+                            <p class="mt-2">Getting Seeds Data...</p>
                         </div>
                         <div v-else>
                             <v-row v-if="calendar.detailBibit.datas">
@@ -138,6 +140,42 @@
                                     </v-simple-table>
                                 </v-col>
                             </v-row>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+            <!-- Detail Seed Modal -->
+            <v-dialog 
+                content-class="rounded-xl elevation-0" 
+                top
+                max-width="1000px" 
+                scrollable 
+                transition="dialog-top-transition"
+                v-model="calendar.detailPeriodFF.show" 
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-sprout
+                            </v-icon>
+                            Seed Details
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="calendar.detailPeriodFF.show = false">
+                            mdi-close-circle
+                        </v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- loading -->
+                        <div v-if="calendar.detailPeriodFF.loading" class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="green"
+                                size="72"
+                                width="7"
+                            ></v-progress-circular>
+                            <p class="mt-2">Getting FF Period Data...</p>
                         </div>
                     </v-card-text>
                 </v-card>
@@ -269,6 +307,7 @@
                                 offset-y
                                 rounded="xl"
                             >
+                            <!-- Card Detail Event -->
                             <v-card
                                 color="grey lighten-4"
                                 min-width="350px"
@@ -310,7 +349,7 @@
                                                                 v-bind="attrs"
                                                                 v-on="on"
                                                                 class="cursor-pointer" 
-                                                                @click="showDetailTotalBibit(calendar.selectedEvent, 'nursery')"
+                                                                @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery')"
                                                             >
                                                                 {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
                                                             </strong>
@@ -339,7 +378,21 @@
                                             <tr v-for="(detailData, detailIndex) in calendar.selectedEvent.details" :key="detailIndex">
                                                 <td>{{ detailIndex + 1 }}</td>
                                                 <td>{{ detailData.mu_name }}</td>
-                                                <td>{{ detailData.ff_name }}</td>
+                                                <td>
+                                                    <v-tooltip top>
+                                                        Click for preview detailed ff period
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <strong 
+                                                                v-on="on"
+                                                                v-bind="attrs"
+                                                                class="cursor-pointer"
+                                                                @click="calendarShowDetailFFPeriod(detailData)"
+                                                            >
+                                                                {{ detailData.ff_name }}
+                                                            </strong>
+                                                        </template>
+                                                    </v-tooltip>
+                                                </td>
                                                 <td align="center">
                                                     <v-tooltip top>
                                                         Click for preview detailed seed
@@ -347,7 +400,7 @@
                                                             <strong 
                                                                 v-on="on"
                                                                 v-bind="attrs"
-                                                                @click="showDetailTotalBibit(detailData, 'ff')"
+                                                                @click="calendarShowDetailTotalBibit(detailData, 'ff')"
                                                                 class="cursor-pointer"
                                                             >{{ numberFormat(detailData.total_bibit_sostam) }}</strong>
                                                         </template>
@@ -676,6 +729,11 @@ export default {
                 loading: false,
                 datas : null
             },
+            detailPeriodFF: {
+                show: false,
+                loading: false,
+                datas : null
+            },
             events: [],
             focus: '',
             loading: false,
@@ -805,7 +863,6 @@ export default {
         }
     },
     methods: {
-        // Calendar
         calendarGetEventColor (event) {
             return event.color
         },
@@ -821,6 +878,48 @@ export default {
         },
         calendarNext () {
             this.$refs.calendar.next()
+        },
+        async calendarShowDetailFFPeriod(data) {
+            const params = {
+                ff_no: data.ff_no,
+                program_year: data.planting_year
+            }
+
+            alert(JSON.stringify(params))
+        },
+        async calendarShowDetailTotalBibit(datas, type) {
+            let ff_no = []
+            let program_year = ''
+            if (type == 'nursery') {
+                await datas.details.forEach(val => {
+                    ff_no.push(val.ff_no)
+                    if (program_year == '') {
+                        program_year = val.planting_year
+                    }
+                })
+            } else if (type == 'ff') {
+                ff_no.push(datas.ff_no)
+                program_year = datas.planting_year
+            }
+            this.calendar.detailBibit.show = true
+            this.calendar.detailBibit.loading = true
+            
+            let url = localStorage.getItem("BaseUrlGet") + 'DistributionSeedDetail?' + new URLSearchParams({
+                ff_no: ff_no.toString(),
+                program_year: program_year
+            })
+            await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ` + localStorage.getItem("token")
+                },
+            }).then(res => {
+                this.calendar.detailBibit.datas = res.data.data.result
+            }).catch(err => {
+                console.log(err.response)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.calendar.detailBibit.loading = false
+            })
         },
         calendarShowEvent ({ nativeEvent, event }) {
             const open = () => {
@@ -1021,40 +1120,6 @@ export default {
                 }
             }
         },
-        async showDetailTotalBibit(datas, type) {
-            let ff_no = []
-            let program_year = ''
-            if (type == 'nursery') {
-                await datas.details.forEach(val => {
-                    ff_no.push(val.ff_no)
-                    if (program_year == '') {
-                        program_year = val.planting_year
-                    }
-                })
-            } else if (type == 'ff') {
-                ff_no.push(datas.ff_no)
-                program_year = datas.planting_year
-            }
-            this.calendar.detailBibit.show = true
-            this.calendar.detailBibit.loading = true
-            
-            let url = localStorage.getItem("BaseUrlGet") + 'DistributionSeedDetail?' + new URLSearchParams({
-                ff_no: ff_no.toString(),
-                program_year: program_year
-            })
-            await axios.get(url, {
-                headers: {
-                    Authorization: `Bearer ` + localStorage.getItem("token")
-                },
-            }).then(res => {
-                this.calendar.detailBibit.datas = res.data.data.result
-            }).catch(err => {
-                console.log(err.response)
-            }).finally(() => {
-                this.calendar.detailBibit.loading = false
-                console.log('finish')
-            })
-        }
     }
 }
 </script>
