@@ -28,7 +28,7 @@
       <!-- Filters Panel -->
       <v-expansion-panel class="rounded-xl ">
         <v-expansion-panel-header>
-          <v-btn dark rounded color="info" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Set Progression Content</v-btn>
+          <v-btn dark rounded color="green" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Set Progression Content</v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row class="mx-2 pt-2">
