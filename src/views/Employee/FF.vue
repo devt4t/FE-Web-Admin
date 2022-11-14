@@ -477,24 +477,79 @@
       </template>
       <!-- Actions Column -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-3" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          class="mr-2"
-          @click="editItem(item)"
-          color="warning"
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
         >
-          mdi-pencil
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDDelete == true"
-          @click="deleteItem(item)"
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-list class="d-flex flex-column align-stretch">
+            <v-list-item>
+              <v-btn
+                dark
+                rounded
+                @click="showDetail(item)"
+                color="info"
+                block
+              >
+              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                  mdi-information-outline
+              </v-icon>
+                Detail
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'">
+              <v-btn
+                vi
+                dark
+                block
+                rounded
+                @click="editItem(item)"
+                color="warning"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+                Edit
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDDelete == true && item.validation != 1) || User.role_group == 'IT'">
+              <v-btn
+                dark
+                rounded
+                @click="deleteItem(item)"
+                color="red"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-delete
+              </v-icon>
+                Delete
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="User.role_group == 'IT'">
+              <v-btn
+                dark
+                rounded
+                @click="nonactivateFF(item)"
+                color="red"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-power
+              </v-icon>
+                Nonactivate
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </v-data-table>
 
@@ -551,7 +606,7 @@ export default {
       { text: "Desa", value: "village" },
       { text: "Kecamatan", value: "kecamatan" },
       { text: "Status", value: "active", align: 'center' },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     dataobject: [],
     defaultItem: {
@@ -1219,6 +1274,9 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
+    nonactivateFF(data) {
+      alert(JSON.stringify(data.ff_no))
+    }
   },
 };
 </script>
