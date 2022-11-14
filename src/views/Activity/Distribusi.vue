@@ -142,9 +142,16 @@
                             </v-row>
                         </div>
                     </v-card-text>
+                    <v-card-actions class="">
+                        <v-btn rounded color="red white--text pr-3" @click="calendar.detailBibit.show = false">
+                            <v-icon class="mr-1">mdi-close-circle</v-icon>
+                            Close
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                    </v-card-actions>
                 </v-card>
             </v-dialog>
-            <!-- Detail Seed Modal -->
+            <!-- Detail Period FF Modal -->
             <v-dialog 
                 content-class="rounded-xl elevation-0" 
                 top
@@ -157,9 +164,9 @@
                     <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
                         <span class="d-flex align-center">
                             <v-icon color="white" class="mr-1">
-                                mdi-sprout
+                                mdi-timer
                             </v-icon>
-                            Seed Details
+                            Distribution Period
                         </span>
                         <v-divider class="mx-2" dark></v-divider>
                         <v-icon color="white" @click="calendar.detailPeriodFF.show = false">
@@ -174,10 +181,89 @@
                                 color="green"
                                 size="72"
                                 width="7"
+                                class="mt-10"
                             ></v-progress-circular>
-                            <p class="mt-2">Getting FF Period Data...</p>
+                            <p class="mt-2">{{ calendar.detailPeriodFF.loadingText }}</p>
+                        </div>
+                        <div v-if="calendar.detailPeriodFF.loading == false && calendar.detailPeriodFF.datas">
+                            <v-row>
+                                <v-col cols="12" lg="6">
+                                    <v-simple-table>
+                                        <tbody>
+                                            <tr>
+                                                <th>Field Facilitator</th>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.FF.name }} <br><small>{{ calendar.detailPeriodFF.datas.FF.ff_no }}</small></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Field Coordinator</th>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.FC.name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Distribution Location</th>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.period.distribution_location }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-col>
+                                <v-col cols="12" lg="6">
+                                    <v-simple-table>
+                                        <tbody>
+                                            <tr>
+                                                <th>Planting Hole Surveillance</th>
+                                                <td>:</td>
+                                                <td>{{ dateFormat(calendar.detailPeriodFF.newPeriod.hole_time, 'DD MMMM Y') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Distribution</th>
+                                                <td>:</td>
+                                                <td>
+                                                    <v-menu offset-x transition="slide-x-transition" rounded="xl">
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <div class="d-flex flex-column align-center">
+                                                                <v-btn 
+                                                                    rounded class=""
+                                                                    color="green white--text"
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+                                                                >
+                                                                    {{ dateFormat(calendar.detailPeriodFF.newPeriod.distribution_time, 'DD MMMM Y') }}
+                                                                </v-btn>
+                                                            </div>
+                                                        </template>
+                                                        <v-date-picker
+                                                            v-model="calendar.detailPeriodFF.newPeriod.distribution_time"
+                                                            color="green"
+                                                            class="rounded-xl"
+                                                        ></v-date-picker>
+                                                    </v-menu>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Planting Realization</th>
+                                                <td>:</td>
+                                                <td>{{ dateFormat(calendar.detailPeriodFF.newPeriod.planting_time, 'DD MMMM Y') }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-col>
+                            </v-row>
                         </div>
                     </v-card-text>
+                    <v-card-actions class="" v-if="calendar.detailPeriodFF.loading == false && calendar.detailPeriodFF.datas">
+                        <v-btn rounded color="red white--text pr-3" @click="calendar.detailPeriodFF.show = false">
+                            <v-icon class="mr-1">mdi-close-circle</v-icon>
+                            Close
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn rounded color="green white--text pr-3" v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD')" @click="calendarUpdateDetailFFPeriod">
+                            <v-icon class="mr-1">mdi-content-save-check</v-icon>
+                            Save
+                        </v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-dialog>
         <!-- END: MODAL -->
@@ -709,6 +795,22 @@
                 </v-expansion-panel>
             </v-expansion-panels>
         </v-container>
+
+        <!-- Snackbar -->
+        <v-snackbar
+        v-model="snackbar.show"
+        :color="snackbar.color"
+        :timeout="snackbar.timeout"
+        rounded="xl"
+        >
+        <div class="d-flex justify-between">
+            <p class="mb-0">
+            {{ snackbar.text }}
+            </p>
+            <v-spacer></v-spacer>
+            <v-icon small class="pl-1" @click="snackbar.show = false">mdi-close-circle</v-icon>
+        </div>
+        </v-snackbar>
     </div>
 </template>
 
@@ -732,7 +834,13 @@ export default {
             detailPeriodFF: {
                 show: false,
                 loading: false,
-                datas : null
+                loadingText: '',
+                datas : null,
+                newPeriod: {
+                    distribution_time: '',
+                    hole_time: '',
+                    planting_time: '',
+                }
             },
             events: [],
             focus: '',
@@ -812,6 +920,12 @@ export default {
                 model: 0
             },
         },
+        snackbar: {
+            color: '',
+            show: false,
+            text: '',
+            timeout: 10000,
+        },
         User: JSON.parse(localStorage.getItem("User"))
     }),
     async mounted() {
@@ -860,6 +974,12 @@ export default {
                     await this.getPackingLabelTableData()
                 }
             }  
+        },
+        'calendar.detailPeriodFF.newPeriod.distribution_time' : {
+            handler(newValue) {
+                this.calendar.detailPeriodFF.newPeriod.hole_time = moment(newValue).subtract(14, 'days').format('Y-MM-DD')
+                this.calendar.detailPeriodFF.newPeriod.planting_time = moment(newValue).add(7, 'days').format('Y-MM-DD')
+            }
         }
     },
     methods: {
@@ -884,9 +1004,86 @@ export default {
                 ff_no: data.ff_no,
                 program_year: data.planting_year
             }
-
-            alert(JSON.stringify(params))
+            this.calendar.detailPeriodFF.show = true
+            this.calendar.detailPeriodFF.loading = true
+            this.calendar.detailPeriodFF.loadingText = 'Getting Distribution Period Data...'
+            axios.get(`${this.apiConfig.baseUrl}DistributionPeriodDetail?${new URLSearchParams(params)}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.token
+                    },
+                }
+            ).then(res => {
+                const response = res.data.data.result
+                console.log(response)
+                this.calendar.detailPeriodFF.datas = response
+                this.calendar.detailPeriodFF.newPeriod.distribution_time = this.dateFormat(response.period.distribution_time, 'Y-MM-DD')
+                this.calendar.detailPeriodFF.newPeriod.hole_time = response.period.pembuatan_lubang_tanam
+                this.calendar.detailPeriodFF.newPeriod.planting_time = response.period.planting_time
+            }).catch(err => {
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.calendar.detailPeriodFF.loading = false
+                this.calendar.detailPeriodFF.loadingText = ''
+            })
         },
+        async calendarUpdateDetailFFPeriod() {
+            const datapost = {
+                form_no: this.calendar.detailPeriodFF.datas.sostam.form_no,
+                ff_no: this.calendar.detailPeriodFF.datas.sostam.ff_no,
+                farmer_no: this.calendar.detailPeriodFF.datas.sostam.farmer_no,
+                no_lahan: this.calendar.detailPeriodFF.datas.sostam.no_lahan,
+                program_year: this.calendar.detailPeriodFF.datas.sostam.planting_year,
+                pembuatan_lubang_tanam: this.calendar.detailPeriodFF.newPeriod.hole_time,
+                distribution_time: this.calendar.detailPeriodFF.newPeriod.distribution_time,
+                planting_time: this.calendar.detailPeriodFF.newPeriod.planting_time,
+                distribution_location: this.calendar.detailPeriodFF.datas.period.distribution_location,
+            };
+            console.log(datapost);
+            try {
+                this.calendar.detailPeriodFF.loading = true
+                this.calendar.detailPeriodFF.loadingText = 'Updating Distribution Period...'
+
+                await axios.post(
+                    this.apiConfig.baseUrl + "UpdateSosialisasiTanamPeriod",
+                    datapost,
+                    {
+                        headers: {
+                        Authorization: `Bearer ` + this.apiConfig.token,
+                        },
+                    }
+                ).then(response => {
+                    if (response.data.data.result == "success") {
+                        this.snackbar.show = true
+                        this.snackbar.color = "green"
+                        this.snackbar.text = "Update distribution period success!"
+
+                        this.calendar.detailPeriodFF.show = false
+                        this.calendar.selectedOpen = false
+
+                        const calendar = {
+                            start: this.$refs.calendar.renderProps.start,
+                            end: this.$refs.calendar.renderProps.end,
+                        }
+                        // refresh calendar
+                        this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                        // refresh packing label table
+                        this.getPackingLabelTableData()
+                    } else {
+                        this.snackbar.show = true
+                        this.snackbar.color = "red"
+                        this.snackbar.text = "Update distribution period failed!"
+                    }
+                }).catch(err => {
+                    this.sessionEnd(err)
+                })
+            } catch (error) {
+                console.log(error)
+            } finally {
+                this.calendar.detailPeriodFF.loading = false
+                this.calendar.detailPeriodFF.loadingText = ''
+            }
+            },
         async calendarShowDetailTotalBibit(datas, type) {
             let ff_no = []
             let program_year = ''
