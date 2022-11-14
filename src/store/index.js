@@ -2,6 +2,7 @@ import moment from 'moment/moment'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {version} from '../../package.json'
+import TaskForceEmail from './taskForceTeam/listEmail'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     programYear: {
       model: '2022',
       options: ['2021', '2022', '2023']
+    },
+    taskForceTeam: {
+      emails: TaskForceEmail
     }
   },
   mutations: {
