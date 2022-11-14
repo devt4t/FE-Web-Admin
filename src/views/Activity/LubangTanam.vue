@@ -1530,11 +1530,11 @@
             </v-icon>
           </template>
 
-          <v-list class="d-flex flex-column align-center">
+          <v-list class="d-flex flex-column align-stretch">
             <v-list-item>
               <v-btn
                 dark
-                class="w-100"
+                block
                 rounded
                 @click="showDetail(item)"
                 color="info"
@@ -1560,17 +1560,18 @@
                 Edit
               </v-btn>
             </v-list-item> -->
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+            <v-list-item v-if="User.role_group == 'IT' && item.is_validate == 1">
               <v-btn
+                block
                 dark
                 rounded
                 @click="showDeleteModal(item)"
                 color="red"
               >
               <v-icon class="mr-1" small color="white">
-                mdi-delete
+                mdi-power
               </v-icon>
-                Delete
+                Unverif
               </v-btn>
             </v-list-item>
           </v-list>
