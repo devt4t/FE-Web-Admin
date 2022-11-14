@@ -142,7 +142,7 @@
                             </v-row>
                         </div>
                     </v-card-text>
-                    <v-card-actions class="">
+                    <v-card-actions v-if="calendar.detailBibit.loading == false" class="">
                         <v-btn rounded color="red white--text pr-3" @click="calendar.detailBibit.show = false">
                             <v-icon class="mr-1">mdi-close-circle</v-icon>
                             Close
@@ -193,7 +193,7 @@
                                             <tr>
                                                 <th>Field Facilitator</th>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailPeriodFF.datas.FF.name }} <br><small>{{ calendar.detailPeriodFF.datas.FF.ff_no }}</small></td>
+                                                <td><small>{{ calendar.detailPeriodFF.datas.FF.ff_no }}</small><br>{{ calendar.detailPeriodFF.datas.FF.name }} </td>
                                             </tr>
                                             <tr>
                                                 <th>Field Coordinator</th>
@@ -203,7 +203,19 @@
                                             <tr>
                                                 <th>Distribution Location</th>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailPeriodFF.datas.period.distribution_location }}</td>
+                                                <td  v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+                                                    <v-textarea
+                                                        v-model="calendar.detailPeriodFF.newPeriod.distribution_location"
+                                                        rows="3"
+                                                        dense
+                                                        rounded
+                                                        outlined
+                                                        hide-details
+                                                        class="text-caption my-1"
+                                                        :rules="[(v) => !!v || 'Field is required']"
+                                                    ></v-textarea>
+                                                </td>
+                                                <td v-else>{{ calendar.detailPeriodFF.newPeriod.distribution_location }}</td>
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
@@ -219,7 +231,7 @@
                                             <tr>
                                                 <th>Distribution</th>
                                                 <td>:</td>
-                                                <td>
+                                                <td v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
                                                     <v-menu offset-x transition="slide-x-transition" rounded="xl">
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <div class="d-flex flex-column align-center">
@@ -228,7 +240,6 @@
                                                                     color="green white--text"
                                                                     v-bind="attrs"
                                                                     v-on="on"
-                                                                    :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
                                                                 >
                                                                     {{ dateFormat(calendar.detailPeriodFF.newPeriod.distribution_time, 'DD MMMM Y') }}
                                                                 </v-btn>
@@ -241,6 +252,7 @@
                                                         ></v-date-picker>
                                                     </v-menu>
                                                 </td>
+                                                <td v-else>{{ dateFormat(calendar.detailPeriodFF.newPeriod.distribution_time, 'DD MMMM Y') }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Planting Realization</th>
@@ -259,7 +271,7 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="green white--text pr-3" v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD')" @click="calendarUpdateDetailFFPeriod">
+                        <v-btn rounded color="green white--text pr-3" v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" @click="calendarUpdateDetailFFPeriod ">
                             <v-icon class="mr-1">mdi-content-save-check</v-icon>
                             Save
                         </v-btn>
@@ -840,6 +852,7 @@ export default {
                     distribution_time: '',
                     hole_time: '',
                     planting_time: '',
+                    distribution_location: '',
                 }
             },
             events: [],
@@ -1018,6 +1031,7 @@ export default {
                 console.log(response)
                 this.calendar.detailPeriodFF.datas = response
                 this.calendar.detailPeriodFF.newPeriod.distribution_time = this.dateFormat(response.period.distribution_time, 'Y-MM-DD')
+                this.calendar.detailPeriodFF.newPeriod.distribution_location = response.period.distribution_location
                 this.calendar.detailPeriodFF.newPeriod.hole_time = response.period.pembuatan_lubang_tanam
                 this.calendar.detailPeriodFF.newPeriod.planting_time = response.period.planting_time
             }).catch(err => {
@@ -1037,7 +1051,7 @@ export default {
                 pembuatan_lubang_tanam: this.calendar.detailPeriodFF.newPeriod.hole_time,
                 distribution_time: this.calendar.detailPeriodFF.newPeriod.distribution_time,
                 planting_time: this.calendar.detailPeriodFF.newPeriod.planting_time,
-                distribution_location: this.calendar.detailPeriodFF.datas.period.distribution_location,
+                distribution_location: this.calendar.detailPeriodFF.newPeriod.distribution_location,
             };
             console.log(datapost);
             try {
@@ -1049,7 +1063,7 @@ export default {
                     datapost,
                     {
                         headers: {
-                        Authorization: `Bearer ` + this.apiConfig.token,
+                            Authorization: `Bearer ` + this.apiConfig.token,
                         },
                     }
                 ).then(response => {
