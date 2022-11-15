@@ -715,6 +715,11 @@ export default {
                     this.inputs.dateRealization.model = moment(newVal).add(7, 'days')
                 }
             }
+        },
+        'dialogs.createData.step': {
+            handler(newVal) {
+                console.log(newVal)
+            }
         }
     },
     mounted() {
@@ -802,11 +807,13 @@ export default {
             window.open(`http://maps.google.co.id/maps?q=${this.inputs.latitude.model},${this.inputs.longitude.model}`)
         },
         stepperMove(type) {
+            let step = parseInt(this.dialogs.createData.step)
             if (type == '+') {
-                this.dialogs.createData.step += 1
+                step += 1
             } else if (type == '-') {
-                this.dialogs.createData.step -= 1
+                step -= 1
             }
+            this.dialogs.createData.step = step
         }
     }
 }
