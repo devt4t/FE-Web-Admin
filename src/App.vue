@@ -303,6 +303,8 @@ export default {
                 activitiesRearrange[2] = valMenuItem
               } else if (valMenuItem.title === 'Lubang Tanam') { 
                 activitiesRearrange[3] = valMenuItem
+              } else if (valMenuItem.title === 'Material Organik') { 
+                activitiesRearrange[3] = valMenuItem
               } else if (valMenuItem.title === 'Distribusi') { 
                 activitiesRearrange[4] = valMenuItem
               } else if (valMenuItem.title === 'Realisasi Tanam') { 

@@ -19,6 +19,7 @@ import Activity from '../views/Activity/Activity.vue'
 import SosialisasiTanam from '../views/Activity/SosialisasiTanam.vue'
 import LubangTanam from '../views/Activity/LubangTanam.vue'
 import PenilikanTanam from '../views/Activity/PenilikanTanam.vue'
+import MaterialOrganik from '../views/Activity/MaterialOrganik.vue'
 import Monitoring2 from '../views/Activity/Monitoring2.vue'
 import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
 import Progression from '../views/Activity/Progression.vue'
@@ -142,6 +143,11 @@ const routes = [
     path: '/LubangTanam',
     name: 'LubangTanam',
     component: LubangTanam
+  },
+  {
+    path: '/MaterialOrganik',
+    name: 'MaterialOrganik',
+    component: MaterialOrganik
   },
   {
     path: '/PenilikanTanam',
