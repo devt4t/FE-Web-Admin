@@ -330,6 +330,12 @@
                                 <v-row class="pt-2">
                                 </v-row>
                             </v-stepper-content>
+                            <!-- Seeds Data -->
+                            <v-stepper-content step="2" class="pt-0">
+                                <v-row class="my-0">
+                                    {{ inputs.seeds.items }}
+                                </v-row>
+                            </v-stepper-content>
                             <!-- Coordinates + Period -->
                             <v-stepper-content step="3" class="pt-0">
                                 <div class="py-2 d-flex align-center">
@@ -452,8 +458,8 @@
                         </v-stepper-items>
                     </v-stepper>
                 </v-card-text>
+                <!-- Footer Button -->
                 <v-card-actions class="ma-2 elevation-5 rounded-xl">
-                    <!-- Footer Button -->
                     <v-row>
                         <v-col cols="3">
                             <v-btn
@@ -680,6 +686,11 @@ export default {
                 items: [],
                 loading: false
             },
+            seeds: {
+                items: [],
+                loading: false,
+                model: ''
+            },
             village: {
                 label: 'Village',
                 model: '',
@@ -718,7 +729,7 @@ export default {
         },
         'dialogs.createData.step': {
             handler(newVal) {
-                console.log(newVal)
+                // console.log(newVal)
             }
         }
     },
@@ -731,6 +742,7 @@ export default {
                 this.$store.state.loadingOverlay = true
                 await this.getOptionsData({type: 'province'})
                 await this.getOptionsData({type: 'employee'})
+                await this.getOptionsData({type: 'seeds'})
                 this.$store.state.loadingOverlay = false
 
                 this.inputs.employee.model = this.User.employee_no
@@ -760,6 +772,9 @@ export default {
             } else if (inputs.type == 'employee') {
                 url = 'GetEmployeeAll'
                 this.$store.state.loadingOverlayText = 'Getting Employee datas...'
+            } else if (inputs.type == 'seeds') {
+                url = 'GetTreesAll'
+                this.$store.state.loadingOverlayText = 'Getting Trees datas...'
             }
 
             
@@ -775,7 +790,7 @@ export default {
                         Authorization: `Bearer ` + token,
                     },
                 }).then(res => {
-                    if (inputs.type == 'employee') {
+                    if (inputs.type == 'employee' || inputs.type == 'seeds') {
                         this.inputs[inputs.type].items = res.data.data.result.data
                     } else {
                         this.inputs[inputs.type].items = res.data.data.result
@@ -783,7 +798,11 @@ export default {
                 }).catch(err => {
                     console.log(err.response)
                     this.forceLogout(err.response)
-                    this.inputs[inputs.type].items = []
+                    if (inputs.type == 'seeds') { 
+                        this.options[inputs.type].items = []
+                    } else {
+                        this.inputs[inputs.type].items = []
+                    }
                 }).finally(() => {
                     this.$store.state.loadingOverlayText = null
                     this.inputs[inputs.type].loading = false
