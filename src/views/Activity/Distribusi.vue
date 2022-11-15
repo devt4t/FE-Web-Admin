@@ -278,6 +278,85 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <!-- Detail Period FF Modal -->
+            <v-dialog 
+                content-class="rounded-xl elevation-0" 
+                top
+                max-width="1000px" 
+                scrollable 
+                transition="dialog-top-transition"
+                v-model="loadingLine.detailDialog.show" 
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-human-dolly
+                            </v-icon>
+                            Loading Line
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="loadingLine.detailDialog.show = false">
+                            mdi-close-circle
+                        </v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- loading -->
+                        <div v-if="loadingLine.detailDialog.loading" class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="green"
+                                size="72"
+                                width="7"
+                                class="mt-10"
+                            ></v-progress-circular>
+                            <p class="mt-2">{{ loadingLine.detailDialog.loadingText }}</p>
+                        </div>
+                        <div v-else>
+                            <v-simple-table>
+                                <tbody>
+                                    <tr>
+                                        <th>Field Facilitator</th>
+                                        <th>:</th>
+                                        <td>T4T Devs</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Management Unit</th>
+                                        <th>:</th>
+                                        <td>CIWIDEY</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Seeds Total</th>
+                                        <th>:</th>
+                                        <td>5.500</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bags / Labels Total</th>
+                                        <th>:</th>
+                                        <td>612</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bags / Labels Scanned Total</th>
+                                        <th>:</th>
+                                        <td>{{ loadingLine.detailDialog.inputs.scanner.values.length }}</td>
+                                    </tr>
+                                </tbody>
+                            </v-simple-table>
+                            <p>Scanned: <strong>{{ JSON.stringify(loadingLine.detailDialog.inputs.scanner.values) }}</strong></p>
+                            <v-text-field
+                                v-model="loadingLine.detailDialog.inputs.scanner.model"
+                                @change="scannerUpdate"
+                                color="green"
+                                placeholder="SCAN HERE"
+                                outlined
+                                rounded
+                                :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
+                                :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
+                            ></v-text-field>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         <!-- END: MODAL -->
         
         
@@ -759,6 +838,10 @@
                                     <template v-slot:item.bags_total="{item}">
                                         {{ numberFormat(item.bags_total) }}
                                     </template>
+                                    <!-- Actions Column -->
+                                    <template v-slot:item.actions="{item}">
+                                        <v-btn @click="loadingLine.detailDialog.show = true">Scan</v-btn>
+                                    </template>
                                 </v-data-table>
                             </v-col>
                         </v-row>
@@ -815,13 +898,13 @@
         :timeout="snackbar.timeout"
         rounded="xl"
         >
-        <div class="d-flex justify-between">
-            <p class="mb-0">
-            {{ snackbar.text }}
-            </p>
-            <v-spacer></v-spacer>
-            <v-icon small class="pl-1" @click="snackbar.show = false">mdi-close-circle</v-icon>
-        </div>
+            <div class="d-flex justify-between">
+                <p class="mb-0">
+                    {{ snackbar.text }}
+                </p>
+                <v-spacer></v-spacer>
+                <v-icon small class="pl-1" @click="snackbar.show = false">mdi-close-circle</v-icon>
+            </div>
         </v-snackbar>
     </div>
 </template>
@@ -895,18 +978,34 @@ export default {
                 model: moment().format('Y-MM-DD'),
                 show: false,
             },
+            detailDialog: {
+                inputs: {
+                    scanner: {
+                        alert: {
+                            color: '',
+                            show: false,
+                            text: ''
+                        },
+                        model: '',
+                        values: [],
+                    }
+                },
+                loading: false,
+                loadingText: 'Loading...',
+                show: false,
+            },
             loading: false,
             table: {
                 headers: [
                     { text: 'Check', value: 'check', align: 'center', width: '100'},
-                    { text: 'Date', value: 'date'},
+                    { text: 'Management Unit', value: 'mu_name'},
                     { text: 'Field Facilitator', value: 'ff_name'},
                     { text: 'Seeds Total', value: 'seeds_total', align: 'center'},
                     { text: 'Bags Total', value: 'bags_total', align: 'center'},
                     { text: 'Actions', value: 'actions', align: 'right'},
                 ],
                 items: [
-                    { check: 0, date: '2022-12-12', ff_name: 'T4T Devs', seeds_total: '5500', bags_total: Math.ceil(5500/15)}
+                    { check: 0, mu_name: 'CIWIDEY', ff_name: 'T4T Devs', seeds_total: '5500', bags_total: Math.ceil(5500/9)}
                 ],
                 loading: false,
             }
@@ -1322,6 +1421,29 @@ export default {
         },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
+        },
+        scannerUpdate() {
+            const existsScannedLabel = this.loadingLine.detailDialog.inputs.scanner.values
+            const newLabel = this.loadingLine.detailDialog.inputs.scanner.model
+            if (existsScannedLabel.includes(newLabel) == false) {
+                this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
+                const audio = new Audio(require('@/assets/audio/success.mp3'))
+                audio.play()
+
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = 'Label scaned!'
+                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
+                this.loadingLine.detailDialog.inputs.scanner.alert.show = true
+
+            } else {
+                const audio = new Audio(require('@/assets/audio/error.mp3'))
+                audio.play()
+
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = 'Label has been already scaned!'
+                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
+                this.loadingLine.detailDialog.inputs.scanner.alert.show = true
+            }
+
+            this.loadingLine.detailDialog.inputs.scanner.model = ''
         },
         sessionEnd(error) {
             if (typeof error.response.status != 'undefined') {
