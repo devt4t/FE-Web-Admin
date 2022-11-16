@@ -34,6 +34,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+        <!-- Detail -->
         <v-dialog v-model="dialogs.detail.show" max-width="800px" persistent content-class="rounded-lg" scrollable>
             <v-card class="rounded-xl">
                 <v-card-title class="mb-1 headermodalstyle">
@@ -98,6 +99,7 @@
                     <v-divider class="mx-2"></v-divider>
                     <v-btn
                         v-if="dialogs.detail.datas.status == 0"
+                        :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'"
                         color="green white--text"
                         rounded
                         @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to verif this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
@@ -117,7 +119,6 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!-- Detail -->
         <!-- END: Dialog -->
         
         <!-- main table -->
@@ -132,6 +133,21 @@
             <!-- Toolbars -->
             <template v-slot:top>
                 <v-row class="my-2 mx-4 align-center">
+                    <!-- Program Year -->
+                    <v-select
+                        color="success"
+                        item-color="success"
+                        v-model="programYear"
+                        :items="$store.state.programYear.options"
+                        outlined
+                        dense
+                        hide-details
+                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                        rounded
+                        label="Program Year"
+                        class="mx-auto mx-lg-3"
+                        style="max-width: 200px"
+                    ></v-select>
                     <v-divider class="mx-2"></v-divider>
                     <v-text-field
                         hide-details
@@ -224,6 +240,7 @@ export default {
                 href: "breadcrumbs_link_1",
             },
         ],
+        programYear: '',
         snackbar: {
             color: '',
             show: false,
@@ -249,6 +266,13 @@ export default {
         },
         User: JSON.parse(localStorage.getItem("User"))
     }),
+    watch: {
+        'programYear': {
+            async handler() {
+                await this.getMainTableData()
+            }
+        }
+    },
     async mounted() {
         await this.firstAccessPage()
     },
@@ -305,13 +329,21 @@ export default {
             })
         },
         async firstAccessPage() {
+            this.programYear = this.$store.state.programYear.model
             await this.getMainTableData()
         },
         async getMainTableData() {
             this.tables.main.loadingText = 'Getting Data...'
             this.tables.main.loading = true
+
+            let params = {
+                program_year: this.programYear,
+                typegetdata: this.User.ff.value_data,
+                ff_no: this.User.ff.ff
+            }
+            
             await axios.get(
-                `${this.apiConfig.baseUrl}GetOrganicAll`,
+                `${this.apiConfig.baseUrl}GetOrganicAllAdmin?${new URLSearchParams(params)}`,
                 {
                     headers: {
                         Authorization: `Bearer ${this.apiConfig.token}` 
