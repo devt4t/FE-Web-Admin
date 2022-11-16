@@ -8,6 +8,7 @@
             large
         ></v-breadcrumbs>
         <!-- Dialog -->
+        <!-- Confirmation -->
         <v-dialog v-model="dialogs.confirmation.show" max-width="700px" persistent content-class="rounded-lg" scrollable>
             <v-card class="rounded-xl">
                 <v-card-title class="mb-1 headermodalstyle">
@@ -33,6 +34,90 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+        <v-dialog v-model="dialogs.detail.show" max-width="900px" persistent content-class="rounded-lg" scrollable>
+            <v-card class="rounded-xl">
+                <v-card-title class="mb-1 headermodalstyle">
+                    <v-icon class="mr-2 white--text">mdi-information</v-icon>
+                    <span>Detail</span>
+                    <v-divider dark class="mx-2"></v-divider>
+                    <v-icon color="red" @click="dialogs.detail.show = false">mdi-close-circle</v-icon>
+                </v-card-title>
+                <v-card-text v-if="dialogs.detail.datas">
+                    <v-simple-table>
+                        <tbody>
+                            <tr>
+                                <th>Organic No</th>
+                                <th>:</th>
+                                <td>{{ dialogs.detail.datas.organic_no }}</td>
+                            </tr>
+                            <tr>
+                                <th>Field Facilitator</th>
+                                <th>:</th>
+                                <td>{{ dialogs.detail.datas.ff_name }} <br>
+                                    <small>{{ dialogs.detail.datas.ff_no }}</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Farmer</th>
+                                <th>:</th>
+                                <td>{{ dialogs.detail.datas.farmer_name }} <br>
+                                    <small>{{ dialogs.detail.datas.farmer_no }}</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Organic Amount</th>
+                                <th>:</th>
+                                <td>{{ numberFormat(dialogs.detail.datas.organic_amount) }} {{ dialogs.detail.datas.uom }}<br>
+                                    <small>{{ dialogs.detail.datas.organic_name }}</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </v-simple-table>
+                    <v-row>
+                        <v-col cols="12" lg="6">
+                            <div>Signature Image</div>
+                            <v-img
+                                height="250"
+                                v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.datas.farmer_signature}`"
+                                class="my-1 mb-4 cursor-pointer rounded-xl elevation-10"
+                                @click="() => {showLightbox(`${apiConfig.imageUrl}${dialogs.detail.datas.farmer_signature}`, 0)}"
+                            ></v-img>
+                        </v-col>
+                        <v-col cols="12" lg="6">
+                            <div>Organic Photo</div>
+                            <v-img
+                                height="250"
+                                v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.datas.organic_photo}`"
+                                class="my-1 mb-4 cursor-pointer rounded-xl elevation-10"
+                                @click="() => {showLightbox(`${apiConfig.imageUrl}${dialogs.detail.datas.organic_photo}`, 0)}"
+                            ></v-img>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions v-if="dialogs.detail.datas">
+                    <v-divider class="mx-2"></v-divider>
+                    <v-btn
+                        v-if="dialogs.detail.datas.status == 0"
+                        color="green white--text"
+                        rounded
+                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to verif this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.status.organic_no"
+                    >
+                        <v-icon class="mr-1">mdi-check-circle</v-icon>
+                        Validate
+                    </v-btn>
+                    <v-btn
+                        v-if="dialogs.detail.datas.status.status == 1 && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')"
+                        color="red white--text"
+                        rounded
+                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to unverif this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = dialogs.detail.datas.status.organic_no"
+                    >
+                        <v-icon class="mr-1">mdi-close-circle</v-icon>
+                        Unvalidate
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!-- Detail -->
         <!-- END: Dialog -->
         
         <!-- main table -->
@@ -60,6 +145,10 @@
                     ></v-text-field>
                 </v-row>
             </template>
+            <!-- Amount Column -->
+            <template v-slot:item.organic_amount="{item}">
+                {{ numberFormat(item.organic_amount) }} {{ item.uom }}
+            </template>
             <!-- Status Column -->
             <template v-slot:item.status="{item}">
                 <v-chip
@@ -72,24 +161,13 @@
             <!-- Actions Column -->
             <template v-slot:item.actions="{item}">
                 <v-btn
-                    v-if="item.status == 0"
-                    color="green white--text"
+                    color="blue white--text"
                     rounded
                     small
-                    @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to verif this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = item.organic_no"
+                    @click="dialogs.detail.show = true;dialogs.detail.datas = item;"
                 >
-                    <v-icon small class="mr-1">mdi-check-circle</v-icon>
-                    Validate
-                </v-btn>
-                <v-btn
-                    v-if="item.status == 1 && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')"
-                    color="red white--text"
-                    rounded
-                    small
-                    @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to unverif this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = item.organic_no"
-                >
-                    <v-icon small class="mr-1">mdi-close-circle</v-icon>
-                    Unvalidate
+                    <v-icon small class="mr-1">mdi-information</v-icon>
+                    Detail
                 </v-btn>
             </template>
         </v-data-table>
@@ -118,6 +196,7 @@ export default {
     data: () => ({
         apiConfig: {
             baseUrl: localStorage.getItem('BaseUrlGet'),
+            imageUrl: localStorage.getItem('BaseUrl'),
             token: localStorage.getItem('token'),
         },
         dialogs: {
@@ -126,6 +205,11 @@ export default {
                 okText: '',
                 show: false,
                 title: 'Confirmation',
+            },
+            detail: {
+                datas: null,
+                loading: false,
+                show: false
             }
         },
         itemsbr: [
@@ -150,7 +234,8 @@ export default {
             main: {
                 headers: [
                     { text: "Organic No", value: "organic_no" },
-                    { text: "Farmer No", value: "farmer_no" },
+                    { text: "FF Name", value: "ff_name" },
+                    { text: "Farmer Name", value: "farmer_name" },
                     { text: "Organic Name", value: "organic_name", align: 'center' },
                     { text: "Amount", value: "organic_amount" },
                     { text: "Status", value: "status", align: 'center' },
@@ -241,6 +326,9 @@ export default {
                 this.tables.main.loading = false
             })
         },
+        numberFormat(num) {
+            return new Intl.NumberFormat('id-ID').format(num)
+        },
         sessionEnd(error) {
             if (typeof error.response.status != 'undefined') {
                 if (error.response.status == 401) {
@@ -248,6 +336,15 @@ export default {
                     this.$router.push("/")
                 }
             }
+        },
+        // Showing Lightbox
+        showLightbox(imgs, index) {
+            if (imgs) this.$store.state.lightbox.imgs = imgs
+            
+            if (index) this.$store.state.lightbox.index = index
+            else this.$store.state.lightbox.index = 0
+
+            this.$store.state.lightbox.show = true
         },
     }
 }
