@@ -840,7 +840,10 @@
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn @click="loadingLine.detailDialog.show = true">Scan</v-btn>
+                                        <v-btn rounded color="blue white--text" @click="loadingLine.detailDialog.show = true">
+                                            <v-icon class="mr-1">mdi-data-matrix-scan</v-icon>
+                                            Scan Label
+                                        </v-btn>
                                     </template>
                                 </v-data-table>
                             </v-col>
