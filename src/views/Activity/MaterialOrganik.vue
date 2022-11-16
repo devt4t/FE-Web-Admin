@@ -145,7 +145,7 @@
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
                         label="Program Year"
-                        class="mx-auto mx-lg-3"
+                        class=""
                         style="max-width: 200px"
                     ></v-select>
                     <v-divider class="mx-2"></v-divider>
