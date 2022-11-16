@@ -211,6 +211,7 @@
                                                         rounded
                                                         outlined
                                                         hide-details
+                                                        color="green"
                                                         class="text-caption my-1"
                                                         :rules="[(v) => !!v || 'Field is required']"
                                                     ></v-textarea>
@@ -280,20 +281,21 @@
             </v-dialog>
             <!-- Loading Line Scan Modal -->
             <v-dialog 
-                content-class="rounded-xl elevation-0 mx-2" 
                 top
-                max-width="700px" 
+                persistent
                 scrollable 
                 transition="dialog-top-transition"
+                max-width="700px" 
+                content-class="rounded-xl elevation-0 mx-2" 
                 v-model="loadingLine.detailDialog.show" 
             >
                 <v-card class="elevation-5 rounded-xl">
                     <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
                         <span class="d-flex align-center">
                             <v-icon color="white" class="mr-1">
-                                mdi-human-dolly
+                                mdi-qrcode-scan
                             </v-icon>
-                            Loading Line
+                            Scan Bags Loading Line
                         </span>
                         <v-divider class="mx-2" dark></v-divider>
                         <v-icon color="white" @click="loadingLine.detailDialog.show = false">
@@ -623,7 +625,7 @@
                         </v-overlay>
                         <v-row>
                             <!-- Packing Label Tabs -->
-                            <v-col cols="12">
+                            <v-col cols="12" v-if="false">
                                 <v-tabs
                                     active-class="green rounded-xl"
                                     background-color="green lighten-3"
@@ -651,8 +653,25 @@
                                             :headers="packingLabel.tables.byLahan.headers"
                                             :items="packingLabel.tables.byLahan.items"
                                             :loading="packingLabel.tables.byLahan.loading"
+                                            :search="packingLabel.tables.byLahan.search"
                                             multi-sort
                                         >
+                                            <template v-slot:top>
+                                                <v-row class="mx-0 my-2 align-center">
+                                                    <v-divider class="mx-2"></v-divider>
+                                                    <v-text-field
+                                                        hide-details
+                                                        dense
+                                                        rounded
+                                                        outlined
+                                                        color="green"
+                                                        placeholder="Start type to search..."
+                                                        label="Search"
+                                                        append-icon="mdi-magnify"
+                                                        v-model="packingLabel.tables.byLahan.search"
+                                                    ></v-text-field>
+                                                </v-row>
+                                            </template>
                                             <!-- Check Column -->
                                             <template v-slot:item.check="{item}">
                                                 <v-checkbox
@@ -841,7 +860,7 @@
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
                                         <v-btn rounded color="blue white--text" @click="loadingLine.detailDialog.show = true">
-                                            <v-icon class="mr-1">mdi-data-matrix-scan</v-icon>
+                                            <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
                                             Scan Label
                                         </v-btn>
                                     </template>
@@ -1029,6 +1048,7 @@ export default {
                     ],
                     items: [],
                     loading: false,
+                    search: ''
                 }
             },
             tabs: {
@@ -1425,27 +1445,26 @@ export default {
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
         },
-        scannerUpdate() {
+        async scannerUpdate() {
             const existsScannedLabel = this.loadingLine.detailDialog.inputs.scanner.values
             const newLabel = this.loadingLine.detailDialog.inputs.scanner.model
             if (existsScannedLabel.includes(newLabel) == false) {
                 this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
                 const audio = new Audio(require('@/assets/audio/success.mp3'))
-                audio.play()
+                await audio.play()
 
-                this.loadingLine.detailDialog.inputs.scanner.alert.text = 'Label scaned!'
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`
                 this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
-                this.loadingLine.detailDialog.inputs.scanner.alert.show = true
 
             } else {
                 const audio = new Audio(require('@/assets/audio/error.mp3'))
-                audio.play()
+                await audio.play()
 
-                this.loadingLine.detailDialog.inputs.scanner.alert.text = 'Label has been already scaned!'
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" has been already scaned!`
                 this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
-                this.loadingLine.detailDialog.inputs.scanner.alert.show = true
             }
 
+            this.loadingLine.detailDialog.inputs.scanner.alert.show = true
             this.loadingLine.detailDialog.inputs.scanner.model = ''
         },
         sessionEnd(error) {
