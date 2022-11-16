@@ -75,7 +75,7 @@
                     </v-simple-table>
                     <v-row>
                         <v-col cols="12" lg="6">
-                            <div>Signature Image</div>
+                            <div class="text-center my-2"><v-icon class="mr-1">mdi-image</v-icon> Signature Image</div>
                             <v-img
                                 height="250"
                                 v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.datas.farmer_signature}`"
@@ -84,7 +84,7 @@
                             ></v-img>
                         </v-col>
                         <v-col cols="12" lg="6">
-                            <div>Organic Photo</div>
+                            <div class="text-center my-2"><v-icon class="mr-1">mdi-camera</v-icon> Organic Photo</div>
                             <v-img
                                 height="250"
                                 v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.datas.organic_photo}`"
