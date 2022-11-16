@@ -100,16 +100,16 @@
                         v-if="dialogs.detail.datas.status == 0"
                         color="green white--text"
                         rounded
-                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to verif this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.status.organic_no"
+                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to verif this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
                     >
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
                         Validate
                     </v-btn>
                     <v-btn
-                        v-if="dialogs.detail.datas.status.status == 1 && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')"
+                        v-if="dialogs.detail.datas.status == 1 && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')"
                         color="red white--text"
                         rounded
-                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to unverif this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = dialogs.detail.datas.status.organic_no"
+                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to unverif this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
                     >
                         <v-icon class="mr-1">mdi-close-circle</v-icon>
                         Unvalidate
@@ -269,6 +269,7 @@ export default {
             }
 
             this.dialogs.confirmation.show = false
+            this.dialogs.detail.show = false
             this.$store.state.loadingOverlayText = `${type} Data...`
             this.$store.state.loadingOverlay = true
 
