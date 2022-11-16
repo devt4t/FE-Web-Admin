@@ -304,13 +304,13 @@ export default {
               } else if (valMenuItem.title === 'Lubang Tanam') { 
                 activitiesRearrange[3] = valMenuItem
               } else if (valMenuItem.title === 'Material Organik') { 
-                activitiesRearrange[3] = valMenuItem
-              } else if (valMenuItem.title === 'Distribusi') { 
                 activitiesRearrange[4] = valMenuItem
-              } else if (valMenuItem.title === 'Realisasi Tanam') { 
+              } else if (valMenuItem.title === 'Distribusi') { 
                 activitiesRearrange[5] = valMenuItem
-              } else if (valMenuItem.title === 'Monitoring 2') { 
+              } else if (valMenuItem.title === 'Realisasi Tanam') { 
                 activitiesRearrange[6] = valMenuItem
+              } else if (valMenuItem.title === 'Monitoring 2') { 
+                activitiesRearrange[7] = valMenuItem
               }
             }
           })
