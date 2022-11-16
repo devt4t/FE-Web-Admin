@@ -278,11 +278,11 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-            <!-- Detail Period FF Modal -->
+            <!-- Loading Line Scan Modal -->
             <v-dialog 
-                content-class="rounded-xl elevation-0" 
+                content-class="rounded-xl elevation-0 mx-2" 
                 top
-                max-width="1000px" 
+                max-width="700px" 
                 scrollable 
                 transition="dialog-top-transition"
                 v-model="loadingLine.detailDialog.show" 
