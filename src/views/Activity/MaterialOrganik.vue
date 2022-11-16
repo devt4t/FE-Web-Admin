@@ -9,7 +9,7 @@
         ></v-breadcrumbs>
         <!-- Dialog -->
         <!-- Confirmation -->
-        <v-dialog v-model="dialogs.confirmation.show" max-width="700px" persistent content-class="rounded-lg" scrollable>
+        <v-dialog v-model="dialogs.confirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
             <v-card class="rounded-xl">
                 <v-card-title class="mb-1 headermodalstyle">
                     <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
@@ -34,7 +34,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="dialogs.detail.show" max-width="900px" persistent content-class="rounded-lg" scrollable>
+        <v-dialog v-model="dialogs.detail.show" max-width="800px" persistent content-class="rounded-lg" scrollable>
             <v-card class="rounded-xl">
                 <v-card-title class="mb-1 headermodalstyle">
                     <v-icon class="mr-2 white--text">mdi-information</v-icon>
