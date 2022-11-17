@@ -221,7 +221,8 @@
                             Detail
                         </v-btn>
                         <v-btn
-                            color="red white--text mt-2"
+                            color="red white--text"
+                            class="mt-2"
                             rounded
                             small
                             :disabled="User.role_group != 'IT'"
