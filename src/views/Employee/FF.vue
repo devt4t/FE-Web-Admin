@@ -6,6 +6,33 @@
       divider=">"
       large
     ></v-breadcrumbs>
+    <!-- Dialogs -->
+      <!-- Confirmation -->
+      <v-dialog v-model="dialogs.nonactivateConfirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
+        <v-card class="rounded-xl" v-if="dialogs.nonactivateConfirmation.model">
+          <v-card-title class="mb-1 headermodalstyle">
+            <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
+            <span>Confirmation</span>
+            <v-divider dark class="mx-2"></v-divider>
+            <v-icon color="red" @click="dialogs.nonactivateConfirmation.show = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <h2 class="text-center pt-4">Do u want to {{ dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate' }} this FF?</h2>
+            <v-row class="mt-10 align-center mb-0">
+              <v-divider class="mx-2"></v-divider>
+              <v-btn rounded color="red white--text mr-1" @click="dialogs.nonactivateConfirmation.show = false">
+                  <v-icon class="mr-1">mdi-close-circle</v-icon>
+                  Close
+              </v-btn>
+              <v-btn rounded color="green white--text ml-1" @click="confirmNonactivate">
+                  <v-icon class="mr-1">mdi-check-circle</v-icon>
+                  {{ dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate' }}
+              </v-btn>
+              <v-divider class="mx-2"></v-divider>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 
     <v-data-table
       :headers="headers"
@@ -535,17 +562,30 @@
                 Delete
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="User.role_group == 'IT'">
+            <v-list-item v-if="User.role_group == 'IT' && item.active == 1">
               <v-btn
                 dark
                 rounded
                 @click="nonactivateFF(item)"
-                color="red"
+                color="red white--text"
               >
               <v-icon class="mr-1" small color="white">
                 mdi-power
               </v-icon>
                 Nonactivate
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="User.role_group == 'IT' && item.active == 0">
+              <v-btn
+                dark
+                rounded
+                @click="activateFF(item)"
+                color="green white--text"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-power
+              </v-icon>
+                Activate
               </v-btn>
             </v-list-item>
           </v-list>
@@ -569,6 +609,12 @@ import axios from "axios";
 export default {
   name: "FieldFacilitator",
   data: () => ({
+    dialogs: {
+      nonactivateConfirmation: {
+        show: false,
+        model: null,
+      }
+    },
     menu2: "",
     valid: true,
     datepicker: new Date().toISOString().substr(0, 10),
@@ -1275,7 +1321,43 @@ export default {
       this.dialogDelete = false;
     },
     nonactivateFF(data) {
-      alert(JSON.stringify(data.ff_no))
+      this.dialogs.nonactivateConfirmation.show = true
+      this.dialogs.nonactivateConfirmation.model = [data.ff_no, 0]
+    },
+    activateFF(data) {
+      this.dialogs.nonactivateConfirmation.show = true
+      this.dialogs.nonactivateConfirmation.model = [data.ff_no, 1]
+    },
+    async confirmNonactivate () {
+      this.dialogs.nonactivateConfirmation.show = false
+      this.$store.state.loadingOverlayText = 'Nonactivate Field Facilitator...'
+      this.$store.state.loadingOverlay = true
+      
+      await axios.post(`${this.BaseUrlGet}NonactivateFieldFacilitator`, 
+        {
+          ff_no: this.dialogs.nonactivateConfirmation.model[0], 
+          active: this.dialogs.nonactivateConfirmation.model[1]
+        }, 
+        { headers: {
+          Authorization: `Bearer ${this.authtoken}`
+        }
+      }).then(() => {
+        this.colorsnackbar = 'green'
+        this.textsnackbar = `${this.dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate'} FF success!`
+        this.initialize()
+      }).catch((err) => {
+        this.colorsnackbar = 'red'
+        this.textsnackbar = `${this.dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate'} FF failed!`
+        if (err.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }).finally(() => {
+          this.snackbar = true
+          this.timeoutsnackbar = 5000
+          this.$store.state.loadingOverlay = false
+          this.$store.state.loadingOverlayText = null
+      })
     }
   },
 };
