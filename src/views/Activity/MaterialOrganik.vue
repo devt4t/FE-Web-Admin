@@ -102,19 +102,19 @@
                         :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'"
                         color="green white--text"
                         rounded
-                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to verif this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
+                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to VERIF this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
                     >
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
-                        Validate
+                        Verif
                     </v-btn>
                     <v-btn
                         v-if="dialogs.detail.datas.status == 1 && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')"
                         color="red white--text"
                         rounded
-                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to unverif this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
+                        @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to UNVERIF this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
                     >
                         <v-icon class="mr-1">mdi-close-circle</v-icon>
-                        Unvalidate
+                        Unverif
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -132,7 +132,7 @@
         >
             <!-- Toolbars -->
             <template v-slot:top>
-                <v-row class="my-2 mx-4 align-center">
+                <v-row class="my-2 mx-2 mx-lg-3 align-center">
                     <!-- Program Year -->
                     <v-select
                         color="success"
@@ -149,6 +149,7 @@
                         style="max-width: 200px"
                     ></v-select>
                     <v-divider class="mx-2"></v-divider>
+                    <!-- Search Field -->
                     <v-text-field
                         hide-details
                         dense
@@ -160,6 +161,28 @@
                         v-model="tables.main.search"
                     ></v-text-field>
                 </v-row>
+                <v-row class="mx-2 mx-lg-3 mb-0 align-center">
+                    <!-- Organic Type -->
+                    <v-select
+                        color="success"
+                        item-color="success"
+                        v-model="organicType"
+                        :items="['Pupuk', 'Pestisida']"
+                        outlined
+                        dense
+                        hide-details
+                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                        rounded
+                        label="Organic Type"
+                        class=""
+                        style="max-width: 200px"
+                    ></v-select>
+                    <v-divider class="mx-2"></v-divider>
+                </v-row>
+            </template>
+            <!-- Created At Column -->
+            <template v-slot:item.created_at="{item}">
+                {{ dateFormat(item.created_at, 'DD MMMM Y, H:ss') }}
             </template>
             <!-- Amount Column -->
             <template v-slot:item.organic_amount="{item}">
@@ -176,15 +199,39 @@
             </template>
             <!-- Actions Column -->
             <template v-slot:item.actions="{item}">
-                <v-btn
-                    color="blue white--text"
-                    rounded
-                    small
-                    @click="dialogs.detail.show = true;dialogs.detail.datas = item;"
+                <v-menu
+                    rounded="xl"
+                    bottom
+                    left
+                    offset-y
+                    transition="slide-y-transition"
+                    :close-on-content-click="false"
                 >
-                    <v-icon small class="mr-1">mdi-information</v-icon>
-                    Detail
-                </v-btn>
+                    <template v-slot:activator="{on, attrs}">
+                        <v-icon v-bind="attrs" v-on="on">mdi-arrow-down-drop-circle</v-icon>
+                    </template>
+                    <v-card class="rounded-xl px-2 py-2 d-flex flex-column align-stretch">
+                        <v-btn
+                            color="blue white--text"
+                            rounded
+                            small
+                            @click="dialogs.detail.show = true;dialogs.detail.datas = item;"
+                        >
+                            <v-icon small class="mr-1">mdi-information</v-icon>
+                            Detail
+                        </v-btn>
+                        <v-btn
+                            color="red white--text mt-2"
+                            rounded
+                            small
+                            :disabled="User.role_group != 'IT'"
+                            @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to PERMANENT DELETE this data?';dialogs.confirmation.okText = 'Delete';dialogs.confirmation.model = item.organic_no"
+                        >
+                            <v-icon small class="mr-1">mdi-delete</v-icon>
+                            Delete
+                        </v-btn>
+                    </v-card>
+                </v-menu>
             </template>
         </v-data-table>
 
@@ -208,6 +255,8 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
+
 export default {
     data: () => ({
         apiConfig: {
@@ -241,6 +290,7 @@ export default {
             },
         ],
         programYear: '',
+        organicType: 'Pupuk',
         snackbar: {
             color: '',
             show: false,
@@ -251,6 +301,7 @@ export default {
             main: {
                 headers: [
                     { text: "Organic No", value: "organic_no" },
+                    { text: "Date", value: "created_at" },
                     { text: "FF Name", value: "ff_name" },
                     { text: "Farmer Name", value: "farmer_name" },
                     { text: "Organic Name", value: "organic_name", align: 'center' },
@@ -271,7 +322,12 @@ export default {
             async handler() {
                 await this.getMainTableData()
             }
-        }
+        },
+        'organicType': {
+            async handler() {
+                await this.getMainTableData()
+            }
+        },
     },
     async mounted() {
         await this.firstAccessPage()
@@ -282,14 +338,19 @@ export default {
     },
     methods: {
         async confirmationOk(type) {
+            let url = ''
             const datas = {
                 organic_no: this.dialogs.confirmation.model,
                 verified_by: this.User.email,
             }
             if (type == 'Verif') {
                 datas.status = 1
+                url = 'Validate'
             } else if (type == 'Unverif') {
                 datas.status = 0
+                url = 'Unvalidate'
+            } else {
+                url = type
             }
 
             this.dialogs.confirmation.show = false
@@ -298,7 +359,7 @@ export default {
             this.$store.state.loadingOverlay = true
 
             await axios.post(
-                `${this.apiConfig.baseUrl}${type == 'Verif' ? 'Validate' : 'Unvalidate'}Organic`,
+                `${this.apiConfig.baseUrl + url}Organic`,
                 datas,
                 {
                     headers: {
@@ -328,6 +389,9 @@ export default {
                 this.$store.state.loadingOverlay = false
             })
         },
+        dateFormat(date, format) {
+            return moment(date).format(format)
+        },
         async firstAccessPage() {
             this.programYear = this.$store.state.programYear.model
             await this.getMainTableData()
@@ -338,6 +402,7 @@ export default {
 
             let params = {
                 program_year: this.programYear,
+                type: this.organicType,
                 typegetdata: this.User.ff.value_data,
                 ff_no: this.User.ff.ff
             }
