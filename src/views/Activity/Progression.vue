@@ -298,6 +298,58 @@
                     </v-list>
                   </v-menu>
             </v-col>
+            <!-- Penlub Date -->
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Penilikan Lubang')">
+              <p class="mb-1">Penlub Date</p>
+                  <v-menu 
+                    rounded="xl"
+                    v-model="menus.penlub"
+                    transition="slide-x-transition"
+                    bottom
+                    right
+                    offset-x
+                    :close-on-content-click="false"
+                  >
+                    <template v-slot:activator="{ on: menu, attrs }">
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on: tooltip }">
+                          <v-btn
+                            rounded
+                            color="green lighten-1"
+                            v-bind="attrs"
+                            v-on="{...menu, ...tooltip}"
+                          >
+                            <v-icon left> mdi-calendar </v-icon>
+                            {{ dates.penlub }}
+                          </v-btn>
+                        </template>
+                        <span>Klik untuk memunculkan datepicker</span>
+                      </v-tooltip>
+                    </template>
+                    <v-list>
+                      <v-list-item>
+                        <v-date-picker 
+                          color="green lighten-1 rounded-xl" 
+                          rounded
+                          v-model="dates.penlub"
+                        ></v-date-picker>
+                        <br>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="green lighten-1"
+                          center
+                          rounded
+                          @click="menus.penlub = false"
+                        >
+                          Ok
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+            </v-col>
             <!-- Button -->
             <v-col cols="12" class="d-flex align-items-center justify-center">
               <v-btn
@@ -631,7 +683,7 @@
                     <table border="1" style="border-collapse: collapse;width: 100%;">
                       <thead>
                         <tr>
-                          <th colspan="3">KAYU ({{ getTotalBibitPerCategory('KAYU') }})</th>
+                          <th colspan="3">KAYU ({{ getTotalBibitPerCategory('KAYU', 'sostam') }})</th>
                         </tr>
                         <tr>
                           <th>No</th>
@@ -652,7 +704,7 @@
                     <table border="1" style="border-collapse: collapse;width: 100%;">
                       <thead>
                         <tr>
-                          <th colspan="3">MPTS ({{ getTotalBibitPerCategory('MPTS') }})</th>
+                          <th colspan="3">MPTS ({{ getTotalBibitPerCategory('MPTS', 'sostam') }})</th>
                         </tr>
                         <tr>
                           <th>No</th>
@@ -673,7 +725,7 @@
                     <table border="1" style="border-collapse: collapse;width: 100%;">
                       <thead>
                         <tr>
-                          <th colspan="3">CROPS ({{ getTotalBibitPerCategory('CROPS') }})</th>
+                          <th colspan="3">CROPS ({{ getTotalBibitPerCategory('CROPS', 'sostam') }})</th>
                         </tr>
                         <tr>
                           <th>No</th>
@@ -683,6 +735,224 @@
                       </thead>
                       <tbody>
                         <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.CROPS" :key="treeIndex">
+                          <td align="center">{{ treeIndex += 1 }}</td>
+                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
+                          <td align="center">{{ numberFormat(tree.amount) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </section>
+          </vue-html2pdf>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+      <!-- Penilikan Lubang Tanam -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.penlub.show">
+        <v-expansion-panel-header>
+          <h3 class="">Penilikan Lubang Tanam</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            :headers="tables.penlub.headers"
+            :items="tables.penlub.items"
+            :search="tables.penlub.search"
+            :loading="tables.penlub.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
+          >
+            <template v-slot:top>
+              <v-row v-if="filters.FC" class="py-3 justify-center">
+                <v-spacer class="d-none d-md-inline-block"></v-spacer>
+                <v-btn 
+                  @click="generateReport('Sosialisasi Tanam')"
+                  color="info"
+                  class="mb-2 d-none d-md-inline-block"
+                  rounded
+                >
+                  <v-icon small class="mr-1">mdi-printer</v-icon>
+                  Export
+                </v-btn>
+              </v-row>
+            </template>
+            <template v-slot:header.total_petani>
+              Total Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.total_lahan>
+              Total Lahan ({{ dateFormat(filters.dates.land[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.total_penlub>
+              Total Penlub ({{ dateFormat(filters.dates.penlub, 'DD MMM Y') }})
+            </template>
+            <template v-slot:item.total_petani="{item}">
+              <strong>{{ item.total_petani }}</strong> Petani
+            </template>
+            <template v-slot:item.total_lahan="{item}">
+              <strong>{{ item.total_lahan }}</strong> Lahan
+            </template>
+            <template v-slot:item.total_penlub="{item}">
+              <strong>{{ item.total_penlub }}</strong> Penlub
+            </template>
+            <template v-slot:item.progress_penlub="{item}">
+              <strong>{{ item.progress_penlub }}</strong>%
+            </template>
+            <template v-slot:item.total_lubang="{item}">
+              <strong>{{ numberFormat(item.total_lubang) }}</strong>
+            </template>
+            <template v-slot:item.total_lubang_standar="{item}">
+              <strong>{{ numberFormat(item.total_lubang_standar) }}</strong>
+            </template>
+            <template v-slot:item.total_bibit="{item}">
+              <strong>{{ numberFormat(item.total_bibit) }}</strong>
+            </template>
+            <template v-slot:item.actions="{item, index}">
+              <v-btn
+                dark
+                color="red"
+                rounded
+                icon
+                @click="removeSostamItem(index)"
+              >
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
+            </template>
+          </v-data-table>
+          <!-- Export Template -->
+          <vue-html2pdf
+            :show-layout="false"
+            :float-layout="true"
+            :enable-download="false"
+            :preview-modal="true"
+            :paginate-elements-by-height="1400"
+            :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
+            :pdf-quality="2"
+            :manual-pagination="false"
+            pdf-format="a4"
+            pdf-orientation="landscape"
+            pdf-content-width="1125px"
+            ref="exportPDFSosialisasiTanam"
+          >
+            <section slot="pdf-content">
+              <v-container>
+                <center>
+                  <h2>Pendataan Penilikan Lubang Tanam</h2>
+                  <h3>Activities Progress</h3>
+                </center>
+                <v-row>
+                  <v-col sm="6">
+                    <table>
+                      <tr>
+                        <td>Unit Manager</td>
+                        <td>:</td>
+                        <td>{{ filters.UM }}</td>
+                      </tr>
+                      <tr>
+                        <td>Field Coordinator</td>
+                        <td>:</td>
+                        <td>{{ filters.FC }}</td>
+                      </tr>
+                      <tr>
+                        <td>Export Date</td>
+                        <td>:</td>
+                        <td>{{ dateFormat(new Date(), 'DD MMMM Y') }}</td>
+                      </tr>
+                    </table>
+                  </v-col>
+                  <v-col sm="12">
+                    <center>
+                      <table border="1" style="border-collapse: collapse;width: 100%;">
+                        <thead>
+                          <tr>
+                            <th rowspan="2">No</th>
+                            <th rowspan="2">Nama FF</th>
+                            <th rowspan="2">Total Petani</th>
+                            <th rowspan="2">Total Lahan</th>
+                            <th colspan="4">Penilikan Lubang Tanam</th>
+                          </tr>
+                          <tr>
+                            <th>{{ dateFormat(filters.dates.penlub, 'DD MMM Y') }}</th>
+                            <th>Progress</th>
+                            <th>Total Bibit</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(data, dIndex) in tables.penlub.items" :key="dIndex">
+                            <td align="center">{{ dIndex + 1 }}</td>
+                            <td style="padding-left: 5px">{{ data.ff }}</td>
+                            <td align="center">{{ data.total_petani }}</td>
+                            <td align="center">{{ data.total_lahan }}</td>
+                            <td align="center">{{ data.total_penlub }}</td>
+                            <td align="center">{{ data.progress_penlub }}%</td>
+                            <td align="center">{{ numberFormat(data.total_bibit) }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </center>
+                  </v-col>
+                </v-row>
+                <v-row class="html2pdf__page-break">
+                  <v-col sm="12" md="4">
+                    <table border="1" style="border-collapse: collapse;width: 100%;">
+                      <thead>
+                        <tr>
+                          <th colspan="3">KAYU ({{ getTotalBibitPerCategory('KAYU', 'penlub') }})</th>
+                        </tr>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(tree, treeIndex) in tables.penlub.totalBibitDetails.KAYU" :key="treeIndex">
+                          <td align="center">{{ treeIndex += 1 }}</td>
+                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
+                          <td align="center">{{ numberFormat(tree.amount) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <table border="1" style="border-collapse: collapse;width: 100%;">
+                      <thead>
+                        <tr>
+                          <th colspan="3">MPTS ({{ getTotalBibitPerCategory('MPTS', 'penlub') }})</th>
+                        </tr>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(tree, treeIndex) in tables.penlub.totalBibitDetails.MPTS" :key="treeIndex">
+                          <td align="center">{{ treeIndex += 1 }}</td>
+                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
+                          <td align="center">{{ numberFormat(tree.amount) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </v-col>
+                  <v-col sm="12" md="4">
+                    <table border="1" style="border-collapse: collapse;width: 100%;">
+                      <thead>
+                        <tr>
+                          <th colspan="3">CROPS ({{ getTotalBibitPerCategory('CROPS', 'penlub') }})</th>
+                        </tr>
+                        <tr>
+                          <th>No</th>
+                          <th>Name</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(tree, treeIndex) in tables.penlub.totalBibitDetails.CROPS" :key="treeIndex">
                           <td align="center">{{ treeIndex += 1 }}</td>
                           <td style="padding-left: 5px">{{ tree.tree_name }}</td>
                           <td align="center">{{ numberFormat(tree.amount) }}</td>
@@ -734,7 +1004,8 @@ export default {
     dates: {
       farmer: ['2022-08-31','2022-09-30'],
       land: ['2022-10-03','2022-10-31'],
-      sostam: '2022-11-15'
+      sostam: '2022-11-15',
+      penlub: '2022-12-31',
     },
     btn: {
       generateButton: {
@@ -751,7 +1022,8 @@ export default {
       dates: {
         farmer: [],
         land: [],
-        sostam: ''
+        sostam: '',
+        penlub: ''
       },
       programYear: '',
       UM: '',
@@ -762,6 +1034,7 @@ export default {
       farmer: false,
       land: false,
       sostam: false,
+      penlub: false,
     },
     options: {
       FC: {
@@ -789,8 +1062,10 @@ export default {
         items: [
           {value: "Pendataan Petani & Lahan", disabled: false},
           {value: "Sosialisasi Tanam", disabled: false},
-          {value: "Penilikan Lubang", disabled: true},
+          {value: "Penilikan Lubang", disabled: false},
+          {value: "Material Organik (Pupuk)", disabled: true},
           {value: "Realisasi Tanam", disabled: true},
+          {value: "Material Organik (Pestisida)", disabled: true},
         ],
         label: 'Activities',
         loading: false,
@@ -850,6 +1125,28 @@ export default {
           CROPS: []
         }
       },
+      penlub: {
+        headers: [
+          { text: "Field Facilitator", value: "ff" },
+          { text: "Total Petani", value: "total_petani", align: 'center' },
+          { text: "Total Lahan", value: "total_lahan", align: 'center' },
+          { text: "Penlub", value: "total_penlub", align: 'center' },
+          { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
+          { text: "Lubang", value: "total_lubang", align: 'center' },
+          { text: "Lubang Standar", value: "total_lubang_standar", align: 'center' },
+          { text: "Total Bibit", value: "total_bibit", align: 'center' },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
+        ],
+        items: [],
+        loading: false,
+        search: '',
+        show: false,
+        totalBibitDetails: {
+          KAYU: [],
+          MPTS: [],
+          CROPS: []
+        }
+      },
     }
   }),
 
@@ -867,12 +1164,27 @@ export default {
   },
 
   watch: {
-    'filters.activities': {
-      handler(newValue) {
-        console.log(newValue)
+    'dates.farmer': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
       }
     },
-    'options.UM.model': {
+    'dates.land': {
+      handler() {
+        this.getButtonGenerateKPIDisabledCondition()
+      }
+    },
+    'expansions.model': {
+      handler(newValue) {
+        // console.log('Expansion' + newValue)
+      }
+    },
+    'filters.activities': {
+      handler(newValue) {
+        // console.log(newValue)
+      }
+    },
+    'options.activities.model': {
       handler() {
         this.getButtonGenerateKPIDisabledCondition()
       }
@@ -882,17 +1194,7 @@ export default {
         this.getButtonGenerateKPIDisabledCondition()
       }
     },
-    'options.activities.model': {
-      handler() {
-        this.getButtonGenerateKPIDisabledCondition()
-      }
-    },
-    'dates.farmer': {
-      handler() {
-        this.getButtonGenerateKPIDisabledCondition()
-      }
-    },
-    'dates.land': {
+    'options.UM.model': {
       handler() {
         this.getButtonGenerateKPIDisabledCondition()
       }
@@ -972,36 +1274,36 @@ export default {
       
       const activitiesActive = this.options.activities.model
       let openedPanel = []
+      let openedPanelIndex = 2
       // Pendataan Petani & Lahan
       if (activitiesActive.includes('Pendataan Petani & Lahan')) {
-        openedPanel.push(2)
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
         this.filters.activities.push('Pendataan Petani & Lahan')
         this.tables.farmer.show = true
       } else {
-        openedPanel.forEach((val, index) => {
-          if (val == 'Pendataan Petani & Lahan') {
-            openedPanel.slice(index, 1)
-          }
-        });
         this.tables.farmer.show = false
       }
       // Sosialisasi Tanam
       if (activitiesActive.includes('Sosialisasi Tanam')) {
-        if (openedPanel.includes(2)) {
-          openedPanel.push(3)
-        } else {
-          openedPanel.push(2)
-        }
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
         this.filters.activities.push('Sosialisasi Tanam')
         this.tables.sostam.show = true
       } else {
-        openedPanel.forEach((val, index) => {
-          if (val == 'Sosialisasi Tanam') {
-            openedPanel.slice(index, 1)
-          }
-        })
         this.tables.sostam.show = false
       }
+      // Penilikan Lubang
+      if (activitiesActive.includes('Penilikan Lubang')) {
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
+        this.filters.activities.push('Penilikan Lubang')
+        this.tables.penlub.show = true
+      } else {
+        this.tables.penlub.show = false
+      }
+
+      // console.log('Opened' + openedPanel)
 
       this.filters.showed = true
       this.expansions.model = [1, ...openedPanel]
@@ -1028,15 +1330,22 @@ export default {
             await this.tables.sostam.headers.splice(sostamHeaderIndex, 1)
           }
         })) 
+        // remove FC in table penlub
+        await Promise.all(this.tables.penlub.headers.map(async (penlubHeader, penlubHeaderIndex) => {
+          if (penlubHeader.text == 'FC') {
+            await this.tables.penlub.headers.splice(penlubHeaderIndex, 1)
+          }
+        })) 
 
         let params = new URLSearchParams({
           activities: this.options.activities.model.join(),
           fc_no: fc_no,
           program_year: this.options.programYear.model,
-          dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
+          dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub]
         })
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
+        this.tables.penlub.loading = true
 
         const response = await axios.get(
           this.auth.baseUrlGet +
@@ -1064,8 +1373,10 @@ export default {
         // set table data
         this.tables.farmer.items = farmers
         this.tables.sostam.items = datas.sostam
+        this.tables.penlub.items = datas.penlub
 
-        this.generateTotalBibitSostamDetails(datas.sostam)
+        this.generateTotalBibitDetails(datas.sostam, 'sostam')
+        this.generateTotalBibitDetails(datas.penlub, 'penlub')
 
         // set filter data
         await this.setFilterData(datas)
@@ -1075,12 +1386,14 @@ export default {
       } finally {
         this.tables.farmer.loading = false
         this.tables.sostam.loading = false
+        this.tables.penlub.loading = false
       }
     },
     async generateKPIbyUM() {
       try {
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
+        this.tables.penlub.loading = true
         this.$store.state.loadingOverlay = true
 
         // add FC in table farmer
@@ -1109,11 +1422,25 @@ export default {
             ...this.tables.sostam.headers
           ]
         }
+        // add FC in table sostam
+        let checkPenlubHeaderContainFC = 0
+        await Promise.all(this.tables.penlub.headers.map(async (penlubHeader, penlubHeaderIndex) => {
+          if (penlubHeader.text == 'FC') {
+            checkPenlubHeaderContainFC += 1
+          }
+        })) 
+        if (checkPenlubHeaderContainFC == 0) {
+          this.tables.penlub.headers = [
+            { text: "FC", value: "fc" },
+            ...this.tables.penlub.headers
+          ]
+        }
 
         const fieldCoordinators = this.options.FC.items || [] 
 
         let farmers = []
         let sostams = []
+        let penlubs = []
         
         let totalFC = fieldCoordinators.length
         let generatedFC = 0
@@ -1125,7 +1452,7 @@ export default {
             activities: this.options.activities.model.join(),
             fc_no: fcVal.nik,
             program_year: this.options.programYear.model,
-            dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam]
+            dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub]
           })
   
           await axios.get(
@@ -1159,6 +1486,16 @@ export default {
                 })
               })
             }
+
+            // get penlub
+            if (datas.penlub.length > 0) {
+              datas.penlub.forEach(penlubVal => {
+                penlubs.push({
+                  fc: fcVal.name,
+                  ...penlubVal
+                })
+              })
+            }
   
             // set filter data
             if (fcIndex == 0) {
@@ -1178,6 +1515,7 @@ export default {
   
               this.tables.farmer.loading = false
               this.tables.sostam.loading = false
+              this.tables.penlub.loading = false
             }
           })
         }))
@@ -1185,6 +1523,7 @@ export default {
         // set datas to tables
         this.tables.farmer.items = farmers
         this.tables.sostam.items = sostams
+        this.tables.penlub.items = penlubs
       } catch (error) {
         console.error(error)
       }
@@ -1235,6 +1574,8 @@ export default {
       this.dates.land = ['2022-10-03' ,'2022-10-31']
       this.filters.dates.sostam = this.dates.sostam
       this.dates.sostam = '2022-11-15'
+      this.filters.dates.penlub = this.dates.penlub
+      this.dates.penlub = '2022-12-31'
     },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
@@ -1270,8 +1611,8 @@ export default {
         })
         return formData
     },
-    generateTotalBibitSostamDetails(datas) {
-      this.tables.sostam.totalBibitDetails = {
+    generateTotalBibitDetails(datas, type) {
+      this.tables[type].totalBibitDetails = {
         KAYU: [],
         MPTS: [],
         CROPS: []
@@ -1279,21 +1620,21 @@ export default {
       datas.forEach((val, index) => {
         val.total_bibit_details.forEach((val2, index2) => {
           let exists = 0
-          this.tables.sostam.totalBibitDetails[val2.category].forEach((val3, index3) => {
+          this.tables[type].totalBibitDetails[val2.category].forEach((val3, index3) => {
             if (val3.tree_code == val2.tree_code) {
-              this.tables.sostam.totalBibitDetails[val2.category][index3].amount += val2.amount
+              this.tables[type].totalBibitDetails[val2.category][index3].amount += val2.amount
               exists += 1
             }
           })
           if (exists == 0 && val2.amount > 0) {
-            this.tables.sostam.totalBibitDetails[val2.category].push(val2)
+            this.tables[type].totalBibitDetails[val2.category].push(val2)
           }
         })
       })
     },
-    getTotalBibitPerCategory(category) {
+    getTotalBibitPerCategory(category, type) {
       let total = 0
-      this.tables.sostam.totalBibitDetails[category].forEach(val => {
+      this.tables[type].totalBibitDetails[category].forEach(val => {
         total += val.amount
       })
       return this.numberFormat(total)
