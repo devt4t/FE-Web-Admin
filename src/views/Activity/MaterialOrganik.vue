@@ -101,15 +101,18 @@
                         v-if="dialogs.detail.datas.status == 0"
                         :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'"
                         color="green white--text"
+                        class="pr-3"
                         rounded
                         @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to VERIF this data?';dialogs.confirmation.okText = 'Verif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
                     >
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
-                        Verif
+                        Verification
                     </v-btn>
                     <v-btn
-                        v-if="dialogs.detail.datas.status == 1 && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')"
+                        v-if="dialogs.detail.datas.status == 1"
+                        :disabled="User.role_group != 'IT' && User.role_name != 'UNIT MANAGER'"
                         color="red white--text"
+                        class="pr-3"
                         rounded
                         @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to UNVERIF this data?';dialogs.confirmation.okText = 'Unverif';dialogs.confirmation.model = dialogs.detail.datas.organic_no"
                     >
