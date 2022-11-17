@@ -1878,11 +1878,12 @@ export default {
 
   mounted() {
     this.firstAccessPage();
-    const taskForceEmails = this.$store.state.taskForceTeam.emails || []
-    console.log(taskForceEmails.includes(this.User.email))
-    if (this.User.role_group != 'IT' && taskForceEmails.includes(this.User.email) == false) {
-      this.$store.state.maintenanceOverlay = true
-    }
+
+    // Showing Maintenance Overlay
+    // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
+    // if (this.User.role_group != 'IT' && taskForceEmails.includes(this.User.email) == false) {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
