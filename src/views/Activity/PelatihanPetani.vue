@@ -129,7 +129,7 @@
       </v-dialog>
 
       <!-- Modal Create Form Pelatihan Petani -->
-      <v-dialog v-model="dialogAddonly" max-width="1000px" persistent content-class="rounded-lg" scrollable>
+      <v-dialog v-model="dialogAddonly" max-width="1000px" persistent content-class="rounded-lg mx-1" scrollable>
         <v-card class="rounded-xl">
           <v-card-title class="mb-1 headermodalstyle">
             <span>{{ formTitle }}</span>
@@ -704,7 +704,7 @@
       </v-dialog>
 
       <!-- Modal Detail Form Pelatihan Petani -->
-      <v-dialog v-model="dialogDetail" max-width="900px" content-class="rounded-xl" scrollable>
+      <v-dialog v-model="dialogDetail" max-width="900px" content-class="rounded-xl mx-1" scrollable>
         <v-card class="rounded-lg">
           <v-card-title class="mb-1 headermodalstyle">
             <span class="headline">Detail Pelatihan Petani</span>
@@ -1035,7 +1035,7 @@
       </v-dialog>
 
       <!-- Preview Petani Modal -->
-      <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl" scrollable>
+      <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl mx-1" scrollable>
         <v-card class="rounded-xl">
           <v-card-title>
             {{ preview.petani.data.kode }} -
@@ -1067,7 +1067,7 @@
       </v-dialog>
 
       <!-- Preview Absensi Modal -->
-      <v-dialog v-model="preview.absensi.modal" max-width="500px" content-class="rounded-xl" scrollable>
+      <v-dialog v-model="preview.absensi.modal" max-width="500px" content-class="rounded-xl mx-1" scrollable>
         <v-card class="rounded-xl">
           <v-card-title>
             Preview Absensi Photo
@@ -1105,7 +1105,7 @@
       </v-dialog>
 
       <!-- Preview Petani Modal ~ before adding to participant list -->
-      <v-dialog v-model="preview.addParticipant.modal" max-width="800px" content-class="rounded-xl" persistent scrollable>
+      <v-dialog v-model="preview.addParticipant.modal" max-width="800px" content-class="rounded-xl mx-1" persistent scrollable>
         <v-card class="rounded-xl">
           <v-card-title class="headermodalstyle mb-0 rounded-none">Konfirmasi Petani</v-card-title>
           <v-card-text class="pa-1 fontall">
@@ -1183,7 +1183,7 @@
       </v-dialog>
 
       <!-- Modal Delete -->
-      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl mx-1">
         <v-card class="rounded-xl pb-2">
           <v-card-title class="headline"
             >Are you sure you want to delete this item?</v-card-title
