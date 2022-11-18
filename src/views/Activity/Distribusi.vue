@@ -1284,12 +1284,7 @@ export default {
         },
         async calendarUpdateRange ({ start, end }) {
             this.calendar.loading = true
-            if (this.User.role_name == 'UNIT MANAGER') {
-                if (typeof this.User.ff.ff[0] != 'undefined') {
-                    const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
-                    this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
-                }
-            }
+            await this.getUserException()
             const params = new URLSearchParams({
                 month: this.dateFormat(start.date, 'MM'),
                 year: this.dateFormat(start.date, 'Y'),
@@ -1423,12 +1418,6 @@ export default {
             return moment(date).format(format)
         },
         async firstAccessPage() {
-            if (this.User.role_name == 'UNIT MANAGER') {
-                if (typeof this.User.ff.ff[0] != 'undefined') {
-                    const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
-                    this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
-                }
-            }
             await this.getPackingLabelTableData()
         },
         getNurseryAlocation(mu_no) {
@@ -1450,6 +1439,16 @@ export default {
             }
             
             return nursery;
+        },
+        async getUserException() {
+            if (this.User.role_name == 'UNIT MANAGER') {
+                if (typeof this.User.ff.ff[0] != 'undefined') {
+                    const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
+                    this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
+                }
+            } else if (this.User.role_name == 'NURSERY') {
+                if (this.User.email = 'muslim@trees4trees.org') this.generalSettings.nursery.model = 'Kebumen'
+            }
         },
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
