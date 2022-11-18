@@ -714,7 +714,7 @@
                                                         <v-list-item>
                                                             <v-btn 
                                                                 block color="blue white--text" rounded 
-                                                                @click="printByLahan('label', item.ph_form_no)"
+                                                                @click="printPackingLabelByLahan('label', item.ph_form_no)"
                                                             >
                                                                 <v-icon class="mr-1">mdi-printer</v-icon>
                                                                 Label
@@ -723,7 +723,7 @@
                                                         <v-list-item>
                                                             <v-btn 
                                                                 color="green white--text" rounded
-                                                                @click="printByLahan('tanda_terima', item.ph_form_no)"
+                                                                @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
                                                             >
                                                                 <v-icon class="mr-1">mdi-printer</v-icon>
                                                                 Tanda Terima
@@ -1367,7 +1367,7 @@ export default {
                 })
             }
         },
-        printByLahan(type, form_no) {
+        printPackingLabelByLahan(type, form_no) {
             if (type == 'label') {
                 window.open(
                     this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +

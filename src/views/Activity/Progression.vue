@@ -43,7 +43,7 @@
                 rounded
                 v-model="options.programYear.model"
                 :items="options.programYear.items"
-                label="Tahun Program"
+                label="Program Year"
                 type="string"
                 :rules="[(v) => !!v || 'Field is required']"
               ></v-select>
