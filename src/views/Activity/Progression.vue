@@ -771,7 +771,7 @@
               <v-row v-if="filters.FC" class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
                 <v-btn 
-                  @click="generateReport('Sosialisasi Tanam')"
+                  @click="generateReport('Penilikan Lubang')"
                   color="info"
                   class="mb-2 d-none d-md-inline-block"
                   rounded
@@ -836,7 +836,7 @@
             pdf-format="a4"
             pdf-orientation="landscape"
             pdf-content-width="1125px"
-            ref="exportPDFSosialisasiTanam"
+            ref="exportPDFPenilikanLubang"
           >
             <section slot="pdf-content">
               <v-container>
@@ -1592,6 +1592,8 @@ export default {
          this.$refs.exportPDFPendataanPetaniLahan.generatePdf()
        } else if (activities == 'Sosialisasi Tanam') {
          this.$refs.exportPDFSosialisasiTanam.generatePdf()
+       } else if (activities == 'Penilikan Lubang') {
+         this.$refs.exportPDFPenilikanLubang.generatePdf()
        }
     },
     generateFormData(data) {
