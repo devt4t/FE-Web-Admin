@@ -284,13 +284,12 @@
                 top
                 persistent
                 scrollable 
-                transition="dialog-top-transition"
                 max-width="700px" 
                 content-class="rounded-xl elevation-0 mx-2" 
                 v-model="loadingLine.detailDialog.show" 
             >
                 <v-card class="elevation-5 rounded-xl">
-                    <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                    <v-card-title class="mb-1 headermodalstyle rounded-xl d-flex align-center">
                         <span class="d-flex align-center">
                             <v-icon color="white" class="mr-1">
                                 mdi-qrcode-scan
@@ -357,6 +356,19 @@
                             ></v-text-field>
                         </div>
                     </v-card-text>
+                    <v-card-actions>
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn
+                            color="green white--text"
+                            rounded
+                            class="pr-3"
+                            :disabled="loadingLine.detailDialog.inputs.scanner.values.length == 0"
+                        >
+                            <v-icon class="mr-1">mdi-check-circle</v-icon>
+                            Save
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                    </v-card-actions>
                 </v-card>
             </v-dialog>
         <!-- END: MODAL -->
@@ -872,7 +884,7 @@
                 <!-- Distribution Report Section -->
                 <v-expansion-panel class="rounded-xl">
                     <v-expansion-panel-header>
-                        <h3 class="dark--text"><v-icon class="mr-1">mdi-nature-people</v-icon> Distribution Report</h3>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> Distribution Report</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
@@ -1448,22 +1460,33 @@ export default {
         async scannerUpdate() {
             const existsScannedLabel = this.loadingLine.detailDialog.inputs.scanner.values
             const newLabel = this.loadingLine.detailDialog.inputs.scanner.model
-            if (existsScannedLabel.includes(newLabel) == false) {
-                this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
-                const audio = new Audio(require('@/assets/audio/success.mp3'))
-                await audio.play()
-
-                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`
-                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
+            let audio = null
+            const totalChar = 21
+            
+            if (newLabel.length != totalChar) {
+                    audio = new Audio(require('@/assets/audio/error.mp3'))
+    
+                    this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" invalid format, total char is ${totalChar}!`
+                    this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
 
             } else {
-                const audio = new Audio(require('@/assets/audio/error.mp3'))
-                await audio.play()
-
-                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" has been already scaned!`
-                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
+                if (existsScannedLabel.includes(newLabel) == false) {
+                    this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
+                    audio = new Audio(require('@/assets/audio/success.mp3'))
+    
+                    this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`
+                    this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
+    
+                } else {
+                    audio = new Audio(require('@/assets/audio/error.mp3'))
+    
+                    this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" has been already scaned!`
+                    this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
+                }
             }
+            
 
+            await audio.play()
             this.loadingLine.detailDialog.inputs.scanner.alert.show = true
             this.loadingLine.detailDialog.inputs.scanner.model = ''
         },
