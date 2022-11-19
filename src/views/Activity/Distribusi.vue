@@ -408,7 +408,7 @@
                     label="Nursery"
                     class="mx-auto mx-lg-3"
                     style="max-width: 200px"
-                    :disabled="User.role_name == 'UNIT MANAGER' || User.role_name == 'NURSERY' || User.role_name == 'NURSERY MANAGER' || calendar.loading"
+                    :disabled="generalSettings.nursery.disabled || calendar.loading"
                 ></v-select>
                 <v-divider class="mx-2"></v-divider>
             </v-toolbar>
@@ -1003,6 +1003,7 @@ export default {
             nursery: {
                 model: 'All',
                 options: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati'],
+                disabled: false,
             },
             programYear: '2022',
         },
@@ -1076,6 +1077,7 @@ export default {
         User: JSON.parse(localStorage.getItem("User"))
     }),
     async mounted() {
+        if (this.User.ff.value_data == '-') this.User.ff.value_data = 'all'
         await this.firstAccessPage()
     },
     destroyed() {
@@ -1445,11 +1447,15 @@ export default {
                 if (typeof this.User.ff.ff[0] != 'undefined') {
                     const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
                     this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
+                    this.generalSettings.nursery.disabled = true
                 }
-            } else if (this.User.role_name == 'NURSERY' || this.User.role_name == 'NURSERY MANAGER') {
+            } else {
                 const nurserySite = ['Arjasari', 'Ciminyak', 'Kebumen', 'Pati']
                 await nurserySite.forEach((val) => {
-                    if (this.$store.state.nurseryTeam.emails[val].includes(this.User.email)) this.generalSettings.nursery.model = val
+                    if (this.$store.state.nurseryTeam.emails[val].includes(this.User.email)) {
+                        this.generalSettings.nursery.model = val
+                        this.generalSettings.nursery.disabled = true
+                    }
                 })
             }
         },
