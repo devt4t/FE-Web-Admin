@@ -61,6 +61,11 @@
                                                 <td>{{ calendar.detailBibit.datas.program_year }}</td>
                                             </tr>
                                             <tr>
+                                                <td>Activity</td>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailBibit.datas.activity == 'sostam' ? 'Sosialisasi Tanam' : 'Penilikan Lubang' }}</td>
+                                            </tr>
+                                            <tr>
                                                 <td>Field Facilitators</td>
                                                 <td>:</td>
                                                 <td>{{ calendar.detailBibit.datas.FF.length }} FF ({{ calendar.detailBibit.datas.FF.toString() }})</td>
@@ -530,7 +535,7 @@
                                                 <td>{{ dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y') }}</td>
                                             </tr>
                                             <tr>
-                                                <td>Total Bibit</td>
+                                                <td>Total Bibit Sostam</td>
                                                 <td>:</td>
                                                 <td>    
                                                     <v-tooltip top>
@@ -540,9 +545,28 @@
                                                                 v-bind="attrs"
                                                                 v-on="on"
                                                                 class="cursor-pointer" 
-                                                                @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery')"
+                                                                @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'sostam')"
                                                             >
                                                                 {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
+                                                            </strong>
+                                                        </template>
+                                                    </v-tooltip>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Bibit Penlub</td>
+                                                <td>:</td>
+                                                <td>    
+                                                    <v-tooltip top>
+                                                        Click for preview detailed seed
+                                                        <template v-slot:activator="{ on, attrs }">
+                                                            <strong 
+                                                                v-bind="attrs"
+                                                                v-on="on"
+                                                                class="cursor-pointer" 
+                                                                @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'penlub')"
+                                                            >
+                                                                {{ numberFormat(calendar.selectedEvent.total_bibit_penlub) }} Bibit
                                                             </strong>
                                                         </template>
                                                     </v-tooltip>
@@ -555,52 +579,79 @@
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
-                                    <v-simple-table class="my-1" dense>
-                                        <thead>
-                                            <tr>
-                                                <td>No</td>
-                                                <td>Management Unit</td>
-                                                <td>FF Name</td>
-                                                <td>Bibit Sostam</td>
-                                                <td>Location</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody >
-                                            <tr v-for="(detailData, detailIndex) in calendar.selectedEvent.details" :key="detailIndex">
-                                                <td>{{ detailIndex + 1 }}</td>
-                                                <td>{{ detailData.mu_name }}</td>
-                                                <td>
-                                                    <v-tooltip top>
-                                                        Click for preview detailed ff period
-                                                        <template v-slot:activator="{ on, attrs }">
-                                                            <strong 
-                                                                v-on="on"
-                                                                v-bind="attrs"
-                                                                class="cursor-pointer"
-                                                                @click="calendarShowDetailFFPeriod(detailData)"
-                                                            >
-                                                                {{ detailData.ff_name }}
-                                                            </strong>
-                                                        </template>
-                                                    </v-tooltip>
-                                                </td>
-                                                <td align="center">
-                                                    <v-tooltip top>
-                                                        Click for preview detailed seed
-                                                        <template v-slot:activator="{ on, attrs }">
-                                                            <strong 
-                                                                v-on="on"
-                                                                v-bind="attrs"
-                                                                @click="calendarShowDetailTotalBibit(detailData, 'ff')"
-                                                                class="cursor-pointer"
-                                                            >{{ numberFormat(detailData.total_bibit_sostam) }}</strong>
-                                                        </template>
-                                                    </v-tooltip>
-                                                </td>
-                                                <td>{{ detailData.distribution_location }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </v-simple-table>
+                                    <v-data-table 
+                                        hide-default-footer
+                                        :items-per-page="-1"
+                                        :headers="calendar.table.headers"
+                                        :items="calendar.selectedEvent.details"
+                                        dense
+                                    >
+                                        <!-- No Column -->
+                                        <template v-slot:item.no="{index}">
+                                            {{ index+1 }}
+                                        </template>
+                                        <!-- Total Bibit Sostam Column -->
+                                        <template v-slot:item.total_bibit_sostam="{item}">
+                                            {{ numberFormat(item.total_bibit_sostam) }} Bibit
+                                        </template>
+                                        <!-- Progress Penlub Column -->
+                                        <template v-slot:item.progress_penlub="{item}">
+                                            <v-chip :color="`${item.progress_penlub == 100 ? 'green' : (item.progress_penlub > 0 ? 'orange' : 'red')} white--text`">
+                                                {{ item.progress_penlub }} %
+                                            </v-chip>
+                                        </template>
+                                        <!-- Total Bibit Penlub Column -->
+                                        <template v-slot:item.total_bibit_penlub="{item}">
+                                            {{ numberFormat(item.total_bibit_penlub) }} Bibit
+                                        </template>
+                                        <!-- Action Column -->
+                                        <template v-slot:item.actions="{item}">
+                                            <v-menu
+                                                rounded="xl"
+                                                bottom
+                                                left
+                                                offset-y
+                                                transition="slide-y-transition"
+                                                :close-on-content-click="false"
+                                            >
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-icon v-bind="attrs" v-on="on" color="dark">
+                                                    mdi-arrow-down-drop-circle
+                                                    </v-icon>
+                                                </template>
+
+                                                <v-list class="d-flex flex-column align-stretch">
+                                                    <v-list-item>
+                                                        <v-btn 
+                                                            block color="blue white--text" rounded 
+                                                            @click="calendarShowDetailFFPeriod(item)"
+                                                        >
+                                                            <v-icon class="mr-1">mdi-calendar</v-icon>
+                                                            Period
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-btn 
+                                                            block color="green white--text" rounded 
+                                                            @click="calendarShowDetailTotalBibit(item, 'ff', 'sostam')"
+                                                        >
+                                                            <v-icon class="mr-1">mdi-seed</v-icon>
+                                                            Sostam Seeds
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-btn 
+                                                            block color="green white--text" rounded 
+                                                            @click="calendarShowDetailTotalBibit(item, 'ff', 'penlub')"
+                                                        >
+                                                            <v-icon class="mr-1">mdi-sprout</v-icon>
+                                                            Penlub Seeds
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
+                                        </template>
+                                    </v-data-table>
                                 </v-card-text>
                                 <v-card-actions class="white">
                                     <v-btn
@@ -980,6 +1031,17 @@ export default {
             selectedElement: null,
             selectedEvent: {},
             selectedOpen: false,
+            table: {
+                headers: [
+                    { text: 'No', value: 'no', align: 'center'},
+                    { text: 'MU', value: 'mu_name', align: 'left'},
+                    { text: 'FF', value: 'ff_name', align: 'left'},
+                    { text: 'Total Bibit Sostam', value: 'total_bibit_sostam', align: 'left'},
+                    { text: 'Progress PenLub', value: 'progress_penlub', align: 'center'},
+                    { text: 'Total Bibit PenLub', value: 'total_bibit_penlub', align: 'center'},
+                    { text: 'Actions', value: 'actions', align: 'right'},
+                ]
+            },
             type: 'month',
             typeToLabel: {
                 month: 'Month',
@@ -1234,7 +1296,7 @@ export default {
                 this.calendar.detailPeriodFF.loadingText = ''
             }
             },
-        async calendarShowDetailTotalBibit(datas, type) {
+        async calendarShowDetailTotalBibit(datas, type, activity) {
             let ff_no = []
             let program_year = ''
             if (type == 'nursery') {
@@ -1253,7 +1315,8 @@ export default {
             
             let url = localStorage.getItem("BaseUrlGet") + 'DistributionSeedDetail?' + new URLSearchParams({
                 ff_no: ff_no.toString(),
-                program_year: program_year
+                program_year: program_year,
+                activity: activity
             })
             await axios.get(url, {
                 headers: {
@@ -1314,6 +1377,7 @@ export default {
                     start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
                     total_ff: evData.total,
                     total_bibit_sostam: evData.total_bibit_sostam,
+                    total_bibit_penlub: evData.total_bibit_penlub,
                     color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
                     details: evData.details,
                 })
