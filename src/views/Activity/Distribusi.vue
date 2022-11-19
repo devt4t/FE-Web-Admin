@@ -408,7 +408,7 @@
                     label="Nursery"
                     class="mx-auto mx-lg-3"
                     style="max-width: 200px"
-                    :disabled="User.role_name == 'UNIT MANAGER' || calendar.loading"
+                    :disabled="User.role_name == 'UNIT MANAGER' || User.role_name == 'NURSERY' || User.role_name == 'NURSERY MANAGER' || calendar.loading"
                 ></v-select>
                 <v-divider class="mx-2"></v-divider>
             </v-toolbar>
@@ -1446,8 +1446,11 @@ export default {
                     const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
                     this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
                 }
-            } else if (this.User.role_name == 'NURSERY') {
-                if (this.User.email = 'muslim@trees4trees.org') this.generalSettings.nursery.model = 'Kebumen'
+            } else if (this.User.role_name == 'NURSERY' || this.User.role_name == 'NURSERY MANAGER') {
+                const nurserySite = ['Arjasari', 'Ciminyak', 'Kebumen', 'Pati']
+                await nurserySite.forEach((val) => {
+                    if (this.$store.state.nurseryTeam.emails[val].includes(this.User.email)) this.generalSettings.nursery.model = val
+                })
             }
         },
         numberFormat(num) {

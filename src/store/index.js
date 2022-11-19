@@ -1,7 +1,8 @@
 import moment from 'moment/moment'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {version} from '../../package.json'
+import { version } from '../../package.json'
+import { Arjasari, Ciminyak, Kebumen, Pati } from './nurseryTeam/listEmail'
 import TaskForceEmail from './taskForceTeam/listEmail'
 
 Vue.use(Vuex)
@@ -24,6 +25,14 @@ export default new Vuex.Store({
     },
     taskForceTeam: {
       emails: TaskForceEmail
+    },
+    nurseryTeam: {
+      emails: {
+        Arjasari: Arjasari || [],
+        Ciminyak: Ciminyak || [],
+        Kebumen: Kebumen || [],
+        Pati: Pati || []
+      }
     }
   },
   mutations: {
