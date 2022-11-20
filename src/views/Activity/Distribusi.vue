@@ -332,7 +332,7 @@
                                         <td>CIWIDEY</td>
                                     </tr>
                                     <tr>
-                                        <th>Seeds Total</th>
+                                        <th>Seedling Total</th>
                                         <th>:</th>
                                         <td>5.500</td>
                                     </tr>
