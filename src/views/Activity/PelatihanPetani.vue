@@ -2064,9 +2064,9 @@ export default {
           this.colorsnackbar = 'red lighten-1'
         }
       } catch(error) {
-          this.textsnackbar = error.response.data.data.status.code + ': ' +error.response.data.data.status.description
-          this.colorsnackbar = 'red lighten-1'
-          this.snackbar = true
+        this.textsnackbar = error
+        this.colorsnackbar = 'red lighten-1'
+        this.snackbar = true
         this.sessionEnd(error)
       } finally {
         this.loadsave = false

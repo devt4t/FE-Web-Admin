@@ -68,7 +68,12 @@
                                             <tr>
                                                 <td>Field Facilitators</td>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailBibit.datas.FF.length }} FF ({{ calendar.detailBibit.datas.FF.toString() }})</td>
+                                                <td>
+                                                    <v-chip color="green white--text" class="mr-1 mb-1" v-for="(ffData, ffIndex) in calendar.detailBibit.datas.FF_details" :key="ffIndex">
+                                                        <v-icon small class="mr-1">mdi-clipboard-account</v-icon>
+                                                        {{ ffData.name }} ({{ ffData.village_name }})
+                                                    </v-chip>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td>Total Bibit</td>
@@ -153,6 +158,10 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
+                        <v-btn rounded color="blue white--text pr-3">
+                            <v-icon class="mr-1">mdi-printer</v-icon>
+                            Export
+                        </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
