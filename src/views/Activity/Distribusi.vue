@@ -208,7 +208,7 @@
                                             <tr>
                                                 <th>Distribution Location</th>
                                                 <td>:</td>
-                                                <td  v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+                                                <td  v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'">
                                                     <v-textarea
                                                         v-model="calendar.detailPeriodFF.newPeriod.distribution_location"
                                                         rows="3"
@@ -237,7 +237,7 @@
                                             <tr>
                                                 <th>Distribution</th>
                                                 <td>:</td>
-                                                <td v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+                                                <td v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'">
                                                     <v-menu offset-x transition="slide-x-transition" rounded="xl">
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <div class="d-flex flex-column align-center">
@@ -277,7 +277,7 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="green white--text pr-3" v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" @click="calendarUpdateDetailFFPeriod ">
+                        <v-btn rounded color="green white--text pr-3" v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" @click="calendarUpdateDetailFFPeriod ">
                             <v-icon class="mr-1">mdi-content-save-check</v-icon>
                             Save
                         </v-btn>
