@@ -1063,6 +1063,17 @@
                         </th>
                       </tr>
                       <tr>
+                        <th
+                          class="text-left"
+                          style="width: 200px; font-size: 14px"
+                        >
+                          Form No
+                        </th>
+                        <td class="text-left" style="font-size: 14px">
+                          <strong>{{ defaultItem.ph_form_no }}</strong>
+                        </td>
+                      </tr>
+                      <tr>
                         <th class="text-left" style="font-size: 14px">
                           Nama Petani
                         </th>

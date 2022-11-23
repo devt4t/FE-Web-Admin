@@ -385,6 +385,32 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <!-- Confirmation -->
+            <v-dialog v-model="confirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
+                <v-card class="rounded-xl">
+                    <v-card-title class="mb-1 headermodalstyle">
+                        <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
+                        <span>Confirmation</span>
+                        <v-divider dark class="mx-2"></v-divider>
+                        <v-icon color="red" @click="confirmation.show = false">mdi-close-circle</v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        <h2 class="text-center pt-4">{{ confirmation.title }}</h2>
+                        <v-row class="mt-10 align-center mb-0">
+                            <v-divider class="mx-2"></v-divider>
+                            <v-btn rounded color="red white--text mr-1" @click="confirmation.show = false">
+                                <v-icon class="mr-1">mdi-close-circle</v-icon>
+                                Close
+                            </v-btn>
+                            <v-btn rounded color="green white--text ml-1" @click="confirmationOk(confirmation.okText)">
+                                <v-icon class="mr-1">mdi-check-circle</v-icon>
+                                {{ confirmation.okText }}
+                            </v-btn>
+                            <v-divider class="mx-2"></v-divider>
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         <!-- END: MODAL -->
         
         
@@ -686,13 +712,15 @@
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
-                        <v-overlay :value="packingLabel.loading" absolute class="rounded-xl">
+                        <v-overlay :value="packingLabel.loading" absolute class="rounded-xl" color="white">
                             <div class="d-flex flex-column align-center justify-center">
                                 <v-progress-circular
                                     indeterminate
-                                    color="white"
-                                    size="64"
+                                    color="green"
+                                    size="100"
+                                    width="7"
                                 ></v-progress-circular>
+                                <p v-if="packingLabel.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">{{ packingLabel.loadingText }}</p>
                             </div>
                         </v-overlay>
                         <v-row>
@@ -714,6 +742,7 @@
                                     <v-tab>By Field Facilitator</v-tab>
                                 </v-tabs>
                             </v-col>
+                            <!-- Packing Label Tables -->
                             <v-col cols="12">
                                 <v-tabs-items v-model="packingLabel.tabs.model">
                                     <!-- Packing Label Table 1 ~ Per Lahan -->
@@ -745,15 +774,17 @@
                                                 </v-row>
                                             </template>
                                             <!-- Check Column -->
-                                            <template v-slot:item.check="{item}">
+                                            <template v-slot:item.is_checked="{item}">
                                                 <v-checkbox
-                                                    v-model="item.is_printed"
-                                                    :background-color="`${item.is_printed ? 'green' : 'grey darken-1'} rounded-xl px-2 pr-3 py-1`"
+                                                    v-model="item.is_checked"
+                                                    @click="confirmationShow('Check Label', item)"
+                                                    readonly
+                                                    :background-color="`${item.is_checked ? 'green' : 'grey darken-1'} rounded-xl px-2 pr-3 py-1`"
                                                     dark
                                                     color="white"
                                                     class="mt-0"
                                                     hide-details
-                                                    :label="`${item.is_printed ? 'Printed' : 'Nope'}`"
+                                                    :label="`${item.is_checked ? 'Printed' : 'Nope'}`"
                                                     off-icon="mdi-circle-outline"
                                                     on-icon="mdi-check-circle"
                                                 ></v-checkbox>
@@ -823,13 +854,15 @@
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
-                        <v-overlay :value="loadingLine.loading" absolute class="rounded-xl">
+                        <v-overlay :value="loadingLine.loading" absolute class="rounded-xl" color="white">
                             <div class="d-flex flex-column align-center justify-center">
                                 <v-progress-circular
                                     indeterminate
-                                    color="white"
-                                    size="64"
+                                    color="green"
+                                    size="100"
+                                    width="7"
                                 ></v-progress-circular>
+                                <p v-if="loadingLine.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">{{ loadingLine.loadingText }}</p>
                             </div>
                         </v-overlay>
                         <v-row>
@@ -842,7 +875,7 @@
                                         bottom
                                         min-width="100"
                                         offset-y
-                                        :close-on-content-click="false"
+                                        :close-on-content-click="true"
                                         v-model="loadingLine.datePicker.show"
                                     >
                                         <template v-slot:activator="{ on: menu, attrs }">
@@ -853,7 +886,7 @@
                                                         color="green"
                                                         hide-details
                                                         outlined
-                                                        label="Select Date"
+                                                        label="Distribution Date"
                                                         rounded
                                                         v-bind="attrs"
                                                         v-on="{...menu, ...tooltip}"
@@ -882,10 +915,6 @@
                                                     min="2022-11-24"
                                                     max="2023-01-31"
                                                 ></v-date-picker>
-                                                <v-btn color="green" class="white--text px-4" small rounded @click="loadingLine.datePicker.show = false">
-                                                    <v-icon small class="mr-1">mdi-check-circle</v-icon>
-                                                    Set
-                                                </v-btn>
                                             </div>
                                         </div>
                                     </v-menu>
@@ -902,36 +931,43 @@
                                 <v-data-table
                                     :headers="loadingLine.table.headers"
                                     :items="loadingLine.table.items"
+                                    :loading="loadingLine.table.loading"
                                 >
                                     <!-- Check Column -->
-                                    <template v-slot:item.check="{item}">
+                                    <template v-slot:item.is_loaded="{item}">
                                         <v-checkbox
-                                            v-model="item.check"
-                                            :background-color="`${item.check ? 'green' : 'grey darken-1'} rounded-xl px-3 py-1`"
+                                            v-model="item.is_loaded"
+                                            readonly
+                                            :background-color="`${item.is_loaded ? 'green' : 'grey darken-1'} rounded-xl px-3 py-1`"
                                             dark
                                             color="white"
                                             class="mt-0"
                                             hide-details
-                                            :label="`${item.check ? 'Loaded' : 'Nope'}`"
+                                            :label="`${item.is_loaded ? 'Loaded' : 'Nope'}`"
                                             off-icon="mdi-truck-alert"
                                             on-icon="mdi-truck-check"
                                         ></v-checkbox>
                                     </template>
-                                    <!-- Date Column -->
-                                    <template v-slot:item.date="{item}">
-                                        {{ dateFormat(item.date, 'DD MMMM Y') }}
+                                    <!-- Printed Progress Column -->
+                                    <template v-slot:item.printed_progress="{item}">
+                                        {{ `${item.ph_printed}/${item.ph_all}` }} 
+                                        <v-chip :color="`${item.printed_progress == 100 ? 'green' : 'red'} white--text`" class="ml-1">
+                                            <v-icon v-if="item.printed_progress == 100" color="white" class="mr-1">mdi-check-circle</v-icon>
+                                            <v-icon v-else color="white" class="mr-1">mdi-close-circle</v-icon>
+                                            {{ item.printed_progress }}%
+                                        </v-chip>
                                     </template>
                                     <!-- Seeds Total Column -->
-                                    <template v-slot:item.seeds_total="{item}">
-                                        {{ numberFormat(item.seeds_total) }}
+                                    <template v-slot:item.total_tree_amount="{item}">
+                                        {{ numberFormat(item.total_tree_amount) }}
                                     </template>
                                     <!-- Bags Total Column -->
-                                    <template v-slot:item.bags_total="{item}">
-                                        {{ numberFormat(item.bags_total) }}
+                                    <template v-slot:item.total_bags="{item}">
+                                        {{ numberFormat(item.total_bags) }}
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn rounded color="blue white--text" @click="loadingLine.detailDialog.show = true">
+                                        <v-btn rounded :disabled="item.printed_progress != 100" color="blue white--text" @click="loadingLine.detailDialog.show = true">
                                             <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
                                             Scan Label
                                         </v-btn>
@@ -1059,6 +1095,12 @@ export default {
                 '4day': '4 Days',
             },
         },
+        confirmation: {
+            model: null,
+            okText: '',
+            show: false,
+            title: 'Confirmation',
+        },
         distributionReport: {
             loading: false,
             table: {
@@ -1101,27 +1143,37 @@ export default {
                 show: false,
             },
             loading: false,
+            loadingText: null,
             table: {
                 headers: [
-                    { text: 'Check', value: 'check', align: 'center', width: '100'},
+                    { text: 'Check', value: 'is_loaded', align: 'center', width: '100'},
                     { text: 'Management Unit', value: 'mu_name'},
                     { text: 'Field Facilitator', value: 'ff_name'},
-                    { text: 'Seeds Total', value: 'seeds_total', align: 'center'},
-                    { text: 'Bags Total', value: 'bags_total', align: 'center'},
+                    { text: 'Printed Progress', value: 'printed_progress', align: 'center'},
+                    { text: 'Seeds Total', value: 'total_tree_amount', align: 'center'},
+                    { text: 'Bags Total', value: 'total_bags', align: 'center'},
                     { text: 'Actions', value: 'actions', align: 'right'},
                 ],
-                items: [
-                    { check: 0, mu_name: 'CIWIDEY', ff_name: 'T4T Devs', seeds_total: '5500', bags_total: Math.ceil(5500/9)}
-                ],
+                items: [],
                 loading: false,
             }
         },
         packingLabel: {
+            dialogs: {
+                checkedConfirmation: {
+                    show: false,
+                    model: {
+                        ph_form_no: null,
+                        status: 0
+                    }
+                }
+            },
             loading: false,
+            loadingText: null,
             tables: {
                 byLahan: {
                     headers: [
-                        { text: 'Check', value: 'check', align: 'center', width: '100'},
+                        { text: 'Check', value: 'is_checked', align: 'center', width: '100'},
                         { text: "No Lahan", align: "start", value: "lahan_no"},
                         { text: "Management Unit", value: "mu_name"},
                         { text: "Target Area", value: "ta_name"},
@@ -1167,10 +1219,20 @@ export default {
                         start: this.$refs.calendar.renderProps.start,
                         end: this.$refs.calendar.renderProps.end,
                     }
+                    this.packingLabel.loadingText = 'Waiting for completed get distribution calendar data...'
+                    this.packingLabel.loading = true
+                    this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
+                    this.loadingLine.loading = true
                     // refresh calendar
                     await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    this.packingLabel.loadingText = 'Getting packing label data...'
+                    this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
                     // refresh packing label table
                     await this.getPackingLabelTableData()
+                    this.packingLabel.loading = false
+                    this.loadingLine.loadingText = 'Getting loading line data...'
+                    await this.getLoadinglineTableData()
+                    this.loadingLine.loading = false
                 }
             }
         },
@@ -1200,9 +1262,15 @@ export default {
                 this.calendar.detailPeriodFF.newPeriod.hole_time = moment(newValue).subtract(14, 'days').format('Y-MM-DD')
                 this.calendar.detailPeriodFF.newPeriod.planting_time = moment(newValue).add(7, 'days').format('Y-MM-DD')
             }
+        },
+        'loadingLine.datePicker.model': {
+            async handler() {
+                await this.getLoadinglineTableData()
+            }
         }
     },
     methods: {
+        // CALENDAR
         calendarGetEventColor (event) {
             return event.color
         },
@@ -1357,6 +1425,7 @@ export default {
             nativeEvent.stopPropagation()
         },
         async calendarUpdateRange ({ start, end }) {
+            this.generalSettings.nursery.model = 'Pati'
             this.calendar.loading = true
             await this.getUserException()
             const params = new URLSearchParams({
@@ -1395,6 +1464,7 @@ export default {
             this.calendar.events = events
             this.calendar.loading = false
         },
+        // FF
         async getFFMUNo(ff_no) {
             let mu_no = ''
             await axios.get(
@@ -1414,6 +1484,7 @@ export default {
             })
             return mu_no
         },
+        // PACKING LABEL
         async getPackingLabelTableData() {
             let url = ''
             let params = {
@@ -1462,6 +1533,77 @@ export default {
                 )
             }
         },
+        async updateCheckedPlantingHoles(ph_form_no, status) {
+            if (status == 0) {
+                this.packingLabel.loadingText = 'Updating status packing label & creating loading line data...'
+                this.packingLabel.loading = true
+                const url = this.apiConfig.baseUrl + 'CheckedPlantingHole?'
+                const params = {
+                    program_year: this.generalSettings.programYear,
+                    ph_form_no: ph_form_no
+                }
+                let success = 0
+                await axios.get(`${url}${new URLSearchParams(params)}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.apiConfig.token}`
+                    }
+                }).then(res => {
+                    success = 1
+                }).catch(err => {
+                    console.log(err.response)
+                    if (err.response.status == 404 ||err.response.status == 400 ) {
+                        this.snackbar.text = err.response.data.data.result
+                        this.snackbar.color = 'red'
+                        this.snackbar.show = true
+                    }
+                    this.sessionEnd(err)
+                }).finally(() => {
+                    this.packingLabel.loading = false
+                    this.packingLabel.loadingText = null
+                })
+                if (success == 1) {
+                    this.packingLabel.loadingText = 'Updating packing label data...'
+                    this.loadingLine.loadingText = 'Waiting...'
+                    this.loadingLine.loading = true
+                    await this.getPackingLabelTableData()
+                    this.packingLabel.loadingText = null
+    
+                    this.loadingLine.loadingText = 'Updating loading line data...'
+                    await this.getLoadinglineTableData()
+                    this.loadingLine.loading = false
+                    this.loadingLine.loadingText = null
+                }
+            } else {
+                this.snackbar.text = 'Already been checked!'
+                this.snackbar.color = 'red'
+                this.snackbar.show = true
+            }
+        },
+        // LOADING LINE
+        async getLoadinglineTableData() {
+            this.loadingLine.table.loading = true
+            let url = 'GetLoadingLine?'
+            let params = {
+                typegetdata: this.User.ff.value_data,
+                ff: this.User.ff.ff,
+                program_year: this.generalSettings.programYear,
+                nursery: this.generalSettings.nursery.model,
+                distribution_date: this.loadingLine.datePicker.model
+            }
+            await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(result => {
+                const res = result.data.data.result
+                this.loadingLine.table.items = res 
+            }).catch(err => {
+                console.error(err)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.loadingLine.table.loading = false
+            })
+        },
         // Utilities
         calendarGetNurseryColor(n, total, date) {
             let maxFF = this.calendarGetMaxFF(n, date)
@@ -1489,11 +1631,43 @@ export default {
                 return 2
             } else return 4
         },
+        async confirmationOk(type) {
+            this.confirmation.show = false
+            if (type == 'Check Label') {
+                await this.updateCheckedPlantingHoles(this.confirmation.model.ph_form_no, this.confirmation.model.status)
+            }
+        },
+        confirmationShow(type, data) {
+            if (type == 'Check Label') {
+                if (data.is_checked == 0) {
+                    this.confirmation.title = `Do u want to check this label? This can't be undone!`
+                    this.confirmation.okText = 'Check Label'
+                    this.confirmation.show = true
+                    this.confirmation.model = {
+                        ph_form_no: data.ph_form_no,
+                        status: data.is_checked
+                    }
+                } else {
+                    this.snackbar.text = 'Already been checked!'
+                    this.snackbar.color = 'red'
+                    this.snackbar.show = true
+                }
+            }
+        },
         dateFormat(date, format) {
             return moment(date).format(format)
         },
         async firstAccessPage() {
+            this.packingLabel.loadingText = 'Getting packing label data...'
+            this.packingLabel.loading = true
+            this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
+            this.loadingLine.loading = true
+
             await this.getPackingLabelTableData()
+            this.packingLabel.loading = false
+            this.loadingLine.loadingText = 'Getting loading line data...'
+            await this.getLoadinglineTableData()
+            this.loadingLine.loading = false
         },
         getNurseryAlocation(mu_no) {
             const ciminyak   = ['023', '026', '027', '021' ]
