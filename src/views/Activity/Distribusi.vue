@@ -333,22 +333,22 @@
                                     <tr>
                                         <th>Field Facilitator</th>
                                         <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model[0].ff_name || '-' }}</td>
+                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].ff_name || '-' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Management Unit</th>
                                         <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model[0].mu_name || '-' }}</td>
+                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].mu_name || '-' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Seedling Total</th>
                                         <th>:</th>
-                                        <td>5.500</td>
+                                        <td>{{ numberFormat(loadingLine.detailDialog.model.total_trees_amount) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Bags / Labels Total</th>
                                         <th>:</th>
-                                        <td>612</td>
+                                        <td>{{ loadingLine.detailDialog.model.total_bags }}</td>
                                     </tr>
                                     <tr>
                                         <th>Bags / Labels Scanned Total</th>
@@ -357,7 +357,6 @@
                                     </tr>
                                 </tbody>
                             </v-simple-table>
-                            <p>Scanned: <strong>{{ JSON.stringify(loadingLine.detailDialog.inputs.scanner.values) }}</strong></p>
                             <v-text-field
                                 v-model="loadingLine.detailDialog.inputs.scanner.model"
                                 @change="scannerUpdate"
@@ -367,16 +366,40 @@
                                 rounded
                                 :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                                 :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
-                            ></v-text-field>
+                            ></v-text-field><v-expansion-panels>
+                            <v-expansion-panel class="rounded-xl" v-if="loadingLine.detailDialog.inputs.scanner.values.length > 0">
+                                <v-expansion-panel-header class="rounded-xl">
+                                    <v-btn rounded color="green white--text">
+                                        <v-icon color="white">mdi-check-circle</v-icon> Show Scanned Lists
+                                    </v-btn>
+                                </v-expansion-panel-header>
+                                <v-expansion-panel-content>
+                                    Scanned Success:
+                                    <v-simple-table>
+                                        <tbody>
+                                            <tr>
+                                                <th width="40">No</th>
+                                                <th>Label</th>
+                                            </tr>
+                                            <tr v-for="(label, labelIndex) in loadingLine.detailDialog.inputs.scanner.values" :key="label">
+                                                <td>{{ labelIndex + 1 }}</td>
+                                                <td>{{ label }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
+                        </v-expansion-panels>
                         </div>
                     </v-card-text>
-                    <v-card-actions>
+                    <v-card-actions v-if="loadingLine.detailDialog.model">
                         <v-divider class="mx-2"></v-divider>
                         <v-btn
                             color="green white--text"
                             rounded
                             class="pr-3"
                             :disabled="loadingLine.detailDialog.inputs.scanner.values.length == 0"
+                            @click="UpdateLoadedDistributionBagsNumber(loadingLine.detailDialog.model.distribution_details[0].ff_no)"
                         >
                             <v-icon class="mr-1">mdi-check-circle</v-icon>
                             Save
@@ -1134,6 +1157,7 @@ export default {
                             show: false,
                             text: ''
                         },
+                        labels: [],
                         model: '',
                         values: [],
                     }
@@ -1613,6 +1637,13 @@ export default {
             this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
             this.loadingLine.detailDialog.loading = true
             this.loadingLine.detailDialog.show = true
+            
+            // reset
+            this.loadingLine.detailDialog.inputs.scanner.values = []
+            this.loadingLine.detailDialog.inputs.scanner.alert.show = false
+            this.loadingLine.detailDialog.inputs.scanner.alert.text = ``
+            this.loadingLine.detailDialog.inputs.scanner.alert.color = ''
+            
             const url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
             const params = {
                 ff_no: ff_no,
@@ -1625,12 +1656,47 @@ export default {
                 }
             }).then(res => {
                 this.loadingLine.detailDialog.model = res.data
+                res.data.distribution_details.forEach(val => {
+                    this.loadingLine.detailDialog.inputs.scanner.labels.push(...val.bags_number)
+                    this.loadingLine.detailDialog.inputs.scanner.values.push(...val.bags_number_loaded)
+                })
             }).catch(err => {
                 console.error(err)
                 this.sessionEnd(err)
             }).finally(() => {
                 this.loadingLine.detailDialog.loading = false
                 this.loadingLine.detailDialog.loadingText = null
+            })
+        },
+        async UpdateLoadedDistributionBagsNumber(ff_no) {
+            this.loadingLine.detailDialog.show = false
+            this.$store.state.loadingOverlayText = 'Updating loaded labels data...'
+            this.$store.state.loadingOverlay = true
+
+            const url = `${this.apiConfig.baseUrl}LoadedDistributionBagsNumber`
+            
+            await axios.post(url, {
+                bags_number: this.loadingLine.detailDialog.inputs.scanner.values,
+                ff_no: ff_no,
+                program_year: this.generalSettings.programYear
+            }, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.color = 'green'
+                this.snackbar.text = 'Updating labels loaded succeed!'
+                this.loadingLine.detailDialog.inputs.scanner.values = []
+                this.getLoadinglineTableData()
+            }).catch(err => {
+                this.snackbar.color = 'red'
+                this.snackbar.text = err.response.data
+                console.error(err)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+                this.snackbar.show = true
             })
         },
         // Utilities
@@ -1745,30 +1811,26 @@ export default {
             const existsScannedLabel = this.loadingLine.detailDialog.inputs.scanner.values
             const newLabel = this.loadingLine.detailDialog.inputs.scanner.model
             let audio = null
-            const totalChar = 21
-            
-            if (newLabel.length != totalChar) {
-                    audio = new Audio(require('@/assets/audio/error.mp3'))
-    
-                    this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" invalid format, total char is ${totalChar}!`
-                    this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
+            const labels = this.loadingLine.detailDialog.inputs.scanner.labels
+            console.log(labels)
+            if (existsScannedLabel.includes(newLabel) == false && labels.includes(newLabel) == true) {
+                this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
+                audio = new Audio(require('@/assets/audio/success.mp3'))
 
-            } else {
-                if (existsScannedLabel.includes(newLabel) == false) {
-                    this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
-                    audio = new Audio(require('@/assets/audio/success.mp3'))
-    
-                    this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`
-                    this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
-    
-                } else {
-                    audio = new Audio(require('@/assets/audio/error.mp3'))
-    
-                    this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" has been already scaned!`
-                    this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
-                }
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`
+                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
+
+            } else if (existsScannedLabel.includes(newLabel) == true) {
+                audio = new Audio(require('@/assets/audio/error.mp3'))
+
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" has been already scaned!`
+                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
+            } else if (labels.includes(newLabel) == false) {
+                audio = new Audio(require('@/assets/audio/error.mp3'))
+
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" not included in this FF!`
+                this.loadingLine.detailDialog.inputs.scanner.alert.color = 'red'
             }
-            
 
             await audio.play()
             this.loadingLine.detailDialog.inputs.scanner.alert.show = true
