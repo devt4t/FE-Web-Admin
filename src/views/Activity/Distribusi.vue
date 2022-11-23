@@ -1534,7 +1534,7 @@ export default {
             }
         },
         async updateCheckedPlantingHoles(ph_form_no, status) {
-            if (status == 0) {
+            if (status == 0 && (this.User.role_group == 'IT' || this.User.role_name == 'NURSERY' || this.User.role_name == 'NURSERY MANAGER')) {
                 this.packingLabel.loadingText = 'Updating status packing label & creating loading line data...'
                 this.packingLabel.loading = true
                 const url = this.apiConfig.baseUrl + 'CheckedPlantingHole?'
@@ -1573,6 +1573,10 @@ export default {
                     this.loadingLine.loading = false
                     this.loadingLine.loadingText = null
                 }
+            } else if (this.User.role_group != 'IT' || this.User.role_name != 'NURSERY' || this.User.role_name != 'NURSERY MANAGER') {
+                this.snackbar.text = `Can't use this modul from this user.`
+                this.snackbar.color = 'red'
+                this.snackbar.show = true
             } else {
                 this.snackbar.text = 'Already been checked!'
                 this.snackbar.color = 'red'
