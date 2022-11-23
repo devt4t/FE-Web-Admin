@@ -328,17 +328,17 @@
                             <p class="mt-2">{{ loadingLine.detailDialog.loadingText }}</p>
                         </div>
                         <div v-else>
-                            <v-simple-table>
+                            <v-simple-table v-if="loadingLine.detailDialog.model">
                                 <tbody>
                                     <tr>
                                         <th>Field Facilitator</th>
                                         <th>:</th>
-                                        <td>T4T Devs</td>
+                                        <td>{{ loadingLine.detailDialog.model[0].ff_name || '-' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Management Unit</th>
                                         <th>:</th>
-                                        <td>CIWIDEY</td>
+                                        <td>{{ loadingLine.detailDialog.model[0].mu_name || '-' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Seedling Total</th>
@@ -967,7 +967,7 @@
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn rounded :disabled="item.printed_progress != 100" color="blue white--text" @click="loadingLine.detailDialog.show = true">
+                                        <v-btn rounded :disabled="item.printed_progress != 100" color="blue white--text" @click="getLoadingLineDetailFFData(item.ff_no)">
                                             <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
                                             Scan Label
                                         </v-btn>
@@ -1140,6 +1140,7 @@ export default {
                 },
                 loading: false,
                 loadingText: 'Loading...',
+                model: null,
                 show: false,
             },
             loading: false,
@@ -1425,7 +1426,7 @@ export default {
             nativeEvent.stopPropagation()
         },
         async calendarUpdateRange ({ start, end }) {
-            this.generalSettings.nursery.model = 'Pati'
+            // this.generalSettings.nursery.model = 'Pati'
             this.calendar.loading = true
             await this.getUserException()
             const params = new URLSearchParams({
@@ -1606,6 +1607,30 @@ export default {
                 this.sessionEnd(err)
             }).finally(() => {
                 this.loadingLine.table.loading = false
+            })
+        },
+        async getLoadingLineDetailFFData(ff_no) {
+            this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
+            this.loadingLine.detailDialog.loading = true
+            this.loadingLine.detailDialog.show = true
+            const url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
+            const params = {
+                ff_no: ff_no,
+                program_year: this.generalSettings.programYear
+            }
+
+            await axios.get(`${url + new URLSearchParams(params)}`, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.loadingLine.detailDialog.model = res.data
+            }).catch(err => {
+                console.error(err)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.loadingLine.detailDialog.loading = false
+                this.loadingLine.detailDialog.loadingText = null
             })
         },
         // Utilities
