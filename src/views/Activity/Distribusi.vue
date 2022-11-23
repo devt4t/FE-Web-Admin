@@ -1559,7 +1559,8 @@ export default {
             }
         },
         async updateCheckedPlantingHoles(ph_form_no, status) {
-            if (status == 0 && (this.User.role_group == 'IT' || this.User.role_name == 'NURSERY' || this.User.role_name == 'NURSERY MANAGER')) {
+            const nurseryEmails = this.$store.state.nurseryTeam.emails
+            if (status == 0 && (this.User.role_group == 'IT' || nurseryEmails.Arjasari.includes(this.User.email) || nurseryEmails.Ciminyak.includes(this.User.email) || nurseryEmails.Kebumen.includes(this.User.email) || nurseryEmails.Pati.includes(this.User.email))) {
                 this.packingLabel.loadingText = 'Updating status packing label & creating loading line data...'
                 this.packingLabel.loading = true
                 const url = this.apiConfig.baseUrl + 'CheckedPlantingHole?'
@@ -1587,6 +1588,9 @@ export default {
                     this.packingLabel.loadingText = null
                 })
                 if (success == 1) {
+                    this.snackbar.text = `Checked label success.`
+                    this.snackbar.color = 'green'
+                    this.snackbar.show = true
                     this.packingLabel.loadingText = 'Updating packing label data...'
                     this.loadingLine.loadingText = 'Waiting...'
                     this.loadingLine.loading = true
