@@ -306,7 +306,7 @@
                     <v-card-title class="mb-1 headermodalstyle rounded-xl d-flex align-center">
                         <span class="d-flex align-center">
                             <v-icon color="white" class="mr-1">
-                                mdi-qrcode-scan
+                                mdi-qrcode
                             </v-icon>
                             Scan Labels
                         </span>
@@ -348,20 +348,23 @@
                                     <tr>
                                         <th>Bags / Labels Total</th>
                                         <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model.total_bags }}</td>
+                                        <td>{{ numberFormat(loadingLine.detailDialog.model.total_bags) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Bags / Labels Scanned Total</th>
                                         <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.inputs.scanner.values.length }}</td>
+                                        <td>{{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) }}</td>
                                     </tr>
                                 </tbody>
                             </v-simple-table>
                             <v-text-field
+                                prepend-inner-icon="mdi-qrcode-scan"
                                 v-model="loadingLine.detailDialog.inputs.scanner.model"
                                 @change="scannerUpdate"
                                 color="green"
-                                placeholder="SCAN HERE"
+                                label="Input Scan Label"
+                                placeholder="Klick here before scan..."
+                                class="text-center mt-2"
                                 outlined
                                 rounded
                                 :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
@@ -465,7 +468,7 @@
         <!-- MAIN Calendar -->
         <v-container fluid>
             <!-- General Settings -->
-            <v-toolbar rounded="xl" class="mb-2">
+            <v-card rounded="xl" class="mb-2 d-flex align-center flex-lg-row flex-column py-2" >
                 <v-divider class="mx-2"></v-divider>
                 <!-- Program Year -->
                 <v-select
@@ -479,7 +482,7 @@
                     :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                     rounded
                     label="Program Year"
-                    class="mx-auto mx-lg-3"
+                    class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
                     style="max-width: 200px"
                 ></v-select>
                 <!-- Nursery -->
@@ -494,12 +497,12 @@
                     :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                     rounded
                     label="Nursery"
-                    class="mx-auto mx-lg-3"
+                    class="mx-auto mx-lg-2 ml-lg-1 mb-2 mb-lg-0"
                     style="max-width: 200px"
                     :disabled="generalSettings.nursery.disabled || calendar.loading"
                 ></v-select>
                 <v-divider class="mx-2"></v-divider>
-            </v-toolbar>
+            </v-card>
             <!-- Expansions Panels -->
             <v-expansion-panels multiple v-model="expansions.model">
                 <!-- Calendar Section -->
@@ -1016,7 +1019,7 @@
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
                                         <v-btn rounded :disabled="item.printed_progress != 100" color="blue white--text" @click="getLoadingLineDetailFFData(item.ff_no)">
-                                            <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
+                                            <v-icon class="mr-1">mdi-qrcode-plus</v-icon>
                                             Scan Label
                                         </v-btn>
                                     </template>
@@ -1449,14 +1452,14 @@ export default {
             this.calendar.detailBibit.show = true
             this.calendar.detailBibit.loading = true
             
-            let url = localStorage.getItem("BaseUrlGet") + 'DistributionSeedDetail?' + new URLSearchParams({
+            let url = this.apiConfig.baseUrl + 'DistributionSeedDetail?' + new URLSearchParams({
                 ff_no: ff_no.toString(),
                 program_year: program_year,
                 activity: activity
             })
             await axios.get(url, {
                 headers: {
-                    Authorization: `Bearer ` + localStorage.getItem("token")
+                    Authorization: `Bearer ` + this.apiConfig.token
                 },
             }).then(res => {
                 this.calendar.detailBibit.datas = res.data.data.result
