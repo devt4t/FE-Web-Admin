@@ -215,22 +215,19 @@
                                                 <td>{{ calendar.detailPeriodFF.datas.FC.name }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Distribution Location</th>
+                                                <th>Management Unit</th>
                                                 <td>:</td>
-                                                <td  v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'">
-                                                    <v-textarea
-                                                        v-model="calendar.detailPeriodFF.newPeriod.distribution_location"
-                                                        rows="3"
-                                                        dense
-                                                        rounded
-                                                        outlined
-                                                        hide-details
-                                                        color="green"
-                                                        class="text-caption my-1"
-                                                        :rules="[(v) => !!v || 'Field is required']"
-                                                    ></v-textarea>
-                                                </td>
-                                                <td v-else>{{ calendar.detailPeriodFF.newPeriod.distribution_location }}</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.FF.mu_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Target Area</th>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.FF.ta_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Village</th>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.FF.village_name }}</td>
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
@@ -273,6 +270,24 @@
                                                 <th>Planting Realization</th>
                                                 <td>:</td>
                                                 <td>{{ dateFormat(calendar.detailPeriodFF.newPeriod.planting_time, 'DD MMMM Y') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Distribution Location</th>
+                                                <td>:</td>
+                                                <td  v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'">
+                                                    <v-textarea
+                                                        v-model="calendar.detailPeriodFF.newPeriod.distribution_location"
+                                                        rows="3"
+                                                        dense
+                                                        rounded
+                                                        outlined
+                                                        hide-details
+                                                        color="green"
+                                                        class="text-caption my-1"
+                                                        :rules="[(v) => !!v || 'Field is required']"
+                                                    ></v-textarea>
+                                                </td>
+                                                <td v-else>{{ calendar.detailPeriodFF.newPeriod.distribution_location }}</td>
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
@@ -426,11 +441,22 @@
                             color="green white--text"
                             rounded
                             class="pr-3"
-                            :disabled="loadingLine.detailDialog.inputs.scanner.values.length == 0"
+                            :disabled="loadingLine.detailDialog.inputs.scanner.values.length == 0 || loadingLine.detailDialog.inputs.disabledSave == true"
                             @click="UpdateLoadedDistributionBagsNumber(loadingLine.detailDialog.model.distribution_details[0].ff_no)"
                         >
                             <v-icon class="mr-1">mdi-check-circle</v-icon>
                             Save
+                        </v-btn>
+                        <v-btn
+                            color="info white--text"
+                            v-if="User.role_group == 'IT' || User.role_name == 'NURSERY MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'"
+                            rounded
+                            class="px-3"
+                            :disabled="loadingLine.detailDialog.inputs.scanner.values.length == 0 || loadingLine.detailDialog.inputs.disabledSave == true"
+                            @click="FinishLoadedDistributionBagsNumber(loadingLine.detailDialog.model.distribution_details[0].ff_no)"
+                        >
+                            <v-icon class="mr-1">mdi-basket-check</v-icon>
+                            Finish
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
                     </v-card-actions>
@@ -1185,6 +1211,7 @@ export default {
             },
             detailDialog: {
                 inputs: {
+                    disabledSave: false,
                     scanner: {
                         alert: {
                             color: '',
@@ -1712,11 +1739,19 @@ export default {
                 }
             }).then(res => {
                 this.loadingLine.detailDialog.model = res.data
+
+                const total_farmer = res.data.distribution_details.length
+                let total_farmer_loaded = 0
                 res.data.distribution_details.forEach(val => {
                     this.loadingLine.detailDialog.inputs.scanner.labels.push(...val.bags_number)
                     this.loadingLine.detailDialog.inputs.scanner.values.push(...val.bags_number_loaded)
                     this.loadingLine.detailDialog.inputs.scanner.farmers.push(val)
+
+                    if (val.is_loaded == 1) total_farmer_loaded += 1
                 })
+
+                if (total_farmer == total_farmer_loaded) this.loadingLine.detailDialog.inputs.disabledSave = true
+                else this.loadingLine.detailDialog.inputs.disabledSave = false
             }).catch(err => {
                 console.error(err)
                 this.sessionEnd(err)
@@ -1743,6 +1778,36 @@ export default {
             }).then(res => {
                 this.snackbar.color = 'green'
                 this.snackbar.text = 'Updating labels loaded succeed!'
+                this.loadingLine.detailDialog.inputs.scanner.values = []
+                this.getLoadinglineTableData()
+            }).catch(err => {
+                this.snackbar.color = 'red'
+                this.snackbar.text = err.response.data
+                console.error(err)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+                this.snackbar.show = true
+            })
+        },
+        async FinishLoadedDistributionBagsNumber(ff_no) {
+            this.loadingLine.detailDialog.show = false
+            this.$store.state.loadingOverlayText = 'Finishing loading bags data...'
+            this.$store.state.loadingOverlay = true
+
+            const url = `${this.apiConfig.baseUrl}FinishLoadingBagsDistributions`
+            
+            await axios.post(url, {
+                ff_no: ff_no,
+                program_year: this.generalSettings.programYear
+            }, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.color = 'green'
+                this.snackbar.text = 'Finishing loading bags succeed!'
                 this.loadingLine.detailDialog.inputs.scanner.values = []
                 this.getLoadinglineTableData()
             }).catch(err => {
