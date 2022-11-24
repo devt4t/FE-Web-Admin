@@ -2,8 +2,9 @@ import moment from 'moment/moment'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { version } from '../../package.json'
-import { Arjasari, Ciminyak, Kebumen, Pati } from './nurseryTeam/listEmail'
-import TaskForceEmail from './taskForceTeam/listEmail'
+import lowProfileUser from './scpecialEmails/lowProfileUser'
+import { Arjasari, Ciminyak, Kebumen, Pati } from './scpecialEmails/nurseryTeam'
+import TaskForceEmail from './scpecialEmails/taskForceTeam'
 
 Vue.use(Vuex)
 
@@ -31,9 +32,10 @@ export default new Vuex.Store({
         Arjasari: Arjasari || [],
         Ciminyak: Ciminyak || [],
         Kebumen: Kebumen || [],
-        Pati: Pati || []
+        Pati: Pati || [],
+        JustLoadingLineModul: lowProfileUser
       }
-    }
+    },
   },
   mutations: {
   },

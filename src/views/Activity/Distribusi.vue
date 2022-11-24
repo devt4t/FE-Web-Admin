@@ -308,7 +308,7 @@
                             <v-icon color="white" class="mr-1">
                                 mdi-qrcode-scan
                             </v-icon>
-                            Scan Bags Loading Line
+                            Scan Labels
                         </span>
                         <v-divider class="mx-2" dark></v-divider>
                         <v-icon color="white" @click="loadingLine.detailDialog.show = false">
@@ -325,7 +325,7 @@
                                 width="7"
                                 class="mt-10"
                             ></v-progress-circular>
-                            <p class="mt-2">{{ loadingLine.detailDialog.loadingText }}</p>
+                            <p class="mt-2 text-center">{{ loadingLine.detailDialog.loadingText }}</p>
                         </div>
                         <div v-else>
                             <v-simple-table v-if="loadingLine.detailDialog.model">
@@ -367,26 +367,51 @@
                                 :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                                 :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                             ></v-text-field><v-expansion-panels>
-                            <v-expansion-panel class="rounded-xl" v-if="loadingLine.detailDialog.inputs.scanner.values.length > 0">
+                            <v-expansion-panel class="rounded-xl" v-if="loadingLine.detailDialog.inputs.scanner.farmers">
                                 <v-expansion-panel-header class="rounded-xl">
-                                    <v-btn rounded color="green white--text">
-                                        <v-icon color="white">mdi-check-circle</v-icon> Show Scanned Lists
-                                    </v-btn>
+                                    <span>
+                                        <v-icon color="dark">mdi-text-box-check</v-icon> Show Lists
+                                    </span>
                                 </v-expansion-panel-header>
                                 <v-expansion-panel-content>
-                                    Scanned Success:
-                                    <v-simple-table>
-                                        <tbody>
-                                            <tr>
-                                                <th width="40">No</th>
-                                                <th>Label</th>
-                                            </tr>
-                                            <tr v-for="(label, labelIndex) in loadingLine.detailDialog.inputs.scanner.values" :key="label">
-                                                <td>{{ labelIndex + 1 }}</td>
-                                                <td>{{ label }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </v-simple-table>
+                                    <v-data-table
+                                        :headers="[
+                                            {text: '', value: 'check', align: 'center', sortable: false},
+                                            {text: 'Farmer', value: 'farmer_name'},
+                                            {text: 'Bags', value: 'bags_number', sortable: false},
+                                            {text: 'Bags Loaded', value: 'bags_number_loaded', sortable: false},
+                                            {text: 'Bags Left', value: 'bags_left', sortable: false},
+                                        ]"
+                                        :items="loadingLine.detailDialog.inputs.scanner.farmers"
+                                    >
+                                        <template v-slot:item.check="{item}">
+                                            <v-icon v-if="item.bags_number.length ==  item.bags_number_loaded.length" color="green">mdi-check-circle</v-icon>
+                                            <v-icon v-else color="red">mdi-close-circle</v-icon>
+                                        </template>
+                                        <template v-slot:item.bags_number="{item}">
+                                            {{ item.bags_number.length }}
+                                        </template>
+                                        <template v-slot:item.bags_number_loaded="{item}">
+                                            {{ item.bags_number_loaded.length }}
+                                        </template>
+                                        <template v-slot:item.bags_left="{item}">
+                                            <v-menu content-class="rounded-xl" scrollable>
+                                                <template v-slot:activator="{attrs, on}">
+                                                    <v-btn v-bind="attrs" :disabled="item.bags_number.length -item.bags_number_loaded.length == 0" v-on="on" :color="`${item.bags_number.length -item.bags_number_loaded.length > 0 ? 'red' : 'green'} white--text`" rounded small>
+                                                        {{  item.bags_number.length -item.bags_number_loaded.length }}
+                                                    </v-btn>
+                                                </template>
+                                                <v-card v-if="item.bags_number.length - item.bags_number_loaded.length > 0">
+                                                    <v-card-title class="d-flex justify-center pt-2">
+                                                        <small class="gray--text">Labels Left:</small><br>
+                                                    </v-card-title>
+                                                    <v-card-text>
+                                                        <strong>{{ getNumberBagsLeft(item.bags_number, item.bags_number_loaded) }}</strong>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-menu>
+                                        </template>
+                                    </v-data-table>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
                         </v-expansion-panels>
@@ -478,7 +503,7 @@
             <!-- Expansions Panels -->
             <v-expansion-panels multiple v-model="expansions.model">
                 <!-- Calendar Section -->
-                <v-expansion-panel class="rounded-xl">
+                <v-expansion-panel v-if="accessModul.calendar" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon> Distribution Calendar</h3>
                     </v-expansion-panel-header>
@@ -492,7 +517,7 @@
                                     size="123"
                                     width="7"
                                 ></v-progress-circular>
-                                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting distribution datas in <strong>{{ generalSettings.nursery.model }}</strong> Nursery...</p>
+                                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">Getting distribution datas in <strong>{{ generalSettings.nursery.model }}</strong> Nursery...</p>
                             </div>
                         </v-overlay>
                         <v-row class="mb-3 align-center">
@@ -729,7 +754,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Packing Label Section -->
-                <v-expansion-panel class="rounded-xl">
+                <v-expansion-panel v-if="accessModul.packingLabel" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-label-multiple</v-icon> Packing Label</h3>
                     </v-expansion-panel-header>
@@ -743,7 +768,7 @@
                                     size="100"
                                     width="7"
                                 ></v-progress-circular>
-                                <p v-if="packingLabel.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">{{ packingLabel.loadingText }}</p>
+                                <p v-if="packingLabel.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">{{ packingLabel.loadingText }}</p>
                             </div>
                         </v-overlay>
                         <v-row>
@@ -871,7 +896,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Loading Line Section -->
-                <v-expansion-panel class="rounded-xl">
+                <v-expansion-panel v-if="accessModul.loadingLine" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-human-dolly</v-icon> Loading Line</h3>
                     </v-expansion-panel-header>
@@ -885,7 +910,7 @@
                                     size="100"
                                     width="7"
                                 ></v-progress-circular>
-                                <p v-if="loadingLine.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">{{ loadingLine.loadingText }}</p>
+                                <p v-if="loadingLine.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">{{ loadingLine.loadingText }}</p>
                             </div>
                         </v-overlay>
                         <v-row>
@@ -1001,7 +1026,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Distribution Report Section -->
-                <v-expansion-panel class="rounded-xl">
+                <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> Distribution Report</h3>
                     </v-expansion-panel-header>
@@ -1068,6 +1093,12 @@ import moment from 'moment'
 
 export default {
     data: () => ({
+        accessModul: {
+            calendar: true,
+            packingLabel: true,
+            loadingLine: true,
+            distributionReport: true
+        },
         apiConfig: {
             baseUrl: localStorage.getItem('BaseUrlGet'),
             token: localStorage.getItem('token'),
@@ -1157,11 +1188,13 @@ export default {
                             show: false,
                             text: ''
                         },
+                        farmers: [],
                         labels: [],
                         model: '',
                         values: [],
                     }
                 },
+                leftLabelsDialog: false,
                 loading: false,
                 loadingText: 'Loading...',
                 model: null,
@@ -1225,6 +1258,7 @@ export default {
         User: JSON.parse(localStorage.getItem("User"))
     }),
     async mounted() {
+        await this.getUserException()
         if (this.User.ff.value_data == '-') this.User.ff.value_data = 'all'
         await this.firstAccessPage()
     },
@@ -1451,43 +1485,45 @@ export default {
         },
         async calendarUpdateRange ({ start, end }) {
             // this.generalSettings.nursery.model = 'Pati'
-            this.calendar.loading = true
             await this.getUserException()
-            const params = new URLSearchParams({
-                month: this.dateFormat(start.date, 'MM'),
-                year: this.dateFormat(start.date, 'Y'),
-                program_year: this.generalSettings.programYear,
-                nursery: this.generalSettings.nursery.model
-            })
+            if (this.accessModul.calendar) {
+                this.calendar.loading = true
 
-            const res = await axios.get(
-                this.apiConfig.baseUrl + 'DistributionCalendar?' + params,
-                {
-                    headers: {
-                        Authorization: `Bearer ` + this.apiConfig.token
-                    },
-                }
-            ).catch(err => {
-                this.sessionEnd(err)
-            })
-            const resData = res.data.data.result.datas
-            const events = []
-
-            console.log(resData)
-            await resData.forEach((evData, evIndex) => {
-                events.push({
-                    name: evData.nursery,
-                    start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
-                    total_ff: evData.total,
-                    total_bibit_sostam: evData.total_bibit_sostam,
-                    total_bibit_penlub: evData.total_bibit_penlub,
-                    color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
-                    details: evData.details,
+                const params = new URLSearchParams({
+                    month: this.dateFormat(start.date, 'MM'),
+                    year: this.dateFormat(start.date, 'Y'),
+                    program_year: this.generalSettings.programYear,
+                    nursery: this.generalSettings.nursery.model
                 })
-            })
-
-            this.calendar.events = events
-            this.calendar.loading = false
+    
+                const res = await axios.get(
+                    this.apiConfig.baseUrl + 'DistributionCalendar?' + params,
+                    {
+                        headers: {
+                            Authorization: `Bearer ` + this.apiConfig.token
+                        },
+                    }
+                ).catch(err => {
+                    this.sessionEnd(err)
+                })
+                const resData = res.data.data.result.datas
+                const events = []
+    
+                await resData.forEach((evData, evIndex) => {
+                    events.push({
+                        name: evData.nursery,
+                        start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
+                        total_ff: evData.total,
+                        total_bibit_sostam: evData.total_bibit_sostam,
+                        total_bibit_penlub: evData.total_bibit_penlub,
+                        color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
+                        details: evData.details,
+                    })
+                })
+    
+                this.calendar.events = events
+                this.calendar.loading = false
+            }
         },
         // FF
         async getFFMUNo(ff_no) {
@@ -1511,38 +1547,40 @@ export default {
         },
         // PACKING LABEL
         async getPackingLabelTableData() {
-            let url = ''
-            let params = {
-                typegetdata: this.User.ff.value_data,
-                ff: this.User.ff.ff,
-                program_year: this.generalSettings.programYear,
-                nursery: this.generalSettings.nursery.model
-            }
-            if (this.packingLabel.tabs.model == 0) {
-                this.packingLabel.tables.byLahan.loading = true
-                url = 'GetPackingLabelByLahan?'
-            }
-
-            if (url && params) {
-                const urlParams = new URLSearchParams(params)
-                // call api
-                await axios.get(
-                    this.apiConfig.baseUrl + url + urlParams,
-                    {
-                        headers: {
-                            Authorization: `Bearer ` + this.apiConfig.token
-                        },
-                    }
-                ).then(res => {
-                    this.packingLabel.tables.byLahan.items = res.data.data.result.data
-                }).catch(err => {
-                    if (err.response.status == 404) {
-                        this.packingLabel.tables.byLahan.items = []
-                    }
-                    this.sessionEnd(err)
-                }).finally(() => {
-                    this.packingLabel.tables.byLahan.loading = false
-                })
+            if (this.accessModul.packingLabel) {
+                let url = ''
+                let params = {
+                    typegetdata: this.User.ff.value_data,
+                    ff: this.User.ff.ff,
+                    program_year: this.generalSettings.programYear,
+                    nursery: this.generalSettings.nursery.model
+                }
+                if (this.packingLabel.tabs.model == 0) {
+                    this.packingLabel.tables.byLahan.loading = true
+                    url = 'GetPackingLabelByLahan?'
+                }
+    
+                if (url && params) {
+                    const urlParams = new URLSearchParams(params)
+                    // call api
+                    await axios.get(
+                        this.apiConfig.baseUrl + url + urlParams,
+                        {
+                            headers: {
+                                Authorization: `Bearer ` + this.apiConfig.token
+                            },
+                        }
+                    ).then(res => {
+                        this.packingLabel.tables.byLahan.items = res.data.data.result.data
+                    }).catch(err => {
+                        if (err.response.status == 404) {
+                            this.packingLabel.tables.byLahan.items = []
+                        }
+                        this.sessionEnd(err)
+                    }).finally(() => {
+                        this.packingLabel.tables.byLahan.loading = false
+                    })
+                }
             }
         },
         printPackingLabelByLahan(type, form_no) {
@@ -1622,28 +1660,30 @@ export default {
         },
         // LOADING LINE
         async getLoadinglineTableData() {
-            this.loadingLine.table.loading = true
-            let url = 'GetLoadingLine?'
-            let params = {
-                typegetdata: this.User.ff.value_data,
-                ff: this.User.ff.ff,
-                program_year: this.generalSettings.programYear,
-                nursery: this.generalSettings.nursery.model,
-                distribution_date: this.loadingLine.datePicker.model
-            }
-            await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
-                headers: {
-                    Authorization: `Bearer ${this.apiConfig.token}`
+            if (this.accessModul.loadingLine) {
+                this.loadingLine.table.loading = true
+                let url = 'GetLoadingLine?'
+                let params = {
+                    typegetdata: this.User.ff.value_data,
+                    ff: this.User.ff.ff,
+                    program_year: this.generalSettings.programYear,
+                    nursery: this.generalSettings.nursery.model,
+                    distribution_date: this.loadingLine.datePicker.model
                 }
-            }).then(result => {
-                const res = result.data.data.result
-                this.loadingLine.table.items = res 
-            }).catch(err => {
-                console.error(err)
-                this.sessionEnd(err)
-            }).finally(() => {
-                this.loadingLine.table.loading = false
-            })
+                await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.apiConfig.token}`
+                    }
+                }).then(result => {
+                    const res = result.data.data.result
+                    this.loadingLine.table.items = res 
+                }).catch(err => {
+                    console.error(err)
+                    this.sessionEnd(err)
+                }).finally(() => {
+                    this.loadingLine.table.loading = false
+                })
+            }
         },
         async getLoadingLineDetailFFData(ff_no) {
             this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
@@ -1651,6 +1691,7 @@ export default {
             this.loadingLine.detailDialog.show = true
             
             // reset
+            this.loadingLine.detailDialog.inputs.scanner.farmers = []
             this.loadingLine.detailDialog.inputs.scanner.values = []
             this.loadingLine.detailDialog.inputs.scanner.alert.show = false
             this.loadingLine.detailDialog.inputs.scanner.alert.text = ``
@@ -1671,6 +1712,7 @@ export default {
                 res.data.distribution_details.forEach(val => {
                     this.loadingLine.detailDialog.inputs.scanner.labels.push(...val.bags_number)
                     this.loadingLine.detailDialog.inputs.scanner.values.push(...val.bags_number_loaded)
+                    this.loadingLine.detailDialog.inputs.scanner.farmers.push(val)
                 })
             }).catch(err => {
                 console.error(err)
@@ -1776,6 +1818,15 @@ export default {
             await this.getLoadinglineTableData()
             this.loadingLine.loading = false
         },
+        getNumberBagsLeft(all, loaded) {
+            let leftData = []
+            all.forEach((val) => {
+                if (loaded.includes(val) == false) {
+                    leftData.push(val)
+                }
+            })
+            return leftData
+        },
         getNurseryAlocation(mu_no) {
             const ciminyak   = ['023', '026', '027', '021' ]
             const arjasari   = ['022', '024', '025', '020', '029']
@@ -1812,6 +1863,17 @@ export default {
                     }
                 })
             }
+
+            // access modul: just loading line
+            const JustLoadingLine = this.$store.state.nurseryTeam.emails.JustLoadingLineModul
+            if (JustLoadingLine.includes(this.User.email)) {
+                this.accessModul = {
+                    calendar: false,
+                    packingLabel: false,
+                    loadingLine: true,
+                    distributionReport: false
+                }
+            }
         },
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
@@ -1822,6 +1884,20 @@ export default {
         async scannerUpdate() {
             const existsScannedLabel = this.loadingLine.detailDialog.inputs.scanner.values
             const newLabel = this.loadingLine.detailDialog.inputs.scanner.model
+
+            // Try to do split from double input 
+            // if (newLabel.length > 21) {
+            //     let newLabelSplit = newLabel.split('-')
+            //     newLabelSplit.forEach((val, index) => {
+            //         if (val.length > 13) {
+            //             const lahanNo = val.slice(0,12)
+            //             const bagNo = val.slice(12,val.length)
+            //             newLabelSplit[index] = [lahanNo, bagNo]
+            //         }
+            //     })
+            //     alert(JSON.stringify(newLabelSplit))
+            // }
+
             let audio = null
             const labels = this.loadingLine.detailDialog.inputs.scanner.labels
             console.log(labels)
@@ -1832,6 +1908,13 @@ export default {
                 this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`
                 this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
 
+                // update table per farmer data table
+                console.log(this.loadingLine.detailDialog.inputs.scanner.farmers)
+                await this.loadingLine.detailDialog.inputs.scanner.farmers.map((farmer, fIndex) => {
+                    if (farmer.bags_number.includes(newLabel)) {
+                        this.loadingLine.detailDialog.inputs.scanner.farmers[fIndex].bags_number_loaded.push(newLabel)
+                    }
+                })
             } else if (existsScannedLabel.includes(newLabel) == true) {
                 audio = new Audio(require('@/assets/audio/error.mp3'))
 
