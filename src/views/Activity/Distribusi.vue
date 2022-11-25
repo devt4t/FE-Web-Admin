@@ -886,7 +886,7 @@
                                                     :background-color="`${item.is_checked ? 'green' : 'grey darken-1'} rounded-xl px-2 pr-3 py-1`"
                                                     dark
                                                     color="white"
-                                                    class="mt-0"
+                                                    class="mt-0 d-inline-block"
                                                     hide-details
                                                     :label="`${item.is_checked ? 'Printed' : 'Nope'}`"
                                                     off-icon="mdi-printer-off"
@@ -905,19 +905,42 @@
                                             <template v-slot:item.actions="{item}">
                                                 <v-row class="justify-end ma-0">
                                                     <v-btn 
-                                                        small color="blue white--text" class="ma-1" rounded 
+                                                        small 
+                                                        rounded 
+                                                        color="green white--text" 
+                                                        class="ma-1 d-none d-lg-inline-block" 
                                                         @click="printPackingLabelByLahan('label', item.ph_form_no)"
                                                     >
                                                         <v-icon class="mr-1">mdi-label</v-icon>
                                                         Label
                                                     </v-btn>
-                                                    <v-btn 
+                                                    <v-btn
+                                                        fab
                                                         small
-                                                        color="green white--text" rounded class="ma-1"
+                                                        color="green white--text"
+                                                        class="d-inline-block d-lg-none ma-1"
+                                                        @click="printPackingLabelByLahan('label', item.ph_form_no)"
+                                                    >
+                                                        <v-icon>mdi-label</v-icon>
+                                                    </v-btn>
+                                                    <v-btn 
+                                                        small 
+                                                        rounded 
+                                                        color="orange white--text" 
+                                                        class="ma-1 d-none d-lg-inline-block mr-0" 
                                                         @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
                                                     >
                                                         <v-icon class="mr-1">mdi-receipt-text</v-icon>
                                                         Receipt
+                                                    </v-btn>
+                                                    <v-btn
+                                                        fab
+                                                        small
+                                                        color="orange white--text"
+                                                        class="d-inline-block d-lg-none ma-1 mr-0"
+                                                        @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
+                                                    >
+                                                        <v-icon>mdi-receipt-text</v-icon>
                                                     </v-btn>
                                                 </v-row>
                                             </template>
@@ -1290,12 +1313,12 @@ export default {
             tables: {
                 byLahan: {
                     headers: [
-                        { text: 'Check', value: 'is_checked', align: 'center', width: '100'},
                         { text: "Management Unit", value: "mu_name"},
                         { text: "Field Facilitator", value: "nama_ff"},
                         { text: "Farmer", value: "nama_petani"},
                         { text: "No Lahan", align: "start", value: "lahan_no"},
                         { text: "Seeds Total", value: "total_bibit"},
+                        { text: 'Check', value: 'is_checked', align: 'center', width: '100'},
                         { text: "Actions", value: "actions", sortable: false, align: 'right' },
                     ],
                     items: [],
