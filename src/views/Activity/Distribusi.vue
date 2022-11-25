@@ -848,6 +848,7 @@
                                             :search="packingLabel.tables.byLahan.search"
                                             multi-sort
                                         >
+                                            <!-- Filter Table -->
                                             <template v-slot:top>
                                                 <v-row class="mx-0 my-2 align-center">
                                                     <!-- Search Field -->
@@ -1286,7 +1287,7 @@ export default {
             loadingText: null,
             table: {
                 headers: [
-                    { text: 'Check', value: 'is_loaded', align: 'center', width: '100'},
+                    { text: 'Status', value: 'is_loaded', align: 'center', width: '100'},
                     { text: 'Management Unit', value: 'mu_name'},
                     { text: 'Field Facilitator', value: 'ff_name'},
                     { text: 'Printed (%)', value: 'printed_progress', align: 'center'},
