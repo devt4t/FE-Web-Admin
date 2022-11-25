@@ -158,7 +158,7 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="blue white--text pr-3">
+                        <v-btn rounded color="blue white--text pr-3" @click="exportExcel('bibit_by_ff', {datas: calendar.detailBibit.datas, distribution_date: dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y')})">
                             <v-icon class="mr-1">mdi-printer</v-icon>
                             Export
                         </v-btn>
@@ -845,26 +845,83 @@
                                             :headers="packingLabel.tables.byLahan.headers"
                                             :items="packingLabel.tables.byLahan.items"
                                             :loading="packingLabel.tables.byLahan.loading"
-                                            :search="packingLabel.tables.byLahan.search"
+                                            :search="packingLabel.tables.byLahan.search.model"
                                             multi-sort
                                         >
                                             <!-- Filter Table -->
                                             <template v-slot:top>
                                                 <v-row class="mx-0 my-2 align-center">
+                                                    <!-- Distribution Date Filter Field -->
+                                                    <v-menu 
+                                                        rounded="xl"
+                                                        transition="slide-x-transition"
+                                                        bottom
+                                                        min-width="100"
+                                                        offset-y
+                                                        :close-on-content-click="true"
+                                                        v-model="packingLabel.datePicker.show"
+                                                        v-if="false"
+                                                    >
+                                                        <template v-slot:activator="{ on: menu, attrs }">
+                                                            <v-tooltip top>
+                                                                <template v-slot:activator="{ on: tooltip }">
+                                                                    <v-text-field
+                                                                        dense
+                                                                        color="green"
+                                                                        class="mb-2 mb-lg-0 mr-0 mr-lg-2"
+                                                                        hide-details
+                                                                        outlined
+                                                                        label="Distribution Date"
+                                                                        rounded
+                                                                        v-bind="attrs"
+                                                                        v-on="{...menu, ...tooltip}"
+                                                                        readonly
+                                                                        v-model="packingLabel.datePicker.modelShow"
+                                                                        style="max-width: 250px"
+                                                                    ></v-text-field>
+                                                                </template>
+                                                                <span>Klik untuk memunculkan datepicker</span>
+                                                            </v-tooltip>
+                                                        </template>
+                                                        <div class="rounded-xl pb-2 white">
+                                                            <v-overlay :value="packingLabel.datePicker.loading">
+                                                                <div class="d-flex flex-column align-center justify-center">
+                                                                    <v-progress-circular
+                                                                        indeterminate
+                                                                        color="white"
+                                                                        size="64"
+                                                                    ></v-progress-circular>
+                                                                    <p class="mt-2 mb-0">Updating available dates...</p>
+                                                                </div>
+                                                            </v-overlay>
+                                                            <div class="d-flex flex-column align-center rounded-xl">
+                                                                <v-date-picker 
+                                                                    color="green lighten-1 rounded-xl" 
+                                                                    v-model="packingLabel.datePicker.model"
+                                                                    min="2022-11-24"
+                                                                    max="2023-01-31"
+                                                                ></v-date-picker>
+                                                            </div>
+                                                        </div>
+                                                    </v-menu>
                                                     <!-- Search Field -->
-                                                    <v-text-field
+                                                    <v-autocomplete
                                                         hide-details
                                                         dense
                                                         rounded
                                                         outlined
                                                         color="green"
+                                                        item-color="green"
+                                                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                                        clearable
                                                         class="mb-2 mb-lg-0"
-                                                        placeholder="Start type to search..."
-                                                        label="Search"
+                                                        label="Search FF"
+                                                        placeholder="Search by Field Facilitator name"
                                                         append-icon="mdi-magnify"
-                                                        v-model="packingLabel.tables.byLahan.search"
+                                                        :items="packingLabel.tables.byLahan.search.items"
+                                                        v-model="packingLabel.tables.byLahan.search.model"
                                                         style="max-width: 350px"
-                                                    ></v-text-field>
+                                                    ></v-autocomplete>
                                                     <v-divider class="mx-2"></v-divider>
                                                     <!-- Refresh Button -->
                                                     <v-btn
@@ -1300,6 +1357,12 @@ export default {
             }
         },
         packingLabel: {
+            datePicker: {
+                loading: false,
+                model: moment().format('Y-MM-DD'),
+                modelShow: moment().format('DD MMMM Y'),
+                show: false,
+            },
             dialogs: {
                 checkedConfirmation: {
                     show: false,
@@ -1324,7 +1387,10 @@ export default {
                     ],
                     items: [],
                     loading: false,
-                    search: ''
+                    search: {
+                        items: [],
+                        model: '',
+                    }
                 }
             },
             tabs: {
@@ -1408,6 +1474,12 @@ export default {
             async handler(newVal) {
                 this.loadingLine.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
                 await this.getLoadinglineTableData()
+            }
+        },
+        'packingLabel.datePicker.model': {
+            async handler(newVal) {
+                this.packingLabel.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
+                await this.getPackingLabelTableData()
             }
         }
     },
@@ -1654,7 +1726,12 @@ export default {
                             },
                         }
                     ).then(res => {
-                        this.packingLabel.tables.byLahan.items = res.data.data.result.data
+                        const result = res.data.data.result.data
+                        this.packingLabel.tables.byLahan.items = result
+                        result.forEach(val => {
+                            this.packingLabel.tables.byLahan.search.items.push(val.nama_ff)
+                        })
+                        
                     }).catch(err => {
                         if (err.response.status == 404) {
                             this.packingLabel.tables.byLahan.items = []
@@ -1742,32 +1819,6 @@ export default {
             }
         },
         // LOADING LINE
-        async getLoadinglineTableData() {
-            if (this.accessModul.loadingLine) {
-                this.loadingLine.table.loading = true
-                let url = 'GetLoadingLine?'
-                let params = {
-                    typegetdata: this.User.ff.value_data,
-                    ff: this.User.ff.ff,
-                    program_year: this.generalSettings.programYear,
-                    nursery: this.generalSettings.nursery.model,
-                    distribution_date: this.loadingLine.datePicker.model
-                }
-                await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
-                    headers: {
-                        Authorization: `Bearer ${this.apiConfig.token}`
-                    }
-                }).then(result => {
-                    const res = result.data.data.result
-                    this.loadingLine.table.items = res 
-                }).catch(err => {
-                    console.error(err)
-                    this.sessionEnd(err)
-                }).finally(() => {
-                    this.loadingLine.table.loading = false
-                })
-            }
-        },
         async getLoadingLineDetailFFData(ff_no) {
             this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
             this.loadingLine.detailDialog.loading = true
@@ -1813,36 +1864,31 @@ export default {
                 this.loadingLine.detailDialog.loadingText = null
             })
         },
-        async UpdateLoadedDistributionBagsNumber(ff_no) {
-            this.loadingLine.detailDialog.show = false
-            this.$store.state.loadingOverlayText = 'Updating loaded labels data...'
-            this.$store.state.loadingOverlay = true
-
-            const url = `${this.apiConfig.baseUrl}LoadedDistributionBagsNumber`
-            
-            await axios.post(url, {
-                bags_number: this.loadingLine.detailDialog.inputs.scanner.values,
-                ff_no: ff_no,
-                program_year: this.generalSettings.programYear
-            }, {
-                headers: {
-                    Authorization: `Bearer ${this.apiConfig.token}`
+        async getLoadinglineTableData() {
+            if (this.accessModul.loadingLine) {
+                this.loadingLine.table.loading = true
+                let url = 'GetLoadingLine?'
+                let params = {
+                    typegetdata: this.User.ff.value_data,
+                    ff: this.User.ff.ff,
+                    program_year: this.generalSettings.programYear,
+                    nursery: this.generalSettings.nursery.model,
+                    distribution_date: this.loadingLine.datePicker.model
                 }
-            }).then(res => {
-                this.snackbar.color = 'green'
-                this.snackbar.text = 'Updating labels loaded succeed!'
-                this.loadingLine.detailDialog.inputs.scanner.values = []
-                this.getLoadinglineTableData()
-            }).catch(err => {
-                this.snackbar.color = 'red'
-                this.snackbar.text = err.response.data
-                console.error(err)
-                this.sessionEnd(err)
-            }).finally(() => {
-                this.$store.state.loadingOverlay = false
-                this.$store.state.loadingOverlayText = null
-                this.snackbar.show = true
-            })
+                await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.apiConfig.token}`
+                    }
+                }).then(result => {
+                    const res = result.data.data.result
+                    this.loadingLine.table.items = res 
+                }).catch(err => {
+                    console.error(err)
+                    this.sessionEnd(err)
+                }).finally(() => {
+                    this.loadingLine.table.loading = false
+                })
+            }
         },
         async FinishLoadedDistributionBagsNumber(ff_no) {
             this.loadingLine.detailDialog.show = false
@@ -1861,6 +1907,37 @@ export default {
             }).then(res => {
                 this.snackbar.color = 'green'
                 this.snackbar.text = 'Finishing loading bags succeed!'
+                this.loadingLine.detailDialog.inputs.scanner.values = []
+                this.getLoadinglineTableData()
+            }).catch(err => {
+                this.snackbar.color = 'red'
+                this.snackbar.text = err.response.data
+                console.error(err)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+                this.snackbar.show = true
+            })
+        },
+        async UpdateLoadedDistributionBagsNumber(ff_no) {
+            this.loadingLine.detailDialog.show = false
+            this.$store.state.loadingOverlayText = 'Updating loaded labels data...'
+            this.$store.state.loadingOverlay = true
+
+            const url = `${this.apiConfig.baseUrl}LoadedDistributionBagsNumber`
+            
+            await axios.post(url, {
+                bags_number: this.loadingLine.detailDialog.inputs.scanner.values,
+                ff_no: ff_no,
+                program_year: this.generalSettings.programYear
+            }, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.color = 'green'
+                this.snackbar.text = 'Updating labels loaded succeed!'
                 this.loadingLine.detailDialog.inputs.scanner.values = []
                 this.getLoadinglineTableData()
             }).catch(err => {
@@ -1926,6 +2003,20 @@ export default {
         },
         dateFormat(date, format) {
             return moment(date).format(format)
+        },
+        exportExcel(type, data) {
+            if (type == 'bibit_by_ff') {
+                const params = new URLSearchParams({
+                    ff_no: data.datas.FF.toString(),
+                    program_year: data.datas.program_year,
+                    activity: data.datas.activity,
+                    distribution_date: data.distribution_date
+                })
+                window.open(
+                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
+                    "ExportBibitExcel?" + params
+                )
+            }
         },
         async firstAccessPage() {
             this.packingLabel.loadingText = 'Getting packing label data...'

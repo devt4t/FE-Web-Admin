@@ -6,14 +6,13 @@ const Arjasari = [
     'syahrul.ramadhan@trees4trees.org',
     // Faza Meidina
 ]
-
 const Ciminyak = [
     'wawan.sugeng@trees4trees.org',
     'saepudin@trees4trees.org',
     'muhamad.fadjar@trees4trees.org',
     'arif.sambas@trees4trees.org',
     'windi.widia@trees4trees.org',
-    // Open Vacant
+    'nada.radilla@trees4trees.org'
 ]
 
 const Kebumen = [
