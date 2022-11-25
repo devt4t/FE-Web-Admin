@@ -491,7 +491,7 @@
         <!-- END: MODAL -->
         
         
-        <!-- MAIN Calendar -->
+        <!-- MAIN Ditribution -->
         <v-container fluid>
             <!-- General Settings -->
             <v-card rounded="xl" class="mb-2 d-flex align-center flex-lg-row flex-column py-2" >
@@ -525,7 +525,7 @@
                     label="Nursery"
                     class="mx-auto mx-lg-2 ml-lg-1 mb-2 mb-lg-0"
                     style="max-width: 200px"
-                    :disabled="generalSettings.nursery.disabled || calendar.loading"
+                    :disabled="generalSettings.nursery.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
                 ></v-select>
                 <v-divider class="mx-2"></v-divider>
             </v-card>
@@ -549,17 +549,31 @@
                                 <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">Getting distribution datas in <strong>{{ generalSettings.nursery.model }}</strong> Nursery...</p>
                             </div>
                         </v-overlay>
-                        <v-row class="mb-3 align-center">
+                        <v-row class="">
                             <v-spacer></v-spacer>
+                            <!-- Refresh Button -->
+                            <v-btn
+                                dark
+                                @click="calendarUpdateRange({start: $refs.calendar.renderProps.start, end: $refs.calendar.renderProps.end})"
+                                color="info"
+                                rounded
+                                small
+                            >
+                                <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row class="mb-1 align-center">
+                            <v-divider class="mx-2"></v-divider>
                             <v-btn
                                 fab
                                 text
                                 small
-                                color="grey darken-2"
+                                color="green white--text"
                                 @click="calendarPrev"
                             >
-                                <v-icon small>
-                                mdi-chevron-left
+                                <v-icon>
+                                mdi-chevron-left-circle
                                 </v-icon>
                             </v-btn>
                             <v-toolbar-title v-if="$refs.calendar">
@@ -569,14 +583,14 @@
                                 fab
                                 text
                                 small
-                                color="grey darken-2"
+                                color="green white--text"
                                 @click="calendarNext"
                             >
-                                <v-icon small>
-                                mdi-chevron-right
+                                <v-icon>
+                                mdi-chevron-right-circle
                                 </v-icon>
                             </v-btn>
-                            <v-spacer></v-spacer>
+                            <v-divider class="mx-2"></v-divider>
                         </v-row>
                         <v-sheet height="750">
                             <v-calendar
@@ -785,7 +799,7 @@
                 <!-- Packing Label Section -->
                 <v-expansion-panel v-if="accessModul.packingLabel" class="rounded-xl">
                     <v-expansion-panel-header>
-                        <h3 class="dark--text"><v-icon class="mr-1">mdi-label-multiple</v-icon> Packing Label</h3>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-printer</v-icon> Print Label & Receipt</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
@@ -836,18 +850,31 @@
                                         >
                                             <template v-slot:top>
                                                 <v-row class="mx-0 my-2 align-center">
-                                                    <v-divider class="mx-2"></v-divider>
+                                                    <!-- Search Field -->
                                                     <v-text-field
                                                         hide-details
                                                         dense
                                                         rounded
                                                         outlined
                                                         color="green"
+                                                        class="mb-2 mb-lg-0"
                                                         placeholder="Start type to search..."
                                                         label="Search"
                                                         append-icon="mdi-magnify"
                                                         v-model="packingLabel.tables.byLahan.search"
+                                                        style="max-width: 350px"
                                                     ></v-text-field>
+                                                    <v-divider class="mx-2"></v-divider>
+                                                    <!-- Refresh Button -->
+                                                    <v-btn
+                                                        dark
+                                                        @click="getPackingLabelTableData()"
+                                                        color="info"
+                                                        rounded
+                                                        small
+                                                    >
+                                                        <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+                                                    </v-btn>
                                                 </v-row>
                                             </template>
                                             <!-- Check Column -->
@@ -862,8 +889,8 @@
                                                     class="mt-0"
                                                     hide-details
                                                     :label="`${item.is_checked ? 'Printed' : 'Nope'}`"
-                                                    off-icon="mdi-circle-outline"
-                                                    on-icon="mdi-check-circle"
+                                                    off-icon="mdi-printer-off"
+                                                    on-icon="mdi-printer-check"
                                                 ></v-checkbox>
                                             </template>
                                             <!-- Total Bibit Column -->
@@ -872,45 +899,27 @@
                                             </template>
                                             <!-- Total Bibit Column -->
                                             <template v-slot:item.total_bibit="{item}">
-                                                {{ numberFormat(item.total_bibit) }}
+                                                <v-icon>mdi-sprout</v-icon> {{ numberFormat(item.total_bibit) }} 
                                             </template>
                                             <!-- Actions Column -->
                                             <template v-slot:item.actions="{item}">
-                                                <v-menu
-                                                    rounded="xl"
-                                                    bottom
-                                                    left
-                                                    offset-y
-                                                    transition="slide-y-transition"
-                                                    :close-on-content-click="false"
-                                                >
-                                                    <template v-slot:activator="{ on, attrs }">
-                                                        <v-icon v-bind="attrs" v-on="on" color="dark">
-                                                        mdi-arrow-down-drop-circle
-                                                        </v-icon>
-                                                    </template>
-
-                                                    <v-list class="d-flex flex-column align-stretch">
-                                                        <v-list-item>
-                                                            <v-btn 
-                                                                block color="blue white--text" rounded 
-                                                                @click="printPackingLabelByLahan('label', item.ph_form_no)"
-                                                            >
-                                                                <v-icon class="mr-1">mdi-printer</v-icon>
-                                                                Label
-                                                            </v-btn>
-                                                        </v-list-item>
-                                                        <v-list-item>
-                                                            <v-btn 
-                                                                color="green white--text" rounded
-                                                                @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
-                                                            >
-                                                                <v-icon class="mr-1">mdi-printer</v-icon>
-                                                                Tanda Terima
-                                                            </v-btn>
-                                                        </v-list-item>
-                                                    </v-list>
-                                                </v-menu>
+                                                <v-row class="justify-end ma-0">
+                                                    <v-btn 
+                                                        small color="blue white--text" class="ma-1" rounded 
+                                                        @click="printPackingLabelByLahan('label', item.ph_form_no)"
+                                                    >
+                                                        <v-icon class="mr-1">mdi-label</v-icon>
+                                                        Label
+                                                    </v-btn>
+                                                    <v-btn 
+                                                        small
+                                                        color="green white--text" rounded class="ma-1"
+                                                        @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
+                                                    >
+                                                        <v-icon class="mr-1">mdi-receipt-text</v-icon>
+                                                        Receipt
+                                                    </v-btn>
+                                                </v-row>
                                             </template>
                                         </v-data-table>
                                     </v-tab-item>
@@ -945,7 +954,8 @@
                         <v-row>
                             <!-- Select Date Input -->
                             <v-col cols="12">
-                                <v-toolbar flat>
+                                <v-row class="ma-2 mb-0 align-center">
+                                    <!-- Distribution Date Filter Field -->
                                     <v-menu 
                                         rounded="xl"
                                         transition="slide-x-transition"
@@ -961,6 +971,7 @@
                                                     <v-text-field
                                                         dense
                                                         color="green"
+                                                        class="mb-2 mb-lg-0"
                                                         hide-details
                                                         outlined
                                                         label="Distribution Date"
@@ -968,7 +979,8 @@
                                                         v-bind="attrs"
                                                         v-on="{...menu, ...tooltip}"
                                                         readonly
-                                                        v-model="loadingLine.datePicker.model"
+                                                        v-model="loadingLine.datePicker.modelShow"
+                                                        style="max-width: 250px"
                                                     ></v-text-field>
                                                 </template>
                                                 <span>Klik untuk memunculkan datepicker</span>
@@ -995,13 +1007,18 @@
                                             </div>
                                         </div>
                                     </v-menu>
-                                    <v-divider class="ml-2"></v-divider>
-                                    <v-divider></v-divider>
-                                    <v-divider></v-divider>
-                                    <v-divider></v-divider>
-                                    <v-divider></v-divider>
-                                    <v-divider></v-divider>
-                                </v-toolbar>
+                                    <v-divider class="mx-2"></v-divider>
+                                    <!-- Refresh Button -->
+                                    <v-btn
+                                        dark
+                                        @click="getLoadinglineTableData()"
+                                        color="info"
+                                        rounded
+                                        small
+                                    >
+                                        <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+                                    </v-btn>
+                                </v-row>
                             </v-col>
                             <!-- Loading Line Table -->
                             <v-col cols="12">
@@ -1009,6 +1026,7 @@
                                     :headers="loadingLine.table.headers"
                                     :items="loadingLine.table.items"
                                     :loading="loadingLine.table.loading"
+                                    multi-sort
                                 >
                                     <!-- Check Column -->
                                     <template v-slot:item.is_loaded="{item}">
@@ -1028,9 +1046,10 @@
                                     <!-- Printed Progress Column -->
                                     <template v-slot:item.printed_progress="{item}">
                                         {{ `${item.ph_printed}/${item.ph_all}` }} 
-                                        <v-chip :color="`${item.printed_progress == 100 ? 'green' : 'red'} white--text`" class="ml-1">
-                                            <v-icon v-if="item.printed_progress == 100" color="white" class="mr-1">mdi-check-circle</v-icon>
-                                            <v-icon v-else color="white" class="mr-1">mdi-close-circle</v-icon>
+                                        <v-chip :color="`${item.printed_progress == 100 ? 'green' : ( item.printed_progress >= 50 ? 'orange' : 'red')} white--text`" class="ml-1">
+                                            <v-icon v-if="item.printed_progress == 100" color="white" class="mr-1">mdi-printer-check</v-icon>
+                                            <v-icon v-else-if="item.printed_progress > 0" color="white" class="mr-1">mdi-printer</v-icon>
+                                            <v-icon v-else color="white" class="mr-1">mdi-printer-off</v-icon>
                                             {{ item.printed_progress }}%
                                         </v-chip>
                                     </template>
@@ -1187,7 +1206,16 @@ export default {
         distributionReport: {
             loading: false,
             table: {
-                headers: [],
+                headers: [
+                    {text: 'Management Unit', value: 'mu_name'},
+                    {text: 'FF Name', value: 'ff_name'},
+                    {text: 'Farmer Name', value: 'farmer_name'},
+                    {text: 'Distribution Date', value: 'distribution_date'},
+                    {text: 'Loaded Bags', value: 'loaded_bags'},
+                    {text: 'Distributed Bags', value: 'distributed_bags'},
+                    {text: 'Status', value: 'status'},
+                    {text: 'Actions', value: 'action', align: 'right', sortable: false},
+                ],
                 items: [],
                 loading: false,
             }
@@ -1207,6 +1235,7 @@ export default {
             datePicker: {
                 loading: false,
                 model: moment().format('Y-MM-DD'),
+                modelShow: moment().format('DD MMMM Y'),
                 show: false,
             },
             detailDialog: {
@@ -1237,10 +1266,10 @@ export default {
                     { text: 'Check', value: 'is_loaded', align: 'center', width: '100'},
                     { text: 'Management Unit', value: 'mu_name'},
                     { text: 'Field Facilitator', value: 'ff_name'},
-                    { text: 'Printed Progress', value: 'printed_progress', align: 'center'},
+                    { text: 'Printed (%)', value: 'printed_progress', align: 'center'},
                     { text: 'Seeds Total', value: 'total_tree_amount', align: 'center'},
                     { text: 'Bags Total', value: 'total_bags', align: 'center'},
-                    { text: 'Actions', value: 'actions', align: 'right'},
+                    { text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
                 items: [],
                 loading: false,
@@ -1262,12 +1291,11 @@ export default {
                 byLahan: {
                     headers: [
                         { text: 'Check', value: 'is_checked', align: 'center', width: '100'},
-                        { text: "No Lahan", align: "start", value: "lahan_no"},
                         { text: "Management Unit", value: "mu_name"},
-                        { text: "Target Area", value: "ta_name"},
                         { text: "Field Facilitator", value: "nama_ff"},
                         { text: "Farmer", value: "nama_petani"},
-                        { text: "Seeds Total", value: "total_bibit", align: 'center' },
+                        { text: "No Lahan", align: "start", value: "lahan_no"},
+                        { text: "Seeds Total", value: "total_bibit"},
                         { text: "Actions", value: "actions", sortable: false, align: 'right' },
                     ],
                     items: [],
@@ -1353,7 +1381,8 @@ export default {
             }
         },
         'loadingLine.datePicker.model': {
-            async handler() {
+            async handler(newVal) {
+                this.loadingLine.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
                 await this.getLoadinglineTableData()
             }
         }
