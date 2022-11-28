@@ -386,6 +386,7 @@
         <v-expansion-panel-content>
           <!-- Main Table -->
           <v-data-table
+            multi-sort
             :headers="tables.farmer.headers"
             :items="tables.farmer.items"
             :search="tables.farmer.search"
@@ -535,6 +536,7 @@
         <v-expansion-panel-content>
           <!-- Main Table -->
           <v-data-table
+            multi-sort
             :headers="tables.sostam.headers"
             :items="tables.sostam.items"
             :search="tables.sostam.search"
@@ -756,6 +758,7 @@
         <v-expansion-panel-content>
           <!-- Main Table -->
           <v-data-table
+            multi-sort
             :headers="tables.penlub.headers"
             :items="tables.penlub.items"
             :search="tables.penlub.search"
@@ -1064,6 +1067,7 @@ export default {
           {value: "Sosialisasi Tanam", disabled: false},
           {value: "Penilikan Lubang", disabled: false},
           {value: "Material Organik (Pupuk)", disabled: true},
+          {value: "Distribusi", disabled: true},
           {value: "Realisasi Tanam", disabled: true},
           {value: "Material Organik (Pestisida)", disabled: true},
         ],
