@@ -942,12 +942,29 @@
                                                     </v-btn>
                                                 </v-row>
                                             </template>
+                                            <!-- Nama FF Column -->
+                                            <template v-slot:item.nama_ff="{item}">
+                                                <p class="ma-0" style="max-width: 150px">{{ item.nama_ff }}</p>
+                                            </template>
+                                            <!-- Nama Petani Column -->
+                                            <template v-slot:item.nama_petani="{item}">
+                                                <p class="ma-0" style="max-width: 150px">{{ item.nama_petani }}</p>
+                                            </template>
+                                            <!-- Total Lubang Column -->
+                                            <template v-slot:item.total_holes="{item}">
+                                                <v-icon>mdi-pi-hole</v-icon> {{ numberFormat(item.total_holes) }}
+                                            </template>
+                                            <!-- Total Bibit Column -->
+                                            <template v-slot:item.total_bibit="{item}">
+                                                <v-icon :color="`${item.total_holes == item.total_bibit ? 'green' : 'red'}`">mdi-sprout</v-icon> {{ numberFormat(item.total_bibit) }} 
+                                            </template>
                                             <!-- Check Column -->
                                             <template v-slot:item.is_checked="{item}">
                                                 <v-checkbox
                                                     v-model="item.is_checked"
                                                     @click="confirmationShow('Check Label', item)"
                                                     readonly
+                                                    :disabled="item.total_holes != item.total_bibit"
                                                     :background-color="`${item.is_checked ? 'green' : 'grey darken-1'} rounded-xl px-2 pr-3 py-1`"
                                                     dark
                                                     color="white"
@@ -958,14 +975,6 @@
                                                     on-icon="mdi-printer-check"
                                                 ></v-checkbox>
                                             </template>
-                                            <!-- Total Bibit Column -->
-                                            <template v-slot:item.total_holes="{item}">
-                                                {{ numberFormat(item.total_holes) }}
-                                            </template>
-                                            <!-- Total Bibit Column -->
-                                            <template v-slot:item.total_bibit="{item}">
-                                                <v-icon>mdi-sprout</v-icon> {{ numberFormat(item.total_bibit) }} 
-                                            </template>
                                             <!-- Actions Column -->
                                             <template v-slot:item.actions="{item}">
                                                 <v-row class="justify-end ma-0">
@@ -975,6 +984,7 @@
                                                         color="green white--text" 
                                                         class="ma-1 d-none d-lg-inline-block" 
                                                         @click="printPackingLabelByLahan('label', item.ph_form_no)"
+                                                        :disabled="item.total_holes != item.total_bibit"
                                                     >
                                                         <v-icon class="mr-1">mdi-label</v-icon>
                                                         Label
@@ -985,6 +995,7 @@
                                                         color="green white--text"
                                                         class="d-inline-block d-lg-none ma-1"
                                                         @click="printPackingLabelByLahan('label', item.ph_form_no)"
+                                                        :disabled="item.total_holes != item.total_bibit"
                                                     >
                                                         <v-icon>mdi-label</v-icon>
                                                     </v-btn>
@@ -994,6 +1005,7 @@
                                                         color="orange white--text" 
                                                         class="ma-1 d-none d-lg-inline-block mr-0" 
                                                         @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
+                                                        :disabled="item.total_holes != item.total_bibit"
                                                     >
                                                         <v-icon class="mr-1">mdi-receipt-text</v-icon>
                                                         Receipt
@@ -1004,6 +1016,7 @@
                                                         color="orange white--text"
                                                         class="d-inline-block d-lg-none ma-1 mr-0"
                                                         @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
+                                                        :disabled="item.total_holes != item.total_bibit"
                                                     >
                                                         <v-icon>mdi-receipt-text</v-icon>
                                                     </v-btn>
@@ -1385,11 +1398,12 @@ export default {
             tables: {
                 byLahan: {
                     headers: [
-                        { text: "Management Unit", value: "mu_name"},
-                        { text: "Field Facilitator", value: "nama_ff"},
+                        { text: "MU", value: "mu_name"},
+                        { text: "FF", value: "nama_ff"},
                         { text: "Farmer", value: "nama_petani"},
                         { text: "No Lahan", align: "start", value: "lahan_no"},
-                        { text: "Seeds Total", value: "total_bibit"},
+                        { text: "Holes", value: "total_holes"},
+                        { text: "Seeds", value: "total_bibit"},
                         { text: 'Check', value: 'is_checked', align: 'center', width: '100'},
                         { text: "Actions", value: "actions", sortable: false, align: 'right' },
                     ],
