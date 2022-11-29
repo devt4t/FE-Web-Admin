@@ -961,10 +961,10 @@
                                             <!-- Check Column -->
                                             <template v-slot:item.is_checked="{item}">
                                                 <v-checkbox
+                                                    v-if="item.total_holes >= item.total_bibit"
                                                     v-model="item.is_checked"
                                                     @click="confirmationShow('Check Label', item)"
                                                     readonly
-                                                    :disabled="item.total_holes != item.total_bibit"
                                                     :background-color="`${item.is_checked ? 'green' : 'grey darken-1'} rounded-xl px-2 pr-3 py-1`"
                                                     dark
                                                     color="white"
@@ -974,6 +974,9 @@
                                                     off-icon="mdi-printer-off"
                                                     on-icon="mdi-printer-check"
                                                 ></v-checkbox>
+                                                <v-btn v-else color="red white--text" fab small @click="confirmationShow('Alert Penlub', item)"> 
+                                                    <v-icon >mdi-pi-hole</v-icon>  
+                                                </v-btn>
                                             </template>
                                             <!-- Actions Column -->
                                             <template v-slot:item.actions="{item}">
@@ -984,7 +987,7 @@
                                                         color="green white--text" 
                                                         class="ma-1 d-none d-lg-inline-block" 
                                                         @click="printPackingLabelByLahan('label', item.ph_form_no)"
-                                                        :disabled="item.total_holes != item.total_bibit"
+                                                        :disabled="item.total_holes < item.total_bibit"
                                                     >
                                                         <v-icon class="mr-1">mdi-label</v-icon>
                                                         Label
@@ -995,7 +998,7 @@
                                                         color="green white--text"
                                                         class="d-inline-block d-lg-none ma-1"
                                                         @click="printPackingLabelByLahan('label', item.ph_form_no)"
-                                                        :disabled="item.total_holes != item.total_bibit"
+                                                        :disabled="item.total_holes < item.total_bibit"
                                                     >
                                                         <v-icon>mdi-label</v-icon>
                                                     </v-btn>
@@ -1005,7 +1008,7 @@
                                                         color="orange white--text" 
                                                         class="ma-1 d-none d-lg-inline-block mr-0" 
                                                         @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
-                                                        :disabled="item.total_holes != item.total_bibit"
+                                                        :disabled="item.total_holes < item.total_bibit"
                                                     >
                                                         <v-icon class="mr-1">mdi-receipt-text</v-icon>
                                                         Receipt
@@ -1016,7 +1019,7 @@
                                                         color="orange white--text"
                                                         class="d-inline-block d-lg-none ma-1 mr-0"
                                                         @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
-                                                        :disabled="item.total_holes != item.total_bibit"
+                                                        :disabled="item.total_holes < item.total_bibit"
                                                     >
                                                         <v-icon>mdi-receipt-text</v-icon>
                                                     </v-btn>
@@ -2029,6 +2032,10 @@ export default {
                     this.snackbar.color = 'red'
                     this.snackbar.show = true
                 }
+            } else if (type == 'Alert Penlub') {
+                this.confirmation.title = `Please check ur data "Lubang Tanam" in ${data.lahan_no}! Total SEEDLING > HOLES`
+                this.confirmation.okText = 'Ok Syap'
+                this.confirmation.show = true
             }
         },
         dateFormat(date, format) {
