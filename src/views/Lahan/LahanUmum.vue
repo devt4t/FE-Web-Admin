@@ -333,6 +333,32 @@
                             <!-- Seeds Data -->
                             <v-stepper-content step="2" class="pt-0">
                                 <v-row class="my-0">
+                                    <!-- Employee -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="tree_name"
+                                            item-value="tree_code"
+                                            :items="inputs.seeds.items"
+                                            :label="inputs.seeds.label"
+                                            :loading="inputs.seeds.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.seeds.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.seeds.model"
+                                        >
+                                            <template v-slot:item="data">
+                                            <v-list-item-content>
+                                                <v-list-item-title v-html="data.item.tree_name"></v-list-item-title>
+                                                <v-list-item-subtitle>{{ data.item.tree_category }}</v-list-item-subtitle>
+                                            </v-list-item-content>
+                                            </template>
+                                        </v-autocomplete>
+                                    </v-col>
                                     {{ inputs.seeds.items }}
                                 </v-row>
                             </v-stepper-content>
@@ -688,13 +714,14 @@ export default {
             },
             seeds: {
                 items: [],
+                label: 'Seedling',
                 loading: false,
                 model: ''
             },
             village: {
+                items: [],
                 label: 'Village',
                 model: '',
-                items: [],
                 loading: false
             },
         },
