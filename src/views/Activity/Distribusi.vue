@@ -363,7 +363,14 @@
                                     <tr>
                                         <th>Bags / Labels Total</th>
                                         <th>:</th>
-                                        <td>{{ numberFormat(loadingLine.detailDialog.model.total_bags) }}</td>
+                                        <td>
+                                            <strong v-if="loadingLine.detailDialog.differentTotalBags">
+                                                {{ numberFormat(loadingLine.detailDialog.model.total_bags) }}
+                                            </strong>
+                                            <span v-else>
+                                                {{ numberFormat(loadingLine.detailDialog.model.total_bags) }}
+                                            </span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Bags / Labels Scanned Total</th>
@@ -1320,6 +1327,7 @@ export default {
                 show: false,
             },
             detailDialog: {
+                differentTotalBags: false,
                 inputs: {
                     disabledSave: false,
                     scanner: {
@@ -1827,9 +1835,11 @@ export default {
             // reset
             this.loadingLine.detailDialog.inputs.scanner.farmers = []
             this.loadingLine.detailDialog.inputs.scanner.values = []
+            this.loadingLine.detailDialog.inputs.scanner.labels = []
             this.loadingLine.detailDialog.inputs.scanner.alert.show = false
             this.loadingLine.detailDialog.inputs.scanner.alert.text = ``
             this.loadingLine.detailDialog.inputs.scanner.alert.color = ''
+            this.loadingLine.detailDialog.differentTotalBags = false
             
             const url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
             const params = {
@@ -1856,6 +1866,12 @@ export default {
 
                 if (total_farmer == total_farmer_loaded) this.loadingLine.detailDialog.inputs.disabledSave = true
                 else this.loadingLine.detailDialog.inputs.disabledSave = false
+
+                // check total_bags doesn't match
+                if (this.loadingLine.detailDialog.model.total_bags != this.loadingLine.detailDialog.inputs.scanner.labels.length) {
+                    this.loadingLine.detailDialog.model.total_bags = this.loadingLine.detailDialog.inputs.scanner.labels.length
+                    this.loadingLine.detailDialog.differentTotalBags = true
+                }
             }).catch(err => {
                 console.error(err)
                 this.sessionEnd(err)

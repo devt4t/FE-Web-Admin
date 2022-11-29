@@ -969,6 +969,44 @@
           </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <!-- Distribusi -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.distribusi.show">
+        <v-expansion-panel-header>
+          <h3 class="">Distribusi</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            multi-sort
+            :headers="tables.distribusi.headers"
+            :items="tables.distribusi.items"
+            :search="tables.distribusi.search"
+            :loading="tables.distribusi.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
+          >
+            <template v-slot:item.progress_penlub="{item}">
+              {{ item.progress_penlub }}%
+            </template>
+            <template v-slot:item.penlub_total_bibit="{item}">
+              {{ numberFormat(item.penlub_total_bibit) }}
+            </template>
+            <template v-slot:item.total_bibit_distribusi_all="{item}">
+              {{ numberFormat(item.total_bibit_distribusi_all) }}
+            </template>
+            <template v-slot:item.total_bibit_distribusi_loaded="{item}">
+              {{ numberFormat(item.total_bibit_distribusi_loaded) }}
+            </template>
+            <template v-slot:item.total_bibit_distribusi_distributed="{item}">
+              {{ numberFormat(item.total_bibit_distribusi_distributed) }}
+            </template>
+          </v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <v-snackbar
@@ -1009,6 +1047,7 @@ export default {
       land: ['2022-10-03','2022-10-31'],
       sostam: '2022-11-15',
       penlub: '2022-12-31',
+      distribusi: '2023-01-31',
     },
     btn: {
       generateButton: {
@@ -1026,7 +1065,8 @@ export default {
         farmer: [],
         land: [],
         sostam: '',
-        penlub: ''
+        penlub: '',
+        distribusi: ''
       },
       programYear: '',
       UM: '',
@@ -1067,7 +1107,7 @@ export default {
           {value: "Sosialisasi Tanam", disabled: false},
           {value: "Penilikan Lubang", disabled: false},
           {value: "Material Organik (Pupuk)", disabled: true},
-          {value: "Distribusi", disabled: true},
+          {value: "Distribusi", disabled: false},
           {value: "Realisasi Tanam", disabled: true},
           {value: "Material Organik (Pestisida)", disabled: true},
         ],
@@ -1139,6 +1179,28 @@ export default {
           { text: "Lubang", value: "total_lubang", align: 'center' },
           { text: "Lubang Standar", value: "total_lubang_standar", align: 'center' },
           { text: "Total Bibit", value: "total_bibit", align: 'center' },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
+        ],
+        items: [],
+        loading: false,
+        search: '',
+        show: false,
+        totalBibitDetails: {
+          KAYU: [],
+          MPTS: [],
+          CROPS: []
+        }
+      },
+      distribusi: {
+        headers: [
+          { text: "Field Facilitator", value: "ff" },
+          { text: "Total Petani", value: "total_petani", align: 'center' },
+          { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
+          { text: "Penlub Bibit", value: "penlub_total_bibit", align: 'center' },
+          { text: "Total Distribusi", value: "total_distribusi", align: 'center' },
+          { text: "D. Bibit All", value: "total_bibit_distribusi_all", align: 'center' },
+          { text: "D. Bibit Loaded", value: "total_bibit_distribusi_loaded", align: 'center' },
+          { text: "D. Bibit Distributed", value: "total_bibit_distribusi_distributed", align: 'center' },
           // { text: "Actions", value: "actions", align: 'center', sortable: false },
         ],
         items: [],
@@ -1306,6 +1368,15 @@ export default {
       } else {
         this.tables.penlub.show = false
       }
+      // Distribusi
+      if (activitiesActive.includes('Distribusi')) {
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
+        this.filters.activities.push('Distribusi')
+        this.tables.distribusi.show = true
+      } else {
+        this.tables.distribusi.show = false
+      }
 
       // console.log('Opened' + openedPanel)
 
@@ -1340,6 +1411,12 @@ export default {
             await this.tables.penlub.headers.splice(penlubHeaderIndex, 1)
           }
         })) 
+        // remove FC in table distribusi
+        await Promise.all(this.tables.distribusi.headers.map(async (distribusiHeader, distribusiHeaderIndex) => {
+          if (distribusiHeader.text == 'FC') {
+            await this.tables.distribusi.headers.splice(distribusiHeaderIndex, 1)
+          }
+        })) 
 
         let params = new URLSearchParams({
           activities: this.options.activities.model.join(),
@@ -1350,6 +1427,7 @@ export default {
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
         this.tables.penlub.loading = true
+        this.tables.distribusi.loading = true
 
         const response = await axios.get(
           this.auth.baseUrlGet +
@@ -1378,6 +1456,7 @@ export default {
         this.tables.farmer.items = farmers
         this.tables.sostam.items = datas.sostam
         this.tables.penlub.items = datas.penlub
+        this.tables.distribusi.items = datas.distribusi
 
         this.generateTotalBibitDetails(datas.sostam, 'sostam')
         this.generateTotalBibitDetails(datas.penlub, 'penlub')
@@ -1391,6 +1470,7 @@ export default {
         this.tables.farmer.loading = false
         this.tables.sostam.loading = false
         this.tables.penlub.loading = false
+        this.tables.distribusi.loading = false
       }
     },
     async generateKPIbyUM() {
@@ -1398,6 +1478,7 @@ export default {
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
         this.tables.penlub.loading = true
+        this.tables.distribusi.loading = true
         this.$store.state.loadingOverlay = true
 
         // add FC in table farmer
@@ -1426,7 +1507,7 @@ export default {
             ...this.tables.sostam.headers
           ]
         }
-        // add FC in table sostam
+        // add FC in table penlub
         let checkPenlubHeaderContainFC = 0
         await Promise.all(this.tables.penlub.headers.map(async (penlubHeader, penlubHeaderIndex) => {
           if (penlubHeader.text == 'FC') {
@@ -1439,12 +1520,26 @@ export default {
             ...this.tables.penlub.headers
           ]
         }
+        // add FC in table distribusi
+        let checkDistribusiHeaderContainFC = 0
+        await Promise.all(this.tables.distribusi.headers.map(async (distribusiHeader, distribusiHeaderIndex) => {
+          if (distribusiHeader.text == 'FC') {
+            checkDistribusiHeaderContainFC += 1
+          }
+        })) 
+        if (checkDistribusiHeaderContainFC == 0) {
+          this.tables.distribusi.headers = [
+            { text: "FC", value: "fc" },
+            ...this.tables.distribusi.headers
+          ]
+        }
 
         const fieldCoordinators = this.options.FC.items || [] 
 
         let farmers = []
         let sostams = []
         let penlubs = []
+        let distribusis = []
         
         let totalFC = fieldCoordinators.length
         let generatedFC = 0
@@ -1500,6 +1595,16 @@ export default {
                 })
               })
             }
+
+            // get distribusi
+            if (datas.distribusi.length > 0) {
+              datas.distribusi.forEach(distribusiVal => {
+                distribusis.push({
+                  fc: fcVal.name,
+                  ...distribusiVal
+                })
+              })
+            }
   
             // set filter data
             if (fcIndex == 0) {
@@ -1520,6 +1625,7 @@ export default {
               this.tables.farmer.loading = false
               this.tables.sostam.loading = false
               this.tables.penlub.loading = false
+              this.tables.distribusi.loading = false
             }
           })
         }))
@@ -1528,6 +1634,7 @@ export default {
         this.tables.farmer.items = farmers
         this.tables.sostam.items = sostams
         this.tables.penlub.items = penlubs
+        this.tables.distribusi.items = distribusis
       } catch (error) {
         console.error(error)
       }
@@ -1580,6 +1687,8 @@ export default {
       this.dates.sostam = '2022-11-15'
       this.filters.dates.penlub = this.dates.penlub
       this.dates.penlub = '2022-12-31'
+      this.filters.dates.distribusi = this.dates.distribusi
+      this.dates.distribusi = '2023-01-31'
     },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
