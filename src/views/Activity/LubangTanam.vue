@@ -75,7 +75,7 @@
         </v-card-text>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+          <v-btn dark color="red" rounded class="px-5" @click="exportDialog.area.show = false">
             <v-icon small class="mr-1">mdi-close</v-icon>
             Cancel
           </v-btn
