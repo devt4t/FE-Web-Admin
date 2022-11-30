@@ -13,6 +13,81 @@
       </v-alert>
     </div>
 
+    <!-- Modal Export By Area -->
+    <v-dialog v-model="exportDialog.area.show" max-width="500px">
+      <v-card rounded="xl">
+        <v-card-title class="">
+          <v-spacer></v-spacer>
+          Export By Area
+          <v-spacer></v-spacer>
+        </v-card-title
+        >
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectMU"
+                  :items="itemsMU"
+                  item-value="mu_no"
+                  item-text="name"
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                  v-on:change="selectedMU"
+                  label="Management Unit"
+                  clearable
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectTA"
+                  :items="itemsTA"
+                  item-value="area_code"
+                  item-text="name"
+                  v-on:change="selectedTA"
+                  label="Target Area"
+                  clearable
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectVillage"
+                  :items="itemsVillage"
+                  item-value="kode_desa"
+                  item-text="name"
+                  v-on:change="selectedVillage"
+                  label="Desa"
+                  clearable
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-spacer></v-spacer>
+          <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+            <v-icon small class="mr-1">mdi-close</v-icon>
+            Cancel
+          </v-btn
+          >
+          <v-btn color="green white--text" rounded class="px-5" @click="exportPenilikanLubangByExcel('area')">
+            <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
+            Export
+          </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <!-- Modal Filter Area -->
     <v-dialog v-model="dialogFilterArea" max-width="500px">
       <v-card rounded="xl">
@@ -1415,7 +1490,7 @@
       }"
     >
       <template v-slot:top>
-        <v-toolbar flat rounded="xl">
+        <v-row class="ma-1 ma-lg-2">
           <!-- dropdown filter button -->
           <v-menu
             rounded="xl"
@@ -1494,6 +1569,55 @@
             class="mr-2"
           ></v-text-field>
           <!-- dropdown export button -->
+          <v-menu
+            rounded="xl"
+            bottom
+            right
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-if="User.role_group == 'IT' || User.role_name == 'NURSERY' || User.role_name == 'NURSERY MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER'"
+                class=""
+                color="info white--text"
+                v-bind="attrs"
+                v-on="on"
+                rounded
+              >
+                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Export
+              </v-btn>
+            </template>
+
+            <v-list class="d-flex flex-column align-center">
+              <v-list-item>
+                <v-btn
+                  rounded
+                  dark
+                  class="px-9"
+                  @click="showExportDialog('area')"
+                  color="green"
+                >
+                  <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
+                  by Area
+                </v-btn>
+              </v-list-item>
+              <v-list-item v-if="false">
+                <v-btn
+                  rounded
+                  dark
+                  class="mx-3 mt-1"
+                  @click="showExportDialog('employee')"
+                  color="green"
+                >
+                  <v-icon class="mx-2" small>mdi-account-group</v-icon> 
+                  by Employee
+                </v-btn>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <!-- dropdown export button -->
           <!-- <v-menu
             rounded="xl"
             bottom
@@ -1523,7 +1647,7 @@
             </v-list>
           </v-menu> -->
           
-        </v-toolbar>
+        </v-row>
       </template>
 
       <!-- Total Lubang -->
@@ -1878,6 +2002,11 @@ export default {
     ph_form_no_temp: "",
 
     program_year: '',
+    exportDialog: {
+      area: {
+        show: false
+      }
+    }
   }),
   watch: {
     'program_year': {
@@ -3682,6 +3811,22 @@ export default {
 
       this.$store.state.lightbox.show = true
     },
+    showExportDialog(type) {
+      this.exportDialog[type].show = true
+    },
+    exportPenilikanLubangByExcel(type) {
+      if (type == 'area') {
+        const params = new URLSearchParams({
+          program_year: this.program_year,
+          type: type,
+          mu: this.selectMU,
+          ta: this.selectTA,
+          village: this.selectVillage,
+        })
+        const url = `${this.BaseUrlGet.substring(0, this.BaseUrlGet.length - 4)}ExportExcelPenilikanLubang?${params}`
+        window.open(url)
+      }
+    }
   },
 };
 </script>

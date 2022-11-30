@@ -320,7 +320,7 @@ export default {
       this.listValMenu = this.User.list_val_menu;
       var name = this.User.name;
       const arrayname = name.split(" ");
-      this.nameadmin = arrayname[0];
+      this.nameadmin = name;
       // this.nameadmin = this.User.name;
       this.statusadmin = this.User.role_name;
     }
