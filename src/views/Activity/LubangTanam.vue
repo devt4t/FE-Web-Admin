@@ -1490,7 +1490,7 @@
       }"
     >
       <template v-slot:top>
-        <v-row class="ma-1 ma-lg-2">
+        <v-row class="ma-1 ma-lg-2 align-center">
           <!-- dropdown filter button -->
           <v-menu
             rounded="xl"
