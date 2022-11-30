@@ -22,6 +22,32 @@
     </div>
 
     <!-- MODAL -->
+      <!-- Confirmation -->
+      <v-dialog v-model="confirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
+          <v-card class="rounded-xl">
+              <v-card-title class="mb-1 headermodalstyle">
+                  <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
+                  <span>Confirmation</span>
+                  <v-divider dark class="mx-2"></v-divider>
+                  <v-icon color="red" @click="confirmation.show = false">mdi-close-circle</v-icon>
+              </v-card-title>
+              <v-card-text>
+                  <h2 class="text-center pt-4">{{ confirmation.title }}</h2>
+                  <v-row class="mt-10 align-center mb-0">
+                      <v-divider class="mx-2"></v-divider>
+                      <v-btn rounded color="red white--text mr-1" @click="confirmation.show = false">
+                          <v-icon class="mr-1">mdi-close-circle</v-icon>
+                          Close
+                      </v-btn>
+                      <v-btn rounded color="green white--text ml-1" @click="confirmationOk(confirmation.okText)">
+                          <v-icon class="mr-1">mdi-check-circle</v-icon>
+                          {{ confirmation.okText }}
+                      </v-btn>
+                      <v-divider class="mx-2"></v-divider>
+                  </v-row>
+              </v-card-text>
+          </v-card>
+      </v-dialog>
     <!-- END: MODAL -->
 
     <v-expansion-panels v-model="expansions.model" class="mb-6 px-3" multiple>
@@ -141,7 +167,7 @@
               </v-select>
             </v-col>
             <!-- Petani Date Range -->
-            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan') || options.activities.model.includes('Sosialisasi Tanam')">
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan') || options.activities.model.includes('Sosialisasi Tanam') || options.activities.model.includes('Penilikan Lubang') || options.activities.model.includes('Distribusi')">
               <p class="mb-1">Petani Date Range</p>
                   <v-menu 
                     rounded="xl"
@@ -194,7 +220,7 @@
                   </v-menu>
             </v-col>
             <!-- Lahan Date Range -->
-            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan') || options.activities.model.includes('Sosialisasi Tanam')">
+            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Pendataan Petani & Lahan') || options.activities.model.includes('Sosialisasi Tanam') || options.activities.model.includes('Penilikan Lubang')">
               <p class="mb-1">Lahan Date Range</p>
                   <v-menu 
                     rounded="xl"
@@ -247,7 +273,7 @@
                   </v-menu>
             </v-col>
             <!-- Sostam Date -->
-            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Sosialisasi Tanam')">
+            <v-col cols="12" sm="12" md="6" lg="2" v-if="options.activities.model.includes('Sosialisasi Tanam')">
               <p class="mb-1">Sostam Date</p>
                   <v-menu 
                     rounded="xl"
@@ -299,7 +325,7 @@
                   </v-menu>
             </v-col>
             <!-- Penlub Date -->
-            <v-col cols="12" sm="12" md="6" lg="3" v-if="options.activities.model.includes('Penilikan Lubang')">
+            <v-col cols="12" sm="12" md="6" lg="2" v-if="options.activities.model.includes('Penilikan Lubang') || options.activities.model.includes('Distribusi')">
               <p class="mb-1">Penlub Date</p>
                   <v-menu 
                     rounded="xl"
@@ -350,10 +376,62 @@
                     </v-list>
                   </v-menu>
             </v-col>
+            <!-- Distribution Date -->
+            <v-col cols="12" sm="12" md="6" lg="2" v-if="options.activities.model.includes('Distribusi')">
+              <p class="mb-1">Distribution Date</p>
+                  <v-menu 
+                    rounded="xl"
+                    v-model="menus.distribusi"
+                    transition="slide-x-transition"
+                    bottom
+                    right
+                    offset-x
+                    :close-on-content-click="false"
+                  >
+                    <template v-slot:activator="{ on: menu, attrs }">
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on: tooltip }">
+                          <v-btn
+                            rounded
+                            color="green lighten-1"
+                            v-bind="attrs"
+                            v-on="{...menu, ...tooltip}"
+                          >
+                            <v-icon left> mdi-calendar </v-icon>
+                            {{ dates.distribusi }}
+                          </v-btn>
+                        </template>
+                        <span>Klik untuk memunculkan datepicker</span>
+                      </v-tooltip>
+                    </template>
+                    <v-list>
+                      <v-list-item>
+                        <v-date-picker 
+                          color="green lighten-1 rounded-xl" 
+                          rounded
+                          v-model="dates.distribusi"
+                        ></v-date-picker>
+                        <br>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                          color="green lighten-1"
+                          center
+                          rounded
+                          @click="menus.distribusi = false"
+                        >
+                          Ok
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+            </v-col>
             <!-- Button -->
             <v-col cols="12" class="d-flex align-items-center justify-center">
               <v-btn
-                class="mr-1 my-2 white--text px-10"
+                class="my-2 white--text px-10"
                 @click="generateKPI()"
                 color="blue"
                 rounded
@@ -363,6 +441,18 @@
               >
                 <v-icon class="mr-1 " small>mdi-calendar-start</v-icon> 
                 <span class="">Generate</span>
+              </v-btn>
+              <v-btn 
+                v-if="options.FC.model"
+                :disabled="btn.generateButton.disabled"
+                @click="exportExcel('Pendataan Petani & Lahan')"
+                color="green white--text"
+                class="ml-2 my-2 d-none d-md-inline-block"
+                rounded
+                x-large
+              >
+                <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
+                Export Excel
               </v-btn>
             </v-col>
           </v-row>
@@ -404,11 +494,11 @@
                 <v-btn 
                   @click="generateReport('Pendataan Petani & Lahan')"
                   color="info"
-                  class="mb-2 d-none d-md-inline-block"
+                  class="mb-2 mx-1 d-none d-md-inline-block"
                   rounded
                 >
-                  <v-icon small class="mr-1">mdi-printer</v-icon>
-                  Export
+                  <v-icon small class="mr-1">mdi-file-pdf-box</v-icon>
+                  Export PDF
                 </v-btn>
               </v-row>
             </template>
@@ -989,6 +1079,15 @@
               itemsPerPageOptions: [8, 15, 30, -1]
             }"
           >
+            <template v-slot:header.total_petani>
+              Total Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.progress_penlub>
+              Penlub ({{ dateFormat(filters.dates.penlub, 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.total_distribution>
+              Total Distribution ({{ dateFormat(filters.dates.distribusi, 'DD MMM Y') }})
+            </template>
             <template v-slot:item.progress_penlub="{item}">
               {{ item.progress_penlub }}%
             </template>
@@ -1042,6 +1141,12 @@ export default {
       typegetdata: '',
       user: '',
     },
+    confirmation: {
+      model: null,
+      okText: '',
+      show: false,
+      title: 'Confirmation',
+    },
     dates: {
       farmer: ['2022-08-31','2022-09-30'],
       land: ['2022-10-03','2022-10-31'],
@@ -1078,6 +1183,7 @@ export default {
       land: false,
       sostam: false,
       penlub: false,
+      distribusi: false
     },
     options: {
       FC: {
@@ -1286,55 +1392,6 @@ export default {
       }
       await this.getUMAll()
     },
-    optionsChanged(type) {
-      if (type == 'UM') {
-        if (this.options.UM.model) {
-          this.getFCbyManager(this.options.UM.model)
-        } 
-      }
-    },
-    async getUMAll() {
-      try {
-        this.options.UM.loading = true
-        const response = await axios.get(
-          this.auth.baseUrlGet + "GetEmployeebyPosition?position_code=20",
-          {
-            headers: {
-              Authorization: `Bearer ` + this.auth.token,
-            },
-          }
-        );
-        this.options.UM.items = response.data.data.result.data
-      } catch (error) {
-        console.error(error.response);
-        this.sessionEnd(error)
-      } finally {
-        this.options.UM.loading = false
-      }
-    },
-    async getFCbyManager(valcodeum) {
-      this.options.FC.model = ''
-      this.options.FC.loading = true
-      try {
-        const response = await axios.get(
-          this.auth.baseUrlGet +
-            "GetEmployeebyManager?manager_code=" +
-            valcodeum +
-            "&position=19",
-          {
-            headers: {
-              Authorization: `Bearer ` + this.auth.token,
-            },
-          }
-        );
-          this.options.FC.items = response.data.data.result.data
-      } catch (error) {
-        console.error(error.response);
-        this.sessionEnd(error)
-      } finally {
-        this.options.FC.loading = false
-      }
-    },
     async generateKPI() {
       this.btn.generateButton.loading = true
       
@@ -1422,7 +1479,7 @@ export default {
           activities: this.options.activities.model.join(),
           fc_no: fc_no,
           program_year: this.options.programYear.model,
-          dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub]
+          dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub, this.dates.distribusi]
         })
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
@@ -1551,7 +1608,7 @@ export default {
             activities: this.options.activities.model.join(),
             fc_no: fcVal.nik,
             program_year: this.options.programYear.model,
-            dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub]
+            dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub, this.dates.distribusi]
           })
   
           await axios.get(
@@ -1639,10 +1696,6 @@ export default {
         console.error(error)
       }
     },
-    removeFromActivitiesInput (item) {
-      const index = this.options.activities.model.indexOf(item.value)
-      if (index >= 0) this.options.activities.model.splice(index, 1)
-    },
     getButtonGenerateKPIDisabledCondition() {
       let requiredNull = 0
       // required UM
@@ -1671,24 +1724,77 @@ export default {
       if (requiredNull == 0) this.btn.generateButton.disabled = false
       else this.btn.generateButton.disabled = true
     },
+    async getFCbyManager(valcodeum) {
+      this.options.FC.model = ''
+      this.options.FC.loading = true
+      try {
+        const response = await axios.get(
+          this.auth.baseUrlGet +
+            "GetEmployeebyManager?manager_code=" +
+            valcodeum +
+            "&position=19",
+          {
+            headers: {
+              Authorization: `Bearer ` + this.auth.token,
+            },
+          }
+        );
+          this.options.FC.items = response.data.data.result.data
+      } catch (error) {
+        console.error(error.response);
+        this.sessionEnd(error)
+      } finally {
+        this.options.FC.loading = false
+      }
+    },
+    async getUMAll() {
+      try {
+        this.options.UM.loading = true
+        const response = await axios.get(
+          this.auth.baseUrlGet + "GetEmployeebyPosition?position_code=20",
+          {
+            headers: {
+              Authorization: `Bearer ` + this.auth.token,
+            },
+          }
+        );
+        this.options.UM.items = response.data.data.result.data
+      } catch (error) {
+        console.error(error.response);
+        this.sessionEnd(error)
+      } finally {
+        this.options.UM.loading = false
+      }
+    },
+    optionsChanged(type) {
+      if (type == 'UM') {
+        if (this.options.UM.model) {
+          this.getFCbyManager(this.options.UM.model)
+        } 
+      }
+    },
+    removeFromActivitiesInput (item) {
+      const index = this.options.activities.model.indexOf(item.value)
+      if (index >= 0) this.options.activities.model.splice(index, 1)
+    },
     // Utilities Function
-    async setFilterData(datas) {
-      // set management
-      this.filters.UM = datas.um || ''
-      this.filters.FC = datas.fc || ''
-      
-      
-      // set date
-      this.filters.dates.farmer = this.dates.farmer
-      this.dates.farmer = ['2022-08-31', '2022-09-30']
-      this.filters.dates.land = this.dates.land
-      this.dates.land = ['2022-10-03' ,'2022-10-31']
-      this.filters.dates.sostam = this.dates.sostam
-      this.dates.sostam = '2022-11-15'
-      this.filters.dates.penlub = this.dates.penlub
-      this.dates.penlub = '2022-12-31'
-      this.filters.dates.distribusi = this.dates.distribusi
-      this.dates.distribusi = '2023-01-31'
+    async confirmationOk(okText) {
+        this.confirmation.show = false
+    },
+    confirmationShow(type, data) {
+
+    },
+    dateFormat(date, format) {
+        return moment(date).format(format)
+    },
+    exportExcel() {
+      let params = new URLSearchParams({
+          activities: this.options.activities.model.join(),
+          fc_no: this.options.FC.model,
+          program_year: this.options.programYear.model,
+          dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub, this.dates.distribusi]
+        })
+      window.open(`${this.auth.baseUrlGet.substring(0, this.auth.baseUrlGet.length - 4)}KPIExportExcel?${params}`)
     },
     getProgramYearPetani(text) {
         if (text.slice(13, 14) === '_') {
@@ -1696,9 +1802,6 @@ export default {
         } else {
             return text.slice(4, 8)
         }
-    },
-    dateFormat(date, format) {
-        return moment(date).format(format)
     },
     generateReport (activities) {
        if (activities == 'Pendataan Petani & Lahan') {
@@ -1768,7 +1871,25 @@ export default {
           this.$router.push("/")
         }
       }
-    }
+    },
+    async setFilterData(datas) {
+      // set management
+      this.filters.UM = datas.um || ''
+      this.filters.FC = datas.fc || ''
+      
+      
+      // set date
+      this.filters.dates.farmer = this.dates.farmer
+      this.dates.farmer = ['2022-08-31', '2022-09-30']
+      this.filters.dates.land = this.dates.land
+      this.dates.land = ['2022-10-03' ,'2022-10-31']
+      this.filters.dates.sostam = this.dates.sostam
+      this.dates.sostam = '2022-11-15'
+      this.filters.dates.penlub = this.dates.penlub
+      this.dates.penlub = '2022-12-31'
+      this.filters.dates.distribusi = this.dates.distribusi
+      this.dates.distribusi = '2023-01-31'
+    },
   },
 };
 </script>

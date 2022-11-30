@@ -956,7 +956,7 @@
                                             </template>
                                             <!-- Total Bibit Column -->
                                             <template v-slot:item.total_bibit="{item}">
-                                                <v-icon :color="`${item.total_holes == item.total_bibit ? 'green' : 'red'}`">mdi-sprout</v-icon> {{ numberFormat(item.total_bibit) }} 
+                                                <v-icon :color="`${item.total_holes >= item.total_bibit ? 'green' : 'red'}`">mdi-sprout</v-icon> {{ numberFormat(item.total_bibit) }} 
                                             </template>
                                             <!-- Check Column -->
                                             <template v-slot:item.is_checked="{item}">
@@ -2011,9 +2011,9 @@ export default {
                 return 2
             } else return 4
         },
-        async confirmationOk(type) {
+        async confirmationOk(okText) {
             this.confirmation.show = false
-            if (type == 'Check Label') {
+            if (okText == 'Check Label') {
                 await this.updateCheckedPlantingHoles(this.confirmation.model.ph_form_no, this.confirmation.model.status)
             }
         },
