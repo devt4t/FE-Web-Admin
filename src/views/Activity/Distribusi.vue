@@ -1180,17 +1180,19 @@
                 <!-- Distribution Report Section -->
                 <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
                     <v-expansion-panel-header>
-                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> Distribution Report</h3>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> <v-badge color="red white--text" content="DEV">Distribution Report</v-badge></h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
-                        <v-overlay :value="distributionReport.loading" absolute class="rounded-xl">
+                        <v-overlay :value="distributionReport.loading" absolute class="rounded-xl" color="white">
                             <div class="d-flex flex-column align-center justify-center">
                                 <v-progress-circular
                                     indeterminate
-                                    color="white"
-                                    size="64"
+                                    color="green"
+                                    size="100"
+                                    width="7"
                                 ></v-progress-circular>
+                                <p v-if="distributionReport.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">{{ distributionReport.loadingText }}</p>
                             </div>
                         </v-overlay>
                         <v-row>
@@ -1199,6 +1201,7 @@
                                 <v-data-table
                                     :headers="distributionReport.table.headers"
                                     :items="distributionReport.table.items"
+                                    :loading="distributionReport.table.loading"
                                 >
                                     <!-- Toolbar -->
                                     <template v-slot:top>
@@ -1260,7 +1263,7 @@
                                             <v-btn
                                                 dark
                                                 readonly
-                                                @click="getLoadinglineTableData()"
+                                                @click="getDistributionReportTble()"
                                                 color="info"
                                                 rounded
                                                 small
@@ -1269,24 +1272,29 @@
                                             </v-btn>
                                         </v-row>
                                     </template>
+                                    <!-- All Bags Column -->
+                                    <template v-slot:item.sum_all_bags="{item}">
+                                        <v-icon>mdi-label-multiple </v-icon> {{ item.sum_all_bags }}
+                                    </template>
                                     <!-- Loaded Bags Column -->
-                                    <template v-slot:item.loaded_bags="{item}">
-                                        <v-icon>mdi-truck-check </v-icon> {{ item.loaded_bags }}
+                                    <template v-slot:item.sum_loaded_bags="{item}">
+                                        <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
                                     </template>
                                     <!-- DIstributed Bags Column -->
-                                    <template v-slot:item.distributed_bags="{item}">
-                                        <v-icon>mdi-basket-check </v-icon> {{ item.distributed_bags }}
+                                    <template v-slot:item.sum_distributed_bags="{item}">
+                                        <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
                                     </template>
                                     <!-- Status Column -->
                                     <template v-slot:item.status="{item}">
                                         <v-chip v-if="(item.status == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
-                                        <v-chip v-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified FC</v-chip>
-                                        <v-chip v-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified UM</v-chip>
+                                        <v-chip v-else-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified FC</v-chip>
+                                        <v-chip v-else-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified UM</v-chip>
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn color="info white--text" fab small icon>
-                                            <v-icon>mdi-information</v-icon>
+                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded>
+                                            <v-icon class="mr-1">mdi-information</v-icon>
+                                            Detail
                                         </v-btn>
                                     </template>
                                 </v-data-table>
@@ -1392,13 +1400,15 @@ export default {
                 show: false,
             },
             loading: false,
+            loadingText: '',
             table: {
                 headers: [
                     {text: 'Management Unit', value: 'mu_name'},
                     {text: 'FF Name', value: 'ff_name'},
                     {text: 'Farmer Name', value: 'farmer_name'},
-                    {text: 'Loaded Bags', value: 'loaded_bags'},
-                    {text: 'Distributed Bags', value: 'distributed_bags'},
+                    {text: 'All Bags', value: 'sum_all_bags'},
+                    {text: 'Loaded Bags', value: 'sum_loaded_bags'},
+                    {text: 'Distributed Bags', value: 'sum_distributed_bags'},
                     {text: 'Status', value: 'status', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
@@ -1549,7 +1559,7 @@ export default {
         'distributionReport.datePicker.model': {
             async handler(newVal) {
                 this.distributionReport.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
-                // await this.getLoadinglineTableData()
+                await this.getDistributionReportTble()
             }
         },
         'expansions.model': {
@@ -1840,7 +1850,8 @@ export default {
                     typegetdata: this.User.ff.value_data,
                     ff: this.User.ff.ff,
                     program_year: this.generalSettings.programYear,
-                    nursery: this.generalSettings.nursery.model
+                    nursery: this.generalSettings.nursery.model,
+                    distribution_date: this.packingLabel.datePicker.model
                 }
                 if (this.packingLabel.tabs.model == 0) {
                     this.packingLabel.tables.byLahan.loading = true
@@ -2091,7 +2102,34 @@ export default {
                 this.snackbar.show = true
             })
         },
-        // Utilities
+        // DISTRIBUTION REPORT
+        async getDistributionReportTble() {
+            if (this.accessModul.distributionReport == true) {
+                this.distributionReport.table.loading = true
+                let url = 'GetDistributionReport?'
+                let params = {
+                    typegetdata: this.User.ff.value_data,
+                    ff: this.User.ff.ff,
+                    program_year: this.generalSettings.programYear,
+                    nursery: this.generalSettings.nursery.model,
+                    distribution_date: this.distributionReport.datePicker.model
+                }
+                await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.apiConfig.token}`
+                    }
+                }).then(result => {
+                    const res = result.data.data.result
+                    this.distributionReport.table.items = res 
+                }).catch(err => {
+                    console.error(err)
+                    this.sessionEnd(err)
+                }).finally(() => {
+                    this.distributionReport.table.loading = false
+                })
+            }
+        },
+        // UTILITIES
         calendarGetNurseryColor(n, total, date) {
             let maxFF = this.calendarGetMaxFF(n, date)
             
@@ -2169,12 +2207,21 @@ export default {
             this.packingLabel.loading = true
             this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
             this.loadingLine.loading = true
+            this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
+            this.distributionReport.loading = true
 
             await this.getPackingLabelTableData()
             this.packingLabel.loading = false
+            this.packingLabel.loadingText = null
             this.loadingLine.loadingText = 'Getting loading line data...'
+            this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
             await this.getLoadinglineTableData()
             this.loadingLine.loading = false
+            this.loadingLine.loadingText = null
+            this.distributionReport.loadingText = 'Getting distribution report data...'
+            await this.getDistributionReportTble() 
+            this.distributionReport.loading = false
+            this.distributionReport.loadingText = null
         },
         getNumberBagsLeft(all, loaded) {
             let leftData = []
