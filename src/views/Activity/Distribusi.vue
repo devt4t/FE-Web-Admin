@@ -474,7 +474,7 @@
                 <v-card class="rounded-xl">
                     <v-card-title class="mb-1 headermodalstyle">
                         <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
-                        <span>Confirmation</span>
+                        <span>{{ `${confirmation.type || 'Confirmation'}` }}</span>
                         <v-divider dark class="mx-2"></v-divider>
                         <v-icon color="red" @click="confirmation.show = false">mdi-close-circle</v-icon>
                     </v-card-title>
@@ -1200,18 +1200,94 @@
                                     :headers="distributionReport.table.headers"
                                     :items="distributionReport.table.items"
                                 >
-                                    <template v-slot:item.check="{item}">
-                                        <v-checkbox
-                                            v-model="item.check"
-                                            :background-color="`${item.check ? 'green' : 'grey darken-1'} rounded-xl px-3 py-1`"
-                                            dark
-                                            color="white"
-                                            class="mt-0"
-                                            hide-details
-                                            :label="`${item.check ? 'Loaded' : 'Nope'}`"
-                                            off-icon="mdi-truck-alert"
-                                            on-icon="mdi-truck-check"
-                                        ></v-checkbox>
+                                    <!-- Toolbar -->
+                                    <template v-slot:top>
+                                        <v-row class="ma-2 mb-0 align-center">
+                                            <!-- Distribution Date Filter Field -->
+                                            <v-menu 
+                                                rounded="xl"
+                                                transition="slide-x-transition"
+                                                bottom
+                                                min-width="100"
+                                                offset-y
+                                                :close-on-content-click="true"
+                                                v-model="distributionReport.datePicker.show"
+                                            >
+                                                <template v-slot:activator="{ on: menu, attrs }">
+                                                    <v-tooltip top>
+                                                        <template v-slot:activator="{ on: tooltip }">
+                                                            <v-text-field
+                                                                dense
+                                                                color="green"
+                                                                class="mb-2 mb-lg-0"
+                                                                hide-details
+                                                                outlined
+                                                                label="Distribution Date"
+                                                                rounded
+                                                                v-bind="attrs"
+                                                                v-on="{...menu, ...tooltip}"
+                                                                readonly
+                                                                v-model="distributionReport.datePicker.modelShow"
+                                                                style="max-width: 250px"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <span>Klik untuk memunculkan datepicker</span>
+                                                    </v-tooltip>
+                                                </template>
+                                                <div class="rounded-xl pb-2 white">
+                                                    <v-overlay :value="distributionReport.datePicker.loading">
+                                                        <div class="d-flex flex-column align-center justify-center">
+                                                            <v-progress-circular
+                                                                indeterminate
+                                                                color="white"
+                                                                size="64"
+                                                            ></v-progress-circular>
+                                                            <p class="mt-2 mb-0">Updating available dates...</p>
+                                                        </div>
+                                                    </v-overlay>
+                                                    <div class="d-flex flex-column align-center rounded-xl">
+                                                        <v-date-picker 
+                                                            color="green lighten-1 rounded-xl" 
+                                                            v-model="distributionReport.datePicker.model"
+                                                            min="2022-11-24"
+                                                            max="2023-01-31"
+                                                        ></v-date-picker>
+                                                    </div>
+                                                </div>
+                                            </v-menu>
+                                            <v-divider class="mx-2"></v-divider>
+                                            <!-- Refresh Button -->
+                                            <v-btn
+                                                dark
+                                                readonly
+                                                @click="getLoadinglineTableData()"
+                                                color="info"
+                                                rounded
+                                                small
+                                            >
+                                                <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+                                            </v-btn>
+                                        </v-row>
+                                    </template>
+                                    <!-- Loaded Bags Column -->
+                                    <template v-slot:item.loaded_bags="{item}">
+                                        <v-icon>mdi-truck-check </v-icon> {{ item.loaded_bags }}
+                                    </template>
+                                    <!-- DIstributed Bags Column -->
+                                    <template v-slot:item.distributed_bags="{item}">
+                                        <v-icon>mdi-basket-check </v-icon> {{ item.distributed_bags }}
+                                    </template>
+                                    <!-- Status Column -->
+                                    <template v-slot:item.status="{item}">
+                                        <v-chip v-if="(item.status == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
+                                        <v-chip v-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified FC</v-chip>
+                                        <v-chip v-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified UM</v-chip>
+                                    </template>
+                                    <!-- Actions Column -->
+                                    <template v-slot:item.actions="{item}">
+                                        <v-btn color="info white--text" fab small icon>
+                                            <v-icon>mdi-information</v-icon>
+                                        </v-btn>
                                     </template>
                                 </v-data-table>
                             </v-col>
@@ -1278,7 +1354,7 @@ export default {
             focus: '',
             loading: false,
             names: ['Arjasari', 'Ciminyak'],
-            range: [ '2022-11-24', '2023-01-31'],
+            range: [ moment().format('Y-MM-DD'), '2023-01-31'],
             selectedElement: null,
             selectedEvent: {},
             selectedOpen: false,
@@ -1306,22 +1382,42 @@ export default {
             okText: '',
             show: false,
             title: 'Confirmation',
+            type: null
         },
         distributionReport: {
+            datePicker: {
+                loading: false,
+                model: moment().format('Y-MM-DD'),
+                modelShow: moment().format('DD MMMM Y'),
+                show: false,
+            },
             loading: false,
             table: {
                 headers: [
                     {text: 'Management Unit', value: 'mu_name'},
                     {text: 'FF Name', value: 'ff_name'},
                     {text: 'Farmer Name', value: 'farmer_name'},
-                    {text: 'Distribution Date', value: 'distribution_date'},
                     {text: 'Loaded Bags', value: 'loaded_bags'},
                     {text: 'Distributed Bags', value: 'distributed_bags'},
-                    {text: 'Status', value: 'status'},
-                    {text: 'Actions', value: 'action', align: 'right', sortable: false},
+                    {text: 'Status', value: 'status', align: 'center'},
+                    {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
-                items: [],
+                items: [
+                    {
+                        mu_name: 'CIWIDEY',
+                        ff_name: 'T4T Devs',
+                        farmer_name: 'Qwerty',
+                        loaded_bags: 52,
+                        distributed_bags: 50,
+                        status: 1,
+                    }
+                ],
                 loading: false,
+            },
+            dialogs: {
+                detail: {
+                    show: false,
+                }
             }
         },
         expansions: {
@@ -1439,9 +1535,26 @@ export default {
         this.$store.state.loadingOverlay = false
     },
     watch: {
+        'calendar.detailPeriodFF.newPeriod.distribution_time' : {
+            handler(newValue) {
+                this.calendar.detailPeriodFF.newPeriod.hole_time = moment(newValue).subtract(14, 'days').format('Y-MM-DD')
+                this.calendar.detailPeriodFF.newPeriod.planting_time = moment(newValue).add(7, 'days').format('Y-MM-DD')
+            }
+        },
         'calendar.events': {
             handler(newValue) {
                 // console.log(newValue)
+            }
+        },
+        'distributionReport.datePicker.model': {
+            async handler(newVal) {
+                this.distributionReport.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
+                // await this.getLoadinglineTableData()
+            }
+        },
+        'expansions.model': {
+            handler(val) {
+                console.log(val)
             }
         },
         'generalSettings.nursery.model': {
@@ -1471,7 +1584,7 @@ export default {
         'generalSettings.programYear': {
             async handler(newValue) {
                 if (newValue == '2022') {
-                    this.calendar.range = [ '2022-11-24', '2023-01-31']
+                    this.calendar.range = [ moment().format('Y-MM-DD'), '2023-01-31']
                 } else if (newValue == '2023') {
                     this.calendar.range = [ '2023-11-24', '2024-01-31']
                 } else {
@@ -1480,19 +1593,6 @@ export default {
                 this.calendar.focus = this.calendar.range[0]
                 // refresh packing label table
                 await this.getPackingLabelTableData()
-            }
-        },
-        'packingLabel.tabs.model': {
-            async handler(newValue) {
-                if (newValue == 0 && this.packingLabel.tables.byLahan.items.length == 0) {
-                    await this.getPackingLabelTableData()
-                }
-            }  
-        },
-        'calendar.detailPeriodFF.newPeriod.distribution_time' : {
-            handler(newValue) {
-                this.calendar.detailPeriodFF.newPeriod.hole_time = moment(newValue).subtract(14, 'days').format('Y-MM-DD')
-                this.calendar.detailPeriodFF.newPeriod.planting_time = moment(newValue).add(7, 'days').format('Y-MM-DD')
             }
         },
         'loadingLine.datePicker.model': {
@@ -1506,7 +1606,14 @@ export default {
                 this.packingLabel.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
                 await this.getPackingLabelTableData()
             }
-        }
+        },
+        'packingLabel.tabs.model': {
+            async handler(newValue) {
+                if (newValue == 0 && this.packingLabel.tables.byLahan.items.length == 0) {
+                    await this.getPackingLabelTableData()
+                }
+            }  
+        },
     },
     methods: {
         // CALENDAR
@@ -2018,6 +2125,7 @@ export default {
             }
         },
         confirmationShow(type, data) {
+            this.confirmation.type = null
             if (type == 'Check Label') {
                 if (data.is_checked == 0) {
                     this.confirmation.title = `Do u want to check this label? This can't be undone!`
@@ -2033,6 +2141,7 @@ export default {
                     this.snackbar.show = true
                 }
             } else if (type == 'Alert Penlub') {
+                this.confirmation.type = 'Alert'
                 this.confirmation.title = `Please check ur data "Lubang Tanam" in ${data.lahan_no}! Total SEEDLING > HOLES`
                 this.confirmation.okText = 'Ok Syap'
                 this.confirmation.show = true
@@ -2097,11 +2206,27 @@ export default {
             return nursery;
         },
         async getUserException() {
-            if (this.User.role_name == 'UNIT MANAGER') {
+            if (this.User.role_name == 'UNIT MANAGER' || this.User.role_name == 'FIELD COORDINATOR') {
                 if (typeof this.User.ff.ff[0] != 'undefined') {
+                    this.$store.state.loadingOverlayText = 'Nursery Alocation...'
+                    this.$store.state.loadingOverlay = true
                     const mu_no = await this.getFFMUNo(this.User.ff.ff[0])
                     this.generalSettings.nursery.model = this.getNurseryAlocation(mu_no)
                     this.generalSettings.nursery.disabled = true
+
+                    // access modul: Field Coordinator
+                    if (this.User.role_name == 'FIELD COORDINATOR') {
+                        this.accessModul = {
+                            calendar: false,
+                            packingLabel: false,
+                            loadingLine: false,
+                            distributionReport: true
+                        }
+                        this.expansions.model = [0]
+                    }
+
+                    this.$store.state.loadingOverlay = false
+                    this.$store.state.loadingOverlayText = null
                 }
             } else {
                 const nurserySite = ['Arjasari', 'Ciminyak', 'Kebumen', 'Pati']
