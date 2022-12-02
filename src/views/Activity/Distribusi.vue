@@ -1199,9 +1199,13 @@
                             <!-- Distribution Report Table -->
                             <v-col cols="12">
                                 <v-data-table
+                                    multi-sort
                                     :headers="distributionReport.table.headers"
                                     :items="distributionReport.table.items"
                                     :loading="distributionReport.table.loading"
+                                    :footer-props="{
+                                        itemsPerPageOptions: [10, 25, 40, -1]
+                                    }"
                                 >
                                     <!-- Toolbar -->
                                     <template v-slot:top>
@@ -2005,7 +2009,7 @@ export default {
                 // check total_bags doesn't match
                 if (this.loadingLine.detailDialog.model.total_bags != this.loadingLine.detailDialog.inputs.scanner.labels.length) {
                     this.loadingLine.detailDialog.model.total_bags = this.loadingLine.detailDialog.inputs.scanner.labels.length
-                    this.loadingLine.detailDialog.differentTotalBags = true
+                    this.loadingLine.detailDialog.differentTotalBags = true 
                 }
             }).catch(err => {
                 console.error(err)

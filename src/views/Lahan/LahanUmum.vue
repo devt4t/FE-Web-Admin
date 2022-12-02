@@ -332,35 +332,103 @@
                             </v-stepper-content>
                             <!-- Seeds Data -->
                             <v-stepper-content step="2" class="pt-0">
-                                <v-row class="my-0">
-                                    <!-- Employee -->
-                                    <v-col cols="12" sm="12" md="6" lg="4">
-                                        <v-autocomplete
-                                            color="success"
-                                            hide-details
-                                            item-color="success"
-                                            item-text="tree_name"
-                                            item-value="tree_code"
-                                            :items="inputs.seeds.items"
-                                            :label="inputs.seeds.label"
-                                            :loading="inputs.seeds.loading"
-                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                            :no-data-text="inputs.seeds.loading ? 'Loading...' : 'No Data'"
-                                            outlined
-                                            rounded
-                                            :rules="[(v) => !!v || 'Field is required']"
-                                            v-model="inputs.seeds.model"
-                                        >
-                                            <template v-slot:item="data">
-                                            <v-list-item-content>
-                                                <v-list-item-title v-html="data.item.tree_name"></v-list-item-title>
-                                                <v-list-item-subtitle>{{ data.item.tree_category }}</v-list-item-subtitle>
-                                            </v-list-item-content>
-                                            </template>
-                                        </v-autocomplete>
-                                    </v-col>
-                                    {{ inputs.seeds.items }}
+                                <v-row class="my-2 mx-0 align-center">
+                                    <v-divider class="mx-2"></v-divider>
+                                    <!-- Trees Input -->
+                                    <v-select
+                                        color="success"
+                                        class="mr-0 mr-lg-2"
+                                        hide-details
+                                        item-color="success"
+                                        :items="['KAYU', 'MPTS', 'CROPS']"
+                                        :label="'Category'"
+                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                        outlined
+                                        rounded
+                                        :disabled="inputs.seeds.category.disabled"
+                                        v-model="inputs.seeds.category.model"
+                                        style="max-width: 150px;"
+                                    ></v-select>
+                                    <!-- Trees Input -->
+                                    <v-autocomplete
+                                        color="success"
+                                        class="mr-0 mr-lg-2"
+                                        hide-details
+                                        item-color="success"
+                                        item-text="tree_name"
+                                        item-value="tree_code"
+                                        return-object
+                                        :items="inputs.seeds[inputs.seeds.category.model]"
+                                        :label="'Seedling'"
+                                        placeholder="Pick ur tree..."
+                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                        outlined
+                                        rounded
+                                        v-model="inputs.seeds.model"
+                                    >
+                                        <template v-slot:item="data">
+                                        <v-list-item-content>
+                                            <v-list-item-title v-html="data.item.tree_name"></v-list-item-title>
+                                            <!-- <v-list-item-subtitle>{{ data.item.tree_code }}</v-list-item-subtitle> -->
+                                        </v-list-item-content>
+                                        </template>
+                                    </v-autocomplete>
+                                    <!-- Trees Amount -->
+                                    <v-text-field 
+                                        color="green"
+                                        hide-details
+                                        type="number"
+                                        prepend-inner-icon="mdi-sprout"
+                                        rounded
+                                        outlined
+                                        min="0"
+                                        label="Amount"
+                                        placeholder="Set amount..."
+                                        v-model="inputs.seeds.amount"
+                                        style="max-width: 200px;"
+                                    ></v-text-field>
+                                    <!-- Add Button -->
+                                    <v-btn color="green white--text" fab icon @click="seedlingAdd()"
+                                        :disabled="(inputs.seeds.amount <= 0) || !inputs.seeds.model"
+                                    >
+                                        <v-icon>mdi-plus-circle</v-icon>
+                                    </v-btn>
+                                    <v-divider class="mx-2"></v-divider>
                                 </v-row>
+                                <v-data-table
+                                    multi-sort
+                                    :headers="inputs.seeds.table.headers"
+                                    :items="inputs.seeds.table.items"
+                                    hide-default-footer
+                                    :items-per-page="-1"
+                                >
+                                    <!-- Index Column -->
+                                    <template v-slot:item.index="{index}">{{ index+1 }}</template>
+                                    <!-- Amount Column -->
+                                    <template v-slot:item.tree_amount="{item, index}">
+                                        <v-row class="ma-0 align-center">
+                                            <v-divider class="mr-2"></v-divider>
+                                            <v-text-field 
+                                                color="green"
+                                                dense
+                                                hide-details
+                                                outlined
+                                                prepend-inner-icon="mdi-sprout"
+                                                rounded
+                                                style="max-width: 200px;"
+                                                type="number"
+                                                min="0"
+                                                v-model="inputs.seeds.table.items[index].tree_amount"
+                                            ></v-text-field>
+                                        </v-row>
+                                    </template>
+                                    <!-- Remove Column -->
+                                    <template v-slot:item.remove="{index}">
+                                        <v-btn fab color="red" icon small @click="seedlingRemove(index)">
+                                            <v-icon>mdi-delete-circle</v-icon>
+                                        </v-btn>
+                                    </template>
+                                </v-data-table>
                             </v-stepper-content>
                             <!-- Coordinates + Period -->
                             <v-stepper-content step="3" class="pt-0">
@@ -481,6 +549,110 @@
                                     </v-col>
                                 </v-row>
                             </v-stepper-content>
+                            <v-stepper-content step="4" class="pt-0">
+                                <v-row class="ma-0">
+                                    <!-- Photo 1 File -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-file-input
+                                        color="success"
+                                        item-color="success"
+                                        outlined
+                                        rounded
+                                        hide-details
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Photo 1"
+                                        prepend-icon="mdi-camera"
+                                        label="Photo 1"
+                                        v-on:change="photo1FileChanged"
+                                        :rules="[(v) => !!v || 'Field is required']"
+                                        ></v-file-input>
+                                        <v-card elevation="2" class="rounded-xl" height="300" v-if="inputs.photos.photo1.preview && inputs.photos.photo1.preview !== ''">
+                                            <v-img
+                                                height="300"
+                                                v-bind:src="inputs.photos.photo1.preview"
+                                                class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                id="photo1"
+                                                @click="showLightbox(inputs.photos.photo1.preview)"
+                                            ></v-img
+                                        ></v-card>
+                                    </v-col>
+                                    <!-- Photo 2 File -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-file-input
+                                        color="success"
+                                        item-color="success"
+                                        outlined
+                                        rounded
+                                        hide-details
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Photo 2"
+                                        prepend-icon="mdi-camera"
+                                        label="Photo 2"
+                                        v-on:change="photo2FileChanged"
+                                        :rules="[(v) => !!v || 'Field is required']"
+                                        ></v-file-input>
+                                        <v-card elevation="2" class="rounded-xl" height="300" v-if="inputs.photos.photo2.preview && inputs.photos.photo2.preview !== ''">
+                                            <v-img
+                                                height="300"
+                                                v-bind:src="inputs.photos.photo2.preview"
+                                                class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                id="photo2"
+                                                @click="showLightbox(inputs.photos.photo2.preview)"
+                                            ></v-img
+                                        ></v-card>
+                                    </v-col>
+                                    <!-- Photo 3 File -->
+                                    <v-col cols="12" sm="12" md="6" lg="4">
+                                        <v-file-input
+                                        color="success"
+                                        item-color="success"
+                                        outlined
+                                        rounded
+                                        hide-details
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="Photo 3"
+                                        prepend-icon="mdi-camera"
+                                        label="Photo 3"
+                                        v-on:change="photo3FileChanged"
+                                        :rules="[(v) => !!v || 'Field is required']"
+                                        ></v-file-input>
+                                        <v-card elevation="2" class="rounded-xl" height="300" v-if="inputs.photos.photo3.preview && inputs.photos.photo3.preview !== ''">
+                                            <v-img
+                                                height="300"
+                                                v-bind:src="inputs.photos.photo3.preview"
+                                                class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                id="photo3"
+                                                @click="showLightbox(inputs.photos.photo3.preview)"
+                                            ></v-img
+                                        ></v-card>
+                                    </v-col>
+                                    <!-- Photo 4 File -->
+                                    <v-col cols="12" sm="12" md="6" lg="6">
+                                        <v-file-input
+                                        color="success"
+                                        item-color="success"
+                                        outlined
+                                        rounded
+                                        hide-details
+                                        accept="image/png, image/jpeg, image/bmp"
+                                        placeholder="MoU Photo"
+                                        prepend-icon="mdi-camera"
+                                        label="MoU Photo"
+                                        v-on:change="photo4FileChanged"
+                                        :rules="[(v) => !!v || 'Field is required']"
+                                        ></v-file-input>
+                                        <v-card elevation="2" class="rounded-xl" height="300" v-if="inputs.photos.photo4.preview && inputs.photos.photo4.preview !== ''">
+                                            <v-img
+                                                height="300"
+                                                v-bind:src="inputs.photos.photo4.preview"
+                                                class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                id="photo4"
+                                                @click="showLightbox(inputs.photos.photo4.preview)"
+                                            ></v-img
+                                        ></v-card>
+                                    </v-col>
+                                </v-row>
+                            </v-stepper-content>
                         </v-stepper-items>
                     </v-stepper>
                 </v-card-text>
@@ -566,7 +738,7 @@
             <template v-slot:top>
                 <v-row class="my-1 mx-2">
                     <v-col cols="12" class="d-flex justify-end">
-                        <v-btn color="info" rounded @click="dialogActions('createData', true)">
+                        <v-btn color="info" rounded @click="dialogActions('createData', true)" class="pl-2">
                             <v-icon class="mr-1">mdi-plus-circle</v-icon>
                             Create Data
                         </v-btn>
@@ -690,6 +862,24 @@ export default {
                 model: '',
                 loading: false
             },
+            photos: {
+                photo1: {
+                    preview: '',
+                    model: null
+                },
+                photo2: {
+                    preview: '',
+                    model: null
+                },
+                photo3: {
+                    preview: '',
+                    model: null
+                },
+                photo4: {
+                    preview: '',
+                    model: null
+                },
+            },
             pic: {
                 label: 'PIC Name',
                 model: '',
@@ -713,10 +903,27 @@ export default {
                 loading: false
             },
             seeds: {
+                category: {
+                    model: 'KAYU',
+                    items: ['KAYU', 'MPTS', 'CROPS'],
+                    disabled: false
+                },
+                CROPS: [],
                 items: [],
-                label: 'Seedling',
-                loading: false,
-                model: ''
+                KAYU: [],
+                model: null,
+                amount: 0,
+                MPTS: [],
+                table: {
+                    headers: [
+                        { text: 'No', value: 'index', align: 'center' },
+                        { text: 'Category', value: 'tree_category', align: 'center' },
+                        { text: 'Name', value: 'tree_name' },
+                        { text: 'Amount', value: 'tree_amount', align: 'right' },
+                        { text: 'Remove', value: 'remove', sortable: false, align: 'right' },
+                    ],
+                    items: []
+                },
             },
             village: {
                 items: [],
@@ -817,8 +1024,17 @@ export default {
                         Authorization: `Bearer ` + token,
                     },
                 }).then(res => {
-                    if (inputs.type == 'employee' || inputs.type == 'seeds') {
+                    if (inputs.type == 'employee') {
                         this.inputs[inputs.type].items = res.data.data.result.data
+                    } else if ( inputs.type == 'seeds') {
+                        const response = res.data.data.result.data
+                        response.forEach(val => {
+                            let category = null
+                            if (val.tree_category == 'Pohon_Kayu') category = 'KAYU' 
+                            else if (val.tree_category == 'Pohon_Buah') category = 'MPTS'
+                            else if (val.tree_category == 'Tanaman_Bawah_Empon') category = 'CROPS'
+                            if (category) this.inputs[inputs.type][category].push(val)
+                        })
                     } else {
                         this.inputs[inputs.type].items = res.data.data.result
                     }
@@ -836,6 +1052,30 @@ export default {
                 })
             }
         },
+        async seedlingAdd() {
+            // set data
+            const data = {
+                tree_category: this.inputs.seeds.category.model,
+                tree_code: this.inputs.seeds.model.tree_code,
+                tree_name: this.inputs.seeds.model.tree_name,
+                tree_amount: this.inputs.seeds.amount
+            }
+            // push data to table
+            await this.inputs.seeds.table.items.push(data)
+            // find index
+            const index = await this.inputs.seeds[data.tree_category].findIndex(val => val.tree_code == data.tree_code)
+            // remove from options
+            await this.inputs.seeds[data.tree_category].splice(index, 1)
+            // reset inputs
+            this.inputs.seeds.model = null
+            this.inputs.seeds.amount = 0
+        },
+        async seedlingRemove(index) {
+            const data = this.inputs.seeds.table.items[index]
+            await this.inputs.seeds[data.tree_category].push(data)
+
+            await this.inputs.seeds.table.items.splice(index, 1)
+        },
         // Utilities
         closeActions(type, name) {
             this[type][name].show = false
@@ -851,6 +1091,51 @@ export default {
         },
         openGoogleMap() {
             window.open(`http://maps.google.co.id/maps?q=${this.inputs.latitude.model},${this.inputs.longitude.model}`)
+        },
+        photo1FileChanged (event) {
+            if (event) {
+                this.inputs.photos.photo1.model = event
+                this.inputs.photos.photo1.preview = URL.createObjectURL(event)
+            } else {
+                this.inputs.photos.photo1.model = null
+                this.inputs.photos.photo1.preview = ""
+            }
+        },
+        photo2FileChanged (event) {
+            if (event) {
+                this.inputs.photos.photo2.model = event
+                this.inputs.photos.photo2.preview = URL.createObjectURL(event)
+            } else {
+                this.inputs.photos.photo2.model = null
+                this.inputs.photos.photo2.preview = ""
+            }
+        },
+        photo3FileChanged (event) {
+            if (event) {
+                this.inputs.photos.photo3.model = event
+                this.inputs.photos.photo3.preview = URL.createObjectURL(event)
+            } else {
+                this.inputs.photos.photo3.model = null
+                this.inputs.photos.photo3.preview = ""
+            }
+        },
+        photo4FileChanged (event) {
+            if (event) {
+                this.inputs.photos.photo4.model = event
+                this.inputs.photos.photo4.preview = URL.createObjectURL(event)
+            } else {
+                this.inputs.photos.photo4.model = null
+                this.inputs.photos.photo4.preview = ""
+            }
+        },
+        // Showing Lightbox
+        showLightbox(imgs, index) {
+            if (imgs) this.$store.state.lightbox.imgs = imgs
+            
+            if (index) this.$store.state.lightbox.index = index
+            else this.$store.state.lightbox.index = 0
+
+            this.$store.state.lightbox.show = true
         },
         stepperMove(type) {
             let step = parseInt(this.dialogs.createData.step)
