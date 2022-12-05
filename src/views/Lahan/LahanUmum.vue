@@ -30,15 +30,15 @@
                                 Main Data
                             </v-stepper-step>
                             <v-divider></v-divider>
-                            <v-stepper-step editable :complete="dialogs.createData.step > 2" step="2" color="success" class="rounded-xl">
+                            <v-stepper-step :editable="!inputs.mou.model == false && !inputs.employee.model == false && !inputs.pic.model == false && !inputs.picKtp.model == false && !inputs.landArea.model == false && !inputs.plantingArea.model == false && !inputs.croppingPattern.model == false && !inputs.landStatus.model == false && !inputs.landDistance.model == false && !inputs.landAccess.model == false && !inputs.mu.model == false && !inputs.province.model == false && !inputs.regency.model == false && !inputs.district.model == false && !inputs.village.model == false && !inputs.address.model == false" :complete="dialogs.createData.step > 2" step="2" color="success" class="rounded-xl">
                                 Seeds
                             </v-stepper-step>
                             <v-divider></v-divider>
-                            <v-stepper-step editable :complete="dialogs.createData.step > 3" step="3" color="success" class="rounded-xl">
+                            <v-stepper-step :editable="(!inputs.mou.model == false && !inputs.employee.model == false && !inputs.pic.model == false && !inputs.picKtp.model == false && !inputs.landArea.model == false && !inputs.plantingArea.model == false && !inputs.croppingPattern.model == false && !inputs.landStatus.model == false && !inputs.landDistance.model == false && !inputs.landAccess.model == false && !inputs.mu.model == false && !inputs.province.model == false && !inputs.regency.model == false && !inputs.district.model == false && !inputs.village.model == false && !inputs.address.model == false && inputs.seeds.table.items.length > 0)" :complete="dialogs.createData.step > 3" step="3" color="success" class="rounded-xl">
                                 Coordinates & Period
                             </v-stepper-step>
                             <v-divider></v-divider>
-                            <v-stepper-step editable :complete="dialogs.createData.step > 4" step="4" color="success" class="rounded-xl">
+                            <v-stepper-step :editable="(!inputs.mou.model == false && !inputs.employee.model == false && !inputs.pic.model == false && !inputs.picKtp.model == false && !inputs.landArea.model == false && !inputs.plantingArea.model == false && !inputs.croppingPattern.model == false && !inputs.landStatus.model == false && !inputs.landDistance.model == false && !inputs.landAccess.model == false && !inputs.mu.model == false && !inputs.province.model == false && !inputs.regency.model == false && !inputs.district.model == false && !inputs.village.model == false && !inputs.address.model == false && inputs.seeds.table.items.length > 0 && !inputs.longitude.model == false && !inputs.latitude.model == false && !inputs.dateDistribution.model == false)" :complete="dialogs.createData.step > 4" step="4" color="success" class="rounded-xl">
                                 Photos
                             </v-stepper-step>
                         </v-stepper-header>
@@ -47,8 +47,28 @@
                             <!-- Main Data -->
                             <v-stepper-content step="1" class="pt-0">
                                 <v-row class="my-0">
+                                    <!-- Program Year -->
+                                    <v-col cols="12" sm="12" md="6" lg="3">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="name"
+                                            item-value="nik"
+                                            :items="inputs.programYear.items"
+                                            :label="inputs.programYear.label"
+                                            :loading="inputs.programYear.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.programYear.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.programYear.model"
+                                            disabled
+                                        ></v-autocomplete>
+                                    </v-col>
                                     <!-- MOU -->
-                                    <v-col cols="12" sm="12" md="12" lg="8">
+                                    <v-col cols="12" sm="12" md="12" lg="5">
                                         <v-text-field
                                             color="success"
                                             hide-details
@@ -148,6 +168,47 @@
                                             </v-btn>
                                         </v-text-field>
                                     </v-col>
+                                    <!-- Land Coverage -->
+                                    <v-col cols="12" sm="12" md="6" lg="3">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="text"
+                                            item-value="value"
+                                            :items="inputs.landCoverage.items"
+                                            :label="inputs.landCoverage.label"
+                                            :loading="inputs.landCoverage.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.landCoverage.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.landCoverage.model"
+                                        ></v-autocomplete>
+                                    </v-col>
+                                    <!-- Planting Area -->
+                                    <v-col cols="12" sm="12" md="6" lg="5">
+                                        <v-text-field
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            :label="inputs.plantingArea.label"
+                                            :loading="inputs.plantingArea.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.plantingArea.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.plantingArea.model"
+                                            type="number"
+                                            readonly
+                                        >
+                                            <v-btn slot="append" text class="text-lowercase" rounded>
+                                                m<sup>2</sup>
+                                            </v-btn>
+                                        </v-text-field>
+                                    </v-col>
                                     <!-- Cropping Pattern -->
                                     <v-col cols="12" sm="12" md="6" lg="4">
                                         <v-autocomplete
@@ -165,7 +226,6 @@
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.croppingPattern.model"
-                                            v-on:change="getOptionsData({type: 'regency'})"
                                         ></v-autocomplete>
                                     </v-col>
                                     <!-- Land Status -->
@@ -201,7 +261,7 @@
                                             type="number"
                                         >
                                             <v-btn slot="append" text class="text-lowercase" rounded>
-                                                m<sup>2</sup>
+                                                m
                                             </v-btn>
                                         </v-text-field>
                                     </v-col>
@@ -222,7 +282,6 @@
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.landAccess.model"
-                                            v-on:change="getOptionsData({type: 'regency'})"
                                         ></v-autocomplete>
                                     </v-col>
                                 </v-row>
@@ -231,6 +290,26 @@
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
                                 <v-row class="">
+                                    <!-- Management Unit -->
+                                    <v-col cols="12" sm="12">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="name"
+                                            item-value="mu_no"
+                                            :items="inputs.mu.items"
+                                            :label="inputs.mu.label"
+                                            :loading="inputs.mu.loading"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.mu.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="inputs.mu.model"
+                                            style="max-width: 500px"
+                                        ></v-autocomplete>
+                                    </v-col>
                                     <!-- Province -->
                                     <v-col cols="12" sm="12" md="6" lg="4">
                                         <v-autocomplete
@@ -698,7 +777,12 @@
                                 outlined
                                 color="primary"
                                 @click="stepperMove('+')"
-                                :disabled="dialogs.createData.step == 4"
+                                :disabled="
+                                    (dialogs.createData.step < 4 && (!inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model)) ||
+                                    (dialogs.createData.step == 2 && inputs.seeds.table.items.length < 1) ||
+                                    (dialogs.createData.step == 3 && (!inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model)) ||
+                                    dialogs.createData.step == 4
+                                "
                             >
                                 <span class="d-none d-md-inline-block"> 
                                     Next
@@ -709,11 +793,13 @@
                         </v-col>
                         <v-col cols="3" align="end">
                             <v-btn
-                                color="success"
+                                color="success white--text"
                                 elevation="1"
                                 rounded
-                                outlined
-                                @click="() => {}"
+                                @click="() => {saveLahanUmum()}"
+                                :disabled="
+                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || !inputs.photos.photo4.model
+                                "
                             >
                                 <span class="d-none d-md-inline-block"> 
                                     Save
@@ -754,6 +840,11 @@ import axios from 'axios'
 import moment from 'moment'
 export default {
     data: () => ({
+        apiConfig: {
+            baseUrl: localStorage.getItem('BaseUrlGet'),
+            imageUrl: localStorage.getItem('BaseUrl'),
+            token: localStorage.getItem('token')
+        },
         breadcrumbs: [
             {
                 text: "Main Data",
@@ -837,6 +928,17 @@ export default {
                 model: '',
                 loading: false
             },
+            landCoverage: {
+                label: 'Land Coverage(%)',
+                items: [
+                    {text: '0%', value: 0},
+                    {text: '25%', value: 25},
+                    {text: '50%', value: 50},
+                    {text: '75%', value: 75},
+                ],
+                model: '',
+                loading: false
+            },
             landDistance: {
                 label: 'Land Distance from Home',
                 model: '',
@@ -860,6 +962,12 @@ export default {
             mou: {
                 label: 'MoU Number',
                 model: '',
+                loading: false
+            },
+            mu: {
+                label: 'Management Unit',
+                model: '',
+                items: [],
                 loading: false
             },
             photos: {
@@ -888,6 +996,17 @@ export default {
             picKtp: {
                 label: 'PIC NIK / Ktp No',
                 model: '',
+                loading: false
+            },
+            plantingArea: {
+                label: 'Planting Area',
+                model: '',
+                loading: false
+            },
+            programYear: {
+                label: 'Program Year',
+                model: null,
+                items: [],
                 loading: false
             },
             province: {
@@ -969,11 +1088,14 @@ export default {
     },
     mounted() {
         this.User = JSON.parse(localStorage.getItem('User'))
+        this.inputs.programYear.model = this.$store.state.programYear.model
+        this.inputs.programYear.items = this.$store.state.programYear.options
     },
     methods: {
         async dialogActions(dialog, show) {
             if (dialog == 'createData' && show == true) {
                 this.$store.state.loadingOverlay = true
+                await this.getOptionsData({type: 'mu'})
                 await this.getOptionsData({type: 'province'})
                 await this.getOptionsData({type: 'employee'})
                 await this.getOptionsData({type: 'seeds'})
@@ -986,8 +1108,6 @@ export default {
         },
         async getOptionsData(inputs) {
             // prepare for calling api
-            const baseUrl = localStorage.getItem('BaseUrlGet')
-            const token = localStorage.getItem('token')
             let url = ''
             
             // set url
@@ -997,9 +1117,15 @@ export default {
             } else if (inputs.type == 'regency') {
                 url = 'GetKabupaten?province_code=' + this.inputs.province.model
                 this.$store.state.loadingOverlayText = 'Getting Regency datas...'
+                this.inputs.district.model = ''
+                this.inputs.district.items = []
+                this.inputs.village.model = ''
+                this.inputs.village.items = []
             } else if (inputs.type == 'district') {
                 url = 'GetKecamatan?kabupaten_no=' + this.inputs.regency.model
                 this.$store.state.loadingOverlayText = 'Getting District datas...'
+                this.inputs.village.model = ''
+                this.inputs.village.items = []
             } else if (inputs.type == 'village') {
                 url = 'GetDesa?&kode_kecamatan=' + this.inputs.district.model
                 this.$store.state.loadingOverlayText = 'Getting Village datas...'
@@ -1009,11 +1135,14 @@ export default {
             } else if (inputs.type == 'seeds') {
                 url = 'GetTreesAll'
                 this.$store.state.loadingOverlayText = 'Getting Trees datas...'
+            } else if (inputs.type == 'mu') {
+                url = 'GetManagementUnit'
+                this.$store.state.loadingOverlayText = 'Getting Management Unit datas...'
             }
 
             
             if (url != '') {
-                url = baseUrl + url
+                url = this.apiConfig.baseUrl + url
 
                 this.inputs[inputs.type].model = ''
                 this.inputs[inputs.type].loading = true
@@ -1021,7 +1150,7 @@ export default {
                 // calling api
                 await axios.get(url, {
                     headers: {
-                        Authorization: `Bearer ` + token,
+                        Authorization: `Bearer ` + this.apiConfig.token,
                     },
                 }).then(res => {
                     if (inputs.type == 'employee') {
@@ -1051,6 +1180,85 @@ export default {
                     this.inputs[inputs.type].loading = false
                 })
             }
+        },
+        async saveLahanUmum() {
+            this.dialogs.createData.show = false
+            this.$store.state.loadingOverlayText = `Start saving "lahan umum" data...`
+            this.$store.state.loadingOverlay = true
+            const url = `${this.apiConfig.baseUrl}AddMandatoryLahanUmum`
+            const postData = {
+                // main data
+                program_year: this.inputs.programYear.model,
+                mou_no: this.inputs.mou.model,
+                employee_no: this.inputs.employee.model,
+                pic_lahan: this.inputs.pic.model,
+                ktp_no: this.inputs.picKtp.model,
+                luas_lahan: this.inputs.landArea.model,
+                luas_tanam: this.inputs.plantingArea.model,
+                planting_pattern: this.inputs.croppingPattern.model,
+                status: this.inputs.landStatus.model,
+                jarak_lahan: this.inputs.landDistance.model,
+                access_lahan: this.inputs.landAccess.model,
+                mu_no: this.inputs.mu.model,
+                province: this.inputs.province.model,
+                regency: this.inputs.regency.model,
+                district: this.inputs.district.model,
+                village: this.inputs.village.model,
+                address: this.inputs.address.model,
+                // coordinates & period
+                longitude: this.inputs.longitude.model,
+                latitude: this.inputs.latitude.model,
+                planting_hole_date: this.inputs.dateHoleSurveillance.model,
+                distribution_date: this.inputs.dateDistribution.model,
+                planting_realization_date: this.inputs.dateRealization.model,
+                // tree
+                list_tree: this.inputs.seeds.table.items,
+                // photos
+                photo1: '',
+                photo2: '',
+                photo3: '',
+                photo4: '',
+                // user
+                created_by: this.User.email
+            }
+            if (this.inputs.photos.photo1.model) {
+                const uploadPhoto1 = await this.uploadPhotos('photo1', this.inputs.photos.photo1.model)
+                if (uploadPhoto1) {
+                    postData.photo1 = `general-lands/${uploadPhoto1}`
+                }
+            }
+            if (this.inputs.photos.photo2.model) {
+                const uploadPhoto2 = await this.uploadPhotos('photo2', this.inputs.photos.photo2.model)
+                if (uploadPhoto2) {
+                    postData.photo2 = `general-lands/${uploadPhoto2}`
+                }
+            }
+            if (this.inputs.photos.photo3.model) {
+                const uploadPhoto3 = await this.uploadPhotos('photo3', this.inputs.photos.photo3.model)
+                if (uploadPhoto3) {
+                    postData.photo3 = `general-lands/${uploadPhoto3}`
+                }
+            }
+            if (this.inputs.photos.photo4.model) {
+                const uploadPhoto4 = await this.uploadPhotos('mou', this.inputs.photos.photo4.model)
+                if (uploadPhoto4) {
+                    postData.photo4 = `general-lands/${uploadPhoto4}`
+                }
+            }
+            await axios.post(url, postData, {
+                headers: {
+                    Authorization: `Bearer ` + this.apiConfig.token,
+                },
+            }).then(res => {
+                console.log(res.data)
+                this.resetInputData()
+            }).catch(err => {
+                console.error(err.response)
+                this.forceLogout(err.response)
+            }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
         },
         async seedlingAdd() {
             // set data
@@ -1088,6 +1296,23 @@ export default {
                 localStorage.removeItem("token")
                 this.$router.push("/")
             }
+        },
+        generateFormData(data) {
+            let formData= new FormData()
+
+            const objectArray= Object.entries(data)
+
+            objectArray.forEach(([key, value]) => {
+
+                if (Array.isArray(value)){
+                value.map(item => {
+                    formData.append(key+'[]' , item)
+                })
+                }else {
+                formData.append(key, value)
+                }
+            })
+            return formData
         },
         openGoogleMap() {
             window.open(`http://maps.google.co.id/maps?q=${this.inputs.latitude.model},${this.inputs.longitude.model}`)
@@ -1128,7 +1353,45 @@ export default {
                 this.inputs.photos.photo4.preview = ""
             }
         },
-        // Showing Lightbox
+        resetInputData() {
+            // main data
+            this.inputs.mou.model = ''
+            this.inputs.employee.model = ''
+            this.inputs.pic.model = ''
+            this.inputs.picKtp.model = ''
+            this.inputs.landArea.model = ''
+            this.inputs.plantingArea.model = ''
+            this.inputs.croppingPattern.model = ''
+            this.inputs.landStatus.model = ''
+            this.inputs.landDistance.model = ''
+            this.inputs.landAccess.model = ''
+            this.inputs.mu.model = ''
+            this.inputs.province.model = ''
+            this.inputs.regency.model = ''
+            this.inputs.regency.items = []
+            this.inputs.district.model = ''
+            this.inputs.district.items = []
+            this.inputs.village.model = ''
+            this.inputs.village.items = []
+            this.inputs.address.model = ''
+            // seeds
+            this.inputs.seeds.table.items = []
+            // coordinates
+            this.inputs.latitude.model = ''
+            this.inputs.longitude.model = ''
+            this.inputs.dateDistribution.model = ''
+            this.inputs.dateHoleSurveillance.model = ''
+            this.inputs.dateRealization.model = ''
+            // photos
+            this.inputs.photos.photo1.model = ''
+            this.inputs.photos.photo1.preview = ''
+            this.inputs.photos.photo2.model = ''
+            this.inputs.photos.photo2.preview = ''
+            this.inputs.photos.photo3.model = ''
+            this.inputs.photos.photo3.preview = ''
+            this.inputs.photos.photo4.model = ''
+            this.inputs.photos.photo4.preview = ''
+        },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs
             
@@ -1145,6 +1408,23 @@ export default {
                 step -= 1
             }
             this.dialogs.createData.step = step
+        },
+        async uploadPhotos(type, file) {
+            this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+            const url = `${this.apiConfig.imageUrl}general-lands/upload.php`
+            const newName = `${this.inputs.mou.model.replace(/\s/g, '')}_${type}_${Date.now()}`
+            const data = this.generateFormData({
+                dir: type == 'mou' ? 'mou' : 'photos',
+                nama: newName,
+                image: file
+            })
+            let responseName = null
+            await axios.post(url,data).then(res => {
+                responseName = res.data.data.new_name
+            }).catch(err => {
+                console.error(err)
+            })
+            return responseName
         }
     }
 }
