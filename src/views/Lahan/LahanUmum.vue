@@ -23,6 +23,22 @@
                     <v-icon color="red lighten-1" class="ml-auto" @click="dialogActions('createData', false)">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text class="pa-0">
+
+                    <!-- Snackbar -->
+                    <v-snackbar
+                    v-model="dialogs.createData.snackbar.show"
+                    :color="dialogs.createData.snackbar.color"
+                    :timeout="dialogs.createData.snackbar.timeout"
+                    rounded="xl"
+                    >
+                        <div class="d-flex justify-between">
+                            <p class="mb-0">
+                                {{ dialogs.createData.snackbar.text }}
+                            </p>
+                            <v-spacer></v-spacer>
+                            <v-icon small class="pl-1" @click="dialogs.createData.snackbar.show = false">mdi-close-circle</v-icon>
+                        </div>
+                    </v-snackbar>
                     <v-stepper v-model="dialogs.createData.step">
                         <!-- Stepper Header -->
                         <v-stepper-header class="rounded-xl mx-2 my-2">
@@ -70,17 +86,18 @@
                                     <!-- MOU -->
                                     <v-col cols="12" sm="12" md="12" lg="5">
                                         <v-text-field
-                                            color="success"
+                                            :class="`${inputs.mou.model ? (inputs.mou.exist ? 'red--text' : 'green-text') : ''}`"   
+                                            :color="`success`"
                                             hide-details
-                                            item-color="success"
                                             :label="inputs.mou.label"
                                             :loading="inputs.mou.loading"
-                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.mou.loading ? 'Loading...' : 'No Data'"
                                             outlined
+                                            :append-icon="inputs.mou.model ? (inputs.mou.exist ? 'mdi-close' : 'mdi-check') : ''"
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.mou.model"
+                                            @change="checkMoUNoExisting"
                                         ></v-text-field>
                                     </v-col>
                                     <!-- Employee -->
@@ -183,7 +200,6 @@
                                             :no-data-text="inputs.landCoverage.loading ? 'Loading...' : 'No Data'"
                                             outlined
                                             rounded
-                                            :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.landCoverage.model"
                                         ></v-autocomplete>
                                     </v-col>
@@ -798,7 +814,7 @@
                                 rounded
                                 @click="() => {saveLahanUmum()}"
                                 :disabled="
-                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || !inputs.photos.photo4.model
+                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || !inputs.photos.photo4.model || inputs.mou.exist
                                 "
                             >
                                 <span class="d-none d-md-inline-block"> 
@@ -815,6 +831,7 @@
         <!-- END: DIALOG MODAL -->
         <!-- Main Table -->
         <v-data-table
+            multi-sort
             class="rounded-xl elevation-6 mx-3 pa-1 mb-5"
             :headers="tables.lahan.headers"
             :items="tables.lahan.items"
@@ -822,16 +839,87 @@
         >
             <!-- Slot: Top -->
             <template v-slot:top>
-                <v-row class="my-1 mx-2">
-                    <v-col cols="12" class="d-flex justify-end">
-                        <v-btn color="info" rounded @click="dialogActions('createData', true)" class="pl-2">
-                            <v-icon class="mr-1">mdi-plus-circle</v-icon>
-                            Create Data
-                        </v-btn>
-                    </v-col>
+                <v-row class="mb-1 mt-2 mx-2 align-center">
+                    <!-- Program Year -->
+                    <v-select
+                        color="success"
+                        item-color="success"
+                        v-model="tables.lahan.programYear.model"
+                        :items="tables.lahan.programYear.items"
+                        outlined
+                        dense
+                        hide-details
+                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                        rounded
+                        label="Program Year"
+                        class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+                        style="max-width: 200px"
+                    ></v-select>
+                    <v-divider class="mx-2"></v-divider>
+                    <v-btn color="info" rounded @click="dialogActions('createData', true)" class="pl-2">
+                        <v-icon class="mr-1">mdi-plus-circle</v-icon>
+                        Create Data
+                    </v-btn>
                 </v-row>
             </template>
+            <!-- Slot: luas_lahan Column -->
+            <template v-slot:item.luas_lahan="{item}">
+                {{ numberFormat(item.luas_lahan) }} m<sup>2</sup>
+            </template>
+            <!-- Slot: Status Column -->
+            <template v-slot:item.is_verified="{item}">
+                <v-chip :color="item.is_verified ? 'green' : 'red'" class="white--text pl-1">
+                    <v-icon class="mr-1">mdi-{{ item.is_verified ? 'check' : 'close' }}-circle</v-icon>
+                    {{ item.is_verified ? 'Verified' : 'Unverified' }}
+                </v-chip>
+            </template>
+            <!-- Slot: Action Column -->
+            <template v-slot:item.action="{item}">
+                <v-menu
+                    rounded="xl"
+                    bottom
+                    left
+                    offset-y
+                    transition="slide-y-transition"
+                    :close-on-content-click="false"
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-icon v-bind="attrs" v-on="on" color="dark">mdi-arrow-down-drop-circle</v-icon>
+                    </template>
+                    <v-list class="d-flex flex-column align-center">
+                        <v-list-item>
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailFarmerTraining(item.training_no)" color="info">
+                                    <v-icon class="mr-1">
+                                    mdi-information-outline
+                                    </v-icon>
+                                    Detail
+                                </v-btn>
+                                </template>
+                                <span>Detail</span>
+                            </v-tooltip>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </template>
         </v-data-table>
+
+        <!-- Snackbar -->
+        <v-snackbar
+        v-model="snackbar.show"
+        :color="snackbar.color"
+        :timeout="snackbar.timeout"
+        rounded="xl"
+        >
+            <div class="d-flex justify-between">
+                <p class="mb-0">
+                    {{ snackbar.text }}
+                </p>
+                <v-spacer></v-spacer>
+                <v-icon small class="pl-1" @click="snackbar.show = false">mdi-close-circle</v-icon>
+            </div>
+        </v-snackbar>
     </div>
 </template>
 
@@ -862,6 +950,12 @@ export default {
                 show: false,
                 title: 'Create Lahan Umum',
                 step: 1,
+                snackbar: {
+                    color: '',
+                    show: false,
+                    text: '',
+                    timeout: 10000,
+                },
             }
         },
         inputs: {
@@ -925,7 +1019,7 @@ export default {
             },
             landArea: {
                 label: 'Land Area',
-                model: '',
+                model: 0,
                 loading: false
             },
             landCoverage: {
@@ -936,12 +1030,12 @@ export default {
                     {text: '50%', value: 50},
                     {text: '75%', value: 75},
                 ],
-                model: '',
+                model: 0,
                 loading: false
             },
             landDistance: {
                 label: 'Land Distance from Home',
-                model: '',
+                model: 0,
                 loading: false
             },
             landStatus: {
@@ -960,9 +1054,10 @@ export default {
                 loading: false
             },
             mou: {
+                exist: false,
                 label: 'MoU Number',
                 model: '',
-                loading: false
+                loading: false,
             },
             mu: {
                 label: 'Management Unit',
@@ -1000,7 +1095,7 @@ export default {
             },
             plantingArea: {
                 label: 'Planting Area',
-                model: '',
+                model: 0,
                 loading: false
             },
             programYear: {
@@ -1051,27 +1146,41 @@ export default {
                 loading: false
             },
         },
+        snackbar: {
+            color: '',
+            show: false,
+            text: '',
+            timeout: 10000,
+        },
         tables: {
             lahan: {
                 headers: [
-                    {text: 'No', value: 'no'},
-                    {text: 'Lahan No', value: 'lahan_no'},
-                    {text: 'Desa', value: 'village'},
-                    {text: 'FC', value: 'fc_name'},
-                    {text: 'PIC', value: 'pic_lahan'},
+                    {text: 'Lahan No', value: 'lahanNo'},
+                    {text: 'PIC T4T', value: 'employee'},
+                    {text: 'MU', value: 'mu'},
+                    {text: 'Desa', value: 'namaDesa'},
+                    {text: 'PIC Lahan', value: 'pic_lahan'},
                     {text: 'Luas Lahan', value: 'luas_lahan'},
                     {text: 'Pola Tanam', value: 'pattern_planting'},
-                    {text: 'Tahun Program', value: 'created_at'},
                     {text: 'Status', value: 'is_verified'},
                     {text: 'Action', value: 'action', align: 'right'},
                 ],
                 items: [],
-                loading: false
+                loading: false,
+                programYear: {
+                    items: [],
+                    model: ''
+                }
             }
         },
         User: {}
     }),
     watch: {
+        'dialogs.createData.step': {
+            handler(newVal) {
+                // console.log(newVal)
+            }
+        },
         'inputs.dateDistribution.model': {
             handler(newVal) {
                 if (newVal) {
@@ -1080,16 +1189,29 @@ export default {
                 }
             }
         },
-        'dialogs.createData.step': {
-            handler(newVal) {
-                // console.log(newVal)
+        'inputs.landArea.model': {
+            handler(val) {
+                this.inputs.plantingArea.model = Math.round(val * ((100 - this.inputs.landCoverage.model) / 100))
             }
-        }
+        },
+        'inputs.landCoverage.model': {
+            handler(val) {
+                this.inputs.plantingArea.model = Math.round(this.inputs.landArea.model * ((100 - val) / 100))
+            }
+        },
+        'tables.lahan.programYear.model': {
+            handler(val) {
+                this.getGeneralLandData()
+            }
+        },
     },
-    mounted() {
+    async mounted() {
         this.User = JSON.parse(localStorage.getItem('User'))
         this.inputs.programYear.model = this.$store.state.programYear.model
         this.inputs.programYear.items = this.$store.state.programYear.options
+        this.tables.lahan.programYear.model = this.$store.state.programYear.model
+        this.tables.lahan.programYear.items = this.$store.state.programYear.options
+        await this.getGeneralLandData()
     },
     methods: {
         async dialogActions(dialog, show) {
@@ -1105,6 +1227,29 @@ export default {
             } 
 
             this.dialogs[dialog].show = show
+            // await this.setDummyData()
+        },
+        async getGeneralLandData() {
+            this.tables.lahan.loading = true
+
+            const url = this.apiConfig.baseUrl + 'GetLahanUmumAllAdmin?'
+            const params ={
+                program_year: this.tables.lahan.programYear.model
+            }
+            if (this.User.role_group != 'IT' && this.User.role_name != 'PROGAM MANAGER') {
+                params.created_by = this.User.email
+            }
+            await axios.get(`${url}${new URLSearchParams(params)}`,{
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.tables.lahan.items = res.data.data.result
+            }).catch(err => {
+
+            }).finally(() => {
+                this.tables.lahan.loading = false
+            })
         },
         async getOptionsData(inputs) {
             // prepare for calling api
@@ -1194,8 +1339,9 @@ export default {
                 pic_lahan: this.inputs.pic.model,
                 ktp_no: this.inputs.picKtp.model,
                 luas_lahan: this.inputs.landArea.model,
+                tutupan_lahan: this.inputs.landCoverage.model,
                 luas_tanam: this.inputs.plantingArea.model,
-                planting_pattern: this.inputs.croppingPattern.model,
+                pattern_planting: this.inputs.croppingPattern.model,
                 status: this.inputs.landStatus.model,
                 jarak_lahan: this.inputs.landDistance.model,
                 access_lahan: this.inputs.landAccess.model,
@@ -1212,7 +1358,7 @@ export default {
                 distribution_date: this.inputs.dateDistribution.model,
                 planting_realization_date: this.inputs.dateRealization.model,
                 // tree
-                list_tree: this.inputs.seeds.table.items,
+                list_trees: this.inputs.seeds.table.items,
                 // photos
                 photo1: '',
                 photo2: '',
@@ -1245,6 +1391,7 @@ export default {
                     postData.photo4 = `general-lands/${uploadPhoto4}`
                 }
             }
+            console.log(postData)
             await axios.post(url, postData, {
                 headers: {
                     Authorization: `Bearer ` + this.apiConfig.token,
@@ -1252,6 +1399,7 @@ export default {
             }).then(res => {
                 console.log(res.data)
                 this.resetInputData()
+                this.getGeneralLandData()
             }).catch(err => {
                 console.error(err.response)
                 this.forceLogout(err.response)
@@ -1285,6 +1433,36 @@ export default {
             await this.inputs.seeds.table.items.splice(index, 1)
         },
         // Utilities
+        async checkMoUNoExisting(data) {
+            const url = `${this.apiConfig.baseUrl}AddMandatoryLahanUmum`
+            this.inputs.mou.loading = true
+            await axios.post(url, {
+                mou_no: data
+            }, {
+                headers: {
+                    Authorization: `Bearer ` + this.apiConfig.token,
+                },
+            }).catch(err => {
+                this.forceLogout(err.response)
+                const res = err.response.data.data.result
+                if (res == 'The mou no has already been taken.') {
+                    this.dialogs.createData.snackbar.color = 'red'
+                    this.dialogs.createData.snackbar.text = 'MoU Number has already been taken! 😱'
+                    this.inputs.mou.exist = true
+                } else if (data) {
+                    this.dialogs.createData.snackbar.color = 'green'
+                    this.dialogs.createData.snackbar.text = 'MoU Number available 👍🏻'
+                    this.inputs.mou.exist = false
+                } else {
+                    this.dialogs.createData.snackbar.color = 'red'
+                    this.dialogs.createData.snackbar.text = 'MoU Number required! 😪'
+                    this.inputs.mou.exist = true
+                }
+            }).finally(() => {
+                this.dialogs.createData.snackbar.show = true
+                this.inputs.mou.loading = false
+            })
+        },
         closeActions(type, name) {
             this[type][name].show = false
         },
@@ -1313,6 +1491,9 @@ export default {
                 }
             })
             return formData
+        },
+        numberFormat(num) {
+            return new Intl.NumberFormat('id-ID').format(num)
         },
         openGoogleMap() {
             window.open(`http://maps.google.co.id/maps?q=${this.inputs.latitude.model},${this.inputs.longitude.model}`)
@@ -1356,14 +1537,15 @@ export default {
         resetInputData() {
             // main data
             this.inputs.mou.model = ''
+            this.inputs.mou.exist = false
             this.inputs.employee.model = ''
             this.inputs.pic.model = ''
             this.inputs.picKtp.model = ''
-            this.inputs.landArea.model = ''
-            this.inputs.plantingArea.model = ''
+            this.inputs.landArea.model = 0
+            this.inputs.landCoverage.model = 0
             this.inputs.croppingPattern.model = ''
             this.inputs.landStatus.model = ''
-            this.inputs.landDistance.model = ''
+            this.inputs.landDistance.model = 0
             this.inputs.landAccess.model = ''
             this.inputs.mu.model = ''
             this.inputs.province.model = ''
@@ -1392,6 +1574,49 @@ export default {
             this.inputs.photos.photo4.model = ''
             this.inputs.photos.photo4.preview = ''
         },
+        async setDummyData() {
+            // main data
+            this.inputs.mou.model = "TESTGENERALLAND001"
+            this.checkMoUNoExisting(this.inputs.mou.model)
+            this.inputs.employee.model = '1110'
+            this.inputs.pic.model = 'Qwerty'
+            this.inputs.picKtp.model = '3322022107010001'
+            this.inputs.landArea.model = 20000
+            this.inputs.croppingPattern.model = 'Pola Konservasi Pohon Kayu'
+            this.inputs.landStatus.model = 'Lapangan'
+            this.inputs.landDistance.model = 100
+            this.inputs.landAccess.model = 'Mobil'
+            this.inputs.mu.model = '021'
+            this.inputs.province.model = 'JB'
+            await this.getOptionsData({type: 'regency'})
+            this.inputs.regency.model = '39'
+            await this.getOptionsData({type: 'district'})
+            this.inputs.district.model = '32.04.16'
+            await this.getOptionsData({type: 'village'})
+            this.inputs.village.model = '32.04.16.06'
+            this.inputs.address.model = 'Jalan'
+            // seeds
+            this.inputs.seeds.table.items = [
+                {
+                    tree_category: 'KAYU',
+                    tree_name: 'Jabon',
+                    tree_code: 'T0067',
+                    tree_amount: 400
+                },
+                {
+                    tree_category: 'MPTS',
+                    tree_name: 'Alpukat',
+                    tree_code: 'T0039',
+                    tree_amount: 100
+                }
+            ]
+            // coordinates
+            this.inputs.latitude.model = '-7.026434'
+            this.inputs.longitude.model = '110.424260'
+            this.inputs.dateDistribution.model = '2022-01-31'
+            // forward step
+            this.dialogs.createData.step = 4
+        },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs
             
@@ -1412,7 +1637,7 @@ export default {
         async uploadPhotos(type, file) {
             this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
             const url = `${this.apiConfig.imageUrl}general-lands/upload.php`
-            const newName = `${this.inputs.mou.model.replace(/\s/g, '')}_${type}_${Date.now()}`
+            const newName = `${this.inputs.mou.model.replace(/\s/g, '')}_${type}`
             const data = this.generateFormData({
                 dir: type == 'mou' ? 'mou' : 'photos',
                 nama: newName,
