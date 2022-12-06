@@ -836,6 +836,7 @@
             :headers="tables.lahan.headers"
             :items="tables.lahan.items"
             :loading="tables.lahan.loading"
+            :search="tables.lahan.search"
         >
             <!-- Slot: Top -->
             <template v-slot:top>
@@ -852,9 +853,22 @@
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
                         label="Program Year"
-                        class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+                        class="mx-auto mx-lg-2 mb-2 mb-lg-0"
                         style="max-width: 200px"
                     ></v-select>
+                    <!-- Search Input -->
+                    <v-text-field
+                        v-model="tables.lahan.search"
+                        append-icon="mdi-magnify"
+                        color="green"
+                        label="Search"
+                        hide-details
+                        outlined
+                        rounded
+                        dense
+                        class=""
+                        style="max-width: 300px"
+                    ></v-text-field>
                     <v-divider class="mx-2"></v-divider>
                     <v-btn color="info" rounded @click="dialogActions('createData', true)" class="pl-2">
                         <v-icon class="mr-1">mdi-plus-circle</v-icon>
@@ -865,6 +879,10 @@
             <!-- Slot: luas_lahan Column -->
             <template v-slot:item.luas_lahan="{item}">
                 {{ numberFormat(item.luas_lahan) }} m<sup>2</sup>
+            </template>
+            <!-- Slot: Pola Tanam Column -->
+            <template v-slot:item.pattern_planting="{item}">
+                {{ item.pattern_planting.replace("Pola ", "") }}
             </template>
             <!-- Slot: Status Column -->
             <template v-slot:item.is_verified="{item}">
@@ -1155,6 +1173,7 @@ export default {
         tables: {
             lahan: {
                 headers: [
+                    {text: 'MoU No', value: 'mou_no'},
                     {text: 'Lahan No', value: 'lahanNo'},
                     {text: 'PIC T4T', value: 'employee'},
                     {text: 'MU', value: 'mu'},
@@ -1170,7 +1189,8 @@ export default {
                 programYear: {
                     items: [],
                     model: ''
-                }
+                },
+                search: ''
             }
         },
         User: {}
