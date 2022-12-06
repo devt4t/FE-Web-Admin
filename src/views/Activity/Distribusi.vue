@@ -867,7 +867,6 @@
                                                         offset-y
                                                         :close-on-content-click="true"
                                                         v-model="packingLabel.datePicker.show"
-                                                        v-if="false"
                                                     >
                                                         <template v-slot:activator="{ on: menu, attrs }">
                                                             <v-tooltip top>
@@ -1849,6 +1848,10 @@ export default {
         // PACKING LABEL
         async getPackingLabelTableData() {
             if (this.accessModul.packingLabel) {
+                // reset search by FF input
+                this.packingLabel.tables.byLahan.search.items = []
+                this.packingLabel.tables.byLahan.search.model = ''
+                
                 let url = ''
                 let params = {
                     typegetdata: this.User.ff.value_data,
@@ -1859,7 +1862,7 @@ export default {
                 }
                 if (this.packingLabel.tabs.model == 0) {
                     this.packingLabel.tables.byLahan.loading = true
-                    url = 'GetPackingLabelByLahan?'
+                    url = 'GetPackingLabelByLahanTemp?'
                 }
     
                 if (url && params) {
