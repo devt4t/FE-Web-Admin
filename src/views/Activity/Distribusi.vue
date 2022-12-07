@@ -1277,7 +1277,7 @@
                                     </template>
                                     <!-- All Bags Column -->
                                     <template v-slot:item.sum_all_bags="{item}">
-                                        <v-icon>mdi-label-multiple </v-icon> {{ item.sum_all_bags }}
+                                        <v-icon>mdi-basket </v-icon> {{ item.sum_all_bags }}
                                     </template>
                                     <!-- Loaded Bags Column -->
                                     <template v-slot:item.sum_loaded_bags="{item}">
@@ -1415,16 +1415,7 @@ export default {
                     {text: 'Status', value: 'status', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
-                items: [
-                    {
-                        mu_name: 'CIWIDEY',
-                        ff_name: 'T4T Devs',
-                        farmer_name: 'Qwerty',
-                        loaded_bags: 52,
-                        distributed_bags: 50,
-                        status: 1,
-                    }
-                ],
+                items: [],
                 loading: false,
             },
             dialogs: {

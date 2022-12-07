@@ -471,7 +471,7 @@
       <!-- Pendataan Petani dan Lahan Panel -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.farmer.show">
         <v-expansion-panel-header>
-          <h3 class="">Pendataan Petani & Lahan</h3>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-table-account</v-icon></v-btn> Pendataan Petani & Lahan</h3>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <!-- Main Table -->
@@ -621,7 +621,7 @@
       <!-- Sosialisasi Tanam -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.sostam.show">
         <v-expansion-panel-header>
-          <h3 class="">Sosialisasi Tanam</h3>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-account-group</v-icon></v-btn> Sosialisasi Tanam</h3>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <!-- Main Table -->
@@ -843,7 +843,7 @@
       <!-- Pelatihan Petani -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.pelpet.show">
         <v-expansion-panel-header>
-          <h3 class="">Pelatihan Petani</h3>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-school</v-icon></v-btn> Pelatihan Petani</h3>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <!-- Main Table -->
@@ -865,7 +865,7 @@
       <!-- Penilikan Lubang Tanam -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.penlub.show">
         <v-expansion-panel-header>
-          <h3 class="">Penilikan Lubang Tanam</h3>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-pi-hole</v-icon></v-btn> Penilikan Lubang Tanam</h3>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <!-- Main Table -->
@@ -1084,7 +1084,7 @@
       <!-- Distribusi -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.distribusi.show">
         <v-expansion-panel-header>
-          <h3 class="">Distribusi</h3>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-human-dolly</v-icon></v-btn> Distribusi</h3>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <!-- Main Table -->
