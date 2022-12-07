@@ -1941,7 +1941,9 @@ export default {
                     this.packingLabel.loadingText = 'Updating packing label data...'
                     this.loadingLine.loadingText = 'Waiting...'
                     this.loadingLine.loading = true
+                    const searchExist = this.packingLabel.tables.byLahan.search.model
                     await this.getPackingLabelTableData()
+                    this.packingLabel.tables.byLahan.search.model = searchExist
                     this.packingLabel.loadingText = null
     
                     this.loadingLine.loadingText = 'Updating loading line data...'
