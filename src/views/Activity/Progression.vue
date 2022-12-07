@@ -840,6 +840,28 @@
           </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <!-- Pelatihan Petani -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.pelpet.show">
+        <v-expansion-panel-header>
+          <h3 class="">Pelatihan Petani</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            multi-sort
+            :headers="tables.pelpet.headers"
+            :items="tables.pelpet.items"
+            :search="tables.pelpet.search"
+            :loading="tables.pelpet.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
+          ></v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
       <!-- Penilikan Lubang Tanam -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.penlub.show">
         <v-expansion-panel-header>
@@ -1211,6 +1233,7 @@ export default {
         items: [
           {value: "Pendataan Petani & Lahan", disabled: false},
           {value: "Sosialisasi Tanam", disabled: false},
+          {value: "Pelatihan Petani", disabled: false},
           {value: "Penilikan Lubang", disabled: false},
           {value: "Material Organik (Pupuk)", disabled: true},
           {value: "Distribusi", disabled: false},
@@ -1274,6 +1297,22 @@ export default {
           MPTS: [],
           CROPS: []
         }
+      },
+      pelpet: {
+        headers: [
+          { text: "Field Facilitator", value: "ff" },
+          { text: "Petani", value: "total_farmer", align: 'center' },
+          { text: "Participant", value: "total_participant", align: 'center' },
+          { text: "Trainer", value: "trainee", align: 'center' },
+          { text: "Date", value: "training_date", align: 'center' },
+          { text: "Materi 1", value: "materi1", align: 'center' },
+          { text: "Materi 2", value: "materi2", align: 'center' },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
+        ],
+        items: [],
+        loading: false,
+        search: '',
+        show: false,
       },
       penlub: {
         headers: [
@@ -1416,6 +1455,15 @@ export default {
       } else {
         this.tables.sostam.show = false
       }
+      // Pelatihan Petani
+      if (activitiesActive.includes('Pelatihan Petani')) {
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
+        this.filters.activities.push('Pelatihan Petani')
+        this.tables.pelpet.show = true
+      } else {
+        this.tables.pelpet.show = false
+      }
       // Penilikan Lubang
       if (activitiesActive.includes('Penilikan Lubang')) {
         await openedPanel.push(openedPanelIndex)
@@ -1462,6 +1510,12 @@ export default {
             await this.tables.sostam.headers.splice(sostamHeaderIndex, 1)
           }
         })) 
+        // remove FC in table pelpet
+        await Promise.all(this.tables.pelpet.headers.map(async (pelpetHeader, pelpetHeaderIndex) => {
+          if (pelpetHeader.text == 'FC') {
+            await this.tables.pelpet.headers.splice(pelpetHeaderIndex, 1)
+          }
+        })) 
         // remove FC in table penlub
         await Promise.all(this.tables.penlub.headers.map(async (penlubHeader, penlubHeaderIndex) => {
           if (penlubHeader.text == 'FC') {
@@ -1483,6 +1537,7 @@ export default {
         })
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
+        this.tables.pelpet.loading = true
         this.tables.penlub.loading = true
         this.tables.distribusi.loading = true
 
@@ -1512,6 +1567,7 @@ export default {
         // set table data
         this.tables.farmer.items = farmers
         this.tables.sostam.items = datas.sostam
+        this.tables.pelpet.items = datas.pelpet
         this.tables.penlub.items = datas.penlub
         this.tables.distribusi.items = datas.distribusi
 
@@ -1526,6 +1582,7 @@ export default {
       } finally {
         this.tables.farmer.loading = false
         this.tables.sostam.loading = false
+        this.tables.pelpet.loading = false
         this.tables.penlub.loading = false
         this.tables.distribusi.loading = false
       }
@@ -1534,6 +1591,7 @@ export default {
       try {
         this.tables.farmer.loading = true
         this.tables.sostam.loading = true
+        this.tables.pelpet.loading = true
         this.tables.penlub.loading = true
         this.tables.distribusi.loading = true
         this.$store.state.loadingOverlay = true
@@ -1562,6 +1620,19 @@ export default {
           this.tables.sostam.headers = [
             { text: "FC", value: "fc" },
             ...this.tables.sostam.headers
+          ]
+        }
+        // add FC in table pelpet
+        let checkPelpetHeaderContainFC = 0
+        await Promise.all(this.tables.pelpet.headers.map(async (pelpetHeader, pelpetHeaderIndex) => {
+          if (pelpetHeader.text == 'FC') {
+            checkPelpetHeaderContainFC += 1
+          }
+        })) 
+        if (checkPelpetHeaderContainFC == 0) {
+          this.tables.pelpet.headers = [
+            { text: "FC", value: "fc" },
+            ...this.tables.pelpet.headers
           ]
         }
         // add FC in table penlub
@@ -1595,6 +1666,7 @@ export default {
 
         let farmers = []
         let sostams = []
+        let pelpets = []
         let penlubs = []
         let distribusis = []
         
@@ -1643,6 +1715,16 @@ export default {
               })
             }
 
+            // get pelpet
+            if (datas.pelpet.length > 0) {
+              datas.pelpet.forEach(pelPetVal => {
+                pelpets.push({
+                  fc: fcVal.name,
+                  ...pelPetVal
+                })
+              })
+            }
+
             // get penlub
             if (datas.penlub.length > 0) {
               datas.penlub.forEach(penlubVal => {
@@ -1681,6 +1763,7 @@ export default {
   
               this.tables.farmer.loading = false
               this.tables.sostam.loading = false
+              this.tables.pelpet.loading = false
               this.tables.penlub.loading = false
               this.tables.distribusi.loading = false
             }
@@ -1690,6 +1773,7 @@ export default {
         // set datas to tables
         this.tables.farmer.items = farmers
         this.tables.sostam.items = sostams
+        this.tables.pelpet.items = pelpets
         this.tables.penlub.items = penlubs
         this.tables.distribusi.items = distribusis
       } catch (error) {
