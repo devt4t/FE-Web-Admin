@@ -1232,7 +1232,10 @@
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on" rounded @click="editLahanUmum(item.mou_no)" color="warning" block>
+                                <v-btn
+                                    v-bind="attrs" v-on="on" rounded @click="editLahanUmum(item.mou_no)" color="warning" block
+                                    :disabled="(item.is_verified == 1)"
+                                >
                                     <v-icon class="mr-1">
                                     mdi-pencil
                                     </v-icon>
