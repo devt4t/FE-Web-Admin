@@ -108,7 +108,7 @@
           </v-btn>
         </template>
       </v-tooltip>
-      <v-menu offset-y open-on-hover rounded="xl">
+      <v-menu offset-y rounded="xl">
         <template v-slot:activator="{ on }">
           <v-btn class="px-1 mr-1" text size="200" v-on="on" rounded>
             <div style="text-align: right" class="mr-2">

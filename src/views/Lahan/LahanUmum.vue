@@ -19,11 +19,10 @@
         >
             <v-card>
                 <v-card-title class="mb-1 headermodalstyle rounded-xl">
-                    <span class="">{{ dialogs.createData.title }}</span>
+                    <span class=""><v-btn class="white dark--text mr-1" fab x-small><v-icon>mdi-list-box</v-icon></v-btn> {{ dialogs.createData.title }}</span>
                     <v-icon color="red lighten-1" class="ml-auto" @click="dialogActions('createData', false)">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text class="pa-0">
-
                     <!-- Snackbar -->
                     <v-snackbar
                     v-model="dialogs.createData.snackbar.show"
@@ -97,6 +96,7 @@
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.mou.model"
+                                            :disabled="dialogs.createData.update"
                                             @change="checkMoUNoExisting"
                                         ></v-text-field>
                                     </v-col>
@@ -117,7 +117,7 @@
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.employee.model"
-                                            :disabled="User.role_group != 'IT'"
+                                            :disabled="(User.role_group != 'IT' && dialogs.createData.update)"
                                         ></v-autocomplete>
                                     </v-col>
                                 </v-row>
@@ -657,7 +657,7 @@
                                         accept="image/png, image/jpeg, image/bmp"
                                         placeholder="Photo 1"
                                         prepend-icon="mdi-camera"
-                                        label="Photo 1"
+                                        label="Photo 1 (*max 6mb)"
                                         v-on:change="photo1FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -682,7 +682,7 @@
                                         accept="image/png, image/jpeg, image/bmp"
                                         placeholder="Photo 2"
                                         prepend-icon="mdi-camera"
-                                        label="Photo 2"
+                                        label="Photo 2 (*max 6mb)"
                                         v-on:change="photo2FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -707,7 +707,7 @@
                                         accept="image/png, image/jpeg, image/bmp"
                                         placeholder="Photo 3"
                                         prepend-icon="mdi-camera"
-                                        label="Photo 3"
+                                        label="Photo 3 (*max 6mb)"
                                         v-on:change="photo3FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -732,7 +732,7 @@
                                         accept="image/png, image/jpeg, image/bmp"
                                         placeholder="MoU Photo"
                                         prepend-icon="mdi-camera"
-                                        label="MoU Photo"
+                                        label="MoU Photo (*max 6mb)"
                                         v-on:change="photo4FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -814,7 +814,7 @@
                                 rounded
                                 @click="() => {saveLahanUmum()}"
                                 :disabled="
-                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || !inputs.photos.photo4.model || inputs.mou.exist
+                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || (!inputs.photos.photo4.model && dialogs.createData.update == false) || inputs.mou.exist
                                 "
                             >
                                 <span class="d-none d-md-inline-block"> 
@@ -930,27 +930,27 @@
                                         <tr>
                                             <td>Management Unit</td>
                                             <td>:</td>
-                                            <td><strong>{{ dialogs.detail.data.mu_no }}</strong></td>
+                                            <td><strong>{{ dialogs.detail.data.mu_name }}</strong></td>
                                         </tr>
                                         <tr>
                                             <td>Province</td>
                                             <td>:</td>
-                                            <td><strong>{{ dialogs.detail.data.province }}</strong></td>
+                                            <td><strong>{{ dialogs.detail.data.province_name }}</strong></td>
                                         </tr>
                                         <tr>
                                             <td>Regency</td>
                                             <td>:</td>
-                                            <td><strong>{{ dialogs.detail.data.regency }}</strong></td>
+                                            <td><strong>{{ dialogs.detail.data.regency_name }}</strong></td>
                                         </tr>
                                         <tr>
                                             <td>District</td>
                                             <td>:</td>
-                                            <td><strong>{{ dialogs.detail.data.district }}</strong></td>
+                                            <td><strong>{{ dialogs.detail.data.district_name }}</strong></td>
                                         </tr>
                                         <tr>
                                             <td>Village</td>
                                             <td>:</td>
-                                            <td><strong>{{ dialogs.detail.data.village }}</strong></td>
+                                            <td><strong>{{ dialogs.detail.data.village_name }}</strong></td>
                                         </tr>
                                         <tr>
                                             <td>Address</td>
@@ -1104,11 +1104,11 @@
                 <v-card-actions class="justify-end">
                     <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER')">
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
-                        Verif
+                        Verification
                     </v-btn>
                     <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 1)" rounded color="red white--text" @click="confirmationShow('unverif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER')">
                         <v-icon class="mr-1">mdi-undo-variant</v-icon>
-                        Unverif
+                        Unverification
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -1215,11 +1215,11 @@
                     <template v-slot:activator="{ on, attrs }">
                         <v-icon v-bind="attrs" v-on="on" color="dark">mdi-arrow-down-drop-circle</v-icon>
                     </template>
-                    <v-list class="d-flex flex-column align-center">
+                    <v-list class="d-flex flex-column align-stretch">
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailLahanUmum(item.mou_no)" color="info">
+                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailLahanUmum(item.mou_no)" color="info" block>
                                     <v-icon class="mr-1">
                                     mdi-information-outline
                                     </v-icon>
@@ -1232,7 +1232,20 @@
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-bind="attrs" v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER') ||  item.is_verified != 1)">
+                                <v-btn v-bind="attrs" v-on="on" rounded @click="editLahanUmum(item.mou_no)" color="warning" block>
+                                    <v-icon class="mr-1">
+                                    mdi-pencil
+                                    </v-icon>
+                                    Edit
+                                </v-btn>
+                                </template>
+                                <span>Edit</span>
+                            </v-tooltip>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER') ||  item.is_verified != 1)">
                                         <v-icon class="mr-1">mdi-undo-variant</v-icon>
                                         Unverif
                                     </v-btn>
@@ -1295,7 +1308,7 @@ export default {
         dialogs: {
             createData: {
                 show: false,
-                title: 'Create Lahan Umum',
+                title: 'Form Lahan Umum',
                 step: 1,
                 snackbar: {
                     color: '',
@@ -1303,6 +1316,8 @@ export default {
                     text: '',
                     timeout: 10000,
                 },
+                update: false,
+                lahan_no: null
             },
             detail: {
                 data: null,
@@ -1575,6 +1590,24 @@ export default {
         await this.getGeneralLandData()
     },
     methods: {
+        async editLahanUmum(mou_no) {
+            this.$store.state.loadingOverlayText = 'Getting Detail Lahan Umum...'
+            this.$store.state.loadingOverlay = true
+            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmum?mou_no=${mou_no}`
+            await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                const data = res.data.data.result
+                console.log(data)
+                this.dialogActions('updateData', true, data)
+                
+            }).catch(err => {
+                console.error(err)
+                this.forceLogout(err.response)
+            })
+        },
         async getGeneralLandData() {
             this.tables.lahan.loading = true
 
@@ -1676,8 +1709,8 @@ export default {
             this.dialogs.createData.show = false
             this.$store.state.loadingOverlayText = `Start saving "lahan umum" data...`
             this.$store.state.loadingOverlay = true
-            const url = `${this.apiConfig.baseUrl}AddMandatoryLahanUmum`
-            const postData = {
+            let url = `${this.apiConfig.baseUrl}`
+            let postData = {
                 // main data
                 program_year: this.inputs.programYear.model,
                 mou_no: this.inputs.mou.model,
@@ -1713,6 +1746,19 @@ export default {
                 // user
                 created_by: this.User.email
             }
+            if (this.dialogs.createData.update == false) {
+                url += 'AddMandatoryLahanUmum'
+            } else {
+                url += 'UpdateLahanUmum'
+                postData.lahan_no = this.dialogs.createData.lahan_no
+            }
+            // upload MOU
+            if (this.inputs.photos.photo4.model) {
+                const uploadPhoto4 = await this.uploadPhotos('mou', this.inputs.photos.photo4.model)
+                if (uploadPhoto4) {
+                    postData.photo4 = `general-lands/${uploadPhoto4}`  
+                } 
+            }
             if (this.inputs.photos.photo1.model) {
                 const uploadPhoto1 = await this.uploadPhotos('photo1', this.inputs.photos.photo1.model)
                 if (uploadPhoto1) {
@@ -1731,12 +1777,6 @@ export default {
                     postData.photo3 = `general-lands/${uploadPhoto3}`
                 }
             }
-            if (this.inputs.photos.photo4.model) {
-                const uploadPhoto4 = await this.uploadPhotos('mou', this.inputs.photos.photo4.model)
-                if (uploadPhoto4) {
-                    postData.photo4 = `general-lands/${uploadPhoto4}`
-                }
-            }
             console.log(postData)
             await axios.post(url, postData, {
                 headers: {
@@ -1746,37 +1786,18 @@ export default {
                 console.log(res.data)
                 this.resetInputData()
                 this.getGeneralLandData()
+                this.snackbar.text = 'Success save data.'
+                this.snackbar.color = 'green'
             }).catch(err => {
                 console.error(err.response)
                 this.forceLogout(err.response)
+                this.snackbar.text = 'Failed save data.'
+                this.snackbar.color = 'red'
             }).finally(() => {
+                this.snackbar.show = true
                 this.$store.state.loadingOverlay = false
                 this.$store.state.loadingOverlayText = null
             })
-        },
-        async seedlingAdd() {
-            // set data
-            const data = {
-                tree_category: this.inputs.seeds.category.model,
-                tree_code: this.inputs.seeds.model.tree_code,
-                tree_name: this.inputs.seeds.model.tree_name,
-                tree_amount: this.inputs.seeds.amount
-            }
-            // push data to table
-            await this.inputs.seeds.table.items.push(data)
-            // find index
-            const index = await this.inputs.seeds[data.tree_category].findIndex(val => val.tree_code == data.tree_code)
-            // remove from options
-            await this.inputs.seeds[data.tree_category].splice(index, 1)
-            // reset inputs
-            this.inputs.seeds.model = null
-            this.inputs.seeds.amount = 0
-        },
-        async seedlingRemove(index) {
-            const data = this.inputs.seeds.table.items[index]
-            await this.inputs.seeds[data.tree_category].push(data)
-
-            await this.inputs.seeds.table.items.splice(index, 1)
         },
         async showDetailLahanUmum(mou_no) {
             this.$store.state.loadingOverlayText = 'Getting Detail Lahan Umum...'
@@ -1896,19 +1917,33 @@ export default {
         dateFormat(date, format) {
             return moment(date).format(format)
         },
-        async dialogActions(dialog, show) {
+        async dialogActions(dialog, show, data) {
+            this.$store.state.loadingOverlay = true
             if (dialog == 'createData' && show == true) {
-                this.$store.state.loadingOverlay = true
+                this.dialogs.createData.update = false
+                this.dialogs.createData.step = 1
+                await this.resetInputData()
                 await this.getOptionsData({type: 'mu'})
                 await this.getOptionsData({type: 'province'})
                 await this.getOptionsData({type: 'employee'})
                 await this.getOptionsData({type: 'seeds'})
-                this.$store.state.loadingOverlay = false
 
                 this.inputs.employee.model = this.User.employee_no
+            } else if (dialog == 'updateData' && show == true) {
+                this.dialogs.createData.update = true
+                this.inputs.mou.exist = false
+                await this.getOptionsData({type: 'mu'})
+                await this.getOptionsData({type: 'province'})
+                await this.getOptionsData({type: 'employee'})
+                await this.getOptionsData({type: 'seeds'})
+                dialog = 'createData'
+                
+                // set data -------------------------------------------------------------------
+                await this.setUpdateData(data)
             }
 
             this.dialogs[dialog].show = show
+            this.$store.state.loadingOverlay = false
             // await this.setDummyData()
         },
         forceLogout(response) {
@@ -1969,8 +2004,14 @@ export default {
         },
         photo4FileChanged (event) {
             if (event) {
-                this.inputs.photos.photo4.model = event
-                this.inputs.photos.photo4.preview = URL.createObjectURL(event)
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.inputs.photos.photo4.model = event
+                    this.inputs.photos.photo4.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
             } else {
                 this.inputs.photos.photo4.model = null
                 this.inputs.photos.photo4.preview = ""
@@ -2015,6 +2056,74 @@ export default {
             this.inputs.photos.photo3.preview = ''
             this.inputs.photos.photo4.model = ''
             this.inputs.photos.photo4.preview = ''
+        },
+        async seedlingAdd() {
+            // set data
+            const data = {
+                tree_category: this.inputs.seeds.category.model,
+                tree_code: this.inputs.seeds.model.tree_code,
+                tree_name: this.inputs.seeds.model.tree_name,
+                tree_amount: this.inputs.seeds.amount
+            }
+            // push data to table
+            await this.inputs.seeds.table.items.push(data)
+            // find index
+            const index = await this.inputs.seeds[data.tree_category].findIndex(val => val.tree_code == data.tree_code)
+            // remove from options
+            await this.inputs.seeds[data.tree_category].splice(index, 1)
+            // reset inputs
+            this.inputs.seeds.model = null
+            this.inputs.seeds.amount = 0
+        },
+        async seedlingRemove(index) {
+            const data = this.inputs.seeds.table.items[index]
+            await this.inputs.seeds[data.tree_category].push(data)
+
+            await this.inputs.seeds.table.items.splice(index, 1)
+        },
+        async setUpdateData(data) {
+            // main data
+            this.inputs.mou.model = data.mou_no
+            this.dialogs.createData.lahan_no = data.lahan_no
+            this.inputs.employee.model = data.employee_no
+            this.inputs.pic.model = data.pic_lahan
+            this.inputs.picKtp.model = data.ktp_no
+            this.inputs.landArea.model = data.luas_lahan
+            this.inputs.croppingPattern.model = data.pattern_planting
+            this.inputs.landStatus.model = data.status
+            this.inputs.landDistance.model = data.jarak_lahan
+            this.inputs.landAccess.model = data.access_lahan
+            this.inputs.mu.model = data.mu_no
+            this.inputs.province.model = data.province
+            await this.getOptionsData({type: 'regency'})
+            this.inputs.regency.model = data.regency
+            await this.getOptionsData({type: 'district'})
+            this.inputs.district.model = data.district
+            await this.getOptionsData({type: 'village'})
+            this.inputs.village.model = data.village
+            this.inputs.address.model = data.address
+            // seeds
+            this.inputs.seeds.table.items = []
+            data.DetailLahanUmum.forEach(treeExist => { 
+                this.inputs.seeds.category.model = treeExist.tree_category
+                this.inputs.seeds.model = {
+                    tree_code: treeExist.tree_code,
+                    tree_name: treeExist.tree_name
+                }
+                this.inputs.seeds.amount = treeExist.amount
+                this.seedlingAdd()
+            })
+            // coordinates
+            this.inputs.latitude.model = data.latitude
+            this.inputs.longitude.model = data.longitude
+            this.inputs.dateDistribution.model = data.distribution_date
+            // photos
+            if (data.photo1 && data.photo1 != '-') this.inputs.photos.photo1.preview = `${this.apiConfig.imageUrl}${data.photo1}`
+            if (data.photo2 && data.photo2 != '-') this.inputs.photos.photo2.preview = `${this.apiConfig.imageUrl}${data.photo2}`
+            if (data.photo3 && data.photo3 != '-') this.inputs.photos.photo3.preview = `${this.apiConfig.imageUrl}${data.photo3}`
+            if (data.photo_doc && data.photo_doc != '-') this.inputs.photos.photo4.preview = `${this.apiConfig.imageUrl}${data.photo_doc}`
+            // forward step
+            this.dialogs.createData.step = 1
         },
         async setDummyData() {
             // main data
