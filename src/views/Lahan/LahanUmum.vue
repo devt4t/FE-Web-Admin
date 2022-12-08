@@ -9,10 +9,10 @@
         ></v-breadcrumbs>
 
         <!-- DIALOG MODAL -->
-        <!-- Create Data Modal -->
+        <!-- Create Lahan Umum -->
         <v-dialog
             v-model="dialogs.createData.show"
-            content-class="rounded-xl"
+            content-class="rounded-xl mx-1"
             max-width="1200px"
             scrollable
             persistent
@@ -569,7 +569,7 @@
                                         <v-tooltip top class="rounded-xl" color="rounded-xl">
                                             Click for check coordinates in GoogleMaps
                                             <template v-slot:activator="{ on, attrs }">
-                                                <v-btn v-bind="attrs" v-on="on" color="info" rounded block :disabled="!inputs.longitude.model || !inputs.longitude.model" @click="openGoogleMap"> 
+                                                <v-btn v-bind="attrs" v-on="on" color="info" rounded block :disabled="!inputs.latitude.model || !inputs.longitude.model" @click="openGoogleMap(inputs.latitude.model, inputs.longitude.model)"> 
                                                     <v-icon class="mr-2">mdi-map-marker</v-icon>
                                                     Check Location
                                                 </v-btn>
@@ -828,6 +828,317 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!-- Detail Lahan Umum -->
+        <v-dialog
+            v-model="dialogs.detail.show"
+            content-class="rounded-xl mx-1"
+            max-width="700px"
+            scrollable
+            persistent
+        >
+            <v-card>
+                <v-card-title class="mb-1 headermodalstyle rounded-xl">
+                    <span class="">{{ dialogs.detail.title }}</span>
+                    <v-icon color="red lighten-1" class="ml-auto" @click="dialogActions('detail', false)">mdi-close-circle</v-icon>
+                </v-card-title>
+                <v-card-text v-if="dialogs.detail.data" class="pa-4 py-2">
+                    <v-expansion-panels multiple v-model="dialogs.detail.expansionShow">
+                        <v-expansion-panel class="rounded-xl">
+                            <v-expansion-panel-header>
+                                <v-btn rounded block color="green white--text" small>
+                                    <v-icon class="mr-1">mdi-list-box</v-icon>
+                                    MAIN DATA
+                                </v-btn>
+                            </v-expansion-panel-header>
+                            <v-expansion-panel-content>
+                                <v-simple-table class="custom-simple-table">
+                                    <tbody>
+                                        <tr>
+                                            <td>Program Year</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.program_year }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>MOU No</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.mou_no }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lahan No</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.lahan_no }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" class="text-center"><v-icon>mdi-clipboard-account</v-icon> PIC</th>
+                                        </tr>
+                                        <tr>
+                                            <td>PIC T4T</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.employeeName }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>PIC Lahan</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.pic_lahan }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>KTP PIC Lahan</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.ktp_no }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" class="text-center"><v-icon>mdi-island</v-icon> Land Detail</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Land Area</td>
+                                            <td>:</td>
+                                            <td><strong>{{ numberFormat(dialogs.detail.data.luas_lahan) }}</strong>m<sup>2</sup></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Land Coverage</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.tutupan_lahan }}</strong>%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Planting Area</td>
+                                            <td>:</td>
+                                            <td><strong>{{ numberFormat(dialogs.detail.data.luas_tanam) }}</strong>m<sup>2</sup></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cropping Pattern</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.pattern_planting }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Land Status</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.status }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distance from Home</td>
+                                            <td>:</td>
+                                            <td><strong>{{ numberFormat(dialogs.detail.data.jarak_lahan) }}</strong>m</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Land Access</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.access_lahan }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" class="text-center"><v-icon>mdi-select-multiple-marker</v-icon> Location</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Management Unit</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.mu_no }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Province</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.province }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Regency</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.regency }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>District</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.district }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Village</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.village }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Address</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.address }}</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
+                        <v-expansion-panel class="rounded-xl">
+                            <v-expansion-panel-header>
+                                <v-btn rounded block color="green white--text" small>
+                                    <v-icon class="mr-1">mdi-sprout</v-icon>
+                                    Seedling
+                                </v-btn>
+                            </v-expansion-panel-header>
+                            <v-expansion-panel-content>
+                                <v-simple-table class="custom-simple-table">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Category</th>
+                                            <th>Name</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(seedling, seedIndex) in dialogs.detail.data.DetailLahanUmum" :key="seedIndex">
+                                            <td>{{ seedIndex + 1 }}</td>
+                                            <td>{{ seedling.tree_category}}</td>
+                                            <td>{{ seedling.tree_name}}</td>
+                                            <td>{{ numberFormat(seedling.amount)}}</td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
+                        <v-expansion-panel class="rounded-xl">
+                            <v-expansion-panel-header>
+                                <v-btn rounded block color="green white--text" small>
+                                    <v-icon class="mr-1">mdi-table-clock</v-icon>
+                                    Coordinates & Period
+                                </v-btn>
+                            </v-expansion-panel-header>
+                            <v-expansion-panel-content>
+                                <v-simple-table class="custom-simple-table">
+                                    <tbody>
+                                        <tr>
+                                            <th colspan="3" class="text-center"><v-icon>mdi-map-marker</v-icon> Coordinate</th>
+                                        </tr>
+                                        <tr>
+                                            <td>LatLong</td>
+                                            <td>:</td>
+                                            <td>            
+                                                <v-tooltip top class="rounded-xl" color="rounded-xl">
+                                                    Click for check coordinates in GoogleMaps
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn v-bind="attrs" v-on="on" text rounded :disabled="(!dialogs.detail.data.latitude || !dialogs.detail.data.longitude)" @click="openGoogleMap(dialogs.detail.data.latitude, dialogs.detail.data.longitude)"> 
+                                                            <strong>{{ dialogs.detail.data.latitude }}, {{ dialogs.detail.data.longitude }}</strong>
+                                                        </v-btn>
+                                                    </template>
+                                                </v-tooltip>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Coordinate</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dialogs.detail.data.coordinate }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3" class="text-center"><v-icon>mdi-timeline-clock</v-icon> Period</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Planting Hole Date</td>
+                                            <td>:</td>
+                                                <td><strong>{{ dateFormat(dialogs.detail.data.planting_hole_date, 'DD MMMM Y') }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Distribution Date</td>
+                                            <td>:</td>
+                                                <td><strong>{{ dateFormat(dialogs.detail.data.distribution_date, 'DD MMMM Y') }}</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Planting Date</td>
+                                            <td>:</td>
+                                            <td><strong>{{ dateFormat(dialogs.detail.data.planting_realization_date, 'DD MMMM Y') }}</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </v-simple-table>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
+                        <v-expansion-panel class="rounded-xl">
+                            <v-expansion-panel-header>
+                                <v-btn rounded block color="green white--text" small>
+                                    <v-icon class="mr-1">mdi-image-multiple</v-icon>
+                                    Photos
+                                </v-btn>
+                            </v-expansion-panel-header>
+                            <v-expansion-panel-content>
+                                <v-row>
+                                    <v-col cols="12" lg="6">
+                                        <h4 class="text-center">MOU</h4>
+                                        <v-card elevation="2" class="rounded-xl" height="300">
+                                            <v-img
+                                                height="300"
+                                                v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.data.photo_doc}`"
+                                                class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                id="MOU Photo"
+                                                @click="showLightbox(`${apiConfig.imageUrl}${dialogs.detail.data.photo_doc}`)"
+                                            ></v-img
+                                        ></v-card>
+                                    </v-col>
+                                    <v-col cols="12" lg="6">
+                                        <h4 class="text-center">Lands</h4>
+                                        <v-carousel 
+                                            cycle
+                                            height="300" 
+                                            show-arrows-on-hover
+                                            hide-delimiter-background
+                                            class="rounded-xl cursor-pointer"
+                                        >
+                                            <v-carousel-item v-if="dialogs.detail.data.photo1 && dialogs.detail.data.photo1 != '-'">
+                                                <v-img
+                                                    height="300"
+                                                    v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.data.photo1}`"
+                                                    @click="showLightbox(`${apiConfig.imageUrl}${dialogs.detail.data.photo1}`)"
+                                                ></v-img>
+                                            </v-carousel-item>
+                                            <v-carousel-item v-if="dialogs.detail.data.photo2 && dialogs.detail.data.photo2 != '-'">
+                                                <v-img
+                                                    height="300"
+                                                    v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.data.photo2}`"
+                                                    @click="showLightbox(`${apiConfig.imageUrl}${dialogs.detail.data.photo2}`)"
+                                                ></v-img>
+                                            </v-carousel-item>
+                                            <v-carousel-item v-if="dialogs.detail.data.photo3 && dialogs.detail.data.photo3 != '-'">
+                                                <v-img
+                                                    height="300"
+                                                    v-bind:src="`${apiConfig.imageUrl}${dialogs.detail.data.photo3}`"
+                                                    @click="showLightbox(`${apiConfig.imageUrl}${dialogs.detail.data.photo3}`)"
+                                                ></v-img>
+                                            </v-carousel-item>
+                                        </v-carousel>
+                                    </v-col>
+                                </v-row>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
+                    </v-expansion-panels>
+                </v-card-text>
+                <v-card-actions class="justify-end">
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER')">
+                        <v-icon class="mr-1">mdi-check-circle</v-icon>
+                        Verif
+                    </v-btn>
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 1)" rounded color="red white--text" @click="confirmationShow('unverif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER')">
+                        <v-icon class="mr-1">mdi-undo-variant</v-icon>
+                        Unverif
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <!-- Confirmation -->
+        <v-dialog v-model="confirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
+            <v-card class="rounded-xl">
+                <v-card-title class="mb-1 headermodalstyle">
+                    <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
+                    <span>{{ `${confirmation.type || 'Confirmation'}` }}</span>
+                    <v-divider dark class="mx-2"></v-divider>
+                    <v-icon color="red" @click="confirmation.show = false">mdi-close-circle</v-icon>
+                </v-card-title>
+                <v-card-text>
+                    <h2 class="text-center pt-4">{{ confirmation.title }}</h2>
+                    <v-row class="mt-10 align-center mb-0">
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn rounded color="red white--text mr-1" @click="confirmation.show = false">
+                            <v-icon class="mr-1">mdi-close-circle</v-icon>
+                            Close
+                        </v-btn>
+                        <v-btn rounded color="green white--text ml-1" @click="confirmationOk(confirmation.okText)">
+                            <v-icon class="mr-1">mdi-check-circle</v-icon>
+                            {{ confirmation.okText }}
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                    </v-row>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
         <!-- END: DIALOG MODAL -->
         <!-- Main Table -->
         <v-data-table
@@ -908,7 +1219,7 @@
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailFarmerTraining(item.training_no)" color="info">
+                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailLahanUmum(item.mou_no)" color="info">
                                     <v-icon class="mr-1">
                                     mdi-information-outline
                                     </v-icon>
@@ -916,6 +1227,17 @@
                                 </v-btn>
                                 </template>
                                 <span>Detail</span>
+                            </v-tooltip>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn v-bind="attrs" v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER') ||  item.is_verified != 1)">
+                                        <v-icon class="mr-1">mdi-undo-variant</v-icon>
+                                        Unverif
+                                    </v-btn>
+                                </template>
+                                <span>Unverif Lahan Umum</span>
                             </v-tooltip>
                         </v-list-item>
                     </v-list>
@@ -963,11 +1285,30 @@ export default {
                 href: "breadcrumbs_link_1",
             },
         ],
+        confirmation: {
+            model: null,
+            okText: '',
+            show: false,
+            title: 'Confirmation',
+            type: null
+        },
         dialogs: {
             createData: {
                 show: false,
                 title: 'Create Lahan Umum',
                 step: 1,
+                snackbar: {
+                    color: '',
+                    show: false,
+                    text: '',
+                    timeout: 10000,
+                },
+            },
+            detail: {
+                data: null,
+                expansionShow: [0,1,2,3],
+                show: false,
+                title: 'Detail Lahan Umum',
                 snackbar: {
                     color: '',
                     show: false,
@@ -1181,7 +1522,7 @@ export default {
                     {text: 'PIC Lahan', value: 'pic_lahan'},
                     {text: 'Luas Lahan', value: 'luas_lahan'},
                     {text: 'Pola Tanam', value: 'pattern_planting'},
-                    {text: 'Status', value: 'is_verified'},
+                    {text: 'Status', value: 'is_verified', align: 'center'},
                     {text: 'Action', value: 'action', align: 'right'},
                 ],
                 items: [],
@@ -1234,21 +1575,6 @@ export default {
         await this.getGeneralLandData()
     },
     methods: {
-        async dialogActions(dialog, show) {
-            if (dialog == 'createData' && show == true) {
-                this.$store.state.loadingOverlay = true
-                await this.getOptionsData({type: 'mu'})
-                await this.getOptionsData({type: 'province'})
-                await this.getOptionsData({type: 'employee'})
-                await this.getOptionsData({type: 'seeds'})
-                this.$store.state.loadingOverlay = false
-
-                this.inputs.employee.model = this.User.employee_no
-            } 
-
-            this.dialogs[dialog].show = show
-            // await this.setDummyData()
-        },
         async getGeneralLandData() {
             this.tables.lahan.loading = true
 
@@ -1452,6 +1778,61 @@ export default {
 
             await this.inputs.seeds.table.items.splice(index, 1)
         },
+        async showDetailLahanUmum(mou_no) {
+            this.$store.state.loadingOverlayText = 'Getting Detail Lahan Umum...'
+            this.$store.state.loadingOverlay = true
+            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmum?mou_no=${mou_no}`
+            await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                const data = res.data.data.result
+                console.log(data)
+                this.dialogs.detail.data = data
+                this.dialogActions('detail', true)
+            }).catch(err => {
+                console.error(err)
+                this.forceLogout(err.response)
+            }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
+        },
+        async updateVerifiedStatus(mou_no, status) {
+            this.dialogs.detail.show = false
+            let url = ''
+            if (status == 1) {
+                this.$store.state.loadingOverlayText = 'Verifying lahan umum...'
+                url = `${this.apiConfig.baseUrl}VerificationLahanUmum`
+            } else {
+                this.$store.state.loadingOverlayText = 'Unverifying lahan umum...'
+                url = `${this.apiConfig.baseUrl}UnverificationLahanUmum`
+            }
+            this.$store.state.loadingOverlay = true
+            await axios.post(url, {
+                mou_no: mou_no,
+                verified_by: this.User.email
+            }, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.text = `Lahan umum ${status ? '' : 'un'}verified.`
+                this.snackbar.color = 'green'
+                this.getGeneralLandData()
+            }).catch(err => {
+                this.dialogs.detail.show = true
+                this.snackbar.text = `Failed to ${status ? '' : 'un'}verif lahan umum!😱`
+                this.snackbar.color = 'red'
+                console.error(err)
+                this.forceLogout(err.response)
+            }).finally(() => {
+                this.snackbar.show = true
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
+        },
         // Utilities
         async checkMoUNoExisting(data) {
             const url = `${this.apiConfig.baseUrl}AddMandatoryLahanUmum`
@@ -1486,8 +1867,49 @@ export default {
         closeActions(type, name) {
             this[type][name].show = false
         },
+        async confirmationOk(okText) {
+            this.confirmation.show = false
+            if (okText == 'Verif') {
+                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 1)
+            } if (okText == 'Unverif') {
+                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 0)
+            }
+        },
+        confirmationShow(type, data) {
+            this.confirmation.type = null
+            if (type == 'verif') {
+                this.confirmation.title = `Do u want to VERIF this data? This can't be undone!`
+                this.confirmation.okText = 'Verif'
+                this.confirmation.show = true
+                this.confirmation.model = {
+                    mou_no: data.mou_no
+                }
+            } else if (type == 'unverif') {
+                this.confirmation.title = `Do u want to UNVERIF this data? This can't be undone!`
+                this.confirmation.okText = 'Unverif'
+                this.confirmation.show = true
+                this.confirmation.model = {
+                    mou_no: data.mou_no
+                }
+            }
+        },
         dateFormat(date, format) {
             return moment(date).format(format)
+        },
+        async dialogActions(dialog, show) {
+            if (dialog == 'createData' && show == true) {
+                this.$store.state.loadingOverlay = true
+                await this.getOptionsData({type: 'mu'})
+                await this.getOptionsData({type: 'province'})
+                await this.getOptionsData({type: 'employee'})
+                await this.getOptionsData({type: 'seeds'})
+                this.$store.state.loadingOverlay = false
+
+                this.inputs.employee.model = this.User.employee_no
+            }
+
+            this.dialogs[dialog].show = show
+            // await this.setDummyData()
         },
         forceLogout(response) {
             if (response.status == 401) {
@@ -1515,8 +1937,8 @@ export default {
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
         },
-        openGoogleMap() {
-            window.open(`http://maps.google.co.id/maps?q=${this.inputs.latitude.model},${this.inputs.longitude.model}`)
+        openGoogleMap(lat, long) {
+            window.open(`http://maps.google.co.id/maps?q=${lat},${long}`)
         },
         photo1FileChanged (event) {
             if (event) {
@@ -1674,3 +2096,9 @@ export default {
     }
 }
 </script>
+
+<style lang="css">
+    .custom-simple-table tr td:first-child {
+        max-width: 100px!important;
+    }
+</style>
