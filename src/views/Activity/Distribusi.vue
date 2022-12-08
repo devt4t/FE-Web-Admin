@@ -495,6 +495,64 @@
                     </v-card-text>
                 </v-card>
             </v-dialog>
+            <!-- Distribution Report Detail -->
+            <v-dialog 
+                content-class="rounded-xl elevation-0" 
+                top
+                max-width="1000px" 
+                scrollable 
+                transition="dialog-top-transition"
+                v-model="distributionReport.dialogs.detail.show" 
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-text-box-check
+                            </v-icon>
+                            Distribution Report
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="distributionReport.dialogs.detail.show = false">
+                            mdi-close-circle
+                        </v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- loading -->
+                        <div v-if="distributionReport.dialogs.detail.loading" class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="green"
+                                size="72"
+                                width="7"
+                                class="mt-10"
+                            ></v-progress-circular>
+                            <p class="mt-2">{{ distributionReport.dialogs.detail.loadingText }}</p>
+                        </div>
+                        <div v-if="distributionReport.dialogs.detail.data">
+                            <v-simple-table>
+                                <tbody>
+                                    <tr>
+                                        <td>Field Facilitator</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.ff_name }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Farmer</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.farmer_name }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Distribution Date</td>
+                                        <td>:</td>
+                                        <td><strong>{{ dateFormat(distributionReport.dialogs.detail.data.distribution_date, 'dddd, DD MMMM Y') }}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </v-simple-table>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
         <!-- END: MODAL -->
         
         
@@ -1266,7 +1324,7 @@
                                             <v-btn
                                                 dark
                                                 readonly
-                                                @click="getDistributionReportTble()"
+                                                @click="getDistributionReportTable()"
                                                 color="info"
                                                 rounded
                                                 small
@@ -1295,7 +1353,7 @@
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded>
+                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded @click="getDistributionReportDetail(item.distribution_no)">
                                             <v-icon class="mr-1">mdi-information</v-icon>
                                             Detail
                                         </v-btn>
@@ -1401,6 +1459,14 @@ export default {
                 model: moment().format('Y-MM-DD'),
                 modelShow: moment().format('DD MMMM Y'),
                 show: false,
+            },
+            dialogs: {
+                detail: {
+                    data: null,
+                    loading: false,
+                    loadingText: null,
+                    show: false,
+                }
             },
             loading: false,
             loadingText: '',
@@ -1553,7 +1619,7 @@ export default {
         'distributionReport.datePicker.model': {
             async handler(newVal) {
                 this.distributionReport.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
-                await this.getDistributionReportTble()
+                await this.getDistributionReportTable()
             }
         },
         'expansions.model': {
@@ -2103,7 +2169,7 @@ export default {
             })
         },
         // DISTRIBUTION REPORT
-        async getDistributionReportTble() {
+        async getDistributionReportTable() {
             if (this.accessModul.distributionReport == true) {
                 this.distributionReport.table.loading = true
                 let url = 'GetDistributionReport?'
@@ -2128,6 +2194,27 @@ export default {
                     this.distributionReport.table.loading = false
                 })
             }
+        },
+        async getDistributionReportDetail(distribution_no) {
+            let url = `${this.apiConfig.baseUrl}GetDetailDistributionReport?distribution_no=${distribution_no}`
+            this.$store.state.loadingOverlayText = 'Getting distribution report detail...'
+            this.$store.state.loadingOverlay = true
+
+            await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.distributionReport.dialogs.detail.data = res.data.data.result
+                console.log(this.distributionReport.dialogs.detail.data)
+                this.distributionReport.dialogs.detail.show = true
+            }).catch(err => {
+                console.error(err)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
         },
         // UTILITIES
         calendarGetNurseryColor(n, total, date) {
@@ -2219,7 +2306,7 @@ export default {
             this.loadingLine.loading = false
             this.loadingLine.loadingText = null
             this.distributionReport.loadingText = 'Getting distribution report data...'
-            await this.getDistributionReportTble() 
+            await this.getDistributionReportTable() 
             this.distributionReport.loading = false
             this.distributionReport.loadingText = null
         },

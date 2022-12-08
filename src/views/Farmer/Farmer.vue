@@ -1242,8 +1242,8 @@ export default {
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
+      this.valueFFcode = this.User.ff.ff;      
+      this.typegetdata = this.User.ff.value_data == '-' ? 'all' : this.User.ff.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       // this.fc_no_global = this.User.fc.fc;
