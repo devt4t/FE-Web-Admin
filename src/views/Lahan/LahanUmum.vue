@@ -1980,8 +1980,14 @@ export default {
         },
         photo1FileChanged (event) {
             if (event) {
-                this.inputs.photos.photo1.model = event
-                this.inputs.photos.photo1.preview = URL.createObjectURL(event)
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.inputs.photos.photo1.model = event
+                    this.inputs.photos.photo1.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
             } else {
                 this.inputs.photos.photo1.model = null
                 this.inputs.photos.photo1.preview = ""
@@ -1989,8 +1995,14 @@ export default {
         },
         photo2FileChanged (event) {
             if (event) {
-                this.inputs.photos.photo2.model = event
-                this.inputs.photos.photo2.preview = URL.createObjectURL(event)
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.inputs.photos.photo2.model = event
+                    this.inputs.photos.photo2.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
             } else {
                 this.inputs.photos.photo2.model = null
                 this.inputs.photos.photo2.preview = ""
@@ -1998,8 +2010,14 @@ export default {
         },
         photo3FileChanged (event) {
             if (event) {
-                this.inputs.photos.photo3.model = event
-                this.inputs.photos.photo3.preview = URL.createObjectURL(event)
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.inputs.photos.photo3.model = event
+                    this.inputs.photos.photo3.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
             } else {
                 this.inputs.photos.photo3.model = null
                 this.inputs.photos.photo3.preview = ""
