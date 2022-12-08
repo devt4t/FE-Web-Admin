@@ -1065,7 +1065,7 @@
                                         ></v-card>
                                     </v-col>
                                     <v-col cols="12" lg="6">
-                                        <h4 class="text-center">Lands</h4>
+                                        <h4 class="text-center mb-2">Lands</h4>
                                         <v-carousel 
                                             cycle
                                             height="300" 
