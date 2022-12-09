@@ -497,15 +497,15 @@
             </v-dialog>
             <!-- Distribution Report Detail -->
             <v-dialog 
-                content-class="rounded-xl elevation-0" 
+                content-class="rounded-xl elevation-0 mx-1" 
                 top
+                persistent
                 max-width="1000px" 
                 scrollable 
-                transition="dialog-top-transition"
                 v-model="distributionReport.dialogs.detail.show" 
             >
                 <v-card class="elevation-5 rounded-xl">
-                    <v-card-title class="mb-1 green headermodalstyle rounded-xl d-flex align-center">
+                    <v-card-title class="mb-1 headermodalstyle rounded-xl d-flex align-center">
                         <span class="d-flex align-center">
                             <v-icon color="white" class="mr-1">
                                 mdi-text-box-check
@@ -529,9 +529,16 @@
                             ></v-progress-circular>
                             <p class="mt-2">{{ distributionReport.dialogs.detail.loadingText }}</p>
                         </div>
+                        <!-- DETAIL CONTENT -->
                         <div v-if="distributionReport.dialogs.detail.data">
+                            <!-- General Data -->
                             <v-simple-table>
                                 <tbody>
+                                    <tr>
+                                        <td>Distribution No</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.distribution_no }}</strong></td>
+                                    </tr>
                                     <tr>
                                         <td>Field Facilitator</td>
                                         <td>:</td>
@@ -549,8 +556,285 @@
                                     </tr>
                                 </tbody>
                             </v-simple-table>
+                            <!-- Total Activities Bags -->
+                            <v-row>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-printer</v-icon> Printed Labels <v-divider class="ml-2"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card class="rounded-xl" max-width="150px" color="info" v-bind="attrs" v-on="on">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detail.labels.printed.length }}</h1>Labels
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-printer</v-icon> Printed Labels <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
+                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detail.labels.printed"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-truck-check</v-icon> Loaded Bags <v-divider class="ml-2"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="warning">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detail.labels.loaded.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-truck-check</v-icon> Loaded Bags <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
+                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
+                                                        {text: 'PIC Load', value: 'loaded_by', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detail.labels.loaded"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2 d-none d-md-inline-block"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="green">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detail.labels.distributed.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
+                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
+                                                        {text: 'PIC Distribute', value: 'distributed_by', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detail.labels.distributed"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-basket-remove</v-icon> Lost Bags
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="red">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detail.labels.lost.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-basket-remove</v-icon> Lost Bags <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
+                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
+                                                        {text: 'PIC Load', value: 'loaded_by', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detail.labels.lost"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                            </v-row>
+                            <!-- Seedling Adjustment -->
+                            <v-row class="ma-0 mt-4">
+                                <v-col cols="12" class="d-flex align-center">
+                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Adjusting Distributed Seedling</h3><v-divider class="mx-2"></v-divider>
+                                </v-col>
+                                <v-col cols="12" md="12" v-for="(adjustmentData, adjIndex) in distributionReport.dialogs.detail.adjustment" :key="adjustmentData.lahan_no">
+                                    <v-row class="align-center ma-0">
+                                        Lahan {{ adjIndex + 1 }} : <strong class="ml-1">{{ adjustmentData.lahan_no }}</strong> <v-divider class="ml-2"></v-divider>
+                                    </v-row>
+                                    <v-data-table
+                                        :headers="[
+                                            {text: 'No', value: 'no', align: 'center'},
+                                            {text: 'Category', value: 'tree_category', align: 'center'},
+                                            {text: 'Name', value: 'tree_name'},
+                                            {text: 'Amount', value: 'adjust', align: 'center', sortable: false},
+                                        ]"
+                                        :items="distributionReport.dialogs.detail.adjustment[adjIndex].items"
+                                        :items-per-page="-1"
+                                        hide-default-footer
+                                        class="rounded-xl elevation-5 overflow-hidden mt-2"
+                                    >
+                                        <template v-slot:item.no="{index}">
+                                            {{ index + 1 }}
+                                        </template>
+                                        <template v-slot:item.adjust="{index}">
+                                            <v-row class="ma-0 align-center justify-end justify-lg-center">
+                                                <v-text-field 
+                                                    color="green"
+                                                    class="mr-1"
+                                                    dense
+                                                    disabled
+                                                    hide-details
+                                                    outlined
+                                                    rounded
+                                                    style="max-width: 120px;"
+                                                    type="number"
+                                                    min="0"
+                                                    label="All"
+                                                    v-model="distributionReport.dialogs.detail.adjustment[adjIndex].items[index].total_distributed"
+                                                ></v-text-field>
+                                                <v-text-field 
+                                                    color="green"
+                                                    class="mr-1"
+                                                    dense
+                                                    :disabled="distributionReport.dialogs.detail.disabledSave"
+                                                    hide-details
+                                                    outlined
+                                                    rounded
+                                                    style="max-width: 120px;"
+                                                    type="number"
+                                                    min="0"
+                                                    label="Broken"
+                                                    v-model="distributionReport.dialogs.detail.adjustment[adjIndex].items[index].broken_seeds"
+                                                    @change="treeAdjustmentChange(adjIndex, index)"
+                                                ></v-text-field>
+                                                <v-text-field 
+                                                    color="green"
+                                                    class="mr-1"
+                                                    dense
+                                                    :disabled="distributionReport.dialogs.detail.disabledSave"
+                                                    hide-details
+                                                    outlined
+                                                    rounded
+                                                    style="max-width: 120px;"
+                                                    type="number"
+                                                    min="0"
+                                                    label="Missing"
+                                                    v-model="distributionReport.dialogs.detail.adjustment[adjIndex].items[index].missing_seeds"
+                                                    @change="treeAdjustmentChange(adjIndex, index)"
+                                                ></v-text-field>
+                                                <v-text-field 
+                                                    disabled
+                                                    color="green"
+                                                    dense
+                                                    hide-details
+                                                    outlined
+                                                    rounded
+                                                    style="max-width: 120px;"
+                                                    type="number"
+                                                    min="0"
+                                                    label="Received"
+                                                    v-model="distributionReport.dialogs.detail.adjustment[adjIndex].items[index].total_tree_received"
+                                                ></v-text-field>
+                                            </v-row>
+                                        </template>
+                                    </v-data-table>
+                                </v-col>
+                            </v-row>
                         </div>
                     </v-card-text>
+                    <v-card-actions class="" v-if="distributionReport.dialogs.detail.data">
+                        <v-btn color="red white--text" rounded @click="distributionReport.dialogs.detail.show = false">
+                            <v-icon color="white">
+                                mdi-close-circle
+                            </v-icon>
+                            Close
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
+                        <v-btn v-else rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
+                    </v-card-actions>
                 </v-card>
             </v-dialog>
         <!-- END: MODAL -->
@@ -1462,7 +1746,15 @@ export default {
             },
             dialogs: {
                 detail: {
+                    adjustment: [],
                     data: null,
+                    disabledSave: true,
+                    labels: {
+                        printed: [],
+                        loaded: [],
+                        distributed: [],
+                        lost: []
+                    },
                     loading: false,
                     loadingText: null,
                     show: false,
@@ -1841,7 +2133,7 @@ export default {
             nativeEvent.stopPropagation()
         },
         async calendarUpdateRange ({ start, end }) {
-            // this.generalSettings.nursery.model = 'Pati'
+            // this.generalSettings.nursery.model = 'Kebumen'
             await this.getUserException()
             if (this.accessModul.calendar) {
                 this.calendar.loading = true
@@ -2205,13 +2497,114 @@ export default {
                     Authorization: `Bearer ${this.apiConfig.token}`
                 }
             }).then(res => {
-                this.distributionReport.dialogs.detail.data = res.data.data.result
-                console.log(this.distributionReport.dialogs.detail.data)
+                const datas = res.data.data.result
+                // console.log(datas)
+                // reset data ???????????????????????????? its weird T_T
+                this.distributionReport.dialogs.detail = {
+                    adjustment: [],
+                    data: datas,
+                    disabledSave: true,
+                    labels: {
+                        printed: [],
+                        loaded: [],
+                        distributed: [],
+                        lost: []
+                    },
+                    loading: false,
+                    loadingText: null,
+                    show: false
+                }
+                // get list lahan with label
+                let labelLahan = []
+                datas.distributionDetail.forEach((label, labelIndex) => {
+                    // push labelLahan
+                    const labelSplit = label.bag_number.split('-')
+                    let checkExistLahanNo = labelLahan.find(lblLhn => lblLhn.lahan_no === labelSplit[1])
+                    const dataLabel = {
+                        lahan_no: labelSplit[1],
+                        bag_numbers: [
+                            {
+                                bag_number: label.bag_number,
+                                tree_category: label.tree_category,
+                                tree_name: label.tree_name,
+                                tree_amount: label.tree_amount,
+                                is_distributed: label.is_distributed,
+                            }
+                        ]
+                    }
+                    if (!checkExistLahanNo) {  // create new lahan
+                        labelLahan.push(dataLabel)
+                    } else { // update exist lahan
+                        labelLahan[(labelLahan.length - 1)].bag_numbers.push(dataLabel.bag_numbers[0])
+                    }
+
+                    // push printed Label
+                    this.getPrintedLabelsPerActivities(label, 'printed')
+                    this.getPrintedLabelsPerActivities(label, 'loaded')
+                    this.getPrintedLabelsPerActivities(label, 'distributed')
+                    this.getPrintedLabelsPerActivities(label, 'lost')
+                })
+                // set to tree adjustment data
+                this.getTreeAdjustmentData(labelLahan)
+                // get total received
+                const total_received = this.getTotalReceived()
+                if (total_received > 0) this.distributionReport.dialogs.detail.disabledSave = false
+                else this.distributionReport.dialogs.detail.disabledSave = true
+
+                if (datas.status == 1) this.distributionReport.dialogs.detail.disabledSave = true
+
                 this.distributionReport.dialogs.detail.show = true
             }).catch(err => {
                 console.error(err)
                 this.sessionEnd(err)
             }).finally(() => {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
+        },
+        async saveAdjustmentAndVerification() {
+            const url = `${this.apiConfig.baseUrl}CreateAdjustment`
+
+            const distributionData = this.distributionReport.dialogs.detail.data
+            const distributionNoSplit = distributionData.distribution_no.split('-')
+
+            let listSeedling = []
+            this.distributionReport.dialogs.detail.adjustment.forEach(lahan => {
+                lahan.items.forEach(item => {
+                    listSeedling.push({
+                        lahan_no: lahan.lahan_no,
+                        ...item
+                    })
+                })
+            })
+            let postData = {
+                program_year: distributionNoSplit[1],
+                distribution_no: distributionData.distribution_no,
+                approved_by: this.User.email,
+                ff_no: distributionData.ff_no,
+                farmer_no: distributionData.farmer_no,
+                list_trees: listSeedling,
+                adjust_date: moment().format('Y-MM-DD')
+            }
+            console.log(postData)
+            this.distributionReport.dialogs.detail.show = false
+            this.$store.state.loadingOverlayText = 'Saving & creating adjustment data...'
+            this.$store.state.loadingOverlay = true
+
+            await axios.post(url, postData, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.text = 'Success!'
+                this.snackbar.color = 'green'
+            }).catch(err => {
+                this.snackbar.text = 'Failed!'
+                this.snackbar.color = 'red'
+                this.sessionEnd(err)
+                this.distributionReport.dialogs.detail.show = true
+            }).finally(() => {
+                this.snackbar.show = true
                 this.$store.state.loadingOverlay = false
                 this.$store.state.loadingOverlayText = null
             })
@@ -2247,6 +2640,8 @@ export default {
             this.confirmation.show = false
             if (okText == 'Check Label') {
                 await this.updateCheckedPlantingHoles(this.confirmation.model.ph_form_no, this.confirmation.model.status)
+            } else if (okText == 'Save & Verif') {
+                await this.saveAdjustmentAndVerification()
             }
         },
         confirmationShow(type, data) {
@@ -2269,6 +2664,10 @@ export default {
                 this.confirmation.type = 'Alert'
                 this.confirmation.title = `Please check ur data "Lubang Tanam" in ${data.lahan_no}! Total SEEDLING > HOLES`
                 this.confirmation.okText = 'Ok Syap'
+                this.confirmation.show = true
+            } else if (type == 'Save & Verif') {
+                    this.confirmation.title = `Do u want to SAVE & VERIFICATION this label? This can't be undone!`
+                this.confirmation.okText = 'Save & Verif'
                 this.confirmation.show = true
             }
         },
@@ -2338,6 +2737,106 @@ export default {
             }
             
             return nursery;
+        },
+        getPrintedLabelsPerActivities(label, type) {
+            try {
+                // printed label
+                const dataLabelPush = {
+                    bag_number: label.bag_number,
+                    tree_category: label.tree_category,
+                    tree_list: [
+                        {
+                            tree_name: label.tree_name,
+                            tree_amount: label.tree_amount
+                        }
+                    ],
+                    is_loaded: label.is_loaded,
+                    loaded_by: label.loaded_by,
+                    is_distributed: label.is_distributed,
+                    distributed_by: label.distributed_by
+                }
+                if (type == 'printed') {
+                    // push to printed label data
+                    const existPrintedLabel = this.distributionReport.dialogs.detail.labels.printed.find(lbl => lbl.bag_number == label.bag_number)
+                    if (!existPrintedLabel) this.distributionReport.dialogs.detail.labels.printed.push(dataLabelPush)
+                    else {
+                        this.distributionReport.dialogs.detail.labels.printed[this.distributionReport.dialogs.detail.labels.printed.length - 1].tree_list.push(dataLabelPush.tree_list[0])
+                    }
+                } else if (type == 'loaded') {
+                    // push to loaded bags
+                    if (dataLabelPush.is_loaded == 1) {
+                        const existLoadedLabel = this.distributionReport.dialogs.detail.labels.loaded.find(lbl => lbl.bag_number == label.bag_number)
+                        if (!existLoadedLabel) this.distributionReport.dialogs.detail.labels.loaded.push(dataLabelPush)
+                        else {
+                            this.distributionReport.dialogs.detail.labels.loaded[this.distributionReport.dialogs.detail.labels.loaded.length - 1].tree_list.push(dataLabelPush.tree_list[0])
+                        }
+                    }
+                } else if (type == 'distributed') {
+                    // push to distributed bags
+                    if (dataLabelPush.is_distributed == 1) {
+                        const existDistributedLabel = this.distributionReport.dialogs.detail.labels.distributed.find(lbl => lbl.bag_number == label.bag_number)
+                        if (!existDistributedLabel) this.distributionReport.dialogs.detail.labels.distributed.push(dataLabelPush)
+                        else {
+                            this.distributionReport.dialogs.detail.labels.distributed[this.distributionReport.dialogs.detail.labels.distributed.length - 1].tree_list.push(dataLabelPush.tree_list[0])
+                        }
+                    }
+                } else if (type == 'lost') {
+                    // push to lost bags
+                    if (dataLabelPush.is_loaded == 1 && dataLabelPush.is_distributed == 0) {
+                        const existLostLabel = this.distributionReport.dialogs.detail.labels.lost.find(lbl => lbl.bag_number == label.bag_number)
+                        if (!existLostLabel) this.distributionReport.dialogs.detail.labels.lost.push(dataLabelPush)
+                        else {
+                            this.distributionReport.dialogs.detail.labels.lost[this.distributionReport.dialogs.detail.labels.lost.length - 1].tree_list.push(dataLabelPush.tree_list[0])
+                        }
+                    }
+                }
+
+
+
+
+            } catch (error) {
+                console.error(error)
+            }
+        },
+        getTotalReceived() {
+            let received = 0
+            this.distributionReport.dialogs.detail.adjustment.forEach(adj => {
+                adj.items.forEach(item => {
+                    received += parseInt(item.total_tree_received) 
+                })
+            })
+            // console.log(received)
+            return received
+        },
+        getTreeAdjustmentData(data) {
+            // this.distributionReport.dialogs.detail.adjustment 
+            // console.log(data)
+            data.forEach((lahan, lahanIndex) => {
+                this.distributionReport.dialogs.detail.adjustment[lahanIndex] = {
+                    lahan_no: lahan.lahan_no,
+                    items: []
+                }
+                lahan.bag_numbers.forEach((bag, bagIndex) => {
+                    if (bag.is_distributed == 1) {
+                        const pushData = {
+                            tree_category: bag.tree_category,
+                            tree_name: bag.tree_name,
+                            total_distributed: parseInt(bag.tree_amount),
+                            broken_seeds: 0,
+                            missing_seeds: 0,
+                            total_tree_received: parseInt(bag.tree_amount)
+                        }
+                        const existingTreeIndex = this.distributionReport.dialogs.detail.adjustment[lahanIndex].items.findIndex(existAdjTree => existAdjTree.tree_name == bag.tree_name)
+                        if (existingTreeIndex > -1) {
+                            this.distributionReport.dialogs.detail.adjustment[lahanIndex].items[existingTreeIndex].total_distributed += parseInt(bag.tree_amount)
+                            this.distributionReport.dialogs.detail.adjustment[lahanIndex].items[existingTreeIndex].total_tree_received += parseInt(bag.tree_amount)
+                        } else {
+                            this.distributionReport.dialogs.detail.adjustment[lahanIndex].items.push(pushData)
+                        }
+                    }
+                })
+            })
+            // console.log(this.distributionReport.dialogs.detail.adjustment)
         },
         async getUserException() {
             if (this.User.role_name == 'UNIT MANAGER' || this.User.role_name == 'FIELD COORDINATOR') {
@@ -2447,6 +2946,31 @@ export default {
                 }
             }
         },
+        treeAdjustmentChange(adjIndex, treeIndex) {
+            const distributed = parseInt(this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].total_distributed)
+            let broken = parseInt(this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].broken_seeds)
+            if (!broken) {
+                this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].broken_seeds = 0
+                broken = 0
+            }
+            let missing = parseInt(this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].missing_seeds)
+            if (!missing) {
+                this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].missing_seeds = 0
+                missing = 0
+            }
+            if ((broken + missing) > distributed) {
+                alert(`Total broken + missing ">" from total distributed!`)
+                this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].broken_seeds = 0
+                this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].missing_seeds = 0
+                broken = 0
+                missing = 0
+            }
+            this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].total_tree_received = distributed - broken - missing
+
+            const total_received = this.getTotalReceived()
+            if (total_received > 0) this.distributionReport.dialogs.detail.disabledSave = false
+            else this.distributionReport.dialogs.detail.disabledSave = true
+        }
     }
 }
 </script>
