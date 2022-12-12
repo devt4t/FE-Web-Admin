@@ -764,7 +764,7 @@
                                                     color="green"
                                                     class="mr-1"
                                                     dense
-                                                    disabled
+                                                    readonly
                                                     hide-details
                                                     outlined
                                                     rounded
@@ -778,7 +778,7 @@
                                                     color="green"
                                                     class="mr-1"
                                                     dense
-                                                    :disabled="distributionReport.dialogs.detail.disabledSave"
+                                                    :readonly="distributionReport.dialogs.detail.disabledSave"
                                                     hide-details
                                                     outlined
                                                     rounded
@@ -793,7 +793,7 @@
                                                     color="green"
                                                     class="mr-1"
                                                     dense
-                                                    :disabled="distributionReport.dialogs.detail.disabledSave"
+                                                    :readonly="distributionReport.dialogs.detail.disabledSave"
                                                     hide-details
                                                     outlined
                                                     rounded
@@ -805,7 +805,7 @@
                                                     @change="treeAdjustmentChange(adjIndex, index)"
                                                 ></v-text-field>
                                                 <v-text-field 
-                                                    disabled
+                                                    readonly
                                                     color="green"
                                                     dense
                                                     hide-details
@@ -833,7 +833,7 @@
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
                         <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
-                        <v-btn v-else rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
+                        <v-btn v-else rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -2499,6 +2499,7 @@ export default {
             }).then(res => {
                 const datas = res.data.data.result
                 // console.log(datas)
+                
                 // reset data ???????????????????????????? its weird T_T
                 this.distributionReport.dialogs.detail = {
                     adjustment: [],
@@ -2514,6 +2515,7 @@ export default {
                     loadingText: null,
                     show: false
                 }
+                
                 // get list lahan with label
                 let labelLahan = []
                 datas.distributionDetail.forEach((label, labelIndex) => {
@@ -2545,13 +2547,32 @@ export default {
                     this.getPrintedLabelsPerActivities(label, 'lost')
                 })
                 // set to tree adjustment data
-                this.getTreeAdjustmentData(labelLahan)
+                if (datas.distributionAdjustment.length < 1) {
+                    this.getTreeAdjustmentData(labelLahan)
+                } else {
+                    datas.distributionAdjustment.forEach((adj, adjIndex) => {
+                        let checkExistLahanNo = this.distributionReport.dialogs.detail.adjustment.find(lblLhn => lblLhn.lahan_no === adj.lahan_no)
+                        const pushData = {
+                            lahan_no: adj.lahan_no,
+                            items: [{
+                                tree_category: adj.tree_category,
+                                tree_name: adj.tree_name,
+                                total_distributed: parseInt(adj.total_distributed),
+                                broken_seeds: parseInt(adj.broken_seeds),
+                                missing_seeds: parseInt(adj.missing_seeds),
+                                total_tree_received: parseInt(adj.total_tree_received)
+                            }]
+                        }
+                        if (checkExistLahanNo > -1) this.distributionReport.dialogs.detail.adjustment[checkExistLahanNo].items.push(pushData.items[0])
+                        else this.distributionReport.dialogs.detail.adjustment.push(pushData)
+                    })
+                }
                 // get total received
                 const total_received = this.getTotalReceived()
                 if (total_received > 0) this.distributionReport.dialogs.detail.disabledSave = false
                 else this.distributionReport.dialogs.detail.disabledSave = true
 
-                if (datas.status == 1) this.distributionReport.dialogs.detail.disabledSave = true
+                if (datas.status > 0) this.distributionReport.dialogs.detail.disabledSave = true
 
                 this.distributionReport.dialogs.detail.show = true
             }).catch(err => {
@@ -2598,11 +2619,44 @@ export default {
             }).then(res => {
                 this.snackbar.text = 'Success!'
                 this.snackbar.color = 'green'
+                this.getDistributionReportTable()
             }).catch(err => {
                 this.snackbar.text = 'Failed!'
                 this.snackbar.color = 'red'
                 this.sessionEnd(err)
                 this.distributionReport.dialogs.detail.show = true
+            }).finally(() => {
+                this.snackbar.show = true
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
+        },
+        async verificationDistributionByUM() {
+            const url = `${this.apiConfig.baseUrl}DistributionVerificationUM`
+            const distributionData = this.distributionReport.dialogs.detail.data
+            const postData = {
+                distribution_no: distributionData.distribution_no,
+                approved_by: this.User.email
+            }
+            
+            this.distributionReport.dialogs.detail.show = false
+            this.$store.state.loadingOverlayText = `Verifying distribution report...`
+            this.$store.state.loadingOverlay = true
+
+            await axios.post(url, postData, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.text = `Verification success!`
+                this.snackbar.color = 'green'
+                this.getDistributionReportTable()
+            }).catch(err => {
+                console.error(err)
+                this.snackbar.text = `Verification failed!`
+                this.snackbar.color = 'red'
+                this.distributionReport.dialogs.detail.show = true
+                this.sessionEnd(err)
             }).finally(() => {
                 this.snackbar.show = true
                 this.$store.state.loadingOverlay = false
@@ -2642,6 +2696,8 @@ export default {
                 await this.updateCheckedPlantingHoles(this.confirmation.model.ph_form_no, this.confirmation.model.status)
             } else if (okText == 'Save & Verif') {
                 await this.saveAdjustmentAndVerification()
+            } else if (okText == 'Verification') {
+                await this.verificationDistributionByUM()
             }
         },
         confirmationShow(type, data) {
@@ -2666,8 +2722,12 @@ export default {
                 this.confirmation.okText = 'Ok Syap'
                 this.confirmation.show = true
             } else if (type == 'Save & Verif') {
-                    this.confirmation.title = `Do u want to SAVE & VERIFICATION this label? This can't be undone!`
+                this.confirmation.title = `Do u want to SAVE & VERIFICATION this distribution? This can't be undone!`
                 this.confirmation.okText = 'Save & Verif'
+                this.confirmation.show = true
+            } else if (type == 'Verified UM') {
+                this.confirmation.title = `Do u want to VERIFICATION this distribution? This can't be undone!`
+                this.confirmation.okText = 'Verification'
                 this.confirmation.show = true
             }
         },
