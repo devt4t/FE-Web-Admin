@@ -1521,7 +1521,7 @@
                 <!-- Distribution Report Section -->
                 <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
                     <v-expansion-panel-header>
-                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> <v-badge color="red white--text" content="DEV">Distribution Report</v-badge></h3>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> <v-badge color="info white--text" content="NEW">Distribution Report</v-badge></h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
@@ -2515,7 +2515,7 @@ export default {
                     loadingText: null,
                     show: false
                 }
-                
+
                 // get list lahan with label
                 let labelLahan = []
                 datas.distributionDetail.forEach((label, labelIndex) => {
