@@ -2551,7 +2551,7 @@ export default {
                     this.getTreeAdjustmentData(labelLahan)
                 } else {
                     datas.distributionAdjustment.forEach((adj, adjIndex) => {
-                        let checkExistLahanNo = this.distributionReport.dialogs.detail.adjustment.find(lblLhn => lblLhn.lahan_no === adj.lahan_no)
+                        let checkExistLahanNo = this.distributionReport.dialogs.detail.adjustment.findIndex(lblLhn => lblLhn.lahan_no === adj.lahan_no)
                         const pushData = {
                             lahan_no: adj.lahan_no,
                             items: [{
