@@ -1187,6 +1187,10 @@
                     </v-btn>
                 </v-row>
             </template>
+            <!-- Slot: MoU Column -->
+            <!-- <template v-slot:item.mou_no="{item}">
+                <p class="mb-0" style="max-width: 170px">{{ item.mou_no }}</p>
+            </template> -->
             <!-- Slot: luas_lahan Column -->
             <template v-slot:item.luas_lahan="{item}">
                 {{ numberFormat(item.luas_lahan) }} m<sup>2</sup>
@@ -1780,13 +1784,13 @@ export default {
                     postData.photo3 = `general-lands/${uploadPhoto3}`
                 }
             }
-            console.log(postData)
+            // console.log(postData)
             await axios.post(url, postData, {
                 headers: {
                     Authorization: `Bearer ` + this.apiConfig.token,
                 },
             }).then(res => {
-                console.log(res.data)
+                // console.log(res.data)
                 this.resetInputData()
                 this.getGeneralLandData()
                 this.snackbar.text = 'Success save data.'
@@ -2209,7 +2213,7 @@ export default {
         async uploadPhotos(type, file) {
             this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
             const url = `${this.apiConfig.imageUrl}general-lands/upload.php`
-            const newName = `${this.inputs.mou.model.replace(/\s/g, '')}_${type}`
+            const newName = `${this.inputs.mou.model.replace(/\s/g, '').replaceAll('/', '_')}_${type}`
             const data = this.generateFormData({
                 dir: type == 'mou' ? 'mou' : 'photos',
                 nama: newName,
