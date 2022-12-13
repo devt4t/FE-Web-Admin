@@ -117,7 +117,7 @@
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.employee.model"
-                                            :disabled="(User.role_group != 'IT' && dialogs.createData.update)"
+                                            :disabled="(User.role_group != 'IT' || (dialogs.createData.update && User.role_group != 'IT'))"
                                         ></v-autocomplete>
                                     </v-col>
                                 </v-row>
