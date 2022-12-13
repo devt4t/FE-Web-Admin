@@ -13,13 +13,1364 @@
       </v-alert>
     </div>
 
+    <!-- MODAL -->
+    
+      <!-- Modal Filter Area -->
+      <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center"
+            >Filter Pencarian Area</v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectMU"
+                    :items="itemsMU"
+                    item-value="mu_no"
+                    item-text="name"
+                    v-on:change="selectedMU"
+                    label="Management Unit"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectTA"
+                    :items="itemsTA"
+                    item-value="area_code"
+                    item-text="name"
+                    v-on:change="selectedTA"
+                    label="Target Area"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectVillage"
+                    :items="itemsVillage"
+                    item-value="kode_desa"
+                    item-text="name"
+                    v-on:change="selectedVillage"
+                    label="Desa"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+              <v-icon small class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="green white--text" rounded class="px-5" @click="searchbyarea">
+              <v-icon small class="mr-1">mdi-magnify</v-icon>
+              Cari
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Filter Emp -->
+      <v-dialog v-model="dialogFilterEmp" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center"
+            >Filter Pencarian By Emp</v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectUM"
+                    :items="itemsum"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedUM"
+                    label="Pilih Unit Manager"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectFC"
+                    :items="itemsfc"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedFC"
+                    label="Pilih Field Coordinator"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterEmp = false">
+              <v-icon small class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="green white--text" rounded class="px-5" @click="searchbyemp">
+              <v-icon small class="mr-1">mdi-magnify</v-icon>
+              Cari
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Add Edit -->
+      <v-dialog v-model="dialog" max-width="800px">
+        <v-card>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title class="mb-1 headermodalstyle">
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text class="pa-0 fontall">
+              <v-container
+                v-if="load == true"
+                fluid
+                fill-height
+                style="background-color: rgba(255, 255, 255, 0.5)"
+              >
+                <v-layout justify-center align-center>
+                  <v-progress-circular
+                    :size="80"
+                    :width="10"
+                    indeterminate
+                    color="primary"
+                  >
+                  </v-progress-circular>
+                </v-layout>
+              </v-container>
+              <v-stepper v-if="load == false" v-model="e1">
+                <v-stepper-header>
+                  <v-stepper-step editable :complete="e1 > 1" step="1">
+                    Main Data
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step editable :complete="e1 > 2" step="2">
+                    List Pohon
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step editable step="3"> Foto </v-stepper-step>
+                </v-stepper-header>
+
+                <v-stepper-items>
+                  <v-stepper-content class="pa-3" step="1">
+                    <v-container class="mb-2">
+                      <v-row>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                            v-model="defaultItem.user_id"
+                            :items="itemsff"
+                            item-text="name"
+                            item-value="ff_no"
+                            label="Pilih Field Facilitator"
+                            outlined
+                            clearable
+                            type="string"
+                            v-on:change="selectPetani"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field
+                            v-model="defaultItem.lahan_no"
+                            label="No Lahan"
+                            outlined
+                            type="string"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                            v-model="defaultItem.planting_year"
+                            :items="itemsTahun"
+                            item-text="text"
+                            item-value="value"
+                            label="Pilih Tahun Program"
+                            outlined
+                            clearable
+                            type="string"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field
+                            v-model="defaultItem.total_holes"
+                            label="Total Lubang"
+                            outlined
+                            type="number"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+
+                    <v-row class="ma-2">
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        class="mr-1"
+                        color="red"
+                        elevation="1"
+                        @click="close"
+                        outlined
+                      >
+                        <v-icon left> mdi-close-circle-outline </v-icon>
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        elevation="1"
+                        outlined
+                        color="primary"
+                        @click="e1 = 2"
+                      >
+                        <v-icon left>
+                          mdi-chevron-right-circle-outline
+                        </v-icon>
+                        Next
+                      </v-btn>
+                    </v-row>
+                  </v-stepper-content>
+
+                  <v-stepper-content class="pa-3" step="2">
+                    <v-container class="mb-2">
+                      <v-row class="mb-3">
+                        <h4>Pilih Pohon</h4>
+                        <v-divider class="mx-2 mt-3"></v-divider>
+                      </v-row>
+                      <v-row>
+                        <v-col class="px-1 py-0" cols="12" sm="12" md="12">
+                          <v-combobox
+                            :items="itemstrees"
+                            item-value="tree_code"
+                            item-text="tree_name"
+                            label="Pilih Pohon"
+                            v-on:change="changeBarangSelected"
+                            outlined
+                            clearable
+                          ></v-combobox>
+                        </v-col>
+                      </v-row>
+                      <v-row class="mb-3">
+                        <h4>List Pohon</h4>
+                        <v-divider class="mx-2 mt-3"></v-divider>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12" sm="12" md="12">
+                          <v-data-table
+                            :headers="headerListProduct"
+                            :items="defaultItem.list_detail"
+                            class="elevation-3"
+                            append-icon="mdi-magnify"
+                            :items-per-page="5"
+                            :loading="loadtabledetail"
+                            loading-text="Loading... Please wait"
+                          >
+                            <template v-slot:item.actions="{ item }">
+                              <v-icon
+                                class="mr-2"
+                                @click="deletelistitemproduct(item)"
+                                color="red"
+                              >
+                                mdi-delete
+                              </v-icon>
+                              <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
+                            </template>
+                          </v-data-table>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+
+                    <v-row class="ma-2">
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        class="mr-1"
+                        color="red"
+                        elevation="1"
+                        @click="close"
+                        outlined
+                      >
+                        <v-icon left> mdi-close-circle-outline </v-icon>
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        elevation="1"
+                        outlined
+                        color="primary"
+                        @click="e1 = 3"
+                      >
+                        <v-icon left>
+                          mdi-chevron-right-circle-outline
+                        </v-icon>
+                        Next
+                      </v-btn>
+                    </v-row>
+                  </v-stepper-content>
+
+                  <v-stepper-content class="pa-3" step="3">
+                    <v-container class="mb-2">
+                      <v-row>
+                        <v-col cols="12" sm="4" md="4" class="pa-1">
+                          <v-file-input
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Pilih Foto"
+                            prepend-icon="mdi-camera"
+                            show-size
+                            label="Gambar Signature"
+                            outlined
+                            v-model="gambarinput1"
+                            v-on:change="pilihgambar1"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col cols="12" sm="4" md="4" class="pa-1">
+                          <v-file-input
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Pilih Foto"
+                            prepend-icon="mdi-camera"
+                            show-size
+                            label="Pilih Gambar1"
+                            outlined
+                            v-model="gambarinput2"
+                            v-on:change="pilihgambar2"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col cols="12" sm="4" md="4" class="pa-1">
+                          <v-file-input
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Pilih Foto"
+                            prepend-icon="mdi-camera"
+                            show-size
+                            label="Pilih Gambar2"
+                            outlined
+                            v-model="gambarinput3"
+                            v-on:change="pilihgambar3"
+                          ></v-file-input>
+                        </v-col>
+                        <v-container>
+                          <v-row>
+                            <v-col cols="4" md="4">
+                              <!-- <div>Foto SPPT/ Dokument</div> -->
+                              <v-card
+                                class="d-flex align-center"
+                                elevation="2"
+                                height="250"
+                                width="250"
+                              >
+                                <v-img
+                                  v-bind:src="defaultItem.gambarshow1"
+                                  class="my-2 mb-4"
+                                  contain
+                                  max-height="225"
+                                ></v-img>
+                              </v-card>
+                            </v-col>
+                            <v-col cols="4" md="4">
+                              <!-- <div>Foto SPPT/ Dokument</div> -->
+                              <v-card
+                                class="d-flex align-center"
+                                elevation="2"
+                                height="250"
+                                width="250"
+                              >
+                                <v-img
+                                  v-bind:src="defaultItem.gambarshow2"
+                                  class="my-2 mb-4"
+                                  max-height="225"
+                                  contain
+                                ></v-img>
+                              </v-card>
+                            </v-col>
+                            <v-col cols="4" md="4">
+                              <!-- <div>Foto SPPT/ Dokument</div> -->
+                              <v-card
+                                class="d-flex align-center"
+                                elevation="2"
+                                height="250"
+                                width="250"
+                              >
+                                <v-img
+                                  v-bind:src="defaultItem.gambarshow3"
+                                  class="my-2 mb-4"
+                                  max-height="225"
+                                  contain
+                                ></v-img>
+                              </v-card>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                      </v-row>
+                    </v-container>
+                    <v-row class="ma-2">
+                      <v-spacer> </v-spacer>
+                      <v-btn
+                        class="mr-1"
+                        color="red"
+                        elevation="1"
+                        @click="close"
+                        outlined
+                      >
+                        <v-icon left> mdi-close-circle-outline </v-icon>
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="success"
+                        elevation="1"
+                        outlined
+                        @click="save"
+                      >
+                        <v-progress-circular
+                          v-if="loadsave == true"
+                          :size="25"
+                          :width="5"
+                          indeterminate
+                          color="green"
+                        >
+                        </v-progress-circular>
+                        <v-icon v-if="loadsave == false" left>
+                          mdi-checkbox-marked-circle-outline
+                        </v-icon>
+                        <h4 v-if="loadsave == false">Save</h4>
+                      </v-btn>
+                    </v-row>
+                  </v-stepper-content>
+                </v-stepper-items>
+              </v-stepper>
+            </v-card-text>
+
+            <!-- <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" outlined @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" outlined @click="save">
+                Save
+              </v-btn>
+            </v-card-actions> -->
+          </v-form>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogAddonly" max-width="800px">
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="headline">{{ formTitle }}</span>
+          </v-card-title>
+
+          <v-card-text class="pa-0 fontall">
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-stepper v-if="load == false" v-model="e1">
+              <v-stepper-header>
+                <v-stepper-step editable :complete="e1 > 1" step="1">
+                  Main Data
+                </v-stepper-step>
+                <v-divider></v-divider>
+                <v-divider></v-divider>
+                <v-stepper-step editable step="2"> Foto </v-stepper-step>
+              </v-stepper-header>
+
+              <v-stepper-items>
+                <v-stepper-content class="pa-3" step="1">
+                  <v-container class="mb-2">
+                    <v-row>
+                      <v-col cols="12" sm="12" md="12">
+                        <v-select
+                          v-model="defaultItem.user_id"
+                          :items="itemsff"
+                          item-text="name"
+                          item-value="ff_no"
+                          label="Pilih Field Facilitator"
+                          outlined
+                          clearable
+                          type="string"
+                          v-on:change="selectPetani"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                          v-model="defaultItem.farmer_no"
+                          :items="itemspetani"
+                          item-text="nama"
+                          item-value="kode"
+                          label="Pilih Petani"
+                          outlined
+                          clearable
+                          type="string"
+                          v-on:change="selectLahan"
+                        ></v-select>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                          v-model="defaultItem.lahan_no"
+                          :items="itemslahan"
+                          item-text="lahan_no"
+                          item-value="lahan_no"
+                          label="Pilih No Lahan"
+                          outlined
+                          clearable
+                          type="string"
+                          v-on:change="selectedLahanNo"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model="defaultItem.lahan_condition"
+                          label="Kondisi Lahan"
+                          outlined
+                          required
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-text-field>
+                        <!-- <v-select
+                          v-model="defaultItem.lahan_condition"
+                          :items="itemslahancondition"
+                          item-text="text"
+                          item-value="value"
+                          label="Pilih Lahan Condition"
+                          outlined
+                          clearable
+                          type="string"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select> -->
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <div
+                          style="
+                            border-style: solid;
+                            padding: 3px;
+                            border-color: red;
+                          "
+                        >
+                          <h4>Jarak Lahan : {{ jarak_lahan }}</h4>
+                          <h4>Akses Jangkauan : {{ akses_jangkauan }}</h4>
+                        </div>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                          v-model="defaultItem.planting_year"
+                          :items="itemsTahun"
+                          item-text="text"
+                          item-value="value"
+                          label="Planting Year"
+                          outlined
+                          clearable
+                          type="string"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-menu
+                          v-model="menu1"
+                          transition="scale-transition"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="datepicker1"
+                              slot="activator"
+                              label="Planting Date"
+                              outlined
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              :rules="[(v) => !!v || 'Field is required']"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="datepicker1"
+                            @input="menu1 = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+                    <!-- <v-row class="mb-3">
+                      <h4>Pilih Pohon</h4>
+                      <v-divider class="mx-2 mt-3"></v-divider>
+                    </v-row>
+                    <v-row>
+                      <v-col class="px-1 py-0" cols="12" sm="12" md="12">
+                        <v-combobox
+                          :items="itemstrees"
+                          item-value="tree_code"
+                          item-text="tree_name"
+                          label="Pilih Pohon"
+                          v-on:change="changeBarangSelected"
+                          outlined
+                          clearable
+                        ></v-combobox>
+                      </v-col>
+                    </v-row> -->
+                    <v-row class="mb-3">
+                      <h4>Detail Penilikan</h4>
+                      <v-divider class="mx-2 mt-3"></v-divider>
+                      <v-btn @click="adddetailpohon">Add</v-btn>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12" sm="12" md="12">
+                        <v-data-table
+                          :headers="headerslistpohon"
+                          :items="itemlistpohon"
+                          sort-by="calories"
+                          class="elevation-1"
+                        >
+                          <template v-slot:item.actions="{ item }">
+                            <v-icon small @click="deleteItemPohon(item)">
+                              mdi-delete
+                            </v-icon>
+                          </template>
+                        </v-data-table>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+
+                  <v-row class="ma-2">
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      class="mr-1"
+                      color="red"
+                      elevation="1"
+                      @click="close"
+                      outlined
+                    >
+                      <v-icon left> mdi-close-circle-outline </v-icon>
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      elevation="1"
+                      outlined
+                      color="primary"
+                      @click="e1 = 2"
+                    >
+                      <v-icon left>
+                        mdi-chevron-right-circle-outline
+                      </v-icon>
+                      Next
+                    </v-btn>
+                  </v-row>
+                </v-stepper-content>
+
+                <v-stepper-content class="pa-3" step="2">
+                  <v-container class="mb-2">
+                    <v-row>
+                      <v-col cols="12" sm="4" md="4" class="pa-1">
+                        <v-file-input
+                          accept="image/png, image/jpeg, image/bmp"
+                          placeholder="Pilih Foto"
+                          prepend-icon="mdi-camera"
+                          show-size
+                          label="Gambar Signature"
+                          outlined
+                          v-model="gambarinput1"
+                          v-on:change="pilihgambar1"
+                        ></v-file-input>
+                      </v-col>
+                      <v-col cols="12" sm="4" md="4" class="pa-1">
+                        <v-file-input
+                          accept="image/png, image/jpeg, image/bmp"
+                          placeholder="Pilih Foto"
+                          prepend-icon="mdi-camera"
+                          show-size
+                          label="Pilih Gambar1"
+                          outlined
+                          v-model="gambarinput2"
+                          v-on:change="pilihgambar2"
+                        ></v-file-input>
+                      </v-col>
+                      <v-col cols="12" sm="4" md="4" class="pa-1">
+                        <v-file-input
+                          accept="image/png, image/jpeg, image/bmp"
+                          placeholder="Pilih Foto"
+                          prepend-icon="mdi-camera"
+                          show-size
+                          label="Pilih Gambar2"
+                          outlined
+                          v-model="gambarinput3"
+                          v-on:change="pilihgambar3"
+                        ></v-file-input>
+                      </v-col>
+                      <v-container>
+                        <v-row>
+                          <v-col cols="4" md="4">
+                            <!-- <div>Foto SPPT/ Dokument</div> -->
+                            <v-card
+                              class="d-flex align-center"
+                              elevation="2"
+                              height="250"
+                              width="250"
+                            >
+                              <v-img
+                                v-bind:src="defaultItem.gambarshow1"
+                                class="my-2 mb-4"
+                                contain
+                                max-height="225"
+                              ></v-img>
+                            </v-card>
+                          </v-col>
+                          <v-col cols="4" md="4">
+                            <!-- <div>Foto SPPT/ Dokument</div> -->
+                            <v-card
+                              class="d-flex align-center"
+                              elevation="2"
+                              height="250"
+                              width="250"
+                            >
+                              <v-img
+                                v-bind:src="defaultItem.gambarshow2"
+                                class="my-2 mb-4"
+                                max-height="225"
+                                contain
+                              ></v-img>
+                            </v-card>
+                          </v-col>
+                          <v-col cols="4" md="4">
+                            <!-- <div>Foto SPPT/ Dokument</div> -->
+                            <v-card
+                              class="d-flex align-center"
+                              elevation="2"
+                              height="250"
+                              width="250"
+                            >
+                              <v-img
+                                v-bind:src="defaultItem.gambarshow3"
+                                class="my-2 mb-4"
+                                max-height="225"
+                                contain
+                              ></v-img>
+                            </v-card>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-row>
+                  </v-container>
+                  <v-row class="ma-2">
+                    <v-spacer> </v-spacer>
+                    <v-btn
+                      class="mr-1"
+                      color="red"
+                      elevation="1"
+                      @click="close"
+                      outlined
+                    >
+                      <v-icon left> mdi-close-circle-outline </v-icon>
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="success"
+                      elevation="1"
+                      outlined
+                      @click="save"
+                    >
+                      <v-progress-circular
+                        v-if="loadsave == true"
+                        :size="25"
+                        :width="5"
+                        indeterminate
+                        color="green"
+                      >
+                      </v-progress-circular>
+                      <v-icon v-if="loadsave == false" left>
+                        mdi-checkbox-marked-circle-outline
+                      </v-icon>
+                      <h4 v-if="loadsave == false">SaveAdd</h4>
+                    </v-btn>
+                  </v-row>
+                </v-stepper-content>
+              </v-stepper-items>
+            </v-stepper>
+          </v-card-text>
+
+          <!-- <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" outlined @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" outlined @click="save">
+                Save
+              </v-btn>
+            </v-card-actions> -->
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogPohon" max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Daftar Pohon</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-combobox
+                    v-model="tree_temp"
+                    :items="itemstrees"
+                    item-text="tree_name"
+                    item-value="tree_code"
+                    label="Pilih Pohon"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-combobox>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="editedItemPohon.qty"
+                    label="Jumlah"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu v-model="menu4" transition="scale-transition">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="datepicker4"
+                        slot="activator"
+                        label="Planting Date"
+                        v-bind="attrs"
+                        v-on="on"
+                        outlined
+                        :rules="[(v) => !!v || 'Field is required']"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="datepicker4"
+                      @input="menu4 = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-select
+                    v-model="editedItemPohon.status"
+                    :items="itemsstatustrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Status"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-select
+                    v-model="editedItemPohon.condition"
+                    :items="itemscoditiontrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Kondisi"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closePohonTambah">
+              Cancel
+            </v-btn>
+            <v-btn color="blue darken-1" text @click="savePohon">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDeletePohon" max-width="500px">
+        <v-card>
+          <v-card-title class="text-h5"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeDeletePohon"
+              >Cancel</v-btn
+            >
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="deleteItemConfirmPohon"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Add Product -->
+      <v-dialog v-model="dialogAddProduct" max-width="500px">
+        <v-card>
+          <v-card-text class="pa-1 fontall">
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-combobox
+                    v-model="trees_add_temp"
+                    :items="itemstrees"
+                    item-text="tree_name"
+                    item-value="tree_code"
+                    label="Pilih Pohon"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-combobox>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="pb-1" cols="12" sm="6" md="6">
+                  <v-text-field
+                    v-model="jumlah_temp"
+                    label="Jumlah"
+                    outlined
+                    type="number"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col class="pb-1" cols="12" sm="6" md="6">
+                  <v-menu v-model="menu2" transition="scale-transition">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="datepicker2"
+                        slot="activator"
+                        label="Planting Date"
+                        outlined
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        :rules="[(v) => !!v || 'Field is required']"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="datepicker2"
+                      @input="menu2 = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6" md="6">
+                  <v-select
+                    v-model="status_temp"
+                    :items="itemsstatustrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Status"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-select
+                    v-model="condition_temp"
+                    :items="itemscoditiontrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Kondisi"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="red"
+              elevation="1"
+              outlined
+              @click="canceladdproduk"
+            >
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="success"
+              elevation="1"
+              outlined
+              @click="addProduct"
+            >
+              <v-icon left> mdi-plus-circle-outline </v-icon>
+              Add
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogShowEdit" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >What you want to edit?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="blue" text @click="showEditModal"
+              >Edit Sosialisasi</v-btn
+            >
+            <v-btn
+              outlined
+              color="green"
+              text
+              @click="showEditJumlahPohonModal"
+              >Jumlah Pohon</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDetailPohon" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            ><span class="headline">Detail Pohon Lahan</span></v-card-title
+          >
+          <v-card-text>
+            <v-row class="mt-3">
+              <v-col cols="12" sm="12" md="12">
+                <div>
+                  <h3 class="ml-1">
+                    <v-data-table
+                      :headers="headersdetaileditjumlah"
+                      :items="DetailTreesLahanTemp"
+                      class="elevation-1"
+                    >
+                      <!-- <template v-slot:item.tree_category="{ item }">
+                        {{ gettype(item.tree_category) }}
+                      </template> -->
+                      <template v-slot:item.actions="{ item }">
+                        <v-icon
+                          v-if="RoleAccesCRUDShow == true"
+                          class="mr-3"
+                          @click="editDetailPohon(item)"
+                          small
+                          color="warning"
+                        >
+                          mdi-pencil
+                        </v-icon>
+                        <v-icon
+                          v-if="RoleAccesCRUDShow == true"
+                          @click="deleteDetailPohon(item)"
+                          small
+                          color="red"
+                        >
+                          mdi-delete
+                        </v-icon>
+                      </template>
+                    </v-data-table>
+                  </h3>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="red" text @click="closeDetailPohon"
+              >Cancel</v-btn
+            >
+            <v-btn outlined color="blue" text @click="saveEditPohon"
+              >Save</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
+        <v-card>
+          <v-card-text>
+            <v-row class="mt-7">
+              <v-col cols="12" sm="12" md="12">
+                <v-text-field
+                  v-model="editedItemPohon.amount"
+                  label="Jumlah Pohon"
+                  outlined
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="red" text @click="closeDetailEditPohon"
+              >Cancel</v-btn
+            >
+            <v-btn outlined color="blue" text @click="saveEditPohonTemp"
+              >Save</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Detail -->
+      <v-dialog v-model="dialogDetail" max-width="800px">
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="headline">Detail Sosialisasi Tanam</span>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-container v-if="load == false">
+              <v-row>
+                <v-col cols="12" sm="4" md="4">
+                  <div>Foto Foto</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.gambarshow1"
+                    class="my-1 mb-4"
+                  ></v-img>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.gambarshow2"
+                    class="my-1 mb-4"
+                  ></v-img>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.gambarshow3"
+                    class="my-1 mb-4"
+                  ></v-img>
+                </v-col>
+                <v-col cols="12" sm="8" md="8">
+                  <v-divider
+                    style="background-color: black !important"
+                  ></v-divider>
+                  <v-simple-table>
+                    <template v-slot:default>
+                      <tbody>
+                        <tr>
+                          <th
+                            class="text-left"
+                            style="width: 200px; font-size: 14px"
+                          >
+                            Tahun Program
+                          </th>
+                          <th class="text-left" style="font-size: 14px">
+                            {{ defaultItem.planting_year }}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Nama Petani
+                          </th>
+                          <th class="text-left" style="font-size: 14px">
+                            {{ defaultItem.nama_petani }}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Nama FF
+                          </th>
+                          <th class="text-left" style="font-size: 14px">
+                            {{ defaultItem.nama_ff }}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            No Lahan
+                          </th>
+                          <th class="text-left" style="font-size: 14px">
+                            {{ defaultItem.lahan_no }}
+                          </th>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Kondisi Lahan
+                          </th>
+                          <th class="text-left" style="font-size: 14px">
+                            {{ defaultItem.lahan_condition }}
+                          </th>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+
+                  <v-divider
+                    style="background-color: black !important"
+                  ></v-divider>
+                  <div>
+                    <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
+                    <h3 class="ml-1">
+                      <v-data-table
+                        :headers="headersdetail"
+                        :items="defaultItem.list_detail"
+                        class="elevation-1"
+                      >
+                        <!-- <template v-slot:item.tree_category="{ item }">
+                              {{ gettype(item.tree_category) }}
+                            </template> -->
+                      </v-data-table>
+                    </h3>
+                  </div>
+                  <v-divider
+                    style="background-color: black !important"
+                  ></v-divider>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions v-if="defaultItem.waitingapproval == true">
+            <v-spacer></v-spacer>
+            <v-btn
+              v-if="RoleAccesCRUDShow == true"
+              color="green"
+              text
+              @click="verifSubmit()"
+              outlined
+              elevation="1"
+            >
+              Verifikasi
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogCetakPilihan" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >What you want to print?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="blue" text @click="showPrintLabel()"
+              >Print Label</v-btn
+            >
+            <v-btn
+              outlined
+              color="green"
+              text
+              @click="showPrintTandaTerima()"
+              >Tanda Terima</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Verification -->
+      <v-dialog v-model="dialogVerification" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >Are you sure you want to Verification?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeVerification"
+              >Cancel</v-btn
+            >
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="VerificationItemConfirm"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeDelete"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    <!-- END: MODAL -->
+
     <v-data-table
       :headers="headers"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
     >
       <!-- Color Status -->
       <template v-slot:item.status="{ item }">
@@ -29,10 +1380,26 @@
       </template>
 
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-row class="ma-0 mt-2 align-center">
+          <!-- Program Year -->
+          <v-select
+              color="success"
+              item-color="success"
+              v-model="generalSettings.programYear"
+              :items="['2021','2022','2023']"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Program Year"
+              class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
           <v-btn
             dark
-            class="mx-3 mt-1 d-none d-md-block"
+            rounded
+            class="mx-1 d-none d-md-block"
             @click="showFilterArea()"
             color="green"
           >
@@ -42,1398 +1409,37 @@
           <v-btn
             v-if="RoleAccesFilterShow == true"
             dark
-            class="mx-3 mt-1 d-none d-md-block"
+            rounded
+            class="mx-1 d-none d-md-block"
             @click="showFilterEmployee()"
             color="green"
           >
             <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
             Employee
           </v-btn>
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 200px"
-          ></v-select>
-          <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select>
-          <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
-          <v-divider class="mx-4 d-none d-md-block" inset vertical></v-divider>
-          <v-spacer class="d-none d-md-block"></v-spacer>
+          <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <v-text-field
+            rounded
+            outlined
+            color="green"
+            dense
             v-model="search"
             append-icon="mdi-magnify"
+            class="mr-0 mr-lg-2"
             label="Search"
-            single-line
             hide-details
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
           <v-btn
-            v-if="RoleAccesIT == true"
+            v-if="false"
             dark
-            class="mb-2 mr-1"
+            rounded
+            class="mx-2"
             @click="showAddModal()"
             color="green"
           >
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn>
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-          </v-btn> -->
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
-          </v-btn> -->
-          <!-- Modal Filter Area -->
-          <v-dialog v-model="dialogFilterArea" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian Area</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectMU"
-                        :items="itemsMU"
-                        item-value="mu_no"
-                        item-text="name"
-                        v-on:change="selectedMU"
-                        label="Management Unit"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectTA"
-                        :items="itemsTA"
-                        item-value="area_code"
-                        item-text="name"
-                        v-on:change="selectedTA"
-                        label="Targer Area"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectVillage"
-                        :items="itemsVillage"
-                        item-value="kode_desa"
-                        item-text="name"
-                        v-on:change="selectedVillage"
-                        label="Desa"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyarea"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Filter Emp -->
-          <v-dialog v-model="dialogFilterEmp" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian By Emp</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectUM"
-                        :items="itemsum"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedUM"
-                        label="Pilih Unit Manager"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectFC"
-                        :items="itemsfc"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedFC"
-                        label="Pilih Field Coordinator"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyemp"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text class="pa-0 fontall">
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-stepper v-if="load == false" v-model="e1">
-                    <v-stepper-header>
-                      <v-stepper-step editable :complete="e1 > 1" step="1">
-                        Main Data
-                      </v-stepper-step>
-                      <v-divider></v-divider>
-                      <v-stepper-step editable :complete="e1 > 2" step="2">
-                        List Pohon
-                      </v-stepper-step>
-                      <v-divider></v-divider>
-                      <v-stepper-step editable step="3"> Foto </v-stepper-step>
-                    </v-stepper-header>
-
-                    <v-stepper-items>
-                      <v-stepper-content class="pa-3" step="1">
-                        <v-container class="mb-2">
-                          <v-row>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-select
-                                v-model="defaultItem.user_id"
-                                :items="itemsff"
-                                item-text="name"
-                                item-value="ff_no"
-                                label="Pilih Field Facilitator"
-                                outlined
-                                clearable
-                                type="string"
-                                v-on:change="selectPetani"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-text-field
-                                v-model="defaultItem.lahan_no"
-                                label="No Lahan"
-                                outlined
-                                type="string"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-select
-                                v-model="defaultItem.planting_year"
-                                :items="itemsTahun"
-                                item-text="text"
-                                item-value="value"
-                                label="Pilih Tahun Program"
-                                outlined
-                                clearable
-                                type="string"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-text-field
-                                v-model="defaultItem.total_holes"
-                                label="Total Lubang"
-                                outlined
-                                type="number"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-text-field>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-
-                        <v-row class="ma-2">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            elevation="1"
-                            outlined
-                            color="primary"
-                            @click="e1 = 2"
-                          >
-                            <v-icon left>
-                              mdi-chevron-right-circle-outline
-                            </v-icon>
-                            Next
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-
-                      <v-stepper-content class="pa-3" step="2">
-                        <v-container class="mb-2">
-                          <v-row class="mb-3">
-                            <h4>Pilih Pohon</h4>
-                            <v-divider class="mx-2 mt-3"></v-divider>
-                          </v-row>
-                          <v-row>
-                            <v-col class="px-1 py-0" cols="12" sm="12" md="12">
-                              <v-combobox
-                                :items="itemstrees"
-                                item-value="tree_code"
-                                item-text="tree_name"
-                                label="Pilih Pohon"
-                                v-on:change="changeBarangSelected"
-                                outlined
-                                clearable
-                              ></v-combobox>
-                            </v-col>
-                          </v-row>
-                          <v-row class="mb-3">
-                            <h4>List Pohon</h4>
-                            <v-divider class="mx-2 mt-3"></v-divider>
-                          </v-row>
-                          <v-row>
-                            <v-col cols="12" sm="12" md="12">
-                              <v-data-table
-                                :headers="headerListProduct"
-                                :items="defaultItem.list_detail"
-                                class="elevation-3"
-                                append-icon="mdi-magnify"
-                                :items-per-page="5"
-                                :loading="loadtabledetail"
-                                loading-text="Loading... Please wait"
-                              >
-                                <template v-slot:item.actions="{ item }">
-                                  <v-icon
-                                    class="mr-2"
-                                    @click="deletelistitemproduct(item)"
-                                    color="red"
-                                  >
-                                    mdi-delete
-                                  </v-icon>
-                                  <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
-                                </template>
-                              </v-data-table>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-
-                        <v-row class="ma-2">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            elevation="1"
-                            outlined
-                            color="primary"
-                            @click="e1 = 3"
-                          >
-                            <v-icon left>
-                              mdi-chevron-right-circle-outline
-                            </v-icon>
-                            Next
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-
-                      <v-stepper-content class="pa-3" step="3">
-                        <v-container class="mb-2">
-                          <v-row>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Gambar Signature"
-                                outlined
-                                v-model="gambarinput1"
-                                v-on:change="pilihgambar1"
-                              ></v-file-input>
-                            </v-col>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Pilih Gambar1"
-                                outlined
-                                v-model="gambarinput2"
-                                v-on:change="pilihgambar2"
-                              ></v-file-input>
-                            </v-col>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Pilih Gambar2"
-                                outlined
-                                v-model="gambarinput3"
-                                v-on:change="pilihgambar3"
-                              ></v-file-input>
-                            </v-col>
-                            <v-container>
-                              <v-row>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow1"
-                                      class="my-2 mb-4"
-                                      contain
-                                      max-height="225"
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow2"
-                                      class="my-2 mb-4"
-                                      max-height="225"
-                                      contain
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow3"
-                                      class="my-2 mb-4"
-                                      max-height="225"
-                                      contain
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                              </v-row>
-                            </v-container>
-                          </v-row>
-                        </v-container>
-                        <v-row class="ma-2">
-                          <v-spacer> </v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            color="success"
-                            elevation="1"
-                            outlined
-                            @click="save"
-                          >
-                            <v-progress-circular
-                              v-if="loadsave == true"
-                              :size="25"
-                              :width="5"
-                              indeterminate
-                              color="green"
-                            >
-                            </v-progress-circular>
-                            <v-icon v-if="loadsave == false" left>
-                              mdi-checkbox-marked-circle-outline
-                            </v-icon>
-                            <h4 v-if="loadsave == false">Save</h4>
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-                    </v-stepper-items>
-                  </v-stepper>
-                </v-card-text>
-
-                <!-- <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" outlined @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" outlined @click="save">
-                    Save
-                  </v-btn>
-                </v-card-actions> -->
-              </v-form>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogAddonly" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">{{ formTitle }}</span>
-              </v-card-title>
-
-              <v-card-text class="pa-0 fontall">
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-stepper v-if="load == false" v-model="e1">
-                  <v-stepper-header>
-                    <v-stepper-step editable :complete="e1 > 1" step="1">
-                      Main Data
-                    </v-stepper-step>
-                    <v-divider></v-divider>
-                    <v-divider></v-divider>
-                    <v-stepper-step editable step="2"> Foto </v-stepper-step>
-                  </v-stepper-header>
-
-                  <v-stepper-items>
-                    <v-stepper-content class="pa-3" step="1">
-                      <v-container class="mb-2">
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-select
-                              v-model="defaultItem.user_id"
-                              :items="itemsff"
-                              item-text="name"
-                              item-value="ff_no"
-                              label="Pilih Field Facilitator"
-                              outlined
-                              clearable
-                              type="string"
-                              v-on:change="selectPetani"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              v-model="defaultItem.farmer_no"
-                              :items="itemspetani"
-                              item-text="nama"
-                              item-value="kode"
-                              label="Pilih Petani"
-                              outlined
-                              clearable
-                              type="string"
-                              v-on:change="selectLahan"
-                            ></v-select>
-                          </v-col>
-
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              v-model="defaultItem.lahan_no"
-                              :items="itemslahan"
-                              item-text="lahan_no"
-                              item-value="lahan_no"
-                              label="Pilih No Lahan"
-                              outlined
-                              clearable
-                              type="string"
-                              v-on:change="selectedLahanNo"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-text-field
-                              v-model="defaultItem.lahan_condition"
-                              label="Kondisi Lahan"
-                              outlined
-                              required
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-text-field>
-                            <!-- <v-select
-                              v-model="defaultItem.lahan_condition"
-                              :items="itemslahancondition"
-                              item-text="text"
-                              item-value="value"
-                              label="Pilih Lahan Condition"
-                              outlined
-                              clearable
-                              type="string"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select> -->
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <div
-                              style="
-                                border-style: solid;
-                                padding: 3px;
-                                border-color: red;
-                              "
-                            >
-                              <h4>Jarak Lahan : {{ jarak_lahan }}</h4>
-                              <h4>Akses Jangkauan : {{ akses_jangkauan }}</h4>
-                            </div>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              v-model="defaultItem.planting_year"
-                              :items="itemsTahun"
-                              item-text="text"
-                              item-value="value"
-                              label="Planting Year"
-                              outlined
-                              clearable
-                              type="string"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-menu
-                              v-model="menu1"
-                              transition="scale-transition"
-                            >
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                  v-model="datepicker1"
-                                  slot="activator"
-                                  label="Planting Date"
-                                  outlined
-                                  readonly
-                                  v-bind="attrs"
-                                  v-on="on"
-                                  :rules="[(v) => !!v || 'Field is required']"
-                                ></v-text-field>
-                              </template>
-                              <v-date-picker
-                                v-model="datepicker1"
-                                @input="menu1 = false"
-                              ></v-date-picker>
-                            </v-menu>
-                          </v-col>
-                        </v-row>
-                        <!-- <v-row class="mb-3">
-                          <h4>Pilih Pohon</h4>
-                          <v-divider class="mx-2 mt-3"></v-divider>
-                        </v-row>
-                        <v-row>
-                          <v-col class="px-1 py-0" cols="12" sm="12" md="12">
-                            <v-combobox
-                              :items="itemstrees"
-                              item-value="tree_code"
-                              item-text="tree_name"
-                              label="Pilih Pohon"
-                              v-on:change="changeBarangSelected"
-                              outlined
-                              clearable
-                            ></v-combobox>
-                          </v-col>
-                        </v-row> -->
-                        <v-row class="mb-3">
-                          <h4>Detail Penilikan</h4>
-                          <v-divider class="mx-2 mt-3"></v-divider>
-                          <v-btn @click="adddetailpohon">Add</v-btn>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-data-table
-                              :headers="headerslistpohon"
-                              :items="itemlistpohon"
-                              sort-by="calories"
-                              class="elevation-1"
-                            >
-                              <template v-slot:item.actions="{ item }">
-                                <v-icon small @click="deleteItemPohon(item)">
-                                  mdi-delete
-                                </v-icon>
-                              </template>
-                            </v-data-table>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-
-                      <v-row class="ma-2">
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          class="mr-1"
-                          color="red"
-                          elevation="1"
-                          @click="close"
-                          outlined
-                        >
-                          <v-icon left> mdi-close-circle-outline </v-icon>
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          elevation="1"
-                          outlined
-                          color="primary"
-                          @click="e1 = 2"
-                        >
-                          <v-icon left>
-                            mdi-chevron-right-circle-outline
-                          </v-icon>
-                          Next
-                        </v-btn>
-                      </v-row>
-                    </v-stepper-content>
-
-                    <v-stepper-content class="pa-3" step="2">
-                      <v-container class="mb-2">
-                        <v-row>
-                          <v-col cols="12" sm="4" md="4" class="pa-1">
-                            <v-file-input
-                              accept="image/png, image/jpeg, image/bmp"
-                              placeholder="Pilih Foto"
-                              prepend-icon="mdi-camera"
-                              show-size
-                              label="Gambar Signature"
-                              outlined
-                              v-model="gambarinput1"
-                              v-on:change="pilihgambar1"
-                            ></v-file-input>
-                          </v-col>
-                          <v-col cols="12" sm="4" md="4" class="pa-1">
-                            <v-file-input
-                              accept="image/png, image/jpeg, image/bmp"
-                              placeholder="Pilih Foto"
-                              prepend-icon="mdi-camera"
-                              show-size
-                              label="Pilih Gambar1"
-                              outlined
-                              v-model="gambarinput2"
-                              v-on:change="pilihgambar2"
-                            ></v-file-input>
-                          </v-col>
-                          <v-col cols="12" sm="4" md="4" class="pa-1">
-                            <v-file-input
-                              accept="image/png, image/jpeg, image/bmp"
-                              placeholder="Pilih Foto"
-                              prepend-icon="mdi-camera"
-                              show-size
-                              label="Pilih Gambar2"
-                              outlined
-                              v-model="gambarinput3"
-                              v-on:change="pilihgambar3"
-                            ></v-file-input>
-                          </v-col>
-                          <v-container>
-                            <v-row>
-                              <v-col cols="4" md="4">
-                                <!-- <div>Foto SPPT/ Dokument</div> -->
-                                <v-card
-                                  class="d-flex align-center"
-                                  elevation="2"
-                                  height="250"
-                                  width="250"
-                                >
-                                  <v-img
-                                    v-bind:src="defaultItem.gambarshow1"
-                                    class="my-2 mb-4"
-                                    contain
-                                    max-height="225"
-                                  ></v-img>
-                                </v-card>
-                              </v-col>
-                              <v-col cols="4" md="4">
-                                <!-- <div>Foto SPPT/ Dokument</div> -->
-                                <v-card
-                                  class="d-flex align-center"
-                                  elevation="2"
-                                  height="250"
-                                  width="250"
-                                >
-                                  <v-img
-                                    v-bind:src="defaultItem.gambarshow2"
-                                    class="my-2 mb-4"
-                                    max-height="225"
-                                    contain
-                                  ></v-img>
-                                </v-card>
-                              </v-col>
-                              <v-col cols="4" md="4">
-                                <!-- <div>Foto SPPT/ Dokument</div> -->
-                                <v-card
-                                  class="d-flex align-center"
-                                  elevation="2"
-                                  height="250"
-                                  width="250"
-                                >
-                                  <v-img
-                                    v-bind:src="defaultItem.gambarshow3"
-                                    class="my-2 mb-4"
-                                    max-height="225"
-                                    contain
-                                  ></v-img>
-                                </v-card>
-                              </v-col>
-                            </v-row>
-                          </v-container>
-                        </v-row>
-                      </v-container>
-                      <v-row class="ma-2">
-                        <v-spacer> </v-spacer>
-                        <v-btn
-                          class="mr-1"
-                          color="red"
-                          elevation="1"
-                          @click="close"
-                          outlined
-                        >
-                          <v-icon left> mdi-close-circle-outline </v-icon>
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          color="success"
-                          elevation="1"
-                          outlined
-                          @click="save"
-                        >
-                          <v-progress-circular
-                            v-if="loadsave == true"
-                            :size="25"
-                            :width="5"
-                            indeterminate
-                            color="green"
-                          >
-                          </v-progress-circular>
-                          <v-icon v-if="loadsave == false" left>
-                            mdi-checkbox-marked-circle-outline
-                          </v-icon>
-                          <h4 v-if="loadsave == false">SaveAdd</h4>
-                        </v-btn>
-                      </v-row>
-                    </v-stepper-content>
-                  </v-stepper-items>
-                </v-stepper>
-              </v-card-text>
-
-              <!-- <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" outlined @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" outlined @click="save">
-                    Save
-                  </v-btn>
-                </v-card-actions> -->
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogPohon" max-width="500px">
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">Daftar Pohon</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-combobox
-                        v-model="tree_temp"
-                        :items="itemstrees"
-                        item-text="tree_name"
-                        item-value="tree_code"
-                        label="Pilih Pohon"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-combobox>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItemPohon.qty"
-                        label="Jumlah"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-menu v-model="menu4" transition="scale-transition">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="datepicker4"
-                            slot="activator"
-                            label="Planting Date"
-                            v-bind="attrs"
-                            v-on="on"
-                            outlined
-                            :rules="[(v) => !!v || 'Field is required']"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="datepicker4"
-                          @input="menu4 = false"
-                        ></v-date-picker>
-                      </v-menu>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedItemPohon.status"
-                        :items="itemsstatustrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Status"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedItemPohon.condition"
-                        :items="itemscoditiontrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Kondisi"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closePohonTambah">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="savePohon">
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDeletePohon" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDeletePohon"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="deleteItemConfirmPohon"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Add Product -->
-          <v-dialog v-model="dialogAddProduct" max-width="500px">
-            <v-card>
-              <v-card-text class="pa-1 fontall">
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-combobox
-                        v-model="trees_add_temp"
-                        :items="itemstrees"
-                        item-text="tree_name"
-                        item-value="tree_code"
-                        label="Pilih Pohon"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-combobox>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col class="pb-1" cols="12" sm="6" md="6">
-                      <v-text-field
-                        v-model="jumlah_temp"
-                        label="Jumlah"
-                        outlined
-                        type="number"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col class="pb-1" cols="12" sm="6" md="6">
-                      <v-menu v-model="menu2" transition="scale-transition">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="datepicker2"
-                            slot="activator"
-                            label="Planting Date"
-                            outlined
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                            :rules="[(v) => !!v || 'Field is required']"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="datepicker2"
-                          @input="menu2 = false"
-                        ></v-date-picker>
-                      </v-menu>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-select
-                        v-model="status_temp"
-                        :items="itemsstatustrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Status"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-select
-                        v-model="condition_temp"
-                        :items="itemscoditiontrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Kondisi"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="red"
-                  elevation="1"
-                  outlined
-                  @click="canceladdproduk"
-                >
-                  <v-icon left> mdi-close-circle-outline </v-icon>
-                  Cancel
-                </v-btn>
-                <v-btn
-                  color="success"
-                  elevation="1"
-                  outlined
-                  @click="addProduct"
-                >
-                  <v-icon left> mdi-plus-circle-outline </v-icon>
-                  Add
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogShowEdit" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to edit?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showEditModal"
-                  >Edit Sosialisasi</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showEditJumlahPohonModal"
-                  >Jumlah Pohon</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohon" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                ><span class="headline">Detail Pohon Lahan</span></v-card-title
-              >
-              <v-card-text>
-                <v-row class="mt-3">
-                  <v-col cols="12" sm="12" md="12">
-                    <div>
-                      <h3 class="ml-1">
-                        <v-data-table
-                          :headers="headersdetaileditjumlah"
-                          :items="DetailTreesLahanTemp"
-                          class="elevation-1"
-                        >
-                          <!-- <template v-slot:item.tree_category="{ item }">
-                            {{ gettype(item.tree_category) }}
-                          </template> -->
-                          <template v-slot:item.actions="{ item }">
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              class="mr-3"
-                              @click="editDetailPohon(item)"
-                              small
-                              color="warning"
-                            >
-                              mdi-pencil
-                            </v-icon>
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              @click="deleteDetailPohon(item)"
-                              small
-                              color="red"
-                            >
-                              mdi-delete
-                            </v-icon>
-                          </template>
-                        </v-data-table>
-                      </h3>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohon"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
-            <v-card>
-              <v-card-text>
-                <v-row class="mt-7">
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field
-                      v-model="editedItemPohon.amount"
-                      label="Jumlah Pohon"
-                      outlined
-                      type="number"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailEditPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Detail -->
-          <v-dialog v-model="dialogDetail" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Sosialisasi Tanam</span>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-row>
-                    <v-col cols="12" sm="4" md="4">
-                      <div>Foto Foto</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow1"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow2"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow3"
-                        class="my-1 mb-4"
-                      ></v-img>
-                    </v-col>
-                    <v-col cols="12" sm="8" md="8">
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                      <v-simple-table>
-                        <template v-slot:default>
-                          <tbody>
-                            <tr>
-                              <th
-                                class="text-left"
-                                style="width: 200px; font-size: 14px"
-                              >
-                                Tahun Program
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.planting_year }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Nama Petani
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_petani }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Nama FF
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_ff }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                No Lahan
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.lahan_no }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Kondisi Lahan
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.lahan_condition }}
-                              </th>
-                            </tr>
-                          </tbody>
-                        </template>
-                      </v-simple-table>
-
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                      <div>
-                        <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
-                        <h3 class="ml-1">
-                          <v-data-table
-                            :headers="headersdetail"
-                            :items="defaultItem.list_detail"
-                            class="elevation-1"
-                          >
-                            <!-- <template v-slot:item.tree_category="{ item }">
-                                  {{ gettype(item.tree_category) }}
-                                </template> -->
-                          </v-data-table>
-                        </h3>
-                      </div>
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions v-if="defaultItem.waitingapproval == true">
-                <v-spacer></v-spacer>
-                <v-btn
-                  v-if="RoleAccesCRUDShow == true"
-                  color="green"
-                  text
-                  @click="verifSubmit()"
-                  outlined
-                  elevation="1"
-                >
-                  Verifikasi
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogCetakPilihan" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to print?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showPrintLabel()"
-                  >Print Label</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showPrintTandaTerima()"
-                  >Tanda Terima</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Verification -->
-          <v-dialog v-model="dialogVerification" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to Verification?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeVerification"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="VerificationItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
+        </v-row>
       </template>
 
       <!-- Action table -->
@@ -1489,6 +1495,9 @@ export default {
   name: "PenilikanTanam",
   authtoken: "",
   data: () => ({
+    generalSettings: {
+        programYear: '2022',
+    },
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
@@ -1802,9 +1811,29 @@ export default {
     //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
     // },
   },
+  async mounted() {
 
-  created() {
-    this.firstAccessPage();
+    await this.firstAccessPage();
+
+    // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
+    
+    if (this.User.role_group != 'IT') {
+      this.$store.state.maintenanceOverlay = true
+    }
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
+
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
+  },
+
+  watch: {
+    'generalSettings.programYear': {
+      handler(newVal) {
+        this.initialize()
+      }
+    }
   },
 
   methods: {
@@ -1882,18 +1911,17 @@ export default {
       this.loadtable = true;
       // console.log(this.User.ff.ff);
       try {
+        const params = new URLSearchParams({
+          planting_year: this.generalSettings.programYear,
+          mu: this.valueMU,
+          ta: this.valueTA,
+          village: this.valueVillage,
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode
+        })
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetMonitoringAdmin?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
+            "GetMonitoringAdmin?" + params,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,

@@ -1986,8 +1986,20 @@ export default {
     // },
   },
 
-  created() {
-    this.firstAccessPage();
+  async mounted() {
+    awaitthis.firstAccessPage();
+
+    // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
+
+    if (this.User.role_group != 'IT') {
+      this.$store.state.maintenanceOverlay = true
+    }
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
+
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
 
   methods: {
