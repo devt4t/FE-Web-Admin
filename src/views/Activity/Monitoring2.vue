@@ -1987,7 +1987,7 @@ export default {
   },
 
   async mounted() {
-    awaitthis.firstAccessPage();
+    await this.firstAccessPage();
 
     // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
