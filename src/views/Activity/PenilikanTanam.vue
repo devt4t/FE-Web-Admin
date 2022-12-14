@@ -1162,12 +1162,11 @@
       </v-dialog>
 
       <!-- Modal Detail -->
-      <v-dialog v-model="dialogDetail" max-width="800px">
+      <v-dialog v-model="dialogDetail" max-width="1000px" content-class="rounded-xl" scrollable>
         <v-card>
           <v-card-title class="mb-1 headermodalstyle">
-            <span class="headline">Detail Sosialisasi Tanam</span>
+            <span class="">Detail Realisasi Tanam</span>
           </v-card-title>
-          <v-divider></v-divider>
           <v-card-text>
             <v-container
               v-if="load == true"
@@ -1187,28 +1186,7 @@
             </v-container>
             <v-container v-if="load == false">
               <v-row>
-                <v-col cols="12" sm="4" md="4">
-                  <div>Foto Foto</div>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.gambarshow1"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.gambarshow2"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.gambarshow3"
-                    class="my-1 mb-4"
-                  ></v-img>
-                </v-col>
                 <v-col cols="12" sm="8" md="8">
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
                   <v-simple-table>
                     <template v-slot:default>
                       <tbody>
@@ -1219,82 +1197,129 @@
                           >
                             Tahun Program
                           </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.planting_year }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Nama Petani
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.nama_petani }}
-                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.planting_year }}</strong>
+                          </td>
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
                             Nama FF
                           </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.nama_ff }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
                           <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.nama_ff }}
+                            Nama Petani
                           </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.nama_petani }}</strong>
+                          </td>
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
                             No Lahan
                           </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.lahan_no }}
-                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.lahan_no.replace('[', '').replace(']', '') }}</strong>
+                          </td>
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
                             Kondisi Lahan
                           </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.lahan_condition }}
-                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.lahan_condition }}</strong>
+                          </td>
                         </tr>
                       </tbody>
                     </template>
                   </v-simple-table>
-
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
                   <div>
-                    <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
+                    <h4 class="mt-3 mb-2"><v-icon>mdi-sprout</v-icon> Jenis dan Jumlah Bibit</h4>
                     <h3 class="ml-1">
-                      <v-data-table
+                      <!-- <v-data-table
                         :headers="headersdetail"
                         :items="defaultItem.list_detail"
                         class="elevation-1"
-                      >
+                      > -->
                         <!-- <template v-slot:item.tree_category="{ item }">
                               {{ gettype(item.tree_category) }}
                             </template> -->
-                      </v-data-table>
+                      <!-- </v-data-table> -->
+                      <v-simple-table dense class="rounded-xl overflow-hidden" style="border: 1px solid #e2e2e2;border-collapse: collapse;">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th colspan="2" class="text-center">Ditanam</th>
+                            <th colspan="2" class="text-center">Belum Ditanam</th>
+                            <th></th>
+                          </tr>
+                          <tr>
+                            <th class="text-center">No</th>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th class="text-center">Hidup</th>
+                            <th class="text-center">Mati</th>
+                            <th class="text-center">Hidup</th>
+                            <th class="text-center">Mati</th>
+                            <th class="text-center">Hilang</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(seed, seedIndex) in defaultItem.list_detail" :key="seedIndex">
+                            <td class="text-center">{{ seedIndex + 1 }}</td>
+                            <td>{{ seed.tree_category }}</td>
+                            <td>{{ seed.tree_name }}</td>
+                            <td class="text-center">{{ seed.seedling.ditanam.hidup }}</td>
+                            <td class="text-center">{{ seed.seedling.ditanam.mati }}</td>
+                            <td class="text-center">{{ seed.seedling.blm_ditanam.hidup }}</td>
+                            <td class="text-center">{{ seed.seedling.blm_ditanam.mati }}</td>
+                            <td class="text-center">{{ seed.seedling.hilang }}</td>
+                          </tr>
+                        </tbody>
+                      </v-simple-table>
                     </h3>
                   </div>
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <div>Foto Foto</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.gambarshow1"
+                    @click="showLightbox(defaultItem.gambarshow1)"
+                    class="my-1 mb-4 rounded-xl cursor-pointer"
+                  ></v-img>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.gambarshow2"
+                    @click="showLightbox(defaultItem.gambarshow2)"
+                    class="my-1 mb-4 rounded-xl cursor-pointer"
+                  ></v-img>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.gambarshow3"
+                    @click="showLightbox(defaultItem.gambarshow3)"
+                    class="my-1 mb-4 rounded-xl cursor-pointer"
+                  ></v-img>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
-          <v-divider></v-divider>
           <v-card-actions v-if="defaultItem.waitingapproval == true">
             <v-spacer></v-spacer>
             <v-btn
               v-if="RoleAccesCRUDShow == true"
-              color="green"
-              text
+              rounded
+              color="green white--text"
+              class="pr-3"
               @click="verifSubmit()"
-              outlined
               elevation="1"
             >
-              Verifikasi
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1323,41 +1348,52 @@
       </v-dialog>
 
       <!-- Modal Verification -->
-      <v-dialog v-model="dialogVerification" max-width="500px">
+      <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline"
-            >Are you sure you want to Verification?</v-card-title
-          >
+          <v-card-title class="justify-center">
+            Are you sure you want to VERIFICATION? <small class="red--text">This can't be undone!</small>
+          </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeVerification"
-              >Cancel</v-btn
-            >
+            <v-btn class="pr-3" color="red white--text" rounded @click="closeVerification">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
             <v-btn
-              color="blue darken-1"
-              text
+              color="green white--text"
+              class="pr-3"
+              rounded
               @click="VerificationItemConfirm"
-              >OK</v-btn
             >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK, Verify
+            </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
       <!-- Modal Delete -->
-      <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="headline"
+          <v-card-title class="justify-center"
             >Are you sure you want to delete this item?</v-card-title
           >
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="closeDelete"
-              >Cancel</v-btn
+            <v-btn class="pr-3" color="red white--text" rounded @click="closeDelete">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="warning white--text"
+              class="pr-3"
+              rounded
+              @click="deleteItemConfirm"
             >
-            <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-              >OK</v-btn
-            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Yes, Delete
+            </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
@@ -1442,12 +1478,37 @@
         </v-row>
       </template>
 
-      <!-- Action table -->
+      <!-- No Lahan Column -->
+      <template v-slot:item.lahan_no="{item}">
+        <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" :key="lahan" class="green white--text ma-1">
+          {{ item.lahan_no.replace('[', '').replace(']', '').split(',')[0] }}
+        </v-chip>
+        <v-menu v-else open-on-hover offset-y :close-on-content-click="false" content-class="rounded-xl" >
+          <template v-slot:activator="{attrs, on}">
+            <v-btn rounded small v-bind="attrs" v-on="on" color="info white--text">
+              {{ item.lahan_no.replace('[', '').replace(']', '').split(',').length }} Lahan
+            </v-btn>
+          </template>
+          <v-card class="pa-2 pb-1 d-flex flex-column">
+            <v-chip 
+              v-for="lahan in item.lahan_no.replace('[', '').replace(']', '').split(',')" 
+              :key="lahan"
+              color="green white--text"
+              class="mb-1"
+              style="cursor: auto"
+            >
+              {{ lahan }}
+            </v-chip>
+          </v-card>
+        </v-menu>
+      </template>
+
+      <!-- Action Column -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
+        <v-btn color="info white--text" rounded small class="pl-1 mr-2" @click="showDetail(item)">
+          <v-icon class="mr-1">mdi-information</v-icon> Detail
+        </v-btn>
+        <!-- <v-icon
           v-if="RoleAccesCRUDShow == true"
           class="mr-2"
           @click="showEditModal(item)"
@@ -1455,7 +1516,7 @@
           color="warning"
         >
           mdi-pencil
-        </v-icon>
+        </v-icon> -->
         <!-- <v-icon
           v-if="RoleAccesPrintLabelShow == true"
           class="mr-2"
@@ -1465,14 +1526,13 @@
         >
           mdi-printer
         </v-icon> -->
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          @click="showDeleteModal(item)"
-          small
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+        <v-btn fab x-small color="red white--text" v-if="User.role_group == 'IT'" @click="showDeleteModal(item)">
+          <v-icon
+            small
+          >
+            mdi-delete
+          </v-icon>
+        </v-btn>
       </template>
     </v-data-table>
 
@@ -1549,18 +1609,12 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Nama Petani", value: "nama_petani", width: "18%" },
-      {
-        text: "No Lahan",
-        align: "start",
-        value: "lahan_no",
-        width: "10%",
-      },
-      { text: "Tahun Tanam", value: "planting_year", width: "15%" },
-      { text: "Kondisi Lahan", value: "lahan_condition", width: "15%" },
-      { text: "Field Facilitator", value: "nama_ff", width: "15%" },
-      { text: "Status", value: "status", width: "13%" },
-      { text: "Actions", value: "actions", sortable: false, width: "20%" },
+      { text: "Field Facilitator", value: "nama_ff" },
+      { text: "Nama Petani", value: "nama_petani" },
+      { text: "No Lahan", align: "start", value: "lahan_no", sortable: false },
+      { text: "Kondisi Lahan", value: "lahan_condition" },
+      { text: "Status", value: "status", align: 'center' },
+      { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
 
     headersdetail: [
@@ -2115,10 +2169,10 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result.data);
-          this.defaultItem.list_detail = response.data.data.result.list_detail;
+          this.defaultItem.list_detail = await this.setGroupingDetailSeedling(response.data.data.result.list_detail);
           this.itemlistpohon = response.data.data.result.list_detail;
           this.max_value_pohon_temp =
             response.data.data.result.count_list_pohon;
@@ -3566,6 +3620,65 @@ export default {
       }
       this.closePohon();
     },
+    showLightbox(imgs, index) {
+        if (imgs) this.$store.state.lightbox.imgs = imgs
+        
+        if (index) this.$store.state.lightbox.index = index
+        else this.$store.state.lightbox.index = 0
+
+        this.$store.state.lightbox.show = true
+    },
+    async setGroupingDetailSeedling(datas) {
+      console.log(datas)
+      let grouping = []
+      await datas.forEach(data => {
+        let pushData = {
+          tree_code: data.tree_code,
+          tree_category: data.tree_category == 'Pohon_Kayu' ? "KAYU" : (data.tree_category == 'Pohon_Buah' ? "MPTS" : "CROPS"),
+          tree_name: data.tree_name,
+          seedling: {
+            ditanam: {
+              hidup: 0,
+              mati: 0
+            },
+            blm_ditanam: {
+              hidup: 0,
+              mati: 0
+            },
+            hilang: 0
+          }
+        }
+        const checkExistsID = grouping.findIndex(grp => grp.tree_code == data.tree_code)
+        if (checkExistsID > -1) {
+          if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
+            grouping[checkExistsID].seedling.ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
+            grouping[checkExistsID].seedling.ditanam.mati += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
+            grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
+            grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'hilang' && data.condition == 'hilang') {
+            grouping[checkExistsID].seedling.hilang += parseInt(data.amount)
+          } 
+        } else {
+          if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
+            pushData.seedling.ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
+            pushData.seedling.ditanam.mati += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
+            pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
+            pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'hilang' && data.condition == 'hilang') {
+            pushData.seedling.hilang += parseInt(data.amount)
+          } 
+          grouping.push(pushData)
+        }
+      })
+      console.log(grouping)
+      return grouping
+    }
   },
 };
 </script>
