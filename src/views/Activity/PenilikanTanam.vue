@@ -1202,6 +1202,17 @@
                           </td>
                         </tr>
                         <tr>
+                          <th
+                            class="text-left"
+                            style="width: 200px; font-size: 14px"
+                          >
+                            Monitoring No
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.monitoring_no }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
                           <th class="text-left" style="font-size: 14px">
                             Nama FF
                           </th>
@@ -3657,7 +3668,7 @@ export default {
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
           } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
-            grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
+            grouping[checkExistsID].seedling.blm_ditanam.mati += parseInt(data.amount)
           } else if (data.status == 'hilang' && data.condition == 'hilang') {
             grouping[checkExistsID].seedling.hilang += parseInt(data.amount)
           } 
@@ -3669,7 +3680,7 @@ export default {
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
           } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
-            pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
+            pushData.seedling.blm_ditanam.mati += parseInt(data.amount)
           } else if (data.status == 'hilang' && data.condition == 'hilang') {
             pushData.seedling.hilang += parseInt(data.amount)
           } 
