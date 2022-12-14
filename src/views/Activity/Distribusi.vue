@@ -2572,7 +2572,9 @@ export default {
                 if (total_received > 0) this.distributionReport.dialogs.detail.disabledSave = false
                 else this.distributionReport.dialogs.detail.disabledSave = true
 
-                if (datas.status > 0) this.distributionReport.dialogs.detail.disabledSave = true
+                if (datas.status == 1 && this.User.role_group != 'IT' && this.User.role_name != 'UNIT MANAGER') this.distributionReport.dialogs.detail.disabledSave = true
+
+                if (datas.status > 1) this.distributionReport.dialogs.detail.disabledSave = true
 
                 this.distributionReport.dialogs.detail.show = true
             }).catch(err => {
@@ -2634,9 +2636,21 @@ export default {
         async verificationDistributionByUM() {
             const url = `${this.apiConfig.baseUrl}DistributionVerificationUM`
             const distributionData = this.distributionReport.dialogs.detail.data
+
+            let listSeedling = []
+            await this.distributionReport.dialogs.detail.adjustment.forEach(lahan => {
+                lahan.items.forEach(item => {
+                    listSeedling.push({
+                        lahan_no: lahan.lahan_no,
+                        ...item
+                    })
+                })
+            })
+            
             const postData = {
                 distribution_no: distributionData.distribution_no,
-                approved_by: this.User.email
+                approved_by: this.User.email,
+                list_trees: listSeedling
             }
             
             this.distributionReport.dialogs.detail.show = false
