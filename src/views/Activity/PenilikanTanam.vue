@@ -1419,13 +1419,6 @@
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-
       <template v-slot:top>
         <v-row class="ma-0 mt-2 align-center">
           <!-- Program Year -->
@@ -1514,6 +1507,19 @@
         </v-menu>
       </template>
 
+      <!-- Lahan Condition Column -->
+      <template v-slot:item.lahan_condition="{ item }">
+        {{ item.lahan_condition.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) }}
+      </template>
+
+      <!-- Status Column -->
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="item.status == 1 ? 'green' : 'red'" class="white--text">
+          <v-icon class="mr-1">mdi-{{ item.status == 1 ? 'check' : 'close' }}-circle</v-icon>
+          {{ item.status == 1 ? 'Verified' : 'Unverified' }}
+        </v-chip>
+      </template>
+      
       <!-- Action Column -->
       <template v-slot:item.actions="{ item }">
         <v-btn color="info white--text" rounded small class="pl-1 mr-2" @click="showDetail(item)">
@@ -1620,10 +1626,11 @@ export default {
     search: "",
     type: "",
     headers: [
+      { text: "Management Unit", value: "mu_name" },
       { text: "Field Facilitator", value: "nama_ff" },
-      { text: "Nama Petani", value: "nama_petani" },
-      { text: "No Lahan", align: "start", value: "lahan_no", sortable: false },
-      { text: "Kondisi Lahan", value: "lahan_condition" },
+      { text: "Farmer", value: "nama_petani" },
+      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
+      { text: "Condition", value: "lahan_condition" },
       { text: "Status", value: "status", align: 'center' },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
