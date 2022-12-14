@@ -1494,7 +1494,7 @@
         <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" :key="lahan" class="green white--text ma-1">
           {{ item.lahan_no.replace('[', '').replace(']', '').split(',')[0] }}
         </v-chip>
-        <v-menu v-else open-on-hover offset-y :close-on-content-click="false" content-class="rounded-xl" >
+        <v-menu v-else open-on-hover offset-x :close-on-content-click="false" content-class="rounded-xl" >
           <template v-slot:activator="{attrs, on}">
             <v-btn rounded small v-bind="attrs" v-on="on" color="info white--text">
               {{ item.lahan_no.replace('[', '').replace(']', '').split(',').length }} Lahan
