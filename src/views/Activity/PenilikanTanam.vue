@@ -1887,9 +1887,9 @@ export default {
 
     await this.firstAccessPage();
 
-    // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
+    const taskForceEmails = this.$store.state.taskForceTeam.emails || []
     
-    if (this.User.role_group != 'IT') {
+    if (this.User.role_group != 'IT' && taskForceEmails.includes(this.User.email) == false) {
       this.$store.state.maintenanceOverlay = true
     }
   },
