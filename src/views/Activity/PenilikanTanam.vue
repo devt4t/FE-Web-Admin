@@ -1515,10 +1515,10 @@
       </template>
 
       <!-- Status Column -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="item.status == 1 ? 'green' : 'red'" class="white--text pl-1">
-          <v-icon class="mr-1">mdi-{{ item.status == 1 ? 'check' : 'close' }}-circle</v-icon>
-          {{ item.status == 1 ? 'Verified' : 'Unverified' }}
+      <template v-slot:item.is_validate="{ item }">
+        <v-chip :color="item.is_validate == 1 ? 'green' : 'red'" class="white--text pl-1">
+          <v-icon class="mr-1">mdi-{{ item.is_validate == 1 ? 'check' : 'close' }}-circle</v-icon>
+          {{ item.is_validate == 1 ? 'Verified' : 'Unverified' }}
         </v-chip>
       </template>
       
@@ -1633,7 +1633,7 @@ export default {
       { text: "Farmer", value: "nama_petani" },
       { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
       { text: "Condition", value: "lahan_condition" },
-      { text: "Status", value: "status", align: 'center' },
+      { text: "Status", value: "is_validate", align: 'center' },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
 
