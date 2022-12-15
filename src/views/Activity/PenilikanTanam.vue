@@ -1509,7 +1509,9 @@
 
       <!-- Lahan Condition Column -->
       <template v-slot:item.lahan_condition="{ item }">
-        {{ item.lahan_condition.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase()) }}
+        <span style="text-transform: capitalize">
+          {{ item.lahan_condition.replace('_', ' ') }}
+        </span>
       </template>
 
       <!-- Status Column -->
