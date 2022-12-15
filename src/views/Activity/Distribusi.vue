@@ -822,6 +822,36 @@
                                     </v-data-table>
                                 </v-col>
                             </v-row>
+                            <!-- Photos -->
+                            <v-row class="ma-0 mt-4">
+                                <v-col cols="12" class="d-flex align-center">
+                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Images</h3><v-divider class="mx-2"></v-divider>
+                                </v-col>
+                                <v-col cols="12" lg="6">
+                                    <h4 class="text-center">Photo</h4>
+                                    <v-card elevation="2" class="rounded-xl" height="300">
+                                        <v-img
+                                            height="300"
+                                            v-bind:src="`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.distribution_photo}`"
+                                            class="my-2 mb-4 rounded-xl cursor-pointer"
+                                            id="Distribution Photo"
+                                            @click="showLightbox(`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.distribution_photo}`)"
+                                        ></v-img
+                                    ></v-card>
+                                </v-col>
+                                <v-col cols="12" lg="6">
+                                    <h4 class="text-center">Farmer Signature</h4>
+                                    <v-card elevation="2" class="rounded-xl" height="300">
+                                        <v-img
+                                            height="300"
+                                            v-bind:src="`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.farmer_signature}`"
+                                            class="my-2 mb-4 rounded-xl cursor-pointer"
+                                            id="Farmer Signature"
+                                            @click="showLightbox(`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.farmer_signature}`)"
+                                        ></v-img
+                                    ></v-card>
+                                </v-col>
+                            </v-row>
                         </div>
                     </v-card-text>
                     <v-card-actions class="" v-if="distributionReport.dialogs.detail.data">
@@ -1681,6 +1711,7 @@ export default {
             distributionReport: true
         },
         apiConfig: {
+            imageUrl: localStorage.getItem('BaseUrl'),
             baseUrl: localStorage.getItem('BaseUrlGet'),
             token: localStorage.getItem('token'),
         },
@@ -3019,6 +3050,14 @@ export default {
                     this.$router.push("/")
                 }
             }
+        },
+        showLightbox(imgs, index) {
+            if (imgs) this.$store.state.lightbox.imgs = imgs
+            
+            if (index) this.$store.state.lightbox.index = index
+            else this.$store.state.lightbox.index = 0
+
+            this.$store.state.lightbox.show = true
         },
         treeAdjustmentChange(adjIndex, treeIndex) {
             const distributed = parseInt(this.distributionReport.dialogs.detail.adjustment[adjIndex].items[treeIndex].total_distributed)
