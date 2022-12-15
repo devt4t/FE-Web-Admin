@@ -1320,7 +1320,7 @@
               </v-row>
             </v-container>
           </v-card-text>
-          <v-card-actions v-if="defaultItem.waitingapproval == true">
+          <v-card-actions v-if="defaultItem.waitingapproval == true && load == false">
             <v-spacer></v-spacer>
             <v-btn
               v-if="RoleAccesCRUDShow == true"
