@@ -1186,7 +1186,7 @@
             </v-container>
             <v-container v-if="load == false">
               <v-row>
-                <v-col cols="12" sm="8" md="8">
+                <v-col cols="12">
                   <v-simple-table>
                     <template v-slot:default>
                       <tbody>
@@ -1233,7 +1233,7 @@
                             No Lahan
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.lahan_no.replace('[', '').replace(']', '') }}</strong>
+                            <strong v-if="defaultItem.lahan_no">{{ defaultItem.lahan_no.replace('[', '').replace(']', '') }}</strong>
                           </td>
                         </tr>
                         <tr>
@@ -1241,7 +1241,9 @@
                             Kondisi Lahan
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.lahan_condition }}</strong>
+                            <strong style="text-transform: capitalize">
+                              {{ defaultItem.lahan_condition.replace('_', ' ') }}
+                            </strong>
                           </td>
                         </tr>
                       </tbody>
@@ -1285,52 +1287,125 @@
                             <td class="text-center">{{ seedIndex + 1 }}</td>
                             <td>{{ seed.tree_category }}</td>
                             <td>{{ seed.tree_name }}</td>
-                            <td class="text-center">{{ seed.seedling.ditanam.hidup }}</td>
-                            <td class="text-center">{{ seed.seedling.ditanam.mati }}</td>
-                            <td class="text-center">{{ seed.seedling.blm_ditanam.hidup }}</td>
-                            <td class="text-center">{{ seed.seedling.blm_ditanam.mati }}</td>
-                            <td class="text-center">{{ seed.seedling.hilang }}</td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.hidup"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.mati"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.hilang"></v-text-field>
+                            </td>
                           </tr>
                         </tbody>
                       </v-simple-table>
                     </h3>
                   </div>
                 </v-col>
-                <v-col cols="12" sm="4" md="4">
-                  <div>Foto Foto</div>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.gambarshow1"
-                    @click="showLightbox(defaultItem.gambarshow1)"
-                    class="my-1 mb-4 rounded-xl cursor-pointer"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.gambarshow2"
-                    @click="showLightbox(defaultItem.gambarshow2)"
-                    class="my-1 mb-4 rounded-xl cursor-pointer"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.gambarshow3"
-                    @click="showLightbox(defaultItem.gambarshow3)"
-                    class="my-1 mb-4 rounded-xl cursor-pointer"
-                  ></v-img>
+                <v-col cols="12">
+                  <div class="text-center mb-2"><v-icon>mdi-image-multiple</v-icon> Photos</div>
+                  <v-row>
+                    <v-col cols="12" lg="4">
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.gambarshow1"
+                        @click="showLightbox(defaultItem.gambarshow1)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.gambarshow2"
+                        @click="showLightbox(defaultItem.gambarshow2)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.gambarshow3"
+                        @click="showLightbox(defaultItem.gambarshow3)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
-          <v-card-actions v-if="defaultItem.waitingapproval == true && load == false">
+          <v-card-actions v-if="load == false">
             <v-spacer></v-spacer>
             <v-btn
-              v-if="RoleAccesCRUDShow == true"
+              v-if="RoleAccesCRUDShow == true && defaultItem.is_validate == 0 && User.role_name != 'UNIT MANAGER'"
               rounded
               color="green white--text"
               class="pr-3"
               @click="verifSubmit()"
               elevation="1"
             >
-              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification FC
+            </v-btn>
+            <v-btn
+              v-else-if="RoleAccesCRUDShow == true && defaultItem.is_validate == 1 && User.role_name != 'FIELD COORDINATOR'"
+              rounded
+              @click="dialogVerificationUM = true"
+              color="green white--text"
+              class="pr-3"
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification UM
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1375,6 +1450,30 @@
               class="pr-3"
               rounded
               @click="VerificationItemConfirm"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK, Verify
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogVerificationUM" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center">
+            Are you sure you want to VERIFICATION? <small class="red--text">This can't be undone!</small>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="pr-3" color="red white--text" rounded @click="dialogVerificationUM = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="green white--text"
+              class="pr-3"
+              rounded
+              @click="VerificationUMItemConfirm"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               OK, Verify
@@ -1484,7 +1583,7 @@
 
       <!-- No Lahan Column -->
       <template v-slot:item.lahan_no="{item}">
-        <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" :key="lahan" class="green white--text ma-1">
+        <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" class="green white--text ma-1">
           {{ item.lahan_no.replace('[', '').replace(']', '').split(',')[0] }}
         </v-chip>
         <v-menu v-else open-on-hover offset-x :close-on-content-click="false" content-class="rounded-xl" >
@@ -1495,8 +1594,8 @@
           </template>
           <v-card class="pa-2 pb-1 d-flex flex-column">
             <v-chip 
-              v-for="lahan in item.lahan_no.replace('[', '').replace(']', '').split(',')" 
-              :key="lahan"
+              v-for="(lahan, lahanIndex) in item.lahan_no.replace('[', '').replace(']', '').split(',')" 
+              :key="lahanIndex"
               color="green white--text"
               class="mb-1"
               style="cursor: auto"
@@ -1516,9 +1615,9 @@
 
       <!-- Status Column -->
       <template v-slot:item.is_validate="{ item }">
-        <v-chip :color="item.is_validate == 1 ? 'green' : 'red'" class="white--text pl-1">
-          <v-icon class="mr-1">mdi-{{ item.is_validate == 1 ? 'check' : 'close' }}-circle</v-icon>
-          {{ item.is_validate == 1 ? 'Verified' : 'Unverified' }}
+        <v-chip :color="item.is_validate > 0 ? `${ item.is_validate == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
+          <v-icon class="mr-1">mdi-{{ item.is_validate > 0 ? `${ item.is_validate == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
+          {{ item.is_validate > 0 ? `Verified ${item.is_validate == 1 ? 'FC' : 'UM'}` : 'Unverified' }}
         </v-chip>
       </template>
       
@@ -1559,8 +1658,16 @@
       v-model="snackbar"
       :color="colorsnackbar"
       :timeout="timeoutsnackbar"
+      rounded="xl"
+      class="d-flex"
     >
-      {{ textsnackbar }}
+      <div class="d-flex justify-between">
+          <p class="mb-0">
+              {{ textsnackbar }}
+          </p>
+          <v-spacer></v-spacer>
+          <v-icon small class="pl-1" @click="snackbar = false">mdi-close-circle</v-icon>
+      </div>
     </v-snackbar>
   </div>
 </template>
@@ -1761,6 +1868,7 @@ export default {
     selectVillageForm: "",
     BaseUrlGet: "",
     dialogVerification: false,
+    dialogVerificationUM: false,
     fc_no_global: "",
     typegetdata: "",
 
@@ -2250,14 +2358,17 @@ export default {
       }
     },
     async verif() {
-      console.log(this.defaultItem.id);
       const datapost = {
         monitoring_no: this.defaultItem.monitoring_no,
-        validate_by: this.employee_no,
+        validate_by: this.User.email,
       };
-      console.log(datapost);
       // this.dialogDetail = false;
       try {
+        this.dialogDetail = false
+        this.dialogVerification = false
+        this.$store.state.loadingOverlayText = 'Verifying monitoring by FC...'
+        this.$store.state.loadingOverlay = true
+
         const response = await axios.post(
           this.BaseUrlGet + "ValidateMonitoring",
           datapost,
@@ -2269,23 +2380,27 @@ export default {
         );
         console.log(response.data.data.result);
         if (response.data.data.result == "success") {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           this.initialize();
+          this.snackbar = true
+          this.textsnackbar = 'Success!'
+          this.timeoutsnackbar = 5000
+          this.colorsnackbar = 'green'
         } else {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           this.alerttoken = true;
         }
       } catch (error) {
-        console.error(error.response);
+        this.textsnackbar = error.message
+        this.timeoutsnackbar = 5000
+        this.colorsnackbar = 'red'
         if (error.response.status == 401) {
           this.alerttoken = true;
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           localStorage.removeItem("token");
           this.$router.push("/");
         }
+      } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
       }
     },
     async verifDelete() {
@@ -3231,6 +3346,97 @@ export default {
     },
     VerificationItemConfirm() {
       this.verif();
+    },
+    async VerificationUMItemConfirm() {
+      try {
+        this.dialogVerificationUM = false
+        this.dialogDetail = false
+        this.$store.state.loadingOverlayText = 'Verifying monitoring by UM...'
+        this.$store.state.loadingOverlay = true
+
+        const data = this.defaultItem
+        let listTrees = []
+        // ungrouping per condition
+        await data.list_detail.forEach((tree) => {
+          if (tree.seedling.ditanam.hidup > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.ditanam.hidup,
+              status: 'sudah_ditanam',
+              condition: 'hidup',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.ditanam.mati > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.ditanam.mati,
+              status: 'sudah_ditanam',
+              condition: 'mati',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.blm_ditanam.hidup > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.blm_ditanam.hidup,
+              status: 'belum_ditanam',
+              condition: 'hidup',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.blm_ditanam.mati > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.blm_ditanam.mati,
+              status: 'belum_ditanam',
+              condition: 'mati',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.hilang > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.hilang,
+              status: 'hilang',
+              condition: 'hilang',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+        })
+        
+        const url = `${this.BaseUrlGet}MonitoringVerificationUM`
+        const postData = {
+          monitoring_no: data.monitoring_no,
+          list_trees: listTrees,
+          validate_by: this.User.email
+        }
+        const response = await axios.post(url, postData, {
+          headers: {
+            Authorization: `Bearer ${this.authtoken}`
+          }
+        })
+        if (response) {
+          this.textsnackbar = "Verified!"
+          this.timeoutsnackbar = 5000
+          this.colorsnackbar = 'green'
+          await this.initialize()
+        }
+      } catch (error) {
+        this.textsnackbar = error.message
+        this.timeoutsnackbar = 5000
+        this.colorsnackbar = 'red'
+        console.log(error)
+      } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
     },
     closeVerification() {
       this.dialogVerification = false;
