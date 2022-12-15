@@ -1516,7 +1516,7 @@
 
       <!-- Status Column -->
       <template v-slot:item.status="{ item }">
-        <v-chip :color="item.status == 1 ? 'green' : 'red'" class="white--text">
+        <v-chip :color="item.status == 1 ? 'green' : 'red'" class="white--text pl-1">
           <v-icon class="mr-1">mdi-{{ item.status == 1 ? 'check' : 'close' }}-circle</v-icon>
           {{ item.status == 1 ? 'Verified' : 'Unverified' }}
         </v-chip>
