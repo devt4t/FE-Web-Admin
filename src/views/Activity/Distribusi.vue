@@ -1649,15 +1649,17 @@
                                     </template>
                                     <!-- All Bags Column -->
                                     <template v-slot:item.sum_all_bags="{item}">
-                                        <v-icon>mdi-basket </v-icon> {{ item.sum_all_bags }}
-                                    </template>
-                                    <!-- Loaded Bags Column -->
-                                    <template v-slot:item.sum_loaded_bags="{item}">
-                                        <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
-                                    </template>
-                                    <!-- DIstributed Bags Column -->
-                                    <template v-slot:item.sum_distributed_bags="{item}">
-                                        <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
+                                        <div class="d-flex align-center justify-content-between">
+                                            <div class="d-flex flex-column align-center mr-1">
+                                                <v-icon>mdi-printer </v-icon> {{ item.sum_all_bags }}
+                                            </div>
+                                            <div class="d-flex flex-column align-center mx-1">
+                                                <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
+                                            </div>
+                                            <div class="d-flex flex-column align-center ml-1">
+                                                <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
+                                            </div>
+                                        </div>
                                     </template>
                                     <!-- Status Column -->
                                     <template v-slot:item.status="{item}">
@@ -1798,9 +1800,10 @@ export default {
                     {text: 'Management Unit', value: 'mu_name'},
                     {text: 'FF Name', value: 'ff_name'},
                     {text: 'Farmer Name', value: 'farmer_name'},
-                    {text: 'All Bags', value: 'sum_all_bags'},
-                    {text: 'Loaded Bags', value: 'sum_loaded_bags'},
-                    {text: 'Distributed Bags', value: 'sum_distributed_bags'},
+                    {text: 'Bags', value: 'sum_all_bags', align: 'center'},
+                    {text: 'KAYU', value: 'adj_kayu', align: 'center'},
+                    {text: 'MPTS', value: 'adj_mpts', align: 'center'},
+                    {text: 'CROPS', value: 'adj_crops', align: 'center'},
                     {text: 'Status', value: 'status', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
