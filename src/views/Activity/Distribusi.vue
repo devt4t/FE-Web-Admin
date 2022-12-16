@@ -1650,13 +1650,13 @@
                                     <!-- All Bags Column -->
                                     <template v-slot:item.sum_all_bags="{item}">
                                         <div class="d-flex align-center justify-content-between">
-                                            <div class="d-flex flex-column align-center mr-1">
+                                            <div class="d-flex flex-column align-center mr-1 mr-lg-5">
                                                 <v-icon>mdi-printer </v-icon> {{ item.sum_all_bags }}
                                             </div>
-                                            <div class="d-flex flex-column align-center mx-1">
+                                            <div class="d-flex flex-column align-center mx-1 mx-lg-5">
                                                 <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
                                             </div>
-                                            <div class="d-flex flex-column align-center ml-1">
+                                            <div class="d-flex flex-column align-center ml-1 ml-lg-5">
                                                 <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
                                             </div>
                                         </div>
