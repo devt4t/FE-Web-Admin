@@ -828,7 +828,7 @@
                                     <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Images</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
                                 <v-col cols="12" lg="6">
-                                    <h4 class="text-center">Photo</h4>
+                                    <h4 class="text-center">Receiver: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
                                     <v-card elevation="2" class="rounded-xl" height="300">
                                         <v-img
                                             height="300"
