@@ -1622,7 +1622,7 @@ export default {
             const params ={
                 program_year: this.tables.lahan.programYear.model
             }
-            if (this.User.role_group != 'IT' && this.User.role_name != 'PROGAM MANAGER') {
+            if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
                 params.created_by = this.User.email
             }
             await axios.get(`${url}${new URLSearchParams(params)}`,{
