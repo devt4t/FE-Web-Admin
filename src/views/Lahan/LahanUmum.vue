@@ -1102,11 +1102,11 @@
                     </v-expansion-panels>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER')">
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER')">
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
                         Verification
                     </v-btn>
-                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 1)" rounded color="red white--text" @click="confirmationShow('unverif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER')">
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 1)" rounded color="red white--text" @click="confirmationShow('unverif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER')">
                         <v-icon class="mr-1">mdi-undo-variant</v-icon>
                         Unverification
                     </v-btn>
@@ -1252,7 +1252,7 @@
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM_MANAGER') ||  item.is_verified != 1)">
+                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER') ||  item.is_verified != 1)">
                                         <v-icon class="mr-1">mdi-undo-variant</v-icon>
                                         Unverif
                                     </v-btn>
