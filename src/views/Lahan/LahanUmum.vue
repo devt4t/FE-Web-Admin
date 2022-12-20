@@ -531,6 +531,7 @@
                                     <p class="mb-0"><v-icon class="mr-2">mdi-crosshairs-gps</v-icon>Coordinates</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
+                                <p class="red--text mb-0">*Use dots (<strong>.</strong>), not commas (<strong>,</strong>) and please <strong>check locations</strong> before saving!</p>
                                 <v-row class="my-0">
                                     <!-- Latitude -->
                                     <v-col cols="12" sm="12" md="6" lg="6">
