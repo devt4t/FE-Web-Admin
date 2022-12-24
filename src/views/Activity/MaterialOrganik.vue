@@ -122,11 +122,59 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!-- Add -->
+        <v-dialog v-model="dialogs.add.show" max-width="800px" persistent content-class="rounded-lg" scrollable>
+            <v-card class="rounded-xl">
+                <v-card-title class="mb-1 headermodalstyle">
+                    <v-icon class="mr-2 white--text">mdi-plus-circle</v-icon>
+                    <span>Add</span>
+                    <v-divider dark class="mx-2"></v-divider>
+                    <v-icon color="red" @click="dialogs.add.show = false">mdi-close-circle</v-icon>
+                </v-card-title>
+                <v-card-text>
+                    <v-row class="ma-0">
+                        <!-- Photo 1 File -->
+                        <v-col cols="12" sm="12" md="6" lg="6">
+                            <v-file-input
+                            color="success"
+                            item-color="success"
+                            outlined
+                            rounded
+                            hide-details
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Photo 1"
+                            prepend-icon="mdi-camera"
+                            label="Photo 1 (*max 6mb)"
+                            v-on:change="photo1FileChanged"
+                            :rules="[(v) => !!v || 'Field is required']"
+                            ></v-file-input>
+                            <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogs.add.inputs.photo1.preview && dialogs.add.inputs.photo1.preview !== ''">
+                                <v-img
+                                    height="300"
+                                    v-bind:src="dialogs.add.inputs.photo1.preview"
+                                    class="my-2 mb-4 rounded-xl cursor-pointer"
+                                    id="photo1"
+                                    @click="showLightbox(dialogs.add.inputs.photo1.preview)"
+                                ></v-img
+                            ></v-card>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-divider class="mx-2"></v-divider>
+                    <v-btn color="green white--text" rounded class="px-4">
+                        <v-icon class="mr-1">mdi-content-save-check</v-icon>
+                        Save
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <!-- END: Dialog -->
         
         <!-- main table -->
         <v-data-table
-            :headers="tables.main.headers"
+            multi-sort
+            :headers="land_program.model == 'Petani' ? tables.main.headers : tables.main.headers2"
             :items="tables.main.items"
             :search="tables.main.search"
             :loading="tables.main.loading"
@@ -149,6 +197,21 @@
                         rounded
                         label="Program Year"
                         class=""
+                        style="max-width: 200px"
+                    ></v-select>
+                    <!-- Land Program -->
+                    <v-select
+                        color="success"
+                        item-color="success"
+                        v-model="land_program.model"
+                        :items="land_program.options"
+                        outlined
+                        dense
+                        hide-details
+                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                        rounded
+                        label="Land Program"
+                        class="ml-2"
                         style="max-width: 200px"
                     ></v-select>
                     <v-divider class="mx-2"></v-divider>
@@ -181,6 +244,10 @@
                         style="max-width: 200px"
                     ></v-select>
                     <v-divider class="mx-2"></v-divider>
+                    <v-btn v-if="land_program.model == 'Umum'" color="info" rounded class="pl-2" @click="dialogs.add.show = true">
+                        <v-icon class="mr-1">mdi-plus-circle</v-icon>
+                        Add
+                    </v-btn>
                 </v-row>
             </template>
             <!-- Created At Column -->
@@ -195,6 +262,7 @@
             <template v-slot:item.status="{item}">
                 <v-chip
                     :color="`${item.status ? 'green' : 'red'} white--text`"
+                    class="pl-1"
                 >
                     <v-icon class="mr-1">mdi-{{ item.status ? 'check' : 'close' }}-circle</v-icon>
                     {{ item.status ? 'Verified' : 'Unverified' }}
@@ -279,6 +347,16 @@ export default {
                 datas: null,
                 loading: false,
                 show: false
+            },
+            add: {
+                inputs: {
+                    photo1: {
+                        model: null,
+                        preview: null
+                    }
+                },
+                loading: false,
+                show: false,
             }
         },
         itemsbr: [
@@ -293,6 +371,10 @@ export default {
                 href: "breadcrumbs_link_1",
             },
         ],
+        land_program: {
+            model: 'Umum',
+            options: ['Petani', 'Umum']
+        },
         programYear: '',
         organicType: 'Pupuk',
         snackbar: {
@@ -308,6 +390,16 @@ export default {
                     { text: "Date", value: "created_at" },
                     { text: "FF Name", value: "ff_name" },
                     { text: "Farmer Name", value: "farmer_name" },
+                    { text: "Organic Name", value: "organic_name", align: 'center' },
+                    { text: "Amount", value: "organic_amount" },
+                    { text: "Status", value: "status", align: 'center' },
+                    { text: "Actions", value: "actions", align: 'right' },
+                ],
+                headers2: [
+                    { text: "MOU No", value: "mou_no" },
+                    { text: "Date", value: "created_at" },
+                    { text: "PIC T4T", value: "employee_name" },
+                    { text: "PIC Lahan", value: "pic_lahan" },
                     { text: "Organic Name", value: "organic_name", align: 'center' },
                     { text: "Amount", value: "organic_amount" },
                     { text: "Status", value: "status", align: 'center' },
@@ -332,6 +424,11 @@ export default {
                 await this.getMainTableData()
             }
         },
+        'land_program.model': {
+            async handler() {
+                await this.getMainTableData()
+            }
+        }
     },
     async mounted() {
         await this.firstAccessPage()
@@ -403,6 +500,7 @@ export default {
         async getMainTableData() {
             this.tables.main.loadingText = 'Getting Data...'
             this.tables.main.loading = true
+            this.tables.main.items = []
 
             let params = {
                 program_year: this.programYear,
@@ -410,9 +508,10 @@ export default {
                 typegetdata: this.User.ff.value_data,
                 ff_no: this.User.ff.ff
             }
-            
+            let url = 'GetOrganicAllAdmin'
+            if (this.land_program.model == 'Umum') url = 'GetOrganicLahanUmumAllAdmin'
             await axios.get(
-                `${this.apiConfig.baseUrl}GetOrganicAllAdmin?${new URLSearchParams(params)}`,
+                `${this.apiConfig.baseUrl}${url}?${new URLSearchParams(params)}`,
                 {
                     headers: {
                         Authorization: `Bearer ${this.apiConfig.token}` 
@@ -422,7 +521,6 @@ export default {
                 const res = response.data.data.result
                 this.tables.main.items = res 
             }).catch(err => {
-                this.tables.main.items = []
                 this.sessionEnd(err)
             }).finally(() => {
                 this.tables.main.loading = false
@@ -430,6 +528,21 @@ export default {
         },
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
+        },
+        photo1FileChanged (event) {
+            if (event) {
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.dialogs.add.inputs.photo1.model = event
+                    this.dialogs.add.inputs.photo1.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
+            } else {
+                this.dialogs.add.inputs.photo1.model = null
+                this.dialogs.add.inputs.photo1.preview = ""
+            }
         },
         sessionEnd(error) {
             if (typeof error.response.status != 'undefined') {
@@ -439,7 +552,6 @@ export default {
                 }
             }
         },
-        // Showing Lightbox
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs
             

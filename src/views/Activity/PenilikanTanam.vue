@@ -1517,6 +1517,7 @@
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
+      multi-sort
     >
       <template v-slot:top>
         <v-row class="ma-0 mt-2 align-center">
@@ -1696,7 +1697,7 @@ export default {
         href: "breadcrumbs_dashboard",
       },
       {
-        text: "Penilikan Tanam",
+        text: "Realisasi Tanam",
         disabled: true,
         href: "breadcrumbs_link_1",
       },

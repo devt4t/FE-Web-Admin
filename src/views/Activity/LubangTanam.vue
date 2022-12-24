@@ -960,6 +960,221 @@
       </v-card>
     </v-dialog>
 
+    <!-- Modal Add Lahan Umum -->
+    <v-dialog v-model="dialogAddPlantingHoleLahanUmum.model" max-width="800px" content-class="rounded-xl mx-1" scrollable>
+      <v-card>
+        <v-card-title class="mb-1 headermodalstyle">
+          <span class="">Penilikan Lubang Lahan Umum</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row class="my-0">
+            <!-- MoU No -->
+            <v-col cols="12" sm="12">
+              <v-autocomplete
+                color="success"
+                item-color="success"
+                item-text="mou_no"
+                item-value="mou_no"
+                v-model="dialogAddPlantingHoleLahanUmum.inputs.mou_no.model"
+                :items="dialogAddPlantingHoleLahanUmum.inputs.mou_no.options"
+                @change="getSeedDetailLahanUmumByMOU"
+                :disabled="dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled"
+                outlined
+                hide-details
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="MoU No"
+                class=""
+              >
+                <template v-slot:item="data">
+                  <v-list-item-content>
+                    <v-list-item-title v-html="data.item.mou_no"></v-list-item-title>
+                    <v-list-item-subtitle>{{ data.item.pic_lahan }} - {{ data.item.lahanNo }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                </template>
+              </v-autocomplete>
+            </v-col>
+            <!-- Lubang -->
+            <v-col cols="12" sm="12" lg="6">
+              <v-text-field
+                color="success"
+                hide-details
+                item-color="success"
+                :label="dialogAddPlantingHoleLahanUmum.inputs.hole.label"
+                min="0"
+                outlined
+                rounded
+                :rules="[(v) => !!v || 'Field is required']"
+                v-model="dialogAddPlantingHoleLahanUmum.inputs.hole.model"
+                type="number"
+              >
+                <v-btn slot="append" text class="text-lowercase" rounded>
+                  <p>
+                    hole{{ dialogAddPlantingHoleLahanUmum.inputs.hole.model > 1 ? 's' : '' }}
+                  </p>
+                </v-btn>
+              </v-text-field>
+            </v-col>
+            <!-- Lubang Standar -->
+            <v-col cols="12" sm="12" lg="6">
+              <v-text-field
+                color="success"
+                hide-details
+                item-color="success"
+                :label="dialogAddPlantingHoleLahanUmum.inputs.hole_standard.label"
+                min="0"
+                outlined
+                rounded
+                :rules="[(v) => !!v || 'Field is required']"
+                v-model="dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model"
+                type="number"
+              >
+                <v-btn slot="append" text class="text-lowercase" rounded>
+                  <p>
+                    hole{{ dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model > 1 ? 's' : '' }}
+                  </p>
+                </v-btn>
+              </v-text-field>
+            </v-col>
+          </v-row>
+          <div class="pb-2 d-flex align-center">
+              <p class="mb-0"><v-icon class="mr-2">mdi-sprout</v-icon> Seedling Adjustment</p>
+              <v-divider class="mx-2"></v-divider>
+              <v-btn rounded :color="dialogAddPlantingHoleLahanUmum.inputs.hole.model < dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment ? 'red' : 'green'" class="white--text">
+                <v-icon class="mr-1">mdi-sprout</v-icon>
+                {{ numberFormat(dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment) }}
+              </v-btn>
+          </div>
+          <v-row>
+            <!-- Seed Adjustment -->
+            <v-col cols="12" sm="12">
+              <v-data-table
+                hide-default-footer
+                :items-per-page="-1"
+                :headers="dialogAddPlantingHoleLahanUmum.inputs.adjustment.headers"
+                :items="dialogAddPlantingHoleLahanUmum.inputs.adjustment.items"
+                :loading="dialogAddPlantingHoleLahanUmum.inputs.adjustment.loading"
+              >
+                <!-- Index Column -->
+                <template v-slot:item.index="{index}">{{ index+1 }}</template>
+                <!-- Amount Column -->
+                <template v-slot:item.amount="{item, index}">
+                    <v-row class="ma-0 align-center">
+                        <v-divider class="mr-2"></v-divider>
+                        <v-text-field 
+                            color="green"
+                            dense
+                            hide-details
+                            outlined
+                            append-icon="mdi-sprout"
+                            rounded
+                            style="max-width: 175px;"
+                            type="number"
+                            min="0"
+                            v-model="dialogAddPlantingHoleLahanUmum.inputs.adjustment.items[index].amount"
+                            @change="updateTotalSeedlingAdjustment"
+                            @keyup="updateTotalSeedlingAdjustment"
+                            @click="updateTotalSeedlingAdjustment"
+                        ></v-text-field>
+                    </v-row>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+          <div class="pb-2 d-flex align-center">
+              <p class="mb-0"><v-icon class="mr-2">mdi-image-multiple</v-icon> Photos</p>
+              <v-divider class="ml-2"></v-divider>
+          </div>
+          <v-row class="ma-0">
+            <!-- Photo 1 File -->
+            <v-col cols="12" sm="12" md="6" lg="6">
+                <v-file-input
+                color="success"
+                item-color="success"
+                outlined
+                rounded
+                hide-details
+                accept="image/png, image/jpeg, image/bmp"
+                placeholder="Photo 1"
+                prepend-icon="mdi-camera"
+                label="Photo Dekat (*max 6mb)"
+                v-on:change="photo1FileChanged"
+                :rules="[(v) => !!v || 'Field is required']"
+                ></v-file-input>
+                <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogAddPlantingHoleLahanUmum.inputs.photo1.preview && dialogAddPlantingHoleLahanUmum.inputs.photo1.preview !== ''">
+                    <v-img
+                        height="300"
+                        v-bind:src="dialogAddPlantingHoleLahanUmum.inputs.photo1.preview"
+                        class="my-2 mb-4 rounded-xl cursor-pointer"
+                        id="photo1"
+                        @click="showLightbox(dialogAddPlantingHoleLahanUmum.inputs.photo1.preview)"
+                    ></v-img
+                ></v-card>
+            </v-col>
+            <!-- Photo 2 File -->
+            <v-col cols="12" sm="12" md="6" lg="6">
+                <v-file-input
+                color="success"
+                item-color="success"
+                outlined
+                rounded
+                hide-details
+                accept="image/png, image/jpeg, image/bmp"
+                placeholder="Photo 2"
+                prepend-icon="mdi-camera"
+                label="Photo Jauh (*max 6mb)"
+                v-on:change="photo2FileChanged"
+                :rules="[(v) => !!v || 'Field is required']"
+                ></v-file-input>
+                <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogAddPlantingHoleLahanUmum.inputs.photo2.preview && dialogAddPlantingHoleLahanUmum.inputs.photo2.preview !== ''">
+                    <v-img
+                        height="300"
+                        v-bind:src="dialogAddPlantingHoleLahanUmum.inputs.photo2.preview"
+                        class="my-2 mb-4 rounded-xl cursor-pointer"
+                        id="photo2"
+                        @click="showLightbox(dialogAddPlantingHoleLahanUmum.inputs.photo2.preview)"
+                    ></v-img
+                ></v-card>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-divider class="mr-2"></v-divider>
+          <v-btn color="green white--text" @click="dialogAddPlantingHoleLahanUmum.confirm = true" rounded class="px-3" :disabled="(dialogAddPlantingHoleLahanUmum.inputs.hole.model < dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment) || dialogAddPlantingHoleLahanUmum.inputs.hole.model < 1 || !dialogAddPlantingHoleLahanUmum.inputs.mou_no.model || !dialogAddPlantingHoleLahanUmum.inputs.lahan_no || (dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled == false && (!dialogAddPlantingHoleLahanUmum.inputs.photo1.model || !dialogAddPlantingHoleLahanUmum.inputs.photo2.model))">
+            <v-icon>mdi-content-save-check</v-icon>
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Save Lahan Umum Confirm -->
+    <v-dialog v-model="dialogAddPlantingHoleLahanUmum.confirm" max-width="500px" content-class="rounded-xl">
+      <v-card>
+        <v-card-title class="d-flex align-center justify-center">Are you sure you want to SAVE?</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="red white--text pr-3"
+            rounded
+            @click="dialogAddPlantingHoleLahanUmum.confirm = false"
+          >
+            <v-icon class="mr-1">mdi-close-circle</v-icon>
+            Cancel
+          </v-btn>
+          <v-btn
+            color="green white--text pr-3"
+            rounded
+            @click="saveLahanUmumPlantingHole"
+          >
+            <v-icon class="mr-1">mdi-check-circle</v-icon>
+            OK
+          </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model="dialogShowEdit" max-width="500px">
       <v-card>
         <v-card-title class="d-flex align-center justify-center">
@@ -1079,46 +1294,13 @@
                 :size="80"
                 :width="10"
                 indeterminate
-                color="primary"
+                color="success"
               >
               </v-progress-circular>
             </v-layout>
           </v-container>
           <v-container v-if="load == false">
             <v-row>
-              <v-col cols="12" sm="4" md="4">
-                <div>Foto Signature</div>
-                <v-img
-                  height="250"
-                  v-bind:src="defaultItem.gambarshow1"
-                  class="my-1 mb-4 cursor-pointer"
-                      @click="() => {showLightbox(defaultItem.gambarshow1, 0)}"
-                ></v-img>
-                <div>Foto Foto</div>
-                <v-carousel 
-                  cycle
-                  height="250" 
-                  v-model="carousel.photo"
-                  show-arrows-on-hover
-                  hide-delimiter-background
-                  class="rounded-xl cursor-pointer"
-                >
-                  <v-carousel-item>
-                    <v-img
-                      height="250"
-                      v-bind:src="defaultItem.gambarshow2"
-                      @click="() => {showLightbox([defaultItem.gambarshow2, defaultItem.gambarshow3], 0)}"
-                    ></v-img>
-                  </v-carousel-item>
-                  <v-carousel-item>
-                    <v-img
-                      height="250"
-                      v-bind:src="defaultItem.gambarshow3"
-                      @click="() => {showLightbox([defaultItem.gambarshow2, defaultItem.gambarshow3], 1)}"
-                    ></v-img>
-                  </v-carousel-item>
-                </v-carousel>
-              </v-col>
               <v-col cols="12" sm="8" md="8">
                 <v-divider
                   style="background-color: black !important"
@@ -1134,7 +1316,7 @@
                           Tahun Program
                         </th>
                         <th class="text-left" style="font-size: 14px">
-                          {{ defaultItem.planting_year }}
+                          {{ land_program.model == 'Petani' ? defaultItem.planting_year : defaultItem.program_year }}
                         </th>
                       </tr>
                       <tr>
@@ -1142,26 +1324,12 @@
                           class="text-left"
                           style="width: 200px; font-size: 14px"
                         >
-                          Form No
+                          {{ land_program.model == 'Petani' ? 'Form No' : 'MoU No' }}
                         </th>
                         <td class="text-left" style="font-size: 14px">
-                          <strong>{{ defaultItem.ph_form_no }}</strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th class="text-left" style="font-size: 14px">
-                          Nama Petani
-                        </th>
-                        <td class="text-left" style="font-size: 14px">
-                          <strong>{{ defaultItem.nama_petani }}</strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th class="text-left" style="font-size: 14px">
-                          Nama FF
-                        </th>
-                        <td class="text-left" style="font-size: 14px">
-                          <strong>{{ defaultItem.nama_ff }}</strong>
+                          <strong>
+                            {{ land_program.model == 'Petani' ? defaultItem.ph_form_no : defaultItem.mou_no }}
+                          </strong>
                         </td>
                       </tr>
                       <tr>
@@ -1170,6 +1338,24 @@
                         </th>
                         <td class="text-left" style="font-size: 14px">
                           <strong>{{ defaultItem.lahan_no }}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="text-left" style="font-size: 14px">
+                          {{ land_program.model == 'Petani' ? 'Field Facilitator' : 'PIC T4T' }}
+                        </th>
+                        <td class="text-left" style="font-size: 14px">
+                          <strong>
+                            {{ land_program.model == 'Petani' ? defaultItem.nama_ff : defaultItem.nama_pic }}
+                          </strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="text-left" style="font-size: 14px">
+                          {{ land_program.model == 'Petani' ? 'Petani' : 'PIC Lahan' }}
+                        </th>
+                        <td class="text-left" style="font-size: 14px">
+                          <strong>{{ land_program.model == 'Petani' ? defaultItem.nama_petani : defaultItem.pic_lahan }}</strong>
                         </td>
                       </tr>
                       <tr>
@@ -1188,7 +1374,7 @@
                           <strong>{{ numberFormat(defaultItem.counter_hole_standard) }}</strong>
                         </td>
                       </tr>
-                      <tr>
+                      <tr v-if="land_program.model == 'Petani'" >
                         <th class="text-left" style="font-size: 14px">
                           Catatan
                         </th>
@@ -1221,14 +1407,48 @@
                   style="background-color: black !important"
                 ></v-divider>
               </v-col>
+              <v-col cols="12" sm="4" md="4">
+                <div v-if="land_program.model == 'Petani'">Foto Signature</div>
+                <v-img
+                  v-if="land_program.model == 'Petani'"
+                  height="250"
+                  v-bind:src="defaultItem.gambarshow1"
+                  class="my-1 mb-4 cursor-pointer"
+                  @click="() => {showLightbox(defaultItem.gambarshow1, 0)}"
+                ></v-img>
+                <div>Foto Foto</div>
+                <v-carousel 
+                  cycle
+                  height="250" 
+                  v-model="carousel.photo"
+                  show-arrows-on-hover
+                  hide-delimiter-background
+                  class="rounded-xl cursor-pointer"
+                >
+                  <v-carousel-item>
+                    <v-img
+                      height="250"
+                      v-bind:src="defaultItem.gambarshow2"
+                      @click="() => {showLightbox([defaultItem.gambarshow2, defaultItem.gambarshow3], 0)}"
+                    ></v-img>
+                  </v-carousel-item>
+                  <v-carousel-item>
+                    <v-img
+                      height="250"
+                      v-bind:src="defaultItem.gambarshow3"
+                      @click="() => {showLightbox([defaultItem.gambarshow2, defaultItem.gambarshow3], 1)}"
+                    ></v-img>
+                  </v-carousel-item>
+                </v-carousel>
+              </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-divider></v-divider>
-        <v-card-actions v-if="defaultItem.waitingapproval == true">
+        <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            v-if="RoleAccesCRUDShow == true"
+            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true"
             color="green white--text"
             @click="verifSubmit()"
             rounded
@@ -1236,6 +1456,26 @@
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Verifikasi
+          </v-btn>
+          <v-btn
+            v-if="defaultItem.is_verified == 1"
+            color="green white--text"
+            @click="verifSubmit()"
+            rounded
+            elevation="1"
+          >
+            <v-icon class="mr-1">mdi-check-circle</v-icon>
+            Verification
+          </v-btn>
+          <v-btn
+            v-else-if="defaultItem.is_verified == 2"
+            color="red white--text"
+            @click="dialogUnverificationData = defaultItem.lahan_no;dialogUnverification = true;"
+            rounded
+            elevation="1"
+          >
+            <v-icon class="mr-1">mdi-power</v-icon>
+            Unverification
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1478,7 +1718,7 @@
     </v-dialog>
     
     <v-data-table
-      :headers="headers"
+      :headers="land_program.model == 'Petani' ? headers : headers2"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
@@ -1555,6 +1795,21 @@
             class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
+          <!-- Land Program -->
+          <v-select
+            color="success"
+            item-color="success"
+            v-model="land_program.model"
+            :items="land_program.options"
+            outlined
+            dense
+            hide-details
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Land Program"
+            class="mx-auto mx-lg-3 mr-lg-0"
+            style="max-width: 200px"
+          ></v-select>
           <v-divider class="mx-4 d-none d-md-block" inset></v-divider>
           <!-- Search Input -->
           <v-text-field
@@ -1576,6 +1831,7 @@
             offset-y
             transition="slide-y-transition"
             :close-on-content-click="false"
+            v-if="land_program.model == 'Petani'"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
@@ -1617,36 +1873,16 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <!-- dropdown export button -->
-          <!-- <v-menu
-            rounded="xl"
-            bottom
-            left
-            offset-y
-            transition="slide-y-transition"
-            :close-on-content-click="false"
+          <!-- Add Lahan umum planting hole -->
+          <v-btn
+            v-if="land_program.model == 'Umum'"
+            class=""
+            color="info white--text"
+            rounded
+            @click="dialogAddPlantingHoleLahanUmumShow()"
           >
-            <template v-slot:activator="{ on, attrs }">
-              <v-icon v-bind="attrs" v-on="on" color="dark">
-                mdi-dots-vertical
-              </v-icon>
-            </template>
-  
-            <v-list class="d-flex flex-column align-center">
-              <v-list-item>
-                <v-btn
-                  v-if="RoleAccesDownloadAllShow == true"
-                  :disabled="!valueMU && User.role_group == 'IT'"
-                  rounded
-                  @click="downloadSuperAdmin()"
-                  color="blue white--text"
-                >
-                  <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-                </v-btn>
-              </v-list-item>
-            </v-list>
-          </v-menu> -->
-          
+            <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add
+          </v-btn>
         </v-row>
       </template>
 
@@ -1663,6 +1899,12 @@
           {{ numberFormat(item.total_bibit) }}
       </template>
       <!-- Color Status -->
+      <template v-slot:item.is_verified="{ item }">
+        <v-chip :color="item.is_verified > 1 ? 'green' : 'red'" class="pl-1" dark>
+          <v-icon class="mr-1">mdi-{{ item.is_verified > 1 ? 'check' : 'close' }}-circle</v-icon>
+          {{ item.is_verified > 1 ? 'Verified' : 'Unverified'  }}
+        </v-chip>
+      </template>
       <template v-slot:item.is_validate="{ item }">
         <v-chip :color="getColorStatus(item.is_validate)" dark>
           {{ item.is_validate ? 'Verified' : 'Unverified'  }}
@@ -1699,6 +1941,20 @@
                 Detail
               </v-btn>
             </v-list-item>
+            <v-list-item v-if="land_program.model == 'Umum'">
+              <v-btn
+                block
+                rounded
+                :disabled="item.is_verified == 2"
+                @click="showEditLahanUmumModal(item)"
+                color="warning white--text"
+              >
+              <v-icon class="mr-1" small color="white">
+                  mdi-pencil
+              </v-icon>
+                Edit
+              </v-btn>
+            </v-list-item>
             <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.is_validate != 1 && User.role_name == 'UNIT MANAGER') || User.role_group == 'IT'">
               <v-btn
                 vi
@@ -1725,6 +1981,17 @@
               <v-icon class="mr-1" small color="white">
                 mdi-power
               </v-icon>
+                Unverif
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER') && item.is_verified == 2">
+              <v-btn
+                color="red white--text"
+                @click="dialogUnverificationData = item.lahan_no;dialogUnverification = true;"
+                rounded
+                elevation="1"
+              >
+                <v-icon class="mr-1">mdi-power</v-icon>
                 Unverif
               </v-btn>
             </v-list-item>
@@ -1762,6 +2029,49 @@ export default {
   name: "LubangTanam",
   authtoken: "",
   data: () => ({
+    dialogAddPlantingHoleLahanUmum: {
+      confirm: false,
+      model: false,
+      inputs: {
+        mou_no: {
+          model: null,
+          options: []
+        },
+        lahan_no: null,
+        hole: {
+          label: 'Total Hole',
+          model: 0,
+        },
+        hole_standard: {
+          label: 'Standard Hole',
+          model: 0,
+        },
+        adjustment: {
+          headers: [
+              { text: 'No', value: 'index', align: 'center', sortable: false },
+              { text: 'Category', value: 'tree_category', align: 'center', sortable: false },
+              { text: 'Name', value: 'tree_name', sortable: false },
+              { text: 'Amount', value: 'amount', align: 'right', sortable: false },
+          ],
+          items: [],
+          loading: false,
+          totalAdjustment: 0
+        },
+        photo1: {
+          model: null,
+          preview: null
+        },
+        photo2: {
+          model: null,
+          preview: null
+        },
+      }
+    },
+    land_program: {
+        model: 'Umum',
+        options: ['Petani', 'Umum'],
+        disabled: false,
+    },
     carousel:{photo: 0},
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
@@ -1823,6 +2133,20 @@ export default {
       { text: "MPTS", value: "pohon_mpts", align: 'center' },
       { text: "CROPS", value: "tanaman_bawah", align: 'center' },
       { text: "Status", value: "is_validate", align: 'center' },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
+    ],
+    headers2: [
+      { text: "Management Unit", value: "nama_mu"},
+      { text: "Employee", value: "nama_pic"},
+      { text: "PIC Lahan", align: "start", value: "pic_lahan"},
+      { text: "MOU", align: "start", value: "mou_no"},
+      { text: "No Lahan", align: "start", value: "lahan_no"},
+      { text: "Lubang", value: "total_holes", align: 'center' },
+      { text: "Lubang Standar", value: "counter_hole_standard", align: 'center' },
+      { text: "KAYU", value: "pohon_kayu", align: 'center' },
+      { text: "MPTS", value: "pohon_mpts", align: 'center' },
+      { text: "CROPS", value: "tanaman_bawah", align: 'center' },
+      { text: "Status", value: "is_verified", align: 'center' },
       { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
 
@@ -2010,12 +2334,16 @@ export default {
   }),
   watch: {
     'program_year': {
-      handler(newValue) {
+      handler() {
+        this.initialize()
+      }
+    },
+    'land_program.model': {
+      handler() {
         this.initialize()
       }
     }
   },
-
   mounted() {
     this.firstAccessPage();
 
@@ -2030,6 +2358,184 @@ export default {
   },
 
   methods: {
+    async showEditLahanUmumModal(item) {
+      this.$store.state.loadingOverlayText = 'Getting list lahan umum data...'
+      this.$store.state.loadingOverlay = true
+      
+      const url = this.BaseUrlGet + 'GetPlantingHoleLahanUmumDetail?lahan_no=' + item.lahan_no
+      const lahanDetail = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${this.authtoken}`
+        }
+      })
+
+      const response = lahanDetail.data.data.result
+
+      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.options=[{
+        mou_no: item.mou_no,
+        pic_lahan: item.pic_lahan,
+        lahanNo: item.lahan_no,
+      }]
+      this.dialogAddPlantingHoleLahanUmum.inputs.lahan_no = response.lahan_no
+      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.model = response.mou_no
+      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled = true
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items = response.list_detail
+      this.dialogAddPlantingHoleLahanUmum.inputs.hole.model = response.total_holes
+      this.dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model = response.counter_hole_standard
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo1.model = null
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo1.preview = response.photo_hole1 ? this.BaseUrl + response.photo_hole1 : null
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo2.model = null
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo2.preview = response.photo_hole2 ? this.BaseUrl + response.photo_hole2 : null
+      await this.updateTotalSeedlingAdjustment()
+      
+      this.dialogAddPlantingHoleLahanUmum.model = true
+      this.$store.state.loadingOverlay = false
+      this.$store.state.loadingOverlayText = null
+    },
+    async dialogAddPlantingHoleLahanUmumShow() {
+      this.$store.state.loadingOverlayText = 'Getting list lahan umum data...'
+      this.$store.state.loadingOverlay = true
+      await this.getLahanUmumDataOptions()
+      
+      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.model = null
+      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled = false
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items = []
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment = 0
+      this.dialogAddPlantingHoleLahanUmum.inputs.hole.model = 0
+      this.dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model = 0
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo1.model = ''
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo1.preview = null
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo2.model = ''
+      this.dialogAddPlantingHoleLahanUmum.inputs.photo2.preview = null
+
+      this.dialogAddPlantingHoleLahanUmum.model = true
+      this.$store.state.loadingOverlay = false
+      this.$store.state.loadingOverlayText = null
+    },
+    async getLahanUmumDataOptions() {
+      const url = this.BaseUrlGet + 'GetLahanUmumAllAdmin?'
+      const params ={
+          program_year: this.program_year
+      }
+      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+          params.created_by = this.User.email
+      }
+      await axios.get(`${url}${new URLSearchParams(params)}`,{
+          headers: {
+              Authorization: `Bearer ${this.authtoken}`
+          }
+      }).then(res => {
+        let verifiedLahanUmum = []
+        res.data.data.result.forEach((val) => {
+          if (val.is_verified == 1 && val.total_holes == 0) {
+            verifiedLahanUmum.push(val)
+          }
+        })
+        this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.options = verifiedLahanUmum
+      }).catch(err => {
+        this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.options = []
+        if (err.response.status == 401) {
+          localStorage.removeItem("token")
+          this.$router.push("/")
+        }
+      })
+    },
+    async getSeedDetailLahanUmumByMOU(mou_no) {
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.loading = true
+      const url = `${this.BaseUrlGet}GetDetailLahanUmum?mou_no=${mou_no}`
+      await axios.get(url, {
+          headers: {
+              Authorization: `Bearer ${this.authtoken}`
+          }
+      }).then(res => {
+          const data = res.data.data.result
+          this.dialogAddPlantingHoleLahanUmum.inputs.lahan_no = data.lahan_no
+          this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment = 0
+          data.DetailLahanUmum.forEach(val => {
+            this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment += parseInt(val.amount)
+          })
+          this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items = data.DetailLahanUmum
+      }).catch(err => {
+        this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items = []
+        if (err.response.status == 401) {
+          localStorage.removeItem("token")
+          this.$router.push("/")
+        }
+      }).finally(() => {
+        this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.loading = false
+      })
+    },
+    updateTotalSeedlingAdjustment() {
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment = 0
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items.forEach(val => {
+        this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment += parseInt(val.amount)
+      })
+    },
+    async saveLahanUmumPlantingHole() {
+      this.dialogAddPlantingHoleLahanUmum.confirm = false
+      this.dialogAddPlantingHoleLahanUmum.model = false
+      this.$store.state.loadingOverlayText = 'Saving planting hole lahan umum...'
+      this.$store.state.loadingOverlay = true
+      let KAYU = 0
+      let MPTS = 0
+      let CROPS = 0
+      this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items.forEach(val => {
+        if (val.tree_category == 'KAYU') KAYU += parseInt(val.amount)
+        if (val.tree_category == 'MPTS') MPTS += parseInt(val.amount)
+        if (val.tree_category == 'CROPS') CROPS += parseInt(val.amount)
+      })
+      const data = {
+        lahan_no: this.dialogAddPlantingHoleLahanUmum.inputs.lahan_no,
+        total_holes: this.dialogAddPlantingHoleLahanUmum.inputs.hole.model,
+        counter_hole_standard: this.dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model,
+        list_trees: this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items,
+        pohon_kayu: KAYU,
+        pohon_mpts: MPTS,
+        tanaman_bawah: CROPS
+      }
+      if (this.dialogAddPlantingHoleLahanUmum.inputs.photo1.model) {
+        const photo1 = await this.uploadPhotos('photo1', this.dialogAddPlantingHoleLahanUmum.inputs.photo1.model)
+        data.photo_hole1 = photo1
+      } else if (this.dialogAddPlantingHoleLahanUmum.inputs.photo1.preview) {
+        data.photo_hole1 = this.dialogAddPlantingHoleLahanUmum.inputs.photo1.preview.replace(this.BaseUrl, '')
+      }
+      if (this.dialogAddPlantingHoleLahanUmum.inputs.photo2.model) {
+        const photo2 = await this.uploadPhotos('photo2', this.dialogAddPlantingHoleLahanUmum.inputs.photo2.model)
+        data.photo_hole2 = photo2
+      } else if (this.dialogAddPlantingHoleLahanUmum.inputs.photo2.preview) {
+        data.photo_hole2 = this.dialogAddPlantingHoleLahanUmum.inputs.photo2.preview.replace(this.BaseUrl, '')
+      }
+      
+      const url = `${this.BaseUrlGet}UpdateHoleLahanUmum`
+      await axios.post(url, data, {
+          headers: {
+              Authorization: `Bearer ${this.authtoken}`
+          }
+      }).then(res => {
+        this.textsnackbar = 'Success!'
+        this.colorsnackbar = 'green'
+
+        this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.model = null
+        this.dialogAddPlantingHoleLahanUmum.inputs.lahan_no = null
+        this.dialogAddPlantingHoleLahanUmum.inputs.hole.model = 0
+        this.dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model = 0
+        this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items = []
+
+        this.initialize()
+      }).catch(err => {
+        this.textsnackbar = 'Failed!'
+        this.colorsnackbar = 'red'
+      this.dialogAddPlantingHoleLahanUmum.model = true
+        if (err.response.status == 401) {
+          localStorage.removeItem("token")
+          this.$router.push("/")
+        }
+      }).finally(() => {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      })
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
@@ -2103,6 +2609,7 @@ export default {
     },
     async initialize() {
       this.loadtable = true;
+      this.dataobject = [];
       let params = {
         program_year: this.program_year,
         mu: this.valueMU,
@@ -2111,12 +2618,18 @@ export default {
         typegetdata: this.typegetdata,
         ff: this.valueFFcode
       }
+      let url = "GetPlantingHoleAdmin?"
+      if (this.land_program.model == 'Umum') {
+        url = "GetPlantingHoleLahanUmumAdmin?"
+        // params.created_by = this.User.email
+        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') params.created_by = this.User.email
+      }
       // console.log(this.User.ff.ff);
       const UrlParams = new URLSearchParams(params)
       try {
         const response = await axios.get(
-          this.BaseUrlGet +
-            "GetPlantingHoleAdmin?" + UrlParams,
+          this.BaseUrlGet + url
+             + UrlParams,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2126,7 +2639,11 @@ export default {
         // console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           const USER = JSON.parse(localStorage.getItem('User'));
-          this.dataobject = response.data.data.result.data;
+          if (this.land_program.model == 'Petani') { 
+            this.dataobject = response.data.data.result.data;
+          } else if (this.land_program.model == 'Umum') { 
+            this.dataobject = response.data.data.result;
+          }
           this.valueMUExcel = this.valueMU;
           this.valueTAExcel = this.valueTA;
           this.valueVillageExcel = this.valueVillage;
@@ -2405,32 +2922,66 @@ export default {
         }
       }
     },
-    async verif() {
-      console.log(this.defaultItem.id);
-      const datapost = {
-        ph_form_no: this.defaultItem.ph_form_no,
-        validate_by: this.employee_no,
-      };
-      console.log(datapost);
-      // this.dialogDetail = false;
+    async getDetailLahanUmum(item) {
+      this.load = true
       try {
-        const response = await axios.post(
-          this.BaseUrlGet + "ValidatePlantingHole",
-          datapost,
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetPlantingHoleLahanUmumDetail?lahan_no=" +
+            item.lahan_no,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
             },
           }
-        );
-        console.log(response.data.data.result);
+        )
+        console.log(response.data.data.result)
+        this.defaultItem = Object.assign({}, response.data.data.result)
+        this.defaultItem.list_detail = response.data.data.result.list_detail
+        this.defaultItem.gambarshow2 = this.BaseUrl + response.data.data.result.photo_hole1
+        this.defaultItem.gambarshow3 = this.BaseUrl + response.data.data.result.photo_hole2
+        this.load = false
+      } catch (error) {
+        console.error(error.response)
+        if (error.response.status == 401) {
+          localStorage.removeItem("token")
+          this.$router.push("/")
+          this.load = false
+        }
+      }
+    },
+    async verif() {
+      console.log(this.defaultItem.id);
+      let datapost = {}
+      let url = this.BaseUrlGet
+      if (this.land_program.model == 'Petani') {
+        datapost = {
+          ph_form_no: this.defaultItem.ph_form_no,
+          validate_by: this.employee_no,
+        }
+        url += "ValidatePlantingHole"
+      } else if (this.land_program.model == 'Umum') {
+        datapost = {
+          lahan_no: this.defaultItem.lahan_no,
+          verified_by: this.User.email,
+        }
+        url += "PlantingHoleVerificationLahanUmum"
+      }
+      this.dialogDetail = false
+      this.dialogVerification = false
+      this.$store.state.loadingOverlayText = 'Verifying...'
+      this.$store.state.loadingOverlay = true
+
+      try {
+        const response = await axios.post(url,datapost,{
+          headers: {
+            Authorization: `Bearer ` + this.authtoken,
+          },
+        })
+        console.log(response.data.data.result)
         if (response.data.data.result == "success") {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           this.initialize();
         } else {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           this.alerttoken = true;
         }
       } catch (error) {
@@ -2442,6 +2993,9 @@ export default {
           localStorage.removeItem("token");
           this.$router.push("/");
         }
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
       }
     },
     async verifDelete() {
@@ -3097,7 +3651,9 @@ export default {
     showDetail(item) {
       this.type = "Detail";
       this.dialogDetail = true;
-      this.getDetail(item);
+      if (this.land_program.model == 'Petani') this.getDetail(item)
+      else if (this.land_program.model == 'Umum') this.getDetailLahanUmum(item)
+      
     },
 
     selectedMUForm(a) {
@@ -3769,19 +4325,31 @@ export default {
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
     },
-    async UnverificationItemConfirm(form_no) {
-      if (form_no) {
+    async UnverificationItemConfirm(uniqId) {
+      if (uniqId) {
+        this.dialogDetail = false
         this.dialogUnverification = false
         this.$store.state.loadingOverlayText = 'Unverif data...'
         this.$store.state.loadingOverlay = true
-        await axios.post(this.BaseUrlGet + `UnvalidatePlantingHole`,
-          {ph_form_no: form_no},
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
+        let url = this.BaseUrlGet
+        let dataPost = {}
+        if (this.land_program.model == 'Petani') {
+          url+=`UnvalidatePlantingHole`
+          dataPost = {
+            ph_form_no: uniqId
           }
-        ).then(() => {
+        } else if (this.land_program.model == 'Umum') {
+          url+=`UnverificationOneLahanUmum`
+          dataPost = {
+            lahan_no: uniqId,
+            verified_by: this.User.email
+          }
+        }
+        await axios.post(url,dataPost, {
+          headers: {
+            Authorization: `Bearer ` + this.authtoken,
+          }
+        }).then(() => {
           this.colorsnackbar = 'green'
           this.timeoutsnackbar = 10000
           this.textsnackbar = 'Unverif Success!'
@@ -3826,6 +4394,70 @@ export default {
         const url = `${this.BaseUrlGet.substring(0, this.BaseUrlGet.length - 4)}ExportExcelPenilikanLubang?${params}`
         window.open(url)
       }
+    },
+    photo1FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogAddPlantingHoleLahanUmum.inputs.photo1.model = event
+                this.dialogAddPlantingHoleLahanUmum.inputs.photo1.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogAddPlantingHoleLahanUmum.inputs.photo1.model = null
+            this.dialogAddPlantingHoleLahanUmum.inputs.photo1.preview = ""
+        }
+    },
+    photo2FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogAddPlantingHoleLahanUmum.inputs.photo2.model = event
+                this.dialogAddPlantingHoleLahanUmum.inputs.photo2.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogAddPlantingHoleLahanUmum.inputs.photo2.model = null
+            this.dialogAddPlantingHoleLahanUmum.inputs.photo2.preview = ""
+        }
+    },
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
+    },
+    async uploadPhotos(type, file) {
+        this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+        const url = `${this.BaseUrl}general-lands/upload.php`
+        const newName = `${this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.model.replace(/\s/g, '').replaceAll('/', '_')}_${type}`
+        const data = this.generateFormData({
+            dir: 'planting-holes',
+            nama: newName,
+            image: file
+        })
+        let responseName = null
+        await axios.post(url,data).then(res => {
+            responseName = res.data.data.new_name
+        }).catch(err => {
+            console.error(err)
+        })
+        return 'general-lands/'+responseName
     }
   },
 };

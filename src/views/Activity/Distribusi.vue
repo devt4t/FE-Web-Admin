@@ -56,17 +56,17 @@
                                     <v-simple-table>
                                         <tbody>
                                             <tr>
-                                                <td>Program Year</td>
+                                                <td style="width: 150px">Program Year</td>
                                                 <td>:</td>
                                                 <td>{{ calendar.detailBibit.datas.program_year }}</td>
                                             </tr>
                                             <tr>
-                                                <td>Activity</td>
+                                                <td style="width: 150px">Activity</td>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailBibit.datas.activity == 'sostam' ? 'Sosialisasi Tanam' : 'Penilikan Lubang' }}</td>
+                                                <td>{{ calendar.detailBibit.datas.activity == 'sostam' ? 'Sosialisasi Tanam' : (calendar.detailBibit.datas.activity  == 'penlub' ? 'Penilikan Lubang' : 'Lahan') }}</td>
                                             </tr>
-                                            <tr>
-                                                <td>Field Facilitators</td>
+                                            <tr v-if="generalSettings.type.model == 'Petani'">
+                                                <td style="width: 150px">Field Facilitators</td>
                                                 <td>:</td>
                                                 <td>
                                                     <v-chip color="green white--text" class="mr-1 mb-1" v-for="(ffData, ffIndex) in calendar.detailBibit.datas.FF_details" :key="ffIndex">
@@ -75,8 +75,28 @@
                                                     </v-chip>
                                                 </td>
                                             </tr>
+                                            <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                                <td style="width: 150px">PIC Lahan</td>
+                                                <td>:</td>
+                                                <td>
+                                                    <v-chip color="green white--text" class="mr-1 mb-1" v-for="(ffData, ffIndex) in calendar.detailBibit.datas.pic_lahan" :key="ffIndex">
+                                                        <v-icon small class="mr-1">mdi-clipboard-account</v-icon>
+                                                        {{ ffData }}
+                                                    </v-chip>
+                                                </td>
+                                            </tr>
+                                            <tr v-if="generalSettings.type.model == 'Umum'">
+                                                <td style="width: 150px">PIC T4T</td>
+                                                <td>:</td>
+                                                <td>
+                                                    <v-chip color="info white--text" class="mr-1 mb-1" v-for="(ffData, ffIndex) in calendar.detailBibit.datas.pic_t4t" :key="ffIndex">
+                                                        <v-icon small class="mr-1">mdi-account-tie</v-icon>
+                                                        {{ ffData }}
+                                                    </v-chip>
+                                                </td>
+                                            </tr>
                                             <tr>
-                                                <td>Total Bibit</td>
+                                                <td style="width: 150px">Total Bibit</td>
                                                 <td>:</td>
                                                 <td>{{ numberFormat(calendar.detailBibit.datas.total_bibit) }} Bibit</td>
                                             </tr>
@@ -158,14 +178,14 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="blue white--text pr-3" @click="exportExcel('bibit_by_ff', {datas: calendar.detailBibit.datas, distribution_date: dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y')})">
+                        <v-btn rounded color="blue white--text pr-3" @click="exportExcel((generalSettings.type.model == 'Petani' ? 'bibit_by_ff' : 'bibit_by_lahan'), {datas: calendar.detailBibit.datas, distribution_date: dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y')})">
                             <v-icon class="mr-1">mdi-printer</v-icon>
                             Export
                         </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-            <!-- Detail Period FF Modal -->
+            <!-- Detail Period Calendar Modal -->
             <v-dialog 
                 content-class="rounded-xl elevation-0" 
                 top
@@ -180,7 +200,7 @@
                             <v-icon color="white" class="mr-1">
                                 mdi-timer
                             </v-icon>
-                            Distribution Period
+                            {{ generalSettings.type.model == 'Umum' ? 'Nursery &' : '' }} Distribution Period
                         </span>
                         <v-divider class="mx-2" dark></v-divider>
                         <v-icon color="white" @click="calendar.detailPeriodFF.show = false">
@@ -204,30 +224,45 @@
                                 <v-col cols="12" lg="6">
                                     <v-simple-table>
                                         <tbody>
-                                            <tr>
+                                            <tr v-if="generalSettings.type.model == 'Petani'">
                                                 <th>Field Facilitator</th>
                                                 <td>:</td>
-                                                <td><small>{{ calendar.detailPeriodFF.datas.FF.ff_no }}</small><br>{{ calendar.detailPeriodFF.datas.FF.name }} </td>
+                                                <td v-if="calendar.detailPeriodFF.datas.FF"><small>{{ calendar.detailPeriodFF.datas.FF.ff_no || '-' }}</small><br>{{ calendar.detailPeriodFF.datas.FF.name || '-' }} </td>
                                             </tr>
-                                            <tr>
+                                            <tr v-if="generalSettings.type.model == 'Umum'">
+                                                <th>PIC T4T</th>
+                                                <td>:</td>
+                                                <td v-if="calendar.detailPeriodFF.datas.pic_t4t">{{ calendar.detailPeriodFF.datas.pic_t4t.name || '-' }} </td>
+                                            </tr>
+                                            <tr v-if="generalSettings.type.model == 'Petani'">
                                                 <th>Field Coordinator</th>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailPeriodFF.datas.FC.name }}</td>
+                                                <td v-if="calendar.detailPeriodFF.datas.FC">{{ calendar.detailPeriodFF.datas.FC.name || '-' }}</td>
+                                            </tr>
+                                            <tr v-if="generalSettings.type.model == 'Umum'">
+                                                <th>PIC Lahan</th>
+                                                <td>:</td>
+                                                <td v-if="calendar.detailPeriodFF.datas">{{ calendar.detailPeriodFF.datas.pic_lahan || '-' }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Management Unit</th>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailPeriodFF.datas.FF.mu_name }}</td>
+                                                <td>{{ generalSettings.type.model == 'Petani' ? (calendar.detailPeriodFF.datas.FF ? calendar.detailPeriodFF.datas.FF.mu_name : '-') : (calendar.detailPeriodFF.datas.data ? calendar.detailPeriodFF.datas.data.mu_name : '-') }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr v-if="generalSettings.type.model == 'Petani'">
                                                 <th>Target Area</th>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailPeriodFF.datas.FF.ta_name }}</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.FF ? calendar.detailPeriodFF.datas.FF.ta_name : '-' }}</td>
+                                            </tr>
+                                            <tr v-if="generalSettings.type.model == 'Umum'">
+                                                <th>District</th>
+                                                <td>:</td>
+                                                <td>{{ calendar.detailPeriodFF.datas.data ? calendar.detailPeriodFF.datas.data.district_name : '-' }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Village</th>
                                                 <td>:</td>
-                                                <td>{{ calendar.detailPeriodFF.datas.FF.village_name }}</td>
+                                                <td>{{ generalSettings.type.model == 'Petani' ? (calendar.detailPeriodFF.datas.FF ? calendar.detailPeriodFF.datas.FF.village_name : '-') : (calendar.detailPeriodFF.datas.data ? calendar.detailPeriodFF.datas.data.village_name : '-') }}</td>
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
@@ -235,6 +270,24 @@
                                 <v-col cols="12" lg="6">
                                     <v-simple-table>
                                         <tbody>
+                                            <tr v-if="generalSettings.type.model == 'Umum'">
+                                                <th>Nursery</th>
+                                                <td>:</td>
+                                                <td v-if="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'">{{ calendar.detailPeriodFF.datas.nursery }}</td>
+                                                <td v-else>
+                                                    <v-select
+                                                        color="success"
+                                                        item-color="success"
+                                                        outlined
+                                                        dense
+                                                        rounded
+                                                        hide-details
+                                                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                                        v-model="calendar.detailPeriodFF.newPeriod.nursery"
+                                                        :items="['Tidak Ada','Arjasari','Ciminyak','Kebumen','Pati']"
+                                                    ></v-select>
+                                                </td>
+                                            </tr>
                                             <tr>
                                                 <th>Planting Hole Surveillance</th>
                                                 <td>:</td>
@@ -271,7 +324,7 @@
                                                 <td>:</td>
                                                 <td>{{ dateFormat(calendar.detailPeriodFF.newPeriod.planting_time, 'DD MMMM Y') }}</td>
                                             </tr>
-                                            <tr>
+                                            <tr v-if="generalSettings.type.model == 'Petani'">
                                                 <th>Distribution Location</th>
                                                 <td>:</td>
                                                 <td  v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'">
@@ -301,7 +354,11 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="green white--text pr-3" v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org'" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" @click="calendarUpdateDetailFFPeriod ">
+                        <v-btn rounded color="green white--text pr-3" v-if="generalSettings.type.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org')" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" @click="calendarUpdateDetailFFPeriod ">
+                            <v-icon class="mr-1">mdi-content-save-check</v-icon>
+                            Save
+                        </v-btn>
+                        <v-btn rounded color="green white--text pr-3" v-if="generalSettings.type.model == 'Umum' && (User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org')" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.nursery == calendar.detailPeriodFF.datas.nursery" @click="calendarUpdateDetailLahanUmumPeriod ">
                             <v-icon class="mr-1">mdi-content-save-check</v-icon>
                             Save
                         </v-btn>
@@ -906,6 +963,22 @@
                     style="max-width: 200px"
                     :disabled="generalSettings.nursery.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
                 ></v-select>
+                <!-- Tipe -->
+                <v-select
+                    color="success"
+                    item-color="success"
+                    v-model="generalSettings.type.model"
+                    :items="generalSettings.type.options"
+                    outlined
+                    dense
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    rounded
+                    label="Land Program"
+                    class="mx-auto mx-lg-2 ml-lg-1 mb-2 mb-lg-0"
+                    style="max-width: 200px"
+                    :disabled="generalSettings.type.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
+                ></v-select>
                 <v-divider class="mx-2"></v-divider>
             </v-card>
             <!-- Expansions Panels -->
@@ -992,14 +1065,21 @@
                                     {{ day }}
                                 </template> -->
                                 <template v-slot:event="{event}">
-                                    <h4 class="mx-1 text-center">
+                                    <h4 class="mx-1 text-center" v-if="generalSettings.type.model == 'Petani'">
                                         <v-icon v-if="event.color == 'green'" dark small>mdi-check-circle</v-icon>
                                         <v-icon v-else-if="event.color == 'red'" dark small>mdi-close-circle</v-icon>
                                         {{ event.name }} ~ {{ event.total_ff }} FF 
                                     </h4>
+                                    <h4 class="mx-1 text-center" v-else-if="generalSettings.type.model == 'Umum'">
+                                        <v-icon v-if="event.color == 'green'" dark small>mdi-check-circle</v-icon>
+                                        <v-icon v-else-if="event.color == 'red'" dark small>mdi-close-circle</v-icon>
+                                        <v-icon v-else-if="event.color == 'blue'" dark small>mdi-help-circle</v-icon>
+                                        {{ event.name == 'Tidak Ada' ? 'Unallocated' : event.name }} ~ {{ event.total_ff }} Lahan 
+                                    </h4>
                                 </template>
                             </v-calendar>
                             <v-menu
+                                v-if="generalSettings.type.model == 'Petani'"
                                 v-model="calendar.selectedOpen"
                                 :close-on-content-click="false"
                                 :close-on-click="false"
@@ -1008,169 +1088,337 @@
                                 offset-y
                                 rounded="xl"
                             >
-                            <!-- Card Detail Event -->
-                            <v-card
-                                color="grey lighten-4"
-                                min-width="350px"
-                                max-height="700"
-                                class="red"
-                                flat
-                            >
-                                <v-toolbar
-                                :color="calendar.selectedEvent.color"
-                                :dark="calendar.selectedEvent.color == 'yellow' ? false : true"
+                                <!-- Card Detail Event -->
+                                <v-card
+                                    color="grey lighten-4"
+                                    min-width="350px"
+                                    max-height="700"
+                                    class="red"
+                                    flat
                                 >
-                                    <v-btn icon>
-                                        <v-icon>mdi-calendar</v-icon>
-                                    </v-btn>
-                                    <v-toolbar-title>
-                                        <strong>{{ calendar.selectedEvent.name }}</strong>
-                                    </v-toolbar-title>
-                                    <v-divider class="mx-2"></v-divider>
-                                    <v-btn icon @click="calendar.selectedOpen = false">
-                                        <v-icon>mdi-close-circle</v-icon>
-                                    </v-btn>
-                                </v-toolbar>
-                                <v-card-text class="white">
-                                    <v-simple-table class="rounded-xl">
-                                        <tbody>
-                                            <tr>
-                                                <td>Tanggal</td>
-                                                <td>:</td>
-                                                <td>{{ dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y') }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total Bibit Sostam</td>
-                                                <td>:</td>
-                                                <td>    
-                                                    <v-tooltip top>
-                                                        Click for preview detailed seed
-                                                        <template v-slot:activator="{ on, attrs }">
-                                                            <strong 
-                                                                v-bind="attrs"
-                                                                v-on="on"
-                                                                class="cursor-pointer" 
-                                                                @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'sostam')"
-                                                            >
-                                                                {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
-                                                            </strong>
-                                                        </template>
-                                                    </v-tooltip>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total Bibit Penlub</td>
-                                                <td>:</td>
-                                                <td>    
-                                                    <v-tooltip top>
-                                                        Click for preview detailed seed
-                                                        <template v-slot:activator="{ on, attrs }">
-                                                            <strong 
-                                                                v-bind="attrs"
-                                                                v-on="on"
-                                                                class="cursor-pointer" 
-                                                                @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'penlub')"
-                                                            >
-                                                                {{ numberFormat(calendar.selectedEvent.total_bibit_penlub) }} Bibit
-                                                            </strong>
-                                                        </template>
-                                                    </v-tooltip>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total FF</td>
-                                                <td>:</td>
-                                                <td>{{ calendar.selectedEvent.total_ff }} FF</td>
-                                            </tr>
-                                        </tbody>
-                                    </v-simple-table>
-                                    <v-data-table 
-                                        hide-default-footer
-                                        :items-per-page="-1"
-                                        :headers="calendar.table.headers"
-                                        :items="calendar.selectedEvent.details"
-                                        dense
+                                    <v-toolbar
+                                    :color="calendar.selectedEvent.color"
+                                    :dark="calendar.selectedEvent.color == 'yellow' ? false : true"
                                     >
-                                        <!-- No Column -->
-                                        <template v-slot:item.no="{index}">
-                                            {{ index+1 }}
-                                        </template>
-                                        <!-- Total Bibit Sostam Column -->
-                                        <template v-slot:item.total_bibit_sostam="{item}">
-                                            {{ numberFormat(item.total_bibit_sostam) }} Bibit
-                                        </template>
-                                        <!-- Progress Penlub Column -->
-                                        <template v-slot:item.progress_penlub="{item}">
-                                            <v-chip :color="`${item.progress_penlub == 100 ? 'green' : (item.progress_penlub > 0 ? 'orange' : 'red')} white--text`">
-                                                {{ item.progress_penlub }} %
-                                            </v-chip>
-                                        </template>
-                                        <!-- Total Bibit Penlub Column -->
-                                        <template v-slot:item.total_bibit_penlub="{item}">
-                                            {{ numberFormat(item.total_bibit_penlub) }} Bibit
-                                        </template>
-                                        <!-- Action Column -->
-                                        <template v-slot:item.actions="{item}">
-                                            <v-menu
-                                                rounded="xl"
-                                                bottom
-                                                left
-                                                offset-y
-                                                transition="slide-y-transition"
-                                                :close-on-content-click="false"
-                                            >
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-icon v-bind="attrs" v-on="on" color="dark">
-                                                    mdi-arrow-down-drop-circle
-                                                    </v-icon>
-                                                </template>
+                                        <v-btn icon>
+                                            <v-icon>mdi-calendar</v-icon>
+                                        </v-btn>
+                                        <v-toolbar-title>
+                                            <strong>{{ calendar.selectedEvent.name }}</strong>
+                                        </v-toolbar-title>
+                                        <v-divider class="mx-2"></v-divider>
+                                        <v-btn icon @click="calendar.selectedOpen = false">
+                                            <v-icon>mdi-close-circle</v-icon>
+                                        </v-btn>
+                                    </v-toolbar>
+                                    <v-card-text class="white">
+                                        <v-simple-table class="rounded-xl">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Tanggal</td>
+                                                    <td>:</td>
+                                                    <td>{{ dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Sostam</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'sostam')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Penlub</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'penlub')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_penlub) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total FF</td>
+                                                    <td>:</td>
+                                                    <td>{{ calendar.selectedEvent.total_ff }} FF</td>
+                                                </tr>
+                                            </tbody>
+                                        </v-simple-table>
+                                        <v-data-table 
+                                            hide-default-footer
+                                            :items-per-page="-1"
+                                            :headers="calendar.table.headers"
+                                            :items="calendar.selectedEvent.details"
+                                            dense
+                                        >
+                                            <!-- No Column -->
+                                            <template v-slot:item.no="{index}">
+                                                {{ index+1 }}
+                                            </template>
+                                            <!-- Total Bibit Sostam Column -->
+                                            <template v-slot:item.total_bibit_sostam="{item}">
+                                                {{ numberFormat(item.total_bibit_sostam) }} Bibit
+                                            </template>
+                                            <!-- Progress Penlub Column -->
+                                            <template v-slot:item.progress_penlub="{item}">
+                                                <v-chip :color="`${item.progress_penlub == 100 ? 'green' : (item.progress_penlub > 0 ? 'orange' : 'red')} white--text`">
+                                                    {{ item.progress_penlub }} %
+                                                </v-chip>
+                                            </template>
+                                            <!-- Total Bibit Penlub Column -->
+                                            <template v-slot:item.total_bibit_penlub="{item}">
+                                                {{ numberFormat(item.total_bibit_penlub) }} Bibit
+                                            </template>
+                                            <!-- Action Column -->
+                                            <template v-slot:item.actions="{item}">
+                                                <v-menu
+                                                    rounded="xl"
+                                                    bottom
+                                                    left
+                                                    offset-y
+                                                    transition="slide-y-transition"
+                                                    :close-on-content-click="false"
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-icon v-bind="attrs" v-on="on" color="dark">
+                                                        mdi-arrow-down-drop-circle
+                                                        </v-icon>
+                                                    </template>
 
-                                                <v-list class="d-flex flex-column align-stretch">
-                                                    <v-list-item>
-                                                        <v-btn 
-                                                            block color="blue white--text" rounded 
-                                                            @click="calendarShowDetailFFPeriod(item)"
-                                                        >
-                                                            <v-icon class="mr-1">mdi-calendar</v-icon>
-                                                            Period
-                                                        </v-btn>
-                                                    </v-list-item>
-                                                    <v-list-item>
-                                                        <v-btn 
-                                                            block color="green white--text" rounded 
-                                                            @click="calendarShowDetailTotalBibit(item, 'ff', 'sostam')"
-                                                        >
-                                                            <v-icon class="mr-1">mdi-seed</v-icon>
-                                                            Sostam Seeds
-                                                        </v-btn>
-                                                    </v-list-item>
-                                                    <v-list-item>
-                                                        <v-btn 
-                                                            block color="green white--text" rounded 
-                                                            @click="calendarShowDetailTotalBibit(item, 'ff', 'penlub')"
-                                                        >
-                                                            <v-icon class="mr-1">mdi-sprout</v-icon>
-                                                            Penlub Seeds
-                                                        </v-btn>
-                                                    </v-list-item>
-                                                </v-list>
-                                            </v-menu>
-                                        </template>
-                                    </v-data-table>
-                                </v-card-text>
-                                <v-card-actions class="white">
-                                    <v-btn
-                                        outlined
-                                        color="red"
-                                        rounded
-                                        @click="calendar.selectedOpen = false"
+                                                    <v-list class="d-flex flex-column align-stretch">
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="blue white--text" rounded 
+                                                                @click="calendarShowDetailFFPeriod(item)"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-calendar</v-icon>
+                                                                Period
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibit(item, 'ff', 'sostam')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-seed</v-icon>
+                                                                Sostam Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibit(item, 'ff', 'penlub')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-sprout</v-icon>
+                                                                Penlub Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                    </v-list>
+                                                </v-menu>
+                                            </template>
+                                        </v-data-table>
+                                    </v-card-text>
+                                    <v-card-actions class="white">
+                                        <v-btn
+                                            outlined
+                                            color="red"
+                                            rounded
+                                            @click="calendar.selectedOpen = false"
+                                        >
+                                            <v-icon class="mr-1">mdi-close</v-icon>
+                                            Close
+                                        </v-btn>
+                                        <v-divider class="mx-2"></v-divider>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-menu>
+                            <v-menu
+                                v-else-if="generalSettings.type.model == 'Umum'"
+                                v-model="calendar.selectedOpen"
+                                :close-on-content-click="false"
+                                :close-on-click="false"
+                                :activator="calendar.selectedElement"
+                                transition="scale-transition"
+                                offset-y
+                                rounded="xl"
+                            >
+                                <!-- Card Detail Event -->
+                                <v-card
+                                    color="grey lighten-4"
+                                    min-width="350px"
+                                    max-height="700"
+                                    class="red"
+                                    flat
+                                >
+                                    <v-toolbar
+                                    :color="calendar.selectedEvent.color"
+                                    :dark="calendar.selectedEvent.color == 'yellow' ? false : true"
                                     >
-                                        <v-icon class="mr-1">mdi-close</v-icon>
-                                        Close
-                                    </v-btn>
-                                    <v-divider class="mx-2"></v-divider>
-                                </v-card-actions>
-                            </v-card>
+                                        <v-btn icon>
+                                            <v-icon>mdi-calendar</v-icon>
+                                        </v-btn>
+                                        <v-toolbar-title>
+                                            <strong>{{ calendar.selectedEvent.name === 'Tidak Ada' ? 'Unallocated' : calendar.selectedEvent.name }}</strong>
+                                        </v-toolbar-title>
+                                        <v-divider class="mx-2"></v-divider>
+                                        <v-btn icon @click="calendar.selectedOpen = false">
+                                            <v-icon>mdi-close-circle</v-icon>
+                                        </v-btn>
+                                    </v-toolbar>
+                                    <v-card-text class="white">
+                                        <v-simple-table class="rounded-xl">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Tanggal</td>
+                                                    <td>:</td>
+                                                    <td>{{ dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Lahan</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibitLahanUmum(calendar.selectedEvent, 'nursery', 'lahan')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Penlub</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibitLahanUmum(calendar.selectedEvent, 'nursery', 'penlub')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_penlub) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total</td>
+                                                    <td>:</td>
+                                                    <td>{{ calendar.selectedEvent.total_ff }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </v-simple-table>
+                                        <v-data-table 
+                                            hide-default-footer
+                                            :items-per-page="-1"
+                                            :headers="calendar.table2.headers"
+                                            :items="calendar.selectedEvent.details"
+                                            dense
+                                        >
+                                            <!-- No Column -->
+                                            <template v-slot:item.no="{index}">
+                                                {{ index+1 }}
+                                            </template>
+                                            <!-- Total Bibit Sostam Column -->
+                                            <template v-slot:item.total_bibit_lahan="{item}">
+                                                {{ numberFormat(item.total_bibit_lahan) }} Bibit
+                                            </template>
+                                            <!-- Total Bibit Penlub Column -->
+                                            <template v-slot:item.total_bibit_penlub="{item}">
+                                                {{ numberFormat(item.total_bibit_penlub) }} Bibit
+                                            </template>
+                                            <!-- Action Column -->
+                                            <template v-slot:item.actions="{item}">
+                                                <v-menu
+                                                    rounded="xl"
+                                                    bottom
+                                                    left
+                                                    offset-y
+                                                    transition="slide-y-transition"
+                                                    :close-on-content-click="false"
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-icon v-bind="attrs" v-on="on" color="dark">
+                                                        mdi-arrow-down-drop-circle
+                                                        </v-icon>
+                                                    </template>
+
+                                                    <v-list class="d-flex flex-column align-stretch">
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="blue white--text" rounded 
+                                                                @click="calendarShowDetailLahanUmumPeriod(item)"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-calendar</v-icon>
+                                                                Nursery & Period
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'lahan_no', 'lahan')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-seed</v-icon>
+                                                                Lahan Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'lahan_no', 'penlub')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-sprout</v-icon>
+                                                                Penlub Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                    </v-list>
+                                                </v-menu>
+                                            </template>
+                                        </v-data-table>
+                                    </v-card-text>
+                                    <v-card-actions class="white">
+                                        <v-btn
+                                            outlined
+                                            color="red"
+                                            rounded
+                                            @click="calendar.selectedOpen = false"
+                                        >
+                                            <v-icon class="mr-1">mdi-close</v-icon>
+                                            Close
+                                        </v-btn>
+                                        <v-divider class="mx-2"></v-divider>
+                                    </v-card-actions>
+                                </v-card>
                             </v-menu>
                         </v-sheet>
                     </v-expansion-panel-content>
@@ -1218,10 +1466,8 @@
                                     <!-- Packing Label Table 1 ~ Per Lahan -->
                                     <v-tab-item>
                                         <v-data-table
-                                            :footer-props="{
-                                                itemsPerPageOptions: [10, 25, 40, -1]
-                                            }"
-                                            :headers="packingLabel.tables.byLahan.headers"
+                                            :footer-props="{itemsPerPageOptions: [10, 25, 40, -1]}"
+                                            :headers="generalSettings.type.model == 'Petani' ? packingLabel.tables.byLahan.headers : packingLabel.tables.byLahan.headers2"
                                             :items="packingLabel.tables.byLahan.items"
                                             :loading="packingLabel.tables.byLahan.loading"
                                             :search="packingLabel.tables.byLahan.search.model"
@@ -1284,6 +1530,7 @@
                                                     </v-menu>
                                                     <!-- Search Field -->
                                                     <v-autocomplete
+                                                        v-if="generalSettings.type.model == 'Petani'"
                                                         hide-details
                                                         dense
                                                         rounded
@@ -1357,8 +1604,8 @@
                                                         rounded 
                                                         color="green white--text" 
                                                         class="ma-1 d-none d-lg-inline-block" 
-                                                        @click="printPackingLabelByLahan('label', item.ph_form_no)"
-                                                        :disabled="item.total_holes < item.total_bibit"
+                                                        @click="printPackingLabelByLahan(`label${generalSettings.type.model == 'Umum' ? '_lahan_umum' : ''}`, (generalSettings.type.model == 'Petani' ? item.ph_form_no : item.lahan_no))"
+                                                        :disabled="(item.total_holes < item.total_bibit)"
                                                     >
                                                         <v-icon class="mr-1">mdi-label</v-icon>
                                                         Label
@@ -1368,8 +1615,8 @@
                                                         small
                                                         color="green white--text"
                                                         class="d-inline-block d-lg-none ma-1"
-                                                        @click="printPackingLabelByLahan('label', item.ph_form_no)"
-                                                        :disabled="item.total_holes < item.total_bibit"
+                                                        @click="printPackingLabelByLahan(`label${generalSettings.type.model == 'Umum' ? '_lahan_umum' : ''}`, (generalSettings.type.model == 'Petani' ? item.ph_form_no : item.lahan_no))"
+                                                        :disabled="(item.total_holes < item.total_bibit)"
                                                     >
                                                         <v-icon>mdi-label</v-icon>
                                                     </v-btn>
@@ -1378,8 +1625,8 @@
                                                         rounded 
                                                         color="orange white--text" 
                                                         class="ma-1 d-none d-lg-inline-block mr-0" 
-                                                        @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
-                                                        :disabled="item.total_holes < item.total_bibit"
+                                                        @click="printPackingLabelByLahan(`tanda_terima${generalSettings.type.model == 'Umum' ? '_lahan_umum' : ''}`, (generalSettings.type.model == 'Petani' ? item.ph_form_no : item.lahan_no))"
+                                                        :disabled="(item.total_holes < item.total_bibit)"
                                                     >
                                                         <v-icon class="mr-1">mdi-receipt-text</v-icon>
                                                         Receipt
@@ -1389,8 +1636,8 @@
                                                         small
                                                         color="orange white--text"
                                                         class="d-inline-block d-lg-none ma-1 mr-0"
-                                                        @click="printPackingLabelByLahan('tanda_terima', item.ph_form_no)"
-                                                        :disabled="item.total_holes < item.total_bibit"
+                                                        @click="printPackingLabelByLahan(`tanda_terima${generalSettings.type.model == 'Umum' ? '_lahan_umum' : ''}`, (generalSettings.type.model == 'Petani' ? item.ph_form_no : item.lahan_no))"
+                                                        :disabled="(item.total_holes < item.total_bibit)"
                                                     >
                                                         <v-icon>mdi-receipt-text</v-icon>
                                                     </v-btn>
@@ -1409,7 +1656,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Loading Line Section -->
-                <v-expansion-panel v-if="accessModul.loadingLine" class="rounded-xl">
+                <v-expansion-panel v-if="accessModul.loadingLine && generalSettings.type.model == 'Petani'" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-human-dolly</v-icon> Loading Line</h3>
                     </v-expansion-panel-header>
@@ -1551,7 +1798,7 @@
                 <!-- Distribution Report Section -->
                 <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
                     <v-expansion-panel-header>
-                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> <v-badge color="info white--text" content="NEW">Distribution Report</v-badge></h3>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> Distribution Report</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
@@ -1571,7 +1818,7 @@
                             <v-col cols="12">
                                 <v-data-table
                                     multi-sort
-                                    :headers="distributionReport.table.headers"
+                                    :headers="distributionReport.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
                                     :items="distributionReport.table.items"
                                     :loading="distributionReport.table.loading"
                                     :footer-props="{
@@ -1730,6 +1977,7 @@ export default {
                 loadingText: '',
                 datas : null,
                 newPeriod: {
+                    nursery: '',
                     distribution_time: '',
                     hole_time: '',
                     planting_time: '',
@@ -1752,6 +2000,17 @@ export default {
                     { text: 'Total Bibit Sostam', value: 'total_bibit_sostam', align: 'left'},
                     { text: 'Progress PenLub', value: 'progress_penlub', align: 'center'},
                     { text: 'Total Bibit PenLub', value: 'total_bibit_penlub', align: 'center'},
+                    { text: 'Actions', value: 'actions', align: 'right'},
+                ]
+            },
+            table2: {
+                headers: [
+                    { text: 'No', value: 'no', align: 'center'},
+                    { text: 'MU', value: 'mu_name', align: 'left'},
+                    { text: 'PIC T4T', value: 'employee_name', align: 'left'},
+                    { text: 'PIC Lahan', value: 'pic_lahan', align: 'left'},
+                    { text: 'Total Bibit Lahan', value: 'total_bibit_lahan', align: 'left'},
+                    { text: 'Total Bibit PenLub', value: 'total_bibit_penlub', align: 'left'},
                     { text: 'Actions', value: 'actions', align: 'right'},
                 ]
             },
@@ -1807,6 +2066,17 @@ export default {
                     {text: 'Status', value: 'status', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
+                headers2: [
+                    {text: 'Management Unit', value: 'mu_name'},
+                    {text: 'PIC T4tT', value: 'pic_t4t'},
+                    {text: 'PIC Lahan', value: 'pic_lahan'},
+                    {text: 'Bags', value: 'sum_all_bags', align: 'center'},
+                    {text: 'KAYU', value: 'adj_kayu', align: 'center'},
+                    {text: 'MPTS', value: 'adj_mpts', align: 'center'},
+                    {text: 'CROPS', value: 'adj_crops', align: 'center'},
+                    {text: 'Status', value: 'status', align: 'center'},
+                    {text: 'Actions', value: 'actions', align: 'right', sortable: false},
+                ],
                 items: [],
                 loading: false,
             },
@@ -1823,6 +2093,11 @@ export default {
             nursery: {
                 model: 'All',
                 options: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati'],
+                disabled: false,
+            },
+            type: {
+                model: 'Umum',
+                options: ['Petani', 'Umum'],
                 disabled: false,
             },
             programYear: '2022',
@@ -1902,6 +2177,16 @@ export default {
                         { text: 'Check', value: 'is_checked', align: 'center', width: '100'},
                         { text: "Actions", value: "actions", sortable: false, align: 'right' },
                     ],
+                    headers2: [
+                        { text: "MU", value: "mu_name"},
+                        { text: "PIC T4T", value: "employee_name"},
+                        { text: "PIC Lahan", value: "pic_lahan"},
+                        { text: "No Lahan", align: "start", value: "lahan_no"},
+                        { text: "Holes", value: "total_holes"},
+                        { text: "Seeds", value: "total_bibit"},
+                        { text: 'Status', value: 'is_checked', align: 'center', width: '100'},
+                        { text: "Actions", value: "actions", sortable: false, align: 'right' },
+                    ],
                     items: [],
                     loading: false,
                     search: {
@@ -1964,16 +2249,25 @@ export default {
                     this.packingLabel.loading = true
                     this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
                     this.loadingLine.loading = true
+                    this.distributionReport.loadingText = 'Waiting for completed get distribution calendar data...'
+                    this.distributionReport.loading = true
                     // refresh calendar
                     await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
                     this.packingLabel.loadingText = 'Getting packing label data...'
                     this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
+                    this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
                     // refresh packing label table
                     await this.getPackingLabelTableData()
                     this.packingLabel.loading = false
                     this.loadingLine.loadingText = 'Getting loading line data...'
+                    this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
+                    // refresh loading line table
                     await this.getLoadinglineTableData()
                     this.loadingLine.loading = false
+                    this.distributionReport.loadingText = 'Getting distribution report data...'
+                    // refresh distribution report table
+                    await this.getDistributionReportTable()
+                    this.distributionReport.loading = false
                 }
             }
         },
@@ -1986,9 +2280,62 @@ export default {
                 } else {
                     this.calendar.range = ['2021-11-24', '2022-01-31']
                 }
+                this.packingLabel.loadingText = 'Waiting for completed get distribution calendar data...'
+                this.packingLabel.loading = true
+                this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
+                this.loadingLine.loading = true
+                this.distributionReport.loadingText = 'Waiting for completed get distribution calendar data...'
+                this.distributionReport.loading = true
+                // refresh calendar
                 this.calendar.focus = this.calendar.range[0]
+                this.packingLabel.loadingText = 'Getting packing label data...'
+                this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
+                this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
                 // refresh packing label table
                 await this.getPackingLabelTableData()
+                this.packingLabel.loading = false
+                this.loadingLine.loadingText = 'Getting loading line data...'
+                this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
+                // refresh loading line table
+                await this.getLoadinglineTableData()
+                this.loadingLine.loading = false
+                this.distributionReport.loadingText = 'Getting distribution report data...'
+                // refresh distribution report table
+                await this.getDistributionReportTable()
+                this.distributionReport.loading = false
+            }
+        },
+        'generalSettings.type.model': {
+            async handler(newValue, oldValue) {
+                if (newValue != oldValue) {
+                    const calendar = {
+                        start: this.$refs.calendar.renderProps.start,
+                        end: this.$refs.calendar.renderProps.end,
+                    }
+                    this.packingLabel.loadingText = 'Waiting for completed get distribution calendar data...'
+                    this.packingLabel.loading = true
+                    this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
+                    this.loadingLine.loading = true
+                    this.distributionReport.loadingText = 'Waiting for completed get distribution calendar data...'
+                    this.distributionReport.loading = true
+                    // refresh calendar
+                    await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    this.packingLabel.loadingText = 'Getting packing label data...'
+                    this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
+                    this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
+                    // refresh packing label table
+                    await this.getPackingLabelTableData()
+                    this.packingLabel.loading = false
+                    this.loadingLine.loadingText = 'Getting loading line data...'
+                    this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
+                    // refresh loading line table
+                    await this.getLoadinglineTableData()
+                    this.loadingLine.loading = false
+                    this.distributionReport.loadingText = 'Getting distribution report data...'
+                    // refresh distribution report table
+                    await this.getDistributionReportTable()
+                    this.distributionReport.loading = false
+                }
             }
         },
         'loadingLine.datePicker.model': {
@@ -2058,6 +2405,38 @@ export default {
                 this.calendar.detailPeriodFF.loadingText = ''
             })
         },
+        async calendarShowDetailLahanUmumPeriod(data) {
+            console.log(data)
+            const params = {
+                mou_no: data.mou_no,
+                lahan_no: data.lahan_no,
+                program_year: data.program_year
+            }
+            this.calendar.detailPeriodFF.show = true
+            this.calendar.detailPeriodFF.loading = true
+            this.calendar.detailPeriodFF.loadingText = 'Getting Distribution Period Data...'
+            axios.get(`${this.apiConfig.baseUrl}DistributionPeriodLahanUmumDetail?${new URLSearchParams(params)}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.token
+                    },
+                }
+            ).then(res => {
+                const response = res.data.data.result
+                console.log(response)
+                this.calendar.detailPeriodFF.datas = response
+                this.calendar.detailPeriodFF.newPeriod.distribution_time = this.dateFormat(response.period.distribution_time, 'Y-MM-DD')
+                this.calendar.detailPeriodFF.newPeriod.distribution_location = '-'
+                this.calendar.detailPeriodFF.newPeriod.nursery = response.nursery
+                this.calendar.detailPeriodFF.newPeriod.hole_time = response.period.planting_hole_date
+                this.calendar.detailPeriodFF.newPeriod.planting_time = response.period.planting_realization_date
+            }).catch(err => {
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.calendar.detailPeriodFF.loading = false
+                this.calendar.detailPeriodFF.loadingText = ''
+            })
+        },
         async calendarUpdateDetailFFPeriod() {
             const datapost = {
                 form_no: this.calendar.detailPeriodFF.datas.sostam.form_no,
@@ -2070,7 +2449,7 @@ export default {
                 planting_time: this.calendar.detailPeriodFF.newPeriod.planting_time,
                 distribution_location: this.calendar.detailPeriodFF.newPeriod.distribution_location,
             };
-            console.log(datapost);
+            // console.log(datapost)
             try {
                 this.calendar.detailPeriodFF.loading = true
                 this.calendar.detailPeriodFF.loadingText = 'Updating Distribution Period...'
@@ -2114,7 +2493,66 @@ export default {
                 this.calendar.detailPeriodFF.loading = false
                 this.calendar.detailPeriodFF.loadingText = ''
             }
-            },
+        },
+        async calendarUpdateDetailLahanUmumPeriod() {
+            const datapost = {
+                mou_no: this.calendar.detailPeriodFF.datas.data.mou_no,
+                lahan_no: this.calendar.detailPeriodFF.datas.data.lahan_no,
+                program_year: this.calendar.detailPeriodFF.datas.data.program_year,
+                planting_hole_date: this.calendar.detailPeriodFF.newPeriod.hole_time,
+                distribution_date: this.calendar.detailPeriodFF.newPeriod.distribution_time,
+                planting_realization_date: this.calendar.detailPeriodFF.newPeriod.planting_time,
+                nursery: this.calendar.detailPeriodFF.newPeriod.nursery
+            };
+            console.log(datapost)
+            try {
+                this.calendar.detailPeriodFF.loading = true
+                this.calendar.detailPeriodFF.loadingText = 'Updating Distribution Period...'
+
+                await axios.post(
+                    this.apiConfig.baseUrl + "UpdateLahanUmumPeriod",
+                    datapost,
+                    {
+                        headers: {
+                            Authorization: `Bearer ` + this.apiConfig.token,
+                        },
+                    }
+                ).then(response => {
+                    this.snackbar.show = true
+                    this.snackbar.color = "green"
+                    this.snackbar.text = "Update distribution period success!"
+
+                    this.calendar.detailPeriodFF.show = false
+                    
+                    this.calendar.selectedElement = null
+                    this.calendar.selectedEvent = {}
+                    this.calendar.selectedOpen = false
+
+                    const calendar = {
+                        start: this.$refs.calendar.renderProps.start,
+                        end: this.$refs.calendar.renderProps.end,
+                    }
+                    // refresh calendar
+                    this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    // refresh packing label table
+                    this.getPackingLabelTableData()
+                }).catch(err => {
+                    this.snackbar.show = true
+                    this.snackbar.color = "red"
+                    this.snackbar.text = "Update distribution period failed!"
+                    this.sessionEnd(err)
+                })
+            } catch (error) {
+                console.log(error)
+            } finally {
+                if (this.calendar.detailPeriodFF.newPeriod.nursery != this.calendar.detailPeriodFF.datas.nursery) {
+                    await this.calendarNext()
+                    await this.calendarPrev()
+                }
+                this.calendar.detailPeriodFF.loading = false
+                this.calendar.detailPeriodFF.loadingText = ''
+            }
+        },
         async calendarShowDetailTotalBibit(datas, type, activity) {
             let ff_no = []
             let program_year = ''
@@ -2150,7 +2588,51 @@ export default {
                 this.calendar.detailBibit.loading = false
             })
         },
+        async calendarShowDetailTotalBibitLahanUmum(datas, type, activity) {
+            let ff_no = []
+            let lahan_no = []
+            let program_year = ''
+            if (type == 'nursery') {
+                await datas.details.forEach(val => {
+                    if (this.generalSettings.type.model == 'Petani') ff_no.push(val.ff_no)
+                    else if (this.generalSettings.type.model == 'Umum') lahan_no.push(val.lahan_no)
+
+                    if (program_year == '') {
+                        if (this.generalSettings.type.model == 'Petani') program_year = val.planting_year
+                        else if (this.generalSettings.type.model == 'Umum') program_year = val.program_year
+                    }
+                })
+            } else if (type == 'ff') {
+                ff_no.push(datas.ff_no)
+                program_year = datas.planting_year
+            } else if (type == 'lahan_no') {
+                lahan_no.push(datas.lahan_no)
+                program_year = datas.program_year
+            }
+            this.calendar.detailBibit.show = true
+            this.calendar.detailBibit.loading = true
+            
+            let url = this.apiConfig.baseUrl + 'DistributionSeedDetail?' + new URLSearchParams({
+                ff_no: ff_no.toString(),
+                lahan_no: lahan_no.toString(),
+                program_year: program_year,
+                activity: activity
+            })
+            await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ` + this.apiConfig.token
+                },
+            }).then(res => {
+                this.calendar.detailBibit.datas = res.data.data.result
+            }).catch(err => {
+                console.log(err.response)
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.calendar.detailBibit.loading = false
+            })
+        },
         calendarShowEvent ({ nativeEvent, event }) {
+            console.log(event)
             const open = () => {
                 this.calendar.selectedEvent = event
                 this.calendar.selectedElement = nativeEvent.target
@@ -2178,9 +2660,10 @@ export default {
                     program_year: this.generalSettings.programYear,
                     nursery: this.generalSettings.nursery.model
                 })
-    
+                let url = 'DistributionCalendar?'
+                if (this.generalSettings.type.model == 'Umum') url = 'DistributionCalendarLahanUmum?' 
                 const res = await axios.get(
-                    this.apiConfig.baseUrl + 'DistributionCalendar?' + params,
+                    this.apiConfig.baseUrl + url + params,
                     {
                         headers: {
                             Authorization: `Bearer ` + this.apiConfig.token
@@ -2199,11 +2682,11 @@ export default {
                         total_ff: evData.total,
                         total_bibit_sostam: evData.total_bibit_sostam,
                         total_bibit_penlub: evData.total_bibit_penlub,
-                        color: this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
+                        color: evData.nursery == 'Tidak Ada' ? 'blue' : this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
                         details: evData.details,
                     })
                 })
-    
+                console.log(events)
                 this.calendar.events = events
                 this.calendar.loading = false
             }
@@ -2245,7 +2728,13 @@ export default {
                 }
                 if (this.packingLabel.tabs.model == 0) {
                     this.packingLabel.tables.byLahan.loading = true
-                    url = 'GetPackingLabelByLahanTemp?'
+                    url = 'GetPackingLabelByLahan?'
+                    if (this.generalSettings.type.model == 'Umum') {
+                        url = 'GetPackingLabelLahanUmum?' 
+                        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+                            params.created_by = this.User.email
+                        }
+                    }
                 }
     
                 if (url && params) {
@@ -2276,20 +2765,30 @@ export default {
                 }
             }
         },
-        printPackingLabelByLahan(type, form_no) {
+        printPackingLabelByLahan(type, id) {
             if (type == 'label') {
                 window.open(
                     this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
-                    "CetakLabelLubangTanamTemp?ph_form_no=" + form_no
+                    "CetakLabelLubangTanam?ph_form_no=" + id
                 )
             } else if (type == 'tanda_terima') {
                 window.open(
                     this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
-                    "CetakBuktiPenyerahanTemp?ph_form_no=" + form_no
+                    "CetakBuktiPenyerahan?ph_form_no=" + id
+                )
+            } else if (type == 'label_lahan_umum') {
+                window.open(
+                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
+                    "CetakLabelUmumLubangTanam?lahan_no=" + id
+                )
+            } else if (type == 'tanda_terima_lahan_umum') {
+                window.open(
+                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
+                    "CetakUmumBuktiPenyerahan?lahan_no=" + id
                 )
             }
         },
-        async updateCheckedPlantingHoles(ph_form_no, status) {
+        async updateCheckedPlantingHoles(id, status) {
             const nurseryEmails = this.$store.state.nurseryTeam.emails
             if (status == 0 && (
                 this.User.role_group == 'IT' || 
@@ -2299,22 +2798,38 @@ export default {
                 nurseryEmails.Ciminyak.includes(this.User.email) || 
                 nurseryEmails.Kebumen.includes(this.User.email) || 
                 nurseryEmails.Pati.includes(this.User.email)
-                )) {
+            )) {
                 this.packingLabel.loadingText = 'Updating status packing label & creating loading line data...'
                 this.packingLabel.loading = true
-                const url = this.apiConfig.baseUrl + 'CheckedPlantingHole?'
-                const params = {
+                
+                let url = this.apiConfig.baseUrl
+                if (this.generalSettings.type.model == 'Petani') url += 'CheckedPlantingHole?'
+                else if (this.generalSettings.type.model == 'Umum') url += 'CreateDistributionLahanUmum' 
+                
+                let params = {
                     program_year: this.generalSettings.programYear,
-                    ph_form_no: ph_form_no
+                    ph_form_no: id
                 }
+                if (this.generalSettings.type.model == 'Umum') params.lahan_no = id 
+                
                 let success = 0
-                await axios.get(`${url}${new URLSearchParams(params)}`, {
-                    headers: {
-                        Authorization: `Bearer ${this.apiConfig.token}`
+                try {
+                    let callApi;
+                    if (this.generalSettings.type.model == 'Petani') {
+                        callApi = await axios.get(`${url}${new URLSearchParams(params)}`, {
+                            headers: {
+                                Authorization: `Bearer ${this.apiConfig.token}`
+                            }
+                        })
+                    } else if (this.generalSettings.type.model == 'Umum') {
+                        callApi = await axios.post(`${url}`, params, {
+                            headers: {
+                                Authorization: `Bearer ${this.apiConfig.token}`
+                            }
+                        })
                     }
-                }).then(res => {
-                    success = 1
-                }).catch(err => {
+                    if (callApi) success = 1
+                } catch (err) {
                     console.log(err.response)
                     if (err.response.status == 404 ||err.response.status == 400 ) {
                         this.snackbar.text = err.response.data.data.result
@@ -2322,10 +2837,12 @@ export default {
                         this.snackbar.show = true
                     }
                     this.sessionEnd(err)
-                }).finally(() => {
+                } finally {
                     this.packingLabel.loading = false
                     this.packingLabel.loadingText = null
-                })
+
+                }
+
                 if (success == 1) {
                     this.snackbar.text = `Checked label success.`
                     this.snackbar.color = 'green'
@@ -2342,6 +2859,7 @@ export default {
                     await this.getLoadinglineTableData()
                     this.loadingLine.loading = false
                     this.loadingLine.loadingText = null
+                    await this.getDistributionReportTable()
                 }
             } else if (this.User.role_group != 'IT' || this.User.role_name != 'NURSERY' || this.User.role_name != 'NURSERY MANAGER') {
                 this.snackbar.text = `Can't use this modul from this user.`
@@ -2411,6 +2929,7 @@ export default {
             if (this.accessModul.loadingLine) {
                 this.loadingLine.table.loading = true
                 let url = 'GetLoadingLine?'
+                if (this.generalSettings.type.model == 'Umum') url = 'GetLoadingLineLahanUmum?'
                 let params = {
                     typegetdata: this.User.ff.value_data,
                     ff: this.User.ff.ff,
@@ -2427,6 +2946,7 @@ export default {
                     this.loadingLine.table.items = res 
                 }).catch(err => {
                     console.error(err)
+                    this.loadingLine.table.items = [] 
                     this.sessionEnd(err)
                 }).finally(() => {
                     this.loadingLine.table.loading = false
@@ -2499,6 +3019,7 @@ export default {
             if (this.accessModul.distributionReport == true) {
                 this.distributionReport.table.loading = true
                 let url = 'GetDistributionReport?'
+                if (this.generalSettings.type.model == 'Umum') url = 'GetUmumDistributionReport?'
                 let params = {
                     typegetdata: this.User.ff.value_data,
                     ff: this.User.ff.ff,
@@ -2515,6 +3036,7 @@ export default {
                     this.distributionReport.table.items = res 
                 }).catch(err => {
                     console.error(err)
+                    this.distributionReport.table.items = [] 
                     this.sessionEnd(err)
                 }).finally(() => {
                     this.distributionReport.table.loading = false
@@ -2741,7 +3263,7 @@ export default {
         async confirmationOk(okText) {
             this.confirmation.show = false
             if (okText == 'Check Label') {
-                await this.updateCheckedPlantingHoles(this.confirmation.model.ph_form_no, this.confirmation.model.status)
+                await this.updateCheckedPlantingHoles(this.confirmation.model.id, this.confirmation.model.status)
             } else if (okText == 'Save & Verif') {
                 await this.saveAdjustmentAndVerification()
             } else if (okText == 'Verification') {
@@ -2756,7 +3278,7 @@ export default {
                     this.confirmation.okText = 'Check Label'
                     this.confirmation.show = true
                     this.confirmation.model = {
-                        ph_form_no: data.ph_form_no,
+                        id: this.generalSettings.type.model == 'Petani' ? data.ph_form_no : data.lahan_no,
                         status: data.is_checked
                     }
                 } else {
@@ -2793,6 +3315,17 @@ export default {
                 window.open(
                     this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
                     "ExportBibitExcel?" + params
+                )
+            } else if (type == 'bibit_by_lahan') {
+                const params = new URLSearchParams({
+                    lahan_no: data.datas.lahan_no.toString(),
+                    program_year: data.datas.program_year,
+                    activity: data.datas.activity,
+                    distribution_date: data.distribution_date
+                })
+                window.open(
+                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
+                    "ExportBibitLahanUmumExcel?" + params
                 )
             }
         },
