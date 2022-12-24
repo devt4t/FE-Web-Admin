@@ -596,15 +596,25 @@
                                         <td>:</td>
                                         <td><strong>{{ distributionReport.dialogs.detail.data.distribution_no }}</strong></td>
                                     </tr>
-                                    <tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
                                         <td>Field Facilitator</td>
                                         <td>:</td>
-                                        <td><strong>{{ distributionReport.dialogs.detail.data.ff_name }}</strong></td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.ff_name || '-' }}</strong></td>
                                     </tr>
-                                    <tr>
+                                    <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                        <td>PIC T4T</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.pic_t4t || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
                                         <td>Farmer</td>
                                         <td>:</td>
-                                        <td><strong>{{ distributionReport.dialogs.detail.data.farmer_name }}</strong></td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.farmer_name || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                        <td>PIC Lahan</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.pic_lahan || '-' }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td>Distribution Date</td>
@@ -719,6 +729,10 @@
                                                 <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2"></v-divider>
                                             </v-card-title>
                                             <v-card-text>
+                                                <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum">
+                                                    <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
+                                                    SCAN
+                                                </v-btn>
                                                 <v-data-table
                                                     dense
                                                     :headers="[
@@ -885,7 +899,8 @@
                                     <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Images</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
                                 <v-col cols="12" lg="6">
-                                    <h4 class="text-center">Receiver: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
+                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Receiver: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
+                                    <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Photo</h4>
                                     <v-card elevation="2" class="rounded-xl" height="300">
                                         <v-img
                                             height="300"
@@ -896,7 +911,7 @@
                                         ></v-img
                                     ></v-card>
                                 </v-col>
-                                <v-col cols="12" lg="6">
+                                <v-col cols="12" lg="6" v-if="generalSettings.type.model == 'Petani'">
                                     <h4 class="text-center">Farmer Signature</h4>
                                     <v-card elevation="2" class="rounded-xl" height="300">
                                         <v-img
@@ -919,8 +934,195 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
+                        <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="generalSettings.type.model == 'Umum' || distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
                         <v-btn v-else rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog> 
+            <!-- SCAN Distribution Lahan Umum -->
+            <v-dialog 
+                content-class="rounded-xl elevation-0 mx-1" 
+                top
+                persistent
+                max-width="700px" 
+                scrollable 
+                v-model="distributionReport.dialogs.scanLahanUmum.show" 
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title class="mb-1 headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-qrcode-scan
+                            </v-icon>
+                            SCAN Distribution
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="distributionReport.dialogs.scanLahanUmum.show = false">
+                            mdi-close-circle
+                        </v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- loading -->
+                        <div v-if="distributionReport.dialogs.scanLahanUmum.loading" class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="green"
+                                size="72"
+                                width="7"
+                                class="mt-10"
+                            ></v-progress-circular>
+                            <p class="mt-2">{{ distributionReport.dialogs.scanLahanUmum.loadingText }}</p>
+                        </div>
+                        <div v-else>
+                            <div class="d-flex align-center justify-center">
+                                <v-card class="rounded-xl overflow-hidden" v-if="distributionReport.dialogs.scanLahanUmum.show">
+                                    <qrcode-stream @decode="onScannedLahanUmumLabel" @init="onInitQRCODEScanner" style="max-width: 250px;max-height: 200px" ></qrcode-stream>
+                                </v-card>
+                            </div>
+                            <p class="mt-2">Last Scanned: <strong>{{ distributionReport.dialogs.scanLahanUmum.scan.lastScanned || '-' }}</strong></p>
+                            <v-row>
+                                <v-col cols="6">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-tag-multiple</v-icon> Bags Left
+                                        <v-divider class="ml-2"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="red">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-tag-multiple</v-icon> Bags Left <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
+                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
+                                                        {text: 'PIC Load', value: 'loaded_by', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.scanLahanUmum.scan.labelsLeft"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-qrcode</v-icon> Bags Scanned
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="green">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.scanLahanUmum.scan.scanned.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-qrcode</v-icon> Bags Scanned <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.scanLahanUmum.scan.scanned"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.bag_number="{item}">
+                                                        {{ item }}
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <!-- Photo File -->
+                                <v-col cols="12" sm="12">
+                                    <v-file-input
+                                    color="success"
+                                    item-color="success"
+                                    outlined
+                                    rounded
+                                    hide-details
+                                    accept="image/png, image/jpeg, image/bmp"
+                                    placeholder="Photo 1"
+                                    prepend-icon="mdi-camera"
+                                    label="Photo (*max 6mb)"
+                                    v-on:change="distributionPhotoFileChanged"
+                                    :rules="[(v) => !!v || 'Field is required']"
+                                    ></v-file-input>
+                                    <v-card elevation="2" class="rounded-xl" height="300" v-if="distributionReport.dialogs.scanLahanUmum.photo.preview && distributionReport.dialogs.scanLahanUmum.photo.preview !== ''">
+                                        <v-img
+                                            height="300"
+                                            v-bind:src="distributionReport.dialogs.scanLahanUmum.photo.preview"
+                                            class="my-2 mb-4 rounded-xl cursor-pointer"
+                                            id="photo1"
+                                            @click="showLightbox(distributionReport.dialogs.scanLahanUmum.photo.preview)"
+                                        ></v-img
+                                    ></v-card>
+                                </v-col>
+                            </v-row>
+
+                            <!-- Snackbar -->
+                            <v-snackbar
+                                v-model="distributionReport.dialogs.scanLahanUmum.scan.alert.show"
+                                :color="distributionReport.dialogs.scanLahanUmum.scan.alert.color"
+                                :timeout="5000"
+                                rounded="xl"
+                            >
+                                <div class="d-flex justify-between">
+                                    <p class="mb-0">
+                                        {{ distributionReport.dialogs.scanLahanUmum.scan.alert.text }}
+                                    </p>
+                                    <v-spacer></v-spacer>
+                                    <!-- <v-icon small class="pl-1" @click="snackbar.show = false">mdi-close-circle</v-icon> -->
+                                </div>
+                            </v-snackbar>
+                        </div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn
+                            color="green white--text"
+                            rounded
+                            class="pr-3"
+                            :disabled="distributionReport.dialogs.scanLahanUmum.scan.scanned.length == 0"
+                            @click="saveScannedDistribution"
+                        >
+                            <v-icon class="mr-1">mdi-check-circle</v-icon>
+                            Save
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -1950,8 +2152,12 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import { QrcodeStream } from "vue-qrcode-reader"
 
 export default {
+    components: {
+        QrcodeStream
+    },
     data: () => ({
         accessModul: {
             calendar: true,
@@ -1960,6 +2166,11 @@ export default {
             distributionReport: true
         },
         apiConfig: {
+            config: {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            },
             imageUrl: localStorage.getItem('BaseUrl'),
             baseUrl: localStorage.getItem('BaseUrlGet'),
             token: localStorage.getItem('token'),
@@ -2050,7 +2261,35 @@ export default {
                     loading: false,
                     loadingText: null,
                     show: false,
-                }
+                },
+                scanLahanUmum: {
+                    data: null,
+                    disabledSave: true,
+                    labels: {
+                        printed: [],
+                        loaded: [],
+                        distributed: [],
+                        lost: []
+                    },
+                    loading: false,
+                    loadingText: null,
+                    photo: {
+                        model: null,
+                        preview: null
+                    },
+                    scan: {
+                        alert: {
+                            color: '',
+                            show: false,
+                            text: ''
+                        },
+                        labels: [],
+                        labelsLeft: [],
+                        lastScanned: null,
+                        scanned: [],
+                    },
+                    show: false,
+                },
             },
             loading: false,
             loadingText: '',
@@ -2080,11 +2319,6 @@ export default {
                 items: [],
                 loading: false,
             },
-            dialogs: {
-                detail: {
-                    show: false,
-                }
-            }
         },
         expansions: {
             model: [0,1,2,3]
@@ -2308,10 +2542,6 @@ export default {
         'generalSettings.type.model': {
             async handler(newValue, oldValue) {
                 if (newValue != oldValue) {
-                    const calendar = {
-                        start: this.$refs.calendar.renderProps.start,
-                        end: this.$refs.calendar.renderProps.end,
-                    }
                     this.packingLabel.loadingText = 'Waiting for completed get distribution calendar data...'
                     this.packingLabel.loading = true
                     this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
@@ -2319,7 +2549,13 @@ export default {
                     this.distributionReport.loadingText = 'Waiting for completed get distribution calendar data...'
                     this.distributionReport.loading = true
                     // refresh calendar
-                    await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    if (this.$refs.calendar) {
+                        const calendar = {
+                            start: this.$refs.calendar.renderProps.start,
+                            end: this.$refs.calendar.renderProps.end,
+                        }
+                        await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    }
                     this.packingLabel.loadingText = 'Getting packing label data...'
                     this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
                     this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
@@ -2730,10 +2966,16 @@ export default {
                     this.packingLabel.tables.byLahan.loading = true
                     url = 'GetPackingLabelByLahan?'
                     if (this.generalSettings.type.model == 'Umum') {
+                        const nurseryEmails = this.$store.state.nurseryTeam.emails
                         url = 'GetPackingLabelLahanUmum?' 
-                        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
-                            params.created_by = this.User.email
-                        }
+                        if (this.User.role_group == 'IT' || 
+                            this.User.role_name == 'REGIONAL MANAGER' || 
+                            this.User.role_name == 'PLANNING MANAGER' || 
+                            nurseryEmails.Arjasari.includes(this.User.email) || 
+                            nurseryEmails.Ciminyak.includes(this.User.email) || 
+                            nurseryEmails.Kebumen.includes(this.User.email) || 
+                            nurseryEmails.Pati.includes(this.User.email)
+                        ) {} else params.created_by = this.User.email
                     }
                 }
     
@@ -3027,6 +3269,9 @@ export default {
                     nursery: this.generalSettings.nursery.model,
                     distribution_date: this.distributionReport.datePicker.model
                 }
+                if (this.generalSettings.type.model == 'Umum') {
+                    if(this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') params.created_by = this.User.email
+                }
                 await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
                     headers: {
                         Authorization: `Bearer ${this.apiConfig.token}`
@@ -3044,7 +3289,9 @@ export default {
             }
         },
         async getDistributionReportDetail(distribution_no) {
-            let url = `${this.apiConfig.baseUrl}GetDetailDistributionReport?distribution_no=${distribution_no}`
+            let url = `${this.apiConfig.baseUrl}`
+            if (this.generalSettings.type.model == 'Petani') url += `GetDetailDistributionReport?distribution_no=${distribution_no}`
+            else if (this.generalSettings.type.model == 'Umum') url += `GetUmumDistributionDetailReport?distribution_no=${distribution_no}`
             this.$store.state.loadingOverlayText = 'Getting distribution report detail...'
             this.$store.state.loadingOverlay = true
 
@@ -3141,6 +3388,65 @@ export default {
                 this.$store.state.loadingOverlayText = null
             })
         },
+        async onScannedLahanUmumLabel(newLabel) {
+            this.distributionReport.dialogs.scanLahanUmum.scan.lastScanned = newLabel
+            const existsScannedLabel = this.distributionReport.dialogs.scanLahanUmum.scan.scanned
+            let audio = null
+            const labels = this.distributionReport.dialogs.scanLahanUmum.scan.labels
+            if (existsScannedLabel.includes(newLabel) == false && labels.includes(newLabel) == true) {
+                this.distributionReport.dialogs.scanLahanUmum.scan.scanned.push(newLabel)
+                audio = new Audio(require('@/assets/audio/success.mp3'))
+
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" scaned!`
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'green'
+
+                // update labels left
+                await this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.forEach((val, index) => {
+                    if (val.bag_number == newLabel) this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.splice(index, 1)
+                })
+                console.log(this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.length)
+                console.log(this.distributionReport.dialogs.detail.labels.lost.length)
+
+            } else if (existsScannedLabel.includes(newLabel) == true) {
+                audio = new Audio(require('@/assets/audio/error.mp3'))
+
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" has been already scaned!`
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+            } else if (labels.includes(newLabel) == false) {
+                audio = new Audio(require('@/assets/audio/error.mp3'))
+
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" not included in this FF!`
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+            }
+
+            await audio.play()
+            this.distributionReport.dialogs.scanLahanUmum.scan.alert.show = true
+            this.distributionReport.dialogs.scanLahanUmum.scan.model = ''
+        },
+        async openModalScanLahanUmum() {
+            // set Labels Left 
+            this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft = []
+            await this.distributionReport.dialogs.detail.labels.lost.forEach(val => {
+                this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.push(val)
+            })
+            // get array labels
+            this.distributionReport.dialogs.scanLahanUmum.scan.labels = []
+            await this.distributionReport.dialogs.detail.labels.loaded.forEach(val => {
+                this.distributionReport.dialogs.scanLahanUmum.scan.labels.push(val.bag_number)
+            })
+            // get array scanned
+            this.distributionReport.dialogs.scanLahanUmum.scan.scanned = []
+            await this.distributionReport.dialogs.detail.labels.distributed.forEach(val => {
+                this.distributionReport.dialogs.scanLahanUmum.scan.scanned.push(val.bag_number)
+            })
+            // set exist photo
+            this.distributionReport.dialogs.scanLahanUmum.photo.model = null
+            if (this.distributionReport.dialogs.detail.data.distribution_photo) {
+                this.distributionReport.dialogs.scanLahanUmum.photo.preview = `${this.apiConfig.imageUrl}${this.distributionReport.dialogs.detail.data.distribution_photo}`
+            }
+            this.distributionReport.dialogs.scanLahanUmum.show = true
+            this.distributionReport.dialogs.scanLahanUmum.scan.lastScanned = null
+        },
         async saveAdjustmentAndVerification() {
             const url = `${this.apiConfig.baseUrl}CreateAdjustment`
 
@@ -3188,6 +3494,38 @@ export default {
                 this.$store.state.loadingOverlay = false
                 this.$store.state.loadingOverlayText = null
             })
+        },
+        async saveScannedDistribution() {
+            let url = this.apiConfig.baseUrl + 'UpdatedDistributionLahanUmum'
+            const luData = this.distributionReport.dialogs.detail.data
+            console.log(luData)
+            let data = {
+                lahan_no: luData.lahan_no,
+                bags_number: this.distributionReport.dialogs.scanLahanUmum.scan.scanned,
+                program_year: this.generalSettings.programYear
+            }
+            this.distributionReport.dialogs.scanLahanUmum.show = false
+            this.distributionReport.dialogs.detail.show = false
+            this.$store.state.loadingOverlay = true
+            if (this.distributionReport.dialogs.scanLahanUmum.photo.model) {
+                data.distribution_photo = await this.uploadPhotos(`${luData.lahan_no}-${luData.pic_lahan}`, this.distributionReport.dialogs.scanLahanUmum.photo.model)
+            }
+            this.$store.state.loadingOverlayText = 'Saving distributed labels...'
+            console.log(data)
+            await axios.post(url, data, this.apiConfig.config).then(res => {
+                this.snackbar.text = res.data
+                this.snackbar.color = 'green'
+                this.getDistributionReportTable()
+            }).catch(err => {
+                this.snackbar.text = err.response.data
+                this.snackbar.color = 'red'
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.snackbar.show = true
+                this.$store.state.loadingOverlayText = null
+                this.$store.state.loadingOverlay = false
+            })
+            
         },
         async verificationDistributionByUM() {
             const url = `${this.apiConfig.baseUrl}DistributionVerificationUM`
@@ -3349,6 +3687,23 @@ export default {
             await this.getDistributionReportTable() 
             this.distributionReport.loading = false
             this.distributionReport.loadingText = null
+        },
+        generateFormData(data) {
+            let formData= new FormData()
+
+            const objectArray= Object.entries(data)
+
+            objectArray.forEach(([key, value]) => {
+
+                if (Array.isArray(value)){
+                value.map(item => {
+                    formData.append(key+'[]' , item)
+                })
+                }else {
+                formData.append(key, value)
+                }
+            })
+            return formData
         },
         getNumberBagsLeft(all, loaded) {
             let leftData = []
@@ -3526,6 +3881,46 @@ export default {
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID').format(num)
         },
+        async onInitQRCODEScanner (promise) {
+            try {
+                await promise
+            } catch (error) {
+                if (error.name === 'NotAllowedError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = "ERROR: you need to grant camera access permission"
+                } else if (error.name === 'NotFoundError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = "ERROR: no camera on this device"
+                } else if (error.name === 'NotSupportedError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = "ERROR: secure context required (HTTPS, localhost)"
+                } else if (error.name === 'NotReadableError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = "ERROR: is the camera already in use?"
+                } else if (error.name === 'OverconstrainedError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = "ERROR: installed cameras are not suitable"
+                } else if (error.name === 'StreamApiNotSupportedError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = "ERROR: Stream API is not supported in this browser"
+                } else if (error.name === 'InsecureContextError') {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = 'ERROR: Camera access is only permitted in secure context. Use HTTPS or localhost rather than HTTP.';
+                } else {
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `ERROR: Camera error (${error.name})`;
+                }
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.show = true
+            }
+        },
+        distributionPhotoFileChanged (event) {
+            if (event) {
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.distributionReport.dialogs.scanLahanUmum.photo.model = event
+                    this.distributionReport.dialogs.scanLahanUmum.photo.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
+            } else {
+                this.distributionReport.dialogs.scanLahanUmum.photo.model = null
+                this.distributionReport.dialogs.scanLahanUmum.photo.preview = ""
+            }
+        },
         rnd (a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
         },
@@ -3619,6 +4014,22 @@ export default {
             const total_received = this.getTotalReceived()
             if (total_received > 0) this.distributionReport.dialogs.detail.disabledSave = false
             else this.distributionReport.dialogs.detail.disabledSave = true
+        },
+        async uploadPhotos(newName, file) {
+            this.$store.state.loadingOverlayText = `Saving photo...`
+            const url = `${localStorage.getItem("BaseUrl")}general-lands/upload.php`
+            const data = this.generateFormData({
+                dir: 'distribution-photos',
+                nama: newName,
+                image: file
+            })
+            let responseName = null
+            await axios.post(url,data).then(res => {
+                responseName = res.data.data.new_name
+            }).catch(err => {
+                console.error(err)
+            })
+            return 'general-lands/'+responseName
         }
     }
 }
