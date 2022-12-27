@@ -2,7 +2,7 @@ import moment from 'moment/moment'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { version } from '../../package.json'
-import lowProfileUser from './scpecialEmails/lowProfileUser'
+import JustLoadingLineModul from './scpecialEmails/JustLoadingLineModul'
 import { Arjasari, Ciminyak, Kebumen, Pati } from './scpecialEmails/nurseryTeam'
 import TaskForceEmail from './scpecialEmails/taskForceTeam'
 
@@ -33,7 +33,7 @@ export default new Vuex.Store({
         Ciminyak: Ciminyak || [],
         Kebumen: Kebumen || [],
         Pati: Pati || [],
-        JustLoadingLineModul: lowProfileUser
+        JustLoadingLineModul: JustLoadingLineModul
       }
     },
   },

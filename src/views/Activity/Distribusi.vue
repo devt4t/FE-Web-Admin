@@ -3869,7 +3869,9 @@ export default {
 
             // access modul: just loading line
             const JustLoadingLine = this.$store.state.nurseryTeam.emails.JustLoadingLineModul
+            console.log(JustLoadingLine)
             if (JustLoadingLine.includes(this.User.email)) {
+                this.generalSettings.type.model = 'Petani'
                 this.accessModul = {
                     calendar: false,
                     packingLabel: false,
