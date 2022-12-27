@@ -1081,6 +1081,75 @@
           </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <!-- Material Organik (Pupuk) -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.pupuk.show">
+        <v-expansion-panel-header>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-beer</v-icon></v-btn> Material Organik (Pupuk)</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            multi-sort
+            :headers="tables.pupuk.headers"
+            :items="tables.pupuk.items"
+            :search="tables.pupuk.search"
+            :loading="tables.pupuk.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
+          >
+            <template v-slot:top>
+              <v-row v-if="filters.FC" class="py-3 justify-center">
+                <v-spacer class="d-none d-md-inline-block"></v-spacer>
+                <!-- <v-btn 
+                  @click="generateReport('Penilikan Lubang')"
+                  color="info"
+                  class="mb-2 d-none d-md-inline-block"
+                  rounded
+                >
+                  <v-icon small class="mr-1">mdi-printer</v-icon>
+                  Export
+                </v-btn> -->
+              </v-row>
+            </template>
+            <template v-slot:header.total_petani>
+              Total Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:item.total_petani="{item}">
+              <strong>{{ item.total_petani }}</strong> Petani
+            </template>
+            <template v-slot:item.progress_penlub="{item}">
+              <strong>{{ item.progress_penlub }}</strong>%
+            </template>
+            <template v-slot:item.progress_pupuk="{item}">
+              <strong>{{ item.progress_pupuk }}</strong>%
+            </template>
+            <template v-slot:item.total_lubang="{item}">
+              <strong>{{ numberFormat(item.total_lubang) }}</strong>
+            </template>
+            <template v-slot:item.total_lubang_standar="{item}">
+              <strong>{{ numberFormat(item.total_lubang_standar) }}</strong>
+            </template>
+            <template v-slot:item.total_amount_pupuks="{item}">
+              <strong>{{ numberFormat(item.total_amount_pupuks) }}</strong> ml
+            </template>
+            <template v-slot:item.actions="{item, index}">
+              <v-btn
+                dark
+                color="red"
+                rounded
+                icon
+                @click="removeSostamItem(index)"
+              >
+                <v-icon>mdi-close-circle</v-icon>
+              </v-btn>
+            </template>
+          </v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
       <!-- Distribusi -->
       <v-expansion-panel class="rounded-xl mt-2" v-if="tables.distribusi.show">
         <v-expansion-panel-header>
@@ -1170,10 +1239,11 @@ export default {
       title: 'Confirmation',
     },
     dates: {
-      farmer: ['2022-08-31','2022-09-30'],
-      land: ['2022-10-03','2022-10-31'],
+      farmer: ['2022-08-31', moment().format('Y-MM-DD')],
+      land: ['2022-10-03', moment().format('Y-MM-DD')],
       sostam: '2022-11-15',
       penlub: '2022-12-31',
+      pupuk: '2023-01-31',
       distribusi: '2023-01-31',
     },
     btn: {
@@ -1205,6 +1275,7 @@ export default {
       land: false,
       sostam: false,
       penlub: false,
+      pupuk: false,
       distribusi: false
     },
     options: {
@@ -1235,9 +1306,9 @@ export default {
           {value: "Sosialisasi Tanam", disabled: false},
           {value: "Pelatihan Petani", disabled: false},
           {value: "Penilikan Lubang", disabled: false},
-          {value: "Material Organik (Pupuk)", disabled: true},
+          {value: "Material Organik (Pupuk)", disabled: false},
           {value: "Distribusi", disabled: false},
-          {value: "Realisasi Tanam", disabled: true},
+          {value: "Realisasi Tanam", disabled: false},
           {value: "Material Organik (Pestisida)", disabled: true},
         ],
         label: 'Activities',
@@ -1335,6 +1406,22 @@ export default {
           MPTS: [],
           CROPS: []
         }
+      },
+      pupuk: {
+        headers: [
+          { text: "Field Facilitator", value: "ff" },
+          { text: "Total Petani", value: "total_petani", align: 'center' },
+          { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
+          { text: "Pupuk Progress", value: "progress_pupuk", align: 'center' },
+          { text: "Lubang", value: "total_lubang", align: 'center' },
+          { text: "Lubang Standar", value: "total_lubang_standar", align: 'center' },
+          { text: "Total Pupuk", value: "total_amount_pupuks", align: 'center' },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
+        ],
+        items: [],
+        loading: false,
+        search: '',
+        show: false,
       },
       distribusi: {
         headers: [
@@ -1473,6 +1560,15 @@ export default {
       } else {
         this.tables.penlub.show = false
       }
+      // Material Organik (Pupuk)
+      if (activitiesActive.includes('Material Organik (Pupuk)')) {
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
+        this.filters.activities.push('Material Organik (Pupuk)')
+        this.tables.pupuk.show = true
+      } else {
+        this.tables.pupuk.show = false
+      }
       // Distribusi
       if (activitiesActive.includes('Distribusi')) {
         await openedPanel.push(openedPanelIndex)
@@ -1522,6 +1618,12 @@ export default {
             await this.tables.penlub.headers.splice(penlubHeaderIndex, 1)
           }
         })) 
+        // remove FC in table pupuk
+        await Promise.all(this.tables.pupuk.headers.map(async (pupukHeader, pupukHeaderIndex) => {
+          if (pupukHeader.text == 'FC') {
+            await this.tables.pupuk.headers.splice(pupukHeaderIndex, 1)
+          }
+        })) 
         // remove FC in table distribusi
         await Promise.all(this.tables.distribusi.headers.map(async (distribusiHeader, distribusiHeaderIndex) => {
           if (distribusiHeader.text == 'FC') {
@@ -1539,6 +1641,7 @@ export default {
         this.tables.sostam.loading = true
         this.tables.pelpet.loading = true
         this.tables.penlub.loading = true
+        this.tables.pupuk.loading = true
         this.tables.distribusi.loading = true
 
         const response = await axios.get(
@@ -1569,6 +1672,7 @@ export default {
         this.tables.sostam.items = datas.sostam
         this.tables.pelpet.items = datas.pelpet
         this.tables.penlub.items = datas.penlub
+        this.tables.pupuk.items = datas.pupuk
         this.tables.distribusi.items = datas.distribusi
 
         this.generateTotalBibitDetails(datas.sostam, 'sostam')
@@ -1584,6 +1688,7 @@ export default {
         this.tables.sostam.loading = false
         this.tables.pelpet.loading = false
         this.tables.penlub.loading = false
+        this.tables.pupuk.loading = false
         this.tables.distribusi.loading = false
       }
     },
@@ -1964,9 +2069,9 @@ export default {
       
       // set date
       this.filters.dates.farmer = this.dates.farmer
-      this.dates.farmer = ['2022-08-31', '2022-09-30']
+      this.dates.farmer = ['2022-08-31', moment().format('Y-MM-DD')]
       this.filters.dates.land = this.dates.land
-      this.dates.land = ['2022-10-03' ,'2022-10-31']
+      this.dates.land = ['2022-10-03' , moment().format('Y-MM-DD')]
       this.filters.dates.sostam = this.dates.sostam
       this.dates.sostam = '2022-11-15'
       this.filters.dates.penlub = this.dates.penlub

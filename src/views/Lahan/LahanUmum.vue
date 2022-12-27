@@ -92,7 +92,7 @@
                                             :loading="inputs.mou.loading"
                                             :no-data-text="inputs.mou.loading ? 'Loading...' : 'No Data'"
                                             outlined
-                                            :append-icon="inputs.mou.model ? (inputs.mou.exist ? 'mdi-close' : 'mdi-check') : ''"
+                                            :append-icon="inputs.mou.model ? 'mdi-check' : ''"
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.mou.model"
@@ -117,7 +117,7 @@
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.employee.model"
-                                            :disabled="(User.role_group != 'IT' || (dialogs.createData.update && User.role_group != 'IT'))"
+                                            :disabled="(User.role_group != 'IT' || (dialogs.createData.update && User.role_group != 'IT')) || inputs.mou.exist"
                                         ></v-autocomplete>
                                     </v-col>
                                 </v-row>
@@ -137,6 +137,7 @@
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.pic.loading ? 'Loading...' : 'No Data'"
                                             outlined
+                                            :disabled="inputs.mou.exist"
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
                                             v-model="inputs.pic.model"
@@ -152,6 +153,7 @@
                                             :loading="inputs.picKtp.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.picKtp.loading ? 'Loading...' : 'No Data'"
+                                            :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -317,6 +319,7 @@
                                             :items="inputs.mu.items"
                                             :label="inputs.mu.label"
                                             :loading="inputs.mu.loading"
+                                            :disabled="inputs.mou.exist"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.mu.loading ? 'Loading...' : 'No Data'"
                                             outlined
@@ -339,6 +342,7 @@
                                             :loading="inputs.province.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.province.loading ? 'Loading...' : 'No Data'"
+                                            :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -359,6 +363,7 @@
                                             :loading="inputs.regency.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.regency.loading ? 'Loading...' : 'No Data'"
+                                            :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -379,6 +384,7 @@
                                             :loading="inputs.district.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.district.loading ? 'Loading...' : 'No Data'"
+                                            :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -399,6 +405,7 @@
                                             :loading="inputs.village.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.village.loading ? 'Loading...' : 'No Data'"
+                                            :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -415,6 +422,7 @@
                                             :loading="inputs.address.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.address.loading ? 'Loading...' : 'No Data'"
+                                            :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -600,11 +608,11 @@
                                             <template v-slot:activator="{ on, attrs }">
                                                 <p class="mb-0"><strong>{{ inputs.dateDistribution.label }}</strong></p>
                                                 <v-btn 
-                                                    dark
                                                     rounded class=""
-                                                    color="green"
+                                                    color="green white--text"
                                                     v-bind="attrs"
                                                     v-on="on"
+                                                    :disabled="inputs.mou.exist"
                                                 >
                                                     {{ dateFormat(inputs.dateDistribution.model, 'ddd, DD MMMM Y') }}
                                                 </v-btn>
@@ -815,7 +823,7 @@
                                 rounded
                                 @click="() => {saveLahanUmum()}"
                                 :disabled="
-                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || (!inputs.photos.photo4.model && dialogs.createData.update == false) || inputs.mou.exist
+                                    !inputs.mou.model || !inputs.employee.model || !inputs.pic.model || !inputs.picKtp.model || !inputs.landArea.model || !inputs.plantingArea.model || !inputs.croppingPattern.model || !inputs.landStatus.model || !inputs.landDistance.model || !inputs.landAccess.model || !inputs.mu.model || !inputs.province.model || !inputs.regency.model || !inputs.district.model || !inputs.village.model || !inputs.address.model || inputs.seeds.table.items.length < 1 || !inputs.longitude.model || !inputs.latitude.model || !inputs.dateDistribution.model || (!inputs.photos.photo4.model && dialogs.createData.update == false)
                                 "
                             >
                                 <span class="d-none d-md-inline-block"> 
@@ -1119,19 +1127,19 @@
             <v-card class="rounded-xl">
                 <v-card-title class="mb-1 headermodalstyle">
                     <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
-                    <span>{{ `${confirmation.type || 'Confirmation'}` }}</span>
+                    <span>{{ `${'Confirmation'}` }}</span>
                     <v-divider dark class="mx-2"></v-divider>
-                    <v-icon color="red" @click="confirmation.show = false">mdi-close-circle</v-icon>
+                    <v-icon color="red" @click="confirmationClose(confirmation.type)">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text>
                     <h2 class="text-center pt-4">{{ confirmation.title }}</h2>
                     <v-row class="mt-10 align-center mb-0">
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="red white--text mr-1" @click="confirmation.show = false">
+                        <v-btn rounded color="red white--text mr-1" @click="confirmationClose(confirmation.type)">
                             <v-icon class="mr-1">mdi-close-circle</v-icon>
                             Close
                         </v-btn>
-                        <v-btn rounded color="green white--text ml-1" @click="confirmationOk(confirmation.okText)">
+                        <v-btn rounded color="green white--text ml-1" @click="confirmationOk(confirmation.type)">
                             <v-icon class="mr-1">mdi-check-circle</v-icon>
                             {{ confirmation.okText }}
                         </v-btn>
@@ -1224,7 +1232,7 @@
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailLahanUmum(item.mou_no)" color="info" block>
+                                <v-btn v-bind="attrs" v-on="on" rounded @click="showDetailLahanUmum(item.lahanNo)" color="info" block>
                                     <v-icon class="mr-1">
                                     mdi-information-outline
                                     </v-icon>
@@ -1238,7 +1246,7 @@
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
                                 <v-btn
-                                    v-bind="attrs" v-on="on" rounded @click="editLahanUmum(item.mou_no)" color="warning" block
+                                    v-bind="attrs" v-on="on" rounded @click="editLahanUmum(item.lahanNo)" color="warning" block
                                     :disabled="(item.is_verified == 1)"
                                 >
                                     <v-icon class="mr-1">
@@ -1598,10 +1606,10 @@ export default {
         await this.getGeneralLandData()
     },
     methods: {
-        async editLahanUmum(mou_no) {
+        async editLahanUmum(lahan_no) {
             this.$store.state.loadingOverlayText = 'Getting Detail Lahan Umum...'
             this.$store.state.loadingOverlay = true
-            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmum?mou_no=${mou_no}`
+            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmum?lahan_no=${lahan_no}`
             await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${this.apiConfig.token}`
@@ -1807,10 +1815,10 @@ export default {
                 this.$store.state.loadingOverlayText = null
             })
         },
-        async showDetailLahanUmum(mou_no) {
+        async showDetailLahanUmum(lahan_no) {
             this.$store.state.loadingOverlayText = 'Getting Detail Lahan Umum...'
             this.$store.state.loadingOverlay = true
-            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmum?mou_no=${mou_no}`
+            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmum?lahan_no=${lahan_no}`
             await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${this.apiConfig.token}`
@@ -1864,14 +1872,42 @@ export default {
         },
         // Utilities
         async checkMoUNoExisting(data) {
-            const url = `${this.apiConfig.baseUrl}AddMandatoryLahanUmum`
+            const url = `${this.apiConfig.baseUrl}GetDetailLahanUmumMOU?mou_no=${data}`
             this.inputs.mou.loading = true
-            await axios.post(url, {
-                mou_no: data
-            }, {
+            await axios.get(url, {
                 headers: {
                     Authorization: `Bearer ` + this.apiConfig.token,
                 },
+            }).then(res => {
+                const result = res.data.data.result
+                if (result) {
+                    this.inputs.mou.exist = true
+                    this.dialogs.createData.snackbar.text = 'Existing MoU Number!'
+                    this.dialogs.createData.snackbar.color = 'green'
+                    this.confirmationShow('existing_mou_no', result)
+                } else {
+                    if (data) {
+                        this.dialogs.createData.snackbar.color = 'green'
+                        this.dialogs.createData.snackbar.text = 'MoU Number available 👍🏻'
+                        this.inputs.mou.exist = false
+                        // RESET DATA
+                        this.inputs.employee.model = null
+                        this.inputs.pic.model = null
+                        this.inputs.picKtp.model = null
+                        this.inputs.mu.model = null
+                        this.inputs.province.model = null
+                        this.inputs.regency.model = null
+                        this.inputs.district.model = null
+                        this.inputs.village.model = null
+                        this.inputs.address.model = null
+                        this.inputs.dateDistribution.model = null
+                    } else {
+                        this.dialogs.createData.snackbar.color = 'red'
+                        this.dialogs.createData.snackbar.text = 'MoU Number required! 😪'
+                        this.inputs.mou.exist = true
+                    }
+                }
+                
             }).catch(err => {
                 this.forceLogout(err.response)
                 const res = err.response.data.data.result
@@ -1896,16 +1932,50 @@ export default {
         closeActions(type, name) {
             this[type][name].show = false
         },
-        async confirmationOk(okText) {
+        async confirmationClose(type) {
             this.confirmation.show = false
-            if (okText == 'Verif') {
-                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 1)
-            } if (okText == 'Unverif') {
-                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 0)
+            if (type == 'existing_mou_no') {
+                // RESET DATA
+                this.inputs.mou.model = null
+                this.inputs.employee.model = null
+                this.inputs.pic.model = null
+                this.inputs.picKtp.model = null
+                this.inputs.mu.model = null
+                this.inputs.province.model = null
+                this.inputs.regency.model = null
+                this.inputs.district.model = null
+                this.inputs.village.model = null
+                this.inputs.address.model = null
+                this.inputs.dateDistribution.model = null
             }
         },
+        async confirmationOk(type) {
+            console.log(type)
+            console.log(this.confirmation.model)
+            this.confirmation.show = false
+            if (type == 'verif') {
+                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 1)
+            } else if (type == 'unverif') {
+                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 0)
+            } else if (type == 'existing_mou_no') {
+                // AUTOINPUT DATA
+                this.inputs.employee.model = this.confirmation.model.employee_no
+                this.inputs.pic.model = this.confirmation.model.pic_lahan
+                this.inputs.picKtp.model = this.confirmation.model.ktp_no
+                this.inputs.mu.model = this.confirmation.model.mu_no
+                this.inputs.province.model = this.confirmation.model.province
+                await this.getOptionsData({type: 'regency'})
+                this.inputs.regency.model = this.confirmation.model.regency
+                await this.getOptionsData({type: 'district'})
+                this.inputs.district.model = this.confirmation.model.district
+                await this.getOptionsData({type: 'village'})
+                this.inputs.village.model = this.confirmation.model.village
+                this.inputs.address.model = this.confirmation.model.address
+                this.inputs.dateDistribution.model = this.confirmation.model.distribution_date
+            } 
+        },
         confirmationShow(type, data) {
-            this.confirmation.type = null
+            this.confirmation.type = type
             if (type == 'verif') {
                 this.confirmation.title = `Do u want to VERIF this data? This can't be undone!`
                 this.confirmation.okText = 'Verif'
@@ -1920,6 +1990,11 @@ export default {
                 this.confirmation.model = {
                     mou_no: data.mou_no
                 }
+            } else if (type == 'existing_mou_no') {
+                this.confirmation.title = `Do u want to PROCEED this existing MOU NO?`
+                this.confirmation.okText = 'Ok, Proceed'
+                this.confirmation.show = true
+                this.confirmation.model = data
             }
         },
         dateFormat(date, format) {
@@ -2214,7 +2289,7 @@ export default {
         async uploadPhotos(type, file) {
             this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
             const url = `${this.apiConfig.imageUrl}general-lands/upload.php`
-            const newName = `${this.inputs.mou.model.replace(/\s/g, '').replaceAll('/', '_')}_${type}`
+            const newName = `${this.inputs.mou.model.replace(/\s/g, '').replaceAll('/', '_')}_${type}${moment().valueOf()}`
             const data = this.generateFormData({
                 dir: type == 'mou' ? 'mou' : 'photos',
                 nama: newName,
