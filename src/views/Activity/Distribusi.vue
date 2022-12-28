@@ -402,10 +402,20 @@
                         <div v-else>
                             <v-simple-table v-if="loadingLine.detailDialog.model">
                                 <tbody>
-                                    <tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
                                         <th>Field Facilitator</th>
                                         <th>:</th>
                                         <td>{{ loadingLine.detailDialog.model.distribution_details[0].ff_name || '-' }}</td>
+                                    </tr>
+                                    <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                        <th>PIC T4T</th>
+                                        <th>:</th>
+                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].employee_name || '-' }}</td>
+                                    </tr>
+                                    <tr v-if="generalSettings.type.model == 'Umum'">
+                                        <th>PIC Lahan</th>
+                                        <th>:</th>
+                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].pic_lahan || '-' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Management Unit</th>
@@ -457,13 +467,7 @@
                                 </v-expansion-panel-header>
                                 <v-expansion-panel-content>
                                     <v-data-table
-                                        :headers="[
-                                            {text: '', value: 'check', align: 'center', sortable: false},
-                                            {text: 'Farmer', value: 'farmer_name'},
-                                            {text: 'Bags', value: 'bags_number', sortable: false},
-                                            {text: 'Bags Loaded', value: 'bags_number_loaded', sortable: false},
-                                            {text: 'Bags Left', value: 'bags_left', sortable: false},
-                                        ]"
+                                        :headers="loadingLine.detailDialog.inputs.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
                                         :items="loadingLine.detailDialog.inputs.scanner.farmers"
                                     >
                                         <template v-slot:item.check="{item}">
@@ -499,7 +503,7 @@
                         </v-expansion-panels>
                         </div>
                     </v-card-text>
-                    <v-card-actions v-if="loadingLine.detailDialog.model">
+                    <v-card-actions v-if="loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'">
                         <v-divider class="mx-2"></v-divider>
                         <v-btn
                             color="green white--text"
@@ -521,6 +525,20 @@
                         >
                             <v-icon class="mr-1">mdi-basket-check</v-icon>
                             Finish
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                    </v-card-actions>
+                    <v-card-actions v-else-if="loadingLine.detailDialog.model && generalSettings.type.model == 'Umum'">
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn
+                            color="green white--text"
+                            rounded
+                            class="pr-3"
+                            :disabled="loadingLine.detailDialog.inputs.scanner.values.length == 0 || loadingLine.detailDialog.inputs.disabledSave == true"
+                            @click="UpdateLoadedDistributionBagsNumber(loadingLine.detailDialog.model.distribution_details[0].mou_no)"
+                        >
+                            <v-icon class="mr-1">mdi-check-circle</v-icon>
+                            Save
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
                     </v-card-actions>
@@ -1947,7 +1965,7 @@
                             <!-- Loading Line Table -->
                             <v-col cols="12">
                                 <v-data-table
-                                    :headers="loadingLine.table.headers"
+                                    :headers="loadingLine.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
                                     :items="loadingLine.table.items"
                                     :loading="loadingLine.table.loading"
                                     multi-sort
@@ -1987,7 +2005,7 @@
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn rounded :disabled="item.printed_progress != 100" color="blue white--text" @click="getLoadingLineDetailFFData(item.ff_no)">
+                                        <v-btn rounded :disabled="item.printed_progress != 100" color="blue white--text" @click="getLoadingLineDetailFFData(item.ff_no || item.mou_no)">
                                             <v-icon class="mr-1">mdi-qrcode-plus</v-icon>
                                             Scan Label
                                         </v-btn>
@@ -2357,6 +2375,22 @@ export default {
                         labels: [],
                         model: '',
                         values: [],
+                    },
+                    table: {
+                        headers: [
+                            {text: '', value: 'check', align: 'center', sortable: false},
+                            {text: 'Farmer', value: 'farmer_name'},
+                            {text: 'Bags', value: 'bags_number', sortable: false},
+                            {text: 'Bags Loaded', value: 'bags_number_loaded', sortable: false},
+                            {text: 'Bags Left', value: 'bags_left', sortable: false},
+                        ],
+                        headers2: [
+                            {text: '', value: 'check', align: 'center', sortable: false},
+                            {text: 'PIC Lahan', value: 'pic_lahan'},
+                            {text: 'Bags', value: 'bags_number', sortable: false},
+                            {text: 'Bags Loaded', value: 'bags_number_loaded', sortable: false},
+                            {text: 'Bags Left', value: 'bags_left', sortable: false},
+                        ]
                     }
                 },
                 leftLabelsDialog: false,
@@ -2372,6 +2406,16 @@ export default {
                     { text: 'Status', value: 'is_loaded', align: 'center', width: '100'},
                     { text: 'Management Unit', value: 'mu_name'},
                     { text: 'Field Facilitator', value: 'ff_name'},
+                    { text: 'Printed (%)', value: 'printed_progress', align: 'center'},
+                    { text: 'Seeds Total', value: 'total_tree_amount', align: 'center'},
+                    { text: 'Bags Total', value: 'total_bags', align: 'center'},
+                    { text: 'Actions', value: 'actions', align: 'right', sortable: false},
+                ],
+                headers2 : [
+                    { text: 'Status', value: 'is_loaded', align: 'center', width: '100'},
+                    { text: 'Management Unit', value: 'mu_name'},
+                    { text: 'PIC T4T', value: 'employee_name'},
+                    { text: 'PIC Lahan', value: 'pic_lahan'},
                     { text: 'Printed (%)', value: 'printed_progress', align: 'center'},
                     { text: 'Seeds Total', value: 'total_tree_amount', align: 'center'},
                     { text: 'Bags Total', value: 'total_bags', align: 'center'},
@@ -3122,7 +3166,7 @@ export default {
             }
         },
         // LOADING LINE
-        async getLoadingLineDetailFFData(ff_no) {
+        async getLoadingLineDetailFFData(id) {
             this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
             this.loadingLine.detailDialog.loading = true
             this.loadingLine.detailDialog.show = true
@@ -3136,10 +3180,15 @@ export default {
             this.loadingLine.detailDialog.inputs.scanner.alert.color = ''
             this.loadingLine.detailDialog.differentTotalBags = false
             
-            const url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
+            let url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
             const params = {
-                ff_no: ff_no,
+                ff_no: id,
                 program_year: this.generalSettings.programYear
+            }
+            if (this.generalSettings.type.model == 'Umum') {
+                delete params.ff_no
+                params.mou_no = id
+                url = `${this.apiConfig.baseUrl}GetLoadingLineDetailLahanUmum?`
             }
 
             await axios.get(`${url + new URLSearchParams(params)}`, {
@@ -3233,18 +3282,24 @@ export default {
                 this.snackbar.show = true
             })
         },
-        async UpdateLoadedDistributionBagsNumber(ff_no) {
+        async UpdateLoadedDistributionBagsNumber(id) {
             this.loadingLine.detailDialog.show = false
             this.$store.state.loadingOverlayText = 'Updating loaded labels data...'
             this.$store.state.loadingOverlay = true
 
-            const url = `${this.apiConfig.baseUrl}LoadedDistributionBagsNumber`
-            
-            await axios.post(url, {
+            let url = `${this.apiConfig.baseUrl}LoadedDistributionBagsNumber`
+            let dataToPost = {
                 bags_number: this.loadingLine.detailDialog.inputs.scanner.values,
-                ff_no: ff_no,
+                ff_no: id,
                 program_year: this.generalSettings.programYear
-            }, {
+            }
+            if (this.generalSettings.type.model == 'Umum') {
+                url = `${this.apiConfig.baseUrl}UpdatedLoadingLahanUmum`
+                delete dataToPost.ff_no
+                dataToPost.mou_no = id
+            }
+            
+            await axios.post(url, dataToPost, {
                 headers: {
                     Authorization: `Bearer ${this.apiConfig.token}`
                 }
@@ -3311,7 +3366,7 @@ export default {
                 const datas = res.data.data.result
                 // console.log(datas)
                 
-                // reset data ???????????????????????????? its weird T_T
+                // reset data ???????????????????????????? its weird T_T __________________________________________ IT'S SOLVED! WKWKWK :)
                 this.distributionReport.dialogs.detail = {
                     adjustment: [],
                     data: datas,
@@ -3452,6 +3507,7 @@ export default {
             if (this.distributionReport.dialogs.detail.data.distribution_photo) {
                 this.distributionReport.dialogs.scanLahanUmum.photo.preview = `${this.apiConfig.imageUrl}${this.distributionReport.dialogs.detail.data.distribution_photo}`
             }
+            // console.log(this.distributionReport.dialogs.detail.data)
             this.distributionReport.dialogs.scanLahanUmum.show = true
             this.distributionReport.dialogs.scanLahanUmum.scan.lastScanned = null
         },
@@ -3516,7 +3572,7 @@ export default {
             this.distributionReport.dialogs.detail.show = false
             this.$store.state.loadingOverlay = true
             if (this.distributionReport.dialogs.scanLahanUmum.photo.model) {
-                data.distribution_photo = await this.uploadPhotos(`${luData.lahan_no}-${luData.pic_lahan}`, this.distributionReport.dialogs.scanLahanUmum.photo.model)
+                data.distribution_photo = await this.uploadPhotos(`${luData.mou_no}-${moment().valueOf()}`, this.distributionReport.dialogs.scanLahanUmum.photo.model)
             }
             this.$store.state.loadingOverlayText = 'Saving distributed labels...'
             console.log(data)
