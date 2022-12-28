@@ -974,22 +974,22 @@
                 color="success"
                 item-color="success"
                 item-text="mou_no"
-                item-value="mou_no"
+                item-value="lahanNo"
                 v-model="dialogAddPlantingHoleLahanUmum.inputs.mou_no.model"
                 :items="dialogAddPlantingHoleLahanUmum.inputs.mou_no.options"
-                @change="getSeedDetailLahanUmumByMOU"
+                @change="getSeedDetailLahanUmumByLahanNo"
                 :disabled="dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled"
                 outlined
                 hide-details
                 :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 rounded
-                label="MoU No"
+                label="Lahan No"
                 class=""
               >
                 <template v-slot:item="data">
                   <v-list-item-content>
-                    <v-list-item-title v-html="data.item.mou_no"></v-list-item-title>
-                    <v-list-item-subtitle>{{ data.item.pic_lahan }} - {{ data.item.lahanNo }}</v-list-item-subtitle>
+                    <v-list-item-title v-html="data.item.lahanNo"></v-list-item-title>
+                    <v-list-item-subtitle>{{ data.item.mou_no }} - {{ data.item.pic_lahan }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
               </v-autocomplete>
@@ -2440,9 +2440,9 @@ export default {
         }
       })
     },
-    async getSeedDetailLahanUmumByMOU(mou_no) {
+    async getSeedDetailLahanUmumByLahanNo(lahan_no) {
       this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.loading = true
-      const url = `${this.BaseUrlGet}GetDetailLahanUmum?mou_no=${mou_no}`
+      const url = `${this.BaseUrlGet}GetDetailLahanUmum?lahan_no=${lahan_no}`
       await axios.get(url, {
           headers: {
               Authorization: `Bearer ${this.authtoken}`

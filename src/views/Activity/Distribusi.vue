@@ -1276,7 +1276,7 @@
                                         <v-icon v-if="event.color == 'green'" dark small>mdi-check-circle</v-icon>
                                         <v-icon v-else-if="event.color == 'red'" dark small>mdi-close-circle</v-icon>
                                         <v-icon v-else-if="event.color == 'blue'" dark small>mdi-help-circle</v-icon>
-                                        {{ event.name == 'Tidak Ada' ? 'Unallocated' : event.name }} ~ {{ event.total_ff }} Lahan 
+                                        {{ event.name == 'Tidak Ada' ? 'Unallocated' : event.name }} ~ {{ event.total_ff }} PIC 
                                     </h4>
                                 </template>
                             </v-calendar>
@@ -1588,7 +1588,7 @@
                                                         <v-list-item>
                                                             <v-btn 
                                                                 block color="green white--text" rounded 
-                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'lahan_no', 'lahan')"
+                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'mou_no', 'lahan')"
                                                             >
                                                                 <v-icon class="mr-1">mdi-seed</v-icon>
                                                                 Lahan Seeds
@@ -1597,7 +1597,7 @@
                                                         <v-list-item>
                                                             <v-btn 
                                                                 block color="green white--text" rounded 
-                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'lahan_no', 'penlub')"
+                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'mou_no', 'penlub')"
                                                             >
                                                                 <v-icon class="mr-1">mdi-sprout</v-icon>
                                                                 Penlub Seeds
@@ -1858,7 +1858,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Loading Line Section -->
-                <v-expansion-panel v-if="accessModul.loadingLine && generalSettings.type.model == 'Petani'" class="rounded-xl">
+                <v-expansion-panel v-if="accessModul.loadingLine" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-human-dolly</v-icon> Loading Line</h3>
                     </v-expansion-panel-header>
@@ -2826,12 +2826,12 @@ export default {
         },
         async calendarShowDetailTotalBibitLahanUmum(datas, type, activity) {
             let ff_no = []
-            let lahan_no = []
+            let mou_no = []
             let program_year = ''
             if (type == 'nursery') {
                 await datas.details.forEach(val => {
                     if (this.generalSettings.type.model == 'Petani') ff_no.push(val.ff_no)
-                    else if (this.generalSettings.type.model == 'Umum') lahan_no.push(val.lahan_no)
+                    else if (this.generalSettings.type.model == 'Umum') mou_no.push(val.mou_no)
 
                     if (program_year == '') {
                         if (this.generalSettings.type.model == 'Petani') program_year = val.planting_year
@@ -2841,8 +2841,8 @@ export default {
             } else if (type == 'ff') {
                 ff_no.push(datas.ff_no)
                 program_year = datas.planting_year
-            } else if (type == 'lahan_no') {
-                lahan_no.push(datas.lahan_no)
+            } else if (type == 'mou_no') {
+                mou_no.push(datas.mou_no)
                 program_year = datas.program_year
             }
             this.calendar.detailBibit.show = true
@@ -2850,7 +2850,7 @@ export default {
             
             let url = this.apiConfig.baseUrl + 'DistributionSeedDetail?' + new URLSearchParams({
                 ff_no: ff_no.toString(),
-                lahan_no: lahan_no.toString(),
+                mou_no: mou_no.toString(),
                 program_year: program_year,
                 activity: activity
             })
@@ -3052,7 +3052,15 @@ export default {
                     program_year: this.generalSettings.programYear,
                     ph_form_no: id
                 }
-                if (this.generalSettings.type.model == 'Umum') params.lahan_no = id 
+                if (this.generalSettings.type.model == 'Umum') {
+                    params.lahan_no = id 
+                    const LUData = await axios.get(`${this.apiConfig.baseUrl}GetDetailLahanUmum?lahan_no=${id}`, {
+                        headers: {
+                            Authorization: `Bearer ` + this.apiConfig.token,
+                        },
+                    })
+                    params.mou_no = LUData.data.data.result.mou_no
+                }
                 
                 let success = 0
                 try {
@@ -3500,7 +3508,7 @@ export default {
             const luData = this.distributionReport.dialogs.detail.data
             console.log(luData)
             let data = {
-                lahan_no: luData.lahan_no,
+                mou_no: luData.mou_no,
                 bags_number: this.distributionReport.dialogs.scanLahanUmum.scan.scanned,
                 program_year: this.generalSettings.programYear
             }

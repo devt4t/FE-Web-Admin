@@ -363,7 +363,7 @@
                                             :loading="inputs.regency.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.regency.loading ? 'Loading...' : 'No Data'"
-                                            :disabled="inputs.mou.exist"
+                                            :disabled="false"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -384,7 +384,7 @@
                                             :loading="inputs.district.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.district.loading ? 'Loading...' : 'No Data'"
-                                            :disabled="inputs.mou.exist"
+                                            :disabled="false"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -405,7 +405,7 @@
                                             :loading="inputs.village.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.village.loading ? 'Loading...' : 'No Data'"
-                                            :disabled="inputs.mou.exist"
+                                            :disabled="false"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -422,7 +422,7 @@
                                             :loading="inputs.address.loading"
                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                             :no-data-text="inputs.address.loading ? 'Loading...' : 'No Data'"
-                                            :disabled="inputs.mou.exist"
+                                            :disabled="false"
                                             outlined
                                             rounded
                                             :rules="[(v) => !!v || 'Field is required']"
@@ -1247,7 +1247,7 @@
                                 <template v-slot:activator="{ on, attrs }">
                                 <v-btn
                                     v-bind="attrs" v-on="on" rounded @click="editLahanUmum(item.lahanNo)" color="warning" block
-                                    :disabled="(item.is_verified == 1)"
+                                    :disabled="(item.is_verified > 0)"
                                 >
                                     <v-icon class="mr-1">
                                     mdi-pencil
@@ -1836,7 +1836,7 @@ export default {
                 this.$store.state.loadingOverlayText = null
             })
         },
-        async updateVerifiedStatus(mou_no, status) {
+        async updateVerifiedStatus(lahan_no, status) {
             this.dialogs.detail.show = false
             let url = ''
             if (status == 1) {
@@ -1848,7 +1848,7 @@ export default {
             }
             this.$store.state.loadingOverlay = true
             await axios.post(url, {
-                mou_no: mou_no,
+                lahan_no: lahan_no,
                 verified_by: this.User.email
             }, {
                 headers: {
@@ -1891,7 +1891,7 @@ export default {
                         this.dialogs.createData.snackbar.text = 'MoU Number available 👍🏻'
                         this.inputs.mou.exist = false
                         // RESET DATA
-                        this.inputs.employee.model = null
+                        this.inputs.employee.model = this.User.employee_no
                         this.inputs.pic.model = null
                         this.inputs.picKtp.model = null
                         this.inputs.mu.model = null
@@ -1937,7 +1937,7 @@ export default {
             if (type == 'existing_mou_no') {
                 // RESET DATA
                 this.inputs.mou.model = null
-                this.inputs.employee.model = null
+                this.inputs.employee.model = this.User.employee_no
                 this.inputs.pic.model = null
                 this.inputs.picKtp.model = null
                 this.inputs.mu.model = null
@@ -1947,6 +1947,7 @@ export default {
                 this.inputs.village.model = null
                 this.inputs.address.model = null
                 this.inputs.dateDistribution.model = null
+                this.inputs.mou.exist = false
             }
         },
         async confirmationOk(type) {
@@ -1954,9 +1955,9 @@ export default {
             console.log(this.confirmation.model)
             this.confirmation.show = false
             if (type == 'verif') {
-                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 1)
+                await this.updateVerifiedStatus(this.confirmation.model.lahan_no, 1)
             } else if (type == 'unverif') {
-                await this.updateVerifiedStatus(this.confirmation.model.mou_no, 0)
+                await this.updateVerifiedStatus(this.confirmation.model.lahan_no, 0)
             } else if (type == 'existing_mou_no') {
                 // AUTOINPUT DATA
                 this.inputs.employee.model = this.confirmation.model.employee_no
@@ -1981,14 +1982,15 @@ export default {
                 this.confirmation.okText = 'Verif'
                 this.confirmation.show = true
                 this.confirmation.model = {
-                    mou_no: data.mou_no
+                    lahan_no: data.lahan_no
                 }
             } else if (type == 'unverif') {
                 this.confirmation.title = `Do u want to UNVERIF this data? This can't be undone!`
                 this.confirmation.okText = 'Unverif'
                 this.confirmation.show = true
+                console.log(data)
                 this.confirmation.model = {
-                    mou_no: data.mou_no
+                    lahan_no: data.lahanNo || data.lahan_no || '' 
                 }
             } else if (type == 'existing_mou_no') {
                 this.confirmation.title = `Do u want to PROCEED this existing MOU NO?`
