@@ -980,20 +980,25 @@
                         </v-icon>
                     </v-card-title>
                     <v-card-text>
-                        <!-- loading -->
-                        <div v-if="distributionReport.dialogs.scanLahanUmum.loading" class="d-flex flex-column align-center justify-center">
-                            <v-progress-circular
-                                indeterminate
-                                color="green"
-                                size="72"
-                                width="7"
-                                class="mt-10"
-                            ></v-progress-circular>
-                            <p class="mt-2">{{ distributionReport.dialogs.scanLahanUmum.loadingText }}</p>
-                        </div>
-                        <div v-else>
+                        <div>
+                            <!-- loading -->
+                            <v-overlay v-if="distributionReport.dialogs.scanLahanUmum.loading" class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="green"
+                                    size="72"
+                                    width="7"
+                                    class="mt-10"
+                                ></v-progress-circular>
+                                <p class="mt-2">{{ distributionReport.dialogs.scanLahanUmum.loadingText }}</p>
+                            </v-overlay>
+                            <v-row class="align-center justify-center ma-0 mb-1">
+                                <v-btn fab x-small :color="`${distributionReport.dialogs.scanLahanUmum.camera ? 'red' : 'green'} white--text`" @click="() => {distributionReport.dialogs.scanLahanUmum.camera = !distributionReport.dialogs.scanLahanUmum.camera}">
+                                    <v-icon>mdi-camera{{ distributionReport.dialogs.scanLahanUmum.camera ? '-off' : '' }}</v-icon>
+                                </v-btn>
+                            </v-row>
                             <div class="d-flex align-center justify-center">
-                                <v-card class="rounded-xl overflow-hidden" v-if="distributionReport.dialogs.scanLahanUmum.show">
+                                <v-card class="rounded-xl overflow-hidden" v-if="distributionReport.dialogs.scanLahanUmum.show && distributionReport.dialogs.scanLahanUmum.camera">
                                     <qrcode-stream @decode="onScannedLahanUmumLabel" @init="onInitQRCODEScanner" style="max-width: 250px;max-height: 200px" ></qrcode-stream>
                                 </v-card>
                             </div>
@@ -1004,7 +1009,7 @@
                                         <v-icon class="mr-1">mdi-tag-multiple</v-icon> Bags Left
                                         <v-divider class="ml-2"></v-divider>
                                     </v-row>
-                                    <v-menu content-class="rounded-xl white">
+                                    <v-menu content-class="rounded-xl white" :close-on-content-click="false">
                                         <template v-slot:activator="{attrs, on}">
                                             <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="red">
                                                 <v-card-text class="text-center white--text">
@@ -1013,6 +1018,16 @@
                                             </v-card>
                                         </template>
                                         <v-card max-height="400px" elevation="0">
+                                            <!-- loading -->
+                                            <v-overlay v-if="distributionReport.dialogs.scanLahanUmum.loading" class="d-flex flex-column align-center justify-center">
+                                                <v-progress-circular
+                                                    indeterminate
+                                                    color="green"
+                                                    size="72"
+                                                    width="7"
+                                                    class="mt-10"
+                                                ></v-progress-circular>
+                                            </v-overlay>
                                             <v-card-title>
                                                 <v-icon class="mr-1">mdi-tag-multiple</v-icon> Bags Left <v-divider class="ml-2"></v-divider>
                                             </v-card-title>
@@ -1134,7 +1149,7 @@
                             color="green white--text"
                             rounded
                             class="pr-3"
-                            :disabled="distributionReport.dialogs.scanLahanUmum.scan.scanned.length == 0"
+                            :disabled="distributionReport.dialogs.scanLahanUmum.scan.scanned.length == 0 || distributionReport.dialogs.scanLahanUmum.loading"
                             @click="saveScannedDistribution"
                         >
                             <v-icon class="mr-1">mdi-check-circle</v-icon>
@@ -2281,6 +2296,7 @@ export default {
                     show: false,
                 },
                 scanLahanUmum: {
+                    camera: true,
                     data: null,
                     disabledSave: true,
                     labels: {
