@@ -982,15 +982,17 @@
                     <v-card-text>
                         <div>
                             <!-- loading -->
-                            <v-overlay v-if="distributionReport.dialogs.scanLahanUmum.loading" class="d-flex flex-column align-center justify-center">
-                                <v-progress-circular
-                                    indeterminate
-                                    color="green"
-                                    size="72"
-                                    width="7"
-                                    class="mt-10"
-                                ></v-progress-circular>
-                                <p class="mt-2">{{ distributionReport.dialogs.scanLahanUmum.loadingText }}</p>
+                            <v-overlay v-if="distributionReport.dialogs.scanLahanUmum.loading">
+                                <div class="d-flex flex-column align-center justify-center">
+                                    <v-progress-circular
+                                        indeterminate
+                                        color="green"
+                                        size="72"
+                                        width="7"
+                                        class="mt-10"
+                                    ></v-progress-circular>
+                                    <p class="mt-2">{{ distributionReport.dialogs.scanLahanUmum.loadingText }}</p>
+                                </div>
                             </v-overlay>
                             <v-row class="align-center justify-center ma-0 mb-1">
                                 <v-btn fab x-small :color="`${distributionReport.dialogs.scanLahanUmum.camera ? 'red' : 'green'} white--text`" @click="() => {distributionReport.dialogs.scanLahanUmum.camera = !distributionReport.dialogs.scanLahanUmum.camera}">
