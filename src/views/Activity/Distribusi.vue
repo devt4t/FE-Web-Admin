@@ -1030,8 +1030,8 @@
                                                     hide-default-footer
                                                 >
                                                     <!-- No Column -->
-                                                    <template v-slot:item.no="{index}">
-                                                        {{ index + 1 }}
+                                                    <template v-slot:item.no="{item}">
+                                                        <v-btn rounded fab x-small color="green white--text" class="my-1" @click="onScannedLahanUmumLabel(item.bag_number)"><v-icon>mdi-checkbox-marked-circle-outline</v-icon></v-btn>
                                                     </template>
                                                     <!-- Seedling Column -->
                                                     <template v-slot:item.tree_list="{item}">
