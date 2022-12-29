@@ -1018,21 +1018,12 @@
                                             </v-card>
                                         </template>
                                         <v-card max-height="400px" elevation="0">
-                                            <!-- loading -->
-                                            <v-overlay v-if="distributionReport.dialogs.scanLahanUmum.loading" class="d-flex flex-column align-center justify-center">
-                                                <v-progress-circular
-                                                    indeterminate
-                                                    color="green"
-                                                    size="72"
-                                                    width="7"
-                                                    class="mt-10"
-                                                ></v-progress-circular>
-                                            </v-overlay>
                                             <v-card-title>
                                                 <v-icon class="mr-1">mdi-tag-multiple</v-icon> Bags Left <v-divider class="ml-2"></v-divider>
                                             </v-card-title>
                                             <v-card-text>
-                                                <v-data-table
+                                                <v-data-table 
+                                                    :loading="distributionReport.dialogs.scanLahanUmum.loading"
                                                     dense
                                                     :headers="[
                                                         {text: 'No', value: 'no', align: 'center', sortable: false},
@@ -2296,7 +2287,7 @@ export default {
                     show: false,
                 },
                 scanLahanUmum: {
-                    camera: true,
+                    camera: false,
                     data: null,
                     disabledSave: true,
                     labels: {
