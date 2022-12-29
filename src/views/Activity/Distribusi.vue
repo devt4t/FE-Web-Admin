@@ -952,8 +952,9 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="generalSettings.type.model == 'Umum' || distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
-                        <v-btn v-else rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
+                        <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
+                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
+                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog> 
@@ -3546,7 +3547,7 @@ export default {
             this.distributionReport.dialogs.scanLahanUmum.scan.lastScanned = null
         },
         async saveAdjustmentAndVerification() {
-            const url = `${this.apiConfig.baseUrl}CreateAdjustment`
+            let url = `${this.apiConfig.baseUrl}CreateAdjustment`
 
             const distributionData = this.distributionReport.dialogs.detail.data
             const distributionNoSplit = distributionData.distribution_no.split('-')
@@ -3568,6 +3569,12 @@ export default {
                 farmer_no: distributionData.farmer_no,
                 list_trees: listSeedling,
                 adjust_date: moment().format('Y-MM-DD')
+            }
+            if (this.generalSettings.type.model == 'Umum') {
+                delete postData.ff_no
+                delete postData.farmer_no
+                
+                url = `${this.apiConfig.baseUrl}CreateLahanUmumAdjustment`
             }
             console.log(postData)
             this.distributionReport.dialogs.detail.show = false
@@ -3669,6 +3676,50 @@ export default {
                 this.$store.state.loadingOverlayText = null
             })
         },
+        async verificationDistributionByPM() {
+            const url = `${this.apiConfig.baseUrl}DistributionVerificationPM`
+            const distributionData = this.distributionReport.dialogs.detail.data
+
+            let listSeedling = []
+            await this.distributionReport.dialogs.detail.adjustment.forEach(lahan => {
+                lahan.items.forEach(item => {
+                    listSeedling.push({
+                        lahan_no: lahan.lahan_no,
+                        ...item
+                    })
+                })
+            })
+            
+            const postData = {
+                distribution_no: distributionData.distribution_no,
+                approved_by: this.User.email,
+                list_trees: listSeedling
+            }
+            
+            this.distributionReport.dialogs.detail.show = false
+            this.$store.state.loadingOverlayText = `Verifying distribution report...`
+            this.$store.state.loadingOverlay = true
+
+            await axios.post(url, postData, {
+                headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`
+                }
+            }).then(res => {
+                this.snackbar.text = `Verification success!`
+                this.snackbar.color = 'green'
+                this.getDistributionReportTable()
+            }).catch(err => {
+                console.error(err)
+                this.snackbar.text = `Verification failed!`
+                this.snackbar.color = 'red'
+                this.distributionReport.dialogs.detail.show = true
+                this.sessionEnd(err)
+            }).finally(() => {
+                this.snackbar.show = true
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
+        },
         // UTILITIES
         calendarGetNurseryColor(n, total, date) {
             let maxFF = this.calendarGetMaxFF(n, date)
@@ -3704,6 +3755,8 @@ export default {
                 await this.saveAdjustmentAndVerification()
             } else if (okText == 'Verification') {
                 await this.verificationDistributionByUM()
+            } else if (okText == 'Verification PM') {
+                await this.verificationDistributionByPM()
             }
         },
         confirmationShow(type, data) {
@@ -3734,6 +3787,10 @@ export default {
             } else if (type == 'Verified UM') {
                 this.confirmation.title = `Do u want to VERIFICATION this distribution? This can't be undone!`
                 this.confirmation.okText = 'Verification'
+                this.confirmation.show = true
+            } else if (type == 'Verified Pak Pandu') {
+                this.confirmation.title = `Do u want to VERIFICATION this distribution? This can't be undone!`
+                this.confirmation.okText = 'Verification PM'
                 this.confirmation.show = true
             }
         },
