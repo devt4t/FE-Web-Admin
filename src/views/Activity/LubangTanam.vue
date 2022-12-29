@@ -1898,6 +1898,10 @@
       <template v-slot:item.total_bibit="{ item }">
           {{ numberFormat(item.total_bibit) }}
       </template>
+      <!-- Pohon Kayu -->
+      <template v-slot:item.pohon_kayu="{ item }">
+          {{ numberFormat(item.pohon_kayu) }}
+      </template>
       <!-- Color Status -->
       <template v-slot:item.is_verified="{ item }">
         <v-chip :color="item.is_verified > 1 ? 'green' : 'red'" class="pl-1" dark>

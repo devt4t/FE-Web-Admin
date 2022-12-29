@@ -3452,39 +3452,64 @@ export default {
             })
         },
         async onScannedLahanUmumLabel(newLabel) {
-            this.distributionReport.dialogs.scanLahanUmum.scan.lastScanned = newLabel
-            const existsScannedLabel = this.distributionReport.dialogs.scanLahanUmum.scan.scanned
             let audio = null
-            const labels = this.distributionReport.dialogs.scanLahanUmum.scan.labels
-            if (existsScannedLabel.includes(newLabel) == false && labels.includes(newLabel) == true) {
-                this.distributionReport.dialogs.scanLahanUmum.scan.scanned.push(newLabel)
-                audio = new Audio(require('@/assets/audio/success.mp3'))
-
-                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" scaned!`
-                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'green'
-
-                // update labels left
-                await this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.forEach((val, index) => {
-                    if (val.bag_number == newLabel) this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.splice(index, 1)
-                })
-                console.log(this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.length)
-                console.log(this.distributionReport.dialogs.detail.labels.lost.length)
-
-            } else if (existsScannedLabel.includes(newLabel) == true) {
-                audio = new Audio(require('@/assets/audio/error.mp3'))
-
-                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" has been already scaned!`
-                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
-            } else if (labels.includes(newLabel) == false) {
-                audio = new Audio(require('@/assets/audio/error.mp3'))
-
-                this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" not included in this FF!`
-                this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+            try {
+                this.distributionReport.dialogs.scanLahanUmum.scan.lastScanned = newLabel
+                const existsScannedLabel = this.distributionReport.dialogs.scanLahanUmum.scan.scanned
+                const labels = this.distributionReport.dialogs.scanLahanUmum.scan.labels
+                if (existsScannedLabel.includes(newLabel) == false && labels.includes(newLabel) == true) {
+                    this.distributionReport.dialogs.scanLahanUmum.scan.scanned.push(newLabel)
+    
+                    this.distributionReport.dialogs.scanLahanUmum.loading = true
+                    this.distributionReport.dialogs.scanLahanUmum.loadingText = `Saving label "${newLabel}"...`
+                    const updated = await axios.post(`${this.apiConfig.baseUrl}UpdatedDistributionLahanUmum`, {
+                        mou_no: this.distributionReport.dialogs.detail.data.mou_no,
+                        bags_number: this.distributionReport.dialogs.scanLahanUmum.scan.scanned,
+                        program_year: this.generalSettings.programYear
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${this.apiConfig.token}`
+                        }
+                    })
+    
+                    if (updated) {
+                        this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" scaned & saved!`
+                        this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'green'
+        
+                        // update labels left
+                        await this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.forEach((val, index) => {
+                            if (val.bag_number == newLabel) this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.splice(index, 1)
+                        })
+                        audio = new Audio(require('@/assets/audio/success.mp3'))
+                    } else {
+                        this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" FAILED to save!`
+                        this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+                        audio = new Audio(require('@/assets/audio/error.mp3'))
+                    }
+                    this.distributionReport.dialogs.scanLahanUmum.loadingText = null
+                    this.distributionReport.dialogs.scanLahanUmum.loading = false
+    
+                    // console.log(this.distributionReport.dialogs.scanLahanUmum.scan.labelsLeft.length)
+                    // console.log(this.distributionReport.dialogs.detail.labels.lost.length)
+    
+                } else if (existsScannedLabel.includes(newLabel) == true) {
+                    audio = new Audio(require('@/assets/audio/error.mp3'))
+    
+                    this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" has been already scaned!`
+                    this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+                } else if (labels.includes(newLabel) == false) {
+                    audio = new Audio(require('@/assets/audio/error.mp3'))
+    
+                    this.distributionReport.dialogs.scanLahanUmum.scan.alert.text = `Label "${newLabel}" not included in this FF!`
+                    this.distributionReport.dialogs.scanLahanUmum.scan.alert.color = 'red'
+                }
+            } catch (err) {
+                this.sessionEnd(err)
+            } finally {
+                await audio.play()
+                this.distributionReport.dialogs.scanLahanUmum.scan.alert.show = true
+                this.distributionReport.dialogs.scanLahanUmum.scan.model = ''
             }
-
-            await audio.play()
-            this.distributionReport.dialogs.scanLahanUmum.scan.alert.show = true
-            this.distributionReport.dialogs.scanLahanUmum.scan.model = ''
         },
         async openModalScanLahanUmum() {
             // set Labels Left 
