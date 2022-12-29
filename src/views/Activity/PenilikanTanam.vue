@@ -1246,6 +1246,14 @@
                             </strong>
                           </td>
                         </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Pohon Sesuai Standar
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.qty_std || 0 }}</strong>
+                          </td>
+                        </tr>
                       </tbody>
                     </template>
                   </v-simple-table>
@@ -1785,6 +1793,7 @@ export default {
       qty_kayu: "",
       qty_mpts: "",
       qty_crops: "",
+      qty_std: '',
       validate_by: "",
       validate_name: "",
       is_validate: "",

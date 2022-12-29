@@ -2140,8 +2140,8 @@
                                     <!-- Status Column -->
                                     <template v-slot:item.status="{item}">
                                         <v-chip v-if="(item.status == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
-                                        <v-chip v-else-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified FC</v-chip>
-                                        <v-chip v-else-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified UM</v-chip>
+                                        <v-chip v-else-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'FC' : 'PIC T4T' }}</v-chip>
+                                        <v-chip v-else-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'UM' : 'PM' }}</v-chip>
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
@@ -2335,7 +2335,7 @@ export default {
                 ],
                 headers2: [
                     {text: 'Management Unit', value: 'mu_name'},
-                    {text: 'PIC T4tT', value: 'pic_t4t'},
+                    {text: 'PIC T4T', value: 'pic_t4t'},
                     {text: 'PIC Lahan', value: 'pic_lahan'},
                     {text: 'Bags', value: 'sum_all_bags', align: 'center'},
                     {text: 'KAYU', value: 'adj_kayu', align: 'center'},
