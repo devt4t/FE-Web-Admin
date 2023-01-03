@@ -1676,11 +1676,16 @@
       :items="dataobject"
       :search="search"
       :loading="loadtable"
+      :options.sync="pagination.options"
+      :server-items-length="pagination.total"
+      :page="pagination.current_page"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
       multi-sort
       :footer-props="{
-        itemsPerPageOptions: [10, 25, 40, -1]
+        itemsPerPageOptions: [10, 20, 30, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
       }"
     >
       <template v-slot:top>
@@ -1747,17 +1752,55 @@
               style="max-width: 200px"
           ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
-          <v-text-field
-            rounded
+          <!-- Select Search Field -->
+          <v-select
+            color="success"
+            item-color="success"
+            v-model="pagination.search.field"
+            :items="pagination.search.options.column"
+            item-value="value"
+            item-text="text"
+            hide-details
             outlined
-            color="green"
             dense
-            v-model="search"
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Kolom Search"
+            class="centered-select"
+            style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+          ></v-select>
+          <!-- Search Input -->
+          <v-text-field
+            v-if="pagination.search.field != 'is_validate'"
+            color="success"
+            item-color="success"
+            v-model="pagination.search.value"
             append-icon="mdi-magnify"
-            class="mr-0 mr-lg-2"
+            outlined
+            dense
+            rounded
             label="Search"
             hide-details
+            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+            :loading="pagination.search.options.column_loading"
           ></v-text-field>
+          <v-select
+            v-else
+            color="success"
+            item-color="success"
+            v-model="pagination.search.value"
+            :items="pagination.search.options.validation"
+            item-value="value"
+            item-text="text"
+            hide-details
+            outlined
+            dense
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Status"
+            class="centered-select"
+            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+          ></v-select>
           <v-btn
             v-if="generalSettings.landProgram.model == 'Umum'"
             dark
@@ -1905,8 +1948,39 @@ export default {
         landProgram: {
           items: ['Petani', 'Umum'],
           label: 'Land Program',
-          model: 'Umum',
+          model: 'Petani',
         },
+    },
+    pagination: {
+      current_page: 1,
+      length_page: 0,
+      options: {
+        itemsPerPage: 20
+      },
+      page_options: [],
+      per_page: 20,
+      search: {
+        field: '',
+        options: {
+          column: [],
+          column_loading: false,
+          validation: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified FC',
+            value: 1
+          }, {
+            text: 'Verified UM',
+            value: 2
+          }]
+        },
+        value: ''
+      },
+      total: 0,
     },
     dialogFormLahanUmum: {
       confirm: false,
@@ -1992,17 +2066,17 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Management Unit", value: "mu_name" },
-      { text: "Field Facilitator", value: "nama_ff" },
-      { text: "Farmer", value: "nama_petani" },
-      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
-      { text: "KAYU", value: "kayu_hidup", align: 'center' },
-      { text: "MPTS", value: "mpts_hidup", align: 'center' },
-      { text: "Status", value: "is_validate", align: 'center' },
+      { text: "MU", value: "mu_name", search: true },
+      { text: "FF", value: "nama_ff", search: true },
+      { text: "Farmer", value: "nama_petani", search: true },
+      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
+      { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
+      { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
+      { text: "Status", value: "is_validate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
     headers2: [
-      { text: "Management Unit", value: "mu_name" },
+      { text: "MU", value: "mu_name" },
       { text: "PIC T4T", value: "employee_name" },
       { text: "PIC Lahan", value: "pic_lahan" },
       { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
@@ -2286,9 +2360,25 @@ export default {
     },
     'generalSettings.landProgram.model': {
       handler() {
+        this.dataobject = []
         this.initialize()
       }
-    }
+    },
+    'pagination.options': {
+        handler(newValue) {
+          let {page, itemsPerPage, sortBy} = newValue
+          this.pagination.current_page = page
+          this.pagination.per_page = itemsPerPage
+          this.initialize()
+        },
+        deep: true
+    },
+    'pagination.search.value': {
+        handler() {
+          this.initialize()
+        },
+        deep: true
+    },
   },
 
   methods: {
@@ -2434,42 +2524,27 @@ export default {
     },
     async initialize() {
       this.loadtable = true;
-      this.dataobject = [];
       // console.log(this.User.ff.ff);
       try {
-        let url = this.BaseUrlGet
-        let params = {
-          planting_year: this.generalSettings.programYear,
-          mu: this.valueMU,
-          ta: this.valueTA,
-          village: this.valueVillage,
-          typegetdata: this.typegetdata,
-          ff: this.valueFFcode
-        }
-        if (this.generalSettings.landProgram.model == 'Petani') {
-          url += "GetMonitoringAdmin?" + new URLSearchParams(params)
-        } else if (this.generalSettings.landProgram.model == 'Umum') {
-          delete params.ff
-          delete params.ta
-          if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
-            params.created_at = this.User.email
+        this.loadtable = true;
+        this.$store.state.loadingOverlayText = 'Getting monitoring datas...'
+        this.$store.state.loadingOverlay = true
+
+        // get search column
+        await this.getSearchColumn()
+        
+        await this.getTableData().then(data => {
+          this.dataobject = data.items
+          this.pagination.total = data.total
+          this.pagination.current_page = data.current_page
+          this.pagination.length_page = data.last_page
+          const pageOptions = []
+          for (let index = 1; index <= data.last_page; index++) {
+            pageOptions.push(index)          
           }
-          url += 'GetMonitoringAdminLahanUmum?' + new URLSearchParams(params)
-        }
-        const response = await axios.get(url, this.$store.state.apiConfig);
-        // console.log(response.data.data.result.data);
-        if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
-          this.valueMUExcel = this.valueMU;
-          this.valueTAExcel = this.valueTA;
-          this.valueVillageExcel = this.valueVillage;
-          this.typegetdataExcel = this.typegetdata;
-          this.valueFFcodeExcel = this.valueFFcode;
-          this.loadtable = false;
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
-        }
+          this.pagination.page_options = pageOptions
+          // console.log(this.pagination)
+        })
       } catch (error) {
         console.error(error);
         if (error.response.status == 401) {
@@ -2480,7 +2555,78 @@ export default {
           this.dataobject = [];
           this.loadtable = false;
         }
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+        this.loadtable = false
       }
+    },
+    getTableData() {
+      return new Promise((resolve, reject) => {
+        let url = this.BaseUrlGet
+        let params = {
+          program_year: this.generalSettings.programYear,
+          // pagination
+          page: this.pagination.current_page,
+          per_page: this.pagination.per_page,
+          sortBy: this.pagination.options.sortBy || '',
+          sortDesc: this.pagination.options.sortDesc || '',
+
+          search_column: this.pagination.search.field || '',
+          search_value: this.pagination.search.value || '',
+          
+          mu: this.valueMU,
+          ta: this.valueTA,
+          village: this.valueVillage,
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode
+        }
+        if (this.generalSettings.landProgram.model == 'Petani') {
+          url += "GetMonitoringAdminTemp?" + new URLSearchParams(params)
+        } else if (this.generalSettings.landProgram.model == 'Umum') {
+          delete params.ff
+          delete params.ta
+          if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+            params.created_at = this.User.email
+          }
+          url += 'GetMonitoringAdminLahanUmum?' + new URLSearchParams(params)
+        }
+        // get data response
+        axios.get(url, this.$store.state.apiConfig).then(res => {
+          if (typeof res.data.data.result !== 'undefined') {
+            let items = res.data.data.result.data
+            const total = res.data.data.result.total
+            const current_page = res.data.data.result.current_page
+            const last_page = res.data.data.result.last_page
+            resolve({
+              items,
+              total,
+              current_page,
+              last_page
+            })
+          } else {
+            reject('Error')
+          }
+        }).catch(err => {
+          if (err.response.status == 401) {
+            localStorage.removeItem("token")
+            this.$router.push("/")
+            this.loadtable = false
+          }
+          reject(err)
+        })
+      })
+    },
+    async getSearchColumn() {
+      let headerItems = []
+      let searchOptions = []
+      if (this.generalSettings.landProgram.model == 'Petani') headerItems = this.headers
+      else if (this.generalSettings.landProgram.model == 'Umum') headerItems = this.headers2
+      await headerItems.forEach(val => {
+        if (val.search == true) searchOptions.push(val)
+      })
+      this.pagination.search.options.column = searchOptions
+      if (!this.pagination.search.field) this.pagination.search.field = 'mu_name'
     },
 
     async getMU() {
