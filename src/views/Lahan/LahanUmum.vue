@@ -1111,7 +1111,7 @@
                     </v-expansion-panels>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER')">
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER') || dialogs.detail.data.DetailLahanUmum.length == 0">
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
                         Verification
                     </v-btn>

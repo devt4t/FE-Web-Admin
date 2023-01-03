@@ -2523,7 +2523,7 @@ export default {
         },
         'expansions.model': {
             handler(val) {
-                console.log(val)
+                // console.log(val)
             }
         },
         'generalSettings.nursery.model': {
@@ -2682,7 +2682,7 @@ export default {
                 }
             ).then(res => {
                 const response = res.data.data.result
-                console.log(response)
+                // console.log(response)
                 this.calendar.detailPeriodFF.datas = response
                 this.calendar.detailPeriodFF.newPeriod.distribution_time = this.dateFormat(response.period.distribution_time, 'Y-MM-DD')
                 this.calendar.detailPeriodFF.newPeriod.distribution_location = response.period.distribution_location
@@ -2696,7 +2696,7 @@ export default {
             })
         },
         async calendarShowDetailLahanUmumPeriod(data) {
-            console.log(data)
+            // console.log(data)
             const params = {
                 mou_no: data.mou_no,
                 lahan_no: data.lahan_no,
@@ -2713,7 +2713,7 @@ export default {
                 }
             ).then(res => {
                 const response = res.data.data.result
-                console.log(response)
+                // console.log(response)
                 this.calendar.detailPeriodFF.datas = response
                 this.calendar.detailPeriodFF.newPeriod.distribution_time = this.dateFormat(response.period.distribution_time, 'Y-MM-DD')
                 this.calendar.detailPeriodFF.newPeriod.distribution_location = '-'
@@ -2794,7 +2794,7 @@ export default {
                 planting_realization_date: this.calendar.detailPeriodFF.newPeriod.planting_time,
                 nursery: this.calendar.detailPeriodFF.newPeriod.nursery
             };
-            console.log(datapost)
+            // console.log(datapost)
             try {
                 this.calendar.detailPeriodFF.loading = true
                 this.calendar.detailPeriodFF.loadingText = 'Updating Distribution Period...'
@@ -2922,7 +2922,7 @@ export default {
             })
         },
         calendarShowEvent ({ nativeEvent, event }) {
-            console.log(event)
+            // console.log(event)
             const open = () => {
                 this.calendar.selectedEvent = event
                 this.calendar.selectedElement = nativeEvent.target
@@ -2976,7 +2976,7 @@ export default {
                         details: evData.details,
                     })
                 })
-                console.log(events)
+                // console.log(events)
                 this.calendar.events = events
                 this.calendar.loading = false
             }
@@ -3576,7 +3576,7 @@ export default {
                 
                 url = `${this.apiConfig.baseUrl}CreateLahanUmumAdjustment`
             }
-            console.log(postData)
+            // console.log(postData)
             this.distributionReport.dialogs.detail.show = false
             this.$store.state.loadingOverlayText = 'Saving & creating adjustment data...'
             this.$store.state.loadingOverlay = true
@@ -3603,7 +3603,7 @@ export default {
         async saveScannedDistribution() {
             let url = this.apiConfig.baseUrl + 'UpdatedDistributionLahanUmum'
             const luData = this.distributionReport.dialogs.detail.data
-            console.log(luData)
+            // console.log(luData)
             let data = {
                 mou_no: luData.mou_no,
                 bags_number: this.distributionReport.dialogs.scanLahanUmum.scan.scanned,
@@ -3616,7 +3616,7 @@ export default {
                 data.distribution_photo = await this.uploadPhotos(`${luData.mou_no}-${moment().valueOf()}`, this.distributionReport.dialogs.scanLahanUmum.photo.model)
             }
             this.$store.state.loadingOverlayText = 'Saving distributed labels...'
-            console.log(data)
+            // console.log(data)
             await axios.post(url, data, this.apiConfig.config).then(res => {
                 this.snackbar.text = res.data
                 this.snackbar.color = 'green'
@@ -4024,7 +4024,7 @@ export default {
 
             // access modul: just loading line
             const JustLoadingLine = this.$store.state.nurseryTeam.emails.JustLoadingLineModul
-            console.log(JustLoadingLine)
+            // console.log(JustLoadingLine)
             if (JustLoadingLine.includes(this.User.email)) {
                 this.generalSettings.type.model = 'Petani'
                 this.accessModul = {

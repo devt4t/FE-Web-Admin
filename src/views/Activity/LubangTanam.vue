@@ -2548,7 +2548,7 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
-      this.program_year = moment().format('YYYY')
+      this.program_year = this.$store.state.programYear.model
       // this.fc_no_global = this.User.fc.fc;
       this.checkRoleAccess();
       this.initialize();

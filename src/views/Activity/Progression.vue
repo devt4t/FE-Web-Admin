@@ -68,7 +68,7 @@
                 hide-details
                 rounded
                 v-model="options.programYear.model"
-                :items="options.programYear.items"
+                :items="$store.state.programYear.options"
                 label="Program Year"
                 type="string"
                 :rules="[(v) => !!v || 'Field is required']"
@@ -1509,7 +1509,7 @@ export default {
       this.auth.baseUrl = localStorage.getItem("BaseUrl")
       this.auth.baseUrlUpload = localStorage.getItem("BaseUrlUpload")
       // set program year
-      this.options.programYear.model = new Date().getFullYear().toString()
+      this.options.programYear.model = this.$store.state.programYear.model
       // set UM model if User == 'UNIT MANAGER'
       if (this.auth.user.role_name == 'UNIT MANAGER') {
         this.options.UM.model = this.auth.user.employee_no

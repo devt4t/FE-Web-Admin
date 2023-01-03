@@ -10,6 +10,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    apiConfig: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    },
     lightbox: {
       imgs: '',
       index: 0,

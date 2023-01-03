@@ -1264,7 +1264,7 @@
                 color="success"
                 item-color="success"
                 v-model="program_year"
-                :items="['all', 2021,2022]"
+                :items="$store.state.programYear.options"
                 outlined
                 dense
                 hide-details
@@ -1545,7 +1545,7 @@ export default {
       loading: false,
 
     },
-    program_year: 2022,
+    program_year: '2022',
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
@@ -1869,8 +1869,8 @@ export default {
   },
 
   mounted() {
+    this.program_year = this.$store.state.programYear.model
     this.firstAccessPage();
-    this.program_year = new Date().getFullYear()
     // if (this.User.role_group != 'IT') {
     //   this.$store.state.maintenanceOverlay = true
     // }

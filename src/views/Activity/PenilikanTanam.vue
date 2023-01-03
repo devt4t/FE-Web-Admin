@@ -841,6 +841,159 @@
         </v-card>
       </v-dialog>
 
+      <!-- Modal Add Realisasi Tanam Lahan Umum -->
+      <v-dialog v-model="dialogFormLahanUmum.model" max-width="1000px" content-class="rounded-xl mx-1" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="">Form Realisasi Tanam Lahan Umum</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container
+              v-if="dialogFormLahanUmum.loading"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-row v-else class="my-0">
+              <!-- MoU No -->
+              <v-col cols="12" sm="12">
+                <v-autocomplete
+                  color="success"
+                  item-color="success"
+                  item-text="mou_no"
+                  item-value="mou_no"
+                  v-model="dialogFormLahanUmum.inputs.mou_no.model"
+                  :items="dialogFormLahanUmum.inputs.mou_no.options"
+                  @change="getSeedDetailFromDistributionAdjustment"
+                  :disabled="dialogFormLahanUmum.inputs.mou_no.disabled"
+                  clearable
+                  outlined
+                  hide-details
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  rounded
+                  label="MoU No"
+                  class=""
+                >
+                  <template v-slot:item="data">
+                    <v-list-item-content>
+                      <v-list-item-title v-html="data.item.mou_no"></v-list-item-title>
+                      <v-list-item-subtitle>{{ data.item.pic_lahan }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </template>
+                </v-autocomplete>
+              </v-col>
+              <v-col cols="12" class="d-flex align-center">
+                  <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Adjusting Trees</h3><v-divider class="mx-2"></v-divider>
+              </v-col>
+              <v-col cols="12" md="12">
+                  <v-data-table
+                      :headers="dialogFormLahanUmum.inputs.adjustment.headers"
+                      :items="dialogFormLahanUmum.inputs.adjustment.items"
+                      :items-per-page="-1"
+                      hide-default-footer
+                      class="rounded-xl elevation-5 overflow-hidden mt-2"
+                  >
+                      <template v-slot:item.no="{index}">
+                          {{ index + 1 }}
+                      </template>
+                      <template v-slot:item.total_tree_received="{item}">
+                          <strong>{{ numberFormat(item.total_tree_received) }}</strong> Bibit
+                      </template>
+                      <template v-slot:item.planted="{index}">
+                          <v-row class="ma-0 align-center justify-end justify-lg-center">
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  readonly
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Life"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_planted_life"
+                              ></v-text-field>
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Dead"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_planted_dead"
+                                  @change="treeAdjustmentChange(adjIndex, index)"
+                              ></v-text-field>
+                          </v-row>
+                      </template>
+                      <template v-slot:item.unplanted="{index}">
+                          <v-row class="ma-0 align-center justify-end justify-lg-center">
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  readonly
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Life"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_unplanted_life"
+                              ></v-text-field>
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  readonly
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Dead"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_unplanted_dead"
+                              ></v-text-field>
+                          </v-row>
+                      </template>
+                      <template v-slot:item.lost="{item}">
+                          <strong>{{ numberFormat(item.lost) }}</strong> Bibit
+                      </template>
+                  </v-data-table>
+              </v-col>
+            </v-row>
+          </v-card-text>
+
+          <!-- <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" outlined @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" outlined @click="save">
+                Save
+              </v-btn>
+            </v-card-actions> -->
+        </v-card>
+      </v-dialog>
+
       <v-dialog v-model="dialogPohon" max-width="500px">
         <v-card>
           <v-card-title>
@@ -1179,7 +1332,7 @@
                   :size="80"
                   :width="10"
                   indeterminate
-                  color="primary"
+                  color="green"
                 >
                 </v-progress-circular>
               </v-layout>
@@ -1519,16 +1672,50 @@
     <!-- END: MODAL -->
 
     <v-data-table
-      :headers="headers"
+      :headers="generalSettings.landProgram.model == 'Petani' ? headers : headers2"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
       multi-sort
+      :footer-props="{
+        itemsPerPageOptions: [10, 25, 40, -1]
+      }"
     >
       <template v-slot:top>
         <v-row class="ma-0 mt-2 align-center">
+          <v-menu offset-y content-class="rounded-xl" v-if="generalSettings.landProgram.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER')">
+            <template v-slot:activator="{attrs, on}">
+              <v-btn  v-bind="attrs" v-on="on" rounded color="warning white--text" class="d-none d-md-block ml-2">
+                <v-icon class="mr-1">mdi-filter</v-icon>
+                Filter
+              </v-btn>
+            </template>
+            <v-card class="d-flex flex-column align-stretch justify-center pa-2 py-3">
+              <v-btn
+                dark
+                rounded
+                class="mx-1 d-none d-md-block mb-2"
+                @click="showFilterArea()"
+                color="green"
+              >
+                <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
+                Area
+              </v-btn>
+              <v-btn
+                v-if="RoleAccesFilterShow == true"
+                dark
+                rounded
+                class="mx-1 d-none d-md-block"
+                @click="showFilterEmployee()"
+                color="green"
+              >
+                <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
+                Employee
+              </v-btn>
+            </v-card>
+          </v-menu>
           <!-- Program Year -->
           <v-select
               color="success"
@@ -1544,27 +1731,21 @@
               class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
               style="max-width: 200px"
           ></v-select>
-          <v-btn
-            dark
-            rounded
-            class="mx-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
-            Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            rounded
-            class="mx-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
-            Employee
-          </v-btn>
+          <!-- Land Program -->
+          <v-select
+              color="success"
+              item-color="success"
+              v-model="generalSettings.landProgram.model"
+              :items="generalSettings.landProgram.items"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              :label="generalSettings.landProgram.label"
+              class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <v-text-field
             rounded
@@ -1578,10 +1759,10 @@
             hide-details
           ></v-text-field>
           <v-btn
-            v-if="false"
+            v-if="generalSettings.landProgram.model == 'Umum'"
             dark
             rounded
-            class="mx-2"
+            class="mx-auto mx-lg-0 mr-lg-2 mt-1 mt-lg-0"
             @click="showAddModal()"
             color="green"
           >
@@ -1622,6 +1803,48 @@
         </span>
       </template>
 
+      <!-- KAYU Column -->
+      <template v-slot:item.kayu_hidup="{ item }">
+        <v-row class="ma-0">
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HIDUP</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.kayu_hidup }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 px-4 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">MATI</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.kayu_mati }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HILANG</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.kayu_hilang }}</strong>
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- MPTS Column -->
+      <template v-slot:item.mpts_hidup="{ item }">
+        <v-row class="ma-0">
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HIDUP</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.mpts_hidup }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 px-4 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">MATI</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.mpts_mati }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HILANG</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.mpts_hilang }}</strong>
+          </v-col>
+        </v-row>
+      </template>
+
       <!-- Status Column -->
       <template v-slot:item.is_validate="{ item }">
         <v-chip :color="item.is_validate > 0 ? `${ item.is_validate == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
@@ -1632,34 +1855,21 @@
       
       <!-- Action Column -->
       <template v-slot:item.actions="{ item }">
-        <v-btn color="info white--text" rounded small class="pl-1 mr-2" @click="showDetail(item)">
-          <v-icon class="mr-1">mdi-information</v-icon> Detail
-        </v-btn>
-        <!-- <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          class="mr-2"
-          @click="showEditModal(item)"
-          small
-          color="warning"
-        >
-          mdi-pencil
-        </v-icon> -->
-        <!-- <v-icon
-          v-if="RoleAccesPrintLabelShow == true"
-          class="mr-2"
-          @click="showPrintModal(item)"
-          small
-          color="green"
-        >
-          mdi-printer
-        </v-icon> -->
-        <v-btn fab x-small color="red white--text" v-if="User.role_group == 'IT'" @click="showDeleteModal(item)">
-          <v-icon
-            small
-          >
-            mdi-delete
-          </v-icon>
-        </v-btn>
+        <v-menu content-class="rounded-xl">
+          <template v-slot:activator="{attrs, on}">
+            <v-btn v-bind="attrs" v-on="on" small fab icon>
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+            <v-btn color="info white--text" rounded small class="pl-1" @click="showDetail(item)">
+              <v-icon class="mr-1">mdi-information</v-icon> Detail
+            </v-btn>
+            <v-btn rounded small color="red white--text" class="mt-2 pl-1" v-if="User.role_group == 'IT'" @click="showDeleteModal(item)">
+              <v-icon class="mr-1">mdi-delete-circle</v-icon> Delete
+            </v-btn>
+          </v-card>
+        </v-menu>
       </template>
     </v-data-table>
 
@@ -1692,6 +1902,44 @@ export default {
   data: () => ({
     generalSettings: {
         programYear: '2022',
+        landProgram: {
+          items: ['Petani', 'Umum'],
+          label: 'Land Program',
+          model: 'Umum',
+        },
+    },
+    dialogFormLahanUmum: {
+      confirm: false,
+      model: false,
+      inputs: {
+        mou_no: {
+          model: null,
+          options: []
+        },
+        lahan_no: null,
+        adjustment: {
+          headers: [
+            {text: 'No', value: 'no', align: 'center'},
+            {text: 'Category', value: 'tree_category', align: 'center'},
+            {text: 'Name', value: 'tree_name'},
+            {text: 'Received', value: 'total_tree_received'},
+            {text: 'Planted', value: 'planted', align: 'center', sortable: false},
+            {text: 'Unplanted', value: 'unplanted', align: 'center', sortable: false},
+            {text: 'Lost', value: 'lost', align: 'center', sortable: false},
+          ],
+          items: [],
+          loading: false,
+          totalAdjustment: 0
+        },
+        photo1: {
+          model: null,
+          preview: null
+        },
+        photo2: {
+          model: null,
+          preview: null
+        },
+      }
     },
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
@@ -1747,6 +1995,16 @@ export default {
       { text: "Management Unit", value: "mu_name" },
       { text: "Field Facilitator", value: "nama_ff" },
       { text: "Farmer", value: "nama_petani" },
+      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
+      { text: "KAYU", value: "kayu_hidup", align: 'center' },
+      { text: "MPTS", value: "mpts_hidup", align: 'center' },
+      { text: "Status", value: "is_validate", align: 'center' },
+      { text: "Actions", value: "actions", align: 'right', sortable: false },
+    ],
+    headers2: [
+      { text: "Management Unit", value: "mu_name" },
+      { text: "PIC T4T", value: "employee_name" },
+      { text: "PIC Lahan", value: "pic_lahan" },
       { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
       { text: "Condition", value: "lahan_condition" },
       { text: "Status", value: "is_validate", align: 'center' },
@@ -2025,6 +2283,11 @@ export default {
       handler(newVal) {
         this.initialize()
       }
+    },
+    'generalSettings.landProgram.model': {
+      handler() {
+        this.initialize()
+      }
     }
   },
 
@@ -2037,6 +2300,7 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
+      this.generalSettings.programYear = this.$store.state.programYear.model
       // this.fc_no_global = this.User.fc.fc;
       this.checkRoleAccess();
       this.initialize();
@@ -2099,27 +2363,100 @@ export default {
       if (status == "Belum Verifikasi") return "red";
       else return "green";
     },
+    async getSeedDetailFromDistributionAdjustment(mou_no) {
+      if (mou_no) {
+
+        const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
+        await axios.get(url, this.$store.state.apiConfig).then(res => {
+            const datas = res.data.data.result
+            console.log(datas)
+            let listLahan = []
+            let listTrees = []
+            datas.distributionAdjustment.forEach((adj, adjIndex) => {
+                let checkExistLahanNo = listLahan.includes(adj.lahan_no)
+                if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
+  
+                const pushData = {
+                  tree_code: adj.tree_code,
+                  tree_category: adj.tree_category,
+                  tree_name: adj.tree_name,
+                  total_tree_received: parseInt(adj.total_tree_received),
+                  total_tree_planted_life: 0,
+                  total_tree_planted_dead: 0,
+                  total_tree_unplanted_life: 0,
+                  total_tree_unplanted_dead: 0,
+                  lost: 0,
+                }
+                const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
+                if (indexTreee > -1) {
+                  listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
+                } else listTrees.push(pushData)
+            })
+            console.log(listLahan)
+            console.log(listTrees)
+            this.dialogFormLahanUmum.inputs.adjustment.items = listTrees
+        }).catch(err => {
+          this.dialogFormLahanUmum.inputs.adjustment.items = []
+          if (err.response.status == 401) {
+            localStorage.removeItem("token")
+            this.$router.push("/")
+          }
+        }).finally(() => {
+        })
+      } else this.dialogFormLahanUmum.inputs.adjustment.items = []
+    },
+    async getLahanUmumDataOptions() {
+      const url = this.BaseUrlGet + 'GetUmumDistributionReport?'
+      const params ={
+          program_year: this.generalSettings.programYear,
+          distribution_date: '2022-12-29'
+      }
+      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+          params.created_by = this.User.email
+      }
+      await axios.get(`${url}${new URLSearchParams(params)}`, this.$store.state.apiConfig)
+      .then(res => {
+        console.log(res.data.data.result)
+        let verifiedLahanUmum = []
+        res.data.data.result.forEach((val) => {
+          if (val.status == 2) {
+            verifiedLahanUmum.push(val)
+          }
+        })
+        this.dialogFormLahanUmum.inputs.mou_no.options = verifiedLahanUmum
+      }).catch(err => {
+        this.dialogFormLahanUmum.inputs.mou_no.options = []
+        if (err.response.status == 401) {
+          localStorage.removeItem("token")
+          this.$router.push("/")
+        }
+      })
+    },
     async initialize() {
       this.loadtable = true;
+      this.dataobject = [];
       // console.log(this.User.ff.ff);
       try {
-        const params = new URLSearchParams({
+        let url = this.BaseUrlGet
+        let params = {
           planting_year: this.generalSettings.programYear,
           mu: this.valueMU,
           ta: this.valueTA,
           village: this.valueVillage,
           typegetdata: this.typegetdata,
           ff: this.valueFFcode
-        })
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetMonitoringAdmin?" + params,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
+        }
+        if (this.generalSettings.landProgram.model == 'Petani') {
+          url += "GetMonitoringAdmin?" + new URLSearchParams(params)
+        } else if (this.generalSettings.landProgram.model == 'Umum') {
+          delete params.ff
+          delete params.ta
+          if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+            params.created_at = this.User.email
           }
-        );
+          url += 'GetMonitoringAdminLahanUmum?' + new URLSearchParams(params)
+        }
+        const response = await axios.get(url, this.$store.state.apiConfig);
         // console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result.data;
@@ -3167,18 +3504,19 @@ export default {
 
       this.load = false;
     },
-    showAddModal() {
-      this.load = false;
-      // console.log(localStorage.getItem("token"));
+    async showAddModal() {
+      this.$store.state.loadingOverlayText = 'Get lahan umum datas...'
+      this.$store.state.loadingOverlay = true
 
-      if (this.$refs.form) {
-        this.$refs.form.reset();
-      }
+      // reset data
+      this.dialogFormLahanUmum.inputs.mou_no.model = null
+      this.dialogFormLahanUmum.inputs.adjustment.items = []
+      await this.getLahanUmumDataOptions()
+      
+      this.$store.state.loadingOverlay = false
+      this.$store.state.loadingOverlayText = null
 
-      this.formTitle = "Add data";
-      this.dialogAddonly = true;
-
-      this.resetvalue();
+      this.dialogFormLahanUmum.model = true
     },
     async showEditModal(item) {
       console.log("test");
@@ -3914,7 +4252,10 @@ export default {
       })
       console.log(grouping)
       return grouping
-    }
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
+    },
   },
 };
 </script>
