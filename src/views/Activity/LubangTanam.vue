@@ -973,7 +973,7 @@
               <v-autocomplete
                 color="success"
                 item-color="success"
-                item-text="mou_no"
+                item-text="lahanNo"
                 item-value="lahanNo"
                 v-model="dialogAddPlantingHoleLahanUmum.inputs.mou_no.model"
                 :items="dialogAddPlantingHoleLahanUmum.inputs.mou_no.options"
@@ -1140,7 +1140,7 @@
         </v-card-text>
         <v-card-actions>
           <v-divider class="mr-2"></v-divider>
-          <v-btn color="green white--text" @click="dialogAddPlantingHoleLahanUmum.confirm = true" rounded class="px-3" :disabled="(dialogAddPlantingHoleLahanUmum.inputs.hole.model < dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment) || dialogAddPlantingHoleLahanUmum.inputs.hole.model < 1 || !dialogAddPlantingHoleLahanUmum.inputs.mou_no.model || !dialogAddPlantingHoleLahanUmum.inputs.lahan_no || (dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled == false && (!dialogAddPlantingHoleLahanUmum.inputs.photo1.model || !dialogAddPlantingHoleLahanUmum.inputs.photo2.model))">
+          <v-btn color="green white--text" @click="dialogAddPlantingHoleLahanUmum.confirm = true" rounded class="px-3" :disabled="(dialogAddPlantingHoleLahanUmum.inputs.hole.model < dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment) || dialogAddPlantingHoleLahanUmum.inputs.hole.model < 1 || !dialogAddPlantingHoleLahanUmum.inputs.mou_no.model || !dialogAddPlantingHoleLahanUmum.inputs.lahan_no || dialogAddPlantingHoleLahanUmum.inputs.adjustment.items.length == 0 || (dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled == false && (!dialogAddPlantingHoleLahanUmum.inputs.photo1.model || !dialogAddPlantingHoleLahanUmum.inputs.photo2.model))">
             <v-icon>mdi-content-save-check</v-icon>
             Save
           </v-btn>
