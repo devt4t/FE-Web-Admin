@@ -1202,7 +1202,9 @@
       loading-text="Loading... Please wait"
       :page="table.pagination.current_page"
       :footer-props="{
-        itemsPerPageOptions: [10, 25, 40, -1]
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
       }"
     >
 
@@ -1429,7 +1431,9 @@
 
       <!-- index column -->
       <template v-slot:item.index="{item, index}">
+        <span v-if="loadtable == false">
           {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
+        </span>
       </template>
 
       <!-- Luas Lahan kolom -->
@@ -1590,7 +1594,7 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "No", value: "index"},
+      { text: "No", value: "index", sortable: false, align: 'center'},
       { text: "No Form", value: "form_no"},
       { text: "Field Facilitator", value: "nama_ff"},
       { text: "Nama Petani", value: "nama_petani"},
@@ -1991,7 +1995,7 @@ export default {
         })
         axios.get(
           this.BaseUrlGet +
-            "GetSosisalisasiTanamAdminLimit?" + params,
+            "GetSosisalisasiTanamAdmin?" + params,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,

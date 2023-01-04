@@ -1814,6 +1814,13 @@
         </v-row>
       </template>
 
+      <!-- index column -->
+      <template v-slot:item.index="{item, index}">
+        <span v-if="loadtable == false">
+          {{ index + 1 + ((pagination.current_page - 1) * pagination.per_page) }}
+        </span>
+      </template>
+
       <!-- No Lahan Column -->
       <template v-slot:item.lahan_no="{item}">
         <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" class="green white--text ma-1">
@@ -2066,6 +2073,7 @@ export default {
     search: "",
     type: "",
     headers: [
+      { text: "No", value: "index", align: 'center', width: '2%', sortable: false },
       { text: "MU", value: "mu_name", search: true },
       { text: "FF", value: "nama_ff", search: true },
       { text: "Farmer", value: "nama_petani", search: true },
@@ -2582,7 +2590,7 @@ export default {
           ff: this.valueFFcode
         }
         if (this.generalSettings.landProgram.model == 'Petani') {
-          url += "GetMonitoringAdminTemp?" + new URLSearchParams(params)
+          url += "GetMonitoringAdmin?" + new URLSearchParams(params)
         } else if (this.generalSettings.landProgram.model == 'Umum') {
           delete params.ff
           delete params.ta
@@ -3590,38 +3598,36 @@ export default {
 
     async showFilterArea() {
       // console.log(localStorage.getItem("token"));
-      await this.resetFilter();
       this.dialogFilterArea = true;
     },
     async showFilterEmployee() {
-      await this.resetFilter();
       this.dialogFilterEmp = true;
     },
     resetFilter() {
-      this.valueMU = "";
-      this.valueFC = "";
-      this.valueVillage = "";
-      this.selectMU = "";
-      this.selectTA = "";
-      this.selectVillage = "";
-
-      this.valueUM = "";
-      this.valueFC = "";
-      this.selectUM = "";
-      this.selectFC = "";
+      if (this.dialogFilterArea == true) {
+        this.valueUM = "";
+        this.valueFC = "";
+        this.selectUM = "";
+        this.selectFC = "";
+      } else if (this.dialogFilterEmp == true) {
+        this.valueMU = "";
+        this.valueFC = "";
+        this.valueVillage = "";
+        this.selectMU = "";
+        this.selectTA = "";
+        this.selectVillage = "";
+      }
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
     },
     async searchbyarea() {
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
-      await this.initialize();
       await this.resetFilter();
+      await this.initialize();
       this.dialogFilterArea = false;
     },
     async searchbyemp() {
-      await this.initialize();
       await this.resetFilter();
+      await this.initialize();
       this.dialogFilterEmp = false;
     },
 
