@@ -205,6 +205,7 @@
                         item-color="success"
                         v-model="land_program.model"
                         :items="land_program.options"
+                        :disabled="land_program.disabled"
                         outlined
                         dense
                         hide-details
@@ -372,8 +373,9 @@ export default {
             },
         ],
         land_program: {
-            model: 'Umum',
-            options: ['Petani', 'Umum']
+            model: 'Petani',
+            options: ['Petani', 'Umum'],
+            disabled: true
         },
         programYear: '',
         organicType: 'Pupuk',

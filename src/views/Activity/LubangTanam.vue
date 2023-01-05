@@ -968,7 +968,7 @@
         </v-card-title>
         <v-card-text>
           <v-row class="my-0">
-            <!-- MoU No -->
+            <!-- MoU No ==> Lahan No -->
             <v-col cols="12" sm="12">
               <v-autocomplete
                 color="success"
@@ -2343,13 +2343,21 @@ export default {
       }
     },
     'land_program.model': {
-      handler() {
-        this.initialize()
+      async handler() {
+        this.$store.state.loadingOverlayText = 'Getting planting hole datas...' 
+        this.$store.state.loadingOverlay = true
+        await this.initialize()
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null 
       }
     }
   },
-  mounted() {
-    this.firstAccessPage();
+  async mounted() {
+    this.$store.state.loadingOverlayText = 'Getting planting hole datas...' 
+    this.$store.state.loadingOverlay = true
+    await this.firstAccessPage()
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null 
 
     // Showing Maintenance Overlay
     // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
@@ -2380,8 +2388,9 @@ export default {
         pic_lahan: item.pic_lahan,
         lahanNo: item.lahan_no,
       }]
+      console.log(this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.options)
       this.dialogAddPlantingHoleLahanUmum.inputs.lahan_no = response.lahan_no
-      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.model = response.mou_no
+      this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.model = response.lahan_no
       this.dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled = true
       this.dialogAddPlantingHoleLahanUmum.inputs.adjustment.items = response.list_detail
       this.dialogAddPlantingHoleLahanUmum.inputs.hole.model = response.total_holes
@@ -2540,7 +2549,7 @@ export default {
         this.$store.state.loadingOverlayText = null
       })
     },
-    firstAccessPage() {
+    async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
@@ -2548,17 +2557,27 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
-      this.program_year = this.$store.state.programYear.model
-      // this.fc_no_global = this.User.fc.fc;
-      this.checkRoleAccess();
-      this.initialize();
-      this.getMU();
-      this.getEthnic();
-      this.getJob();
-      this.getFF();
-      this.getUMAll();
-      this.getTrees();
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
+      // this.fc_no_global = this.User.fc.fc;
+
+      this.$store.state.loadingOverlayText = 'Checking roles...' 
+      await this.checkRoleAccess();
+      await setTimeout(() => {
+        this.$store.state.loadingOverlayText = 'Getting MU datas...' 
+      }, 500);
+      await this.getMU();
+      this.$store.state.loadingOverlayText = 'Getting Ethnic datas...' 
+      await this.getEthnic();
+      this.$store.state.loadingOverlayText = 'Getting Job datas...' 
+      await this.getJob();
+      this.$store.state.loadingOverlayText = 'Getting FF datas...' 
+      await this.getFF();
+      this.$store.state.loadingOverlayText = 'Getting UM datas...' 
+      await this.getUMAll();
+      this.$store.state.loadingOverlayText = 'Getting Trees datas...' 
+      await this.getTrees();
+      this.$store.state.loadingOverlayText = 'Getting table datas...' 
+      this.program_year = this.$store.state.programYear.model
     },
     checkRoleAccess() {
       if (this.User.role_group == "IT") {

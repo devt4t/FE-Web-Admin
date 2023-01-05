@@ -842,7 +842,7 @@
       </v-dialog>
 
       <!-- Modal Add Realisasi Tanam Lahan Umum -->
-      <v-dialog v-model="dialogFormLahanUmum.model" max-width="1000px" content-class="rounded-xl mx-1" scrollable>
+      <v-dialog v-model="dialogFormLahanUmum.model" max-width="1000px" content-class="rounded-xl mx-1" scrollable persistent>
         <v-card>
           <v-card-title class="mb-1 headermodalstyle">
             <span class="">Form Realisasi Tanam Lahan Umum</span>
@@ -860,7 +860,7 @@
                   :size="80"
                   :width="10"
                   indeterminate
-                  color="primary"
+                  color="green"
                 >
                 </v-progress-circular>
               </v-layout>
@@ -900,23 +900,38 @@
                   <v-data-table
                       :headers="dialogFormLahanUmum.inputs.adjustment.headers"
                       :items="dialogFormLahanUmum.inputs.adjustment.items"
+                      :loading="dialogFormLahanUmum.inputs.adjustment.loading"
                       :items-per-page="-1"
                       hide-default-footer
                       class="rounded-xl elevation-5 overflow-hidden mt-2"
                   >
+                      <template v-slot:progress>
+                        <v-layout justify-center align-center>
+                          <v-progress-circular
+                            :size="50"
+                            :width="5"
+                            indeterminate
+                            color="green"
+                            class="my-3"
+                          >
+                          </v-progress-circular>
+                        </v-layout>
+                      </template>
                       <template v-slot:item.no="{index}">
                           {{ index + 1 }}
                       </template>
                       <template v-slot:item.total_tree_received="{item}">
-                          <strong>{{ numberFormat(item.total_tree_received) }}</strong> Bibit
+                          <v-chip color="info white--text">
+                            <strong class="mr-1">{{ numberFormat(item.total_tree_received) }}</strong>
+                            Bibit
+                          </v-chip>
                       </template>
                       <template v-slot:item.planted="{index}">
-                          <v-row class="ma-0 align-center justify-end justify-lg-center">
+                          <v-row class="ma-0 align-center justify-end justify-lg-center flex-nowrap">
                               <v-text-field 
                                   color="green"
                                   class="mr-1 my-1"
                                   dense
-                                  readonly
                                   hide-details
                                   outlined
                                   rounded
@@ -925,6 +940,9 @@
                                   min="0"
                                   label="Life"
                                   v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_planted_life"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
                               ></v-text-field>
                               <v-text-field 
                                   color="green"
@@ -938,17 +956,18 @@
                                   min="0"
                                   label="Dead"
                                   v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_planted_dead"
-                                  @change="treeAdjustmentChange(adjIndex, index)"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
                               ></v-text-field>
                           </v-row>
                       </template>
                       <template v-slot:item.unplanted="{index}">
-                          <v-row class="ma-0 align-center justify-end justify-lg-center">
+                          <v-row class="ma-0 align-center justify-end justify-lg-center flex-nowrap">
                               <v-text-field 
                                   color="green"
                                   class="mr-1 my-1"
                                   dense
-                                  readonly
                                   hide-details
                                   outlined
                                   rounded
@@ -957,12 +976,14 @@
                                   min="0"
                                   label="Life"
                                   v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_unplanted_life"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
                               ></v-text-field>
                               <v-text-field 
                                   color="green"
                                   class="mr-1 my-1"
                                   dense
-                                  readonly
                                   hide-details
                                   outlined
                                   rounded
@@ -971,26 +992,199 @@
                                   min="0"
                                   label="Dead"
                                   v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_unplanted_dead"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
                               ></v-text-field>
                           </v-row>
                       </template>
                       <template v-slot:item.lost="{item}">
-                          <strong>{{ numberFormat(item.lost) }}</strong> Bibit
+                          <v-chip color="red white--text">
+                            <strong class="mr-1">{{ numberFormat(item.lost) }}</strong>
+                            Bibit
+                          </v-chip>
                       </template>
                   </v-data-table>
+              </v-col>
+              <v-col cols="12" class="d-flex align-center">
+                  <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-forest</v-icon></v-btn> <h3>Land Data</h3><v-divider class="mx-2"></v-divider>
+              </v-col>
+              <!-- Lahan Condition -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                <v-text-field 
+                    color="green"
+                    hide-details
+                    outlined
+                    rounded
+                    label="Land Condition"
+                    v-model="dialogFormLahanUmum.inputs.land_condition"
+                ></v-text-field>
+              </v-col>
+              <!-- Standard Trees Amount -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                <v-text-field 
+                    color="green"
+                    hide-details
+                    outlined
+                    rounded
+                    type="number"
+                    min="0"
+                    label="Standard Trees Amount"
+                    v-model="dialogFormLahanUmum.inputs.qty_std"
+                ></v-text-field>
+              </v-col>
+              <!-- Planting Date -->
+              <v-col cols="12" md="6" lg="4" class="text-center">
+                  <v-menu v-model="dialogFormLahanUmum.inputs.planting_date.datepicker.show" offset-x transition="slide-x-transition" rounded="xl">
+                      <template v-slot:activator="{ on, attrs }">
+                          <p class="mb-0"><strong>{{ dialogFormLahanUmum.inputs.planting_date.label }}</strong></p>
+                          <v-btn 
+                              rounded class=""
+                              color="green white--text"
+                              v-bind="attrs"
+                              v-on="on"
+                          >
+                              {{ dateFormat(dialogFormLahanUmum.inputs.planting_date.model, 'ddd, DD MMMM Y') }}
+                          </v-btn>
+                      </template>
+                      <div>
+                          <v-date-picker
+                              v-model="dialogFormLahanUmum.inputs.planting_date.model"
+                              min="2022-11-24"
+                              max="2023-01-31"
+                              @input="dialogFormLahanUmum.inputs.planting_date.datepicker.show = false"
+                              color="green"
+                              class="rounded-xl"
+                              :key="dialogFormLahanUmum.inputs.planting_date.datepicker.key"
+                          ></v-date-picker>
+                      </div>
+                  </v-menu>
+              </v-col>
+              <v-col cols="12" class="d-flex align-center">
+                  <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Photos</h3><v-divider class="mx-2"></v-divider>
+              </v-col>
+              <!-- Photo 1 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Photo 1"
+                  prepend-icon="mdi-camera"
+                  label="Living Plant (*max 6mb)"
+                  v-on:change="photo1FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo1.preview && dialogFormLahanUmum.inputs.photo1.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo1.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo1"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo1.preview)"
+                      ></v-img
+                  ></v-card>
+              </v-col>
+              <!-- Photo 2 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Photo 2"
+                  prepend-icon="mdi-camera"
+                  label="Dead Plant (*max 6mb)"
+                  v-on:change="photo2FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo2.preview && dialogFormLahanUmum.inputs.photo2.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo2.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo2"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo2.preview)"
+                      ></v-img
+                  ></v-card>
+              </v-col>
+              <!-- Photo 3 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Photo 3"
+                  prepend-icon="mdi-camera"
+                  label="Seeds haven't planted (*max 6mb)"
+                  v-on:change="photo3FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo3.preview && dialogFormLahanUmum.inputs.photo3.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo3.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo3"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo3.preview)"
+                      ></v-img
+                  ></v-card>
               </v-col>
             </v-row>
           </v-card-text>
 
-          <!-- <v-card-actions v-if="load == false">
-              <v-spacer></v-spacer>
-              <v-btn color="red darken-1" outlined @click="close">
-                Cancel
-              </v-btn>
-              <v-btn color="blue darken-1" outlined @click="save">
-                Save
-              </v-btn>
-            </v-card-actions> -->
+          <v-card-actions v-if="dialogFormLahanUmum.loading == false">
+            <v-btn color="red white--text" rounded @click="dialogFormLahanUmum.model = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-divider class="mx-2"></v-divider>
+            <v-btn color="blue white--text" rounded 
+              :disabled="
+                dialogFormLahanUmum.inputs.qty_std < 1 ||
+                !dialogFormLahanUmum.inputs.photo1.model ||
+                !dialogFormLahanUmum.inputs.mou_no.model ||
+                dialogFormLahanUmum.inputs.adjustment.items.length == 0 ||
+                !dialogFormLahanUmum.inputs.planting_date.model
+              "
+              @click="dialogFormLahanUmum.confirm = true"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogFormLahanUmum.confirm" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center">
+            Are you sure you want to SAVE? <small class="red--text">This can't be undone!</small>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="pr-3" color="red white--text" rounded @click="dialogFormLahanUmum.confirm = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="green white--text"
+              class="pr-3"
+              rounded
+              @click="saveLahanUmumMonitoring"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK, SAVE
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
         </v-card>
       </v-dialog>
 
@@ -1689,7 +1883,7 @@
       }"
     >
       <template v-slot:top>
-        <v-row class="ma-0 mt-2 align-center">
+        <v-row class="ma-0 mt-2 mr-2 align-center">
           <v-menu offset-y content-class="rounded-xl" v-if="generalSettings.landProgram.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER')">
             <template v-slot:activator="{attrs, on}">
               <v-btn  v-bind="attrs" v-on="on" rounded color="warning white--text" class="d-none d-md-block ml-2">
@@ -1805,7 +1999,7 @@
             v-if="generalSettings.landProgram.model == 'Umum'"
             dark
             rounded
-            class="mx-auto mx-lg-0 mr-lg-2 mt-1 mt-lg-0"
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="showAddModal()"
             color="green"
           >
@@ -1944,6 +2138,7 @@
 <script>
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
+import moment from 'moment'
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
@@ -1955,7 +2150,7 @@ export default {
         landProgram: {
           items: ['Petani', 'Umum'],
           label: 'Land Program',
-          model: 'Petani',
+          model: 'Umum',
         },
     },
     pagination: {
@@ -1998,15 +2193,16 @@ export default {
           options: []
         },
         lahan_no: null,
+        land_condition: '',
         adjustment: {
           headers: [
-            {text: 'No', value: 'no', align: 'center'},
+            {text: 'No', value: 'no', align: 'center', sortable: false},
             {text: 'Category', value: 'tree_category', align: 'center'},
             {text: 'Name', value: 'tree_name'},
             {text: 'Received', value: 'total_tree_received'},
             {text: 'Planted', value: 'planted', align: 'center', sortable: false},
             {text: 'Unplanted', value: 'unplanted', align: 'center', sortable: false},
-            {text: 'Lost', value: 'lost', align: 'center', sortable: false},
+            {text: 'Lost', value: 'lost', align: 'center', sortable: true},
           ],
           items: [],
           loading: false,
@@ -2020,7 +2216,21 @@ export default {
           model: null,
           preview: null
         },
-      }
+        photo3: {
+          model: null,
+          preview: null
+        },
+        planting_date: {
+          datepicker: {
+            show: false,
+            key: 84846
+          },
+          label: 'Planting Date',
+          model: ''
+        },
+        qty_std: 0
+      },
+      loading: false
     },
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
@@ -2078,6 +2288,7 @@ export default {
       { text: "FF", value: "nama_ff", search: true },
       { text: "Farmer", value: "nama_petani", search: true },
       { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
+      { text: "Standard Trees", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
       { text: "Status", value: "is_validate", align: 'center', search: true },
@@ -2463,7 +2674,7 @@ export default {
     },
     async getSeedDetailFromDistributionAdjustment(mou_no) {
       if (mou_no) {
-
+        this.dialogFormLahanUmum.inputs.adjustment.loading = true
         const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
         await axios.get(url, this.$store.state.apiConfig).then(res => {
             const datas = res.data.data.result
@@ -2483,11 +2694,12 @@ export default {
                   total_tree_planted_dead: 0,
                   total_tree_unplanted_life: 0,
                   total_tree_unplanted_dead: 0,
-                  lost: 0,
+                  lost: parseInt(adj.total_tree_received),
                 }
                 const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
                 if (indexTreee > -1) {
                   listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
+                  listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
                 } else listTrees.push(pushData)
             })
             console.log(listLahan)
@@ -2500,6 +2712,7 @@ export default {
             this.$router.push("/")
           }
         }).finally(() => {
+          this.dialogFormLahanUmum.inputs.adjustment.loading = false
         })
       } else this.dialogFormLahanUmum.inputs.adjustment.items = []
     },
@@ -2635,6 +2848,104 @@ export default {
       })
       this.pagination.search.options.column = searchOptions
       if (!this.pagination.search.field) this.pagination.search.field = 'mu_name'
+    },
+
+    async saveLahanUmumMonitoring() {
+      try {
+        this.dialogFormLahanUmum.confirm = false
+        this.dialogFormLahanUmum.model = false
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Saving monitoring lahan umum...'
+        const url = `${this.BaseUrlGet}CreateMonitoringLahanUmum`
+        let dataForPost = {
+          program_year: this.generalSettings.programYear,
+          mou_no: this.dialogFormLahanUmum.inputs.mou_no.model,
+          planting_date: this.dialogFormLahanUmum.inputs.planting_date.model,
+          qty_std: this.dialogFormLahanUmum.inputs.qty_std,
+          land_condition: this.dialogFormLahanUmum.inputs.land_condition,
+          created_by: this.User.email,
+          list_trees: []
+        }
+        // set list trees
+        await this.dialogFormLahanUmum.inputs.adjustment.items.forEach(val => {
+          if (parseInt(val.total_tree_planted_life) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_planted_life),
+            status: 'sudah_ditanam',
+            condition: 'hidup'
+          })
+          if (parseInt(val.total_tree_planted_dead) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_planted_dead),
+            status: 'sudah_ditanam',
+            condition: 'mati'
+          })
+          if (parseInt(val.total_tree_unplanted_life) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_unplanted_life),
+            status: 'belum_ditanam',
+            condition: 'hidup'
+          })
+          if (parseInt(val.total_tree_unplanted_dead) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_unplanted_dead),
+            status: 'belum_ditanam',
+            condition: 'mati'
+          })
+          if (parseInt(val.lost) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.lost),
+            status: 'hilang',
+            condition: 'hilang'
+          })
+        })
+        // upload photo 1
+        if (this.dialogFormLahanUmum.inputs.photo1.model) {
+          const photo1 = await this.uploadPhotos('photo1', this.dialogFormLahanUmum.inputs.photo1.model)
+          dataForPost.photo1 = photo1
+        } else if (this.dialogFormLahanUmum.inputs.photo1.preview) {
+          dataForPost.photo1 = this.dialogFormLahanUmum.inputs.photo1.preview.replace(this.BaseUrl, '')
+        }
+        // upload photo 2
+        if (this.dialogFormLahanUmum.inputs.photo2.model) {
+          const photo2 = await this.uploadPhotos('photo2', this.dialogFormLahanUmum.inputs.photo2.model)
+          dataForPost.photo2 = photo2
+        } else if (this.dialogFormLahanUmum.inputs.photo2.preview) {
+          dataForPost.photo2 = this.dialogFormLahanUmum.inputs.photo2.preview.replace(this.BaseUrl, '')
+        }
+        // upload photo 3
+        if (this.dialogFormLahanUmum.inputs.photo3.model) {
+          const photo3 = await this.uploadPhotos('photo3', this.dialogFormLahanUmum.inputs.photo3.model)
+          dataForPost.photo3 = photo3
+        } else if (this.dialogFormLahanUmum.inputs.photo3.preview) {
+          dataForPost.photo3 = this.dialogFormLahanUmum.inputs.photo3.preview.replace(this.BaseUrl, '')
+        }
+        console.log(dataForPost)
+        const store = await axios.post(url, dataForPost, this.$store.state.apiConfig)
+        if (store) {
+          this.textsnackbar = "Success store monitoring lahan umum data!"
+          this.colorsnackbar = 'green'
+        } else {
+          this.textsnackbar = "Failed store monitoring lahan umum data!"
+          this.colorsnackbar = 'red'
+        }
+      } catch (err) {
+        if (err.response.status == 401) {
+          this.textsnackbar = "Unaunthicated!"
+          this.colorsnackbar = 'red'
+          localStorage.removeItem("token")
+          this.$router.push("/")
+        } else {
+          this.textsnackbar = err.response.message
+          this.colorsnackbar = 'red'
+        }
+        console.error(err)
+      } finally {
+        this.timeoutsnackbar = 5000
+        this.snackbar = true
+        this.$store.state.loadingOverlayText = null
+        this.$store.state.loadingOverlay = false
+      }
     },
 
     async getMU() {
@@ -3663,6 +3974,16 @@ export default {
       // reset data
       this.dialogFormLahanUmum.inputs.mou_no.model = null
       this.dialogFormLahanUmum.inputs.adjustment.items = []
+      this.dialogFormLahanUmum.inputs.land_condition = ''
+      this.dialogFormLahanUmum.inputs.qty_std = 0
+      this.dialogFormLahanUmum.inputs.planting_date.model = moment().format('Y-MM-DD')
+      this.dialogFormLahanUmum.inputs.photo1.model = null
+      this.dialogFormLahanUmum.inputs.photo1.preview = null
+      this.dialogFormLahanUmum.inputs.photo2.model = null
+      this.dialogFormLahanUmum.inputs.photo2.preview = null
+      this.dialogFormLahanUmum.inputs.photo3.model = null
+      this.dialogFormLahanUmum.inputs.photo3.preview = null
+
       await this.getLahanUmumDataOptions()
       
       this.$store.state.loadingOverlay = false
@@ -3815,6 +4136,23 @@ export default {
       this.dialogDelete = true;
     },
 
+    async updateSeedlingAdjustment() {
+      await this.dialogFormLahanUmum.inputs.adjustment.items.forEach(val => {
+        val.lost = parseInt(val.total_tree_received) - ( parseInt(val.total_tree_planted_life) + parseInt(val.total_tree_planted_dead) + parseInt(val.total_tree_unplanted_life) + parseInt(val.total_tree_unplanted_dead) )
+        if (val.lost < 0 || val.lost > val.total_tree_received) {
+          alert('Invalid input!')
+          val.lost = val.total_tree_received
+          val.total_tree_planted_life = 0
+          val.total_tree_planted_dead = 0
+          val.total_tree_unplanted_life = 0
+          val.total_tree_unplanted_dead = 0
+        }
+      })
+    },
+    
+    dateFormat(date, format) {
+      return moment(date).format(format)
+    },
     deleteItemConfirm() {
       this.verifDelete();
     },
@@ -4408,6 +4746,85 @@ export default {
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
     },
+    photo1FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photo1.model = event
+                this.dialogFormLahanUmum.inputs.photo1.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photo1.model = null
+            this.dialogFormLahanUmum.inputs.photo1.preview = ""
+        }
+    },
+    photo2FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photo2.model = event
+                this.dialogFormLahanUmum.inputs.photo2.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photo2.model = null
+            this.dialogFormLahanUmum.inputs.photo2.preview = ""
+        }
+    },
+    photo3FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photo3.model = event
+                this.dialogFormLahanUmum.inputs.photo3.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photo3.model = null
+            this.dialogFormLahanUmum.inputs.photo3.preview = ""
+        }
+    },
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
+    },
+    async uploadPhotos(type, file) {
+        this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+        const url = `${this.BaseUrl}general-lands/upload.php`
+        const newName = `${this.dialogFormLahanUmum.inputs.mou_no.model.replace(/\s/g, '').replaceAll('/', '_')}_${type}`
+        const data = this.generateFormData({
+            dir: 'first-monitorings',
+            nama: newName,
+            image: file
+        })
+        let responseName = null
+        await axios.post(url,data).then(res => {
+            responseName = res.data.data.new_name
+        }).catch(err => {
+            console.error(err)
+        })
+        return 'general-lands/'+responseName
+    }
   },
 };
 </script>
