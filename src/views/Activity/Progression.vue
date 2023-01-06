@@ -489,7 +489,7 @@
             }"
           >
             <template v-slot:top>
-              <v-row v-if="filters.FC" class="py-3 justify-center">
+              <v-row class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
                 <v-btn 
                   @click="generateReport('Pendataan Petani & Lahan')"
@@ -542,7 +542,7 @@
             :paginate-elements-by-height="1400"
             :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
             :pdf-quality="2"
-            :manual-pagination="false"
+            :manual-pagination="true"
             pdf-format="a4"
             pdf-orientation="landscape"
             pdf-content-width="1125px"
@@ -596,7 +596,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex">
+                          <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex" :class="pageBreakIndex(dIndex)">
                             <td align="center">{{ dIndex + 1 }}</td>
                             <td style="padding-left: 5px">{{ data.ff }}</td>
                             <td align="center">{{ data.petani1 }}</td>
@@ -2161,6 +2161,11 @@ export default {
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    pageBreakIndex(index) {
+      const pageBreak = [21,52,83]
+      if (pageBreak.includes(index)) return 'html2pdf__page-break'
+      else return ''
     },
     async removeSostamItem(index) {
       this.tables.sostam.items.splice(index, 1)
