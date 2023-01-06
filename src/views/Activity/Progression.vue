@@ -1197,6 +1197,50 @@
           </v-data-table>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <!-- Monitoring 1 -->
+      <v-expansion-panel class="rounded-xl mt-2" v-if="tables.monitoring1.show">
+        <v-expansion-panel-header>
+          <h3 class=""><v-btn fab x-small color="green white--text" class="mr-1"><v-icon>mdi-nature-people</v-icon></v-btn> Realisasi Tanam / Monitoring 1</h3>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <!-- Main Table -->
+          <v-data-table
+            multi-sort
+            :headers="tables.monitoring1.headers"
+            :items="tables.monitoring1.items"
+            :search="tables.monitoring1.search"
+            :loading="tables.monitoring1.loading"
+            loading-text="Loading... Please wait"
+            class="rounded-xl mx-3 pa-1 mb-5"
+            :items-per-page="15"
+            :footer-props="{
+              itemsPerPageOptions: [8, 15, 30, -1]
+            }"
+          >
+            <template v-slot:header.total_petani>
+              Total Petani ({{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }})
+            </template>
+            <template v-slot:header.total_distribution>
+              Total Distribution ({{ dateFormat(filters.dates.distribusi, 'DD MMM Y') }})
+            </template>
+            <template v-slot:item.progress_monitoring="{item}">
+              {{ item.progress_monitoring }}%
+            </template>
+            <template v-slot:item.total_seed_received="{item}">
+              {{ numberFormat(item.total_seed_received) }}
+            </template>
+            <template v-slot:item.total_seed_planted_live="{item}">
+              {{ numberFormat(item.total_seed_planted_live) }}
+            </template>
+            <template v-slot:item.total_seed_dead="{item}">
+              {{ numberFormat(item.total_seed_dead) }}
+            </template>
+            <template v-slot:item.total_seed_lost="{item}">
+              {{ numberFormat(item.total_seed_lost) }}
+            </template>
+          </v-data-table>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <v-snackbar
@@ -1426,13 +1470,39 @@ export default {
       distribusi: {
         headers: [
           { text: "Field Facilitator", value: "ff" },
-          { text: "Total Petani", value: "total_petani", align: 'center' },
+          { sortable: false, text: "Total Petani", value: "total_petani", align: 'center' },
           { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
           { text: "Penlub Bibit", value: "penlub_total_bibit", align: 'center' },
-          { text: "Total Distribusi", value: "total_distribusi", align: 'center' },
+          { sortable: false, text: "Total Distribusi", value: "total_distribusi", align: 'center' },
           { text: "D. Bibit All", value: "total_bibit_distribusi_all", align: 'center' },
-          { text: "D. Bibit Loaded", value: "total_bibit_distribusi_loaded", align: 'center' },
-          { text: "D. Bibit Distributed", value: "total_bibit_distribusi_distributed", align: 'center' },
+          { sortable: false, text: "D. Bibit Loaded", value: "total_bibit_distribusi_loaded", align: 'center' },
+          { sortable: false, text: "D. Bibit Distributed", value: "total_bibit_distribusi_distributed", align: 'center' },
+          { sortable: false, text: "D. Bibit Broken", value: "total_bibit_distribusi_broken", align: 'center' },
+          { sortable: false, text: "D. Bibit Missing", value: "total_bibit_distribusi_missing", align: 'center' },
+          { sortable: false, text: "D. Bibit Received", value: "total_bibit_distribusi_received", align: 'center' },
+          // { text: "Actions", value: "actions", align: 'center', sortable: false },
+        ],
+        items: [],
+        loading: false,
+        search: '',
+        show: false,
+        totalBibitDetails: {
+          KAYU: [],
+          MPTS: [],
+          CROPS: []
+        }
+      },
+      monitoring1: {
+        headers: [
+          { text: "Field Facilitator", value: "ff" },
+          { sortable: false, text: "Total Petani", value: "total_petani", align: 'center' },
+          { sortable: false, text: "Total Distribusi", value: "total_distribusi", align: 'center' },
+          { sortable: false, text: "Total Monitoring", value: "total_monitoring", align: 'center' },
+          { sortable: true, text: "Progress Monitoring", value: "progress_monitoring", align: 'center' },
+          { sortable: false, text: "Received Seeds", value: "total_seed_received", align: 'center' },
+          { sortable: false, text: "Planted Live Seeds", value: "total_seed_planted_live", align: 'center' },
+          { sortable: false, text: "Dead Seeds", value: "total_seed_dead", align: 'center' },
+          { sortable: false, text: "Lost Seeds", value: "total_seed_lost", align: 'center' },
           // { text: "Actions", value: "actions", align: 'center', sortable: false },
         ],
         items: [],
@@ -1578,6 +1648,15 @@ export default {
       } else {
         this.tables.distribusi.show = false
       }
+      // Realisasi Tanam
+      if (activitiesActive.includes('Realisasi Tanam')) {
+        await openedPanel.push(openedPanelIndex)
+        openedPanelIndex += 1
+        this.filters.activities.push('Realisasi Tanam')
+        this.tables.monitoring1.show = true
+      } else {
+        this.tables.monitoring1.show = false
+      }
 
       // console.log('Opened' + openedPanel)
 
@@ -1630,6 +1709,12 @@ export default {
             await this.tables.distribusi.headers.splice(distribusiHeaderIndex, 1)
           }
         })) 
+        // remove FC in table monitoring1
+        await Promise.all(this.tables.monitoring1.headers.map(async (monitoring1Header, monitoring1HeaderIndex) => {
+          if (monitoring1Header.text == 'FC') {
+            await this.tables.monitoring1.headers.splice(monitoring1HeaderIndex, 1)
+          }
+        })) 
 
         let params = new URLSearchParams({
           activities: this.options.activities.model.join(),
@@ -1643,6 +1728,7 @@ export default {
         this.tables.penlub.loading = true
         this.tables.pupuk.loading = true
         this.tables.distribusi.loading = true
+        this.tables.monitoring1.loading = true
 
         const response = await axios.get(
           this.auth.baseUrlGet +
@@ -1674,6 +1760,7 @@ export default {
         this.tables.penlub.items = datas.penlub
         this.tables.pupuk.items = datas.pupuk
         this.tables.distribusi.items = datas.distribusi
+        this.tables.monitoring1.items = datas.monitoring1
 
         this.generateTotalBibitDetails(datas.sostam, 'sostam')
         this.generateTotalBibitDetails(datas.penlub, 'penlub')
@@ -1690,6 +1777,7 @@ export default {
         this.tables.penlub.loading = false
         this.tables.pupuk.loading = false
         this.tables.distribusi.loading = false
+        this.tables.monitoring1.loading = false
       }
     },
     async generateKPIbyUM() {
@@ -1699,6 +1787,7 @@ export default {
         this.tables.pelpet.loading = true
         this.tables.penlub.loading = true
         this.tables.distribusi.loading = true
+        this.tables.monitoring1.loading = true
         this.$store.state.loadingOverlay = true
 
         // add FC in table farmer
@@ -1766,6 +1855,19 @@ export default {
             ...this.tables.distribusi.headers
           ]
         }
+        // add FC in table distribusi
+        let checkMonitoring1HeaderContainFC = 0
+        await Promise.all(this.tables.monitoring1.headers.map(async (monitoring1Header, monitoring1HeaderIndex) => {
+          if (monitoring1Header.text == 'FC') {
+            checkMonitoring1HeaderContainFC += 1
+          }
+        })) 
+        if (checkMonitoring1HeaderContainFC == 0) {
+          this.tables.monitoring1.headers = [
+            { text: "FC", value: "fc" },
+            ...this.tables.monitoring1.headers
+          ]
+        }
 
         const fieldCoordinators = this.options.FC.items || [] 
 
@@ -1774,16 +1876,17 @@ export default {
         let pelpets = []
         let penlubs = []
         let distribusis = []
+        let firstMonitorings = []
         
         let totalFC = fieldCoordinators.length
         let generatedFC = 0
 
         this.$store.state.loadingOverlayText = `Getting KPI FC (<strong>${generatedFC} / ${totalFC}</strong>) datas...`
 
-        await Promise.all(fieldCoordinators.map(async (fcVal, fcIndex) => {
+        for (let forIndex = 0; forIndex < totalFC; forIndex++) {
           let params = new URLSearchParams({
             activities: this.options.activities.model.join(),
-            fc_no: fcVal.nik,
+            fc_no: fieldCoordinators[forIndex].nik,
             program_year: this.options.programYear.model,
             dates: [this.dates.farmer[0], this.dates.farmer[1], this.dates.land[0], this.dates.land[1], this.dates.sostam, this.dates.penlub, this.dates.distribusi]
           })
@@ -1802,7 +1905,7 @@ export default {
             if (datas.petani_lahan.length > 0) {
               datas.petani_lahan.forEach(plVal => {
                 farmers.push({
-                  fc: fcVal.name,
+                  fc: fieldCoordinators[forIndex].name,
                   ff: plVal.ff,
                   ...plVal.petani,
                   ...plVal.lahan
@@ -1814,7 +1917,7 @@ export default {
             if (datas.sostam.length > 0) {
               datas.sostam.forEach(sosVal => {
                 sostams.push({
-                  fc: fcVal.name,
+                  fc: fieldCoordinators[forIndex].name,
                   ...sosVal
                 })
               })
@@ -1824,7 +1927,7 @@ export default {
             if (datas.pelpet.length > 0) {
               datas.pelpet.forEach(pelPetVal => {
                 pelpets.push({
-                  fc: fcVal.name,
+                  fc: fieldCoordinators[forIndex].name,
                   ...pelPetVal
                 })
               })
@@ -1834,7 +1937,7 @@ export default {
             if (datas.penlub.length > 0) {
               datas.penlub.forEach(penlubVal => {
                 penlubs.push({
-                  fc: fcVal.name,
+                  fc: fieldCoordinators[forIndex].name,
                   ...penlubVal
                 })
               })
@@ -1844,23 +1947,30 @@ export default {
             if (datas.distribusi.length > 0) {
               datas.distribusi.forEach(distribusiVal => {
                 distribusis.push({
-                  fc: fcVal.name,
+                  fc: fieldCoordinators[forIndex].name,
                   ...distribusiVal
+                })
+              })
+            }
+
+            // get monitoring1
+            if (datas.monitoring1.length > 0) {
+              datas.monitoring1.forEach(monitoring1Val => {
+                firstMonitorings.push({
+                  fc: fieldCoordinators[forIndex].name,
+                  ...monitoring1Val
                 })
               })
             }
   
             // set filter data
-            if (fcIndex == 0) {
+            if (forIndex == 0) {
               this.setFilterData({um: datas.um})
             } 
   
             // update progress text
-            this.$store.state.loadingOverlayText = `Getting KPI FC (<strong>${generatedFC += 1} / ${totalFC}</strong>) datas...`
-          }).catch(err => {
-            console.error(err)
-            this.sessionEnd(err)
             generatedFC += 1
+            this.$store.state.loadingOverlayText = `Getting KPI FC (<strong>${generatedFC} / ${totalFC}</strong>) datas...`
           }).finally(() => {
             if (generatedFC == totalFC) {
               this.$store.state.loadingOverlay = false
@@ -1871,9 +1981,10 @@ export default {
               this.tables.pelpet.loading = false
               this.tables.penlub.loading = false
               this.tables.distribusi.loading = false
+              this.tables.monitoring1.loading = false
             }
           })
-        }))
+        }
         
         // set datas to tables
         this.tables.farmer.items = farmers
@@ -1881,8 +1992,10 @@ export default {
         this.tables.pelpet.items = pelpets
         this.tables.penlub.items = penlubs
         this.tables.distribusi.items = distribusis
+        this.tables.monitoring1.items = firstMonitorings
       } catch (error) {
         console.error(error)
+        this.sessionEnd(error)
       }
     },
     getButtonGenerateKPIDisabledCondition() {

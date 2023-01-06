@@ -747,7 +747,7 @@
                                                 <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2"></v-divider>
                                             </v-card-title>
                                             <v-card-text>
-                                                <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum">
+                                                <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detail.data.status > 0">
                                                     <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
                                                     SCAN
                                                 </v-btn>
