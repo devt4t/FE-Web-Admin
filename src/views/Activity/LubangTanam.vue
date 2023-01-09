@@ -2430,7 +2430,7 @@ export default {
       const params ={
           program_year: this.program_year
       }
-      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
           params.created_by = this.User.email
       }
       await axios.get(`${url}${new URLSearchParams(params)}`,{
@@ -2645,7 +2645,7 @@ export default {
       if (this.land_program.model == 'Umum') {
         url = "GetPlantingHoleLahanUmumAdmin?"
         // params.created_by = this.User.email
-        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') params.created_by = this.User.email
+        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') params.created_by = this.User.email
       }
       // console.log(this.User.ff.ff);
       const UrlParams = new URLSearchParams(params)

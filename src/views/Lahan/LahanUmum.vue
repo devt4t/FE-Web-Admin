@@ -1111,11 +1111,11 @@
                     </v-expansion-panels>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER') || dialogs.detail.data.DetailLahanUmum.length == 0">
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 0)" rounded color="green white--text" @click="confirmationShow('verif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER') || dialogs.detail.data.DetailLahanUmum.length == 0">
                         <v-icon class="mr-1">mdi-check-circle</v-icon>
                         Verification
                     </v-btn>
-                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 1)" rounded color="red white--text" @click="confirmationShow('unverif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER')">
+                    <v-btn v-if="dialogs.detail.data && (dialogs.detail.data.is_verified == 1)" rounded color="red white--text" @click="confirmationShow('unverif', dialogs.detail.data)" :disabled="(User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER')">
                         <v-icon class="mr-1">mdi-undo-variant</v-icon>
                         Unverification
                     </v-btn>
@@ -1261,7 +1261,7 @@
                         <v-list-item>
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER') ||  item.is_verified != 1)">
+                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('unverif', item)" :disabled="((User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER') ||  item.is_verified != 1)">
                                         <v-icon class="mr-1">mdi-undo-variant</v-icon>
                                         Unverif
                                     </v-btn>
@@ -1631,7 +1631,7 @@ export default {
             const params ={
                 program_year: this.tables.lahan.programYear.model
             }
-            if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+            if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
                 params.created_by = this.User.email
             }
             await axios.get(`${url}${new URLSearchParams(params)}`,{

@@ -1996,6 +1996,16 @@
             style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
           ></v-select>
           <v-btn
+            v-if="generalSettings.landProgram.model == 'Petani'"
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
+            @click="() => {}"
+            :disabled="true"
+            color="info white--text"
+          >
+            <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
+          </v-btn>
+          <v-btn
             v-if="generalSettings.landProgram.model == 'Umum'"
             dark
             rounded
@@ -2722,7 +2732,7 @@ export default {
           program_year: this.generalSettings.programYear,
           distribution_date: '2022-12-29'
       }
-      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
           params.created_by = this.User.email
       }
       await axios.get(`${url}${new URLSearchParams(params)}`, this.$store.state.apiConfig)
@@ -2807,7 +2817,7 @@ export default {
         } else if (this.generalSettings.landProgram.model == 'Umum') {
           delete params.ff
           delete params.ta
-          if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') {
+          if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
             params.created_at = this.User.email
           }
           url += 'GetMonitoringAdminLahanUmum?' + new URLSearchParams(params)

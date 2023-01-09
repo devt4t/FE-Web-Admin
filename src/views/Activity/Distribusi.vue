@@ -954,7 +954,7 @@
                         <v-divider class="mx-2"></v-divider>
                         <v-btn v-if="distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
                         <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
-                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn>
+                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog> 
@@ -2110,6 +2110,18 @@
                                                 </div>
                                             </v-menu>
                                             <v-divider class="mx-2"></v-divider>
+                                            <!-- Export Button -->
+                                            <v-btn
+                                                readonly
+                                                @click="() => {}"
+                                                color="info white--text"
+                                                class="mr-1"
+                                                :disabled="true"
+                                                rounded
+                                                small
+                                            >
+                                                <v-icon small class="mr-1">mdi-microsoft-excel</v-icon> Export
+                                            </v-btn>
                                             <!-- Refresh Button -->
                                             <v-btn
                                                 dark
@@ -3343,7 +3355,7 @@ export default {
                     distribution_date: this.distributionReport.datePicker.model
                 }
                 if (this.generalSettings.type.model == 'Umum') {
-                    if(this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER') params.created_by = this.User.email
+                    if(this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') params.created_by = this.User.email
                 }
                 await axios.get(`${this.apiConfig.baseUrl + url + new URLSearchParams(params)}`, {
                     headers: {
