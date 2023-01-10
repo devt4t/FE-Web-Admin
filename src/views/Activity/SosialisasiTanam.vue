@@ -1152,6 +1152,29 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Modal Unverif -->
+      <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex justify-center"
+            >Are you sure you want to UNVERIF this item?</v-card-title
+          >
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn color="orange white--text" rounded small @click="dialogUnverif = false" class="px-4">
+              <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="red white--text" rounded small @click="unverifItemConfirm" class="px-4">
+              <v-icon class="mr-1" small>mdi-undo</v-icon>
+              OK
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- Preview Signature Modal -->
       <v-dialog v-model="preview.signature.modal" max-width="500px" content-class="rounded-xl" scrollable>
         <v-card class="rounded-xl">
@@ -1468,7 +1491,7 @@
             </v-icon>
           </template>
 
-          <v-list class="d-flex flex-column align-center">
+          <v-list class="d-flex flex-column align-stretch">
             <v-list-item>
               <v-btn
                 dark
@@ -1476,6 +1499,7 @@
                 rounded
                 @click="showDetail(item)"
                 color="info"
+                block
               >
               <v-icon class="mr-1" @click="showDetail(item)" small color="white">
                   mdi-information-outline
@@ -1491,11 +1515,25 @@
                 rounded
                 @click="showEditDetailModal(item)"
                 color="warning"
+                block
               >
               <v-icon class="mr-1" small color="white">
                 mdi-pencil
               </v-icon>
                 Edit
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation == 1) && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')">
+              <v-btn
+                rounded
+                @click="showUnverifModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-undo
+              </v-icon>
+                Unverif
               </v-btn>
             </v-list-item>
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
@@ -1504,6 +1542,7 @@
                 rounded
                 @click="showDeleteModal(item)"
                 color="red"
+                block
               >
               <v-icon class="mr-1" small color="white">
                 mdi-delete
@@ -1549,6 +1588,7 @@ export default {
       loading: false,
 
     },
+    dialogUnverif: false,
     program_year: '2022',
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
@@ -2900,6 +2940,43 @@ export default {
       console.log(item.form_no);
       this.defaultItem.form_no = item.form_no;
       this.dialogDelete = true;
+    },
+
+    showUnverifModal(item) {
+      // console.log(item.form_no);
+      this.defaultItem.form_no = item.form_no;
+      this.dialogUnverif = true;
+    },
+    async unverifItemConfirm() {
+      const datapost = {
+        form_no: this.defaultItem.form_no,
+      };
+      // this.dialogDetail = false;
+      try {
+        this.dialogUnverif = false
+        this.$store.state.loadingOverlayText = 'Unverification data...'
+        this.$store.state.loadingOverlay = true
+        await axios.post(
+          this.BaseUrlGet + "UnverificationSosisalisasiTanam",
+          datapost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        await this.initialize();
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
     },
 
     deleteItemConfirm() {

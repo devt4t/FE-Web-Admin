@@ -1523,6 +1523,27 @@
           </v-card-actions>
         </v-card> 
       </v-dialog>
+
+      <!-- Modal Update Lat Long -->
+      <v-dialog v-model="modalUpdateLatLong.show" max-width="1000px" content-class="rounded-xl" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle"
+            ><span class=""><v-icon class="mr-1 white--text">mdi-map-check</v-icon> Update Lat Long Lahan</span></v-card-title
+          >
+          <v-card-text>
+            <v-textarea
+              class="mt-3"
+              color="green"
+              label="Input Data"
+              outlined
+              rounded
+              rows="50"
+              auto-grow
+              placeholder="..."
+            ></v-textarea>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     <!-- END: MODAL -->
     <v-data-table
       :headers="headers"
@@ -1665,6 +1686,25 @@
           >
             <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
           </v-btn>
+          <!-- UPDATE LAHAN LAT LONG -->
+          <v-menu
+            rounded="xl"
+            bottom
+            left
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
+            content-class="rounded-xl"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on" color="dark">
+                mdi-dots-vertical
+              </v-icon>
+            </template>
+            <v-card class="pa-3 d-flex flex-column align-stretch justify-content-center">
+              <v-btn @click="modalUpdateLatLong.show = true" rounded color="primary"><v-icon class="mr-1">mdi-map-check</v-icon> Update Lat Long</v-btn>
+            </v-card>
+          </v-menu>
         </v-row>
       </template>
 
@@ -1787,6 +1827,12 @@ import axios from "axios";
 export default {
   name: "Lahan",
   data: () => ({
+    modalUpdateLatLong: {
+      show: false,
+      data: {
+        text: ''
+      }
+    },
     itemsbr: [
       {
         text: "Main Data",

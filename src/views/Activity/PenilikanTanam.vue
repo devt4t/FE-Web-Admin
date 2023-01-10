@@ -3180,9 +3180,64 @@ export default {
       }
     },
     async verif() {
+      let listTrees = []
+      await this.defaultItem.list_detail.forEach(tree => {
+        if (parseInt(tree.seedling.ditanam.hidup) > 0) {
+          listTrees.push({
+            monitoring_no: this.defaultItem.monitoring_no,
+            tree_code: tree.tree_code,
+            qty: parseInt(tree.seedling.ditanam.hidup),
+            status: 'sudah_ditanam',
+            condition: 'hidup',
+            planting_date: this.defaultItem.planting_date,
+          })
+        }
+        if (parseInt(tree.seedling.ditanam.mati) > 0) {
+          listTrees.push({
+            monitoring_no: this.defaultItem.monitoring_no,
+            tree_code: tree.tree_code,
+            qty: parseInt(tree.seedling.ditanam.mati),
+            status: 'sudah_ditanam',
+            condition: 'mati',
+            planting_date: this.defaultItem.planting_date,
+          })
+        }
+        if (parseInt(tree.seedling.blm_ditanam.hidup) > 0) {
+          listTrees.push({
+            monitoring_no: this.defaultItem.monitoring_no,
+            tree_code: tree.tree_code,
+            qty: parseInt(tree.seedling.blm_ditanam.hidup),
+            status: 'belum_ditanam',
+            condition: 'hidup',
+            planting_date: this.defaultItem.planting_date,
+          })
+        }
+        if (parseInt(tree.seedling.blm_ditanam.mati) > 0) {
+          listTrees.push({
+            monitoring_no: this.defaultItem.monitoring_no,
+            tree_code: tree.tree_code,
+            qty: parseInt(tree.seedling.blm_ditanam.mati),
+            status: 'belum_ditanam',
+            condition: 'mati',
+            planting_date: this.defaultItem.planting_date,
+          })
+        }
+        if (parseInt(tree.seedling.hilang) > 0) {
+          listTrees.push({
+            monitoring_no: this.defaultItem.monitoring_no,
+            tree_code: tree.tree_code,
+            qty: parseInt(tree.seedling.hilang),
+            status: 'hilang',
+            condition: 'hilang',
+            planting_date: this.defaultItem.planting_date,
+          })
+        }
+      })
+      // console.log(listTrees)
       const datapost = {
         monitoring_no: this.defaultItem.monitoring_no,
         validate_by: this.User.email,
+        list_trees: listTrees
       };
       // this.dialogDetail = false;
       try {
