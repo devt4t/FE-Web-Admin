@@ -16,11 +16,13 @@ const Ciminyak = [
 ]
 
 const Kebumen = [
-    'muslim@trees4trees.org'
+    'muslim@trees4trees.org',
+    'rika@trees4trees.org',
 ]
 
 const Pati = [
-    'falah.nurwirana@trees4trees.org'
+    'falah.nurwirana@trees4trees.org',
+    'rika@trees4trees.org'
 ]
 
 export {
