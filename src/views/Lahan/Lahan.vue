@@ -1538,7 +1538,7 @@
               label="Input Data"
               outlined
               rounded
-              rows="100"
+              rows="1000"
               auto-grow
               placeholder="..."
             ></v-textarea>
@@ -2229,6 +2229,7 @@ export default {
         this.textsnackbar = "SUCCESSSSS YEAYYY!"
         this.timeoutsnackbar = 2000
         this.colorsnackbar = 'green'
+        this.modalUpdateLatLong.data.text = ''
         console.log(response.data)
       } finally {
         this.snackbar = true
