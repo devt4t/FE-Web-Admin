@@ -1532,16 +1532,22 @@
           >
           <v-card-text>
             <v-textarea
+              v-model="modalUpdateLatLong.data.text"
               class="mt-3"
               color="green"
               label="Input Data"
               outlined
               rounded
-              rows="50"
+              rows="100"
               auto-grow
               placeholder="..."
             ></v-textarea>
           </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="saveUpdateLatLong" rounded color="info white--text px-5"><v-icon>mdi-content-save</v-icon> SAVE</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
         </v-card>
       </v-dialog>
     <!-- END: MODAL -->
@@ -1702,7 +1708,7 @@
               </v-icon>
             </template>
             <v-card class="pa-3 d-flex flex-column align-stretch justify-content-center">
-              <v-btn @click="modalUpdateLatLong.show = true" rounded color="primary"><v-icon class="mr-1">mdi-map-check</v-icon> Update Lat Long</v-btn>
+              <v-btn @click="modalUpdateLatLong.show = true" :disabled="User.role_group != 'IT'" rounded color="primary"><v-icon class="mr-1">mdi-map-check</v-icon> Update Lat Long</v-btn>
             </v-card>
           </v-menu>
         </v-row>
@@ -2208,6 +2214,28 @@ export default {
   },
 
   methods: {
+    async saveUpdateLatLong() {
+      try {
+        this.modalUpdateLatLong.show = false
+        this.$store.state.loadingOverlayText = 'Creating data...'
+        this.$store.state.loadingOverlay = true
+        const response = await axios.post(this.BaseUrlGet + "UpdateLatLongLahan",
+          { datas: this.modalUpdateLatLong.data.text},
+          { headers: {
+              Authorization: `Bearer ` + this.authtoken,
+          }}
+        )
+        
+        this.textsnackbar = "SUCCESSSSS YEAYYY!"
+        this.timeoutsnackbar = 2000
+        this.colorsnackbar = 'green'
+        console.log(response.data)
+      } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
