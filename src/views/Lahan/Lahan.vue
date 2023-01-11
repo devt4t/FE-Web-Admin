@@ -2230,7 +2230,10 @@ export default {
         this.timeoutsnackbar = 2000
         this.colorsnackbar = 'green'
         this.modalUpdateLatLong.data.text = ''
-        console.log(response.data)
+      } catch (err) {
+        this.textsnackbar = "GAK KESIMPEEEEEEN! ERRORR"
+        this.timeoutsnackbar = 2000
+        this.colorsnackbar = 'red'
       } finally {
         this.snackbar = true
         this.$store.state.loadingOverlay = false
