@@ -2119,7 +2119,7 @@
             <v-btn color="info white--text" rounded small class="pl-1" @click="showDetail(item)">
               <v-icon class="mr-1">mdi-information</v-icon> Detail
             </v-btn>
-            <v-btn rounded small color="red white--text" class="mt-2 pl-1" v-if="item.is_validate > 0 && (User.role_group == 'IT' || (item.is_validate < 2 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
+            <v-btn rounded small color="red white--text" class="mt-2 pl-1" v-if="item.is_validate > 0 && (User.role_group == 'IT' || ((item.is_validate < 2 && User.role_name == 'UNIT MANAGER') || (item.is_validate == 2 && User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverification
             </v-btn>
           </v-card>
@@ -2571,9 +2571,9 @@ export default {
     const taskForceEmails = this.$store.state.taskForceTeam.emails || []
     
     // if (this.User.role_group != 'IT' && taskForceEmails.includes(this.User.email) == false) {
-    if (this.User.role_group != 'IT') {
-      this.$store.state.maintenanceOverlay = true
-    }
+    // if (this.User.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
