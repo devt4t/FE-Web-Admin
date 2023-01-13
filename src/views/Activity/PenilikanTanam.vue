@@ -1838,15 +1838,15 @@
         </v-card>
       </v-dialog>
 
-      <!-- Modal Delete -->
-      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+      <!-- Modal Unverif -->
+      <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
         <v-card>
-          <v-card-title class="justify-center"
-            >Are you sure you want to delete this item?</v-card-title
+          <v-card-title class="justify-center text-center"
+            >Are you sure you want to <br> UNVERIFICATION <br> this data monitoring 1?</v-card-title
           >
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="pr-3" color="red white--text" rounded @click="closeDelete">
+            <v-btn class="pr-3" color="red white--text" rounded @click="dialogUnverif = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Cancel
             </v-btn>
@@ -1854,10 +1854,10 @@
               color="warning white--text"
               class="pr-3"
               rounded
-              @click="deleteItemConfirm"
+              @click="unverifItemConfirm"
             >
-              <v-icon class="mr-1">mdi-check-circle</v-icon>
-              Yes, Delete
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon>
+              Yes, Unverif
             </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -2119,8 +2119,8 @@
             <v-btn color="info white--text" rounded small class="pl-1" @click="showDetail(item)">
               <v-icon class="mr-1">mdi-information</v-icon> Detail
             </v-btn>
-            <v-btn rounded small color="red white--text" class="mt-2 pl-1" v-if="User.role_group == 'IT'" @click="showDeleteModal(item)">
-              <v-icon class="mr-1">mdi-delete-circle</v-icon> Delete
+            <v-btn rounded small color="red white--text" class="mt-2 pl-1" v-if="item.is_validate > 0 && User.role_group == 'IT' || (item.is_validate < 2 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER'))" @click="showUnverifModal(item)">
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverification
             </v-btn>
           </v-card>
         </v-menu>
@@ -2270,7 +2270,7 @@ export default {
     menu4: "",
     dialogAddonly: false,
     dialog: false,
-    dialogDelete: false,
+    dialogUnverif: false,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -2571,8 +2571,9 @@ export default {
     const taskForceEmails = this.$store.state.taskForceTeam.emails || []
     
     // if (this.User.role_group != 'IT' && taskForceEmails.includes(this.User.email) == false) {
-    //   this.$store.state.maintenanceOverlay = true
-    // }
+    if (this.User.role_group != 'IT') {
+      this.$store.state.maintenanceOverlay = true
+    }
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
@@ -3278,40 +3279,6 @@ export default {
         this.snackbar = true
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
-      }
-    },
-    async verifDelete() {
-      const datapost = {
-        monitoring_no: this.defaultItem.monitoring_no,
-      };
-      console.log(datapost);
-      // this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "SoftDeleteMonitoring",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.dialogDelete = false;
-          this.initialize();
-        } else {
-          this.dialogDelete = false;
-          this.alerttoken = true;
-        }
-      } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.dialogDelete = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
       }
     },
 
@@ -4195,10 +4162,10 @@ export default {
       });
     },
 
-    showDeleteModal(item) {
-      console.log(item.form_no);
-      this.defaultItem.form_no = item.form_no;
-      this.dialogDelete = true;
+    showUnverifModal(item) {
+      this.defaultItem.monitoring_no = item.monitoring_no;
+      this.defaultItem.is_validate = item.is_validate;
+      this.dialogUnverif = true;
     },
 
     async updateSeedlingAdjustment() {
@@ -4218,8 +4185,33 @@ export default {
     dateFormat(date, format) {
       return moment(date).format(format)
     },
-    deleteItemConfirm() {
-      this.verifDelete();
+    async unverifItemConfirm() {
+      const datapost = {
+        monitoring_no: this.defaultItem.monitoring_no,
+        is_validate: parseInt(this.defaultItem.is_validate) - 1
+      }
+      console.log(datapost);
+      // this.dialogDetail = false;
+      try {
+        this.dialogUnverif = false
+        await axios.post(this.BaseUrlGet + "UnverificationMonitoring", datapost, this.$store.state.apiConfig);
+        this.textsnackbar = "Data unverified!"
+        this.colorsnackbar = 'green'
+        await this.initialize();
+      } catch (error) {
+        console.error(error.response);
+        this.textsnackbar = "Data failed to unverif!"
+        this.colorsnackbar = 'red'
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          this.dialogUnverif = false;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      } finally {
+        this.timeoutsnackbar = 5000
+        this.snackbar = true
+      }
     },
     close() {
       this.dialog = false;
@@ -4232,7 +4224,7 @@ export default {
       this.dialogPohon = false;
     },
     closeDelete() {
-      this.dialogDelete = false;
+      this.dialogUnverif = false;
     },
     closeDetailEditPohon() {
       this.dialogDetailPohonEdit = false;
