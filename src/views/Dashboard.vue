@@ -41,67 +41,170 @@
           </v-card-subtitle>
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="3" class="d-flex align-end">
-                <v-avatar size="50" rounded class="elevation-1">
-                  <v-icon
-                    dark
-                    style="font-size: 35px !important"
-                    color="#444941"
-                    >mdi-account-multiple
-                  </v-icon>
-                </v-avatar>
-                <div class="ms-3">
-                  <p class="itemparent mb-0">
-                    {{ data1.Judul }}
-                  </p>
-                  <h3 class="fontall">
-                    {{ numberFormat(data1.Count) }}
-                  </h3>
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="3" class="d-flex align-end">
-                <v-avatar size="50" rounded class="elevation-1">
-                  <v-icon style="font-size: 35px !important" color="#3353ee"
-                    >mdi-image-filter-hdr</v-icon
-                  >
-                </v-avatar>
-                <div class="ms-3">
-                  <p class="itemparent mb-0">
-                    {{ data2.Judul }}
-                  </p>
-                  <h3 class="fontall">
-                    {{ numberFormat(data2.Count) }}
-                  </h3>
-                </div>
-              </v-col>
-
-              <v-col cols="12" md="3" class="d-flex align-end">
-                <v-avatar size="50" rounded class="elevation-1">
-                  <v-icon style="font-size: 35px !important" color="#32c351"
-                    >mdi-forest</v-icon
-                  >
-                </v-avatar>
-                <div class="ms-3">
-                  <p class="itemparent mb-0">
-                    {{ data3.Judul }}
-                  </p>
-                  <h3 class="fontall">
-                    {{ numberFormat(data3.Count) }}
-                  </h3>
-                </div>
+              <v-col cols="9" class="d-flex flex-column flex-lg-row align-items-center justify-content-center">
+                <v-select
+                  dense
+                  color="success"
+                  item-color="success"
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  hide-details
+                  rounded
+                  v-model="options.programYear"
+                  :items="$store.state.programYear.options"
+                  label="Program Year"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  outlined
+                  class="mt-2 mr-1"
+                  style="max-width: 175px;"
+                ></v-select>
+                <v-select
+                  dense
+                  color="success"
+                  item-color="success"
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  hide-details
+                  rounded
+                  v-model="options.source.model"
+                  :items="options.source.options"
+                  label="Source Data"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  outlined
+                  class="mt-2 mx-1"
+                ></v-select>
+                <v-select
+                  dense
+                  color="success"
+                  item-color="success"
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  hide-details
+                  rounded
+                  v-model="options.province.model"
+                  :items="options.province.options"
+                  label="Province"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  outlined
+                  class="mt-2 ml-1"
+                ></v-select>
               </v-col>
               <v-col cols="3" class="d-none d-md-block">
                 <v-row align="center" justify="center" class="mb-0">
                   <v-img
                     max-width="200"
                     src="/images/dashboard_logo.jpg"
-                    style="margin-top: -50px"
+                    style="margin-top: -70px;"
                   ></v-img>
                 </v-row>
               </v-col>
             </v-row>
           </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row class="">
+      <v-col cols="12" md="3" class="">
+        
+      </v-col>
+      <!-- Total Petani -->
+      <v-col cols="12" md="3" class="">
+        <v-card
+          outlined
+          class="rounded-xl shadow-lg"
+          @click="$router.push('Farmer')"
+        >
+          <v-list-item three-line>
+            <v-list-item-content class="px-3">
+              <div class="mb-2">
+                {{ data1.Judul }}
+              </div>
+              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
+                {{ numberFormat(data1.Count) }}
+              </v-list-item-title>
+              <v-list-item-subtitle>NIK</v-list-item-subtitle>
+            </v-list-item-content>
+  
+            <v-list-item-avatar
+              tile
+              size="80"
+              color="grey darken-3"
+              class="rounded-circle"
+            >
+              
+            <v-icon
+              style="font-size: 35px !important"
+              color="white"
+              >mdi-nature-people
+            </v-icon>
+            </v-list-item-avatar>
+          </v-list-item>
+        </v-card>
+      </v-col>
+      <!-- Total Lahan -->
+      <v-col cols="12" md="3" class="">
+        <v-card
+          @click="$router.push('Lahan')"
+          class="rounded-xl shadow-lg"
+          outlined
+        >
+          <v-list-item three-line>
+            <v-list-item-content class="px-3">
+              <div class="mb-2">
+                {{ data2.Judul }}
+              </div>
+              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
+                {{ numberFormat(data2.Count) }}
+              </v-list-item-title>
+              <v-list-item-subtitle>Lahan</v-list-item-subtitle>
+            </v-list-item-content>
+  
+            <v-list-item-avatar
+              tile
+              size="80"
+              color="brown"
+              class="rounded-circle"
+            >
+              
+            <v-icon
+              style="font-size: 35px !important"
+              color="white"
+              >mdi-land-fields
+            </v-icon>
+            </v-list-item-avatar>
+          </v-list-item>
+        </v-card>
+      </v-col>
+      <!-- Total Pohon -->
+      <v-col cols="12" md="3" class="">
+        <v-card
+          class="rounded-xl shadow-lg"
+          max-width="344"
+          outlined
+        >
+          <v-list-item three-line>
+            <v-list-item-content class="px-3">
+              <div class="mb-2">
+                {{ data3.Judul }}
+              </div>
+              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
+                {{ numberFormat(data3.Count) }}
+              </v-list-item-title>
+              <v-list-item-subtitle>Pohon</v-list-item-subtitle>
+            </v-list-item-content>
+  
+            <v-list-item-avatar
+              tile
+              size="80"
+              color="green darken-2"
+              class="rounded-circle"
+            >
+              
+            <v-icon
+              style="font-size: 35px !important"
+              color="white"
+              >mdi-forest
+            </v-icon>
+            </v-list-item-avatar>
+          </v-list-item>
         </v-card>
       </v-col>
     </v-row>
@@ -335,6 +438,18 @@ export default {
 
     fullnameadmin: "",
     nameadmin: "",
+
+    options: {
+      programYear: '2022',
+      province: {
+        model: 'All',
+        options: ['All', 'Jawa Barat', 'Jawa Tengah']
+      },
+      source: {
+        model: 'Lahan',
+        options: ['Lahan', 'Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi (Loaded)', 'Distribusi (Received)', 'Monitoring 1' ]
+      },
+    }
   }),
   mounted() {
     this.authtoken = localStorage.getItem("token");
@@ -347,8 +462,10 @@ export default {
       this.nameadmin = arrayname[0];
     }
     this.initialize();
+    this.$store.state.maintenanceOverlay = false
   },
   destroyed() {
+    this.$store.state.maintenanceOverlay = false
     this.$store.state.loadingOverlay = false
     this.$store.state.loadingOverlayText = null
   },

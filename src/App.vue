@@ -175,9 +175,9 @@
     
     <!-- Maintenance Overlay -->
     <v-overlay :value="$store.state.maintenanceOverlay">
-      <div class="d-flex flex-column align-center">
-        <img class="rounded-xl" style="max-width: 100%;width: 700px;" :src="require('@/assets/maintenance.gif')" alt="">
-        <h4 class="white--text mt-3">GEKO Maintenance...
+      <div class="d-flex flex-column align-center position-relative">
+        <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="">
+        <h4 class="white--text mt-3 position-absolute" style="position: absolute;bottom: 40px;">GEKO Maintenance...
           <v-progress-circular
               indeterminate
               color="white"

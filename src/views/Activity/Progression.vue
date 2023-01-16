@@ -1285,10 +1285,10 @@ export default {
     dates: {
       farmer: ['2022-08-31', moment().format('Y-MM-DD')],
       land: ['2022-10-03', moment().format('Y-MM-DD')],
-      sostam: '2022-11-15',
-      penlub: '2022-12-31',
-      pupuk: '2023-01-31',
-      distribusi: '2023-01-31',
+      sostam: moment().format('Y-MM-DD'),
+      penlub: moment().format('Y-MM-DD'),
+      pupuk: moment().format('Y-MM-DD'),
+      distribusi: moment().format('Y-MM-DD'),
     },
     btn: {
       generateButton: {

@@ -469,9 +469,21 @@
               </v-card-text>
               <v-card-actions>
                   <v-divider class="mx-2"></v-divider>
-                  <v-btn rounded color="red white--text" class="px-5">
+                  <v-btn v-if="defaultItem.active == 1" rounded color="red white--text" class="px-5" @click="nonactivateFF(defaultItem)">
                     <v-icon class="mr-1">mdi-account-off</v-icon>
                     Nonactivate
+                  </v-btn>
+                  <v-btn
+                    v-else
+                    dark
+                    rounded
+                    @click="activateFF(defaultItem)"
+                    color="green white--text"
+                  >
+                  <v-icon class="mr-1" small color="white">
+                    mdi-account-check
+                  </v-icon>
+                    Activate
                   </v-btn>
               </v-card-actions>
             </v-card>
@@ -548,7 +560,7 @@
                 Edit
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDDelete == true && item.validation != 1) || User.role_group == 'IT'">
+            <v-list-item v-if="(RoleAccesCRUDDelete == true || User.role_group == 'IT' ) && item.active != 1">
               <v-btn
                 dark
                 rounded
@@ -570,7 +582,7 @@
                 color="red white--text"
               >
               <v-icon class="mr-1" small color="white">
-                mdi-power
+                mdi-account-off
               </v-icon>
                 Nonactivate
               </v-btn>
@@ -583,7 +595,7 @@
                 color="green white--text"
               >
               <v-icon class="mr-1" small color="white">
-                mdi-power
+                mdi-account-check
               </v-icon>
                 Activate
               </v-btn>
@@ -686,6 +698,7 @@ export default {
       user_id: "",
       village: "",
       working_area: "",
+      active: ''
     },
     itemsgender: [
       { text: "Laki-Laki", value: "male" },
@@ -1331,6 +1344,7 @@ export default {
     },
     async confirmNonactivate () {
       this.dialogs.nonactivateConfirmation.show = false
+      this.dialogdetail = false
       this.$store.state.loadingOverlayText = 'Nonactivate Field Facilitator...'
       this.$store.state.loadingOverlay = true
       
