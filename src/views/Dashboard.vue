@@ -46,7 +46,7 @@
                   dense
                   color="success"
                   item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
                   hide-details
                   rounded
                   v-model="options.programYear"
@@ -57,11 +57,11 @@
                   class="mt-2 mr-1"
                   style="max-width: 175px;"
                 ></v-select>
-                <v-select
+                <v-autocomplete
                   dense
                   color="success"
                   item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
                   hide-details
                   rounded
                   v-model="options.source.model"
@@ -70,12 +70,12 @@
                   :rules="[(v) => !!v || 'Field is required']"
                   outlined
                   class="mt-2 mx-1"
-                ></v-select>
-                <v-select
+                ></v-autocomplete>
+                <v-autocomplete
                   dense
                   color="success"
                   item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
                   hide-details
                   rounded
                   v-model="options.province.model"
@@ -84,7 +84,7 @@
                   :rules="[(v) => !!v || 'Field is required']"
                   outlined
                   class="mt-2 ml-1"
-                ></v-select>
+                ></v-autocomplete>
               </v-col>
               <v-col cols="3" class="d-none d-md-block">
                 <v-row align="center" justify="center" class="mb-0">
@@ -102,13 +102,12 @@
     </v-row>
 
     <v-row class="">
+      <!-- Total Petani -->
       <v-col cols="12" md="3" class="">
-        
       </v-col>
       <!-- Total Petani -->
       <v-col cols="12" md="3" class="">
         <v-card
-          outlined
           class="rounded-xl shadow-lg"
           @click="$router.push('Farmer')"
         >
@@ -144,7 +143,6 @@
         <v-card
           @click="$router.push('Lahan')"
           class="rounded-xl shadow-lg"
-          outlined
         >
           <v-list-item three-line>
             <v-list-item-content class="px-3">
@@ -178,7 +176,6 @@
         <v-card
           class="rounded-xl shadow-lg"
           max-width="344"
-          outlined
         >
           <v-list-item three-line>
             <v-list-item-content class="px-3">
@@ -446,7 +443,7 @@ export default {
         options: ['All', 'Jawa Barat', 'Jawa Tengah']
       },
       source: {
-        model: 'Lahan',
+        model: 'Sosialisasi Tanam',
         options: ['Lahan', 'Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi (Loaded)', 'Distribusi (Received)', 'Monitoring 1' ]
       },
     }
@@ -456,10 +453,10 @@ export default {
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
     this.User = JSON.parse(localStorage.getItem("User"));
     if (this.User) {
-      var name = this.User.name;
-      this.fullnameadmin = name;
-      const arrayname = name.split(" ");
-      this.nameadmin = arrayname[0];
+      var name = this.User.name
+      this.fullnameadmin = name
+      const arrayname = name.split(" ")
+      this.nameadmin = arrayname[0]
     }
     this.initialize();
     this.$store.state.maintenanceOverlay = false
@@ -482,6 +479,7 @@ export default {
         });
         if (response.data.length != 0) {
           // this.loadtable = false;
+          // console.log(response.data.data.result)
           this.greeting = response.data.data.result.greeting;
           this.day = response.data.data.result.day;
           this.date = response.data.data.result.dateformat;

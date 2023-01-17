@@ -767,7 +767,7 @@
       </v-dialog>
 
       <!-- Modal Detail -->
-      <v-dialog v-model="dialogDetail" max-width="800px">
+      <v-dialog v-model="dialogDetail" max-width="800px" content-class="rounded-xl" scrollable>
         <v-card>
           <v-card-title class="mb-1 headermodalstyle">
             <span class="headline">Detail Lahan</span>
@@ -792,35 +792,6 @@
             </v-container>
             <v-container v-if="load == false">
               <v-row>
-                <v-col cols="12" sm="4" md="4">
-                  <div>Foto Sppt</div>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.sppt"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <div>Foto Lahan</div>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.photo1"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.photo2"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.photo3"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.photo4"
-                    class="my-1 mb-4"
-                  ></v-img>
-                </v-col>
                 <v-col cols="12" sm="8" md="8">
                   <v-row>
                     <v-col cols="12" sm="12" md="6">
@@ -1342,6 +1313,56 @@
                     </v-col>
                   </v-row> -->
                 </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <div>Foto Sppt</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.sppt"
+                    @click="showLightbox(defaultItem.sppt)"
+                    class="my-1 mb-4 rounded-xl cursor-pointer"
+                  ></v-img>
+                  <div>Foto Lahan</div>
+                  <v-carousel 
+                    cycle
+                    height="250" 
+                    show-arrows-on-hover
+                    hide-delimiter-background
+                    class="rounded-xl cursor-pointer"
+                  >
+                    <v-carousel-item>
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.photo1"
+                        @click="showLightbox([defaultItem.photo1,defaultItem.photo2,defaultItem.photo3,defaultItem.photo4], 0)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-carousel-item>
+                    <v-carousel-item>
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.photo2"
+                        @click="showLightbox([defaultItem.photo1,defaultItem.photo2,defaultItem.photo3,defaultItem.photo4], 1)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-carousel-item>
+                    <v-carousel-item>
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.photo3"
+                        @click="showLightbox([defaultItem.photo1,defaultItem.photo2,defaultItem.photo3,defaultItem.photo4], 2)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-carousel-item>
+                    <v-carousel-item>
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.photo4"
+                        @click="showLightbox([defaultItem.photo1,defaultItem.photo2,defaultItem.photo3,defaultItem.photo4], 3)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-carousel-item>
+                  </v-carousel>
+                </v-col>
               </v-row>
             </v-container>
           </v-card-text>
@@ -1525,14 +1546,14 @@
       </v-dialog>
 
       <!-- Modal Update Lat Long -->
-      <v-dialog v-model="modalUpdateLatLong.show" max-width="1000px" content-class="rounded-xl" scrollable>
+      <v-dialog v-model="insertDataLahan.show" max-width="1000px" content-class="rounded-xl" scrollable>
         <v-card>
           <v-card-title class="mb-1 headermodalstyle"
-            ><span class=""><v-icon class="mr-1 white--text">mdi-map-check</v-icon> Update Lat Long Lahan</span></v-card-title
+            ><span class=""><v-icon class="mr-1 white--text">mdi-land-fields</v-icon> Mass Insert Data Lahan</span></v-card-title
           >
           <v-card-text>
             <v-textarea
-              v-model="modalUpdateLatLong.data.text"
+              v-model="insertDataLahan.data.text"
               class="mt-3"
               color="green"
               label="Input Data"
@@ -1545,7 +1566,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="saveUpdateLatLong" rounded color="info white--text px-5"><v-icon>mdi-content-save</v-icon> SAVE</v-btn>
+            <v-btn @click="saveMassInsertDataLahan" rounded color="info white--text px-5"><v-icon>mdi-content-save</v-icon> SAVE</v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
@@ -1554,6 +1575,7 @@
     <v-data-table
       :headers="headers"
       :items="dataobject"
+      multi-sort
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
@@ -1669,6 +1691,7 @@
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
+            color="green"
             hide-details
             outlined
             rounded
@@ -1690,7 +1713,7 @@
             color="blue"
             rounded
           >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
+            <v-icon class="mr-1" small>mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <!-- UPDATE LAHAN LAT LONG -->
           <v-menu
@@ -1703,12 +1726,13 @@
             content-class="rounded-xl"
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-icon v-bind="attrs" v-on="on" color="dark">
+              <v-icon v-bind="attrs" v-on="on" color="dark" :disabled="User.role_group != 'IT'">
                 mdi-dots-vertical
               </v-icon>
             </template>
             <v-card class="pa-3 d-flex flex-column align-stretch justify-content-center">
-              <v-btn @click="modalUpdateLatLong.show = true" :disabled="User.role_group != 'IT'" rounded color="primary"><v-icon class="mr-1">mdi-map-check</v-icon> Update Lat Long</v-btn>
+              <v-btn @click="insertDataLahan.show = true" rounded color="red white--text"><v-icon class="mr-1">mdi-land-fields</v-icon> Mass Insert Data Lahan</v-btn>
+              <v-btn :disabled="true" rounded color="info white--text" class="mt-2"><v-icon class="mr-1">mdi-map-check</v-icon> Update LatLong Lahan</v-btn>
             </v-card>
           </v-menu>
         </v-row>
@@ -1833,7 +1857,7 @@ import axios from "axios";
 export default {
   name: "Lahan",
   data: () => ({
-    modalUpdateLatLong: {
+    insertDataLahan: {
       show: false,
       data: {
         text: ''
@@ -2214,13 +2238,13 @@ export default {
   },
 
   methods: {
-    async saveUpdateLatLong() {
+    async saveMassInsertDataLahan() {
       try {
-        this.modalUpdateLatLong.show = false
+        this.insertDataLahan.show = false
         this.$store.state.loadingOverlayText = 'Creating data...'
         this.$store.state.loadingOverlay = true
         const response = await axios.post(this.BaseUrlGet + "UpdateLatLongLahan",
-          { datas: this.modalUpdateLatLong.data.text},
+          { datas: this.insertDataLahan.data.text},
           { headers: {
               Authorization: `Bearer ` + this.authtoken,
           }}
@@ -2229,7 +2253,7 @@ export default {
         this.textsnackbar = "SUCCESSSSS YEAYYY!"
         this.timeoutsnackbar = 2000
         this.colorsnackbar = 'green'
-        this.modalUpdateLatLong.data.text = ''
+        this.insertDataLahan.data.text = ''
       } catch (err) {
         this.textsnackbar = "GAK KESIMPEEEEEEN! ERRORR"
         this.timeoutsnackbar = 2000
@@ -3717,6 +3741,14 @@ export default {
       // this.valueVillageExcel = "";
       // this.typegetdataExcel = "";
       // this.valueFFcodeExcel = "";
+    },
+    showLightbox(imgs, index) {
+        if (imgs) this.$store.state.lightbox.imgs = imgs
+        
+        if (index) this.$store.state.lightbox.index = index
+        else this.$store.state.lightbox.index = 0
+
+        this.$store.state.lightbox.show = true
     },
   },
 };
