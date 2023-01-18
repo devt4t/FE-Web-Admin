@@ -588,181 +588,247 @@
       </v-dialog>
 
       <!-- Modal Edit GIS -->
-      <v-dialog v-model="dialogGIS" max-width="800px" content-class="rounded-xl">
+      <v-dialog v-model="dialogGIS" max-width="800px" content-class="rounded-xl" scrollable>
         <v-card>
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-card-title class="mb-1 headermodalstyle">
-              <span class="headline">Edit GIS</span>
-            </v-card-title>
+          <v-card-title class="mb-1 headermodalstyle rounded-xl">
+            <span class=""><v-icon class="mr-1 white--text">mdi-map-check</v-icon> Edit GIS</span>
+            <v-divider class="mx-2" color="white"></v-divider>
+            <v-icon @click="close" color="red">mdi-close-circle</v-icon>
+          </v-card-title>
 
-            <v-card-text>
-              <v-container
-                v-if="load == true"
-                fluid
-                fill-height
-                style="background-color: rgba(255, 255, 255, 0.5)"
-              >
-                <v-layout justify-center align-center>
-                  <v-progress-circular
-                    :size="80"
-                    :width="10"
-                    indeterminate
-                    color="primary"
-                  >
-                  </v-progress-circular>
-                </v-layout>
-              </v-container>
-              <v-container v-if="load == false">
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-select
-                      v-model="defaultItem.ff_no"
-                      :items="itemsff"
-                      item-text="name"
-                      item-value="ff_no"
-                      label="Pilih Field Facilitator"
-                      outlined
-                      clearable
-                      disabled
-                      v-on:change="selectPetani"
-                    ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-select
-                      v-model="defaultItem.kode"
-                      :items="itemspetani"
-                      item-text="nama"
-                      item-value="kode"
-                      label="Pilih Petani"
-                      outlined
-                      clearable
-                      disabled
-                    ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field
-                      v-model="defaultItem.barcode"
-                      label="No Barcode"
-                      outlined
-                      disabled
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field
-                      v-model="defaultItem.document_no"
-                      label="No SPPT/Document"
-                      outlined
-                      disabled
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field
-                      v-model="defaultItem.latitude"
-                      label="Latitude"
-                      outlined
-                      :rules="[(v) => !!v || 'Field is required']"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                    <v-text-field
-                      v-model="defaultItem.longitude"
-                      label="Longitude"
-                      outlined
-                      :rules="[(v) => !!v || 'Field is required']"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-                      v-model="defaultItem.soil_type"
-                      :items="itemsTanahType"
-                      item-text="text"
-                      item-value="value"
-                      label="Tipe Tanah"
-                      outlined
-                      disabled
-                      clearable
-                    ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-                      v-model="defaultItem.potency"
-                      :items="itemsPotency"
-                      item-text="text"
-                      item-value="value"
-                      label="Potency"
-                      outlined
-                      clearable
-                      disabled
-                    ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-                      v-model="defaultItem.kelerengan_lahan"
-                      :items="itemsKeleranganLahan"
-                      item-text="text"
-                      item-value="value"
-                      label="Kelerengan Lahan"
-                      outlined
-                      clearable
-                      disabled
-                    ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-                      v-model="defaultItem.elevation"
-                      :items="itemsElevation"
-                      item-text="text"
-                      item-value="value"
-                      label="Elevation"
-                      outlined
-                      clearable
-                      disabled
-                    ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <v-select
-                      v-model="defaultItem.tutupan_lahan"
-                      :items="itemsTutupanLahan"
-                      item-text="text"
-                      item-value="value"
-                      label="Tutupan Lahan"
-                      outlined
-                      clearable
-                      disabled
-                    ></v-select>
-                  </v-col>
+          <v-card-text>
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-container v-if="load == false">
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-select
+                    v-model="defaultItem.ff_no"
+                    :items="itemsff"
+                    item-text="name"
+                    item-value="ff_no"
+                    label="Pilih Field Facilitator"
+                    outlined
+                    dense
+                    hide-details
+                    rounded
+                    clearable
+                    disabled
+                    v-on:change="selectPetani"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-select
+                    v-model="defaultItem.kode"
+                    :items="itemspetani"
+                    item-text="nama"
+                    item-value="kode"
+                    label="Pilih Petani"
+                    dense
+                    rounded
+                    hide-details
+                    outlined
+                    clearable
+                    disabled
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-text-field
+                    v-model="defaultItem.barcode"
+                    label="No Barcode"
+                    dense
+                    rounded
+                    outlined
+                    hide-details
+                    disabled
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-text-field
+                    v-model="defaultItem.document_no"
+                    label="No SPPT/Document"
+                    dense
+                    rounded
+                    hide-details
+                    outlined
+                    disabled
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.mu_no"
+                    :items="itemsMU"
+                    item-text="name"
+                    item-value="mu_no"
+                    label="Management Unit"
+                    outlined
+                    hide-details
+                    rounded
+                    disabled
+                    clearable
+                    :rules="[(v) => !!v || 'Field is required']"
+                    v-on:change="selectedMUForm"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.target_area"
+                    :items="itemsTAForm"
+                    item-text="name"
+                    item-value="area_code"
+                    label="Target Area"
+                    hide-details
+                    rounded
+                    disabled
+                    outlined
+                    clearable
+                    :rules="[(v) => !!v || 'Field is required']"
+                    v-on:change="selectedTAForm"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    color="success"
+                    item-color="success"
+                    :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
+                    v-model="defaultItem.village"
+                    :items="itemsVillageForm"
+                    item-text="name"
+                    item-value="kode_desa"
+                    label="Desa"
+                    hide-details
+                    rounded
+                    outlined
+                    :rules="[(v) => !!v || 'Field is required']"
+                    v-on:change="selectedVillageForm"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-text-field
+                    color="success"
+                    v-model="defaultItem.latitude"
+                    label="Latitude"
+                    hide-details
+                    rounded
+                    outlined
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-text-field
+                    color="success"
+                    v-model="defaultItem.longitude"
+                    label="Longitude"
+                    hide-details
+                    rounded
+                    outlined
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.soil_type"
+                    :items="itemsTanahType"
+                    item-text="text"
+                    item-value="value"
+                    label="Tipe Tanah"
+                    hide-details
+                    rounded
+                    dense
+                    outlined
+                    disabled
+                    clearable
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.potency"
+                    :items="itemsPotency"
+                    item-text="text"
+                    item-value="value"
+                    label="Potency"
+                    hide-details
+                    rounded
+                    dense
+                    outlined
+                    clearable
+                    disabled
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.kelerengan_lahan"
+                    :items="itemsKeleranganLahan"
+                    item-text="text"
+                    item-value="value"
+                    label="Kelerengan Lahan"
+                    outlined
+                    hide-details
+                    dense
+                    rounded
+                    clearable
+                    disabled
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.elevation"
+                    :items="itemsElevation"
+                    item-text="text"
+                    item-value="value"
+                    label="Elevation"
+                    outlined
+                    dense
+                    hide-details
+                    rounded
+                    clearable
+                    disabled
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <v-select
+                    v-model="defaultItem.tutupan_lahan"
+                    :items="itemsTutupanLahan"
+                    item-text="text"
+                    item-value="value"
+                    label="Tutupan Lahan"
+                    rounded
+                    hide-details
+                    outlined
+                    dense
+                    clearable
+                    disabled
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
 
-                  <!-- <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="defaultItem.exposure"
-                      label="Exposure"
-                      outlined
-                    ></v-text-field>
-                  </v-col> -->
-
-                  <!-- <v-col cols="12" sm="4" md="4">
-                    <v-text-field
-                      v-model="defaultItem.current_crops"
-                      label="Current Crops"
-                      outlined
-                    ></v-text-field>
-                  </v-col> -->
-                </v-row>
-              </v-container>
-            </v-card-text>
-
-            <v-card-actions v-if="load == false">
-              <v-spacer></v-spacer>
-              <v-btn outlined color="red darken-1" @click="close">
-                <v-icon left> mdi-close-circle-outline </v-icon>
-                Cancel
-              </v-btn>
-              <v-btn outlined color="blue darken-1" @click="savegis">
-                <v-icon left> mdi-content-save-all-outline </v-icon>
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-form>
+          <v-card-actions v-if="load == false">
+            <v-spacer></v-spacer>
+            <v-btn outlined rounded color="red darken-1" @click="close">
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Cancel
+            </v-btn>
+            <v-btn rounded color="info white--text" class="px-3" @click="savegis">
+              <v-icon left class=""> mdi-content-save-all-outline </v-icon>
+              Save
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-dialog>
 
@@ -1746,8 +1812,8 @@
       </template>
 
       <template v-slot:item.updated_gis="{ item }">
-        <v-chip :color="getColorStatusGIS(item.updated_gis)" dark>
-          {{ item.updated_gis }}
+        <v-chip :color="getColorStatusGIS(item.updated_gis)" dark style="text-transform: capitalize;" class="pl-1">
+          <v-icon class="mr-1">mdi-{{ item.updated_gis == 'sudah' ? 'map-check' : 'help-circle' }}</v-icon> {{ item.updated_gis }}
         </v-chip>
       </template>
 
@@ -2975,21 +3041,25 @@ export default {
     },
 
     async updateDataGIS() {
-      const datapost = {
-        lahan_no: this.defaultItem.lahan_no,
-        longitude: this.defaultItem.longitude,
-        latitude: this.defaultItem.latitude,
-        soil_type: this.defaultItem.soil_type,
-        potency: this.defaultItem.potency,
-        kelerengan_lahan: this.defaultItem.kelerengan_lahan,
-        // exposure: this.defaultItem.exposure,
-        elevation: this.defaultItem.elevation,
-        // current_crops: this.defaultItem.current_crops,
-        tutupan_lahan: this.defaultItem.tutupan_lahan,
-      };
-
-      console.log(datapost);
       try {
+        this.dialogGIS = false
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Updating lahan GIS data...'
+        const datapost = {
+          lahan_no: this.defaultItem.lahan_no,
+          village: this.defaultItem.village,
+          longitude: this.defaultItem.longitude,
+          latitude: this.defaultItem.latitude,
+          soil_type: this.defaultItem.soil_type,
+          potency: this.defaultItem.potency,
+          kelerengan_lahan: this.defaultItem.kelerengan_lahan,
+          // exposure: this.defaultItem.exposure,
+          elevation: this.defaultItem.elevation,
+          // current_crops: this.defaultItem.current_crops,
+          tutupan_lahan: this.defaultItem.tutupan_lahan,
+        };
+  
+        // console.log(datapost);
         const response = await axios.post(
           this.BaseUrlGet + "UpdateLahanGIS",
           datapost,
@@ -2999,10 +3069,9 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.data.result == "success") {
           this.dialogGIS = false;
-          this.snackbar = true;
           this.colorsnackbar = "green";
           this.textsnackbar = "Sukses mengubah data";
           this.initialize();
@@ -3014,10 +3083,13 @@ export default {
         if (error.response.status == 401) {
           this.dialogGIS = true;
         } else {
-          this.snackbar = true;
           this.colorsnackbar = "red";
           this.textsnackbar = "Gagal Simpan";
         }
+      } finally {
+        this.snackbar = true;
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
       }
     },
 
@@ -3284,15 +3356,6 @@ export default {
       this.showAdd = true;
       this.dialog = true;
     },
-    // async showEditModal(item) {
-    //   // console.log(item.kode);
-    //   this.type = "Edit";
-    //   await this.getDetail(item);
-    //   await this.getTA("form");
-    //   await this.getVillage("form");
-    //   this.getPetani();
-    //   this.dialog = true;
-    // },
     async showEditGIS() {
       this.type = "Edit";
       this.showAdd = false;
@@ -3300,6 +3363,8 @@ export default {
       this.dialogShowEdit = false;
       this.dialogGIS = true;
       await this.getDetail(this.itemTemp);
+      await this.getTA("form");
+      await this.getVillage("form");
       this.getPetani();
     },
     async showEditModal() {
@@ -3422,8 +3487,7 @@ export default {
       this.updateDataPohon(datapost);
     },
 
-    savegis() {
-      this.$refs.form.validate();
+    async savegis() {
       if (
         this.defaultItem.latitude.length != 0 &&
         this.defaultItem.longitude.length != 0 &&
@@ -3436,7 +3500,7 @@ export default {
         this.defaultItem.soil_type != null &&
         this.defaultItem.potency != null
       ) {
-        this.updateDataGIS();
+        await this.updateDataGIS();
       } else {
         this.snackbar = true;
         this.colorsnackbar = "red";
