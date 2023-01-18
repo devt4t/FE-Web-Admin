@@ -102,8 +102,42 @@
     </v-row>
 
     <v-row class="">
-      <!-- Total Petani -->
+      <!-- TOGGLE BUTTON -->
       <v-col cols="12" md="3" class="">
+        <v-card
+          class="rounded-xl shadow-lg overflow-hidden"
+          @click="() => {}"
+        >
+          <v-list-item three-line>
+            <v-list-item-content class="px-3">
+              <div class="mb-2">
+                Survival Rates
+              </div>
+              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
+                100%
+              </v-list-item-title>
+              <v-list-item-subtitle></v-list-item-subtitle>
+            </v-list-item-content>
+  
+            <!-- <v-list-item-avatar
+              tile
+              size="80"
+              color="info"
+              class="rounded-circle"
+            >
+              
+            <v-icon
+              style="font-size: 35px !important"
+              color="white"
+              >mdi-chart-pie
+            </v-icon>
+            </v-list-item-avatar> -->
+            <img
+              style="max-width: 113px;"            
+              :src="require('@/assets/plant.gif')"
+            />
+          </v-list-item>
+        </v-card>
       </v-col>
       <!-- Total Petani -->
       <v-col cols="12" md="3" class="">

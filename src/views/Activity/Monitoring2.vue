@@ -1991,9 +1991,9 @@ export default {
 
     // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
-    if (this.User.role_group != 'IT') {
+    // if (this.User.role_group != 'IT') {
       this.$store.state.maintenanceOverlay = true
-    }
+    // }
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false

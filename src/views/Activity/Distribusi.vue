@@ -399,108 +399,161 @@
                             ></v-progress-circular>
                             <p class="mt-2 text-center">{{ loadingLine.detailDialog.loadingText }}</p>
                         </div>
-                        <div v-else>
-                            <v-simple-table v-if="loadingLine.detailDialog.model">
-                                <tbody>
-                                    <tr v-if="generalSettings.type.model == 'Petani'">
-                                        <th>Field Facilitator</th>
-                                        <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].ff_name || '-' }}</td>
-                                    </tr>
-                                    <tr v-else-if="generalSettings.type.model == 'Umum'">
-                                        <th>PIC T4T</th>
-                                        <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].employee_name || '-' }}</td>
-                                    </tr>
-                                    <tr v-if="generalSettings.type.model == 'Umum'">
-                                        <th>PIC Lahan</th>
-                                        <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].pic_lahan || '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Management Unit</th>
-                                        <th>:</th>
-                                        <td>{{ loadingLine.detailDialog.model.distribution_details[0].mu_name || '-' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Seedling Total</th>
-                                        <th>:</th>
-                                        <td>{{ numberFormat(loadingLine.detailDialog.model.total_trees_amount) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Bags / Labels Total</th>
-                                        <th>:</th>
-                                        <td>
-                                            <strong v-if="loadingLine.detailDialog.differentTotalBags">
-                                                {{ numberFormat(loadingLine.detailDialog.model.total_bags) }}
-                                            </strong>
-                                            <span v-else>
-                                                {{ numberFormat(loadingLine.detailDialog.model.total_bags) }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Bags / Labels Scanned Total</th>
-                                        <th>:</th>
-                                        <td>{{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) }}</td>
-                                    </tr>
-                                </tbody>
-                            </v-simple-table>
-                            <v-text-field
-                                prepend-inner-icon="mdi-qrcode-scan"
-                                v-model="loadingLine.detailDialog.inputs.scanner.model"
-                                @change="scannerUpdate"
+                        <div v-else-if="loadingLine.detailDialog.model">
+                            <v-row class="py-2" v-if="loadingLine.detailDialog.tabs.open == 'all'">
+                                <v-col cols="12" md="6">
+                                    <v-card @click="loadingLine.detailDialog.tabs.open = 1" disabled color="green pa-5 rounded-xl text-center white--text">
+                                        <v-icon color="white" x-large>mdi-truck</v-icon>
+                                        <h3 class="mb-0 mt-1 font-weight-regular" large>Select Truck</h3>
+                                    </v-card>
+                                </v-col>
+                                <v-col cols="12" md="6">
+                                    <v-card @click="loadingLine.detailDialog.tabs.open = 2" disabled color="orange pa-5 rounded-xl text-center white--text">
+                                        <v-icon color="white" x-large>mdi-card-account-details</v-icon>
+                                        <h3 class="mb-0 mt-1 font-weight-regular" large>Select Driver</h3>
+                                    </v-card>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-card @click="loadingLine.detailDialog.tabs.open = 3" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'grey' : 'blue'} pa-5 rounded-xl text-center white--text`">
+                                        <v-icon color="white" x-large>mdi-basket{{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : '' }}</v-icon>
+                                        <h3 class="mb-0 mt-1 font-weight-regular" large>
+                                            {{ 
+                                                numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)
+                                                ? 'Load Completed' : 'Start Scan Bags'
+                                            }}
+                                        </h3>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                            <v-tabs
+                                v-else
+                                v-model="loadingLine.detailDialog.tabs.open"
+                                background-color="transparent"
+                                icons-and-text
+                                grow
+                                show-arrows
                                 color="green"
-                                label="Input Scan Label"
-                                placeholder="Klick here before scan..."
-                                class="text-center mt-2"
-                                outlined
-                                rounded
-                                :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
-                                :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
-                            ></v-text-field><v-expansion-panels>
-                            <v-expansion-panel class="rounded-xl" v-if="loadingLine.detailDialog.inputs.scanner.farmers">
-                                <v-expansion-panel-header class="rounded-xl">
-                                    <span>
-                                        <v-icon color="dark">mdi-text-box-check</v-icon> Show Lists
-                                    </span>
-                                </v-expansion-panel-header>
-                                <v-expansion-panel-content>
-                                    <v-data-table
-                                        :headers="loadingLine.detailDialog.inputs.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
-                                        :items="loadingLine.detailDialog.inputs.scanner.farmers"
-                                    >
-                                        <template v-slot:item.check="{item}">
-                                            <v-icon v-if="item.bags_number.length ==  item.bags_number_loaded.length" color="green">mdi-check-circle</v-icon>
-                                            <v-icon v-else color="red">mdi-close-circle</v-icon>
-                                        </template>
-                                        <template v-slot:item.bags_number="{item}">
-                                            {{ item.bags_number.length }}
-                                        </template>
-                                        <template v-slot:item.bags_number_loaded="{item}">
-                                            {{ item.bags_number_loaded.length }}
-                                        </template>
-                                        <template v-slot:item.bags_left="{item}">
-                                            <v-menu content-class="rounded-xl" scrollable>
-                                                <template v-slot:activator="{attrs, on}">
-                                                    <v-btn v-bind="attrs" :disabled="item.bags_number.length -item.bags_number_loaded.length == 0" v-on="on" :color="`${item.bags_number.length -item.bags_number_loaded.length > 0 ? 'red' : 'green'} white--text`" rounded small>
-                                                        {{  item.bags_number.length -item.bags_number_loaded.length }}
-                                                    </v-btn>
-                                                </template>
-                                                <v-card v-if="item.bags_number.length - item.bags_number_loaded.length > 0">
-                                                    <v-card-title class="d-flex justify-center pt-2">
-                                                        <small class="gray--text">Labels Left:</small><br>
-                                                    </v-card-title>
-                                                    <v-card-text>
-                                                        <strong>{{ getNumberBagsLeft(item.bags_number, item.bags_number_loaded) }}</strong>
-                                                    </v-card-text>
-                                                </v-card>
-                                            </v-menu>
-                                        </template>
-                                    </v-data-table>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
+                            >
+                                <v-tab href="#all">
+                                    Home
+                                    <v-icon>mdi-view-dashboard</v-icon>
+                                </v-tab>
+                                <v-tab disabled>
+                                    Truck
+                                    <v-icon>mdi-truck</v-icon>
+                                </v-tab>
+                                <v-tab disabled>
+                                    Driver
+                                    <v-icon>mdi-card-account-details</v-icon>
+                                </v-tab>
+                                <v-tab>
+                                    Bags
+                                    <v-icon>mdi-basket{{numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : ''}}</v-icon>
+                                </v-tab>
+                            </v-tabs>
+                            <v-tabs-items v-if="loadingLine.detailDialog.tabs.open != 'all'" v-model="loadingLine.detailDialog.tabs.open">
+                                <v-tab-item></v-tab-item>
+                                <v-tab-item></v-tab-item>
+                                <v-tab-item></v-tab-item>
+                                <v-tab-item>
+                                    <v-simple-table dense>
+                                        <tbody>
+                                            <tr v-if="generalSettings.type.model == 'Petani'">
+                                                <td style="max-width: 100px">Field Facilitator</td>
+                                                <td>: <strong>{{ loadingLine.detailDialog.model.distribution_details[0].ff_name || '-' }}</strong></td>
+                                            </tr>
+                                            <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                                <td style="max-width: 100px">PIC T4T</td>
+                                                <td>: <strong> {{ loadingLine.detailDialog.model.distribution_details[0].employee_name || '-' }}</strong></td>
+                                            </tr>
+                                            <tr v-if="generalSettings.type.model == 'Umum'">
+                                                <td style="max-width: 100px">PIC Lahan</td>
+                                                <td>: <strong> {{ loadingLine.detailDialog.model.distribution_details[0].pic_lahan || '-' }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="max-width: 100px">MU</td>
+                                                <td>: <strong> {{ loadingLine.detailDialog.model.distribution_details[0].mu_name || '-' }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="max-width: 100px">Seedling Total</td>
+                                                <td>: <strong> {{ numberFormat(loadingLine.detailDialog.model.total_trees_amount) }}</strong> Seeds</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="max-width: 100px">Bags Total</td>
+                                                <td>: <strong> 
+                                                    <strong v-if="loadingLine.detailDialog.differentTotalBags">
+                                                        {{ numberFormat(loadingLine.detailDialog.model.total_bags) }}
+                                                    </strong>
+                                                    <span v-else>
+                                                        {{ numberFormat(loadingLine.detailDialog.model.total_bags) }}
+                                                    </span></strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="max-width: 100px">Bags Scanned</td>
+                                                <td>: <strong> {{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) }}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </v-simple-table>
+                                    <v-text-field
+                                        prepend-inner-icon="mdi-qrcode-scan"
+                                        v-model="loadingLine.detailDialog.inputs.scanner.model"
+                                        @change="scannerUpdate"
+                                        color="green"
+                                        label="Input Scan Label"
+                                        placeholder="Klick here before scan..."
+                                        class="text-center mt-2"
+                                        outlined
+                                        rounded
+                                        :disabled="numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)"
+                                        :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
+                                        :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
+                                    ></v-text-field>
+                                    <v-expansion-panels class="mb-2">
+                                        <v-expansion-panel class="rounded-xl" v-if="loadingLine.detailDialog.inputs.scanner.farmers">
+                                            <v-expansion-panel-header class="rounded-xl">
+                                                <span>
+                                                    <v-icon color="dark">mdi-text-box-check</v-icon> Show Lists
+                                                </span>
+                                            </v-expansion-panel-header>
+                                            <v-expansion-panel-content>
+                                                <v-data-table
+                                                    :headers="loadingLine.detailDialog.inputs.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
+                                                    :items="loadingLine.detailDialog.inputs.scanner.farmers"
+                                                >
+                                                    <template v-slot:item.check="{item}">
+                                                        <v-icon v-if="item.bags_number.length ==  item.bags_number_loaded.length" color="green">mdi-check-circle</v-icon>
+                                                        <v-icon v-else color="red">mdi-close-circle</v-icon>
+                                                    </template>
+                                                    <template v-slot:item.bags_number="{item}">
+                                                        {{ item.bags_number.length }}
+                                                    </template>
+                                                    <template v-slot:item.bags_number_loaded="{item}">
+                                                        {{ item.bags_number_loaded.length }}
+                                                    </template>
+                                                    <template v-slot:item.bags_left="{item}">
+                                                        <v-menu content-class="rounded-xl" scrollable>
+                                                            <template v-slot:activator="{attrs, on}">
+                                                                <v-btn v-bind="attrs" :disabled="item.bags_number.length -item.bags_number_loaded.length == 0" v-on="on" :color="`${item.bags_number.length -item.bags_number_loaded.length > 0 ? 'red' : 'green'} white--text`" rounded small>
+                                                                    {{  item.bags_number.length -item.bags_number_loaded.length }}
+                                                                </v-btn>
+                                                            </template>
+                                                            <v-card v-if="item.bags_number.length - item.bags_number_loaded.length > 0">
+                                                                <v-card-title class="d-flex justify-center pt-2">
+                                                                    <small class="gray--text">Labels Left:</small><br>
+                                                                </v-card-title>
+                                                                <v-card-text>
+                                                                    <strong>{{ getNumberBagsLeft(item.bags_number, item.bags_number_loaded) }}</strong>
+                                                                </v-card-text>
+                                                            </v-card>
+                                                        </v-menu>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-expansion-panel-content>
+                                        </v-expansion-panel>
+                                    </v-expansion-panels>
+                                </v-tab-item>
+                            </v-tabs-items>
                         </div>
                     </v-card-text>
                     <v-card-actions v-if="loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'">
@@ -919,7 +972,7 @@
                                 <v-col cols="12" lg="6">
                                     <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Receiver: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
                                     <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Photo</h4>
-                                    <v-card elevation="2" class="rounded-xl" height="300">
+                                    <v-card v-if="distributionReport.dialogs.detail.data.distribution_photo" elevation="2" class="rounded-xl" height="300">
                                         <v-img
                                             height="300"
                                             v-bind:src="`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.distribution_photo}`"
@@ -931,7 +984,7 @@
                                 </v-col>
                                 <v-col cols="12" lg="6" v-if="generalSettings.type.model == 'Petani'">
                                     <h4 class="text-center">Farmer Signature</h4>
-                                    <v-card elevation="2" class="rounded-xl" height="300">
+                                    <v-card v-if="distributionReport.dialogs.detail.data.farmer_signature" elevation="2" class="rounded-xl" height="300">
                                         <v-img
                                             height="300"
                                             v-bind:src="`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.farmer_signature}`"
@@ -2384,6 +2437,9 @@ export default {
                 show: false,
             },
             detailDialog: {
+                tabs: {
+                    open: 'all',
+                },
                 differentTotalBags: false,
                 inputs: {
                     disabledSave: false,
@@ -3201,6 +3257,7 @@ export default {
             this.loadingLine.detailDialog.inputs.scanner.alert.text = ``
             this.loadingLine.detailDialog.inputs.scanner.alert.color = ''
             this.loadingLine.detailDialog.differentTotalBags = false
+            this.loadingLine.detailDialog.tabs.open = 'all'
             
             let url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
             const params = {
