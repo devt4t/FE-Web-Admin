@@ -114,24 +114,18 @@
                 Survival Rates
               </div>
               <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                100%
+                <number
+                  ref="survivalRatesNumber"
+                  animationPaused
+                  :key="componentKeys.survivalRatesNumber"
+                  :from="0"
+                  :to="100"
+                  :duration="5"
+                  :delay="0"
+                  easing="Power1.easeOut"/>%
               </v-list-item-title>
               <v-list-item-subtitle></v-list-item-subtitle>
             </v-list-item-content>
-  
-            <!-- <v-list-item-avatar
-              tile
-              size="80"
-              color="info"
-              class="rounded-circle"
-            >
-              
-            <v-icon
-              style="font-size: 35px !important"
-              color="white"
-              >mdi-chart-pie
-            </v-icon>
-            </v-list-item-avatar> -->
             <img
               style="max-width: 113px;"            
               :src="require('@/assets/plant.gif')"
@@ -151,7 +145,16 @@
                 {{ data1.Judul }}
               </div>
               <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                {{ numberFormat(data1.Count) }}
+                <number
+                  ref="totalFarmerNumber"
+                  :key="componentKeys.totalFarmerNumber"
+                  :format="numberFormat"
+                  animationPaused
+                  :from="0"
+                  :to="data1.Count"
+                  :duration="5"
+                  :delay="0"
+                  easing="Power2.easeInOut"/>
               </v-list-item-title>
               <v-list-item-subtitle>NIK</v-list-item-subtitle>
             </v-list-item-content>
@@ -184,7 +187,16 @@
                 {{ data2.Judul }}
               </div>
               <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                {{ numberFormat(data2.Count) }}
+                <number
+                  ref="totalLandNumber"
+                  :key="componentKeys.totalLandNumber"
+                  :format="numberFormat"
+                  animationPaused
+                  :from="0"
+                  :to="data2.Count"
+                  :duration="5"
+                  :delay="0"
+                  easing="Power2.easeInOut"/>
               </v-list-item-title>
               <v-list-item-subtitle>Lahan</v-list-item-subtitle>
             </v-list-item-content>
@@ -217,7 +229,16 @@
                 {{ data3.Judul }}
               </div>
               <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                {{ numberFormat(data3.Count) }}
+                <number
+                  ref="totalTreeNumber"
+                  :key="componentKeys.totalTreeNumber"
+                  :format="numberFormat"
+                  animationPaused
+                  :from="0"
+                  :to="data3.Count"
+                  :duration="5"
+                  :delay="0"
+                  easing="Power2.easeInOut"/>
               </v-list-item-title>
               <v-list-item-subtitle>Pohon</v-list-item-subtitle>
             </v-list-item-content>
@@ -331,6 +352,12 @@ export default {
   data: () => ({
     isMorning() {
       return new Date().getHours() < 12 ? true : false;
+    },
+    componentKeys: {
+      survivalRatesNumber: 42342345,
+      totalFarmerNumber: 12335123,
+      totalLandNumber: 142,
+      totalTreeNumber: 5234,
     },
     greeting: "Morning",
     date: "01 December 2021",
@@ -523,6 +550,7 @@ export default {
           this.chartDataColom1 = response.data.data.result.listarraytotalkayu;
           this.chartDataColom2 = response.data.data.result.listarraytotalmpts;
           this.chartDataColom3 = response.data.data.result.listarraytotalcrops;
+          this.startNumberAnimation()
           // this.chartData = response.data.data.result.listarraysales;
           // this.profils = response.data.data.result.listvalcust;
         } else {
@@ -544,8 +572,22 @@ export default {
         this.$store.state.loadingOverlayText = null
       }
     },
+    async startNumberAnimation () {
+      this.componentKeys.survivalRatesNumber += 1
+      this.componentKeys.totalFarmerNumber += 1
+      this.componentKeys.totalLandNumber += 1
+      this.componentKeys.totalTreeNumber += 1
+      await setTimeout(() => {
+        this.$refs.survivalRatesNumber.play()
+        this.$refs.totalFarmerNumber.play()
+        this.$refs.totalLandNumber.play()
+        this.$refs.totalTreeNumber.play()
+      }, 100)
+    },
     numberFormat(num) {
-        return new Intl.NumberFormat('id-ID').format(num)
+        return new Intl.NumberFormat('id-ID', {
+          maximumFractionDigits: 0
+        }).format(num)
     },
   },
 };
