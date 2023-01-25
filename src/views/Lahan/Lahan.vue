@@ -5,6 +5,7 @@
       :items="itemsbr"
       divider=">"
       large
+      data-aos="fade-right"
     ></v-breadcrumbs>
     <div class="mx-9">
       <v-alert :value="alerttoken" color="red" elevation="24" type="error">
@@ -1639,6 +1640,7 @@
       </v-dialog>
     <!-- END: MODAL -->
     <v-data-table
+      data-aos="fade-up" data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       multi-sort

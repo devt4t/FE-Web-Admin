@@ -5,6 +5,7 @@
       :items="itemsbr"
       divider=">"
       large
+      data-aos="fade-right"
     ></v-breadcrumbs>
 
     <div class="mx-9">
@@ -1216,6 +1217,8 @@
 
     <!-- Main Table -->
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
       class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
       :headers="headers"
       :items="dataobject"

@@ -2,6 +2,7 @@
     <div>
         <!-- Breadcrumb -->
         <v-breadcrumbs
+          data-aos="fade-right"
           class="breadcrumbsmain"
           :items="[{
             text: 'Activities',
@@ -400,21 +401,16 @@
                             <p class="mt-2 text-center">{{ loadingLine.detailDialog.loadingText }}</p>
                         </div>
                         <div v-else-if="loadingLine.detailDialog.model">
+                            <!-- HOME View -->
                             <v-row class="py-2" v-if="loadingLine.detailDialog.tabs.open == 'all'">
                                 <v-col cols="12" md="6">
-                                    <v-card @click="loadingLine.detailDialog.tabs.open = 1" disabled color="green pa-5 rounded-xl text-center white--text">
-                                        <v-icon color="white" x-large>mdi-truck</v-icon>
-                                        <h3 class="mb-0 mt-1 font-weight-regular" large>Select Truck</h3>
+                                    <v-card @click="loadingLine.detailDialog.tabs.open = 1" disabled data-aos="zoom-in" color="green pa-5 rounded-xl text-center white--text">
+                                        <v-icon color="white" x-large>mdi-sprout</v-icon>
+                                        <h3 class="mb-0 mt-1 font-weight-regular" large>Distribution Details</h3>
                                     </v-card>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-card @click="loadingLine.detailDialog.tabs.open = 2" disabled color="orange pa-5 rounded-xl text-center white--text">
-                                        <v-icon color="white" x-large>mdi-card-account-details</v-icon>
-                                        <h3 class="mb-0 mt-1 font-weight-regular" large>Select Driver</h3>
-                                    </v-card>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-card @click="loadingLine.detailDialog.tabs.open = 3" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'grey' : 'blue'} pa-5 rounded-xl text-center white--text`">
+                                    <v-card @click="loadingLine.detailDialog.tabs.open = 2" data-aos="zoom-in" data-aos-delay="200" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'blue darken-2' : 'blue'} pa-5 rounded-xl text-center white--text`">
                                         <v-icon color="white" x-large>mdi-basket{{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : '' }}</v-icon>
                                         <h3 class="mb-0 mt-1 font-weight-regular" large>
                                             {{ 
@@ -425,6 +421,7 @@
                                     </v-card>
                                 </v-col>
                             </v-row>
+                            <!-- Tabs Header -->
                             <v-tabs
                                 v-else
                                 v-model="loadingLine.detailDialog.tabs.open"
@@ -433,28 +430,43 @@
                                 grow
                                 show-arrows
                                 color="green"
+                                data-aos="fade-down" data-aos-delay="0"
                             >
                                 <v-tab href="#all">
                                     Home
                                     <v-icon>mdi-view-dashboard</v-icon>
                                 </v-tab>
                                 <v-tab disabled>
-                                    Truck
-                                    <v-icon>mdi-truck</v-icon>
-                                </v-tab>
-                                <v-tab disabled>
-                                    Driver
-                                    <v-icon>mdi-card-account-details</v-icon>
+                                    Distribution Details
+                                    <v-icon>mdi-sprout</v-icon>
                                 </v-tab>
                                 <v-tab>
-                                    Bags
+                                    Scan Bags
                                     <v-icon>mdi-basket{{numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : ''}}</v-icon>
                                 </v-tab>
                             </v-tabs>
+                            <!-- Tabs Items -->
                             <v-tabs-items v-if="loadingLine.detailDialog.tabs.open != 'all'" v-model="loadingLine.detailDialog.tabs.open">
                                 <v-tab-item></v-tab-item>
-                                <v-tab-item></v-tab-item>
-                                <v-tab-item></v-tab-item>
+                                <v-tab-item class="pt-3">
+                                    <v-row data-aos="zoom-in">
+                                        <v-col cols="12">
+                                            <!-- Plat -->
+                                            <v-autocomplete
+                                                color="success"
+                                                item-color="success"
+                                                v-model="generalSettings.type.model"
+                                                :items="generalSettings.type.options"
+                                                outlined
+                                                dense
+                                                hide-details
+                                                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                                rounded
+                                                label="Plat Number"
+                                            ></v-autocomplete>
+                                        </v-col>
+                                    </v-row>
+                                </v-tab-item>
                                 <v-tab-item>
                                     <v-simple-table dense>
                                         <tbody>
@@ -556,7 +568,7 @@
                             </v-tabs-items>
                         </div>
                     </v-card-text>
-                    <v-card-actions v-if="loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'">
+                    <v-card-actions v-if="loadingLine.detailDialog.loading == false && loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'" data-aos="fade-up" data-aos-delay="600">
                         <v-divider class="mx-2"></v-divider>
                         <v-btn
                             color="green white--text"
@@ -581,7 +593,7 @@
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
                     </v-card-actions>
-                    <v-card-actions v-else-if="loadingLine.detailDialog.model && generalSettings.type.model == 'Umum'">
+                    <v-card-actions v-else-if="loadingLine.detailDialog.loading == false && loadingLine.detailDialog.model && generalSettings.type.model == 'Umum'" data-aos="fade-up" data-aos-delay="600">
                         <v-divider class="mx-2"></v-divider>
                         <v-btn
                             color="green white--text"
@@ -1212,7 +1224,7 @@
         <!-- MAIN Ditribution -->
         <v-container fluid>
             <!-- General Settings -->
-            <v-card rounded="xl" class="mb-2 d-flex align-center flex-lg-row flex-column py-2" >
+            <v-card rounded="xl" class="mb-2 d-flex align-center flex-lg-row flex-column py-2" data-aos="fade-up" data-aos-delay="200">
                 <v-divider class="mx-2"></v-divider>
                 <!-- Program Year -->
                 <v-select
@@ -1264,7 +1276,7 @@
                 <v-divider class="mx-2"></v-divider>
             </v-card>
             <!-- Expansions Panels -->
-            <v-expansion-panels multiple v-model="expansions.model">
+            <v-expansion-panels multiple v-model="expansions.model" data-aos="fade-up" data-aos-delay="400">
                 <!-- Calendar Section -->
                 <v-expansion-panel v-if="accessModul.calendar" class="rounded-xl">
                     <v-expansion-panel-header>

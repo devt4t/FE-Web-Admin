@@ -1,0 +1,14 @@
+[
+    {
+        "type": "small",
+        "capacity": "1500 - 1700"
+    },
+    {
+        "type": "medium",
+        "capacity": "2000 - 2500"
+    },
+    {
+        "type": "large",
+        "capacity": "4000 - 5000"
+    }
+]

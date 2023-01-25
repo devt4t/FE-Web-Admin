@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -13,7 +14,7 @@
       </v-alert>
     </div>
 
-    <v-card elevation="5" class="pt-1 pb-0 px-2 mx-3 mt-0 mb-3">
+    <v-card elevation="5" class="pt-1 pb-0 px-2 mx-3 mt-0 mb-3" data-aos="fade-up" data-aos-delay="200">
       <v-card-text class="px-1">
         <v-row>
           <v-col
@@ -93,6 +94,7 @@
     </v-card>
 
     <v-data-table
+      data-aos="fade-up" data-aos-delay="400"
       :headers="headers"
       :items="dataobject"
       :loading="loadtable"

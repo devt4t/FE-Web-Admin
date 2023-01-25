@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -8,6 +9,8 @@
     ></v-breadcrumbs>
 
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"
@@ -839,8 +842,15 @@ export default {
     this.initialize();
     this.getDesaAll();
     this.getTrees();
+    this.$store.state.maintenanceOverlay = true
     // localStorage.setItem("token", this.authtoken);
     // this.getMU();
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
+
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
   methods: {
     async initialize() {

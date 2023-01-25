@@ -168,16 +168,18 @@
             indeterminate
             color="white"
             size="64"
+            data-aos="zoom-in"
+            data-aos-duration="1000"
         ></v-progress-circular>
-        <p class="mt-2 mb-0" v-if="$store.state.loadingOverlayText" v-html="$store.state.loadingOverlayText"></p>
+        <p class="mt-2 mb-0" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="800" v-if="$store.state.loadingOverlayText" v-html="$store.state.loadingOverlayText"></p>
       </div>
     </v-overlay>
     
     <!-- Maintenance Overlay -->
     <v-overlay :value="$store.state.maintenanceOverlay">
       <div class="d-flex flex-column align-center position-relative">
-        <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="">
-        <h4 class="white--text mt-3 position-absolute" style="position: absolute;bottom: 40px;">GEKO Maintenance...
+        <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="" data-aos="zoom-in">
+        <h4 class="white--text mt-3 position-absolute" style="position: absolute;bottom: 40px;" data-aos="zoom-in" data-aos-delay="200">GEKO Maintenance...
           <v-progress-circular
               indeterminate
               color="white"

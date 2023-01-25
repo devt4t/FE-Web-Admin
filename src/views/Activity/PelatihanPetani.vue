@@ -2,6 +2,7 @@
   <div>
     <!-- breadcrumbs -->
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -1208,6 +1209,8 @@
 
     <!-- main table -->
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"

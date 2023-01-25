@@ -2,25 +2,7 @@
   <v-container class="mt-5 pl-3 pl-lg-6" fluid>
     <v-row style="margin-top: -15px">
       <v-col cols="12" md="12">
-        <!-- <v-card>
-          <v-alert show dismissible text color="#444941" class="fontall">
-            Login Berhasil! Selamat datang di <strong>HRIS</strong>
-          </v-alert>
-        </v-card> -->
-        <!-- <div>
-          <v-alert
-            type="success"
-            border="left"
-            color="#4199bb"
-            dark
-            class="fontall"
-            dismissible
-          >
-            Login Berhasil! Selamat datang di Admin Management System
-          </v-alert>
-        </div> -->
-
-        <v-card rounded="xl">
+        <v-card data-aos="fade-down" rounded="xl" >
           <v-card-title class="fontall" v-if="isMorning()">
             Good Morning, {{ fullnameadmin }}</v-card-title
           >
@@ -105,6 +87,8 @@
       <!-- TOGGLE BUTTON -->
       <v-col cols="12" md="3" class="">
         <v-card
+          data-aos="fade-down"
+          data-aos-delay="300"
           class="rounded-xl shadow-lg overflow-hidden"
           @click="() => {}"
         >
@@ -127,6 +111,8 @@
               <v-list-item-subtitle></v-list-item-subtitle>
             </v-list-item-content>
             <img
+              data-aos="zoom-in"
+              data-aos-delay="700"
               style="max-width: 113px;"            
               :src="require('@/assets/plant.gif')"
             />
@@ -136,6 +122,8 @@
       <!-- Total Petani -->
       <v-col cols="12" md="3" class="">
         <v-card
+          data-aos="fade-down"
+          data-aos-delay="400"
           class="rounded-xl shadow-lg"
           @click="$router.push('Farmer')"
         >
@@ -160,6 +148,8 @@
             </v-list-item-content>
   
             <v-list-item-avatar
+              data-aos="zoom-in"
+              data-aos-delay="800"
               tile
               size="80"
               color="grey darken-3"
@@ -178,6 +168,8 @@
       <!-- Total Lahan -->
       <v-col cols="12" md="3" class="">
         <v-card
+          data-aos="fade-down"
+          data-aos-delay="500"
           @click="$router.push('Lahan')"
           class="rounded-xl shadow-lg"
         >
@@ -202,6 +194,8 @@
             </v-list-item-content>
   
             <v-list-item-avatar
+              data-aos="zoom-in"
+              data-aos-delay="900"
               tile
               size="80"
               color="brown"
@@ -222,6 +216,8 @@
         <v-card
           class="rounded-xl shadow-lg"
           max-width="344"
+          data-aos="fade-down"
+          data-aos-delay="600"
         >
           <v-list-item three-line>
             <v-list-item-content class="px-3">
@@ -244,6 +240,8 @@
             </v-list-item-content>
   
             <v-list-item-avatar
+              data-aos="zoom-in"
+              data-aos-delay="1000"
               tile
               size="80"
               color="green darken-2"
@@ -261,9 +259,11 @@
       </v-col>
     </v-row>
 
-    <v-row dense class="mt-3">
+    <v-row dense class="mt-3" v-if="SR.show === false">
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
+        <v-card 
+          data-aos="zoom-in"
+          data-aos-delay="800" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -273,7 +273,9 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
+        <v-card 
+          data-aos="zoom-in"
+          data-aos-delay="800" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -284,7 +286,9 @@
         </v-card>
       </v-col>
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
+        <v-card
+          data-aos="zoom-in"
+          data-aos-delay="900" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -294,7 +298,9 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
+        <v-card
+          data-aos="zoom-in"
+          data-aos-delay="900" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -305,7 +311,9 @@
         </v-card>
       </v-col>
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
+        <v-card
+          data-aos="zoom-in"
+          data-aos-delay="1000" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -315,7 +323,9 @@
           </v-card-text>
         </v-card>
 
-        <v-card class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
+        <v-card
+          data-aos="zoom-in"
+          data-aos-delay="1000" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -507,6 +517,9 @@ export default {
         model: 'Sosialisasi Tanam',
         options: ['Lahan', 'Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi (Loaded)', 'Distribusi (Received)', 'Monitoring 1' ]
       },
+    },
+    SR: {
+      show: false
     }
   }),
   mounted() {

@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -1866,6 +1867,8 @@
     <!-- END: MODAL -->
 
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
       :headers="generalSettings.landProgram.model == 'Petani' ? headers : headers2"
       :items="dataobject"
       :search="search"

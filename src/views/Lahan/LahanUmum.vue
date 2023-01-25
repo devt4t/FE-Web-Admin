@@ -2,6 +2,7 @@
     <div>
         <!-- BreadCrumbs -->
         <v-breadcrumbs
+            data-aos="fade-right"
             class="breadcrumbsmain"
             :items="breadcrumbs"
             divider=">"
@@ -1151,6 +1152,8 @@
         <!-- END: DIALOG MODAL -->
         <!-- Main Table -->
         <v-data-table
+            data-aos="fade-up"
+            data-aos-delay="200"
             multi-sort
             class="rounded-xl elevation-6 mx-3 pa-1 mb-5"
             :headers="tables.lahan.headers"
@@ -1267,6 +1270,17 @@
                                     </v-btn>
                                 </template>
                                 <span>Unverif Lahan Umum</span>
+                            </v-tooltip>
+                        </v-list-item>
+                        <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER')">
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('delete', item)">
+                                        <v-icon class="mr-1">mdi-delete</v-icon>
+                                        Delete
+                                    </v-btn>
+                                </template>
+                                <span>Delete Lahan Umum</span>
                             </v-tooltip>
                         </v-list-item>
                     </v-list>
@@ -1603,7 +1617,18 @@ export default {
         this.inputs.programYear.items = this.$store.state.programYear.options
         this.tables.lahan.programYear.model = this.$store.state.programYear.model
         this.tables.lahan.programYear.items = this.$store.state.programYear.options
+
+        if (this.User.role_group !== 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+            this.$store.state.maintenanceOverlay = true
+        }
+        
         await this.getGeneralLandData()
+    },
+    destroyed() {
+        this.$store.state.maintenanceOverlay = false
+
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
     },
     methods: {
         async editLahanUmum(lahan_no) {
@@ -1995,6 +2020,11 @@ export default {
             } else if (type == 'existing_mou_no') {
                 this.confirmation.title = `Do u want to PROCEED this existing MOU NO?`
                 this.confirmation.okText = 'Ok, Proceed'
+                this.confirmation.show = true
+                this.confirmation.model = data
+            } else if (type == 'delete') {
+                this.confirmation.title = `Do u want to DELETE this LAND?`
+                this.confirmation.okText = 'Ok, Delete'
                 this.confirmation.show = true
                 this.confirmation.model = data
             }

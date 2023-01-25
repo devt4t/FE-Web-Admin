@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -1718,6 +1719,8 @@
     </v-dialog>
     
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
       :headers="land_program.model == 'Petani' ? headers : headers2"
       :items="dataobject"
       :search="search"
@@ -2072,7 +2075,7 @@ export default {
       }
     },
     land_program: {
-        model: 'Umum',
+        model: 'Petani',
         options: ['Petani', 'Umum'],
         disabled: false,
     },
@@ -2343,7 +2346,10 @@ export default {
       }
     },
     'land_program.model': {
-      async handler() {
+      async handler(val) {
+        if (val == 'Umum' && this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+            this.$store.state.maintenanceOverlay = true
+        }
         this.$store.state.loadingOverlayText = 'Getting planting hole datas...' 
         this.$store.state.loadingOverlay = true
         await this.initialize()
@@ -2367,6 +2373,9 @@ export default {
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
+
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
 
   methods: {

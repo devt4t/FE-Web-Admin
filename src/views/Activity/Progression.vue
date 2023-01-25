@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="[{
         text: 'Activities',
@@ -50,7 +51,7 @@
       </v-dialog>
     <!-- END: MODAL -->
 
-    <v-expansion-panels v-model="expansions.model" class="mb-6 px-3" multiple>
+    <v-expansion-panels v-model="expansions.model" class="mb-6 px-3" multiple data-aos="fade-up" data-aos-delay="200">
       <!-- Filters Panel -->
       <v-expansion-panel class="rounded-xl ">
         <v-expansion-panel-header>
