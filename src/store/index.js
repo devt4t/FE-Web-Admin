@@ -15,6 +15,7 @@ export default new Vuex.Store({
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     },
+    apiUrl: localStorage.getItem('BaseUrlGet'),
     lightbox: {
       imgs: '',
       index: 0,
@@ -41,6 +42,14 @@ export default new Vuex.Store({
         JustLoadingLineModul: JustLoadingLineModul
       }
     },
+  },
+  getters: {
+    getApiUrl: (state) => (url) => {
+      return state.apiUrl + url
+    },
+    capitalizeFirstLetter: () => (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1)
+    }
   },
   mutations: {
   },

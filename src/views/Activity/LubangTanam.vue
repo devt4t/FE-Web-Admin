@@ -1141,7 +1141,7 @@
         </v-card-text>
         <v-card-actions>
           <v-divider class="mr-2"></v-divider>
-          <v-btn color="green white--text" @click="dialogAddPlantingHoleLahanUmum.confirm = true" rounded class="px-3" :disabled="(dialogAddPlantingHoleLahanUmum.inputs.hole.model < dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment) || dialogAddPlantingHoleLahanUmum.inputs.hole.model < 1 || !dialogAddPlantingHoleLahanUmum.inputs.mou_no.model || !dialogAddPlantingHoleLahanUmum.inputs.lahan_no || dialogAddPlantingHoleLahanUmum.inputs.adjustment.items.length == 0 || (dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled == false && (!dialogAddPlantingHoleLahanUmum.inputs.photo1.model || !dialogAddPlantingHoleLahanUmum.inputs.photo2.model))">
+          <v-btn color="green white--text" @click="dialogAddPlantingHoleLahanUmum.confirm = true" rounded class="px-3" :disabled="(dialogAddPlantingHoleLahanUmum.inputs.hole.model < dialogAddPlantingHoleLahanUmum.inputs.adjustment.totalAdjustment) || dialogAddPlantingHoleLahanUmum.inputs.hole.model < 1 || (parseInt(dialogAddPlantingHoleLahanUmum.inputs.hole_standard.model) > parseInt(dialogAddPlantingHoleLahanUmum.inputs.hole.model)) || !dialogAddPlantingHoleLahanUmum.inputs.mou_no.model || !dialogAddPlantingHoleLahanUmum.inputs.lahan_no || dialogAddPlantingHoleLahanUmum.inputs.adjustment.items.length == 0 || (dialogAddPlantingHoleLahanUmum.inputs.mou_no.disabled == false && (!dialogAddPlantingHoleLahanUmum.inputs.photo1.model || !dialogAddPlantingHoleLahanUmum.inputs.photo2.model))">
             <v-icon>mdi-content-save-check</v-icon>
             Save
           </v-btn>
@@ -1809,6 +1809,7 @@
             hide-details
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
+            :disabled="loadtable"
             label="Land Program"
             class="mx-auto mx-lg-3 mr-lg-0"
             style="max-width: 200px"
@@ -2075,7 +2076,7 @@ export default {
       }
     },
     land_program: {
-        model: 'Petani',
+        model: 'Umum',
         options: ['Petani', 'Umum'],
         disabled: false,
     },
@@ -2347,16 +2348,16 @@ export default {
     },
     'land_program.model': {
       async handler(val) {
-        if (val == 'Umum' && this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
-            this.$store.state.maintenanceOverlay = true
-        }
+        // if (val == 'Umum' && this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+        //     this.$store.state.maintenanceOverlay = true
+        // }
         this.$store.state.loadingOverlayText = 'Getting planting hole datas...' 
         this.$store.state.loadingOverlay = true
         await this.initialize()
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null 
       }
-    }
+    },
   },
   async mounted() {
     this.$store.state.loadingOverlayText = 'Getting planting hole datas...' 
@@ -3010,13 +3011,17 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         })
-        console.log(response.data.data.result)
+        // console.log(response.data.data.result)
+        this.textsnackbar = 'Verivication Success!'
+        this.colorsnackbar = 'green'
         if (response.data.data.result == "success") {
           this.initialize();
         } else {
           this.alerttoken = true;
         }
       } catch (error) {
+        this.textsnackbar = 'Verivication Failed!'
+        this.colorsnackbar = 'red'
         console.error(error.response);
         if (error.response.status == 401) {
           this.alerttoken = true;
@@ -3026,6 +3031,7 @@ export default {
           this.$router.push("/");
         }
       } finally {
+        this.snackbar = true
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
       }

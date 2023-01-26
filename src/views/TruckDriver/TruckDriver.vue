@@ -23,6 +23,8 @@
                 <v-expansion-panel-content>
                     <v-data-table
                         :headers="tables.truck.headers"
+                        :loading="tables.truck.loading"
+                        :items="tables.truck.items"
                         class=""
                     >
                         <template v-slot:top>
@@ -72,6 +74,9 @@
                 <v-expansion-panel-content>
                     <v-data-table
                         :headers="tables.driver.headers"
+                        :loading="tables.driver.loading"
+                        :items="tables.driver.items"
+                        :search="tables.driver.search"
                         class=""
                     >
                         <template v-slot:top>
@@ -119,6 +124,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import DriverFormModal from './components/DriverFormModal.vue';
 import TruckFormModal from './components/TruckFormModal.vue'
 
@@ -153,16 +159,23 @@ export default {
         tables: {
             truck: {
                 programYear: "2022",
+                items: [],
                 headers: [
                     { text: "Truck ID", value: "truck_id" },
                 ],
+                loading: false,
                 search: ""
             },
             driver: {
                 programYear: "2022",
+                items: [],
                 headers: [
-                    { text: "Driver ID", value: "driver_id" },
+                    { text: "NIK / Licence", value: "nik" },
+                    { text: "Name", value: "name" },
+                    { text: "Address", value: "address" },
+                    { text: "Action", value: "action", align: 'right' },
                 ],
+                loading: false,
                 search: ""
             },
         }
@@ -174,14 +187,36 @@ export default {
             }
         }
     },
+    async mounted() {
+        await this.getTableData('truck')
+        await this.getTableData('driver')
+    },
     methods: {
+        async getTableData(type) {
+            try {
+                this.tables[type].loading = true
+                const res = await axios.get(`${this.$store.getters.getApiUrl(`Get${this.$store.getters.capitalizeFirstLetter(type)}`)}`, this.$store.state.apiConfig)
+                this.tables[type].items = res.data.data.result
+            } catch(err) {
+                console.log(err)
+                if (err.response) this.forceLogout(err.response)
+            } finally {
+                this.tables[type].loading = false
+            }
+        },
         // UTILITIES
         closeModals(data) {
             if (data.type && data.val == false) {
                 this.modals[data.type].show = false
                 this.modals[data.type].id = null
             }
-        }
+        },
+        forceLogout(response) {
+            if (response.status == 401) {
+                localStorage.removeItem("token")
+                this.$router.push("/")
+            }
+        },
     },
 }
 </script>

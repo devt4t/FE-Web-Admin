@@ -834,7 +834,7 @@ export default {
     timeoutsnackbar: 2000,
     colorsnackbar: null,
   }),
-  created() {
+  mounted() {
     this.authtoken = localStorage.getItem("token");
     this.User = JSON.parse(localStorage.getItem("User"));
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");

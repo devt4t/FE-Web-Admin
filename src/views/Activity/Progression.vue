@@ -912,6 +912,9 @@
             <template v-slot:item.total_lahan="{item}">
               <strong>{{ item.total_lahan }}</strong> Lahan
             </template>
+            <template v-slot:item.total_sostam="{item}">
+              <strong>{{ item.total_sostam }}</strong> Sostam
+            </template>
             <template v-slot:item.total_penlub="{item}">
               <strong>{{ item.total_penlub }}</strong> Penlub
             </template>
@@ -1433,8 +1436,7 @@ export default {
       penlub: {
         headers: [
           { text: "Field Facilitator", value: "ff" },
-          { text: "Total Petani", value: "total_petani", align: 'center' },
-          { text: "Total Lahan", value: "total_lahan", align: 'center' },
+          { text: "Total Sostam", value: "total_sostam", align: 'center' },
           { text: "Penlub", value: "total_penlub", align: 'center' },
           { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
           { text: "Lubang", value: "total_lubang", align: 'center' },

@@ -21,7 +21,7 @@
             <v-card>
                 <v-card-title class="mb-1 headermodalstyle rounded-xl">
                     <span class=""><v-btn class="white dark--text mr-1" fab x-small><v-icon>mdi-list-box</v-icon></v-btn> {{ dialogs.createData.title }}</span>
-                    <v-icon color="red lighten-1" class="ml-auto" @click="dialogActions('createData', false)">mdi-close-circle</v-icon>
+                    <v-icon color="red lighten-1" class="ml-auto" @click="closeActions('dialogs', 'createData')">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text class="pa-0">
                     <!-- Snackbar -->
@@ -1275,7 +1275,7 @@
                         <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER')">
                             <v-tooltip top>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn v-bind="attrs" block v-on="on" rounded color="red white--text" @click="confirmationShow('delete', item)">
+                                    <v-btn v-bind="attrs" block v-on="on" :disabled="item.is_verified > 0" rounded color="red white--text" @click="confirmationShow('delete', item)">
                                         <v-icon class="mr-1">mdi-delete</v-icon>
                                         Delete
                                     </v-btn>
@@ -1618,9 +1618,9 @@ export default {
         this.tables.lahan.programYear.model = this.$store.state.programYear.model
         this.tables.lahan.programYear.items = this.$store.state.programYear.options
 
-        if (this.User.role_group !== 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
-            this.$store.state.maintenanceOverlay = true
-        }
+        // if (this.User.role_group !== 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+        //     this.$store.state.maintenanceOverlay = true
+        // }
         
         await this.getGeneralLandData()
     },
@@ -1641,7 +1641,7 @@ export default {
                 }
             }).then(res => {
                 const data = res.data.data.result
-                console.log(data)
+                // console.log(data)
                 this.dialogActions('updateData', true, data)
                 
             }).catch(err => {
@@ -1895,6 +1895,27 @@ export default {
                 this.$store.state.loadingOverlayText = null
             })
         },
+        async deleteLahanUmum(lahan_no) {
+            this.$store.state.loadingOverlayText = 'Deleting lahan umum...'
+            let url = `${this.apiConfig.baseUrl}DestroyLahanUmum`
+            this.$store.state.loadingOverlay = true
+            await axios.post(url, {
+                lahan_no: lahan_no
+            }, this.$store.state.apiConfig).then(res => {
+                this.snackbar.text = `Lahan umum DELETED!`
+                this.snackbar.color = 'green'
+                this.getGeneralLandData()
+            }).catch(err => {
+                this.snackbar.text = `Failed to delete lahan umum!😱`
+                this.snackbar.color = 'red'
+                console.error(err)
+                this.forceLogout(err.response)
+            }).finally(() => {
+                this.snackbar.show = true
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            })
+        },
         // Utilities
         async checkMoUNoExisting(data) {
             const url = `${this.apiConfig.baseUrl}GetDetailLahanUmumMOU?mou_no=${data}`
@@ -1976,8 +1997,8 @@ export default {
             }
         },
         async confirmationOk(type) {
-            console.log(type)
-            console.log(this.confirmation.model)
+            // console.log(type)
+            // console.log(this.confirmation.model)
             this.confirmation.show = false
             if (type == 'verif') {
                 await this.updateVerifiedStatus(this.confirmation.model.lahan_no, 1)
@@ -1998,7 +2019,9 @@ export default {
                 this.inputs.village.model = this.confirmation.model.village
                 this.inputs.address.model = this.confirmation.model.address
                 this.inputs.dateDistribution.model = this.confirmation.model.distribution_date
-            } 
+            } else if (type == 'delete') {
+                await this.deleteLahanUmum(this.confirmation.model.lahanNo)
+            }
         },
         confirmationShow(type, data) {
             this.confirmation.type = type
@@ -2013,7 +2036,7 @@ export default {
                 this.confirmation.title = `Do u want to UNVERIF this data? This can't be undone!`
                 this.confirmation.okText = 'Unverif'
                 this.confirmation.show = true
-                console.log(data)
+                // console.log(data)
                 this.confirmation.model = {
                     lahan_no: data.lahanNo || data.lahan_no || '' 
                 }
@@ -2252,16 +2275,20 @@ export default {
             this.inputs.dateDistribution.model = data.distribution_date
             // photos
             if (data.photo1 && data.photo1 != '-') this.inputs.photos.photo1.preview = `${this.apiConfig.imageUrl}${data.photo1}`
+            else this.inputs.photos.photo1.preview = ''
             if (data.photo2 && data.photo2 != '-') this.inputs.photos.photo2.preview = `${this.apiConfig.imageUrl}${data.photo2}`
+            else this.inputs.photos.photo2.preview = ''
             if (data.photo3 && data.photo3 != '-') this.inputs.photos.photo3.preview = `${this.apiConfig.imageUrl}${data.photo3}`
+            else this.inputs.photos.photo3.preview = ''
             if (data.photo_doc && data.photo_doc != '-') this.inputs.photos.photo4.preview = `${this.apiConfig.imageUrl}${data.photo_doc}`
+            else this.inputs.photos.photo4.preview = ''
             // forward step
             this.dialogs.createData.step = 1
         },
         async setDummyData() {
             // main data
             this.inputs.mou.model = "TESTGENERALLAND001"
-            this.checkMoUNoExisting(this.inputs.mou.model)
+            await this.checkMoUNoExisting(this.inputs.mou.model)
             this.inputs.employee.model = '1110'
             this.inputs.pic.model = 'Qwerty'
             this.inputs.picKtp.model = '3322022107010001'

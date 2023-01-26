@@ -50,11 +50,11 @@
                         <v-divider class="mx-2"></v-divider>
                     </div>
                     <v-row>
-                        <!-- NIK / Licence -->
                         <v-col cols="12" sm="12" md="12" lg="6">
+                            <!-- NIK / Licence -->
                             <v-text-field
                                 dense
-                                :class="`${inputs.nik.model ? (inputs.nik.exist ? 'red--text' : 'green-text') : ''}`"   
+                                :class="`${inputs.nik.model ? (inputs.nik.exist ? 'red--text' : 'green-text') : ''} mb-3`"   
                                 :color="`success`"
                                 hide-details
                                 :label="inputs.nik.label"
@@ -69,29 +69,54 @@
                                 @change="checkNikNoExisting"
                                 @keyup="checkNikNoExisting(inputs.nik.model)"
                             ></v-text-field>
-                        </v-col>
-                        <!-- Name -->
-                        <v-col cols="12" sm="12" md="12" lg="6">
-                            <v-text-field
+                            <!-- Upload Photo -->
+                            <v-file-input
                                 dense
-                                :class="`${inputs.nik.model ? (inputs.nik.exist ? 'red--text' : 'green-text') : ''}`"   
-                                :color="`success`"
-                                hide-details
-                                :label="inputs.nik.label"
+                                color="success"
+                                item-color="success"
                                 outlined
                                 rounded
-                                :rules="[(v) => v.length > 2 || 'Field is required']"
-                                v-model="inputs.nik.model"
-                            ></v-text-field>
+                                hide-details
+                                accept="image/png, image/jpeg, image/bmp"
+                                placeholder="Image File (*max 6mb)"
+                                prepend-icon="mdi-camera"
+                                label="Photo KTP / Licence (*max 6mb)"
+                                v-on:change="photoFileChanged"
+                                :rules="[(v) => !!v || 'Field is required']"
+                            ></v-file-input>
+                            <v-card elevation="2" class="rounded-xl" height="300" v-if="inputs.photo.preview && inputs.photo.preview !== ''">
+                                <v-img
+                                    height="300"
+                                    v-bind:src="inputs.photo.preview"
+                                    class="my-2 mb-4 rounded-xl cursor-pointer"
+                                    id="photo1"
+                                    @click="showLightbox(inputs.photo.preview)"
+                                ></v-img
+                            ></v-card>
                         </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-switch
-                                v-model="inputs.isActive"
-                                :label="`Status ${inputs.isActive ? 'Active' : 'Nonactive'}`"
-                                color="green"
-                            ></v-switch>
+                        <v-col cols="12" sm="12" md="12" lg="6">
+                            <!-- Name -->
+                            <v-text-field
+                                dense
+                                :color="`success`"
+                                class="mb-3"
+                                hide-details
+                                :label="inputs.name.label"
+                                outlined
+                                rounded
+                                :rules="[(v) => !!v || 'Field is required']"
+                                v-model="inputs.name.model"
+                            ></v-text-field>
+                            <!-- Address -->
+                            <v-textarea
+                                :color="`success`"
+                                hide-details
+                                :label="inputs.address.label"
+                                outlined
+                                rounded
+                                :rules="[(v) => !!v || 'Field is required']"
+                                v-model="inputs.address.model"
+                            ></v-textarea>
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -122,11 +147,23 @@ export default {
     },
     data: () => ({
         inputs: {
+            address: {
+                label: 'Address',
+                model: '',
+            },
+            name: {
+                label: 'Name',
+                model: '',
+            },
             nik: {
                 exist: false,
                 label: 'NIK / Licence Number',
                 loading: false,
                 model: '',
+            },
+            photo: {
+                preview: '',
+                model: null
             },
         },
         loading: {
@@ -164,6 +201,35 @@ export default {
         // UTILITIES
         dateFormat(date, format) {
             return moment(date).format(format)
+        },
+        forceLogout(response) {
+            if (response.status == 401) {
+                localStorage.removeItem("token")
+                this.$router.push("/")
+            }
+        },
+        photoFileChanged (event) {
+            if (event) {
+                let fileSize = event.size / 1000000
+                console.log(fileSize)
+                if (fileSize < 6) {
+                    this.inputs.photo.model = event
+                    this.inputs.photo.preview = URL.createObjectURL(event)
+                } else {
+                    alert(`Please change your photo file, it's too big. Max 6mb.`)
+                }
+            } else {
+                this.inputs.photo.model = null
+                this.inputs.photo.preview = ""
+            }
+        },
+        showLightbox(imgs, index) {
+            if (imgs) this.$store.state.lightbox.imgs = imgs
+            
+            if (index) this.$store.state.lightbox.index = index
+            else this.$store.state.lightbox.index = 0
+
+            this.$store.state.lightbox.show = true
         },
     },
 }
