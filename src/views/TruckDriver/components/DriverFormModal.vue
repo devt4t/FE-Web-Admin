@@ -73,9 +73,9 @@
                                     rounded
                                     :rules="[(v) => v.length == 16 || 'Field is required']"
                                     v-model="inputs.nik.model"
-                                    :disabled="id"
+                                    :disabled="id ? true : false"
                                 ></v-text-field>
-                                <v-btn small rounded class="ml-2 mt-2" color="info" @click="checkNikNoExisting(inputs.nik.model)" :loading="checkNik.loading">Check</v-btn>
+                                <v-btn v-if="!id" small rounded class="ml-2 mt-2" color="info" @click="checkNikNoExisting(inputs.nik.model)" :loading="checkNik.loading">Check</v-btn>
                             </v-row>
                         </v-col>
                         <v-col cols="12" sm="12" md="12" lg="6">
@@ -139,7 +139,7 @@
                         content-class="rounded-xl"
                     >
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" color="green white--text" rounded class="px-3" small :disabled="checkNik.loading || !checkNik.checked || inputs.nik.exist || !inputs.name.model"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save</v-btn>
+                            <v-btn v-bind="attrs" v-on="on" color="green white--text" rounded class="px-3" small :disabled="!id && (checkNik.loading || !checkNik.checked || inputs.nik.exist || !inputs.name.model)"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save</v-btn>
                         </template>
                         <v-card>
                             <v-card-title class="text-h5">
@@ -164,7 +164,7 @@
                                 <v-btn
                                     color="green white--text pr-3"
                                     rounded
-                                    @click="save()"
+                                    @click="save(id)"
                                 >
                                     <v-icon class="mr-1">mdi-check-circle</v-icon>
                                     Ok, Save
@@ -265,10 +265,17 @@ export default {
     },
     methods: {
         async getDetailData(id) {
-            this.loading.show = true
-            setTimeout(() => {
+            try {
+                this.loading.show = true
+                const res = await axios.get(`${this.$store.getters.getApiUrl('GetDetailDriver')}?nik=${id}`, this.$store.state.apiConfig)
+                await this.manageData('set', res.data.data.result)
+            } catch (err) {
+                if (err.response != undefined) {
+                    this.forceLogout(err.response)
+                } else console.log(err)
+            } finally {
                 this.loading.show = false
-            }, 2000);
+            }
         },
         async checkNikNoExisting(val) {
             this.inputs.nik.exist = false
@@ -288,7 +295,7 @@ export default {
                     this.checkNik.loading = false
                 })
         },
-        async save() {
+        async save(id = null) {
             try {
                 this.inputs.nik.exist = false
                 this.dialog = false
@@ -302,14 +309,16 @@ export default {
                     if (value.model) sendData[key] = value.model
                 }
                 if (sendData.photo) sendData.photo = await this.uploadPhotos('ktp-licence', sendData.photo, 'driver-ktp_licence')
-                await axios.post(`${this.$store.getters.getApiUrl('AddDriver')}`, sendData, this.$store.state.apiConfig)
+                let type = 'AddDriver'
+                if (id) type = 'UpdateDriver'
+                await axios.post(`${this.$store.getters.getApiUrl(type)}`, sendData, this.$store.state.apiConfig)
                 await this.$emit('snackbar', {color: 'green', text: 'Success saving driver data!'})
                 await this.$emit('refreshTable')
                 this.manageData('reset')
             } catch (err) {
                 await this.$emit('snackbar', {color: 'red', text: err})
                 if (err.response != undefined) {
-                    console.log(err.response.data.data.result)
+                    // console.log(err.response.data.data.result)
                     const message = err.response.data.data.result
                     if (message == 'The nik has already been taken.') {
                         this.$refs['nikInput'].focus()
@@ -318,7 +327,7 @@ export default {
                     }
 
                     this.forceLogout(err.response)
-                } else console.error(err)
+                } else console.log(err)
             } finally {
                 this.$store.state.loadingOverlay = false
                 this.$store.state.loadingOverlayText = null
@@ -368,19 +377,24 @@ export default {
                 this.inputs.photo.preview = ""
             }
         },
-        manageData(type) {
+        async manageData(type, data = null) {
+            this.inputs.program_year.model = this.$store.state.programYear.model
             if (type == 'dummy') {
-                this.inputs.program_year.model = this.$store.state.programYear.model
                 this.inputs.nik.model = 3322202210701001
                 this.inputs.name.model = 'Melvin'
                 this.inputs.address.model = 'Jl. Sanggung Bar. No.11, RT.006/RW.002, Jatingaleh, Kec. Candisari, Kota Semarang, Jawa Tengah 50254'
             } else if (type == 'reset') {
-                this.inputs.program_year.model = this.$store.state.programYear.model
                 this.inputs.nik.model = ''
                 this.inputs.name.model = ''
                 this.inputs.address.model = ''
                 this.inputs.photo.model = ''
                 this.inputs.photo.preview = ''
+            } else if (type == 'set' && data) {
+                this.inputs.nik.model = data.nik
+                this.inputs.name.model = data.name
+                this.inputs.address.model = data.address
+                this.inputs.photo.model = data.photo
+                if (data.photo) this.inputs.photo.preview = this.$store.state.apiUrlImage + data.photo
             }
         },
         showLightbox(imgs, index) {
@@ -406,7 +420,7 @@ export default {
             }).catch(err => {
                 console.error(err)
             })
-            return responseName
+            return 'drivers_trucks/' + responseName
         }
     },
 }

@@ -146,7 +146,7 @@
                         </template>
                         <!-- Actions -->
                         <template v-slot:item.action="{item}">
-                            <v-btn :disabled="true" rounded small color="orange" class="white--text pl-1" @click="modals.driver.id = item.plat_no;modals.driver.show = true;"><v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit</v-btn>
+                            <v-btn rounded small color="orange" class="white--text pl-1" @click="modals.driver.id = item.nik;modals.driver.show = true;"><v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit</v-btn>
                         </template>
                     </v-data-table>
                 </v-expansion-panel-content>
