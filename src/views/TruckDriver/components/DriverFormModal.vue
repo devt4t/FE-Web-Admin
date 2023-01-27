@@ -34,7 +34,7 @@
                                 item-text="name"
                                 item-value="nik"
                                 dense
-                                v-model="inputs.programYear"
+                                v-model="inputs.program_year.model"
                                 :items="$store.state.programYear.options"
                                 :disabled="true"
                                 :label="'Program Year'"
@@ -50,25 +50,35 @@
                         <v-divider class="mx-2"></v-divider>
                     </div>
                     <v-row>
+                        <v-col cols="12" sm="12" md="12">
+                            <v-alert :value="inputs.nik.exist" type="error" class="rounded-xl" dense dismissible transition="scale-transition">
+                                The nik has already been taken.
+                            </v-alert>
+                            <v-alert v-if="inputs.nik.model && inputs.nik.exist == false && checkNik.loading == false && checkNik.checked == true" type="success" class="rounded-xl" dense dismissible data-aos="zoom-in" data-aos-duration="100">
+                                The nik is available.
+                            </v-alert>
+                            <v-row class="ma-0 align-center">
+                                <!-- NIK / Licence -->
+                                <v-text-field
+                                    ref="nikInput"
+                                    dense
+                                    :class="`${inputs.nik.model ? (inputs.nik.exist ? 'red--text' : 'green-text') : ''} mt-2`"   
+                                    :color="`success`"
+                                    hide-details
+                                    :label="inputs.nik.label"
+                                    :loading="inputs.nik.loading"
+                                    :no-data-text="inputs.nik.loading ? 'Loading...' : 'No Data'"
+                                    outlined
+                                    :append-icon="inputs.nik.exist ? '' : (inputs.nik.model ? '' : '')"
+                                    rounded
+                                    :rules="[(v) => v.length == 16 || 'Field is required']"
+                                    v-model="inputs.nik.model"
+                                    :disabled="id"
+                                ></v-text-field>
+                                <v-btn small rounded class="ml-2 mt-2" color="info" @click="checkNikNoExisting(inputs.nik.model)" :loading="checkNik.loading">Check</v-btn>
+                            </v-row>
+                        </v-col>
                         <v-col cols="12" sm="12" md="12" lg="6">
-                            <!-- NIK / Licence -->
-                            <v-text-field
-                                dense
-                                :class="`${inputs.nik.model ? (inputs.nik.exist ? 'red--text' : 'green-text') : ''} mb-3`"   
-                                :color="`success`"
-                                hide-details
-                                :label="inputs.nik.label"
-                                :loading="inputs.nik.loading"
-                                :no-data-text="inputs.nik.loading ? 'Loading...' : 'No Data'"
-                                outlined
-                                :append-icon="inputs.nik.model ? 'mdi-check' : ''"
-                                rounded
-                                :rules="[(v) => v.length > 2 || 'Field is required']"
-                                v-model="inputs.nik.model"
-                                :disabled="id"
-                                @change="checkNikNoExisting"
-                                @keyup="checkNikNoExisting(inputs.nik.model)"
-                            ></v-text-field>
                             <!-- Upload Photo -->
                             <v-file-input
                                 dense
@@ -114,7 +124,6 @@
                                 :label="inputs.address.label"
                                 outlined
                                 rounded
-                                :rules="[(v) => !!v || 'Field is required']"
                                 v-model="inputs.address.model"
                             ></v-textarea>
                         </v-col>
@@ -123,16 +132,53 @@
                 <v-card-actions>
                     <v-btn color="red" outlined rounded class="pr-3 pl-1" small @click="showModal = false"><v-icon class="mr-1">mdi-close-circle</v-icon> Close</v-btn>
                     <v-divider class="mx-2"></v-divider>
-                    <v-btn color="green white--text" rounded class="px-3" small><v-icon class="mr-1">mdi-content-save-check</v-icon> Save</v-btn>
+                    <v-dialog
+                        v-model="dialog"
+                        persistent
+                        max-width="400"
+                        content-class="rounded-xl"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs" v-on="on" color="green white--text" rounded class="px-3" small :disabled="checkNik.loading || !checkNik.checked || inputs.nik.exist || !inputs.name.model"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save</v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title class="text-h5">
+                                <v-spacer></v-spacer>
+                                Are u sure?
+                                <v-spacer></v-spacer>
+                            </v-card-title>
+                            <v-card-text class="text-center">
+                                Are u sure wanna save this data?
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-btn
+                                    color="red"
+                                    text
+                                    rounded
+                                    @click="dialog = false"
+                                >
+                                    <v-icon class="mr-1">mdi-undo</v-icon>
+                                    Back
+                                </v-btn>
+                                <v-divider class="mx-2"></v-divider>
+                                <v-btn
+                                    color="green white--text pr-3"
+                                    rounded
+                                    @click="save()"
+                                >
+                                    <v-icon class="mr-1">mdi-check-circle</v-icon>
+                                    Ok, Save
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                 </v-card-actions>
             </v-card>
     </v-dialog>
 </template>
 <script>
 import moment  from 'moment'
-import trucksJSON from '@/utils/trucks'
-import nurseryJSON from '@/utils/nursery'
-import distributionPeriodJSON from '@/utils/distributionPeriod'
+import axios from 'axios'
 
 export default {
     props: {
@@ -141,11 +187,12 @@ export default {
             default: false
         },
         id: {
-            type: Number,
+            type: String,
             default: 0
         }
     },
     data: () => ({
+        dialog: false,
         inputs: {
             address: {
                 label: 'Address',
@@ -165,12 +212,40 @@ export default {
                 preview: '',
                 model: null
             },
+            program_year: {
+                model: ''
+            },
+            user_id: {
+                model: JSON.parse(localStorage.getItem('User')).email
+            }
+        },
+        checkNik: {
+            checked: false,
+            loading: false
         },
         loading: {
             show: false,
             text: 'Loading...'
-        }
+        },
     }),
+    watch: {
+        'inputs.nik.exist': {
+            handler(val) {
+                console.log(val)
+            }
+        },
+        'inputs.nik.model': {
+            handler(val) {
+                this.checkNik.checked = false
+            }
+        },
+        show(val) {
+            if (val) {
+                // set dummy data
+                // this.manageData('dummy')
+            } else this.manageData('reset')
+        }
+    },
     computed: {
         showModal: {
             get: function () {
@@ -186,7 +261,7 @@ export default {
         }
     },
     mounted() {
-        this.inputs.programYear = this.$store.state.programYear.model
+        this.inputs.program_year.model = this.$store.state.programYear.model
     },
     methods: {
         async getDetailData(id) {
@@ -196,7 +271,58 @@ export default {
             }, 2000);
         },
         async checkNikNoExisting(val) {
-            // alert(val)
+            this.inputs.nik.exist = false
+            this.checkNik.checked = false
+            this.checkNik.loading = true
+            await axios.get(`${this.$store.getters.getApiUrl('GetDetailDriver')}?nik=${val}`, this.$store.state.apiConfig)
+                .then(() => {
+                    this.inputs.nik.exist = true
+                }).catch((err) => {
+                    const nikLicenceFormat = /^(\d{16}|\d{4}-\d{4}-\d{6})$/
+                    if (nikLicenceFormat.test(val)) {
+                        this.inputs.nik.exist = false
+                        this.checkNik.checked = true
+                    } else alert('Nik / Licence are invalid.')
+                    this.forceLogout(err)
+                }).finally(() => {
+                    this.checkNik.loading = false
+                })
+        },
+        async save() {
+            try {
+                this.inputs.nik.exist = false
+                this.dialog = false
+                this.$emit('close', {type: 'driver', val: false})
+
+                this.$store.state.loadingOverlayText = 'Saving data...'
+                this.$store.state.loadingOverlay = true
+                
+                let sendData = {}
+                for (const [key, value] of Object.entries(this.inputs)) {
+                    if (value.model) sendData[key] = value.model
+                }
+                if (sendData.photo) sendData.photo = await this.uploadPhotos('ktp-licence', sendData.photo, 'driver-ktp_licence')
+                await axios.post(`${this.$store.getters.getApiUrl('AddDriver')}`, sendData, this.$store.state.apiConfig)
+                await this.$emit('snackbar', {color: 'green', text: 'Success saving driver data!'})
+                await this.$emit('refreshTable')
+                this.manageData('reset')
+            } catch (err) {
+                await this.$emit('snackbar', {color: 'red', text: err})
+                if (err.response != undefined) {
+                    console.log(err.response.data.data.result)
+                    const message = err.response.data.data.result
+                    if (message == 'The nik has already been taken.') {
+                        this.$refs['nikInput'].focus()
+                        this.$emit('close', {type: 'driver', val: true})
+                        this.inputs.nik.exist = true
+                    }
+
+                    this.forceLogout(err.response)
+                } else console.error(err)
+            } finally {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = null
+            }
         },
         // UTILITIES
         dateFormat(date, format) {
@@ -208,6 +334,23 @@ export default {
                 this.$router.push("/")
             }
         },
+        generateFormData(data) {
+            let formData= new FormData()
+
+            const objectArray= Object.entries(data)
+
+            objectArray.forEach(([key, value]) => {
+
+                if (Array.isArray(value)){
+                value.map(item => {
+                    formData.append(key+'[]' , item)
+                })
+                }else {
+                formData.append(key, value)
+                }
+            })
+            return formData
+        },
         photoFileChanged (event) {
             if (event) {
                 let fileSize = event.size / 1000000
@@ -217,10 +360,27 @@ export default {
                     this.inputs.photo.preview = URL.createObjectURL(event)
                 } else {
                     alert(`Please change your photo file, it's too big. Max 6mb.`)
+                    this.inputs.photo.model = null
+                    this.inputs.photo.preview = null
                 }
             } else {
                 this.inputs.photo.model = null
                 this.inputs.photo.preview = ""
+            }
+        },
+        manageData(type) {
+            if (type == 'dummy') {
+                this.inputs.program_year.model = this.$store.state.programYear.model
+                this.inputs.nik.model = 3322202210701001
+                this.inputs.name.model = 'Melvin'
+                this.inputs.address.model = 'Jl. Sanggung Bar. No.11, RT.006/RW.002, Jatingaleh, Kec. Candisari, Kota Semarang, Jawa Tengah 50254'
+            } else if (type == 'reset') {
+                this.inputs.program_year.model = this.$store.state.programYear.model
+                this.inputs.nik.model = ''
+                this.inputs.name.model = ''
+                this.inputs.address.model = ''
+                this.inputs.photo.model = ''
+                this.inputs.photo.preview = ''
             }
         },
         showLightbox(imgs, index) {
@@ -231,6 +391,23 @@ export default {
 
             this.$store.state.lightbox.show = true
         },
+        async uploadPhotos(type, file, dir) {
+            this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+            const url = `${this.$store.state.apiUrlImage}drivers_trucks/upload.php`
+            const newName = `${this.inputs.nik.model}_${type}`
+            const data = this.generateFormData({
+                dir: dir,
+                nama: newName,
+                image: file
+            })
+            let responseName = null
+            await axios.post(url,data).then(res => {
+                responseName = res.data.data.new_name
+            }).catch(err => {
+                console.error(err)
+            })
+            return responseName
+        }
     },
 }
 </script>

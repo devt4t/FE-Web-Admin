@@ -10,8 +10,8 @@
         ></v-breadcrumbs>
 
         <!-- START: MODAL -->
-        <TruckFormModal :show="modals.truck.show" :id="modals.truck.id" @close="closeModals($event)"></TruckFormModal>
-        <DriverFormModal :show="modals.driver.show" :id="modals.driver.id" @close="closeModals($event)"></DriverFormModal>
+        <TruckFormModal :show="modals.truck.show" :id="modals.truck.id" @close="closeModals($event)" @refreshTable="() => getTableData('truck')" @snackbar="showSnackBar($event)"></TruckFormModal>
+        <DriverFormModal :show="modals.driver.show" :id="modals.driver.id" @close="closeModals($event)" @refreshTable="() => getTableData('driver')" @snackbar="showSnackBar($event)"></DriverFormModal>
         <!-- END: MODAL -->
 
         <v-expansion-panels v-model="expansions.model" class="mb-6 px-3" multiple  data-aos="fade-up" data-aos-delay="200" data-aos-once="true">
@@ -23,8 +23,10 @@
                 <v-expansion-panel-content>
                     <v-data-table
                         :headers="tables.truck.headers"
+                        :search="tables.truck.search"
                         :loading="tables.truck.loading"
                         :items="tables.truck.items"
+                        multi-sort
                         class=""
                     >
                         <template v-slot:top>
@@ -63,6 +65,32 @@
                                 </v-btn>
                             </v-row>
                         </template>
+                        <!-- Licence Plate -->
+                        <template v-slot:item.plat_no="{item}">
+                            <v-chip color="grey darken-3 white--text" class="rounded-lg">{{ item.plat_no }}</v-chip>
+                        </template>
+                        <!-- Status -->
+                        <template v-slot:item.status="{item}">
+                            <v-chip small :color="item.status == 'contract' ? 'primary' : 'orange'" class="white--text">
+                                {{ item.status.toUpperCase() }}
+                            </v-chip>
+                        </template>
+                        <!-- Is Active -->
+                        <template v-slot:item.is_active="{item}">
+                            <v-chip :color="`${item.is_active ? 'green' : 'red'} white--text`">
+                                <v-icon class="mr-1">mdi-truck-{{ item.is_active ? 'check' : 'alert' }}</v-icon>
+                                {{ item.is_active ? 'Active' : 'Nonactive' }}
+                            </v-chip>
+                        </template>
+                        <!-- Type -->
+                        <template v-slot:item.type="{item}">
+                            <p class="mb-0">{{ trucks.find(v => v.name == item.type).type || ''  }}</p>
+                            <small>{{ $store.getters.numberFormat(item.min_capacity) }} - {{ $store.getters.numberFormat(item.max_capacity) }} Bibit</small>
+                        </template>
+                        <!-- Actions -->
+                        <template v-slot:item.action="{item}">
+                            <v-btn rounded small color="orange" class="white--text pl-1" @click="modals.truck.id = item.plat_no;modals.truck.show = true;"><v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit</v-btn>
+                        </template>
                     </v-data-table>
                 </v-expansion-panel-content>
             </v-expansion-panel>
@@ -77,6 +105,7 @@
                         :loading="tables.driver.loading"
                         :items="tables.driver.items"
                         :search="tables.driver.search"
+                        multi-sort
                         class=""
                     >
                         <template v-slot:top>
@@ -115,11 +144,30 @@
                                 </v-btn>
                             </v-row>
                         </template>
+                        <!-- Actions -->
+                        <template v-slot:item.action="{item}">
+                            <v-btn :disabled="true" rounded small color="orange" class="white--text pl-1" @click="modals.driver.id = item.plat_no;modals.driver.show = true;"><v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit</v-btn>
+                        </template>
                     </v-data-table>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-expansion-panels>
         
+        <!-- Snackbar -->
+        <v-snackbar
+        v-model="snackbar.show"
+        :color="snackbar.color"
+        :timeout="snackbar.timeout"
+        rounded="xl"
+        >
+            <div class="d-flex justify-between">
+                <p class="mb-0">
+                    {{ snackbar.text }}
+                </p>
+                <v-spacer></v-spacer>
+                <v-icon small class="pl-1" @click="snackbar.show = false">mdi-close-circle</v-icon>
+            </div>
+        </v-snackbar>
     </div>
 </template>
 
@@ -127,6 +175,7 @@
 import axios from 'axios';
 import DriverFormModal from './components/DriverFormModal.vue';
 import TruckFormModal from './components/TruckFormModal.vue'
+import trucks from '@/utils/trucks'
 
 export default {
     components: { TruckFormModal, DriverFormModal },
@@ -156,12 +205,23 @@ export default {
                 id: null,
             }
         },
+        snackbar: {
+            color: '',
+            show: false,
+            text: '',
+            timeout: 5000,
+        },
         tables: {
             truck: {
                 programYear: "2022",
                 items: [],
                 headers: [
-                    { text: "Truck ID", value: "truck_id" },
+                    { text: "Nursery", value: "nursery" },
+                    { text: "Licence Plate", value: "plat_no", align: 'center' },
+                    { text: "Type", value: "type" },
+                    { text: "Status", value: "status", align: 'center' },
+                    { text: "Availability", value: "is_active", align: 'center' },
+                    { text: "Action", value: "action", align: 'right' },
                 ],
                 loading: false,
                 search: ""
@@ -170,15 +230,15 @@ export default {
                 programYear: "2022",
                 items: [],
                 headers: [
-                    { text: "NIK / Licence", value: "nik" },
                     { text: "Name", value: "name" },
-                    { text: "Address", value: "address" },
+                    { text: "NIK / Licence", value: "nik" },
                     { text: "Action", value: "action", align: 'right' },
                 ],
                 loading: false,
                 search: ""
             },
-        }
+        },
+        trucks
     }),
     watch: {
         'modals.truck.show': {
@@ -209,7 +269,16 @@ export default {
             if (data.type && data.val == false) {
                 this.modals[data.type].show = false
                 this.modals[data.type].id = null
-            }
+            } else if (data.type && data.val == true) this.modals[data.type].show = true
+        },
+        showSnackBar(data) {
+            const {color, text} = data
+            this.snackbar.show = false
+            setTimeout(() => {
+                this.snackbar.color = color
+                this.snackbar.text = text
+                this.snackbar.show = true
+            }, 100);
         },
         forceLogout(response) {
             if (response.status == 401) {

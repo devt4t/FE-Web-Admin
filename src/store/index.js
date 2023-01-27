@@ -16,6 +16,7 @@ export default new Vuex.Store({
       }
     },
     apiUrl: localStorage.getItem('BaseUrlGet'),
+    apiUrlImage: localStorage.getItem('BaseUrl'),
     lightbox: {
       imgs: '',
       index: 0,
@@ -49,7 +50,10 @@ export default new Vuex.Store({
     },
     capitalizeFirstLetter: () => (string) => {
       return string.charAt(0).toUpperCase() + string.slice(1)
-    }
+    },
+    numberFormat: () => (num) =>  {
+        return new Intl.NumberFormat('id-ID').format(num)
+    },
   },
   mutations: {
   },
