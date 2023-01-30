@@ -1817,7 +1817,6 @@
                                                                     color="green lighten-1 rounded-xl" 
                                                                     v-model="packingLabel.datePicker.model"
                                                                     min="2022-11-24"
-                                                                    max="2023-01-31"
                                                                 ></v-date-picker>
                                                             </div>
                                                         </div>
@@ -2018,7 +2017,6 @@
                                                     color="green lighten-1 rounded-xl" 
                                                     v-model="loadingLine.datePicker.model"
                                                     min="2022-11-24"
-                                                    max="2023-01-31"
                                                 ></v-date-picker>
                                             </div>
                                         </div>
@@ -2169,7 +2167,6 @@
                                                             color="green lighten-1 rounded-xl" 
                                                             v-model="distributionReport.datePicker.model"
                                                             min="2022-11-24"
-                                                            max="2023-01-31"
                                                         ></v-date-picker>
                                                     </div>
                                                 </div>
