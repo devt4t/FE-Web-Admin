@@ -190,7 +190,7 @@
                                         small
                                         close
                                         data-aos="zoom-in" :data-aos-delay="data.index * 200"
-                                        @click="data.select"
+                                        @click="() => {}"
                                         @click:close="spliceDatePeriod(data.item.name)"
                                     >
                                         {{ data.item.name }}

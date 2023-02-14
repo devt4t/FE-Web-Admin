@@ -64,7 +64,7 @@
               <v-select
                 color="success"
                 item-color="success"
-                :menu-props="{rounded: 'xl', offsetY: true}"
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 outlined
                 hide-details
                 rounded
@@ -80,7 +80,7 @@
               <v-autocomplete
                 color="success"
                 item-color="success"
-                :menu-props="{rounded: 'xl'}"
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 outlined
                 hide-details
                 rounded
@@ -109,7 +109,7 @@
               <v-autocomplete
                 color="success"
                 item-color="success"
-                :menu-props="{rounded: 'xl'}"
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 outlined
                 hide-details
                 clearable
@@ -139,7 +139,7 @@
                 item-color="success"
                 item-text="value"
                 item-value="value"
-                :menu-props="{rounded: 'xl', offsetY: true}"
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 outlined
                 rounded
                 hide-details
@@ -492,7 +492,7 @@
             <template v-slot:top>
               <v-row class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
-                <v-btn 
+                <!-- <v-btn 
                   @click="generateReport('Pendataan Petani & Lahan')"
                   color="info"
                   class="mb-2 mx-1 d-none d-md-inline-block"
@@ -500,7 +500,7 @@
                 >
                   <v-icon small class="mr-1">mdi-file-pdf-box</v-icon>
                   Export PDF
-                </v-btn>
+                </v-btn> -->
               </v-row>
             </template>
             <template v-slot:header.petani1>
@@ -533,90 +533,6 @@
               </v-btn>
             </template>
           </v-data-table>
-
-          <!-- Export Template -->
-          <vue-html2pdf
-            :show-layout="false"
-            :float-layout="true"
-            :enable-download="false"
-            :preview-modal="true"
-            :paginate-elements-by-height="1400"
-            :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
-            :pdf-quality="2"
-            :manual-pagination="true"
-            pdf-format="a4"
-            pdf-orientation="landscape"
-            pdf-content-width="1125px"
-            ref="exportPDFPendataanPetaniLahan"
-          >
-            <section slot="pdf-content">
-              <v-container>
-                <center>
-                  <h2>Pendataan Petani & Lahan</h2>
-                  <h3>Activities Progress</h3>
-                </center>
-                <v-row>
-                  <v-col sm="6" class="mb-2">
-                    <table>
-                      <tr>
-                        <td>Unit Manager</td>
-                        <td>:</td>
-                        <td>{{ filters.UM }}</td>
-                      </tr>
-                      <tr>
-                        <td>Field Coordinator</td>
-                        <td>:</td>
-                        <td>{{ filters.FC }}</td>
-                      </tr>
-                      <tr>
-                        <td>Export Date</td>
-                        <td>:</td>
-                        <td>{{ dateFormat(new Date(), 'DD MMMM Y') }}</td>
-                      </tr>
-                    </table>
-                  </v-col>
-                  <v-col sm="12">
-                    <center>
-                      <table border="1" style="border-collapse: collapse;width: 100%;">
-                        <thead>
-                          <tr>
-                            <th rowspan="2">No</th>
-                            <th rowspan="2">Nama FF</th>
-                            <th colspan="4">Petani</th>
-                            <th colspan="4">Lahan</th>
-                          </tr>
-                          <tr>
-                            <th>{{ dateFormat(filters.dates.farmer[0], 'DD MMM Y') }}</th>
-                            <th>{{ dateFormat(filters.dates.farmer[1], 'DD MMM Y') }}</th>
-                            <th>Total</th>
-                            <th>Progress</th>
-                            <th>{{ dateFormat(filters.dates.land[0], 'DD MMM Y') }}</th>
-                            <th>{{ dateFormat(filters.dates.land[1], 'DD MMM Y') }}</th>
-                            <th>Total</th>
-                            <th>Progress</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(data, dIndex) in tables.farmer.items" :key="dIndex" :class="pageBreakIndex(dIndex)">
-                            <td align="center">{{ dIndex + 1 }}</td>
-                            <td style="padding-left: 5px">{{ data.ff }}</td>
-                            <td align="center">{{ data.petani1 }}</td>
-                            <td align="center">{{ data.petani2 }}</td>
-                            <td align="center">{{ data.total_petani }}</td>
-                            <td align="center">{{ data.progress_petani }}%</td>
-                            <td align="center">{{ data.lahan1 }}</td>
-                            <td align="center">{{ data.lahan2 }}</td>
-                            <td align="center">{{ data.total_lahan }}</td>
-                            <td align="center">{{ data.progress_lahan }}%</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </center>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </section>
-          </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
       <!-- Sosialisasi Tanam -->
@@ -642,7 +558,7 @@
             <template v-slot:top>
               <v-row v-if="filters.FC" class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
-                <v-btn 
+                <!-- <v-btn 
                   @click="generateReport('Sosialisasi Tanam')"
                   color="info"
                   class="mb-2 d-none d-md-inline-block"
@@ -650,7 +566,7 @@
                 >
                   <v-icon small class="mr-1">mdi-printer</v-icon>
                   Export
-                </v-btn>
+                </v-btn> -->
               </v-row>
             </template>
             <template v-slot:header.total_petani>
@@ -693,152 +609,6 @@
               </v-btn>
             </template>
           </v-data-table>
-          <!-- Export Template -->
-          <vue-html2pdf
-            :show-layout="false"
-            :float-layout="true"
-            :enable-download="false"
-            :preview-modal="true"
-            :paginate-elements-by-height="1400"
-            :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
-            :pdf-quality="2"
-            :manual-pagination="false"
-            pdf-format="a4"
-            pdf-orientation="landscape"
-            pdf-content-width="1125px"
-            ref="exportPDFSosialisasiTanam"
-          >
-            <section slot="pdf-content">
-              <v-container>
-                <center>
-                  <h2>Pendataan Sosialisasi Tanam</h2>
-                  <h3>Activities Progress</h3>
-                </center>
-                <v-row>
-                  <v-col sm="6">
-                    <table>
-                      <tr>
-                        <td>Unit Manager</td>
-                        <td>:</td>
-                        <td>{{ filters.UM }}</td>
-                      </tr>
-                      <tr>
-                        <td>Field Coordinator</td>
-                        <td>:</td>
-                        <td>{{ filters.FC }}</td>
-                      </tr>
-                      <tr>
-                        <td>Export Date</td>
-                        <td>:</td>
-                        <td>{{ dateFormat(new Date(), 'DD MMMM Y') }}</td>
-                      </tr>
-                    </table>
-                  </v-col>
-                  <v-col sm="12">
-                    <center>
-                      <table border="1" style="border-collapse: collapse;width: 100%;">
-                        <thead>
-                          <tr>
-                            <th rowspan="2">No</th>
-                            <th rowspan="2">Nama FF</th>
-                            <th rowspan="2">Total Petani</th>
-                            <th rowspan="2">Total Lahan</th>
-                            <th colspan="4">Sosialisasi Tanam</th>
-                          </tr>
-                          <tr>
-                            <th>{{ dateFormat(filters.dates.sostam, 'DD MMM Y') }}</th>
-                            <th>Progress</th>
-                            <th>Total Bibit</th>
-                            <th>Tanggal Distribusi</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(data, dIndex) in tables.sostam.items" :key="dIndex">
-                            <td align="center">{{ dIndex + 1 }}</td>
-                            <td style="padding-left: 5px">{{ data.ff }}</td>
-                            <td align="center">{{ data.total_petani }}</td>
-                            <td align="center">{{ data.total_lahan }}</td>
-                            <td align="center">{{ data.total_sostam }}</td>
-                            <td align="center">{{ data.progress_sostam }}%</td>
-                            <td align="center">{{ numberFormat(data.total_bibit) }}</td>
-                            <td align="center">
-                              <span v-if="data.distribution_time != '-'">{{dateFormat(data.distribution_time, 'DD MMMM Y') }}</span>
-                              <span v-else>-</span>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </center>
-                  </v-col>
-                </v-row>
-                <v-row class="html2pdf__page-break">
-                  <v-col sm="12" md="4">
-                    <table border="1" style="border-collapse: collapse;width: 100%;">
-                      <thead>
-                        <tr>
-                          <th colspan="3">KAYU ({{ getTotalBibitPerCategory('KAYU', 'sostam') }})</th>
-                        </tr>
-                        <tr>
-                          <th>No</th>
-                          <th>Name</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.KAYU" :key="treeIndex">
-                          <td align="center">{{ treeIndex += 1 }}</td>
-                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
-                          <td align="center">{{ numberFormat(tree.amount) }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </v-col>
-                  <v-col sm="12" md="4">
-                    <table border="1" style="border-collapse: collapse;width: 100%;">
-                      <thead>
-                        <tr>
-                          <th colspan="3">MPTS ({{ getTotalBibitPerCategory('MPTS', 'sostam') }})</th>
-                        </tr>
-                        <tr>
-                          <th>No</th>
-                          <th>Name</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.MPTS" :key="treeIndex">
-                          <td align="center">{{ treeIndex += 1 }}</td>
-                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
-                          <td align="center">{{ numberFormat(tree.amount) }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </v-col>
-                  <v-col sm="12" md="4">
-                    <table border="1" style="border-collapse: collapse;width: 100%;">
-                      <thead>
-                        <tr>
-                          <th colspan="3">CROPS ({{ getTotalBibitPerCategory('CROPS', 'sostam') }})</th>
-                        </tr>
-                        <tr>
-                          <th>No</th>
-                          <th>Name</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(tree, treeIndex) in tables.sostam.totalBibitDetails.CROPS" :key="treeIndex">
-                          <td align="center">{{ treeIndex += 1 }}</td>
-                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
-                          <td align="center">{{ numberFormat(tree.amount) }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </section>
-          </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
       <!-- Pelatihan Petani -->
@@ -886,7 +656,7 @@
             <template v-slot:top>
               <v-row v-if="filters.FC" class="py-3 justify-center">
                 <v-spacer class="d-none d-md-inline-block"></v-spacer>
-                <v-btn 
+                <!-- <v-btn 
                   @click="generateReport('Penilikan Lubang')"
                   color="info"
                   class="mb-2 d-none d-md-inline-block"
@@ -894,7 +664,7 @@
                 >
                   <v-icon small class="mr-1">mdi-printer</v-icon>
                   Export
-                </v-btn>
+                </v-btn> -->
               </v-row>
             </template>
             <template v-slot:header.total_petani>
@@ -942,147 +712,6 @@
               </v-btn>
             </template>
           </v-data-table>
-          <!-- Export Template -->
-          <vue-html2pdf
-            :show-layout="false"
-            :float-layout="true"
-            :enable-download="false"
-            :preview-modal="true"
-            :paginate-elements-by-height="1400"
-            :filename="`Progress FF | FC ${filters.FC} | UM ${filters.UM}`"
-            :pdf-quality="2"
-            :manual-pagination="false"
-            pdf-format="a4"
-            pdf-orientation="landscape"
-            pdf-content-width="1125px"
-            ref="exportPDFPenilikanLubang"
-          >
-            <section slot="pdf-content">
-              <v-container>
-                <center>
-                  <h2>Pendataan Penilikan Lubang Tanam</h2>
-                  <h3>Activities Progress</h3>
-                </center>
-                <v-row>
-                  <v-col sm="6">
-                    <table>
-                      <tr>
-                        <td>Unit Manager</td>
-                        <td>:</td>
-                        <td>{{ filters.UM }}</td>
-                      </tr>
-                      <tr>
-                        <td>Field Coordinator</td>
-                        <td>:</td>
-                        <td>{{ filters.FC }}</td>
-                      </tr>
-                      <tr>
-                        <td>Export Date</td>
-                        <td>:</td>
-                        <td>{{ dateFormat(new Date(), 'DD MMMM Y') }}</td>
-                      </tr>
-                    </table>
-                  </v-col>
-                  <v-col sm="12">
-                    <center>
-                      <table border="1" style="border-collapse: collapse;width: 100%;">
-                        <thead>
-                          <tr>
-                            <th rowspan="2">No</th>
-                            <th rowspan="2">Nama FF</th>
-                            <th rowspan="2">Total Petani</th>
-                            <th rowspan="2">Total Lahan</th>
-                            <th colspan="4">Penilikan Lubang Tanam</th>
-                          </tr>
-                          <tr>
-                            <th>{{ dateFormat(filters.dates.penlub, 'DD MMM Y') }}</th>
-                            <th>Progress</th>
-                            <th>Total Bibit</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(data, dIndex) in tables.penlub.items" :key="dIndex">
-                            <td align="center">{{ dIndex + 1 }}</td>
-                            <td style="padding-left: 5px">{{ data.ff }}</td>
-                            <td align="center">{{ data.total_petani }}</td>
-                            <td align="center">{{ data.total_lahan }}</td>
-                            <td align="center">{{ data.total_penlub }}</td>
-                            <td align="center">{{ data.progress_penlub }}%</td>
-                            <td align="center">{{ numberFormat(data.total_bibit) }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </center>
-                  </v-col>
-                </v-row>
-                <v-row class="html2pdf__page-break">
-                  <v-col sm="12" md="4">
-                    <table border="1" style="border-collapse: collapse;width: 100%;">
-                      <thead>
-                        <tr>
-                          <th colspan="3">KAYU ({{ getTotalBibitPerCategory('KAYU', 'penlub') }})</th>
-                        </tr>
-                        <tr>
-                          <th>No</th>
-                          <th>Name</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(tree, treeIndex) in tables.penlub.totalBibitDetails.KAYU" :key="treeIndex">
-                          <td align="center">{{ treeIndex += 1 }}</td>
-                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
-                          <td align="center">{{ numberFormat(tree.amount) }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </v-col>
-                  <v-col sm="12" md="4">
-                    <table border="1" style="border-collapse: collapse;width: 100%;">
-                      <thead>
-                        <tr>
-                          <th colspan="3">MPTS ({{ getTotalBibitPerCategory('MPTS', 'penlub') }})</th>
-                        </tr>
-                        <tr>
-                          <th>No</th>
-                          <th>Name</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(tree, treeIndex) in tables.penlub.totalBibitDetails.MPTS" :key="treeIndex">
-                          <td align="center">{{ treeIndex += 1 }}</td>
-                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
-                          <td align="center">{{ numberFormat(tree.amount) }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </v-col>
-                  <v-col sm="12" md="4">
-                    <table border="1" style="border-collapse: collapse;width: 100%;">
-                      <thead>
-                        <tr>
-                          <th colspan="3">CROPS ({{ getTotalBibitPerCategory('CROPS', 'penlub') }})</th>
-                        </tr>
-                        <tr>
-                          <th>No</th>
-                          <th>Name</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(tree, treeIndex) in tables.penlub.totalBibitDetails.CROPS" :key="treeIndex">
-                          <td align="center">{{ treeIndex += 1 }}</td>
-                          <td style="padding-left: 5px">{{ tree.tree_name }}</td>
-                          <td align="center">{{ numberFormat(tree.amount) }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </section>
-          </vue-html2pdf>
         </v-expansion-panel-content>
       </v-expansion-panel>
       <!-- Material Organik (Pupuk) -->
@@ -2194,11 +1823,11 @@ export default {
       this.filters.dates.land = this.dates.land
       this.dates.land = ['2022-10-03' , moment().format('Y-MM-DD')]
       this.filters.dates.sostam = this.dates.sostam
-      this.dates.sostam = '2022-11-15'
+      this.dates.sostam = moment().format('Y-MM-DD')
       this.filters.dates.penlub = this.dates.penlub
-      this.dates.penlub = '2022-12-31'
+      this.dates.penlub = moment().format('Y-MM-DD')
       this.filters.dates.distribusi = this.dates.distribusi
-      this.dates.distribusi = '2023-01-31'
+      this.dates.distribusi = moment().format('Y-MM-DD')
     },
   },
 };

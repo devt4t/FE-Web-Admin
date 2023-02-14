@@ -152,8 +152,8 @@
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main :class="`gradient-animate`">
-      <div class="waves">
+    <v-main :class="`${$route.name !== 'Distribusi' ? 'gradient-animate' : 'green lighten-2'}`">
+      <div class="waves" v-if="$route.name !== 'Distribusi'">
         <div class="wave"></div>
         <div class="wave"></div>
         <div class="wave"></div>

@@ -154,7 +154,7 @@
       </v-dialog>
 
       <!-- Modal Add Edit -->
-      <v-dialog v-model="dialog" max-width="800px">
+      <v-dialog v-model="dialog" max-width="800px" content-class="rounded-xl">
         <v-card>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-card-title class="mb-1 headermodalstyle">
@@ -529,7 +529,7 @@
       </v-dialog>
 
       <!-- Modal Detail -->
-      <v-dialog v-model="dialogDetail" max-width="800px">
+      <v-dialog v-model="dialogDetail" max-width="800px" content-class="rounded-xl" scrollable>
         <v-card>
           <v-card-title class="mb-1 headermodalstyle">
             <span class="headline">Detail Petani</span>
@@ -554,26 +554,6 @@
             </v-container>
             <v-container v-if="load == false">
               <v-row>
-                <v-col cols="12" sm="4" md="4">
-                  <div>Foto Petani</div>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.farmer_profile"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <div>Foto Ktp</div>
-                  <v-img
-                    height="250"
-                    v-bind:src="defaultItem.ktp_document"
-                    class="my-1 mb-4"
-                  ></v-img>
-                  <div>Foto Signature</div>
-                  <v-img
-                    height="150"
-                    v-bind:src="defaultItem.signature"
-                    class="my-1 mb-4"
-                  ></v-img>
-                </v-col>
                 <v-col cols="12" sm="8" md="8">
                   <v-row>
                     <v-col cols="12" sm="12" md="6">
@@ -799,6 +779,26 @@
                       </div>
                     </v-col>
                   </v-row>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <div>Foto Petani</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.farmer_profile"
+                    class="my-1 mb-4"
+                  ></v-img>
+                  <div>Foto Ktp</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.ktp_document"
+                    class="my-1 mb-4"
+                  ></v-img>
+                  <div>Foto Signature</div>
+                  <v-img
+                    height="150"
+                    v-bind:src="defaultItem.signature"
+                    class="my-1 mb-4"
+                  ></v-img>
                 </v-col>
               </v-row>
             </v-container>
@@ -1074,7 +1074,7 @@ export default {
       { text: "Tahun Program", value: "mou_no", width: "10%" },
       { text: "Tahun Bergabung", value: "join_date", width: "10%" },
       { text: "Status", value: "status", width: "10%" },
-      { text: "Actions", value: "actions", sortable: false, width: "5%" },
+      { text: "Actions", value: "actions", sortable: false, width: "5%", align: 'right' },
     ],
     dataobject: [],
     editedItem: {
@@ -1520,14 +1520,14 @@ export default {
       this.defaultItem.idTabelPetani = item.idTblPetani;
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetFarmerDetail?id=" + item.idTblPetani,
+          this.BaseUrlGet + "GetFarmerDetailWeb?id=" + item.idTblPetani,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
 

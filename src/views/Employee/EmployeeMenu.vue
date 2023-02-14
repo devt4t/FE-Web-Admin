@@ -52,7 +52,7 @@
                   </v-row>
                   <v-row>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.IdManager"
                         :items="itemsEmp"
                         item-value="nik"
@@ -60,19 +60,19 @@
                         label="Pilih Manager"
                         clearable
                         v-on:change="selectedManager($event)"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
                         v-model="menudropdown"
                         :items="itemsMenu"
                         item-value="id"
                         item-text="name"
                         label="Pilih Tambah Menu Access"
                         v-on:change="selectedMenuAccess($event)"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row>
