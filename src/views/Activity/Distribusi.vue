@@ -2533,8 +2533,8 @@ export default {
         loadingLine: {
             datePicker: {
                 loading: false,
-                model: moment('2023-01-31').format('Y-MM-DD'),
-                modelShow: moment('2023-01-31').format('DD MMMM Y'),
+                model: moment().format('Y-MM-DD'),
+                modelShow: moment().format('DD MMMM Y'),
                 show: false,
             },
             detailDialog: {
