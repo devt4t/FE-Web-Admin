@@ -34,6 +34,9 @@
         </v-card>
       </v-dialog>
 
+      <!-- Change FF Modal -->
+      <ChangeFFModal :show="dialogs.changeFF.show" @dialogAct="dialogsAction($event)" />
+
     <v-data-table
       :headers="headers"
       :items="dataobject"
@@ -600,6 +603,20 @@
                 Activate
               </v-btn>
             </v-list-item>
+            <v-list-item v-if="User.role_group == 'IT'">
+              <v-btn
+                dark
+                rounded
+                @click="() => {dialogs.changeFF.show = true}"
+                color="red white--text"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-account-convert
+              </v-icon>
+                Change FC
+              </v-btn>
+            </v-list-item>
           </v-list>
         </v-menu>
       </template>
@@ -617,11 +634,16 @@
 
 <script>
 import axios from "axios";
+import ChangeFFModal from "./components/FF/ChangeFFModal.vue"
 
 export default {
   name: "FieldFacilitator",
+  components: { ChangeFFModal },
   data: () => ({
     dialogs: {
+      changeFF: {
+        show: false,
+      },
       nonactivateConfirmation: {
         show: false,
         model: null,
@@ -748,6 +770,9 @@ export default {
     this.firstAccessPage();
   },
   methods: {
+    dialogsAction(dialog) {
+      this.dialogs[dialog.name].show = dialog.status
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
