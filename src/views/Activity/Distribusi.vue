@@ -390,7 +390,7 @@
                     </v-card-title>
                     <v-card-text>
                         <!-- loading -->
-                        <div v-if="loadingLine.detailDialog.loading" class="d-flex flex-column align-center justify-center">
+                        <div v-if="loadingLine.detailDialog.loading && !loadingLine.detailDialog.model" class="d-flex flex-column align-center justify-center">
                             <v-progress-circular
                                 indeterminate
                                 color="green"
@@ -400,17 +400,29 @@
                             ></v-progress-circular>
                             <p class="mt-2 text-center">{{ loadingLine.detailDialog.loadingText }}</p>
                         </div>
-                        <div v-else-if="loadingLine.detailDialog.model">
+                        <!-- Loading -->
+                        <v-overlay v-else-if="loadingLine.detailDialog.loading && loadingLine.detailDialog.model" absolute :value="loadingLine.detailDialog.loading">
+                            <div class="d-flex flex-column"></div>
+                            <v-progress-circular
+                            :size="80"
+                            :width="10"
+                            indeterminate
+                            color="white"
+                            >
+                            </v-progress-circular>
+                            <p class="mt-2 mb-0">{{ loadingLine.detailDialog.loadingText }}</p>
+                        </v-overlay>
+                        <div v-if="loadingLine.detailDialog.model">
                             <!-- HOME View -->
                             <v-row class="py-2" v-if="loadingLine.detailDialog.tabs.open == 'all'">
                                 <v-col cols="12" md="6">
-                                    <v-card @click="loadingLine.detailDialog.tabs.open = 1" disabled data-aos="zoom-in" color="green pa-5 rounded-xl text-center white--text">
+                                    <v-card v-if="loadingLine.detailDialog.show" @click="loadingLine.detailDialog.tabs.open = 1" data-aos="zoom-in" color="green pa-5 rounded-xl text-center white--text">
                                         <v-icon color="white" x-large>mdi-sprout</v-icon>
                                         <h3 class="mb-0 mt-1 font-weight-regular" large>Distribution Details</h3>
                                     </v-card>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-card @click="loadingLine.detailDialog.tabs.open = 2" data-aos="zoom-in" data-aos-delay="200" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'blue darken-2' : 'blue'} pa-5 rounded-xl text-center white--text`">
+                                    <v-card v-if="loadingLine.detailDialog.show" @click="loadingLine.detailDialog.tabs.open = 2" data-aos="zoom-in" data-aos-delay="200" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'blue darken-2' : 'blue'} pa-5 rounded-xl text-center white--text`">
                                         <v-icon color="white" x-large>mdi-basket{{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : '' }}</v-icon>
                                         <h3 class="mb-0 mt-1 font-weight-regular" large>
                                             {{ 
@@ -436,38 +448,25 @@
                                     Home
                                     <v-icon>mdi-view-dashboard</v-icon>
                                 </v-tab>
-                                <v-tab disabled>
-                                    Distribution Details
+                                <v-tab>
+                                    Details
                                     <v-icon>mdi-sprout</v-icon>
                                 </v-tab>
                                 <v-tab>
                                     Scan Bags
-                                    <v-icon>mdi-basket{{numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : ''}}</v-icon>
+                                    <v-icon>mdi-{{numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'basket-check' : 'qrcode-scan'}}</v-icon>
+                                </v-tab>
+                                <v-tab>
+                                    Bags List
+                                    <v-icon>mdi-text-box-check</v-icon>
                                 </v-tab>
                             </v-tabs>
                             <!-- Tabs Items -->
                             <v-tabs-items v-if="loadingLine.detailDialog.tabs.open != 'all'" v-model="loadingLine.detailDialog.tabs.open">
+                                <!-- Empty -->
                                 <v-tab-item></v-tab-item>
+                                <!-- Detail -->
                                 <v-tab-item class="pt-3">
-                                    <v-row data-aos="zoom-in">
-                                        <v-col cols="12">
-                                            <!-- Plat -->
-                                            <v-autocomplete
-                                                color="success"
-                                                item-color="success"
-                                                v-model="generalSettings.type.model"
-                                                :items="generalSettings.type.options"
-                                                outlined
-                                                dense
-                                                hide-details
-                                                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-                                                rounded
-                                                label="Plat Number"
-                                            ></v-autocomplete>
-                                        </v-col>
-                                    </v-row>
-                                </v-tab-item>
-                                <v-tab-item>
                                     <v-simple-table dense>
                                         <tbody>
                                             <tr v-if="generalSettings.type.model == 'Petani'">
@@ -507,13 +506,95 @@
                                             </tr>
                                         </tbody>
                                     </v-simple-table>
+                                </v-tab-item>
+                                <!-- Transport + Scan -->
+                                <v-tab-item>
+                                    <!-- <div class="pb-2 d-flex align-center">
+                                        <p class="mb-0"><v-icon class="mr-2">mdi-car-pickup</v-icon>Transportations</p>
+                                        <v-divider class="mx-2"></v-divider>
+                                        <v-btn rounded small color="green white--text" class="pl-1" :disabled="!loadingLine.detailDialog.transportations[loadingLine.detailDialog.transportations.length - 1].truck_detail || !loadingLine.detailDialog.transportations[loadingLine.detailDialog.transportations.length - 1].driver_detail" @click="addMoreTransportation"><v-icon class="mr-1">mdi-plus-circle</v-icon> Add</v-btn>
+                                    </div> -->
+                                    <v-row v-if="false" class="ma-0">
+                                        <v-card v-for="(trans, transIndex) in loadingLine.detailDialog.transportations" :key="transIndex" data-aos="zoom-in" class="ml-2 rounded-xl pa-3 overflow-hidden mb-2">
+                                            <div class="d-flex align-center">
+                                                <v-btn fab x-small color="grey white--text">{{ transIndex + 1 }}</v-btn>
+                                                <p v-if="trans.truck_detail === null" class="mb-0 ml-2">Select Truck & Driver</p>
+                                                <p v-else class="mb-0 ml-2">Max: {{ $store.getters.numberFormat(trans.truck_detail.max_capacity) }} Bibit</p>
+                                            </div>
+                                            <v-row class="mx-0 mt-2">
+                                                <v-col v-if="trans.truck_detail" class="d-flex flex-column align-center position-relative">
+                                                    <v-avatar v-if="trans.truck_detail && loadingLine.detailDialog.transportationIndex != transIndex" data-aos="zoom-in" size="72" :color="getProgressionColor(trans.progression)" class="rounded-circle position-relative overflow-visible">
+                                                        <v-icon size="42" color="white">mdi-{{ trans.truck_detail.type == 'ss' || trans.truck_detail.type == 'l300' ? 'car-pickup' : 'truck' }}</v-icon>
+                                                    </v-avatar>
+                                                    <v-progress-circular
+                                                        v-else-if="loadingLine.detailDialog.transportationIndex === transIndex"
+                                                        data-aos="zoom-in"
+                                                        :rotate="360"
+                                                        :size="72"
+                                                        :width="10"
+                                                        :value="trans.progression"
+                                                        :color="getProgressionColor(trans.progression)"
+                                                    >
+                                                        {{ Math.ceil(trans.progression) }}%
+                                                    </v-progress-circular>
+                                                    <!-- <v-chip v-if="trans.truck_detail" data-aos="zoom-in" data-aos-delay="200" color="green white--text" small style="position: absolute;top: 70px">{{ $store.getters.numberFormat(trans.truck_detail.min_capacity) }} - {{ $store.getters.numberFormat(trans.truck_detail.max_capacity) }} Bibit</v-chip> -->
+                                                    <v-chip v-if="trans.truck_detail" data-aos="zoom-in" data-aos-delay="200" color="grey darken-3 white--text" class="rounded-lg mt-1">{{ trans.truck_detail.plat_no }}</v-chip>
+                                                </v-col>
+                                                <v-col  v-if="trans.driver_detail" class="d-flex flex-column align-center position-relative">
+                                                    <v-avatar v-if="trans.driver_detail" data-aos="zoom-in" size="72" color="blue darken-1" class="rounded-circle position-relative overflow-visible">
+                                                        <v-icon size="42" color="white">mdi-badge-account</v-icon>
+                                                    </v-avatar>
+                                                    <v-chip v-if="trans.driver_detail" data-aos="zoom-in" data-aos-delay="200" color="grey darken-3 white--text" class="rounded-lg mt-1">{{ trans.driver_detail.name }}</v-chip>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row v-if="trans.truck_detail && trans.driver_detail" class="mx-0 mb-0 justify-center">
+                                                <v-btn rounded small color="green white--text" v-if="loadingLine.detailDialog.transportationIndex != transIndex" @click="startScanningAfterSelectingTransportation(transIndex)">Start Loading Bags</v-btn>
+                                                <v-btn rounded small color="red white--text" class="pl-1" v-else-if="loadingLine.detailDialog.transportationIndex === transIndex" :disabled="transIndex === 0 || trans.loaded_labels.length > 0" @click="loadingLine.detailDialog.transportations.splice(transIndex, 1)"><v-icon class="mr-1">mdi-delete-circle</v-icon> Remove Truck</v-btn>
+                                            </v-row>
+                                            <v-row v-else-if="transIndex > 0" class="mx-0 mb-0 justify-center">
+                                                <v-btn rounded small color="red white--text" class="pl-1" @click="loadingLine.detailDialog.transportations.splice(transIndex, 1)"><v-icon class="mr-1">mdi-delete-circle</v-icon> Remove Truck</v-btn>
+                                            </v-row>
+                                            <v-text-field
+                                                v-if="trans.truck_detail === null"
+                                                dense
+                                                hide-details
+                                                outlined
+                                                rounded
+                                                label="Plat No"
+                                                color="green"
+                                                class="mt-5"
+                                                clearable
+                                                v-model="trans.plat_no"
+                                                @change="getTransportDetail('truck', trans.plat_no, transIndex)"
+                                            ></v-text-field>
+                                            <v-text-field
+                                                v-if="trans.driver_detail === null"
+                                                dense
+                                                hide-details
+                                                outlined
+                                                rounded
+                                                label="Driver NIK / Licence"
+                                                color="green"
+                                                class="mt-2"
+                                                clearable
+                                                v-model="trans.nik"
+                                                @change="getTransportDetail('driver', trans.nik, transIndex)"
+                                            ></v-text-field>
+                                        </v-card>
+                                    </v-row>
+                                    <!-- <v-text-field
+                                        v-if="typeof loadingLine.detailDialog.transportationIndex == 'number'" 
+                                        :disabled="loadingLine.detailDialog.transportationIndex === null || numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)"
+                                    -->
                                     <v-text-field
+                                        ref="scanLabelLoadingInput"
+                                        data-aos="zoom-in"
                                         prepend-inner-icon="mdi-qrcode-scan"
                                         v-model="loadingLine.detailDialog.inputs.scanner.model"
                                         @change="scannerUpdate"
                                         color="green"
                                         label="Input Scan Label"
-                                        placeholder="Klick here before scan..."
+                                        placeholder="Input scan here..."
                                         class="text-center mt-2"
                                         outlined
                                         rounded
@@ -521,52 +602,59 @@
                                         :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                                         :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                                     ></v-text-field>
-                                    <v-expansion-panels class="mb-2">
-                                        <v-expansion-panel class="rounded-xl" v-if="loadingLine.detailDialog.inputs.scanner.farmers">
-                                            <v-expansion-panel-header class="rounded-xl">
-                                                <span>
-                                                    <v-icon color="dark">mdi-text-box-check</v-icon> Show Lists
-                                                </span>
-                                            </v-expansion-panel-header>
-                                            <v-expansion-panel-content>
-                                                <v-data-table
-                                                    :headers="loadingLine.detailDialog.inputs.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
-                                                    :items="loadingLine.detailDialog.inputs.scanner.farmers"
-                                                >
-                                                    <template v-slot:item.check="{item}">
-                                                        <v-icon v-if="item.bags_number.length ==  item.bags_number_loaded.length" color="green">mdi-check-circle</v-icon>
-                                                        <v-icon v-else color="red">mdi-close-circle</v-icon>
-                                                    </template>
-                                                    <template v-slot:item.bags_number="{item}">
-                                                        {{ item.bags_number.length }}
-                                                    </template>
-                                                    <template v-slot:item.bags_number_loaded="{item}">
-                                                        {{ item.bags_number_loaded.length }}
-                                                    </template>
-                                                    <template v-slot:item.bags_left="{item}">
-                                                        <v-menu content-class="rounded-xl" scrollable>
-                                                            <template v-slot:activator="{attrs, on}">
-                                                                <v-btn v-bind="attrs" :disabled="item.bags_number.length -item.bags_number_loaded.length == 0" v-on="on" :color="`${item.bags_number.length -item.bags_number_loaded.length > 0 ? 'red' : 'green'} white--text`" rounded small>
-                                                                    {{  item.bags_number.length -item.bags_number_loaded.length }}
-                                                                </v-btn>
-                                                            </template>
-                                                            <v-card v-if="item.bags_number.length - item.bags_number_loaded.length > 0">
-                                                                <v-card-title class="d-flex justify-center pt-2">
-                                                                    <small class="gray--text">Labels Left:</small><br>
-                                                                </v-card-title>
-                                                                <v-card-text>
-                                                                    <strong>{{ getNumberBagsLeft(item.bags_number, item.bags_number_loaded) }}</strong>
-                                                                </v-card-text>
-                                                            </v-card>
-                                                        </v-menu>
-                                                    </template>
-                                                </v-data-table>
-                                            </v-expansion-panel-content>
-                                        </v-expansion-panel>
-                                    </v-expansion-panels>
+                                </v-tab-item>
+                                <v-tab-item>
+                                    <v-data-table
+                                        v-if="loadingLine.detailDialog.inputs.scanner.farmers"
+                                        :headers="loadingLine.detailDialog.inputs.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
+                                        :items="loadingLine.detailDialog.inputs.scanner.farmers"
+                                    >
+                                        <template v-slot:item.check="{item}">
+                                            <v-icon v-if="item.bags_number.length ==  item.bags_number_loaded.length" color="green">mdi-check-circle</v-icon>
+                                            <v-icon v-else color="red">mdi-close-circle</v-icon>
+                                        </template>
+                                        <template v-slot:item.bags_number="{item}">
+                                            {{ item.bags_number.length }}
+                                        </template>
+                                        <template v-slot:item.bags_number_loaded="{item}">
+                                            {{ item.bags_number_loaded.length }}
+                                        </template>
+                                        <template v-slot:item.bags_left="{item}">
+                                            <v-menu content-class="rounded-xl" scrollable>
+                                                <template v-slot:activator="{attrs, on}">
+                                                    <v-btn v-bind="attrs" :disabled="item.bags_number.length -item.bags_number_loaded.length == 0" v-on="on" :color="`${item.bags_number.length -item.bags_number_loaded.length > 0 ? 'red' : 'green'} white--text`" rounded small>
+                                                        {{  item.bags_number.length -item.bags_number_loaded.length }}
+                                                    </v-btn>
+                                                </template>
+                                                <v-card v-if="item.bags_number.length - item.bags_number_loaded.length > 0">
+                                                    <v-card-title class="d-flex justify-center pt-2">
+                                                        <small class="gray--text">Labels Left:</small><br>
+                                                    </v-card-title>
+                                                    <v-card-text>
+                                                        <strong>{{ getNumberBagsLeft(item.bags_number, item.bags_number_loaded) }}</strong>
+                                                    </v-card-text>
+                                                </v-card>
+                                            </v-menu>
+                                        </template>
+                                    </v-data-table>
                                 </v-tab-item>
                             </v-tabs-items>
                         </div>
+                        <!-- Snackbar -->
+                        <v-snackbar
+                        v-model="loadingLine.detailDialog.snackbar.show"
+                        :color="loadingLine.detailDialog.snackbar.color"
+                        :timeout="5000"
+                        rounded="xl"
+                        >
+                            <div class="d-flex justify-between">
+                                <p class="mb-0">
+                                    {{ loadingLine.detailDialog.snackbar.text }}
+                                </p>
+                                <v-spacer></v-spacer>
+                                <v-icon small class="pl-1" @click="loadingLine.detailDialog.snackbar.show = false">mdi-close-circle</v-icon>
+                            </div>
+                        </v-snackbar>
                     </v-card-text>
                     <v-card-actions v-if="loadingLine.detailDialog.loading == false && loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'" data-aos="fade-up" data-aos-delay="600">
                         <v-divider class="mx-2"></v-divider>
@@ -2254,6 +2342,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import { QrcodeStream } from "vue-qrcode-reader"
+import trucksJSON from '@/utils/trucks'
 
 export default {
     components: {
@@ -2275,6 +2364,9 @@ export default {
             imageUrl: localStorage.getItem('BaseUrl'),
             baseUrl: localStorage.getItem('BaseUrlGet'),
             token: localStorage.getItem('token'),
+        },
+        dataJSON: {
+            trucks: trucksJSON
         },
         calendar: {
             colors: ['green', 'teal'],
@@ -2441,8 +2533,8 @@ export default {
         loadingLine: {
             datePicker: {
                 loading: false,
-                model: moment().format('Y-MM-DD'),
-                modelShow: moment().format('DD MMMM Y'),
+                model: moment('2023-01-31').format('Y-MM-DD'),
+                modelShow: moment('2023-01-31').format('DD MMMM Y'),
                 show: false,
             },
             detailDialog: {
@@ -2481,10 +2573,29 @@ export default {
                     }
                 },
                 leftLabelsDialog: false,
+                listLabelDetail: [],
                 loading: false,
                 loadingText: 'Loading...',
                 model: null,
                 show: false,
+                snackbar: {
+                    color: '',
+                    show: false,
+                    text: '',
+                    timeout: 10000,
+                },
+                transportationIndex: null,
+                transportations: [
+                    {
+                        driver_detail: null,
+                        loaded_labels: [],
+                        truck_detail: null,
+                        progression: 0,
+                        plat_no: '',
+                        nik: '',
+                        total_loaded: 0,
+                    }
+                ]
             },
             loading: false,
             loadingText: null,
@@ -3253,49 +3364,76 @@ export default {
             }
         },
         // LOADING LINE
+        addMoreTransportation() {
+            this.loadingLine.detailDialog.transportations.push({
+                driver_detail: null,
+                loaded_labels: [],
+                truck_detail: null,
+                progression: 0,
+                plat_no: '',
+                nik: '',
+                total_loaded: 0,
+            })
+            this.loadingLine.detailDialog.transportationIndex = null
+        },
         async getLoadingLineDetailFFData(id) {
-            this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
-            this.loadingLine.detailDialog.loading = true
-            this.loadingLine.detailDialog.show = true
-            
-            // reset
-            this.loadingLine.detailDialog.inputs.scanner.farmers = []
-            this.loadingLine.detailDialog.inputs.scanner.values = []
-            this.loadingLine.detailDialog.inputs.scanner.labels = []
-            this.loadingLine.detailDialog.inputs.scanner.alert.show = false
-            this.loadingLine.detailDialog.inputs.scanner.alert.text = ``
-            this.loadingLine.detailDialog.inputs.scanner.alert.color = ''
-            this.loadingLine.detailDialog.differentTotalBags = false
-            this.loadingLine.detailDialog.tabs.open = 'all'
-            
-            let url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
-            const params = {
-                ff_no: id,
-                program_year: this.generalSettings.programYear
-            }
-            if (this.generalSettings.type.model == 'Umum') {
-                delete params.ff_no
-                params.mou_no = id
-                url = `${this.apiConfig.baseUrl}GetLoadingLineDetailLahanUmum?`
-            }
-
-            await axios.get(`${url + new URLSearchParams(params)}`, {
-                headers: {
-                    Authorization: `Bearer ${this.apiConfig.token}`
+            try {
+                this.loadingLine.detailDialog.loadingText = 'Getting All Labels data...'
+                this.loadingLine.detailDialog.loading = true
+                this.loadingLine.detailDialog.show = true
+                
+                // reset
+                this.loadingLine.detailDialog.inputs.scanner.farmers = []
+                this.loadingLine.detailDialog.inputs.scanner.values = []
+                this.loadingLine.detailDialog.inputs.scanner.labels = []
+                this.loadingLine.detailDialog.inputs.scanner.alert.show = false
+                this.loadingLine.detailDialog.inputs.scanner.alert.text = ``
+                this.loadingLine.detailDialog.inputs.scanner.alert.color = ''
+                this.loadingLine.detailDialog.differentTotalBags = false
+                this.loadingLine.detailDialog.tabs.open = 'all'
+                this.loadingLine.detailDialog.transportationIndex = null
+                this.loadingLine.detailDialog.transportations = [{
+                    driver_detail: null,
+                    loaded_labels: [],
+                    truck_detail: null,
+                    progression: 0,
+                    plat_no: '',
+                    nik: '',
+                    total_loaded: 0
+                }]
+                
+                let url = `${this.apiConfig.baseUrl}GetLoadingLineDetailFF?`
+                const params = {
+                    ff_no: id,
+                    program_year: this.generalSettings.programYear
                 }
-            }).then(res => {
+                if (this.generalSettings.type.model == 'Umum') {
+                    delete params.ff_no
+                    params.mou_no = id
+                    url = `${this.apiConfig.baseUrl}GetLoadingLineDetailLahanUmum?`
+                }
+    
+                const res = await axios.get(`${url + new URLSearchParams(params)}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.apiConfig.token}`
+                    }
+                })
+
                 this.loadingLine.detailDialog.model = res.data
 
                 const total_farmer = res.data.distribution_details.length
                 let total_farmer_loaded = 0
-                res.data.distribution_details.forEach(val => {
+                let listLabelDetail = []
+                await res.data.distribution_details.forEach(val => {
                     this.loadingLine.detailDialog.inputs.scanner.labels.push(...val.bags_number)
                     this.loadingLine.detailDialog.inputs.scanner.values.push(...val.bags_number_loaded)
                     this.loadingLine.detailDialog.inputs.scanner.farmers.push(val)
+                    listLabelDetail.push(...val.labels_list)
 
                     if (val.is_loaded == 1) total_farmer_loaded += 1
                 })
-
+                this.loadingLine.detailDialog.listLabelDetail = await listLabelDetail
+                // console.log(listLabelDetail)
                 if (total_farmer == total_farmer_loaded) this.loadingLine.detailDialog.inputs.disabledSave = true
                 else this.loadingLine.detailDialog.inputs.disabledSave = false
 
@@ -3304,13 +3442,15 @@ export default {
                     this.loadingLine.detailDialog.model.total_bags = this.loadingLine.detailDialog.inputs.scanner.labels.length
                     this.loadingLine.detailDialog.differentTotalBags = true 
                 }
-            }).catch(err => {
+
+            } catch (err) {
                 console.error(err)
                 this.sessionEnd(err)
-            }).finally(() => {
+
+            } finally {
                 this.loadingLine.detailDialog.loading = false
                 this.loadingLine.detailDialog.loadingText = null
-            })
+            }
         },
         async getLoadinglineTableData() {
             if (this.accessModul.loadingLine) {
@@ -3339,6 +3479,52 @@ export default {
                     this.loadingLine.table.loading = false
                 })
             }
+        },
+        getProgressionColor(progress) {
+            if (progress >= 0 && progress < 50) return 'orange'
+            else if (progress >= 50 && progress < 90) return 'blue'
+            else if (progress <= 100) return 'green'
+            else if (progress > 100) return 'red'  
+        },
+        async getTransportDetail(type, id, transIndex) {
+            if (type && id) {
+                try {
+                    let checkExisting = await this.checkExistingTruckDriver(type, id)
+                    if (checkExisting === false) {
+                        this.loadingLine.detailDialog.loading = true
+                        this.loadingLine.detailDialog.loadingText = `Getting ${type.toUpperCase()} data...`
+                        let url = type == 'truck' ? `GetDetailTruck?plat_no=${id}` : (type == 'driver' ? `GetDetailDriver?nik=${id}` : null)
+                        if (url) {
+                            const res = await axios.get(`${this.$store.getters.getApiUrl(url)}`, this.$store.state.apiConfig)
+                            if (type == 'truck') this.loadingLine.detailDialog.transportations[transIndex].truck_detail = res.data.data.result
+                            else if (type == 'driver') this.loadingLine.detailDialog.transportations[transIndex].driver_detail = res.data.data.result
+                            this.loadingLine.detailDialog.snackbar.color = 'green'
+                            this.loadingLine.detailDialog.snackbar.text = `${type.toUpperCase()} data selected`
+                        } else {
+                            this.loadingLine.detailDialog.snackbar.color = 'red'
+                            this.loadingLine.detailDialog.snackbar.text = 'Failed to get data!'
+                        }
+                    } else {
+                        this.loadingLine.detailDialog.transportations[transIndex][type == 'driver' ? 'nik' : 'plat_no'] = ''
+                        this.loadingLine.detailDialog.snackbar.color = 'orange'
+                        this.loadingLine.detailDialog.snackbar.text = `Data ${type.toUpperCase()} exist!`
+                    }
+                } catch (err) {
+                    this.loadingLine.detailDialog.snackbar.color = 'red'
+                    this.loadingLine.detailDialog.snackbar.text = `Failed to get data ${type.toUpperCase()}!`
+
+                    if (err.response != undefined) this.sessionEnd(err)
+                    else console.error(err)
+                } finally {
+                    this.loadingLine.detailDialog.snackbar.show = true
+                    this.loadingLine.detailDialog.loading = false
+                }
+            }
+        },
+        async checkExistingTruckDriver(type, id) {
+            let dataExist = await this.loadingLine.detailDialog.transportations.filter(val => val[type == 'driver' ? 'nik' : 'plat_no'] === id)
+            if (dataExist.length > 1) return true
+            else return false
         },
         async FinishLoadedDistributionBagsNumber(ff_no) {
             this.loadingLine.detailDialog.show = false
@@ -3370,6 +3556,12 @@ export default {
                 this.snackbar.show = true
             })
         },
+        async startScanningAfterSelectingTransportation(transIndex) {
+            this.loadingLine.detailDialog.transportationIndex = await transIndex
+            setTimeout(() => {
+                this.$refs.scanLabelLoadingInput.focus()
+            }, 100);
+        },
         async UpdateLoadedDistributionBagsNumber(id) {
             this.loadingLine.detailDialog.show = false
             this.$store.state.loadingOverlayText = 'Updating loaded labels data...'
@@ -3387,11 +3579,7 @@ export default {
                 dataToPost.mou_no = id
             }
             
-            await axios.post(url, dataToPost, {
-                headers: {
-                    Authorization: `Bearer ${this.apiConfig.token}`
-                }
-            }).then(res => {
+            await axios.post(url, dataToPost, this.$store.state.apiConfig).then(res => {
                 this.snackbar.color = 'green'
                 this.snackbar.text = 'Updating labels loaded succeed!'
                 this.loadingLine.detailDialog.inputs.scanner.values = []
@@ -3691,7 +3879,7 @@ export default {
             this.distributionReport.dialogs.detail.show = false
             this.$store.state.loadingOverlay = true
             if (this.distributionReport.dialogs.scanLahanUmum.photo.model) {
-                data.distribution_photo = await this.uploadPhotos(`${luData.mou_no}-${moment().valueOf()}`, this.distributionReport.dialogs.scanLahanUmum.photo.model)
+                data.distribution_photo = await this.uploadPhotos(`${luData.mou_no.replace(/\s/g, '').replaceAll('/', '_')}-${moment().valueOf()}`, this.distributionReport.dialogs.scanLahanUmum.photo.model)
             }
             this.$store.state.loadingOverlayText = 'Saving distributed labels...'
             // console.log(data)
@@ -4178,7 +4366,7 @@ export default {
 
             let audio = null
             const labels = this.loadingLine.detailDialog.inputs.scanner.labels
-            console.log(labels)
+            // console.log(labels)
             if (existsScannedLabel.includes(newLabel) == false && labels.includes(newLabel) == true) {
                 this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel)
                 audio = new Audio(require('@/assets/audio/success.mp3'))
@@ -4187,12 +4375,26 @@ export default {
                 this.loadingLine.detailDialog.inputs.scanner.alert.color = 'green'
 
                 // update table per farmer data table
-                console.log(this.loadingLine.detailDialog.inputs.scanner.farmers)
+                // console.log(this.loadingLine.detailDialog.inputs.scanner.farmers)
                 await this.loadingLine.detailDialog.inputs.scanner.farmers.map((farmer, fIndex) => {
                     if (farmer.bags_number.includes(newLabel)) {
                         this.loadingLine.detailDialog.inputs.scanner.farmers[fIndex].bags_number_loaded.push(newLabel)
                     }
                 })
+
+                // update progression in truck
+                // const transIndex = await this.loadingLine.detailDialog.transportationIndex
+                // const maxCap = await this.loadingLine.detailDialog.transportations[transIndex].truck_detail.max_capacity || 1
+                // let loadedTruck = 0
+                // await this.loadingLine.detailDialog.transportations[transIndex].loaded_labels.push(newLabel)
+                // await this.loadingLine.detailDialog.transportations[transIndex].loaded_labels.forEach(transLabel => {
+                //     const newLabelDetail = this.loadingLine.detailDialog.listLabelDetail.filter(lld => lld.bag_number == transLabel)
+                //     newLabelDetail.forEach(nld => {
+                //         loadedTruck += parseInt(nld.tree_amount)
+                //     })
+                // })
+                // this.loadingLine.detailDialog.transportations[transIndex].progression = parseInt(loadedTruck) / parseInt(maxCap) * 100
+
             } else if (existsScannedLabel.includes(newLabel) == true) {
                 audio = new Audio(require('@/assets/audio/error.mp3'))
 
