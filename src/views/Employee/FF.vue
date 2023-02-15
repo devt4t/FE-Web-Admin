@@ -35,7 +35,7 @@
       </v-dialog>
 
       <!-- Change FF Modal -->
-      <ChangeFFModal :show="dialogs.changeFF.show" @dialogAct="dialogsAction($event)" />
+      <ChangeFFModal :show="dialogs.changeFF.show" :id="dialogs.changeFF.id" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @refreshTable="initialize" />
 
     <v-data-table
       :headers="headers"
@@ -525,7 +525,7 @@
           left
           offset-y
           transition="slide-y-transition"
-          :close-on-content-click="false"
+          :close-on-content-click="true"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" color="dark">
@@ -533,91 +533,97 @@
             </v-icon>
           </template>
 
-          <v-list class="d-flex flex-column align-stretch">
-            <v-list-item>
-              <v-btn
-                dark
-                rounded
-                @click="showDetail(item)"
-                color="info"
-                block
-              >
+          <v-card class="rounded-xl pa-2">
+            <v-btn
+              dark
+              rounded
+              @click="showDetail(item)"
+              color="info"
+              class="mb-1"
+              block
+              small
+            >
               <v-icon class="mr-1" @click="showDetail(item)" small color="white">
                   mdi-information-outline
               </v-icon>
-                Detail
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'">
-              <v-btn
-                vi
-                dark
-                block
-                rounded
-                @click="editItem(item)"
-                color="warning"
-              >
+              Detail
+            </v-btn>
+            <v-btn
+              v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'"
+              dark
+              class="mb-1"
+              block
+              small
+              rounded
+              @click="editItem(item)"
+              color="warning"
+            >
               <v-icon class="mr-1" small color="white">
                 mdi-pencil
               </v-icon>
-                Edit
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDDelete == true || User.role_group == 'IT' ) && item.active != 1">
-              <v-btn
-                dark
-                rounded
-                @click="deleteItem(item)"
-                color="red"
-                block
-              >
+              Edit
+            </v-btn>
+            <v-btn
+              v-if="(RoleAccesCRUDDelete == true || User.role_group == 'IT' ) && item.active != 1"
+              dark
+              rounded
+              @click="deleteItem(item)"
+              color="red"
+              class="mb-1"
+              block
+              small
+            >
               <v-icon class="mr-1" small color="white">
                 mdi-delete
               </v-icon>
-                Delete
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="User.role_group == 'IT' && item.active == 1">
-              <v-btn
-                dark
-                rounded
-                @click="nonactivateFF(item)"
-                color="red white--text"
-              >
-              <v-icon class="mr-1" small color="white">
-                mdi-account-off
-              </v-icon>
-                Nonactivate
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="User.role_group == 'IT' && item.active == 0">
-              <v-btn
-                dark
-                rounded
-                @click="activateFF(item)"
-                color="green white--text"
-              >
-              <v-icon class="mr-1" small color="white">
-                mdi-account-check
-              </v-icon>
-                Activate
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="User.role_group == 'IT'">
-              <v-btn
-                dark
-                rounded
-                @click="() => {dialogs.changeFF.show = true}"
-                color="red white--text"
-                block
-              >
-              <v-icon class="mr-1" small color="white">
-                mdi-account-convert
-              </v-icon>
-                Change FC
-              </v-btn>
-            </v-list-item>
-          </v-list>
+              Delete
+            </v-btn>
+            <v-btn
+              v-if="User.role_group == 'IT' && item.active == 1"
+              dark
+              rounded
+              @click="nonactivateFF(item)"
+              color="red white--text"
+              class="mb-1"
+              block
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-account-off
+            </v-icon>
+              Nonactivate
+            </v-btn>
+            <v-btn
+              v-if="User.role_group == 'IT' && item.active == 0"
+              dark
+              rounded
+              @click="activateFF(item)"
+              color="green white--text"
+              class="mb-1"
+              block
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-account-check
+            </v-icon>
+              Activate
+            </v-btn>
+            <v-btn
+              dark
+              rounded
+              @click="() => {dialogs.changeFF.id = item.id;dialogs.changeFF.show = true;}"
+              color="red white--text"
+              class="mb-0"
+              block
+              :disabled="User.role_group != 'IT'"
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-account-convert
+            </v-icon>
+              Change FC
+            </v-btn>
+          </v-card>
         </v-menu>
       </template>
     </v-data-table>
@@ -643,6 +649,7 @@ export default {
     dialogs: {
       changeFF: {
         show: false,
+        id: ''
       },
       nonactivateConfirmation: {
         show: false,
@@ -754,7 +761,7 @@ export default {
 
     snackbar: false,
     textsnackbar: "Test",
-    timeoutsnackbar: 2000,
+    timeoutsnackbar: 5000,
     colorsnackbar: null,
     user_id: "",
 
@@ -772,6 +779,7 @@ export default {
   methods: {
     dialogsAction(dialog) {
       this.dialogs[dialog.name].show = dialog.status
+      if (dialog.name == 'changeFF' && dialog.status == false) this.dialogs[dialog.name].id = ''
     },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
@@ -1398,6 +1406,11 @@ export default {
           this.$store.state.loadingOverlay = false
           this.$store.state.loadingOverlayText = null
       })
+    },
+    showSnackbar(text,color) {
+      this.textsnackbar = text
+      this.colorsnackbar = color
+      this.snackbar = true
     }
   },
 };

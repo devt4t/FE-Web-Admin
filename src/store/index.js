@@ -43,6 +43,7 @@ export default new Vuex.Store({
         JustLoadingLineModul: JustLoadingLineModul
       }
     },
+    User: JSON.parse(localStorage.getItem('User')),
   },
   getters: {
     getApiUrl: (state) => (url) => {
@@ -53,6 +54,12 @@ export default new Vuex.Store({
     },
     numberFormat: () => (num) =>  {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    numberFormat: () => (num) =>  {
+        return new Intl.NumberFormat('id-ID').format(num)
+    },
+    dateFormat: () => (date, format) => {
+        return moment(date).format(format)
     },
   },
   mutations: {

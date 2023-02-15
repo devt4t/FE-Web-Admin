@@ -1602,6 +1602,14 @@
                             <strong>{{ defaultItem.qty_std || 0 }}</strong>
                           </td>
                         </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Waktu Sinkron
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.created_at ? $store.getters.dateFormat(defaultItem.created_at, 'HH:MM, DD MMMM Y') : '-' }}</strong>
+                          </td>
+                        </tr>
                       </tbody>
                     </template>
                   </v-simple-table>

@@ -71,9 +71,9 @@
               <v-col cols="3" class="d-none d-md-block">
                 <v-row align="center" justify="center" class="mb-0">
                   <v-img
-                    max-width="200"
-                    src="/images/dashboard_logo.jpg"
-                    style="margin-top: -70px;"
+                    max-width="170px"
+                    :src="require('@/assets/female-investors.gif')"
+                    style="position: absolute;top: -10px;"
                   ></v-img>
                 </v-row>
               </v-col>

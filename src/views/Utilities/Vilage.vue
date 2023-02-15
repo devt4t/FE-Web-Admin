@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -8,13 +9,16 @@
     ></v-breadcrumbs>
 
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
+      multi-sort
       :headers="headers"
       :items="dataobject"
       :search="search"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -24,13 +28,15 @@
           ></v-text-field>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-btn dark class="mb-2" @click="showAddModal()" color="green">
+          <v-btn dark class="mb-2" @click="showAddModal()" color="green" rounded>
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog" max-width="500px" content-class="rounded-xl">
             <v-card>
               <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
+                <v-spacer></v-spacer>
+                <span class="">{{ formTitle }}</span>
+                <v-spacer></v-spacer>
               </v-card-title>
               <v-card-text>
                 <v-container>
