@@ -2325,8 +2325,8 @@ export default {
   }),
 
   mounted() {
-    this.firstAccessPage();
     this.programYear = this.$store.state.programYear.model
+    this.firstAccessPage();
     // localStorage.setItem("token", this.authtoken);
     // this.getMU();
   },
@@ -2377,6 +2377,7 @@ export default {
         this.textsnackbar = "SUCCESSSSS YEAYYY!"
         this.timeoutsnackbar = 2000
         this.colorsnackbar = 'green'
+        this.initialize()
         this.updateDataLahan.data.text = ''
       } catch (err) {
         if (err.message != undefined) this.textsnackbar = err.message
