@@ -2,6 +2,7 @@
     <div>
         <!-- breadcrumbs -->
         <v-breadcrumbs
+            :dark="$store.state.theme == 'dark'"
             data-aos="fade-right"
             class="breadcrumbsmain"
             :items="itemsbr"

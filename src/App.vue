@@ -1,7 +1,7 @@
 <template>
   <v-app id="Trees">
     <!-- Sidebar -->
-    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="$store.state.theme == 'dark'" app :class="`${$store.state.theme == 'dark' ? 'grey darken-4' : ''} rounded-xl ml-2 mt-2 elevation-5`" style="height: auto;max-height: 97.5vh;">
+    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="$store.state.theme == 'dark'" app :class="`custom-sidebar ${$store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'} rounded-xl ml-2 mt-2 elevation-5`" style="height: auto;max-height: 97.5vh;">
       <template v-slot:prepend>
         <v-list-item>
           <v-list-item-content class="text-center">
@@ -18,8 +18,9 @@
         </v-list-item>
       </template>
 
-      <v-list color="transparent" rounded>
-        <v-list-item color="#71AF34" :to="DashboardLink" link>
+      <v-list color="transparent" rounded >
+        <v-list-item color="#71AF34" :to="DashboardLink" link 
+          :ripple="false">
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard</v-icon>
           </v-list-item-icon>
@@ -34,6 +35,7 @@
           no-action
           color="#71AF34"
           class="fontall"
+          :ripple="false"
         >
           <template v-slot:activator>
             <v-list-item-content>
@@ -50,6 +52,7 @@
             :to="child.to"
             link
             dense
+            :ripple="false"
           >
             <v-list-item-content>
               <v-list-item-title
@@ -63,7 +66,7 @@
 
       <template v-slot:append>
         <div class="text-center pa-2">
-          <v-btn :color="`${$store.state.theme == 'light' ? 'yellow white--text' : 'yellow--text'} darken-2`" fab x-small class="mr-1" @click="$store.state.theme = 'light'">
+          <v-btn :color="`${$store.state.theme == 'light' ? 'orange white--text' : 'orange--text white'} darken-2`" fab x-small class="mr-1" @click="$store.state.theme = 'light'">
             <v-icon>mdi-weather-sunny</v-icon>
           </v-btn>
           <v-btn color="red white--text" fab small class="" @click="logout()">
@@ -83,7 +86,7 @@
     </v-navigation-drawer>
 
     <!-- TopBar -->
-    <v-app-bar class="mx-2 ml-2 ml-lg-5 mt-2 rounded-xl" v-if="isLogin" app>
+    <v-app-bar :class="`${$store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'} mx-2 ml-2 ml-lg-5 mt-2 rounded-xl`" :dark="$store.state.theme == 'dark'" v-if="isLogin" app>
       <v-app-bar-nav-icon
         @click="drawer = !drawer"
         
@@ -142,7 +145,7 @@
     </v-app-bar>
 
     <!-- footer -->
-    <v-app-bar v-if="isLogin" class="mx-5 mr-3 mb-2 rounded-xl" app dense bottom absolute :dark="$store.state.theme == 'dark'" >
+    <v-app-bar v-if="isLogin" :class="`${$store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'} mx-5 mr-3 mb-2 rounded-xl`" app dense bottom absolute :dark="$store.state.theme == 'dark'" >
       <v-col
         :class="`text-center green--text ${$store.state.theme == 'dark' ? 'text--lighten-4' : 'text--darken-1'}`"
         cols="12"
@@ -152,7 +155,7 @@
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main :class="`${$route.name !== 'Distribusi' ? 'gradient-animate' : 'green lighten-2'}`">
+    <v-main :class="`${$route.name !== 'Distribusi' ? 'gradient-animate' : 'green lighten-2'} ${$store.state.theme}`">
       <div class="waves" v-if="$route.name !== 'Distribusi'">
         <div class="wave"></div>
         <div class="wave"></div>
@@ -426,6 +429,15 @@ export default {
 </script>
 
 <style>
+/* THEME _________________________________________________________________________________ */
+.dark-bg-gradient {
+  background: rgb(55,55,55);
+  background: linear-gradient(325deg, rgba(55,55,55,1) 0%, rgba(21,21,21,1) 100%);
+}
+.light-bg-gradient {
+  background: rgb(255,255,255);
+  /* background: linear-gradient(325deg, rgba(255,255,255,1) 0%, rgba(215,255,225,1) 100%); */
+}
 /* width */
 ::-webkit-scrollbar {
   width: 7px;
@@ -448,12 +460,16 @@ export default {
   background: #71AF34;
 }
 
+/* BG Wave animation _________________________________________________________________________________ */
 /* Gradient Animate */
 .gradient-animate {
   background: linear-gradient(315deg, #3D6036 3%, #70A14F 38%, #a7ea7b 68%, #76d239 98%);
   animation: gradient 15s ease infinite;
   background-size: 400% 400%;
   background-attachment: fixed;
+}
+.gradient-animate.dark {
+  background: linear-gradient(315deg, #1a2518 3%, #334329 38%, #46682f 68%, #2a4915 98%);
 }
 @keyframes gradient {
     0% {
@@ -514,5 +530,21 @@ export default {
         transform: translateX(1);
     }
 }
-
+/* Sidebar Custom _________________________________________________________________________________ */
+.custom-sidebar .v-list-item--active::before, .custom-sidebar .v-list-item::before{
+  width: 5px;
+  border-radius: 10px;
+}
+.custom-sidebar .v-list-item:hover .v-list-item__content,
+.custom-sidebar .v-list-item:hover .v-list-item__icon {
+  opacity: .7;
+}
+.custom-sidebar .v-list-item.v-list-item--dense.v-list-item--link {
+  overflow: visible;
+}
+.custom-sidebar .v-list-item.v-list-item--dense.v-list-item--link::before,
+.custom-sidebar .v-list-item--active.v-list-item--dense.v-list-item--link::before {
+  width: 4px;
+  margin-left: 45px;
+}
 </style>

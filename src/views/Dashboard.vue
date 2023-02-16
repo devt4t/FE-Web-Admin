@@ -1,8 +1,8 @@
 <template>
   <v-container class="mt-5 pl-3 pl-lg-6" fluid>
     <v-row style="margin-top: -15px">
-      <v-col cols="12" md="12">
-        <v-card data-aos="fade-down" rounded="xl" >
+      <v-col cols="12" md="12" data-aos="fade-down" >
+        <v-card rounded="xl" :dark="$store.state.theme == 'dark'">
           <v-card-title class="fontall" v-if="isMorning()">
             Good Morning, {{ fullnameadmin }}</v-card-title
           >
@@ -28,7 +28,7 @@
                   dense
                   color="success"
                   item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
+                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
                   hide-details
                   rounded
                   v-model="options.programYear"
@@ -43,7 +43,7 @@
                   dense
                   color="success"
                   item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
+                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
                   hide-details
                   rounded
                   v-model="options.source.model"
@@ -57,7 +57,7 @@
                   dense
                   color="success"
                   item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
+                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
                   hide-details
                   rounded
                   v-model="options.province.model"

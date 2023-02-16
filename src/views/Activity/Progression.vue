@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
       data-aos="fade-right"
       class="breadcrumbsmain"
       :items="[{
@@ -53,7 +54,7 @@
 
     <v-expansion-panels v-model="expansions.model" class="mb-6 px-3" multiple data-aos="fade-up" data-aos-delay="200">
       <!-- Filters Panel -->
-      <v-expansion-panel class="rounded-xl ">
+      <v-expansion-panel class="rounded-xl " >
         <v-expansion-panel-header>
           <v-btn dark rounded color="green" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Set Progression Content</v-btn>
         </v-expansion-panel-header>

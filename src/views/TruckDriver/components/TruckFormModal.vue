@@ -6,7 +6,7 @@
             persistent
         >
             <v-card>
-                <v-card-title class="mb-1 grey darken-3 rounded-xl">
+                <v-card-title class="mb-1 headermodalstyle rounded-xl">
                     <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-truck</v-icon></v-btn> Truck Form</span>
                     <v-icon color="red lighten-1" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
                 </v-card-title>

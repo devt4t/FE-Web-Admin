@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
