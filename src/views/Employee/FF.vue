@@ -49,6 +49,7 @@
       <template v-slot:top>
         <v-toolbar flat rounded="xl">
           <v-text-field
+          color="green"
             outlined
             rounded
             dense
