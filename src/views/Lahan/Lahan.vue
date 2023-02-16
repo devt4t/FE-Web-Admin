@@ -1804,11 +1804,11 @@
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn> -->
           <v-btn
-            dark
             class="mb-2 mr-1 ml-2 d-none d-md-block"
             @click="download()"
-            color="blue"
+            color="blue white--text"
             rounded
+            :disabled="!typegetdataExcel"
           >
             <v-icon class="mr-1" small>mdi-microsoft-excel</v-icon> Export
           </v-btn>
