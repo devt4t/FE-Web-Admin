@@ -1612,7 +1612,7 @@
         </v-card> 
       </v-dialog>
 
-      <!-- Modal Update Lat Long -->
+      <!-- Modal Mass Insert Lahan -->
       <v-dialog v-model="insertDataLahan.show" max-width="1000px" content-class="rounded-xl" scrollable>
         <v-card>
           <v-card-title class="mb-1 headermodalstyle"
@@ -1634,6 +1634,35 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn @click="saveMassInsertDataLahan" rounded color="info white--text px-5"><v-icon>mdi-content-save</v-icon> SAVE</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Mass Update Lat Long -->
+      <v-dialog v-model="updateDataLahan.show" max-width="1000px" content-class="rounded-xl" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle"
+            ><span class=""><v-icon class="mr-1 white--text">mdi-land-fields</v-icon> Mass Update Data Coordinate</span></v-card-title
+          >
+          <v-card-text>
+            <v-textarea
+              v-model="updateDataLahan.data.text"
+              class="mt-3"
+              color="green"
+              label="Input Data"
+              outlined
+              rounded
+              rows="1000"
+              auto-grow
+              placeholder=".lahan_no	latitude	longitude	;
+              10_0000009421	107,473890	-7,030280	;
+              ..."
+            ></v-textarea>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn @click="saveMassUpdateDataLahan" rounded color="info white--text px-5"><v-icon>mdi-content-save</v-icon> SAVE</v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
@@ -1794,13 +1823,13 @@
             content-class="rounded-xl"
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-icon v-bind="attrs" v-on="on" color="dark" :disabled="User.role_group != 'IT'">
+              <v-icon v-bind="attrs" v-on="on" color="dark" >
                 mdi-dots-vertical
               </v-icon>
             </template>
             <v-card class="pa-3 d-flex flex-column align-stretch justify-content-center">
-              <v-btn @click="insertDataLahan.show = true" rounded color="red white--text"><v-icon class="mr-1">mdi-land-fields</v-icon> Mass Insert Data Lahan</v-btn>
-              <v-btn :disabled="true" rounded color="info white--text" class="mt-2"><v-icon class="mr-1">mdi-map-check</v-icon> Update LatLong Lahan</v-btn>
+              <v-btn :disabled="User.role_group != 'IT'" @click="insertDataLahan.show = true" rounded color="red white--text"><v-icon class="mr-1">mdi-land-fields</v-icon> Mass Insert Data Lahan</v-btn>
+              <v-btn :disabled="User.role_group != 'IT' && User.role_name != 'GIS STAFF'" @click="updateDataLahan.show = true" rounded color="info white--text" class="mt-2"><v-icon class="mr-1">mdi-map-check</v-icon> Mass Update Lat Long</v-btn>
             </v-card>
           </v-menu>
         </v-row>
@@ -1926,6 +1955,12 @@ export default {
   name: "Lahan",
   data: () => ({
     insertDataLahan: {
+      show: false,
+      data: {
+        text: ''
+      }
+    },
+    updateDataLahan: {
       show: false,
       data: {
         text: ''
@@ -2299,7 +2334,6 @@ export default {
   watch: {
     programYear: {
       handler(newValue) {
-        this.$store.state.programYear.model = newValue
         this.initialize()
       }
     }
@@ -2324,6 +2358,29 @@ export default {
         this.insertDataLahan.data.text = ''
       } catch (err) {
         this.textsnackbar = "GAK KESIMPEEEEEEN! ERRORR"
+        this.timeoutsnackbar = 2000
+        this.colorsnackbar = 'red'
+      } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
+    },
+    async saveMassUpdateDataLahan() {
+      try {
+        this.updateDataLahan.show = false
+        this.$store.state.loadingOverlayText = 'Creating data...'
+        this.$store.state.loadingOverlay = true
+        const response = await axios.post(this.$store.getters.getApiUrl('MassUpdateLatLongLahan'),
+          { datas: this.updateDataLahan.data.text}, this.$store.state.apiConfig)
+        
+        this.textsnackbar = "SUCCESSSSS YEAYYY!"
+        this.timeoutsnackbar = 2000
+        this.colorsnackbar = 'green'
+        this.updateDataLahan.data.text = ''
+      } catch (err) {
+        if (err.message != undefined) this.textsnackbar = err.message
+        else this.textsnackbar = "GAK KESIMPEEEEEEN! ERRORR"
         this.timeoutsnackbar = 2000
         this.colorsnackbar = 'red'
       } finally {
@@ -2406,7 +2463,7 @@ export default {
         village: this.valueVillage,
         typegetdata: this.typegetdata,
         ff: this.valueFFcode,
-        program_year: this.$store.state.programYear.model
+        program_year: this.programYear
       }
       try {
         const response = await axios.get(
@@ -3754,31 +3811,24 @@ export default {
     },
 
     download() {
-      console.log(this.valueMUExcel);
-      console.log(this.valueTAExcel);
-      console.log(this.valueVillageExcel);
-      console.log(this.typegetdataExcel);
-      console.log(this.valueFFcodeExcel);
+      // console.log(this.valueMUExcel);
+      // console.log(this.valueTAExcel);
+      // console.log(this.valueVillageExcel);
+      // console.log(this.typegetdataExcel);
+      // console.log(this.valueFFcodeExcel);
+      const params = new URLSearchParams({
+        program_year: this.programYear,
+        mu: this.valueMUExcel,
+        ta: this.valueTAExcel,
+        village: this.valueVillageExcel,
+        typegetdata: this.typegetdataExcel,
+        ff: this.valueFFcodeExcel
+      })
       var str = this.BaseUrlGet;
       window.open(
         str.substring(0, str.length - 4) +
-          "ExportLahanTest?mu=" +
-          this.valueMUExcel +
-          "&ta=" +
-          this.valueTAExcel +
-          "&village=" +
-          this.valueVillageExcel +
-          "&typegetdata=" +
-          this.typegetdataExcel +
-          "&ff=" +
-          this.valueFFcodeExcel
-      );
-
-      // this.valueMUExcel = "";
-      // this.valueTAExcel = "";
-      // this.valueVillageExcel = "";
-      // this.typegetdataExcel = "";
-      // this.valueFFcodeExcel = "";
+          "ExportLahanTest?" + params
+      )
     },
 
     downloadSuperAdmin() {
