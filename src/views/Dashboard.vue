@@ -38,8 +38,10 @@
                   outlined
                   class="mt-2 mr-1"
                   style="max-width: 175px;"
+                  @change="initialize"
                 ></v-select>
                 <v-autocomplete
+                  disabled
                   dense
                   color="success"
                   item-color="success"
@@ -52,6 +54,7 @@
                   :rules="[(v) => !!v || 'Field is required']"
                   outlined
                   class="mt-2 mx-1"
+                  @change="initialize"
                 ></v-autocomplete>
                 <v-autocomplete
                   dense
@@ -66,6 +69,7 @@
                   :rules="[(v) => !!v || 'Field is required']"
                   outlined
                   class="mt-2 ml-1"
+                  @change="initialize"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="3" class="d-none d-md-block">
@@ -87,6 +91,7 @@
       <!-- TOGGLE BUTTON -->
       <v-col cols="12" md="3" class="">
         <v-card
+          v-if="loading == false"
           data-aos="fade-down"
           data-aos-delay="300"
           class="rounded-xl shadow-lg overflow-hidden"
@@ -122,6 +127,7 @@
       <!-- Total Petani -->
       <v-col cols="12" md="3" class="">
         <v-card
+          v-if="loading == false"
           data-aos="fade-down"
           data-aos-delay="400"
           class="rounded-xl shadow-lg"
@@ -168,6 +174,7 @@
       <!-- Total Lahan -->
       <v-col cols="12" md="3" class="">
         <v-card
+          v-if="loading == false"
           data-aos="fade-down"
           data-aos-delay="500"
           @click="$router.push('Lahan')"
@@ -214,6 +221,7 @@
       <!-- Total Pohon -->
       <v-col cols="12" md="3" class="">
         <v-card
+          v-if="loading == false"
           class="rounded-xl shadow-lg"
           max-width="344"
           data-aos="fade-down"
@@ -259,9 +267,10 @@
       </v-col>
     </v-row>
 
-    <v-row dense class="mt-3" v-if="SR.show === false">
+    <v-row dense class="mt-3">
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
         <v-card 
+          v-if="loading == false"
           data-aos="zoom-in"
           data-aos-delay="800" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
@@ -274,6 +283,7 @@
         </v-card>
 
         <v-card 
+          v-if="loading == false"
           data-aos="zoom-in"
           data-aos-delay="800" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
@@ -287,6 +297,7 @@
       </v-col>
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
         <v-card
+          v-if="loading == false"
           data-aos="zoom-in"
           data-aos-delay="900" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
@@ -299,6 +310,7 @@
         </v-card>
 
         <v-card
+          v-if="loading == false"
           data-aos="zoom-in"
           data-aos-delay="900" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
@@ -312,6 +324,7 @@
       </v-col>
       <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
         <v-card
+          v-if="loading == false"
           data-aos="zoom-in"
           data-aos-delay="1000" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
@@ -324,6 +337,7 @@
         </v-card>
 
         <v-card
+          v-if="loading == false"
           data-aos="zoom-in"
           data-aos-delay="1000" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
@@ -360,6 +374,7 @@ export default {
     // apexchart: VueApexCharts,
   },
   data: () => ({
+    loading: false,
     isMorning() {
       return new Date().getHours() < 12 ? true : false;
     },
@@ -508,10 +523,22 @@ export default {
     nameadmin: "",
 
     options: {
-      programYear: '2022',
+      programYear: '',
       province: {
-        model: 'All',
-        options: ['All', 'Jawa Barat', 'Jawa Tengah']
+        model: 'all',
+        options: [
+          { 
+            text: 'All',
+            value: 'all'
+          },
+          { 
+            text: 'Jawa Barat',
+            value: 'JB'
+          }, 
+          { 
+            text: 'Jawa Tengah',
+            value: 'JT'
+          }]
       },
       source: {
         model: 'Sosialisasi Tanam',
@@ -523,9 +550,10 @@ export default {
     }
   }),
   mounted() {
-    this.authtoken = localStorage.getItem("token");
-    this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
-    this.User = JSON.parse(localStorage.getItem("User"));
+    this.authtoken = localStorage.getItem("token")
+    this.BaseUrlGet = localStorage.getItem("BaseUrlGet")
+    this.User = JSON.parse(localStorage.getItem("User"))
+    this.options.programYear = this.$store.state.programYear.model
     if (this.User) {
       var name = this.User.name
       this.fullnameadmin = name
@@ -542,47 +570,56 @@ export default {
   },
   methods: {
     async initialize() {
-      this.loadtable = true;
-      this.$store.state.loadingOverlayText = 'Getting Dashboard datas...'
+      this.loading = true;
+      this.$store.state.loadingOverlayText = 'Getting Old Dashboard datas...'
       this.$store.state.loadingOverlay = true
       try {
         const response = await axios.get(this.BaseUrlGet + "Dashboard", {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
           },
-        });
-        if (response.data.length != 0) {
-          // this.loadtable = false;
+        })
+
+        this.$store.state.loadingOverlayText = 'Getting New Dashboard datas...'
+        const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardAll?${new URLSearchParams({
+          program_year: this.options.programYear,
+          source: this.options.source.model,
+          province: this.options.province.model
+        })}`), this.$store.state.apiConfig)
+        // console.log(totalData)
+        if (response.data.length != 0 && totalData.data) {
+          // this.loading = false;
           // console.log(response.data.data.result)
-          this.greeting = response.data.data.result.greeting;
-          this.day = response.data.data.result.day;
-          this.date = response.data.data.result.dateformat;
-          this.data1.Count = response.data.data.result.Getfarmer;
-          this.data2.Count = response.data.data.result.Getlahan;
-          this.data3.Count = response.data.data.result.Getpohon;
-          this.chartDataColom1 = response.data.data.result.listarraytotalkayu;
-          this.chartDataColom2 = response.data.data.result.listarraytotalmpts;
-          this.chartDataColom3 = response.data.data.result.listarraytotalcrops;
+          this.greeting = response.data.data.result.greeting
+          this.day = response.data.data.result.day
+          this.date = response.data.data.result.dateformat
+          this.data1.Count = totalData.data.data.result.total.farmer
+          this.data2.Count = totalData.data.data.result.total.land_total
+          this.data3.Count = totalData.data.data.result.total.trees
+          this.chartDataColom1 = response.data.data.result.listarraytotalkayu
+          this.chartDataColom2 = response.data.data.result.listarraytotalmpts
+          this.chartDataColom3 = response.data.data.result.listarraytotalcrops
           this.startNumberAnimation()
           // this.chartData = response.data.data.result.listarraysales;
           // this.profils = response.data.data.result.listvalcust;
         } else {
           console.log("Kosong");
-          this.loadtable = false;
+          this.loading = false
         }
       } catch (error) {
         console.error(error);
         if (error.response.status == 401) {
-          this.loadtable = false;
+          this.loading = false;
           localStorage.removeItem("token");
           this.$router.push("/");
         } else {
-          this.loadtable = false;
+          this.loading = false;
           this.dataobject = [];
         }
       } finally {
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
+          this.loading = false
       }
     },
     async startNumberAnimation () {
