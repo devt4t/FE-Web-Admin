@@ -41,7 +41,6 @@
                   @change="initialize"
                 ></v-select>
                 <v-autocomplete
-                  disabled
                   dense
                   color="success"
                   item-color="success"
@@ -542,7 +541,7 @@ export default {
       },
       source: {
         model: 'Sosialisasi Tanam',
-        options: ['Lahan', 'Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi (Loaded)', 'Distribusi (Received)', 'Monitoring 1' ]
+        options: ['Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi', 'Realisasi Tanam']
       },
     },
     SR: {
@@ -571,7 +570,7 @@ export default {
   methods: {
     async initialize() {
       this.loading = true;
-      this.$store.state.loadingOverlayText = 'Getting Old Dashboard datas...'
+      this.$store.state.loadingOverlayText = 'Loading...'
       this.$store.state.loadingOverlay = true
       try {
         const response = await axios.get(this.BaseUrlGet + "Dashboard", {
@@ -580,7 +579,7 @@ export default {
           },
         })
 
-        this.$store.state.loadingOverlayText = 'Getting New Dashboard datas...'
+        this.$store.state.loadingOverlayText = `Getting datas from ${this.options.source.model}...`
         const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardAll?${new URLSearchParams({
           program_year: this.options.programYear,
           source: this.options.source.model,

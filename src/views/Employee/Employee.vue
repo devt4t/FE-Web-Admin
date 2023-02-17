@@ -6,9 +6,11 @@
       :items="itemsbr"
       divider=">"
       large
+      data-aos="fade-right"
     ></v-breadcrumbs>
 
     <v-data-table
+      data-aos="fade-up" data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"

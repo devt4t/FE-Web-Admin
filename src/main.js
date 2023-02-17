@@ -22,7 +22,9 @@ L.Icon.Default.mergeOptions({
    ShadowUrl : require('leaflet/dist/images/marker-shadow.png'),
 })
 
-AOS.init();
+AOS.init({
+  duration: 1000
+});
 Vue.use(VueGoogleCharts)
 
 Vue.config.productionTip = false

@@ -155,8 +155,8 @@
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main :class="`${$route.name !== 'Distribusi' ? 'gradient-animate' : 'green lighten-2'} ${$store.state.theme}`">
-      <div class="waves" v-if="$route.name !== 'Distribusi'">
+    <v-main :class="`gradient-animate ${$store.state.theme}`">
+      <div class="waves" v-if="$route.name !== 'Distribusi' || $store.state.User.role_name == 'FIELD COORDINATOR'">
         <div class="wave"></div>
         <div class="wave"></div>
         <div class="wave"></div>

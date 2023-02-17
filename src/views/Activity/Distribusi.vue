@@ -417,13 +417,13 @@
                             <!-- HOME View -->
                             <v-row class="py-2" v-if="loadingLine.detailDialog.tabs.open == 'all'">
                                 <v-col cols="12" md="6">
-                                    <v-card v-if="loadingLine.detailDialog.show" @click="loadingLine.detailDialog.tabs.open = 1" data-aos="zoom-in" color="green pa-5 rounded-xl text-center white--text">
+                                    <v-card v-if="loadingLine.detailDialog.show" @click="loadingLine.detailDialog.tabs.open = 1" data-aos="zoom-in" data-aos-duration="500" color="green pa-5 rounded-xl text-center white--text">
                                         <v-icon color="white" x-large>mdi-sprout</v-icon>
                                         <h3 class="mb-0 mt-1 font-weight-regular" large>Distribution Details</h3>
                                     </v-card>
                                 </v-col>
                                 <v-col cols="12" md="6">
-                                    <v-card v-if="loadingLine.detailDialog.show" @click="loadingLine.detailDialog.tabs.open = 2" data-aos="zoom-in" data-aos-delay="200" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'blue darken-2' : 'blue'} pa-5 rounded-xl text-center white--text`">
+                                    <v-card v-if="loadingLine.detailDialog.show" @click="loadingLine.detailDialog.tabs.open = 2" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="500" :color="`${numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? 'blue darken-2' : 'blue'} pa-5 rounded-xl text-center white--text`">
                                         <v-icon color="white" x-large>mdi-basket{{ numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags) ? '-check' : '' }}</v-icon>
                                         <h3 class="mb-0 mt-1 font-weight-regular" large>
                                             {{ 
@@ -443,7 +443,7 @@
                                 grow
                                 show-arrows
                                 color="green"
-                                data-aos="fade-down" data-aos-delay="0"
+                                data-aos="fade-down" data-aos-delay="0" data-aos-duration="500"
                             >
                                 <v-tab href="#all">
                                     Home
@@ -657,7 +657,7 @@
                             </div>
                         </v-snackbar>
                     </v-card-text>
-                    <v-card-actions v-if="loadingLine.detailDialog.loading == false && loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'" data-aos="fade-up" data-aos-delay="600">
+                    <v-card-actions v-if="loadingLine.detailDialog.loading == false && loadingLine.detailDialog.model && generalSettings.type.model == 'Petani'" data-aos="fade-up" data-aos-delay="600" data-aos-duration="500">
                         <v-divider class="mx-2"></v-divider>
                         <v-btn
                             color="green white--text"

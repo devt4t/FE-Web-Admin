@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
       :dark="$store.state.theme == 'dark'"
       class="breadcrumbsmain"
       :items="itemsbr"
@@ -9,6 +10,7 @@
     ></v-breadcrumbs>
 
     <v-data-table
+      data-aos="fade-up" data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"
