@@ -1103,10 +1103,10 @@ export default {
       distribusi: {
         headers: [
           { text: "Field Facilitator", value: "ff" },
-          { sortable: false, text: "Total Petani", value: "total_petani", align: 'center' },
-          { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
+          // { sortable: false, text: "Total Petani", value: "total_petani", align: 'center' },
+          // { text: "Penlub Progress", value: "progress_penlub", align: 'center' },
           { text: "Penlub Bibit", value: "penlub_total_bibit", align: 'center' },
-          { sortable: false, text: "Total Distribusi", value: "total_distribusi", align: 'center' },
+          // { sortable: false, text: "Total Distribusi", value: "total_distribusi", align: 'center' },
           { text: "D. Bibit All", value: "total_bibit_distribusi_all", align: 'center' },
           { sortable: false, text: "D. Bibit Loaded", value: "total_bibit_distribusi_loaded", align: 'center' },
           { sortable: false, text: "D. Bibit Distributed", value: "total_bibit_distribusi_distributed", align: 'center' },

@@ -6,8 +6,8 @@
         <v-list-item>
           <v-list-item-content class="text-center">
             <v-list-item-title
-              style="color: #71AF34; font-weight: 550; font-size: 125%"
-              class="fontall"
+              style="font-weight: 550; font-size: 125%"
+              class="fontall green--text--theme"
             >
               GEKO
             </v-list-item-title>
@@ -95,8 +95,8 @@
       <v-toolbar-title
         class="pl-1 fontall"
       >
-        <a href="/" style="text-decoration: none;" :class="'green--text'">
-          Trees4trees
+        <a href="/" style="text-decoration: none;" :class="'green--text--theme'">
+          Trees4Trees
         </a>
       </v-toolbar-title>
 
@@ -437,6 +437,9 @@ export default {
 .light-bg-gradient {
   background: rgb(255,255,255);
   /* background: linear-gradient(325deg, rgba(255,255,255,1) 0%, rgba(215,255,225,1) 100%); */
+}
+.green--text--theme {
+  color: #71AF34!important;
 }
 /* width */
 ::-webkit-scrollbar {

@@ -1707,11 +1707,12 @@
               </v-btn>
             </template>
 
-            <v-list class="d-flex flex-column align-center">
+            <v-list class="">
               <v-list-item>
                 <v-btn
+                  block
                   dark
-                  class="mx-1 mt-1"
+                  class=""
                   rounded
                   @click="showFilterArea()"
                   color="green"
@@ -1719,12 +1720,12 @@
                   <v-icon class="mx-1" small>mdi-filter-variant</v-icon> Filter Area
                 </v-btn>
               </v-list-item>
-              <v-list-item>
+              <v-list-item v-if="RoleAccesFilterShow == true">
                 <v-btn
-                  v-if="RoleAccesFilterShow == true"
+                  block
                   rounded
                   dark
-                  class="mx-1 mt-1 d-none d-md-block"
+                  class=" d-none d-md-block"
                   @click="showFilterEmployee()"
                   color="green"
                 >
