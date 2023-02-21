@@ -41,6 +41,7 @@
 
     <v-data-table
       data-aos="fade-up" data-aos-delay="200"
+      multi-sort
       :headers="headers"
       :items="dataobject"
       :search="search"

@@ -222,7 +222,6 @@
         <v-card
           v-if="loading == false"
           class="rounded-xl shadow-lg"
-          max-width="344"
           data-aos="fade-down"
           data-aos-delay="600"
         >
@@ -271,7 +270,7 @@
         <v-card 
           v-if="loading == false"
           data-aos="zoom-in"
-          data-aos-delay="800" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
+          data-aos-delay="800" class="d-none d-md-inline-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -284,7 +283,7 @@
         <v-card 
           v-if="loading == false"
           data-aos="zoom-in"
-          data-aos-delay="800" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
+          data-aos-delay="800" class="d-sm-inline-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -298,7 +297,7 @@
         <v-card
           v-if="loading == false"
           data-aos="zoom-in"
-          data-aos-delay="900" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
+          data-aos-delay="900" class="d-none d-md-inline-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -311,7 +310,7 @@
         <v-card
           v-if="loading == false"
           data-aos="zoom-in"
-          data-aos-delay="900" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
+          data-aos-delay="900" class="d-sm-inline-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -325,7 +324,7 @@
         <v-card
           v-if="loading == false"
           data-aos="zoom-in"
-          data-aos-delay="1000" class="d-none d-md-block overflow-hidden" elevation="5" rounded="xl">
+          data-aos-delay="1000" class="d-none d-md-inline-block overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"
@@ -338,7 +337,7 @@
         <v-card
           v-if="loading == false"
           data-aos="zoom-in"
-          data-aos-delay="1000" class="d-sm-block d-md-none overflow-hidden" elevation="5" rounded="xl">
+          data-aos-delay="1000" class="d-sm-inline-block d-md-none overflow-hidden" elevation="5" rounded="xl">
           <v-card-text class="py-1 px-1">
             <GChart
               type="ColumnChart"

@@ -27,6 +27,18 @@
 
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
+        <!-- <v-list-item disabled 
+          :ripple="false">
+          <v-list-item-icon>
+            <v-icon color="grey">mdi-comment-question</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-title>
+            <v-badge content="Dev">
+              FAQ
+            </v-badge>
+          </v-list-item-title>
+        </v-list-item> -->
         <v-list-group
           v-for="item in items"
           :key="item.title"

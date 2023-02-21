@@ -15,7 +15,7 @@
       </v-alert>
     </div>
 
-    <v-card elevation="5" class="pt-1 pb-0 px-2 mx-3 mt-0 mb-3" data-aos="fade-up" data-aos-delay="200">
+    <v-card v-if="false" elevation="5" class="pt-1 pb-0 px-2 mx-3 mt-0 mb-3" data-aos="fade-up" data-aos-delay="200">
       <v-card-text class="px-1">
         <v-row>
           <v-col
@@ -1994,9 +1994,9 @@ export default {
 
     // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
-    // if (this.User.role_group != 'IT') {
+    if (this.User.role_group != 'IT') {
       this.$store.state.maintenanceOverlay = true
-    // }
+    }
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
