@@ -917,12 +917,11 @@
               </v-list-item>
               <v-list-item>
                 <v-btn
-                  v-if="RoleAccesFilterShow == true"
+                  :disabled="RoleAccesFilterShow == false"
                   rounded
-                  dark
                   class="mx-3 mt-1"
                   @click="showFilterEmployee()"
-                  color="green"
+                  color="green white--text"
                 >
                   <v-icon class="mx-2" small>mdi-account-group</v-icon> 
                   by Employee
@@ -958,7 +957,7 @@
             class="mr-0 mr-lg-2 my-2 my-lg-0"
           ></v-text-field>
           <!-- Add Button -->
-          <v-btn
+          <!-- <v-btn
             v-if="User.role_group == 'IT'"
             dark
             rounded
@@ -967,6 +966,17 @@
             color="green"
           >
             <v-icon small>mdi-plus</v-icon> Add
+          </v-btn> -->
+          
+          <!-- Export Button -->
+          <v-btn
+            rounded
+            :disabled="loadtable"
+            class="mb-2"
+            @click="exportData()"
+            color="blue white--text"
+          >
+            <v-icon small>mdi-microsoft-excel</v-icon> Export
           </v-btn>
         </v-row>
       </template>
@@ -1033,6 +1043,14 @@ export default {
   name: "Farmer",
   authtoken: "",
   data: () => ({
+    export_filter: {
+      program_year: '',
+      typegetdata: '',
+      mu: '',
+      ta: '',
+      village: '',
+      ff: ''
+    },
     programYear: moment().format('Y'),
     alerttoken: false,
     datepicker: new Date().toISOString().substr(0, 10),
@@ -1233,6 +1251,12 @@ export default {
     'programYear': {
       handler(newVal) {
         this.initialize()
+        this.export_filter.program_year = newVal
+        this.export_filter.typegetdata = this.typegetdata
+        this.export_filter.ff = this.valueFFcode
+        this.export_filter.mu = ''
+        this.export_filter.ta = ''
+        this.export_filter.village = ''
       }
     }
   },
@@ -1243,6 +1267,17 @@ export default {
   },
 
   methods: {
+    exportData() {
+      let params = new URLSearchParams({
+        program_year: this.export_filter.program_year,
+        typegetdata: this.export_filter.typegetdata,
+        ff: this.export_filter.ff.toString(),
+        mu: this.export_filter.mu,
+        ta: this.export_filter.ta,
+        village: this.export_filter.village
+      })
+      window.open(`${this.BaseUrlGet.slice(0, 38)}ExportFarmerAllAdmin?${params}`)
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
@@ -2030,7 +2065,7 @@ export default {
     },
 
     selectedMU(a) {
-      console.log(a);
+      // console.log(a);
       this.valueMU = a;
       if (a != null) {
         this.getTA("table");
@@ -2048,7 +2083,7 @@ export default {
       // this.initialize();
     },
     selectedTA(a) {
-      console.log(a);
+      // console.log(a);
       this.valueTA = a;
       if (a != null) {
         this.getVillage("table");
@@ -2062,7 +2097,7 @@ export default {
       // this.initialize();
     },
     selectedVillage(a) {
-      console.log(a);
+      // console.log(a);
       this.valueVillage = a;
       if (a == null) {
         this.valueVillage = "";
@@ -2070,7 +2105,7 @@ export default {
       // this.initialize();
     },
     selectedUM(a) {
-      console.log(a);
+      // console.log(a);
       this.valueUM = a;
       if (a != null) {
         this.getEmpFCbyManager(a);
@@ -2087,7 +2122,7 @@ export default {
       // this.initialize();
     },
     selectedFC(a) {
-      console.log(a);
+      // console.log(a);
       this.valueFC = a;
       this.GetFFbyUMandFC("FC", a);
       this.typegetdata = "several";
@@ -2159,7 +2194,7 @@ export default {
     },
     resetFilter() {
       this.valueMU = "";
-      this.valueFC = "";
+      this.valueTA = "";
       this.valueVillage = "";
       this.selectMU = "";
       this.selectTA = "";
@@ -2175,11 +2210,21 @@ export default {
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
+      this.export_filter.mu = this.valueMU
+      this.export_filter.ta = this.valueTA
+      this.export_filter.village = this.valueVillage
+      this.export_filter.typegetdata = this.typegetdata
+      this.export_filter.ff = this.valueFFcode
       await this.initialize();
       await this.resetFilter();
       this.dialogFilterArea = false;
     },
     async searchbyemp() {
+      this.export_filter.mu = ''
+      this.export_filter.ta = ''
+      this.export_filter.village = ''
+      this.export_filter.typegetdata = 'several'
+      this.export_filter.ff = this.valueFFcode
       await this.initialize();
       await this.resetFilter();
       this.dialogFilterEmp = false;
