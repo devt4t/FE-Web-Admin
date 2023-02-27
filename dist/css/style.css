@@ -225,4 +225,21 @@ body * {
 
   .bg-white-transparent {
     background-color: #ffffff55!important;
+    position: relative;
+    /* filter: blur(8px);
+    -webkit-filter: blur(8px); */
+    z-index: 1;
+  }
+  .bg-white-transparent.blurred {
+    background-color: #00000000!important;
+  }
+  .bg-white-transparent.blurred::before {
+    border-radius: 25px;
+    content: "";
+    background-color: #ffffff55!important;
+    filter: blur(5px);
+    position: absolute;
+    left: 0;right: 0;
+    top: 0;bottom: 0;
+    z-index: -1;
   }

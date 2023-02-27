@@ -7,6 +7,23 @@
                     <v-card-text class="d-flex flex-column flex-lg-row align-center">
                         <v-chip color="green white--text" class="px-5 mb-2 mb-lg-0"><v-icon class="mr-2">mdi-forest</v-icon> Trees Planted</v-chip>
                         <v-divider class="mx-2"></v-divider>
+                        <v-autocomplete
+                            rounded
+                            dense
+                            outlined
+                            :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
+                            color="green"
+                            item-color="green"
+                            class="mb-2 mb-lg-0 mr-0 mr-lg-2"
+                            label="Management Unit"
+                            :loading="mu_no.loading"
+                            hide-details
+                            item-value="mu_no"
+                            item-text="name"
+                            :items="mu_no.items"
+                            v-model="mu_no.model"
+                            style="max-width: 250px;"
+                        ></v-autocomplete>
                         <v-select
                             rounded
                             dense
@@ -39,7 +56,7 @@
                                 <v-spacer></v-spacer>
                             </v-card-title>
                             <v-card-text>
-                                <v-card class="rounded-xl bg-white-transparent">
+                                <v-card class="rounded-xl bg-white-transparent blurred">
                                     <v-card-text class="pt-1">
                                         <p class="mb-1">{{ programYear }}</p>
                                         <h4 style="font-size: 33px;">
@@ -56,7 +73,7 @@
                                         </h4>
                                     </v-card-text>
                                 </v-card>
-                                <v-card class="rounded-xl bg-white-transparent mt-2">
+                                <v-card class="rounded-xl bg-white-transparent blurred mt-2">
                                     <v-card-text class="pt-1">
                                         <p class="mb-1">Total</p>
                                         <h4 style="font-size: 33px;">10k</h4>
@@ -131,13 +148,13 @@
                                 <v-spacer></v-spacer>
                             </v-card-title>
                             <v-card-text>
-                                <v-card class="rounded-xl bg-white-transparent">
+                                <v-card class="rounded-xl bg-white-transparent blurred">
                                     <v-card-text class="pt-1">
                                         <p class="mb-1">{{ programYear }}</p>
                                         <h4 style="font-size: 33px;">10k</h4>
                                     </v-card-text>
                                 </v-card>
-                                <v-card class="rounded-xl bg-white-transparent mt-2">
+                                <v-card class="rounded-xl bg-white-transparent blurred mt-2">
                                     <v-card-text class="pt-1">
                                         <p class="mb-1">Total</p>
                                         <h4 style="font-size: 33px;">10k</h4>
@@ -206,23 +223,47 @@
 </template>
 
 <script>
+import axios from 'axios'
 import moment from 'moment'
 
 export default {
     data: () => ({
+        // filter
+        mu_no: {
+            items: [],
+            loading: false,
+            model: '021',
+        },
         programYear: '',
+        // keys
         componentKeys: {
             totalKayuProgramYear: 1111,
         }
     }),
-    mounted() {
+    async mounted() {
         this.programYear = this.$store.state.programYear.model
+        await this.getManagementUnitItems()
     },
     methods: {
         numberFormat(num) {
             return new Intl.NumberFormat('id-ID', {
             maximumFractionDigits: 0
             }).format(num)
+        },
+        async getManagementUnitItems() {
+            try {
+                this.mu_no.loading = true
+                const response = await axios.get(this.$store.getters.getApiUrl("GetManagementUnit"), this.$store.state.apiConfig)
+                const data = response.data.data.result || []
+                this.mu_no.items = data
+            } catch (error) {
+                if (error.response.status == 401) {
+                    localStorage.removeItem("token")
+                    this.$router.push("/")
+                } else console.error(error.response)
+            } finally {
+                this.mu_no.loading = false
+            }
         },
     },
 }

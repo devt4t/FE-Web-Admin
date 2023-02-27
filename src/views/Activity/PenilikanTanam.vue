@@ -2172,7 +2172,7 @@ export default {
         landProgram: {
           items: ['Petani', 'Umum'],
           label: 'Land Program',
-          model: 'Petani',
+          model: 'Umum',
         },
     },
     pagination: {
@@ -2623,6 +2623,20 @@ export default {
   },
 
   watch: {
+    'dialogFormLahanUmum.inputs.qty_std': {
+      async handler(val) {
+        if (val) {
+          let sumTreesLife = 0
+          await this.dialogFormLahanUmum.inputs.adjustment.items.map(tree => {
+            sumTreesLife += parseInt(tree.total_tree_planted_life)
+          })
+          if (val > sumTreesLife) {
+            alert(`Ur total trees PLANTED and LIFE is just ${sumTreesLife}!`)
+            this.dialogFormLahanUmum.inputs.qty_std = sumTreesLife
+          } else if (val < 0) this.dialogFormLahanUmum.inputs.qty_std = 0
+        } else this.dialogFormLahanUmum.inputs.qty_std = 0
+      }
+    },
     'generalSettings.programYear': {
       handler(newVal) {
         this.initialize()
