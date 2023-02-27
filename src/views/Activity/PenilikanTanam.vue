@@ -924,8 +924,8 @@
                       </template>
                       <template v-slot:item.total_tree_received="{item}">
                           <v-chip color="info white--text">
-                            <strong class="mr-1">{{ numberFormat(item.total_tree_received) }}</strong>
-                            Bibit
+                            <v-icon>mdi-sprout</v-icon>
+                            <strong class="ml-1">{{ numberFormat(item.total_tree_received) }}</strong>
                           </v-chip>
                       </template>
                       <template v-slot:item.planted="{index}">
@@ -1002,8 +1002,8 @@
                       </template>
                       <template v-slot:item.lost="{item}">
                           <v-chip color="red white--text">
-                            <strong class="mr-1">{{ numberFormat(item.lost) }}</strong>
-                            Bibit
+                            <v-icon>mdi-pi-hole</v-icon>
+                            <strong class="ml-1">{{ numberFormat(item.lost) }}</strong>
                           </v-chip>
                       </template>
                   </v-data-table>
@@ -1152,7 +1152,7 @@
             <v-btn color="blue white--text" rounded 
               :disabled="
                 dialogFormLahanUmum.inputs.qty_std < 1 ||
-                !dialogFormLahanUmum.inputs.photo1.model ||
+                (dialogFormLahanUmum.inputs.mou_no.disabled == false && !dialogFormLahanUmum.inputs.photo1.model) ||
                 !dialogFormLahanUmum.inputs.mou_no.model ||
                 dialogFormLahanUmum.inputs.adjustment.items.length == 0 ||
                 !dialogFormLahanUmum.inputs.planting_date.model
@@ -1547,7 +1547,7 @@
                             Tahun Program
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.planting_year }}</strong>
+                            <strong>{{ defaultItem.planting_year || defaultItem.program_year || '?' }}</strong>
                           </td>
                         </tr>
                         <tr>
@@ -1563,18 +1563,18 @@
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
-                            Nama FF
+                            Nama {{ generalSettings.landProgram.model == 'Petani' ? 'FF' : 'PIC T4T' }}
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.nama_ff }}</strong>
+                            <strong>{{ defaultItem.nama_ff || defaultItem.nama_pic_t4t || '?' }}</strong>
                           </td>
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
-                            Nama Petani
+                            Nama {{ generalSettings.landProgram.model == 'Petani' ? 'Petani' : 'PIC Lahan' }}
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.nama_petani }}</strong>
+                            <strong>{{ defaultItem.nama_petani || defaultItem.nama_pic_lahan || '?'  }}</strong>
                           </td>
                         </tr>
                         <tr>
@@ -1605,10 +1605,11 @@
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
-                            Waktu Sinkron
+                            {{ generalSettings.landProgram.model == 'Petani' ? 'Waktu Sinkron' : 'Created Time / By' }}
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.created_at ? $store.getters.dateFormat(defaultItem.created_at, 'HH:MM, DD MMMM Y') : '-' }}</strong>
+                            <strong>{{ defaultItem.created_at ? $store.getters.dateFormat(defaultItem.created_at, 'HH:MM, DD MMMM Y') : '-' }}
+                              {{ generalSettings.landProgram.model == 'Umum' ? ` / ${ defaultItem.created_by || '?' } ` : '' }}</strong>
                           </td>
                         </tr>
                       </tbody>
@@ -1617,15 +1618,6 @@
                   <div>
                     <h4 class="mt-3 mb-2"><v-icon>mdi-sprout</v-icon> Jenis dan Jumlah Bibit</h4>
                     <h3 class="ml-1">
-                      <!-- <v-data-table
-                        :headers="headersdetail"
-                        :items="defaultItem.list_detail"
-                        class="elevation-1"
-                      > -->
-                        <!-- <template v-slot:item.tree_category="{ item }">
-                              {{ gettype(item.tree_category) }}
-                            </template> -->
-                      <!-- </v-data-table> -->
                       <v-simple-table dense class="rounded-xl overflow-hidden" style="border: 1px solid #e2e2e2;border-collapse: collapse;">
                         <thead>
                           <tr>
@@ -1661,7 +1653,7 @@
                                 hide-details
                                 dense
                                 rounded
-                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.hidup"></v-text-field>
                             </td>
                             <td class="text-center">
@@ -1673,7 +1665,7 @@
                                 hide-details
                                 dense
                                 rounded
-                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.mati"></v-text-field>
                             </td>
                             <td class="text-center">
@@ -1685,7 +1677,7 @@
                                 hide-details
                                 dense
                                 rounded
-                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup"></v-text-field>
                             </td>
                             <td class="text-center">
@@ -1697,7 +1689,7 @@
                                 hide-details
                                 dense
                                 rounded
-                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati"></v-text-field>
                             </td>
                             <td class="text-center">
@@ -1709,7 +1701,7 @@
                                 hide-details
                                 dense
                                 rounded
-                                :readonly="(User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2"
+                                :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.hilang"></v-text-field>
                             </td>
                           </tr>
@@ -1772,28 +1764,28 @@
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon> Verification UM
             </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="dialogCetakPilihan" max-width="500px">
-        <v-card>
-          <v-card-title class="headline"
-            >What you want to print?</v-card-title
-          >
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn outlined color="blue" text @click="showPrintLabel()"
-              >Print Label</v-btn
-            >
             <v-btn
-              outlined
-              color="green"
-              text
-              @click="showPrintTandaTerima()"
-              >Tanda Terima</v-btn
+              v-if="defaultItem.is_verified == 0"
+              :disabled="User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER'"
+              rounded
+              color="green white--text"
+              class="pr-3"
+              @click="() => {verifSubmit()}"
+              elevation="1"
             >
-            <v-spacer></v-spacer>
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification PIC
+            </v-btn>
+            <v-btn
+              v-if="defaultItem.is_verified == 1"
+              :disabled="User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER' && User.role_group != 'IT'"
+              rounded
+              color="green white--text"
+              class="pr-3"
+              @click="() => {verifSubmit()}"
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification RM / PM
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -1806,7 +1798,7 @@
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="pr-3" color="red white--text" rounded @click="closeVerification">
+            <v-btn class="pr-3" color="red white--text" text rounded @click="closeVerification">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Cancel
             </v-btn>
@@ -1995,7 +1987,7 @@
             color="success"
             item-color="success"
             v-model="pagination.search.value"
-            :items="pagination.search.options.validation"
+            :items="pagination.search.options[generalSettings.landProgram.model == 'Petani' ? 'validation' : 'validation2']"
             item-value="value"
             item-text="text"
             hide-details
@@ -2018,7 +2010,7 @@
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <v-btn
-            v-if="generalSettings.landProgram.model == 'Umum'"
+            v-if="generalSettings.landProgram.model == 'Umum' && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER'"
             dark
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
@@ -2065,7 +2057,7 @@
       <!-- Lahan Condition Column -->
       <template v-slot:item.lahan_condition="{ item }">
         <span style="text-transform: capitalize">
-          {{ item.lahan_condition.replace('_', ' ') }}
+          {{ item.lahan_condition ? item.lahan_condition.replace('_', ' ') : '-' }}
         </span>
       </template>
 
@@ -2115,7 +2107,7 @@
       <template v-slot:item.is_validate="{ item }">
         <v-chip :color="item.is_validate > 0 ? `${ item.is_validate == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
           <v-icon class="mr-1">mdi-{{ item.is_validate > 0 ? `${ item.is_validate == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
-          {{ item.is_validate > 0 ? `Verified ${item.is_validate == 1 ? 'FC' : 'UM'}` : 'Unverified' }}
+          {{ item.is_validate > 0 ? `Verified ${item.is_validate == 1 ? (generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC') : (generalSettings.landProgram.model == 'Petani' ? 'UM' : 'RM / PM')}` : 'Unverified' }}
         </v-chip>
       </template>
       
@@ -2128,11 +2120,19 @@
             </v-btn>
           </template>
           <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-            <v-btn color="info white--text" rounded small class="pl-1" @click="showDetail(item)">
+            <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="showDetail(item)">
               <v-icon class="mr-1">mdi-information</v-icon> Detail
             </v-btn>
-            <v-btn rounded small color="red white--text" class="mt-2 pl-1" v-if="item.is_validate > 0 && (User.role_group == 'IT' || ((item.is_validate < 2 && User.role_name == 'UNIT MANAGER') || (item.is_validate == 2 && User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
-              <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverification
+            <v-btn v-if="generalSettings.landProgram.model == 'Umum'" :disabled="item.is_validate > 0 || (item.is_validate == 0 && (User.role_name == 'REGIONAL MANAGER' || User.role_name == 'PROGRAM MANAGER'))" color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" @click="() => {showEditUmumModal(item.monitoring_no)}">
+              <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
+            </v-btn>
+            <v-btn rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center" v-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Petani') && (User.role_group == 'IT' || ((item.is_validate < 2 && User.role_name == 'UNIT MANAGER') || (item.is_validate == 2 && User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
+            </v-btn>
+            <v-btn v-else-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Umum')" 
+              :disabled="(item.is_validate == 1 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER') || (item.is_validate == 2 && User.role_group != 'IT')"
+              rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center"  @click="showUnverifModal(item)">
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
             </v-btn>
           </v-card>
         </v-menu>
@@ -2200,6 +2200,19 @@ export default {
           }, {
             text: 'Verified UM',
             value: 2
+          }],
+          validation2: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified PIC',
+            value: 1
+          }, {
+            text: 'Verified RM / PM',
+            value: 2
           }]
         },
         value: ''
@@ -2212,9 +2225,10 @@ export default {
       inputs: {
         mou_no: {
           model: null,
-          options: []
+          options: [],
+          disabled: false,
         },
-        lahan_no: null,
+        lahan_no: [],
         land_condition: '',
         adjustment: {
           headers: [
@@ -2317,12 +2331,13 @@ export default {
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
     headers2: [
-      { text: "MU", value: "mu_name" },
-      { text: "PIC T4T", value: "employee_name" },
-      { text: "PIC Lahan", value: "pic_lahan" },
-      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false },
+      { text: "MU", value: "mu_name", search: true },
+      { text: "MoU No", value: "mou_no", search: true },
+      { text: "PIC T4T", value: "pic_t4t_name", search: true },
+      { text: "PIC Lahan", value: "pic_lahan_name", search: true },
+      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
       { text: "Condition", value: "lahan_condition" },
-      { text: "Status", value: "is_validate", align: 'center' },
+      { text: "Status", value: "is_validate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
 
@@ -2575,6 +2590,19 @@ export default {
     // formTitle() {
     //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
     // },
+    disabledEditSeedInDetailModal() {
+      let User = this.User
+      let defaultItem = this.defaultItem
+      if (User.role_group != 'IT') {
+        if (this.generalSettings.landProgram.model == 'Petani') {
+          if ((User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2) return true
+          else return false
+        } else {
+          if (((User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER') && defaultItem.is_verified == 1) ||((User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER') && defaultItem.is_verified == 0) || defaultItem.is_verified == 2) return true
+          else return false
+        }
+      } else return false
+    }
   },
   async mounted() {
 
@@ -2603,6 +2631,8 @@ export default {
     'generalSettings.landProgram.model': {
       handler() {
         this.dataobject = []
+        this.pagination.search.field = ''
+        this.pagination.search.value = ''
         this.initialize()
       }
     },
@@ -2695,76 +2725,85 @@ export default {
       if (status == "Belum Verifikasi") return "red";
       else return "green";
     },
-    async getSeedDetailFromDistributionAdjustment(mou_no) {
+    async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
       if (mou_no) {
-        this.dialogFormLahanUmum.inputs.adjustment.loading = true
-        const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
-        await axios.get(url, this.$store.state.apiConfig).then(res => {
-            const datas = res.data.data.result
-            console.log(datas)
-            let listLahan = []
-            let listTrees = []
-            datas.distributionAdjustment.forEach((adj, adjIndex) => {
-                let checkExistLahanNo = listLahan.includes(adj.lahan_no)
-                if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
-  
-                const pushData = {
-                  tree_code: adj.tree_code,
-                  tree_category: adj.tree_category,
-                  tree_name: adj.tree_name,
-                  total_tree_received: parseInt(adj.total_tree_received),
-                  total_tree_planted_life: 0,
-                  total_tree_planted_dead: 0,
-                  total_tree_unplanted_life: 0,
-                  total_tree_unplanted_dead: 0,
-                  lost: parseInt(adj.total_tree_received),
-                }
-                const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
-                if (indexTreee > -1) {
-                  listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
-                  listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
-                } else listTrees.push(pushData)
+        try {
+          this.dialogFormLahanUmum.inputs.adjustment.loading = true
+          const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
+          const res = await axios.get(url, this.$store.state.apiConfig)
+          const datas = res.data.data.result
+          // console.log(datas)
+          let listLahan = []
+          let listTrees = []
+          await datas.distributionAdjustment.forEach((adj, adjIndex) => {
+              let checkExistLahanNo = listLahan.includes(adj.lahan_no)
+              if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
+
+              const pushData = {
+                tree_code: adj.tree_code,
+                tree_category: adj.tree_category,
+                tree_name: adj.tree_name,
+                total_tree_received: parseInt(adj.total_tree_received),
+                total_tree_planted_life: 0,
+                total_tree_planted_dead: 0,
+                total_tree_unplanted_life: 0,
+                total_tree_unplanted_dead: 0,
+                lost: parseInt(adj.total_tree_received),
+              }
+              const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
+              if (indexTreee > -1) {
+                listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
+                listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
+              } else listTrees.push(pushData)
+          })
+          // console.log(listLahan)
+          // console.log(listTrees)
+          this.dialogFormLahanUmum.inputs.lahan_no = await listLahan
+          this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees
+          if (existingData) {
+            console.log(existingData)
+            await existingData.map(exData => {
+              let adjIndexEx =  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(adjItems => adjItems.tree_code == exData.tree_code)
+              if (exData.status == 'sudah_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_life += parseInt(exData.amount)
+              else if (exData.status == 'sudah_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_dead += parseInt(exData.amount)
+              else if (exData.status == 'belum_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_life += parseInt(exData.amount)
+              else if (exData.status == 'belum_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_dead += parseInt(exData.amount)
             })
-            console.log(listLahan)
-            console.log(listTrees)
-            this.dialogFormLahanUmum.inputs.adjustment.items = listTrees
-        }).catch(err => {
-          this.dialogFormLahanUmum.inputs.adjustment.items = []
-          if (err.response.status == 401) {
-            localStorage.removeItem("token")
-            this.$router.push("/")
+            await this.updateSeedlingAdjustment()
           }
-        }).finally(() => {
+        } catch (err) {
+            this.dialogFormLahanUmum.inputs.adjustment.items = []
+            if (err.response.status == 401) {
+              localStorage.removeItem("token")
+              this.$router.push("/")
+            }
+        } finally {
           this.dialogFormLahanUmum.inputs.adjustment.loading = false
-        })
+        }
       } else this.dialogFormLahanUmum.inputs.adjustment.items = []
     },
     async getLahanUmumDataOptions() {
-      const url = this.BaseUrlGet + 'GetUmumDistributionReport?'
-      const params ={
-          program_year: this.generalSettings.programYear,
-          distribution_date: '2022-12-29'
-      }
-      if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
-          params.created_by = this.User.email
-      }
-      await axios.get(`${url}${new URLSearchParams(params)}`, this.$store.state.apiConfig)
-      .then(res => {
-        console.log(res.data.data.result)
-        let verifiedLahanUmum = []
-        res.data.data.result.forEach((val) => {
-          if (val.status == 2) {
-            verifiedLahanUmum.push(val)
-          }
-        })
-        this.dialogFormLahanUmum.inputs.mou_no.options = verifiedLahanUmum
-      }).catch(err => {
-        this.dialogFormLahanUmum.inputs.mou_no.options = []
-        if (err.response.status == 401) {
-          localStorage.removeItem("token")
-          this.$router.push("/")
+      try {
+        const url = this.BaseUrlGet + 'GetUmumDistributionAdjustment?'
+        const params ={
+            program_year: this.generalSettings.programYear,
         }
-      })
+        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+            params.created_by = this.User.email
+        }
+        const res = await axios.get(`${url}${new URLSearchParams(params)}`, this.$store.state.apiConfig)
+        this.dialogFormLahanUmum.inputs.mou_no.options = res.data
+      } catch (err) {
+          this.dialogFormLahanUmum.inputs.mou_no.options = []
+          if (err.response != undefined) {
+            if (err.response.status == 401) {
+              localStorage.removeItem("token")
+              this.$router.push("/")
+            }
+          } else console.log(err)
+      } finally {
+
+      }
     },
     async initialize() {
       this.loadtable = true;
@@ -2831,9 +2870,9 @@ export default {
           delete params.ff
           delete params.ta
           if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
-            params.created_at = this.User.email
+            params.created_by = this.User.email
           }
-          url += 'GetMonitoringAdminLahanUmum?' + new URLSearchParams(params)
+          url += 'GetMonitoringLahanUmumAdmin?' + new URLSearchParams(params)
         }
         // get data response
         axios.get(url, this.$store.state.apiConfig).then(res => {
@@ -2879,15 +2918,17 @@ export default {
         this.dialogFormLahanUmum.model = false
         this.$store.state.loadingOverlay = true
         this.$store.state.loadingOverlayText = 'Saving monitoring lahan umum...'
-        const url = `${this.BaseUrlGet}CreateMonitoringLahanUmum`
+        let url = `${this.BaseUrlGet}CreateMonitoringLahanUmum`
+        if (this.dialogFormLahanUmum.inputs.mou_no.disabled == true) url = `${this.BaseUrlGet}UpdateMonitoringLahanUmum`
         let dataForPost = {
           program_year: this.generalSettings.programYear,
           mou_no: this.dialogFormLahanUmum.inputs.mou_no.model,
           planting_date: this.dialogFormLahanUmum.inputs.planting_date.model,
           qty_std: this.dialogFormLahanUmum.inputs.qty_std,
-          land_condition: this.dialogFormLahanUmum.inputs.land_condition,
+          lahan_condition: this.dialogFormLahanUmum.inputs.land_condition,
           created_by: this.User.email,
-          list_trees: []
+          list_trees: [],
+          lahan_no: this.dialogFormLahanUmum.inputs.lahan_no.toString()
         }
         // set list trees
         await this.dialogFormLahanUmum.inputs.adjustment.items.forEach(val => {
@@ -2943,11 +2984,12 @@ export default {
         } else if (this.dialogFormLahanUmum.inputs.photo3.preview) {
           dataForPost.photo3 = this.dialogFormLahanUmum.inputs.photo3.preview.replace(this.BaseUrl, '')
         }
-        console.log(dataForPost)
+        // console.log(dataForPost)
         const store = await axios.post(url, dataForPost, this.$store.state.apiConfig)
         if (store) {
           this.textsnackbar = "Success store monitoring lahan umum data!"
           this.colorsnackbar = 'green'
+          this.initialize()
         } else {
           this.textsnackbar = "Failed store monitoring lahan umum data!"
           this.colorsnackbar = 'red'
@@ -3122,9 +3164,13 @@ export default {
     async getDetail(item) {
       this.load = true;
       try {
+        let urlPrefix = "GetMonitoringDetail?monitoring_no="
+        if (this.generalSettings.landProgram.model == 'Umum') {
+          urlPrefix = "GetMonitoringDetailLahanUmumAdmin?monitoring_no="
+        }
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetMonitoringDetail?monitoring_no=" +
+            urlPrefix +
             item.monitoring_no,
           {
             headers: {
@@ -3149,7 +3195,7 @@ export default {
             this.defaultItem.gambarshow1 =
               this.BaseUrl + response.data.data.result.data.gambar1;
           }
-          console.log(this.defaultItem.gambarshow1);
+          // console.log(this.defaultItem.gambarshow1);
           if (response.data.data.result.data.gambar2 == "-") {
             this.defaultItem.gambarshow2 = "/images/noimage.png";
           } else {
@@ -3192,75 +3238,76 @@ export default {
         }
       }
     },
-    async verif() {
-      let listTrees = []
-      await this.defaultItem.list_detail.forEach(tree => {
-        if (parseInt(tree.seedling.ditanam.hidup) > 0) {
-          listTrees.push({
-            monitoring_no: this.defaultItem.monitoring_no,
-            tree_code: tree.tree_code,
-            qty: parseInt(tree.seedling.ditanam.hidup),
-            status: 'sudah_ditanam',
-            condition: 'hidup',
-            planting_date: this.defaultItem.planting_date,
-          })
-        }
-        if (parseInt(tree.seedling.ditanam.mati) > 0) {
-          listTrees.push({
-            monitoring_no: this.defaultItem.monitoring_no,
-            tree_code: tree.tree_code,
-            qty: parseInt(tree.seedling.ditanam.mati),
-            status: 'sudah_ditanam',
-            condition: 'mati',
-            planting_date: this.defaultItem.planting_date,
-          })
-        }
-        if (parseInt(tree.seedling.blm_ditanam.hidup) > 0) {
-          listTrees.push({
-            monitoring_no: this.defaultItem.monitoring_no,
-            tree_code: tree.tree_code,
-            qty: parseInt(tree.seedling.blm_ditanam.hidup),
-            status: 'belum_ditanam',
-            condition: 'hidup',
-            planting_date: this.defaultItem.planting_date,
-          })
-        }
-        if (parseInt(tree.seedling.blm_ditanam.mati) > 0) {
-          listTrees.push({
-            monitoring_no: this.defaultItem.monitoring_no,
-            tree_code: tree.tree_code,
-            qty: parseInt(tree.seedling.blm_ditanam.mati),
-            status: 'belum_ditanam',
-            condition: 'mati',
-            planting_date: this.defaultItem.planting_date,
-          })
-        }
-        if (parseInt(tree.seedling.hilang) > 0) {
-          listTrees.push({
-            monitoring_no: this.defaultItem.monitoring_no,
-            tree_code: tree.tree_code,
-            qty: parseInt(tree.seedling.hilang),
-            status: 'hilang',
-            condition: 'hilang',
-            planting_date: this.defaultItem.planting_date,
-          })
-        }
-      })
-      // console.log(listTrees)
-      const datapost = {
-        monitoring_no: this.defaultItem.monitoring_no,
-        validate_by: this.User.email,
-        list_trees: listTrees
-      };
-      // this.dialogDetail = false;
+    async VerificationItemConfirm() {
       try {
+        let listTrees = []
+        await this.defaultItem.list_detail.forEach(tree => {
+          if (parseInt(tree.seedling.ditanam.hidup) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.ditanam.hidup),
+              status: 'sudah_ditanam',
+              condition: 'hidup',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.ditanam.mati) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.ditanam.mati),
+              status: 'sudah_ditanam',
+              condition: 'mati',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.blm_ditanam.hidup) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.blm_ditanam.hidup),
+              status: 'belum_ditanam',
+              condition: 'hidup',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.blm_ditanam.mati) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.blm_ditanam.mati),
+              status: 'belum_ditanam',
+              condition: 'mati',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.hilang) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.hilang),
+              status: 'hilang',
+              condition: 'hilang',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+        })
+        // console.log(listTrees)
+        let datapost = {
+          monitoring_no: this.defaultItem.monitoring_no,
+          validate_by: this.User.email,
+          list_trees: listTrees
+        };
+        if (this.generalSettings.landProgram.model == 'Umum') datapost.is_verified = this.defaultItem.is_verified + 1
+        // this.dialogDetail = false;
         this.dialogDetail = false
         this.dialogVerification = false
-        this.$store.state.loadingOverlayText = 'Verifying monitoring by FC...'
+        this.$store.state.loadingOverlayText = `Verifying monitoring by ${this.generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC T4T'}...`
         this.$store.state.loadingOverlay = true
 
         const response = await axios.post(
-          this.BaseUrlGet + "ValidateMonitoring",
+          this.BaseUrlGet + `ValidateMonitoring${this.generalSettings.landProgram.model == 'Umum' ? 'LahanUmum' : ''}`,
           datapost,
           {
             headers: {
@@ -3268,7 +3315,7 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.data.result == "success") {
           this.initialize();
           this.snackbar = true
@@ -4012,28 +4059,63 @@ export default {
       this.load = false;
     },
     async showAddModal() {
-      this.$store.state.loadingOverlayText = 'Get lahan umum datas...'
-      this.$store.state.loadingOverlay = true
+      try {
+        this.$store.state.loadingOverlayText = 'Get lahan umum datas...'
+        this.$store.state.loadingOverlay = true
+  
+        // reset data
+        this.dialogFormLahanUmum.inputs.mou_no.model = null
+        this.dialogFormLahanUmum.inputs.mou_no.disabled = false
+        this.dialogFormLahanUmum.inputs.mou_no.options = []
+        this.dialogFormLahanUmum.inputs.adjustment.items = []
+        this.dialogFormLahanUmum.inputs.land_condition = ''
+        this.dialogFormLahanUmum.inputs.qty_std = 0
+        this.dialogFormLahanUmum.inputs.planting_date.model = moment().format('Y-MM-DD')
+        this.dialogFormLahanUmum.inputs.photo1.model = null
+        this.dialogFormLahanUmum.inputs.photo1.preview = null
+        this.dialogFormLahanUmum.inputs.photo2.model = null
+        this.dialogFormLahanUmum.inputs.photo2.preview = null
+        this.dialogFormLahanUmum.inputs.photo3.model = null
+        this.dialogFormLahanUmum.inputs.photo3.preview = null
+  
+        await this.getLahanUmumDataOptions()
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+  
+        this.dialogFormLahanUmum.model = true
+      }
+    },
+    async showEditUmumModal(monitoring_no) {
+      try {
+        this.$store.state.loadingOverlayText = 'Getting monitoring data...'
+        this.$store.state.loadingOverlay = true
 
-      // reset data
-      this.dialogFormLahanUmum.inputs.mou_no.model = null
-      this.dialogFormLahanUmum.inputs.adjustment.items = []
-      this.dialogFormLahanUmum.inputs.land_condition = ''
-      this.dialogFormLahanUmum.inputs.qty_std = 0
-      this.dialogFormLahanUmum.inputs.planting_date.model = moment().format('Y-MM-DD')
-      this.dialogFormLahanUmum.inputs.photo1.model = null
-      this.dialogFormLahanUmum.inputs.photo1.preview = null
-      this.dialogFormLahanUmum.inputs.photo2.model = null
-      this.dialogFormLahanUmum.inputs.photo2.preview = null
-      this.dialogFormLahanUmum.inputs.photo3.model = null
-      this.dialogFormLahanUmum.inputs.photo3.preview = null
-
-      await this.getLahanUmumDataOptions()
-      
-      this.$store.state.loadingOverlay = false
-      this.$store.state.loadingOverlayText = null
-
-      this.dialogFormLahanUmum.model = true
+        const response = await axios.get(this.$store.getters.getApiUrl(`GetMonitoringDetailLahanUmumAdmin?monitoring_no=${monitoring_no}`), this.$store.state.apiConfig)
+        const res = await response.data.data.result
+        // reset data
+        this.dialogFormLahanUmum.inputs.mou_no.model = res.data.mou_no || ''
+        this.dialogFormLahanUmum.inputs.mou_no.disabled = true
+        this.dialogFormLahanUmum.inputs.mou_no.options = [{mou_no: res.data.mou_no}]
+        await this.getSeedDetailFromDistributionAdjustment(res.data.mou_no, res.list_detail)
+        this.dialogFormLahanUmum.inputs.land_condition = res.data.lahan_condition || '-'
+        this.dialogFormLahanUmum.inputs.qty_std = res.data.qty_std || 0
+        this.dialogFormLahanUmum.inputs.planting_date.model = this.$store.getters.dateFormat(res.data.planting_date, 'Y-MM-DD')
+        this.dialogFormLahanUmum.inputs.photo1.model = null
+        this.dialogFormLahanUmum.inputs.photo1.preview = res.data.photo1 != '-' ? ( this.BaseUrl + res.data.photo1) : ''
+        this.dialogFormLahanUmum.inputs.photo2.model = null
+        this.dialogFormLahanUmum.inputs.photo2.preview = res.data.photo2 != '-' ? ( this.BaseUrl + res.data.photo2) : ''
+        this.dialogFormLahanUmum.inputs.photo3.model = null
+        this.dialogFormLahanUmum.inputs.photo3.preview = res.data.photo3 != '-' ? ( this.BaseUrl + res.data.photo3) : ''
+  
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+  
+        this.dialogFormLahanUmum.model = true
+      }
     },
     async showEditModal(item) {
       console.log("test");
@@ -4075,48 +4157,6 @@ export default {
       // await this.getDetail(item);
       console.log(this.itemTemp);
       this.dialogShowEdit = true;
-    },
-    showPrintModal(item) {
-      if (item.is_validate == 1) {
-        this.type = "Detail";
-        // this.dialogDetail = true;
-        //   this.getDetail(item);
-        this.ph_form_no_temp = item.ph_form_no;
-
-        this.dialogCetakPilihan = true;
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Tidak Bisa Cetak. Status Belum Verifikasi";
-      }
-      //   var str = this.BaseUrlGet;
-      //   window.open(
-      //     str.substring(0, str.length - 4) +
-      //       "CetakLabelLubangTanam?ph_form_no=" +
-      //       item.ph_form_no
-      //   );
-    },
-    showPrintLabel() {
-      this.type = "Detail";
-      // this.dialogDetail = true;
-      //   this.getDetail(item);
-
-      this.dialogCetakPilihan = false;
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakLabelLubangTanamTemp?ph_form_no=" +
-          this.ph_form_no_temp
-      );
-    },
-    showPrintTandaTerima() {
-      this.dialogCetakPilihan = false;
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakBuktiPenyerahanTemp?ph_form_no=" +
-          this.ph_form_no_temp
-      );
     },
 
     saveEditPohon() {
@@ -4207,7 +4247,10 @@ export default {
           monitoring_no: this.defaultItem.monitoring_no,
           is_validate: parseInt(this.defaultItem.is_validate) - 1
         }
-        await axios.post(this.BaseUrlGet + "UnverificationMonitoring", datapost, this.$store.state.apiConfig);
+        let url = this.BaseUrlGet
+        if (this.generalSettings.landProgram.model == 'Petani') url += "UnverificationMonitoring"
+        else if (this.generalSettings.landProgram.model == 'Umum') url += "UnverificationMonitoringLahanUmum"
+        await axios.post(url, datapost, this.$store.state.apiConfig)
         this.textsnackbar = "Data unverified!"
         this.colorsnackbar = 'green'
         await this.initialize();
@@ -4253,9 +4296,6 @@ export default {
 
     verifSubmit() {
       this.dialogVerification = true;
-    },
-    VerificationItemConfirm() {
-      this.verif();
     },
     async VerificationUMItemConfirm() {
       try {
@@ -4425,24 +4465,6 @@ export default {
     capitalize(word) {
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     },
-    genderindo(val) {
-      if (val == "male") {
-        return "Laki-Laki";
-      } else {
-        return "Perempuan";
-      }
-    },
-    convertToRupiah(angka) {
-      var rupiah = "";
-      var angkarev = angka.toString().split("").reverse().join("");
-      for (var i = 0; i < angkarev.length; i++)
-        if (i % 3 == 0) rupiah += angkarev.substr(i, 3) + ".";
-      rupiah = rupiah
-        .split("", rupiah.length - 1)
-        .reverse()
-        .join("");
-      return "Rp. " + (rupiah.length < 1 ? "0" : rupiah) + ",-";
-    },
     waitingapprovefunct(valapprove) {
       if (valapprove == 0) {
         return true;
@@ -4506,131 +4528,6 @@ export default {
       }
     },
 
-    gettanggal(val) {
-      var bulanIndo = [
-        "",
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agust",
-        "Sept",
-        "Okt",
-        "Nov",
-        "Des",
-      ];
-
-      var date = val.split(" ")[0];
-
-      var tanggal = date.split("-")[2];
-      var bulan = date.split("-")[1];
-      var tahun = date.split("-")[0];
-
-      return tanggal + " " + bulanIndo[Math.abs(bulan)] + " " + tahun;
-    },
-
-    downloadSuperAdmin() {
-      this.dialogdownload = true;
-      this.downloadvalueff = false;
-      this.downloadvaluetime = false;
-      this.downloadvaluepetani = false;
-      this.loaddownload = false;
-      // console.log(this.valueMUExcel);
-      // console.log(this.valueTAExcel);
-      // console.log(this.valueVillageExcel);
-      // console.log(this.typegetdataExcel);
-      // console.log(this.valueFFcodeExcel);
-    },
-    pilihtipedownload(val) {
-      console.log(val);
-      if (val == "output_data") {
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      } else if (val == "loading_plan") {
-        this.loaddownload = true;
-        this.getFF();
-        console.log(this.itemsff);
-        this.downloadvalueff = true;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      } else if (val == "packing_plan") {
-        this.loaddownload = true;
-        this.getDistribusiTimeDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = true;
-        this.downloadvaluepetani = false;
-      } else if (val == "shipping_plan") {
-        this.loaddownload = true;
-        this.getDistribusiTimeDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = true;
-        this.downloadvaluepetani = false;
-      } else if (val == "farmer_receipt") {
-        this.loaddownload = true;
-        this.getPetaniDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = true;
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal tipe tidak tersedia";
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      }
-    },
-    verifytipedownload() {
-      console.log(this.selectFFdownload.ff_no);
-      console.log(this.selectpetanidownload.kodePetani);
-      console.log(this.selectdistribusitimedownload);
-      if (this.valuedownloadselected == "output_data") {
-        this.downloadall();
-      } else if (this.valuedownloadselected == "loading_plan") {
-        if (this.selectFFdownload.ff_no) {
-          this.downloadloadingplan(this.selectFFdownload.ff_no);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih ff terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "packing_plan") {
-        if (this.selectdistribusitimedownload) {
-          this.downloadpackingplan(this.selectdistribusitimedownload);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih waktu distribusi terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "shipping_plan") {
-        // this.downloadshippingplan();
-        if (this.selectdistribusitimedownload) {
-          this.downloadshippingplan(this.selectdistribusitimedownload);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih waktu distribusi terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "farmer_receipt") {
-        // this.downloadfarmerreceipt();
-        if (this.selectpetanidownload.kodePetani) {
-          this.downloadfarmerreceipt(this.selectpetanidownload.kodePetani);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih petani terlebih dahulu";
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal tipe tidak tersedia";
-      }
-    },
-
     downloadall() {
       var str = this.BaseUrlGet;
       window.open(
@@ -4658,62 +4555,6 @@ export default {
       this.valueVillageExcel = "";
       this.typegetdataExcel = "";
       this.valueFFcodeExcel = "";
-    },
-    downloadpackingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelPackingPlan?date=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadshippingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelShippingPlan?date=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadloadingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelLoadingPlan?typegetdatadownload=ff&ff=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadfarmerreceipt(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelLoadingPlan?typegetdatadownload=farmer&farmer_no=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
     },
 
     deleteItemPohon(item) {
@@ -4765,7 +4606,7 @@ export default {
         this.$store.state.lightbox.show = true
     },
     async setGroupingDetailSeedling(datas) {
-      console.log(datas)
+      // console.log(datas)
       let grouping = []
       await datas.forEach(data => {
         let pushData = {
@@ -4812,7 +4653,7 @@ export default {
           grouping.push(pushData)
         }
       })
-      console.log(grouping)
+      // console.log(grouping)
       return grouping
     },
     numberFormat(num) {

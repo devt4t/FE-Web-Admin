@@ -1131,7 +1131,7 @@
                             SCAN Distribution
                         </span>
                         <v-divider class="mx-2" dark></v-divider>
-                        <v-icon color="white" @click="distributionReport.dialogs.scanLahanUmum.show = false">
+                        <v-icon color="white" @click="() => {distributionReport.dialogs.scanLahanUmum.show = false;distributionReport.dialogs.detail.show = false;}">
                             mdi-close-circle
                         </v-icon>
                     </v-card-title>

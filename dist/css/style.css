@@ -85,3 +85,144 @@ body * {
 .v-dialog.v-dialog--active.v-dialog--scrollable {
     box-shadow: unset!important;
 }
+
+/* THEME _________________________________________________________________________________ */
+.dark-bg-gradient {
+    background: rgb(55,55,55);
+    background: linear-gradient(325deg, rgba(55,55,55,1) 0%, rgba(21,21,21,1) 100%);
+  }
+  .light-bg-gradient {
+    background: rgb(255,255,255);
+    /* background: linear-gradient(325deg, rgba(255,255,255,1) 0%, rgba(215,255,225,1) 100%); */
+  }
+  .green--text--theme {
+    color: #71AF34!important;
+  }
+  /* width */
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f155;
+    border-radius: 10px;
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #71AF34aa;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #71AF34;
+  }
+  
+  /* BG Wave animation _________________________________________________________________________________ */
+  /* Gradient Animate */
+  .gradient-animate {
+    background: linear-gradient(315deg, #3D6036 3%, #70A14F 38%, #a7ea7b 68%, #76d239 98%);
+    animation: gradient 10s ease infinite;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+  }
+  .gradient-animate.dark {
+    background: linear-gradient(315deg, #1a2518 3%, #334329 38%, #46682f 68%, #2a4915 98%);
+    animation: gradient 15s ease infinite;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+  }
+  .gradient-animate.brown {
+    background: linear-gradient(315deg, #472D2D 3%, #a48080 38%, #704F4F 68%, #A77979 98%);
+    animation: gradient 10s ease infinite;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+  }
+  .gradient-animate.orange {
+    background: linear-gradient(315deg, #E38B29 3%, #FFD8A9 38%, #F1A661 68%, #FDEEDC 98%);
+    animation: gradient 12s ease infinite;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+  }
+  @keyframes gradient {
+      0% {
+          background-position: 0% 0%;
+      }
+      50% {
+          background-position: 100% 100%;
+      }
+      100% {
+          background-position: 0% 0%;
+      }
+  }
+  
+  .waves .wave {
+      background: rgb(255 255 255 / 25%);
+      border-radius: 1000% 1000% 0 0;
+      position: fixed;
+      width: 200%;
+      height: 12em;
+      animation: wave 10s -3s linear infinite;
+      transform: translate3d(0, 0, 0);
+      opacity: 0.8;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+  }
+  
+  .waves .wave:nth-of-type(2) {
+      bottom: -1.25em;
+      animation: wave 18s linear reverse infinite;
+      opacity: 0.8;
+  }
+  
+  .waves .wave:nth-of-type(3) {
+      bottom: -2.5em;
+      animation: wave 20s -1s reverse infinite;
+      opacity: 0.9;
+  }
+  
+  @keyframes wave {
+      2% {
+          transform: translateX(1);
+      }
+  
+      25% {
+          transform: translateX(-25%);
+      }
+  
+      50% {
+          transform: translateX(-50%);
+      }
+  
+      75% {
+          transform: translateX(-25%);
+      }
+  
+      100% {
+          transform: translateX(1);
+      }
+  }
+  /* Sidebar Custom _________________________________________________________________________________ */
+  .custom-sidebar .v-list-item--active::before, .custom-sidebar .v-list-item::before{
+    width: 5px;
+    border-radius: 10px;
+  }
+  .custom-sidebar .v-list-item:hover .v-list-item__content,
+  .custom-sidebar .v-list-item:hover .v-list-item__icon {
+    opacity: .7;
+  }
+  .custom-sidebar .v-list-item.v-list-item--dense.v-list-item--link {
+    overflow: visible;
+  }
+  .custom-sidebar .v-list-item.v-list-item--dense.v-list-item--link::before,
+  .custom-sidebar .v-list-item--active.v-list-item--dense.v-list-item--link::before {
+    width: 4px;
+    margin-left: 45px;
+  }
+
+  .bg-white-transparent {
+    background-color: #ffffff55!important;
+  }

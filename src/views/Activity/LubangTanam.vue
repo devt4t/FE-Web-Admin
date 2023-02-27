@@ -1981,11 +1981,11 @@
             </v-list-item> -->
             <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER') && item.is_validate == 1">
               <v-btn
+                :disabled="item.is_checked == 1"
                 block
-                dark
                 rounded
                 @click="dialogUnverificationData = item.ph_form_no;dialogUnverification = true;"
-                color="red"
+                color="red white--text"
               >
               <v-icon class="mr-1" small color="white">
                 mdi-power
@@ -1995,6 +1995,7 @@
             </v-list-item>
             <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER') && item.is_verified == 2">
               <v-btn
+                :disabled="item.is_checked == 1"
                 color="red white--text"
                 @click="dialogUnverificationData = item.lahan_no;dialogUnverification = true;"
                 rounded
@@ -2077,7 +2078,7 @@ export default {
       }
     },
     land_program: {
-        model: 'Umum',
+        model: 'Petani',
         options: ['Petani', 'Umum'],
         disabled: false,
     },

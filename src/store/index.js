@@ -49,6 +49,9 @@ export default new Vuex.Store({
     getApiUrl: (state) => (url) => {
       return state.apiUrl + url
     },
+    getImageUrl: (state) => (url) => {
+      return state.apiUrlImage + url
+    },
     capitalizeFirstLetter: () => (string) => {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },

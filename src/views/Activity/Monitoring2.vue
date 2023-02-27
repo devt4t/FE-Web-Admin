@@ -15,6 +15,8 @@
       </v-alert>
     </div>
 
+    <trees-preview></trees-preview>
+
     <v-card v-if="false" elevation="5" class="pt-1 pb-0 px-2 mx-3 mt-0 mb-3" data-aos="fade-up" data-aos-delay="200">
       <v-card-text class="px-1">
         <v-row>
@@ -95,12 +97,12 @@
     </v-card>
 
     <v-data-table
-      data-aos="fade-up" data-aos-delay="400"
+      data-aos="fade-up"
       :headers="headers"
       :items="dataobject"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
     >
       <!-- Color Status -->
       <template v-slot:item.status="{ item }">
@@ -110,7 +112,7 @@
       </template>
 
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <!-- <v-btn
             dark
             class="mx-3 mt-1 d-none d-md-block"
@@ -1581,6 +1583,7 @@
 import axios from "axios";
 // import BaseUrl from "../../services/BaseUrl.js";
 import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
+import TreesPreview from "./components/monitoring2/TreesPreview.vue";
 
 export default {
   name: "Monitoring2",
@@ -1589,7 +1592,8 @@ export default {
     LTileLayer,
     LMarker,
     LPopup,
-  },
+    TreesPreview
+},
   authtoken: "",
   data: () => ({
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
