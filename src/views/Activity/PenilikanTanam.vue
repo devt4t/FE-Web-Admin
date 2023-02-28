@@ -2172,7 +2172,7 @@ export default {
         landProgram: {
           items: ['Petani', 'Umum'],
           label: 'Land Program',
-          model: 'Umum',
+          model: 'Petani',
         },
     },
     pagination: {

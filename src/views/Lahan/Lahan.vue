@@ -1613,6 +1613,86 @@
         </v-card> 
       </v-dialog>
 
+      <!-- Modal Unverif -->
+      <v-dialog v-model="unverifDialog.show" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex flex-column align-center justify-center">
+            <v-icon color="orange" size="65">mdi-alert-circle</v-icon>
+            <p class="mt-3 text-center">
+              Are you sure you want to UNVERIF this land:<br> <b>{{ unverifDialog.lahan_no || '-' }}</b>?
+            </p>
+          </v-card-title>
+          <v-card-actions>
+            <v-btn color="warning white--text" rounded text @click="() => {unverifDialog.show = false}">
+              <v-icon class="mr-1">mdi-undo</v-icon>
+              Back
+            </v-btn>
+            <v-divider class="mx-2"></v-divider>
+            <v-btn color="blue darken-1" rounded outlined @click="() => {unverifDialog.show2 = true}">
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Okay
+            </v-btn>
+          </v-card-actions>
+        </v-card> 
+      </v-dialog>
+      <v-dialog v-model="unverifDialog.show2" max-width="600px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex flex-column align-center justify-center">
+            <v-icon color="red" size="65">mdi-alert</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <p class="mt-3 text-center">
+              This process also <span class="red--text font-weight-bold">DELETE</span> all activities data from land <b>{{ unverifDialog.lahan_no || '-' }}</b>!<br>
+              It's including "Sosialisasi Tanam", "Penilikan Lubang", "Material Organik", "Distribusi", and "Realisasi Tanam / Monitoring 1".<br>
+              Still wanna process it??
+            </p>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="warning white--text" rounded text @click="() => closeUnverification2()">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              No
+            </v-btn>
+            <v-divider class="mx-2"></v-divider>
+            <v-btn color="red white--text" rounded outlined @click="() => {unverifLahanConfirm(unverifDialog.lahan_no)}">
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Sure!
+            </v-btn>
+          </v-card-actions>
+        </v-card> 
+      </v-dialog>
+      <v-dialog v-model="unverifDialog.show3" max-width="400px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex flex-column align-center justify-center">
+            <v-icon color="green" size="65">mdi-check-circle</v-icon>
+            <p>Unverif lahan data success!</p>
+          </v-card-title>
+          <v-card-text>
+            <div v-if="unverifDialog.show3data.lahan" class="px-3">
+              <p class="mb-0">Updated data: </p>
+              <ol>
+                <li v-if="unverifDialog.show3data.lahan.main">Unverified data lahan.</li>
+              </ol>
+              <p class="mb-0 pt-3">Deleted data: </p>
+              <ol>
+                <li v-if="unverifDialog.show3data.sostam.main">Deleted data "Sosialisasi Tanam".</li>
+                <li v-if="unverifDialog.show3data.penlub.main">Deleted data "Penilikan Lubang".</li>
+                <li v-if="unverifDialog.show3data.material_organic.data.length > 0">Deleted data "Material Organik".</li>
+                <li v-if="unverifDialog.show3data.distribusi.main">Deleted data "Distribusi".</li>
+                <li v-if="unverifDialog.show3data.mon1.main">Deleted data "Realisasi Tanam / Monitoring 1".</li>
+              </ol>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-divider class="mr-2"></v-divider>
+            <v-btn color="blue white--text" rounded text @click="() => {unverifDialog.show3 = false;unverifDialog.show3data = {};}">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Okay
+            </v-btn>
+            <v-divider class="ml-2"></v-divider>
+          </v-card-actions>
+        </v-card> 
+      </v-dialog>
+
       <!-- Modal Mass Insert Lahan -->
       <v-dialog v-model="insertDataLahan.show" max-width="1000px" content-class="rounded-xl" scrollable>
         <v-card>
@@ -1750,40 +1830,6 @@
             class="ml-1 ml-lg-2"
             style="max-width: 200px"
           ></v-select>
-
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 200px"
-          ></v-select>
-          <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select>
-          <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
           <v-divider class="d-none d-md-block mx-2"></v-divider>
           <v-text-field
             class="mt-2 mt-lg-0"
@@ -1796,15 +1842,6 @@
             rounded
             dense
           ></v-text-field>
-          <!-- <v-btn
-            v-if="RoleAccesCRUDShow == true && crudLahanBasicShow == true"
-            dark
-            class="mb-2 mr-1"
-            @click="showAddModal()"
-            color="green"
-          >
-            <v-icon small>mdi-plus</v-icon> Add
-          </v-btn> -->
           <v-btn
             class="mb-2 mr-1 ml-2 d-none d-md-block"
             @click="download()"
@@ -1849,76 +1886,6 @@
           <v-icon class="mr-1">mdi-{{ item.updated_gis == 'sudah' ? 'map-check' : 'help-circle' }}</v-icon> {{ item.updated_gis }}
         </v-chip>
       </template>
-
-      <!-- Action table -->
-      <template v-slot:item.actions="{ item }">
-        <v-menu
-          rounded="xl"
-          bottom
-          left
-          offset-y
-          transition="slide-y-transition"
-          :close-on-content-click="false"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon v-bind="attrs" v-on="on" color="dark">
-              mdi-arrow-down-drop-circle
-            </v-icon>
-          </template>
-
-          <v-list class="d-flex flex-column align-stretch">
-            <v-list-item>
-              <v-btn
-                dark
-                class="w-100"
-                rounded
-                @click="showDetail(item)"
-                color="info"
-                block
-              >
-              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
-                  mdi-information-outline
-              </v-icon>
-                Detail
-              </v-btn>
-            </v-list-item>
-            <v-list-item
-              v-if="(RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT' || User.role_name == 'GIS STAFF'"
-            >
-              <v-btn
-                dark
-                class="w-100"
-                rounded
-                @click="showEditDetailModal(item)"
-                color="warning"
-                block
-              >
-              <v-icon class="mr-1" @click="showEditDetailModal(item)" small color="white">
-                mdi-lead-pencil
-              </v-icon>
-                Edit
-              </v-btn>
-            </v-list-item>
-            <v-list-item
-              v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
-            >
-              <v-btn
-                dark
-                class="w-100"
-                rounded
-                @click="showDeleteModal(item)"
-                color="warning"
-                block
-              >
-              <v-icon class="mr-1" @click="showDeleteModal(item)" small color="white">
-                mdi-delete
-              </v-icon>
-                Delete
-              </v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
       
       <!-- Index -->
       <template v-slot:item.index="{index}">
@@ -1939,6 +1906,83 @@
       <template v-slot:item.created_at="{ item }">
         {{ item.created_at.slice(0, 4) }}
       </template>
+
+      <!-- Action table -->
+      <template v-slot:item.actions="{ item }">
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-card class="pa-2 d-flex flex-column align-stretch" style="gap: 7px;">
+            <v-btn
+              class="w-100"
+              rounded
+              @click="showDetail(item)"
+              color="info white--text"
+              block
+              small
+            >
+            <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                mdi-information-outline
+            </v-icon>
+              Detail
+            </v-btn>
+            <v-btn
+              v-if="(RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT' || User.role_name == 'GIS STAFF'"
+              class="w-100"
+              rounded
+              @click="showEditDetailModal(item)"
+              color="warning white--text"
+              block
+              small
+            >
+            <v-icon class="mr-1" @click="showEditDetailModal(item)" small color="white">
+              mdi-lead-pencil
+            </v-icon>
+              Edit
+            </v-btn>
+            <v-btn
+              v-if="item.status == 'Sudah Verifikasi'"
+              class="w-100"
+              rounded
+              @click="() => showUnverifModal(item)"
+              color="red white--text"
+              :disabled="User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'"
+              block
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-undo
+            </v-icon>
+              Unverif
+            </v-btn>
+            <!-- <v-btn
+              v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
+              class="w-100"
+              rounded
+              @click="showDeleteModal(item)"
+              color="red white--text"
+              block
+              small
+            >
+            <v-icon class="mr-1" @click="showDeleteModal(item)" small color="white">
+              mdi-delete
+            </v-icon>
+              Delete
+            </v-btn> -->
+          </v-card>
+        </v-menu>
+      </template>
     </v-data-table>
     <v-snackbar
       v-model="snackbar"
@@ -1956,6 +2000,13 @@ import axios from "axios";
 export default {
   name: "Lahan",
   data: () => ({
+    unverifDialog: {
+      show: false,
+      show2: false,
+      show3: false,
+      show3data: {},
+      lahan_no: ''
+    },
     insertDataLahan: {
       show: false,
       data: {
@@ -3492,9 +3543,44 @@ export default {
       });
     },
     showDeleteModal(item) {
-      console.log(item.idTblLahan);
-      this.defaultItem.id = item.idTblLahan;
-      this.dialogDelete = true;
+      this.defaultItem.id = item.idTblLahan
+      this.dialogDelete = true
+    },
+    showUnverifModal(item) {
+      this.unverifDialog.lahan_no = item.lahanNo
+      this.unverifDialog.show = true
+    },
+    async closeUnverification2() {
+      this.unverifDialog.show2 = false
+      await setTimeout(() => {
+        this.unverifDialog.show = false
+      }, 300)
+    },
+    async unverifLahanConfirm(lahan_no) {
+      try {
+        await this.closeUnverification2()
+        this.$store.state.loadingOverlayText = 'Loading unverif data...'
+        this.$store.state.loadingOverlay = true
+        if (lahan_no) {
+          const response = await axios.post(this.$store.getters.getApiUrl('UnverificationLahan'), {lahan_no: lahan_no}, this.$store.state.apiConfig)
+          const res = response.data
+          this.unverifDialog.show3 = true
+          this.unverifDialog.show3data = res
+          this.initialize()
+        } 
+      } catch (err) {
+        if (err.response) {
+          if (err.response.status == 401) {
+            this.alerttoken = true;
+            this.loadtable = false;
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        } else console.error(err)
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
     },
     deleteItemConfirm() {
       this.verifDelete();
