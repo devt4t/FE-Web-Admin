@@ -146,6 +146,12 @@ body * {
     background-size: 400% 400%;
     background-attachment: fixed;
   }
+  .gradient-animate.blue {
+    background: linear-gradient(315deg, #2983e3 3%, #a9d7ff 38%, #61a7f1 68%, #dce9fd 98%);
+    animation: gradient 12s ease infinite;
+    background-size: 400% 400%;
+    background-attachment: fixed;
+  }
   @keyframes gradient {
       0% {
           background-position: 0% 0%;
