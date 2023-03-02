@@ -1,6 +1,7 @@
 <template>
     <div>
         <title-info :show="dialogs.titleInfo.show" @close="$event => closeDialog($event)"></title-info>
+        <detail :show="dialogs.detail.show" @close="$event => closeDialog($event)" :data="dialogs.detail.data"></detail>
         <v-container fluid data-aos="fade-up" data-aos-delay="100">
             <v-row :class="`${mu_no.model ? '' : ''}`">
                 <!-- Title Toolbar -->
@@ -13,7 +14,6 @@
                                 rounded
                                 dense
                                 outlined
-                                clearable
                                 :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
                                 color="green"
                                 item-color="green"
@@ -43,7 +43,7 @@
                                 v-model="programYear"
                                 style="max-width: 200px;"
                             ></v-select>
-                            <v-btn rounded color="blue white--text" class="ml-2">
+                            <v-btn rounded color="blue white--text" class="ml-2" disabled>
                                 <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
                                 Export
                             </v-btn>
@@ -66,35 +66,45 @@
                                     <v-card class="rounded-xl bg-white-transparent blurred">
                                         <v-card-text class="pt-1">
                                             <p class="mb-1">{{ programYear }}</p>
-                                            <h4 style="font-size: 33px;">
-                                                <number
-                                                ref="totalKayuProgramYear"
-                                                :key="componentKeys.totalKayuProgramYear"
-                                                :format="numberFormat"
-                                                animationPaused
-                                                :from="0"
-                                                :to="trees.kayu.general.qty_py"
-                                                :duration="5"
-                                                :delay="0"
-                                                easing="Power2.easeInOut"/>
-                                            </h4>
+                                            <v-tooltip bottom content-class="rounded-xl">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 33px;">
+                                                        <number
+                                                        ref="totalKayuProgramYear"
+                                                        :key="componentKeys.totalKayuProgramYear"
+                                                        :format="numberFormat"
+                                                        animationPaused
+                                                        :from="0"
+                                                        :to="trees.kayu.general.qty_py"
+                                                        :duration="5"
+                                                        :delay="0"
+                                                        easing="Power2.easeInOut"/>
+                                                    </h4>
+                                                </template>
+                                                <span>{{ $store.getters.numberFormat(trees.kayu.general.qty_py) }}</span>
+                                            </v-tooltip>
                                         </v-card-text>
                                     </v-card>
                                     <v-card class="rounded-xl bg-white-transparent blurred mt-2">
                                         <v-card-text class="pt-1">
                                             <p class="mb-1">Total</p>
-                                            <h4 style="font-size: 33px;">
-                                                <number
-                                                ref="totalKayuAll"
-                                                :key="componentKeys.totalKayuAll"
-                                                :format="numberFormat"
-                                                animationPaused
-                                                :from="0"
-                                                :to="trees.kayu.general.qty"
-                                                :duration="5"
-                                                :delay="0"
-                                                easing="Power2.easeInOut"/>
-                                            </h4>
+                                            <v-tooltip bottom content-class="rounded-xl">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 33px;">
+                                                        <number
+                                                        ref="totalKayuAll"
+                                                        :key="componentKeys.totalKayuAll"
+                                                        :format="numberFormat"
+                                                        animationPaused
+                                                        :from="0"
+                                                        :to="trees.kayu.general.qty"
+                                                        :duration="5"
+                                                        :delay="0"
+                                                        easing="Power2.easeInOut"/>
+                                                    </h4>
+                                                </template>
+                                                <span>{{ $store.getters.numberFormat(trees.kayu.general.qty) }}</span>
+                                            </v-tooltip>
                                         </v-card-text>
                                     </v-card>
                                 </v-card-text>
@@ -106,7 +116,7 @@
                 <v-col cols="12" lg="10" class="d-flex align-lg-stretch">
                     <v-card class="rounded-xl flex-grow-1 d-flex flex-column flex-lg-row" :loading="trees.kayu.category.loading">
                         <v-card-text class="d-flex" v-if="trees.kayu.category.loading == false && trees.kayu.category.items.length > 0">
-                            <v-row class="align-self-lg-stretch">
+                            <v-row class="align-self-lg-stretch" :key="trees.kayu.category.currentPage">
                                 <v-col v-for="(kayu, kayuIndex) in displayedItemsKayu" :key="kayuIndex" class="px-1 d-flex" cols="12" lg="3">
                                     <v-card class="rounded-xl align-self-lg-stretch flex-grow-1" data-aos="zoom-in" :data-aos-delay="200 + (kayuIndex * 50)">
                                         <v-card-title class="green ma-1 rounded-xl pa-1 white--text">
@@ -121,7 +131,14 @@
                                                     <v-card class="rounded-xl">
                                                         <v-card-text class="pt-1">
                                                             <p>{{ programYear }}</p>
-                                                            <h4 style="font-size: 20px;">{{ numberFormat(kayu.qty_py || 0) }}</h4>
+                                                            <v-tooltip bottom content-class="rounded-xl">
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 20px;">
+                                                                        {{ numberFormat(kayu.qty_py || 0) }}
+                                                                    </h4>
+                                                                </template>
+                                                                <span>{{ $store.getters.numberFormat(kayu.qty_py || 0) }}</span>
+                                                            </v-tooltip>
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-col>
@@ -129,20 +146,35 @@
                                                     <v-card class="rounded-xl">
                                                         <v-card-text class="pt-1">
                                                             <p>Total</p>
-                                                            <h4 style="font-size: 20px;">{{ numberFormat(kayu.qty || 0) }}</h4>
+                                                            <v-tooltip bottom content-class="rounded-xl">
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 20px;">
+                                                                        {{ numberFormat(kayu.qty || 0) }}
+                                                                    </h4>
+                                                                </template>
+                                                                <span>{{ $store.getters.numberFormat(kayu.qty || 0) }}</span>
+                                                            </v-tooltip>
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-col>
                                             </v-row>
-                                            <v-btn
-                                                rounded
-                                                small
-                                                color="green lighten-2 white--text"
-                                                class="mt-1"
-                                            >
-                                                <v-icon class="mr-1">mdi-list-box</v-icon>
-                                                Show Land
-                                            </v-btn>
+                                            <v-tooltip top content-class="rounded-xl">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                        rounded
+                                                        small
+                                                        color="green lighten-2 white--text"
+                                                        class="mt-1"
+                                                        @click="() => showDetail(programYear, mu_no.model, kayu.tree_code, 'KAYU')"
+                                                    >
+                                                        <v-icon class="mr-1">mdi-list-box</v-icon>
+                                                        List ({{ programYear }})
+                                                    </v-btn>
+                                                </template>
+                                                <span>Show farmer(s) who planted "{{ kayu.tree_name }}" in {{ programYear }}.</span>
+                                            </v-tooltip>
                                         </v-card-text>
                                     </v-card>
                                 </v-col>
@@ -185,34 +217,45 @@
                                     <v-card class="rounded-xl bg-white-transparent blurred">
                                         <v-card-text class="pt-1">
                                             <p class="mb-1">{{ programYear }}</p>
-                                            <h4 style="font-size: 33px;">
-                                                <number
-                                                ref="totalMptsProgramYear"
-                                                :key="componentKeys.totalMptsProgramYear"
-                                                :format="numberFormat"
-                                                animationPaused
-                                                :from="0"
-                                                :to="trees.mpts.general.qty_py"
-                                                :duration="5"
-                                                :delay="0"
-                                                easing="Power2.easeInOut"/>
-                                            </h4>
+                                            <v-tooltip bottom content-class="rounded-xl">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 33px;">
+                                                        <number
+                                                        ref="totalMptsProgramYear"
+                                                        :key="componentKeys.totalMptsProgramYear"
+                                                        :format="numberFormat"
+                                                        animationPaused
+                                                        :from="0"
+                                                        :to="trees.mpts.general.qty_py"
+                                                        :duration="5"
+                                                        :delay="0"
+                                                        easing="Power2.easeInOut"/>
+                                                    </h4>
+                                                </template>
+                                                <span>{{ $store.getters.numberFormat(trees.mpts.general.qty_py) }}</span>
+                                            </v-tooltip>
                                         </v-card-text>
                                     </v-card>
                                     <v-card class="rounded-xl bg-white-transparent blurred mt-2">
                                         <v-card-text class="pt-1">
-                                            <p class="mb-1">Total</p><h4 style="font-size: 33px;">
-                                                <number
-                                                ref="totalMptsAll"
-                                                :key="componentKeys.totalMptsAll"
-                                                :format="numberFormat"
-                                                animationPaused
-                                                :from="0"
-                                                :to="trees.mpts.general.qty"
-                                                :duration="5"
-                                                :delay="0"
-                                                easing="Power2.easeInOut"/>
-                                            </h4>
+                                            <p class="mb-1">Total</p>
+                                            <v-tooltip bottom content-class="rounded-xl">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 33px;">
+                                                        <number
+                                                        ref="totalMptsAll"
+                                                        :key="componentKeys.totalMptsAll"
+                                                        :format="numberFormat"
+                                                        animationPaused
+                                                        :from="0"
+                                                        :to="trees.mpts.general.qty"
+                                                        :duration="5"
+                                                        :delay="0"
+                                                        easing="Power2.easeInOut"/>
+                                                    </h4>
+                                                </template>
+                                                <span>{{ $store.getters.numberFormat(trees.mpts.general.qty) }}</span>
+                                            </v-tooltip>
                                         </v-card-text>
                                     </v-card>
                                 </v-card-text>
@@ -224,7 +267,7 @@
                 <v-col cols="12" lg="10" class="d-flex align-lg-stretch pt-0">
                     <v-card class="rounded-xl flex-grow-1 d-flex flex-column flex-lg-row" :loading="trees.mpts.category.loading">
                         <v-card-text v-if="trees.mpts.category.loading == false && trees.mpts.category.items.length > 0" class="d-flex">
-                            <v-row class="align-self-lg-stretch">
+                            <v-row class="align-self-lg-stretch" :key="trees.mpts.category.currentPage">
                                 <v-col v-for="(mpts, mptsIndex) in displayedItemsMpts" :key="mptsIndex" class="px-1 d-flex" cols="12" lg="3">
                                     <v-card class="rounded-xl align-self-lg-stretch flex-grow-1" data-aos="zoom-in" :data-aos-delay="200 + (mptsIndex * 50)">
                                         <v-card-title class="blue ma-1 rounded-xl pa-1 white--text">
@@ -239,7 +282,14 @@
                                                     <v-card class="rounded-xl">
                                                         <v-card-text class="pt-1">
                                                             <p>{{ programYear }}</p>
-                                                            <h4 style="font-size: 20px;">{{ numberFormat(mpts.qty_py || 0) }}</h4>
+                                                            <v-tooltip bottom content-class="rounded-xl">
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 20px;">
+                                                                        {{ numberFormat(mpts.qty_py || 0) }}
+                                                                    </h4>
+                                                                </template>
+                                                                <span>{{ $store.getters.numberFormat(mpts.qty_py || 0) }}</span>
+                                                            </v-tooltip>
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-col>
@@ -247,20 +297,35 @@
                                                     <v-card class="rounded-xl">
                                                         <v-card-text class="pt-1">
                                                             <p>Total</p>
-                                                            <h4 style="font-size: 20px;">{{ numberFormat(mpts.qty || 0) }}</h4>
+                                                            <v-tooltip bottom content-class="rounded-xl">
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <h4 v-bind="attrs" v-on="on" style="font-size: 20px;">
+                                                                        {{ numberFormat(mpts.qty || 0) }}
+                                                                    </h4>
+                                                                </template>
+                                                                <span>{{ $store.getters.numberFormat(mpts.qty || 0) }}</span>
+                                                            </v-tooltip>
                                                         </v-card-text>
                                                     </v-card>
                                                 </v-col>
                                             </v-row>
-                                            <v-btn
-                                                rounded
-                                                small
-                                                color="blue lighten-2 white--text"
-                                                class="mt-1"
-                                            >
-                                                <v-icon class="mr-1">mdi-list-box</v-icon>
-                                                Show Land
-                                            </v-btn>
+                                            <v-tooltip top content-class="rounded-xl">
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                        rounded
+                                                        small
+                                                        color="blue lighten-2 white--text"
+                                                        class="mt-1"
+                                                        @click="() => showDetail(programYear, mu_no.model, mpts.tree_code, 'MPTS')"
+                                                    >
+                                                        <v-icon class="mr-1">mdi-list-box</v-icon>
+                                                        List ({{ programYear }})
+                                                    </v-btn>
+                                                </template>
+                                                <span>Show farmers who planted "{{ mpts.tree_name }}" in {{ programYear }}.</span>
+                                            </v-tooltip>
                                         </v-card-text>
                                     </v-card>
                                 </v-col>
@@ -298,17 +363,19 @@
 import axios from 'axios'
 import moment from 'moment'
 import TitleInfo from './dialogs/TitleInfo.vue'
+import Detail from './dialogs/Detail.vue'
 
 export default {
     components: {
-        TitleInfo
+        TitleInfo,
+        Detail
     },
     data: () => ({
         // filter
         mu_no: {
             items: [],
             loading: false,
-            model: '',
+            model: '021',
         },
         programYear: '',
         // trees datas
@@ -341,6 +408,15 @@ export default {
         // dialogs
         dialogs: {
             titleInfo: {show: false},
+            detail: {
+                show: false,
+                data: {
+                    py: '',
+                    mu_no: '',
+                    tree_code: '',
+                    type: ''
+                }
+            }
         },
         // keys
         componentKeys: {
@@ -396,10 +472,10 @@ export default {
             let alpha = ''
             let fractionDigit = 0
             if (number >= 10000 && number < 1000000) {
-                numb = numb / 1000
+                numb = Math.floor(numb / 1000)
                 alpha = 'K'
             } else if (number >= 1000000) {
-                numb = numb / 1000000
+                numb = Math.floor(numb / 1000000)
                 alpha = 'M'
                 if (number < 100000000) fractionDigit = 1
             }
@@ -482,6 +558,15 @@ export default {
         },
         closeDialog(name) {
             this.dialogs[name].show = false
+        },
+        async showDetail(py, mu_no, tree_code, type) {
+            if (py && mu_no && tree_code && type) {
+                this.dialogs.detail.data.py = py
+                this.dialogs.detail.data.mu_no = mu_no
+                this.dialogs.detail.data.tree_code = tree_code
+                this.dialogs.detail.data.type = type
+                this.dialogs.detail.show = true
+            }
         }
     },
 }
