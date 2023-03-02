@@ -56,10 +56,9 @@ export default new Vuex.Store({
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
     numberFormat: () => (num) =>  {
-        return new Intl.NumberFormat('id-ID').format(num)
-    },
-    numberFormat: () => (num) =>  {
-        return new Intl.NumberFormat('id-ID').format(num)
+        return new Intl.NumberFormat('id-ID', {
+            maximumFractionDigits: 0
+        }).format(num)
     },
     dateFormat: () => (date, format) => {
         return moment(date).format(format)

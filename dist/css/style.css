@@ -112,12 +112,12 @@ body * {
   /* Handle */
   ::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background: #71AF34aa;
+    background: #545454;
   }
   
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: #71AF34;
+    background: #434343aa;
   }
   
   /* BG Wave animation _________________________________________________________________________________ */
