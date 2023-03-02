@@ -246,9 +246,11 @@ export default {
         }
 
         var rslt = itemroutecheck.includes(this.$route.name);
+        var exceptionPage = ['SeedlingChangeRequest']
+        const checkExceptionPage = exceptionPage.includes(this.$route.name)
         // console.log(this.$route.name);
         // console.log(itemroutecheck);
-        if (rslt == true) {
+        if (rslt == true || checkExceptionPage) {
           // console.log("comp=" + localStorage.getItem("token"));
           this.authtoken = localStorage.getItem("token");
           var authtokenval = this.authtoken;

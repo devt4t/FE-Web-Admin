@@ -1364,6 +1364,7 @@
                     :disabled="generalSettings.type.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
                 ></v-select>
                 <v-divider class="mx-2"></v-divider>
+                <v-btn rounded class="mr-2" color="red white--text" @click="$router.push('SeedlingChangeRequest')"><v-icon class="mr-1">mdi-stack-exchange</v-icon> Seedling Change Request</v-btn>
             </v-card>
             <!-- Expansions Panels -->
             <v-expansion-panels multiple v-model="expansions.model" data-aos="fade-up" data-aos-delay="400">
