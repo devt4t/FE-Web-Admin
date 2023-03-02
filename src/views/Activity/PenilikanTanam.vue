@@ -1053,7 +1053,7 @@
                           <v-date-picker
                               v-model="dialogFormLahanUmum.inputs.planting_date.model"
                               min="2022-11-24"
-                              max="2023-02-28"
+                              max="2023-03-31"
                               @input="dialogFormLahanUmum.inputs.planting_date.datepicker.show = false"
                               color="green"
                               class="rounded-xl"
