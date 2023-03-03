@@ -2130,7 +2130,7 @@
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
             </v-btn>
             <v-btn v-else-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Umum')" 
-              :disabled="(item.is_validate == 1 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT') || (item.is_validate == 2 && User.role_group != 'IT')"
+              :disabled="(item.is_validate == 1 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT') || (item.is_validate == 2 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT')"
               rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center"  @click="showUnverifModal(item)">
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
             </v-btn>
