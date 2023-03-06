@@ -194,6 +194,7 @@
                         item-color="success"
                         v-model="programYear"
                         :items="$store.state.programYear.options"
+                        :disabled="tables.main.loading"
                         outlined
                         dense
                         hide-details
@@ -222,6 +223,7 @@
                     <v-divider class="mx-2"></v-divider>
                     <!-- Search Field -->
                     <v-text-field
+                        color="green"
                         hide-details
                         dense
                         outlined
@@ -239,6 +241,7 @@
                         item-color="success"
                         v-model="organicType"
                         :items="['Pupuk', 'Pestisida']"
+                        :disabled="tables.main.loading"
                         outlined
                         dense
                         hide-details
