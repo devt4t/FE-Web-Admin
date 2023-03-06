@@ -102,18 +102,18 @@
                         <small>{{ item.farmer_no }}</small>
                     </template>
                     <template v-slot:item.lahan_no="{item}">
-                        <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" :class="`${themeColor} white--text ma-1`">
-                            {{ item.lahan_no.replace('[', '').replace(']', '').split(',')[0] }}
+                        <v-chip v-if="lahanNoFormat(item.lahan_no).length < 2" :class="`${themeColor} white--text ma-1`">
+                            {{ lahanNoFormat(item.lahan_no)[0] }}
                         </v-chip>
                         <v-menu v-else open-on-hover offset-x :close-on-content-click="false" content-class="rounded-xl" >
                             <template v-slot:activator="{attrs, on}">
-                                <v-btn rounded small v-bind="attrs" v-on="on" :color="`${themeColor} darken-${item.lahan_no.replace('[', '').replace(']', '').split(',').length} white--text`">
-                                    {{ item.lahan_no.replace('[', '').replace(']', '').split(',').length }} Lahan
+                                <v-btn rounded small v-bind="attrs" v-on="on" :color="`${themeColor} darken-${lahanNoFormat(item.lahan_no).length < 5 ? lahanNoFormat(item.lahan_no).length : 4} white--text`">
+                                    {{ lahanNoFormat(item.lahan_no).length }} Lahan
                                 </v-btn>
                             </template>
                             <v-card class="pa-2 pb-1 d-flex flex-column">
                                 <v-chip 
-                                    v-for="(lahan, lahanIndex) in item.lahan_no.replace('[', '').replace(']', '').split(',')" 
+                                    v-for="(lahan, lahanIndex) in lahanNoFormat(item.lahan_no)" 
                                     :key="lahanIndex"
                                     :color="`${themeColor} white--text`"
                                     class="mb-1"
@@ -229,6 +229,9 @@ export default {
                 this.$refs[ref].play()
             }, 100)
         },
+        lahanNoFormat(lahan_no) {
+            return lahan_no.replace('[', '').replace(']', '').split(',')
+        }
     },
 }
 </script>
