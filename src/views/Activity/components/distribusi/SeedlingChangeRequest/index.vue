@@ -56,7 +56,7 @@ export default {
 		this.User = this.$store.state.User
 	// const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
-	if (this.User.role_group != 'IT') {
+	if (this.User.role_group != 'IT' || this.User.email != 'iyas.muzani@trees4trees.org') {
 		this.$store.state.maintenanceOverlay = true
 	}
 	},
