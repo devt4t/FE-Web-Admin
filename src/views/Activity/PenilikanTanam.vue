@@ -1865,6 +1865,62 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Modal Delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-text>
+            <p class="text-center grey--text text--darken-3 pt-4" style="font-size: 20px;">
+              Are u sure?! <br>You wanna DELETE this <br><b>{{ defaultItem.monitoring_no }}</b>?
+            </p>
+            <v-simple-table>
+              <tbody>
+                <tr>
+                  <td>MU</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.mu_name }}</b></td>
+                </tr>
+                <tr v-if="generalSettings.landProgram.model == 'Petani'">
+                  <td>FF</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.nama_ff }}</b></td>
+                </tr>
+                <tr v-else>
+                  <td>PIC T4T</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.pic_t4t_name || '-' }}</b></td>
+                </tr>
+                <tr v-if="generalSettings.landProgram.model == 'Petani'">
+                  <td>Farmer</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.nama_petani }}</b></td>
+                </tr>
+                <tr v-else>
+                  <td>PIC Lahan</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.pic_lahan_name || '-' }}</b></td>
+                </tr>
+              </tbody>
+            </v-simple-table>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn class="pr-3" color="blue white--text" text rounded @click="() => dialogDelete = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-divider class="mx-2"></v-divider>
+            <v-btn
+              color="red white--text"
+              class="pr-3"
+              rounded
+              @click="() => {deleteItemConfirm()}"
+            >
+              <v-icon class="mr-1 pl-2">mdi-delete</v-icon>
+              Yes, Delete
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     <!-- END: MODAL -->
 
     <v-data-table
@@ -2031,18 +2087,18 @@
 
       <!-- No Lahan Column -->
       <template v-slot:item.lahan_no="{item}">
-        <v-chip v-if="item.lahan_no.replace('[', '').replace(']', '').split(',').length < 2" class="green white--text ma-1">
-          {{ item.lahan_no.replace('[', '').replace(']', '').split(',')[0] }}
+        <v-chip v-if="lahanNoFormat(item.lahan_no).length < 2" class="green white--text ma-1">
+          {{ lahanNoFormat(item.lahan_no)[0] }}
         </v-chip>
         <v-menu v-else open-on-hover offset-x :close-on-content-click="false" content-class="rounded-xl" >
           <template v-slot:activator="{attrs, on}">
-            <v-btn rounded small v-bind="attrs" v-on="on" color="info white--text">
-              {{ item.lahan_no.replace('[', '').replace(']', '').split(',').length }} Lahan
+            <v-btn rounded small v-bind="attrs" v-on="on" :color="`green darken-${(lahanNoFormat(item.lahan_no).length - 1) < 5 ? (lahanNoFormat(item.lahan_no).length - 1) : 4} white--text`">
+              {{ lahanNoFormat(item.lahan_no).length }} Lahan
             </v-btn>
           </template>
           <v-card class="pa-2 pb-1 d-flex flex-column">
             <v-chip 
-              v-for="(lahan, lahanIndex) in item.lahan_no.replace('[', '').replace(']', '').split(',')" 
+              v-for="(lahan, lahanIndex) in lahanNoFormat(item.lahan_no)" 
               :key="lahanIndex"
               color="green white--text"
               class="mb-1"
@@ -2131,8 +2187,11 @@
             </v-btn>
             <v-btn v-else-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Umum')" 
               :disabled="(item.is_validate == 1 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT') || (item.is_validate == 2 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT')"
-              rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center"  @click="showUnverifModal(item)">
+              rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center"  @click="() => showUnverifModal(item)">
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
+            </v-btn>
+            <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
+              <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
             </v-btn>
           </v-card>
         </v-menu>
@@ -2585,6 +2644,7 @@ export default {
     tree_temp: "",
 
     ph_form_no_temp: "",
+    dialogDelete: false,
   }),
   computed: {
     // formTitle() {
@@ -2668,6 +2728,24 @@ export default {
   },
 
   methods: {
+    deleteDisabled(is_validate) {
+      const program = this.generalSettings.landProgram.model
+      const role_group = this.User.role_group 
+      const role_name = this.User.role_name
+      let status = false
+      if (role_group == 'IT') status = false 
+      else if (program == 'Petani') {
+        if (is_validate == 1 && role_name == 'FIELD FACILITATOR') status = true
+        if (is_validate == 2 && role_name == 'UNIT MANAGER') status = true
+      } else if (program == 'Umum') {
+        if (is_validate == 1 && role_group != 'IT' && role_name != 'REGIONAL MANAGER' && role_name != 'PROGRAM MANAGER') status = true
+      }
+      
+      if (program == 'Umum') { 
+        status = true
+      }
+      return status
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
@@ -3349,6 +3427,38 @@ export default {
           this.$router.push("/");
         }
       } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
+    },
+
+    async deleteItemConfirm() {
+      try {
+        this.dialogDelete = false
+        this.$store.state.loadingOverlayText = `Deleting ${this.defaultItem.monitoring_no}...`
+        this.$store.state.loadingOverlay = true
+        let urlName = this.$store.getters.getApiUrl('DeleteMonitoring')
+        if (this.generalSettings.landProgram == 'Umum') urlName = this.$store.getters.getApiUrl('DeleteMonitoringLahanUmum')
+        const data = {
+          monitoring_no: this.defaultItem.monitoring_no
+        }
+        const res = await axios.post(urlName, data, this.$store.state.apiConfig)
+        if (res) {
+          this.textsnackbar = 'Delete Success!'
+          this.colorsnackbar = 'green'
+          this.initialize()
+        }
+      } catch (error) {
+        this.textsnackbar = error.message
+        this.colorsnackbar = 'red'
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      } finally {
+        this.timeoutsnackbar = 5000
         this.snackbar = true
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
@@ -4234,6 +4344,20 @@ export default {
       this.dialogUnverif = true;
     },
 
+    showDeleteModal(item) {
+      this.defaultItem.monitoring_no = item.monitoring_no;
+      this.defaultItem.is_validate = item.is_validate;
+      this.defaultItem.mu_name = item.mu_name;
+      if (this.generalSettings.landProgram.model == 'Petani') {
+        this.defaultItem.nama_petani = item.nama_petani;
+        this.defaultItem.nama_ff = item.nama_ff;
+      } else {
+        this.defaultItem.pic_t4t_name = item.pic_t4t_name;
+        this.defaultItem.pic_lahan_name = item.pic_lahan_name;
+      }
+      this.dialogDelete = true;
+    },
+
     async updateSeedlingAdjustment() {
       await this.dialogFormLahanUmum.inputs.adjustment.items.forEach(val => {
         val.lost = parseInt(val.total_tree_received) - ( parseInt(val.total_tree_planted_life) + parseInt(val.total_tree_planted_dead) + parseInt(val.total_tree_unplanted_life) + parseInt(val.total_tree_unplanted_dead) )
@@ -4751,6 +4875,9 @@ export default {
             console.error(err)
         })
         return 'general-lands/'+responseName
+    },
+    lahanNoFormat(lahan_no) {
+        return lahan_no.replace('[', '').replace(']', '').split(',')
     }
   },
 };
