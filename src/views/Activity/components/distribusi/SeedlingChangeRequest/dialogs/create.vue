@@ -32,6 +32,23 @@
                             disabled
                         ></v-autocomplete>
                     </v-col>
+                    <!-- Land Program -->
+                    <v-col cols="12" sm="12" md="6" lg="3">
+                        <v-autocomplete
+                            color="success"
+                            dense
+                            hide-details
+                            item-color="success"
+                            :items="inputs.landProgram.items"
+                            :label="inputs.landProgram.label"
+                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                            outlined
+                            rounded
+                            :rules="[(v) => !!v || 'Field is required']"
+                            v-model="inputs.landProgram.model"
+                            disabled
+                        ></v-autocomplete>
+                    </v-col>
                     <!-- Nursery -->
                     <v-col cols="12" lg="4">
                         <v-autocomplete
@@ -196,6 +213,14 @@ export default {
         show: {
             type: Boolean,
             default: false
+        },
+        landProgram: {
+            type: String,
+            default: ''
+        },
+        programYear: {
+            type: String|Number,
+            default: ''
         }
     },
     data: () => ({
@@ -208,6 +233,11 @@ export default {
                 label: 'Program Year',
                 model: null,
                 loading: false
+            },
+            landProgram: {
+                label: 'Land Program',
+                items: ['Petani', 'Umum'],
+                model: ''
             },
             nursery: {
                 model: '',
@@ -310,7 +340,8 @@ export default {
     },
     methods: {
         async initialize() {
-            this.inputs.programYear.model = this.$store.state.programYear.model
+            this.inputs.programYear.model = this.programYear
+            this.inputs.landProgram.model = this.landProgram
             this.inputs.nursery.model = 'Kebumen'
             this.alert.message = 'Select Distribution Date'
             this.inputs.distributionDate.model = '2022-12-01'
