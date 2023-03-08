@@ -16,7 +16,7 @@
 		>
 			<!-- Toolbar -->
 			<template v-slot:top>
-				<div class="d-flex align-center pa-2 pt-3">
+				<v-row class="align-center justify-center pa-2 pt-3 mx-0">
 					<!-- Program Year -->
 					<v-select
 						color="success"
@@ -47,7 +47,7 @@
 						class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
 						style="max-width: 200px"
 					></v-select>
-					<v-spacer></v-spacer>
+					<v-spacer class="d-none d-lg-inline-block"></v-spacer>
 					<!-- Search Input -->
 					<v-text-field
 						color="success"
@@ -62,8 +62,8 @@
 						class="mr-2"
 						style="max-width: 300px;"
 					></v-text-field>
-					<v-btn rounded small color="orange white--text" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-comment-plus</v-icon> Add New Request</v-btn>
-				</div>
+					<v-btn rounded small color="orange white--text my-1" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-comment-plus</v-icon> Add New Request</v-btn>
+				</v-row>
 			</template>
 		</v-data-table>
     </div>
