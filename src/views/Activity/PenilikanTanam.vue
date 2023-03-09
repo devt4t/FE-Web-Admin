@@ -1603,13 +1603,12 @@
                             <strong>{{ defaultItem.qty_std || 0 }}</strong>
                           </td>
                         </tr>
-                        <tr>
+                        <tr v-if="generalSettings.landProgram.model == 'Petani'">
                           <th class="text-left" style="font-size: 14px">
-                            {{ generalSettings.landProgram.model == 'Petani' ? 'Waktu Sinkron' : 'Created Time / By' }}
+                            Tanggal Penanaman
                           </th>
                           <td class="text-left" style="font-size: 14px">
-                            <strong>{{ defaultItem.created_at ? $store.getters.dateFormat(defaultItem.created_at, 'HH:MM, DD MMMM Y') : '-' }}
-                              {{ generalSettings.landProgram.model == 'Umum' ? ` / ${ defaultItem.created_by || '?' } ` : '' }}</strong>
+                            <strong>{{ defaultItem.planting_date ? $store.getters.dateFormat(defaultItem.planting_date, 'DD MMMM Y') : '-' }}</strong>
                           </td>
                         </tr>
                       </tbody>
