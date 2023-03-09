@@ -440,7 +440,7 @@
                                         <tbody>
                                             <tr>
                                                 <td style="width: 15px;">1</td>
-                                                <td colspan="2">Harap diprint ulang data <b>{{ this.inputs.land.items.length }} lahan</b> dari <b>petani {{ this.inputs.farmer.items.find(farVal => farVal.farmer_no == this.inputs.farmer.model).farmer_name || '-' }}</b> yang berubah</td>
+                                                <td colspan="2">Harap diprint ulang data <b>{{ this.inputs.land.items.length }} lahan</b> dari <b>petani {{ this.inputs.farmer.model ? (this.inputs.farmer.items.find(farVal => farVal.farmer_no == this.inputs.farmer.model).farmer_name || '-') : '-' }}</b> yang berubah</td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 15px;">2</td>
@@ -458,7 +458,7 @@
                             <v-row class="my-1 mt-2 mx-0 align-center">
                                 <v-btn rounded outlined color="orange" @click="() => stepper.model -= 1"><v-icon>mdi-chevron-left</v-icon> Back</v-btn>
                                 <v-divider color="white" class="mx-2"></v-divider>
-                                <v-btn rounded color="orange white--text"> Send Request <v-icon class="ml-1">mdi-send</v-icon></v-btn>
+                                <v-btn rounded color="orange white--text" @click="() => sendRequest"> Send Request <v-icon class="ml-1">mdi-send</v-icon></v-btn>
                             </v-row>
                         </v-stepper-content>
                     </v-stepper>
@@ -573,7 +573,7 @@ export default {
             },
             seedling: [],
             notes: {
-                label: 'Notes',
+                label: 'Reason Notes',
                 model: ''
             }
         },
@@ -896,22 +896,6 @@ export default {
                 return false
             }
         },
-        async getLandDetail(lahan_no) {
-            try {
-                const params = new URLSearchParams({
-                    lahan_no: lahan_no,
-                    land_program: this.inputs.landProgram.model,
-                    program_year: this.inputs.programYear.model
-                })
-                const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetLandDetail?${params}`)
-                const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
-                return data.penlub_bibit
-            } catch (err) {
-                this.sessionEnd(err)
-                console.log(err)
-                return false
-            }
-        },
         async getTreesLocations(mu_no) {
             try {
                 const params = new URLSearchParams({
@@ -957,6 +941,52 @@ export default {
             } finally {
                 this.loading.show = false
                 this.loading.text = 'Loading...'
+            }
+        },
+        async sendRequest() {
+            try {
+                const lands = JSON.parse(JSON.stringify(this.inputs.seedling))
+                let lahan_no = []
+                let seedling = []
+                for (let index = 0; index < lands.length; index++) {
+                    const land = lands[index]
+                    const seedsNew = land.new
+                    const seedsOri = land.old
+                    // set lahan_no
+                    lahan_no.push(land.lahan_no)
+                    // set seedling
+                    await seedsNew.map(seed => {
+                        // check & get origin amount
+                        let seedOri = seedsOri.find(seo => seo.tree_code === seed.tree_code)
+                        let oriAmount = 0
+                        if (seedOri) oriAmount = seedOri.amount
+                        // get new amount
+                        const newAmount = seed.amount
+                        // get seedling type
+                        let type = 'same'
+                        if (oriAmount == newAmount) type = 'same'
+                        else type = 'change'
+                        if (oriAmount == 0) type = 'new'
+                        if (newAmount == 0) type = 'remove'
+                         
+                        const data = {
+                            lahan_no: land.lahan_no,
+                            type: type,
+                            tree_code: seed.tree_code,
+                            old_amount: oriAmount,
+                            new_amount: newAmount
+                        }
+                        seedling.push(data)
+                    })
+                }
+                lahan_no = lahan_no.toString()
+                console.log(lahan_no)
+            } catch (err) {
+                this.sessionEnd(err)
+                console.log(err)
+                return false
+            } finally {
+
             }
         },
         // utilities: add and delete new seedling
@@ -1064,8 +1094,20 @@ export default {
                 await this.getLand('F00019831')
                 this.stepper.model = 2
                 await this.getSeedlingChangeData()
+                this.inputs.seedling[0].new[0].amount = 0
+                this.inputs.seedling[0].new[1].amount = 3
+                this.inputs.seedling[0].new[3].amount = 23
+                this.inputs.seedling[0].new.push({
+                    tree_code: this.trees.items[0].tree_code,
+                    tree_name: this.trees.items[0].tree_name,
+                    amount: 9,
+                })
                 this.stepper.model = 3
             }
+            await setTimeout(() => {
+                this.inputs.notes.model = 'Tester change request...'
+                this.sendRequest()
+            }, 1000)
         }
     },
 }
