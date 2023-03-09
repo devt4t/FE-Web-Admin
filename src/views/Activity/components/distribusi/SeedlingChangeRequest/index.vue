@@ -66,6 +66,22 @@
 				</v-row>
 			</template>
 		</v-data-table>
+
+		<v-snackbar
+			v-model="snackbar.show"
+			:color="snackbar.color"
+			:timeout="snackbar.timeout"
+			rounded="xl"
+			class="d-flex"
+		>
+			<div class="d-flex justify-between">
+				<p class="mb-0">
+					{{ snackbar.text }}
+				</p>
+				<v-spacer></v-spacer>
+				<v-icon small class="pl-1" @click="() => snackbar.show = false">mdi-close-circle</v-icon>
+			</div>
+		</v-snackbar>
     </div>
 </template>
 
@@ -114,6 +130,12 @@ export default {
 			loading: false,
 			search: ''
 		},
+        snackbar: {
+            color: 'green',
+            timeout: 5000,
+            show: false,
+            text: 'Alert!'
+        },
 		User: {}
 	}),
 	async mounted() {
@@ -135,8 +157,12 @@ export default {
 		async initialize() {
 			this.programYear = this.$store.state.programYear.model
 		},
-		async closeDialogs(name) {
-			this.dialogs[name].show = false
+		async closeDialogs(data) {
+			this.dialogs[data.name].show = false
+			if (data.snackbar) {
+				this.snackbar = {...data.snackbar}
+				if (data.name == 'create' && data.snackbar.color == 'green') this.initialize()
+			}
 		}
 	},
 }

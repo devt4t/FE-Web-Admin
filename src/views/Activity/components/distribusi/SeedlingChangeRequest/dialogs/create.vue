@@ -1,6 +1,7 @@
 <template>
     <div>
         <formRequestHelp :show="dialogs.help.model" @close="() => dialogs.help.model = false"></formRequestHelp>
+        <createConfirmation :show="dialogs.confirmation.model" @close="() => dialogs.confirmation.model = false" @confirm="() => sendRequest()"></createConfirmation>
         <v-dialog
             v-model="showDialog" 
             max-width="1200"
@@ -345,7 +346,7 @@
                                                                 <tbody>
                                                                     <tr v-for="(tree, treeIndex) in seed.new" :key="treeIndex">
                                                                         <td>{{ treeIndex + 1 }}</td>
-                                                                        <td>{{ tree.tree_name }}</td>
+                                                                        <td :class="getNewSeedlingColor(tree, seedIndex)">{{ tree.tree_name }}</td>
                                                                         <td class="d-flex align-center justify-end" style="gap: 5px;">
                                                                             <v-text-field 
                                                                                 hide-details
@@ -396,69 +397,68 @@
                             <v-row class="my-1 mt-3 mx-0 align-center">
                                 <v-btn rounded outlined color="orange" @click="() => stepper.model -= 1"><v-icon>mdi-chevron-left</v-icon> Back</v-btn>
                                 <v-divider class="mx-2"></v-divider>
-                                <v-btn rounded outlined color="orange" :disabled="disabledNext2" @click="() => {stepper.model += 1;}">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
+                                <v-btn rounded outlined color="orange" :disabled="disabledNext2" @click="() => {stepper.model += 1}">Next <v-icon>mdi-chevron-right</v-icon></v-btn>
                             </v-row>
                         </v-stepper-content>
                         <!-- step 3 -->
                         <v-stepper-step color="orange" step="3">
-                            Confirmation
+                            Seedling Confirmation
                         </v-stepper-step>
                         <v-stepper-content step="3">
                             <v-row class="my-0">
-                                <!-- Change Log  -->
-                                <v-col cols="12" lg="6">
-                                    <p style="font-size: 16px;"><v-icon>mdi-clipboard-list</v-icon> Change Log Database</p>
-                                    <v-simple-table dense>
-                                        <tbody>
-                                            <tr>
-                                                <td style="width: 15px;">1</td>
-                                                <td>Merubah data bibit lahan</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 15px;">2</td>
-                                                <td>Merubah data bibit sosialisasi tanam</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 15px;">3</td>
-                                                <td>Merubah data bibit penilikan lubang</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 15px;">4</td>
-                                                <td>Mengganti data distribusi bibit</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 15px;">5</td>
-                                                <td>Menghapus data realisasi tanam</td>
-                                            </tr>
-                                        </tbody>
-                                    </v-simple-table>
-                                </v-col>
-                                <!-- Nursery Log -->
-                                <v-col cols="12" lg="6">
-                                    <p style="font-size: 16px;"><v-icon>mdi-format-list-checks</v-icon> Data Confirmation</p>
-                                    <v-simple-table dense>
-                                        <tbody>
-                                            <tr>
-                                                <td style="width: 15px;">1</td>
-                                                <td colspan="2">Harap diprint ulang data <b>{{ this.inputs.land.items.length }} lahan</b> dari <b>petani {{ this.inputs.farmer.model ? (this.inputs.farmer.items.find(farVal => farVal.farmer_no == this.inputs.farmer.model).farmer_name || '-') : '-' }}</b> yang berubah</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 15px;">2</td>
-                                                <td>Gunakan fitur di-scan + di-verifikasikan pada data distribusi? </td>
-                                                <td><v-switch class="d-inline-block" label="No"></v-switch></td>
-                                            </tr>
-                                        </tbody>
-                                    </v-simple-table>
-                                </v-col>
                                 <!-- Notes -->
                                 <v-col cols="12">
                                     <v-textarea rounded outlined dense hide-details color="green" :label="inputs.notes.label" v-model="inputs.notes.model" rows="3" prepend-icon="mdi-note-edit"></v-textarea>
+                                </v-col>
+                                <!-- List changed seed -->
+                                <v-col cols="12">
+                                    <div class="d-flex align-center my-2">
+                                        <v-icon class="mr-1">mdi-order-bool-ascending-variant</v-icon>
+                                        <p class="mb-0">Seedling Confirmation</p>
+                                        <v-divider class="ml-2"></v-divider>
+                                    </div>
+                                    <v-data-table
+                                        dense
+                                        :headers="inputs.seedlingFinal.headers"
+                                        :items="inputs.seedlingFinal.items"
+                                    >
+                                        <!-- status template -->
+                                        <template v-slot:item.type="{item}">
+                                            <v-chip small :color="getTypeColorAndLabel('color', item.type)">{{ getTypeColorAndLabel('label', item.type) }}</v-chip>
+                                        </template>
+                                        <!-- amount header -->
+                                        <template v-slot:header.new_amount>
+                                            <v-icon class="">mdi-counter</v-icon> Amount
+                                        </template>
+                                        <!-- change log -->
+                                        <template v-slot:item.new_amount="{item}">
+                                            <v-icon :color="getTypeColorAndLabel('color', item.type)">mdi-sprout</v-icon> {{ item.old_amount }}
+                                            <span v-if="item.type != 'same'">
+                                                <v-icon small>mdi-chevron-double-right</v-icon>
+                                                {{ item.new_amount }}
+                                            </span>
+                                        </template>
+                                        <!-- check -->
+                                        <template v-slot:header.is_checked>
+                                            <v-icon small>mdi-checkbox-marked-circle-outline</v-icon> Confirm
+                                        </template>
+                                        <template v-slot:item.is_checked="{item}">
+                                            <v-row class="justify-center">
+                                                <v-checkbox
+                                                    off-icon="mdi-circle-outline"
+                                                    on-icon="mdi-check-circle"
+                                                    color="green"
+                                                    v-model="item.is_checked"
+                                                ></v-checkbox>
+                                            </v-row>
+                                        </template>
+                                    </v-data-table>
                                 </v-col>
                             </v-row>
                             <v-row class="my-1 mt-2 mx-0 align-center">
                                 <v-btn rounded outlined color="orange" @click="() => stepper.model -= 1"><v-icon>mdi-chevron-left</v-icon> Back</v-btn>
                                 <v-divider color="white" class="mx-2"></v-divider>
-                                <v-btn rounded color="orange white--text" @click="() => sendRequest"> Send Request <v-icon class="ml-1">mdi-send</v-icon></v-btn>
+                                <v-btn rounded color="orange white--text" :disabled="disabledSendRequest" @click="() => dialogs.confirmation.model = true"> Send Request <v-icon class="ml-1">mdi-send</v-icon></v-btn>
                             </v-row>
                         </v-stepper-content>
                     </v-stepper>
@@ -487,10 +487,12 @@
 <script>
 import axios from 'axios'
 import formRequestHelp from './formRequestHelp'
+import createConfirmation from './createConfirmation.vue'
 
 export default {
     components: {
-        formRequestHelp
+        formRequestHelp,
+        createConfirmation
     },
     props: {
         show: {
@@ -512,7 +514,8 @@ export default {
             message: 'Select Nursery',
         },
         dialogs: {
-            help: {model: false}
+            help: {model: false},
+            confirmation: {model: false}
         },
         inputs: {
             programYear: {
@@ -572,6 +575,17 @@ export default {
                 model: 0,
             },
             seedling: [],
+            seedlingFinal: {
+                headers: [
+                    {text: 'Lahan No', value: 'lahan_no'},
+                    {text: 'Jenis', value: 'tree_name'},
+                    {text: 'Status', value: 'type', align: 'center'},
+                    {text: 'Amount', value: 'new_amount'},
+                    {text: 'CHECK', value: 'is_checked', align: 'center'},
+                ],
+                items: [],
+                lahan_no: ''
+            },
             notes: {
                 label: 'Reason Notes',
                 model: ''
@@ -622,7 +636,7 @@ export default {
             },
             set: async function (val) {
                 if (val == false) {
-                    this.$emit('close', 'create')
+                    this.$emit('close', {name: 'create'})
                     this.resetData()
                 } 
             }
@@ -654,11 +668,11 @@ export default {
             return title
         },
         stepper2TitleComplete() {
-            const seedling = this.inputs.seedling
+            const seedling = JSON.parse(JSON.stringify(this.inputs.seedling))
             let totalOri = 0
             let totalNew = 0
             let newSeed = []
-            seedling.forEach(seedl => {
+            seedling.forEach((seedl, seedlIndex) => {
                 seedl.old.forEach(seed => {
                     totalOri += parseInt(seed.amount)
                 })
@@ -666,9 +680,9 @@ export default {
                     totalNew += parseInt(seed.amount)
                     const checkExist = seedl.old.find(seo => seo.tree_code === seed.tree_code)
                     if (!checkExist && seed.amount > 0 && newSeed.includes(seed.tree_code) == false) newSeed.push(seed.tree_code)
-                    else if (!checkExist && seed.amount == 0) seedl.new.splice(seedIndex, 1)
                 })
             })
+            this.setFinalSeedling()
             return `Total from ${totalOri} to ${totalNew} with ${newSeed.length} new seedling`
         },
         // disabled
@@ -725,6 +739,19 @@ export default {
         },
         disabledNext2() {
             return false
+        },
+        disabledSendRequest() {
+            let status = false
+            let seedling = this.inputs.seedlingFinal.items
+            if (seedling.length < 1) status = true
+            else {
+                let checked = 0
+                seedling.map(seed => {
+                    if (seed.is_checked == 1) checked += 1 
+                })
+                if (seedling.length > checked) status = true
+            } 
+            return status
         }
     },
     async mounted() {
@@ -736,7 +763,7 @@ export default {
             this.inputs.programYear.model = this.programYear || this.$store.state.programYear.model
             this.inputs.landProgram.model = this.landProgram || 'Petani'
             
-            await this.getTesterData()
+            await this.setTesterData()
         },
         async getMU() {
             try {
@@ -943,8 +970,10 @@ export default {
                 this.loading.text = 'Loading...'
             }
         },
-        async sendRequest() {
+        async setFinalSeedling() {
             try {
+                this.inputs.seedlingFinal.lahan_no = ''
+                this.inputs.seedlingFinal.items = []
                 const lands = JSON.parse(JSON.stringify(this.inputs.seedling))
                 let lahan_no = []
                 let seedling = []
@@ -963,7 +992,7 @@ export default {
                         // get new amount
                         const newAmount = seed.amount
                         // get seedling type
-                        let type = 'same'
+                        let type = ''
                         if (oriAmount == newAmount) type = 'same'
                         else type = 'change'
                         if (oriAmount == 0) type = 'new'
@@ -973,20 +1002,66 @@ export default {
                             lahan_no: land.lahan_no,
                             type: type,
                             tree_code: seed.tree_code,
+                            tree_name: seed.tree_name,
                             old_amount: oriAmount,
-                            new_amount: newAmount
+                            new_amount: newAmount,
+                            is_checked: 1
                         }
-                        seedling.push(data)
+                        if (type && (oriAmount > 0 || newAmount > 0)) seedling.push(data)
                     })
                 }
                 lahan_no = lahan_no.toString()
-                console.log(lahan_no)
+                this.inputs.seedlingFinal.lahan_no = lahan_no
+                this.inputs.seedlingFinal.items = seedling
             } catch (err) {
                 this.sessionEnd(err)
                 console.log(err)
                 return false
             } finally {
 
+            }
+        },
+        async sendRequest() {
+            try {
+                this.dialogs.confirmation.model = false
+                this.loading.show = true
+                this.loading.text = 'Sending request...'
+                const inputs = this.inputs
+                let urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}AddRequest`)
+                let apiConfig = this.$store.state.apiConfig
+                let mainData = {
+                    program_year: inputs.programYear.model,
+                    land_program: inputs.landProgram.model,
+                    distribution_date: inputs.distributionDate.model,
+                    nursery: inputs.nursery.model,
+                    mu_no: inputs.mu.model,
+                    lahan_no: inputs.seedlingFinal.lahan_no,
+                    notes: inputs.notes.model,
+                    seedlings: JSON.parse(JSON.stringify(inputs.seedlingFinal.items))
+                }
+                if (mainData.land_program == 'Petani') mainData.farmer_no = inputs.farmer.model
+                else if (mainData.land_program == 'Umum') mainData.mou_no = inputs.mou.model
+                const send = await axios.post(urlName, mainData, apiConfig)
+                console.log(send.data)
+                if (send) {
+                    this.$emit('close', {
+                        name: 'create', 
+                        snackbar: {
+                            text: 'Send request success!',
+                            color: 'green',
+                            show: true
+                        }
+                    })
+                }
+            } catch (err) {
+                this.sessionEnd(err)
+                console.log(err)
+                this.snackbar.color = 'red'
+                this.snackbar.text = err.message
+                this.snackbar.show = true
+            } finally {
+                this.loading.show = false
+                this.loading.text = 'Loading...'
             }
         },
         // utilities: add and delete new seedling
@@ -997,8 +1072,9 @@ export default {
             if (checkExising) {
                 this.snackbar.text = 'Already exist!'
                 this.snackbar.color = 'red'
-                this.snackbar.show = true
             } else {
+                this.snackbar.text = 'Added new seedling!'
+                this.snackbar.color = 'green'
                 let data = {
                     tree_code: tree.tree_code,
                     tree_name: tree.tree_name,
@@ -1007,6 +1083,8 @@ export default {
                 }
                 seedlings.push(data)
             }
+            this.snackbar.timeout = 1000
+            this.snackbar.show = true
             this.trees.model = ''
         },
         async deleteSeedling(tree, seed) {
@@ -1029,6 +1107,19 @@ export default {
                 this.snackbar.show = true
             }
         },
+        // utilities: get new seedling color
+        getNewSeedlingColor(seed, landIndex) {
+            let origin = this.inputs.seedling[landIndex].old
+            const checkExisting = origin.find(ori => ori.tree_code == seed.tree_code)
+            let color = ''
+            if (checkExisting) {
+                if (checkExisting.amount != seed.amount) {
+                    if (seed.amount == 0) color = 'red--text'
+                    else color = 'orange--text'
+                } else color = ''
+            } else color = 'blue--text'
+            return color + (color ? ' font-weight-bold' : '')
+        },
         // Utilities: get sum bibit
         getTotalTrees(list) {
             try {
@@ -1041,6 +1132,24 @@ export default {
                 } else return 0
             } catch {
                 return 0
+            }
+        },
+        // utilities: get type color
+        getTypeColorAndLabel(t, type) {
+            if (t == 'color') {
+                let color = 'grey darken-1'
+                if (type == 'remove') color = 'red'  
+                if (type == 'change') color = 'orange'
+                if (type == 'new') color = 'blue'
+    
+                return color + ' white--text'
+            } else {
+                let label = 'TETAP'
+                if (type == 'remove') label = 'HAPUS'  
+                if (type == 'change') label = 'BERUBAH'
+                if (type == 'new') label = 'BARU'
+
+                return label
             }
         },
         // Utilities: reset data
@@ -1068,7 +1177,7 @@ export default {
             }
         },
         // tester
-        async getTesterData() {
+        async setTesterData() {
             if (this.landProgram == 'Umum') {
                 this.inputs.nursery.model = await 'Arjasari'
                 this.inputs.distributionDate.model = await '2023-02-07'
@@ -1079,9 +1188,6 @@ export default {
                 await this.getFarmerOrMOU('04-0006')
                 this.inputs.mou.model = '112/T4T-U/CRS-I/XI/2022'
                 await this.getLand('112/T4T-U/CRS-I/XI/2022')
-                this.stepper.model = 2
-                await this.getSeedlingChangeData()
-                this.stepper.model = 3
             } else if (this.landProgram == 'Petani') {
                 this.inputs.nursery.model = await 'Kebumen'
                 this.inputs.distributionDate.model = await '2022-12-05'
@@ -1092,22 +1198,26 @@ export default {
                 await this.getFarmerOrMOU('FF00000992')
                 this.inputs.farmer.model = 'F00019831'
                 await this.getLand('F00019831')
+            }
                 this.stepper.model = 2
                 await this.getSeedlingChangeData()
                 this.inputs.seedling[0].new[0].amount = 0
                 this.inputs.seedling[0].new[1].amount = 3
                 this.inputs.seedling[0].new[3].amount = 23
                 this.inputs.seedling[0].new.push({
-                    tree_code: this.trees.items[0].tree_code,
-                    tree_name: this.trees.items[0].tree_name,
+                    tree_code: this.trees.items[2].tree_code,
+                    tree_name: this.trees.items[2].tree_name,
                     amount: 9,
                 })
+                await this.setFinalSeedling()
                 this.stepper.model = 3
-            }
-            await setTimeout(() => {
-                this.inputs.notes.model = 'Tester change request...'
-                this.sendRequest()
-            }, 1000)
+                setTimeout(() => {
+                    this.inputs.notes.model = 'Tester change request...'
+                    this.dialogs.confirmation.model = true
+                    setTimeout(() => {
+                        this.sendRequest()
+                    }, 1000);
+                }, 1000)
         }
     },
 }
