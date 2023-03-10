@@ -18,14 +18,16 @@
                 </v-card-title>
                 <v-card-text>
                     <v-overlay v-if="loading.show" justify-center align-center>
-                        <v-progress-circular
-                            :size="80"
-                            :width="7"
-                            indeterminate
-                            color="white"
-                        >
-                        </v-progress-circular>
-                        <p class="mb-0 text-center mt-4">{{ loading.text || 'Loading...' }}</p>
+                        <div class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                :size="80"
+                                :width="7"
+                                indeterminate
+                                color="white"
+                            >
+                            </v-progress-circular>
+                            <p class="mb-0 text-center mt-4">{{ loading.text || 'Loading...' }}</p>
+                        </div>
                     </v-overlay>
                     <v-stepper vertical v-model="stepper.model" class="rounded-xl elevation-0">
                         <!-- step 1 -->
@@ -448,6 +450,7 @@
                                                     off-icon="mdi-circle-outline"
                                                     on-icon="mdi-check-circle"
                                                     color="green"
+                                                    :label="item.is_checked ? 'Confirmed' : 'Check'"
                                                     v-model="item.is_checked"
                                                 ></v-checkbox>
                                             </v-row>
@@ -467,6 +470,7 @@
                         v-model="snackbar.show"
                         :color="snackbar.color"
                         :timeout="snackbar.timeout"
+                        :multi-line="snackbar.multiLine"
                         rounded="xl"
                         class="d-flex"
                     >
@@ -606,7 +610,8 @@ export default {
             color: 'green',
             timeout: 5000,
             show: false,
-            text: 'Alert!'
+            text: 'Alert!',
+            multiLine: false
         },
         stepper: {
             model: 1
@@ -1056,9 +1061,6 @@ export default {
             } catch (err) {
                 this.sessionEnd(err)
                 console.log(err)
-                this.snackbar.color = 'red'
-                this.snackbar.text = err.message
-                this.snackbar.show = true
             } finally {
                 this.loading.show = false
                 this.loading.text = 'Loading...'
@@ -1172,7 +1174,12 @@ export default {
                     if (error.response.status == 401) {
                         localStorage.removeItem("token")
                         this.$router.push("/")
-                    }
+                    } else if (error.response.status == 400) {
+                        // this.snackbar.multiLine = true
+                        this.snackbar.text = error.response.data
+                        this.snackbar.color = 'red'
+                        this.snackbar.show = true
+                    } 
                 }
             }
         },
