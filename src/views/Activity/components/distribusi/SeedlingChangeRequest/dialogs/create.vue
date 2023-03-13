@@ -779,7 +779,7 @@ export default {
             this.inputs.programYear.model = this.programYear || this.$store.state.programYear.model
             this.inputs.landProgram.model = this.landProgram || 'Petani'
             
-            await this.setTesterData()
+            // await this.setTesterData()
         },
         async getMU() {
             try {

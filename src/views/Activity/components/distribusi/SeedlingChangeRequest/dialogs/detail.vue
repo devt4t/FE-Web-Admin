@@ -181,7 +181,7 @@
                 <v-card-actions v-if="verificationStatus != 3" class="justify-center rounded-pill" style="position: relative;">
                     <!-- Reject Button -->
                     <v-hover v-slot="{hover}">
-                        <v-btn :disabled="User.role_group != 'IT' && User.role_name != 'NURSERY MANAGER'" @click="() => {dialogs.confirmation.type = 'reject';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-file-document-remove</v-icon> Reject</v-btn>
+                        <v-btn v-if="User.role_group == 'IT' || User.role_name == 'NURSERY MANAGER'" @click="() => {dialogs.confirmation.type = 'reject';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-file-document-remove</v-icon> Reject</v-btn>
                     </v-hover>
                     <v-divider class="mx-2 mr-5" color="white"></v-divider>
                     <!-- verification button -->
