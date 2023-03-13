@@ -259,7 +259,7 @@
                                 </v-card-title>
                                 <v-card-text class="pb-0">
                                     <v-stepper alt-labels class="elevation-0" v-model="inputs.activitiesStep.model">
-                                        <v-stepper-header class="">
+                                        <v-stepper-header class="elevation-0">
                                             <v-stepper-step data-aos="zoom-in" data-aos-delay="0" color="green" step="x" :complete="inputs.activitiesStep.model >= 1" :rules="[() => inputs.activitiesStep.model < 1 ? false : true]" error-icon="mdi-close-circle"><small>Pendataan Lahan</small></v-stepper-step>
                                             <v-divider class=""></v-divider>
                                             <v-stepper-step v-if="landProgram == 'Petani'" data-aos="zoom-in" data-aos-delay="50" color="green" step="x" :complete="inputs.activitiesStep.model >= 2" :rules="[() => inputs.activitiesStep.model < 2 ? false : true]" error-icon="mdi-close-circle"><small>Sosialisasi Tanam</small></v-stepper-step>
@@ -404,14 +404,10 @@
                         </v-stepper-content>
                         <!-- step 3 -->
                         <v-stepper-step color="orange" step="3">
-                            Seedling Confirmation
+                            Seedling Confirmation & Reason
                         </v-stepper-step>
                         <v-stepper-content step="3">
                             <v-row class="my-0">
-                                <!-- Notes -->
-                                <v-col cols="12">
-                                    <v-textarea rounded outlined dense hide-details color="green" :label="inputs.notes.label" v-model="inputs.notes.model" rows="3" prepend-icon="mdi-note-edit"></v-textarea>
-                                </v-col>
                                 <!-- List changed seed -->
                                 <v-col cols="12">
                                     <div class="d-flex align-center my-2">
@@ -421,9 +417,16 @@
                                     </div>
                                     <v-data-table
                                         dense
+                                        hide-default-footer
+                                        :items-per-page="-1"
+                                        multi-sort
                                         :headers="inputs.seedlingFinal.headers"
                                         :items="inputs.seedlingFinal.items"
                                     >
+                                        <!-- no column -->
+                                        <template v-slot:item.no="{index}">
+                                            {{ index + 1 }}
+                                        </template>
                                         <!-- status template -->
                                         <template v-slot:item.type="{item}">
                                             <v-chip small :color="getTypeColorAndLabel('color', item.type)">{{ getTypeColorAndLabel('label', item.type) }}</v-chip>
@@ -442,7 +445,7 @@
                                         </template>
                                         <!-- check -->
                                         <template v-slot:header.is_checked>
-                                            <v-icon small>mdi-checkbox-marked-circle-outline</v-icon> Confirm
+                                            <v-icon small>mdi-checkbox-marked-circle-outline</v-icon> Confirm ({{ inputs.seedlingFinal.items.filter(s => s.is_checked === true ).length }}/{{ inputs.seedlingFinal.items.length }})
                                         </template>
                                         <template v-slot:item.is_checked="{item}">
                                             <v-row class="justify-center">
@@ -456,6 +459,10 @@
                                             </v-row>
                                         </template>
                                     </v-data-table>
+                                </v-col>
+                                <!-- Notes -->
+                                <v-col cols="12">
+                                    <v-textarea rounded outlined dense hide-details color="green" :label="inputs.notes.label" v-model="inputs.notes.model" rows="3" prepend-icon="mdi-note-edit"></v-textarea>
                                 </v-col>
                             </v-row>
                             <v-row class="my-1 mt-2 mx-0 align-center">
@@ -492,6 +499,7 @@
 import axios from 'axios'
 import formRequestHelp from './formRequestHelp'
 import createConfirmation from './createConfirmation.vue'
+import { statSync } from 'fs'
 
 export default {
     components: {
@@ -576,11 +584,13 @@ export default {
                 loading: false
             },
             activitiesStep: {
+                last: '',
                 model: 0,
             },
             seedling: [],
             seedlingFinal: {
                 headers: [
+                    {text: 'No', value: 'no', align: 'center', width: '20px', sortable: false},
                     {text: 'Lahan No', value: 'lahan_no'},
                     {text: 'Jenis', value: 'tree_name'},
                     {text: 'Status', value: 'type', align: 'center'},
@@ -656,17 +666,17 @@ export default {
             if (lp == 'Petani') {
                 // get ff
                 const ff = this.inputs.ff.items.find(ffVal => ffVal.ff_no == this.inputs.ff.model)
-                if (ff) title += ` > ${ff.ff_name}`
+                if (ff) title += ` > FF: ${ff.ff_name}`
                 // get farmer
                 const farmer = this.inputs.farmer.items.find(farVal => farVal.farmer_no == this.inputs.farmer.model)
-                if (farmer) title += ` > ${farmer.farmer_name}`
+                if (farmer) title += ` > Petani: ${farmer.farmer_name}`
             } else if (lp == 'Umum') {
                 // get pic t4t
                 const picT4t = this.inputs.pic_t4t.items.find(picVal => picVal.employee_no == this.inputs.pic_t4t.model)
-                if (picT4t) title += ` > ${picT4t.employee_name}`
+                if (picT4t) title += ` > PIC T4T: ${picT4t.employee_name}`
                 // get mou
                 const mou = this.inputs.mou.items.find(mouVal => mouVal.mou_no == this.inputs.mou.model)
-                if (mou) title += ` > ${mou.pic_lahan} ~ ${mou.mou_no}`
+                if (mou) title += ` > PIC Lahan: ${mou.pic_lahan} ~ ${mou.mou_no}`
             }
 
             title += ` > ${this.inputs.land.items.length} Lahan`
@@ -756,6 +766,7 @@ export default {
                 })
                 if (seedling.length > checked) status = true
             } 
+            if (!this.inputs.notes.model) status = true
             return status
         }
     },
@@ -903,6 +914,7 @@ export default {
                     if (data.activities.includes('Load Bag')) this.inputs.activitiesStep.model = 5
                     if (data.activities.includes('Distribute Bag')) this.inputs.activitiesStep.model = 6
                     if (data.activities.includes('Realisasi Tanam')) this.inputs.activitiesStep.model = 7
+                    this.inputs.activitiesStep.last = data.activities[data.activities.length - 1]
                     this.inputs.land.items = data.list
                 }
             } catch (err) {
@@ -1010,7 +1022,7 @@ export default {
                             tree_name: seed.tree_name,
                             old_amount: oriAmount,
                             new_amount: newAmount,
-                            is_checked: 1
+                            is_checked: 0
                         }
                         if (type && (oriAmount > 0 || newAmount > 0)) seedling.push(data)
                     })
@@ -1042,7 +1054,8 @@ export default {
                     mu_no: inputs.mu.model,
                     lahan_no: inputs.seedlingFinal.lahan_no,
                     notes: inputs.notes.model,
-                    seedlings: JSON.parse(JSON.stringify(inputs.seedlingFinal.items))
+                    seedlings: JSON.parse(JSON.stringify(inputs.seedlingFinal.items)),
+                    last_activity: inputs.activitiesStep.last
                 }
                 if (mainData.land_program == 'Petani') mainData.farmer_no = inputs.farmer.model
                 else if (mainData.land_program == 'Umum') mainData.mou_no = inputs.mou.model

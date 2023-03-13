@@ -10,6 +10,9 @@
                 <span v-if="type == 'verification'">
                     Apakah anda yakin untuk memverifikasi data penyesuaian bibit ini?
                 </span>
+                <span v-else-if="type == 'reject'">
+                    Apakah anda yakin untuk membatalkan data penyesuaian bibit ini?
+                </span>
                 <span v-else>
                     Penyesuaian bibit ini akan diproses setelah <b>disetujui</b> oleh REGIONAL MANAGER / PROGRAM MANAGER. <br>
                     Yakin ingin mengirim permintaan penyesuaian bibit ini?
@@ -53,18 +56,21 @@ export default {
         getConfirmationBtnIcon() {
             let icon = ''
             if (this.type == 'verification') icon = 'check-circle'
+            else if (this.type == 'reject') icon = 'file-document-remove'
             else icon = 'send-circle'
             return 'mdi-' + icon
         },
         getConfirmationBtnColor() {
             let color = ''
             if (this.type == 'verification') color = 'green'
+            else if (this.type == 'reject') color = 'red'
             else color = 'orange'
             return color + ' white--text'
         },
         getConfirmationBtnText() {
             let text = 'Okay'
             if (this.type == 'verification') text += ', verif'
+            else if (this.type == 'reject') text += ', reject'
             else text += ', send'
             return text
         }

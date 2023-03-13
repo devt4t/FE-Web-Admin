@@ -77,7 +77,7 @@
 						style="max-width: 300px;"
 						:disabled="table.loading"
 					></v-text-field>
-					<v-btn rounded small color="orange white--text my-1" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-comment-plus</v-icon> Add New Request</v-btn>
+					<v-btn rounded small color="orange white--text my-1" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-chat-plus</v-icon> Add New Request</v-btn>
 				</v-row>
 			</template>
 			<!-- No Lahan Column -->
