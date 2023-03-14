@@ -88,6 +88,7 @@
                                         label="Nursery"
                                         class=""
                                         :items="inputs.nursery.items"
+                                        :disabled="inputs.nursery.disabled"
                                         v-model="inputs.nursery.model"
                                     ></v-autocomplete>
                                 </v-col>
@@ -541,6 +542,7 @@ export default {
                 model: ''
             },
             nursery: {
+                disabled: false,
                 model: '',
                 items: ['Arjasari','Ciminyak','Kebumen','Pati']
             },
@@ -778,6 +780,7 @@ export default {
             this.stepper.model = 1
             this.inputs.programYear.model = this.programYear || this.$store.state.programYear.model
             this.inputs.landProgram.model = this.landProgram || 'Petani'
+            await this.setNurserySite()
             
             // await this.setTesterData()
         },
@@ -1060,7 +1063,7 @@ export default {
                 if (mainData.land_program == 'Petani') mainData.farmer_no = inputs.farmer.model
                 else if (mainData.land_program == 'Umum') mainData.mou_no = inputs.mou.model
                 const send = await axios.post(urlName, mainData, apiConfig)
-                console.log(send.data)
+                // console.log(send.data)
                 if (send) {
                     this.resetData()
                     this.$emit('close', {
@@ -1172,6 +1175,7 @@ export default {
         resetData() {
             this.inputs.programYear.model = ''
             this.inputs.nursery.model = ''
+            this.inputs.nursery.disabled = false
             this.inputs.distributionDate.model = ''
             this.inputs.mu.model = ''
             this.inputs.ff.model = ''
@@ -1198,6 +1202,21 @@ export default {
                     } 
                 }
             }
+        },
+        // Utilities: set nursery site
+        async setNurserySite() {
+            const arjasari = this.$store.state.nurseryTeam.emails.Arjasari
+            const ciminyak = this.$store.state.nurseryTeam.emails.Ciminyak
+            const kebumen = [...this.$store.state.nurseryTeam.emails.Kebumen, 'rizki.pradhitya@trees4trees.org']
+            const pati = [...this.$store.state.nurseryTeam.emails.Pati, 'um_pati@t4t.org']
+            const userEmail = this.$store.state.User.email
+            let nursery = this.inputs.nursery.model
+            if (arjasari.includes(userEmail)) nursery = 'Arjasari'
+            else if (ciminyak.includes(userEmail)) nursery = 'Ciminyak'
+            else if (kebumen.includes(userEmail)) nursery = 'Kebumen'
+            else if (pati.includes(userEmail)) nursery = 'Pati'
+            if (nursery) this.inputs.nursery.disabled = true
+            this.inputs.nursery.model = nursery
         },
         // tester
         async setTesterData() {

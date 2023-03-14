@@ -77,7 +77,7 @@
 						style="max-width: 300px;"
 						:disabled="table.loading"
 					></v-text-field>
-					<v-btn rounded small color="orange white--text my-1" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-chat-plus</v-icon> Add New Request</v-btn>
+					<v-btn rounded small color="orange white--text my-1" :disabled="disabledCreateRequestButton" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-chat-plus</v-icon> Add New Request</v-btn>
 				</v-row>
 			</template>
 			<!-- No Lahan Column -->
@@ -118,9 +118,9 @@
 			</template>
 			<!-- status verified column -->
 			<template v-slot:item.verification="{item}">
-				<v-chip :color="statusColorAndIcon(item.verification, 'color', 'verification')" class="pl-1" style="text-transform: uppercase;">
-					<v-icon class="mr-1">{{ statusColorAndIcon(item.verification, 'icon', 'verification') }}</v-icon>
-					{{ statusColorAndIcon(item.verification, 'text', 'verification') }}
+				<v-chip :color="statusColorAndIcon(item.verification, 'color', 'verification', item.status)" class="pl-1" style="text-transform: uppercase;">
+					<v-icon class="mr-1">{{ statusColorAndIcon(item.verification, 'icon', 'verification', item.status) }}</v-icon>
+					{{ statusColorAndIcon(item.verification, 'text', 'verification', item.status) }}
 				</v-chip>
 			</template>
 			<!-- action column -->
@@ -237,6 +237,25 @@ export default {
 			}
 		}
 	},
+	computed: {
+		disabledCreateRequestButton() {
+			let disabled = false
+			let user = this.User
+			if (user.role_name == 'NURSERY MANAGER') disabled = false
+			else {
+				const kebumen = this.$store.state.nurseryTeam.emails.Kebumen
+				const pati = this.$store.state.nurseryTeam.emails.Pati
+
+				const exception = [...kebumen, ...pati, 'rizki.pradhitya@trees4trees.org', 'um_pati@t4t.org']
+				if (exception.includes(user.email)) disabled = false
+				else disabled = true
+			}
+			
+			if (user.role_group == 'IT') disabled = false
+			
+			return disabled
+		}
+	},
 	async mounted() {
 		this.programYear = this.$store.state.programYear.model
 		this.settings.apiConfig = this.$store.state.apiConfig
@@ -245,8 +264,8 @@ export default {
 		this.User = this.$store.state.User
 		// const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
-		if (this.User.role_group != 'IT') {
-			this.$store.state.maintenanceOverlay = true
+		if (this.User.role_group != 'IT' && this.User.email != 'um_pati@t4t.org') {
+			this.$store.state.maintenanceOverlay = false
 		}
 	},
 	destroyed() {
@@ -272,7 +291,7 @@ export default {
 				const urlConfig = this.$store.state.apiConfig
 				const data = await axios.get(urlName, urlConfig).then(res => {return res.data})
 				this.table.items = data.list
-				console.log(data)
+				// console.log(data)
 			} catch (err) {
 				this.sessionEnd(err)
 				console.log(err)
@@ -314,7 +333,7 @@ export default {
             }
         },
 		// utilities: get status request color & icon
-		statusColorAndIcon(status, el, type) {
+		statusColorAndIcon(status, el, type, reqStat = null) {
 			let data = ''
 			if (type == 'request') {
 				if (el == 'color') {
@@ -334,12 +353,14 @@ export default {
 					else if (status == 1) data = 'orange'
 					else if (status == 2 ) data = 'yellow darken-2'
 					else if (status == 3) data = 'green'
+					if (reqStat == 'rejected') data = 'red'
 					return data + ' white--text'
 				} else if ( el == 'icon') {
 					if (status == 0) data = 'progress-alert'
 					else if (status == 1) data = 'progress-check'
 					else if (status == 2 ) data = 'check-circle'
 					else if (status == 3) data = 'checkbox-multiple-marked-circle'
+					if (reqStat == 'rejected') data = 'close-circle'
 					return 'mdi-' + data
 				} else {
 					const lp = this.landProgram.model
@@ -347,6 +368,7 @@ export default {
 					else if (status == 1) data = `VERIFIED ${lp == 'Petani' ? 'FC' : 'PIC T4T'}`
 					else if (status == 2 ) data = 'VERIFIED UM'
 					else if (status == 3) data = 'VERIFIED RM / PM'
+					if (reqStat == 'rejected') data = 'REJECTED'
 					return data
 				} 
 			}

@@ -83,7 +83,7 @@
                                     </tr>
                                     <tr>
                                         <td style="max-width: fit-content;">Reason Notes</td>
-                                        <td>: {{ data.main.notes || '-' }}</td>
+                                        <td>: {{ data.main.notes || '-' }} <i>({{ data.main.created_by_name || '-' }})</i></td>
                                     </tr>
                                 </tbody>
                             </v-simple-table>
