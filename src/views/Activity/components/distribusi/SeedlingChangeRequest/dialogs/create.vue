@@ -12,7 +12,7 @@
             <v-card class="orange">
                 <v-card-title class="transparent white--text rounded-xl">
                     <p class="mb-0"><v-icon color="white">mdi-comment-text</v-icon> Form Request</p>
-                    <v-icon small class="ml-1" color="white" @click="() => dialogs.help.model = true">mdi-help-circle</v-icon>
+                    <!-- <v-icon small class="ml-1" color="white" @click="() => dialogs.help.model = true">mdi-help-circle</v-icon> -->
                     <v-divider color="white" class="mx-2"></v-divider>
                     <v-icon color="white" @click="() => showDialog = false">mdi-close-circle</v-icon>
                 </v-card-title>
@@ -253,7 +253,7 @@
                                 <v-card-title data-aos="zoom-in" class="pb-0">
                                     <v-spacer class="mr-2"></v-spacer>
                                     <span class="grey--text text--darken-2">
-                                        <v-icon class="mr-1">mdi-timeline-check</v-icon> {{ landProgram == 'Petani' ? 'Farmer' : 'MoU' }} Activities
+                                        <v-icon class="mr-1">mdi-timeline-check</v-icon> {{ landProgram == 'Petani' ? 'Farmer' : 'MoU' }} Last Activities
                                     </span>
                                     <v-spacer class="ml-2"></v-spacer>
                                 </v-card-title>
@@ -1062,6 +1062,7 @@ export default {
                 const send = await axios.post(urlName, mainData, apiConfig)
                 console.log(send.data)
                 if (send) {
+                    this.resetData()
                     this.$emit('close', {
                         name: 'create', 
                         snackbar: {
@@ -1179,6 +1180,8 @@ export default {
             this.inputs.mou.model = ''
             this.inputs.land.model = ''
             this.inputs.notes.model = ''
+            this.inputs.activitiesStep.last = ''
+            this.inputs.activitiesStep.model = 0
         },
         // Utilities: session  end
         sessionEnd(error) {

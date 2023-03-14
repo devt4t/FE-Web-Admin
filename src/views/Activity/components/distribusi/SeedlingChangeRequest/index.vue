@@ -108,7 +108,7 @@
 			<template v-slot:item.request_no="{item}">
 				<v-tooltip right content-class="rounded-xl">
 					<template v-slot:activator="{ on, attrs }">
-						<v-chip v-bind="attrs" v-on="on" :color="statusColorAndIcon(item.status, 'color', 'request')" style="text-transform: uppercase;">
+						<v-chip v-bind="attrs" v-on="on" :color="statusColorAndIcon(item.status, 'color', 'request')" @click="() => initialize()" style="text-transform: uppercase;">
 							<v-icon class="mr-1">{{ statusColorAndIcon(item.status, 'icon', 'request') }}</v-icon>
 							{{ item.request_no }}
 						</v-chip>
@@ -342,8 +342,9 @@ export default {
 					else if (status == 3) data = 'checkbox-multiple-marked-circle'
 					return 'mdi-' + data
 				} else {
+					const lp = this.landProgram.model
 					if (status == 0) data = 'UNVERIFIED'
-					else if (status == 1) data = 'VERIFIED FC'
+					else if (status == 1) data = `VERIFIED ${lp == 'Petani' ? 'FC' : 'PIC T4T'}`
 					else if (status == 2 ) data = 'VERIFIED UM'
 					else if (status == 3) data = 'VERIFIED RM / PM'
 					return data

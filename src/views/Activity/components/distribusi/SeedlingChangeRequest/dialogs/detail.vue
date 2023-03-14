@@ -81,6 +81,10 @@
                                         <td style="max-width: fit-content;">Lahan</td>
                                         <td>: {{ data.main.lahan_no || '-' }}</td>
                                     </tr>
+                                    <tr>
+                                        <td style="max-width: fit-content;">Reason Notes</td>
+                                        <td>: {{ data.main.notes || '-' }}</td>
+                                    </tr>
                                 </tbody>
                             </v-simple-table>
                             <!-- activities -->
@@ -88,7 +92,7 @@
                                 <v-card-title data-aos="zoom-in" class="pb-0">
                                     <v-spacer class="mr-2"></v-spacer>
                                     <span class="grey--text text--darken-2">
-                                        <v-icon class="mr-1">mdi-timeline-check</v-icon> {{ landProgram == 'Petani' ? 'Farmer' : 'MoU' }} Activities
+                                        <v-icon class="mr-1">mdi-timeline-check</v-icon> {{ landProgram == 'Petani' ? 'Farmer' : 'MoU' }} Last Activities
                                     </span>
                                     <v-spacer class="ml-2"></v-spacer>
                                 </v-card-title>
@@ -187,7 +191,7 @@
                     <!-- verification button -->
                     <v-tooltip left content-class="rounded-xl">
                         <template v-slot:activator="{on,attrs}">
-                            <v-btn v-bind="attrs" v-on="on" @click="() => {dialogs.confirmation.type = 'verification';dialogs.confirmation.model = true;}"  :disabled="disabledVerification" fab rounded absolute top right color="green white--text"><v-icon>mdi-check-all</v-icon></v-btn>
+                            <v-btn v-bind="attrs" v-on="on" @click="() => {showVerificationDialog()}"  :disabled="disabledVerification" fab rounded absolute top right color="green white--text"><v-icon>mdi-check-all</v-icon></v-btn>
                         </template>
                         Verification Request
                     </v-tooltip>
@@ -282,7 +286,8 @@ export default {
                     else if (verification == 1 && user.role_name != 'UNIT MANAGER') disabled = true
                     else if (verification == 2 && user.role_name != 'PROGRAM MANAGER' && user.role_name != 'REGIONAL MANAGER') disabled = true
                 } else {
-                    if (verification == 0 && user.created_email != user.email) disabled = true
+                    const createdLU = data.main.created_lu_email
+                    if (verification == 0 && createdLU != user.email) disabled = true
                     else if (verification == 1 && user.role_name != 'PROGRAM MANAGER' && user.role_name != 'REGIONAL MANAGER') disabled = true
                 }
 
@@ -357,7 +362,7 @@ export default {
                 dialogConfirm.model = false
                 let urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}`)
                 const apiConfig = this.settings.apiConfig
-                if (dialogConfirm.type == 'verification') {
+                if (dialogConfirm.type == 'verification' || dialogConfirm.type == 'last_verification') {
                     this.loading.text = 'Verifying data...'
                     urlName += 'Verification'
                     const verif = await axios.post(urlName, {request_no: this.id}, apiConfig).then(res => {return res.data})
@@ -391,6 +396,15 @@ export default {
                 this.loading.show = false
                 this.loading.text = 'Loading...'
             }
+        },
+        // utilities: show verif dialog
+        showVerificationDialog() {
+            const dialog = this.dialogs.confirmation
+            const lp = this.landProgram
+            const data = this.data.main
+            if ((lp == 'Petani' && data.verification == 2) || (lp == 'Umum' && data.verification == 1)) dialog.type = 'last_verification'
+            else dialog.type = 'verification'
+            dialog.model = true
         },
         // utilities: get type color
         getTypeColorAndLabel(t, type) {
