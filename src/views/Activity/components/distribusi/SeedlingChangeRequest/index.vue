@@ -61,6 +61,23 @@
 						style="max-width: 200px"
 						:disabled="table.loading"
 					></v-select>
+					<!-- Nursery -->
+					<v-select
+						v-if="nursery.show"
+						color="success"
+						item-color="success"
+						v-model="nursery.model"
+						:items="nursery.items"
+						outlined
+						dense
+						hide-details
+						:menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+						rounded
+						:label="`Nursery`"
+						class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+						style="max-width: 200px"
+						:disabled="table.loading || nursery.disabled"
+					></v-select>
 					<v-spacer class="d-none d-lg-inline-block"></v-spacer>
 					<!-- Search Input -->
 					<v-text-field
@@ -180,6 +197,12 @@ export default {
 			items: ['Petani', 'Umum'],
 			model: 'Petani'
 		},
+		nursery: {
+			disabled: false,
+			model: 'All',
+			items: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati'],
+			show: true
+		},
 		programYear: '',
 		dialogs: {
 			create: {
@@ -235,6 +258,13 @@ export default {
 			async handler() {
 				await this.initialize()
 			}
+		},
+		'nursery.model': {
+			async handler() {
+				const user = this.$store.state.User
+				await this.initialize()
+				if (user.role_group == 'IT' || user.role_name == 'REGIONAL MANAGER' || user.role_name == 'PROGRAM MANAGER') this.nursery.disabled = false
+			}
 		}
 	},
 	computed: {
@@ -261,7 +291,6 @@ export default {
 		this.settings.apiConfig = this.$store.state.apiConfig
 
 		await this.initialize()
-		this.User = this.$store.state.User
 		// const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
 		if (this.User.role_group != 'IT' && this.User.email != 'um_pati@t4t.org') {
@@ -276,17 +305,30 @@ export default {
 	},
 	methods: {
 		async initialize() {
+			this.User = this.$store.state.User
+			await this.setNurserySite()
 			await this.getRequests()
 		},
 		async getRequests() {
 			try {
 				this.table.loading = true
 				this.table.items = []
-
+				const user = this.User
 				const params = new URLSearchParams({
 					land_program: this.landProgram.model,
-					program_year: this.programYear
+					program_year: this.programYear,
+					nursery: this.nursery.model,
+					ff: user.ff.ff.toString()
 				})
+				if (this.landProgram.model == 'Umum') {
+					const roleName = user.role_name
+					const roleGroup = user.role_group
+					const manRole = ['PROGRAM MANAGER', 'REGIONAL MANAGER', 'NURSERY MANAGER']
+					if (roleGroup != 'IT' && manRole.includes(roleName) == false) {
+						params.delete('ff')
+						params.set('created_by', user.email)
+					}
+				}
 				const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetRequests?${params}`)
 				const urlConfig = this.$store.state.apiConfig
 				const data = await axios.get(urlName, urlConfig).then(res => {return res.data})
@@ -372,7 +414,26 @@ export default {
 					return data
 				} 
 			}
-		}
+		},
+		// utilities: set nursery site
+        async setNurserySite() {
+            const arjasari = this.$store.state.nurseryTeam.emails.Arjasari
+            const ciminyak = this.$store.state.nurseryTeam.emails.Ciminyak
+            const kebumen = [...this.$store.state.nurseryTeam.emails.Kebumen, 'rizki.pradhitya@trees4trees.org']
+            const pati = [...this.$store.state.nurseryTeam.emails.Pati, 'um_pati@t4t.org']
+			const user = this.$store.state.User
+            const userEmail = user.email
+            let nursery = this.nursery.model
+            if (arjasari.includes(userEmail)) nursery = 'Arjasari'
+            else if (ciminyak.includes(userEmail)) nursery = 'Ciminyak'
+            else if (kebumen.includes(userEmail)) nursery = 'Kebumen'
+            else if (pati.includes(userEmail)) nursery = 'Pati'
+            if ( user.role_name == 'NURSERY MANAGER') this.nursery.disabled = true
+
+			if (user.role_group != 'IT' && user.role_name != 'REGIONAL MANAGER' && user.role_name != 'PROGRAM MANAGER') this.nursery.show = false
+
+            this.nursery.model = nursery
+        },
 	},
 }
 </script>

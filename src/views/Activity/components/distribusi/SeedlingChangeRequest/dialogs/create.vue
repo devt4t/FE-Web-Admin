@@ -1209,13 +1209,14 @@ export default {
             const ciminyak = this.$store.state.nurseryTeam.emails.Ciminyak
             const kebumen = [...this.$store.state.nurseryTeam.emails.Kebumen, 'rizki.pradhitya@trees4trees.org']
             const pati = [...this.$store.state.nurseryTeam.emails.Pati, 'um_pati@t4t.org']
-            const userEmail = this.$store.state.User.email
+            const user = this.$store.state.User
+            const userEmail = user.email
             let nursery = this.inputs.nursery.model
             if (arjasari.includes(userEmail)) nursery = 'Arjasari'
             else if (ciminyak.includes(userEmail)) nursery = 'Ciminyak'
             else if (kebumen.includes(userEmail)) nursery = 'Kebumen'
             else if (pati.includes(userEmail)) nursery = 'Pati'
-            if (nursery) this.inputs.nursery.disabled = true
+            if (nursery && user.role_group != 'IT') this.inputs.nursery.disabled = true
             this.inputs.nursery.model = nursery
         },
         // tester
