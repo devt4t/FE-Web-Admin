@@ -13,7 +13,7 @@
                 <span v-else-if="type == 'last_verification'">
                     Ini adalah verifikasi <b>terakhir</b>, yang mana akan <b>memproses</b> semua penyesuaian dan perubahan bibit sesuai dengan request, dan <b>tidak akan bisa dibatalkan</b>. Apakah anda yakin untuk memverifikasi request data ini? 
                 </span>
-                <span v-else-if="type == 'reject'">
+                <span v-else-if="type == 'reject' || type == 'cancel'">
                     Apakah anda yakin untuk membatalkan data penyesuaian bibit ini?
                 </span>
                 <span v-else>
@@ -60,13 +60,14 @@ export default {
             let icon = ''
             if (this.type == 'verification' || this.type == 'last_verification') icon = 'check-circle'
             else if (this.type == 'reject') icon = 'file-document-remove'
+            else if (this.type == 'cancel') icon = 'close-circle'
             else icon = 'send-circle'
             return 'mdi-' + icon
         },
         getConfirmationBtnColor() {
             let color = ''
             if (this.type == 'verification' || this.type == 'last_verification') color = 'green'
-            else if (this.type == 'reject') color = 'red'
+            else if (this.type == 'reject' || this.type == 'cancel') color = 'red'
             else color = 'orange'
             return color + ' white--text'
         },
@@ -74,6 +75,7 @@ export default {
             let text = 'Okay'
             if (this.type == 'verification' || this.type == 'last_verification') text += ', verif'
             else if (this.type == 'reject') text += ', reject'
+            else if (this.type == 'cancel') text += ', cancel'
             else text += ', send'
             return text
         }

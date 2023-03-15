@@ -380,12 +380,12 @@ export default {
 			if (type == 'request') {
 				if (el == 'color') {
 					if (status == 'requested') data = 'orange'
-					else if (status == 'rejected') data = 'red'
+					else if (status == 'rejected' || status == 'canceled') data = 'red'
 					else data = 'green'
 					return data + ' white--text'
 				} else {
 					if (status == 'requested') data = 'chat-processing'
-					else if (status == 'rejected') data = 'chat-remove'
+					else if (status == 'rejected' || status == 'canceled') data = 'chat-remove'
 					else data = 'check-decagram'
 					return 'mdi-' + data
 				}
@@ -395,14 +395,14 @@ export default {
 					else if (status == 1) data = 'orange'
 					else if (status == 2 ) data = 'yellow darken-2'
 					else if (status == 3) data = 'green'
-					if (reqStat == 'rejected') data = 'red'
+					if (reqStat == 'rejected' || reqStat == 'canceled') data = 'red'
 					return data + ' white--text'
 				} else if ( el == 'icon') {
 					if (status == 0) data = 'progress-alert'
 					else if (status == 1) data = 'progress-check'
 					else if (status == 2 ) data = 'check-circle'
 					else if (status == 3) data = 'checkbox-multiple-marked-circle'
-					if (reqStat == 'rejected') data = 'close-circle'
+					if (reqStat == 'rejected' || reqStat == 'canceled') data = 'close-circle'
 					return 'mdi-' + data
 				} else {
 					const lp = this.landProgram.model
@@ -410,7 +410,9 @@ export default {
 					else if (status == 1) data = `VERIFIED ${lp == 'Petani' ? 'FC' : 'PIC T4T'}`
 					else if (status == 2 ) data = 'VERIFIED UM'
 					else if (status == 3) data = 'VERIFIED RM / PM'
+
 					if (reqStat == 'rejected') data = 'REJECTED'
+					else if (reqStat == 'canceled') data = 'CANCELED'
 					return data
 				} 
 			}

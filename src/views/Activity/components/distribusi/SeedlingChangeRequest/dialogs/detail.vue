@@ -9,7 +9,7 @@
                     <v-divider color="white" class="mx-2"></v-divider>
                     <v-icon color="white" @click="() => showDialog = false">mdi-close-circle</v-icon>
                 </v-card-title>
-                <v-card-text :class="verificationStatus != 3 ? 'pb-0' : ''">
+                <v-card-text :class="data.main.status == 'requested' ? 'pb-0' : ''">
                     <v-overlay v-if="loading.show" justify-center align-center absolute>
                         <div class="d-flex flex-column align-center justify-center">
                             <v-progress-circular
@@ -182,10 +182,14 @@
                         </div>
                     </v-snackbar>
                 </v-card-text>
-                <v-card-actions v-if="verificationStatus != 3" class="justify-center rounded-pill" style="position: relative;">
+                <v-card-actions v-if="data.main.status == 'requested'" class="justify-center rounded-pill" style="position: relative;">
+                    <!-- Cancel Button -->
+                    <v-hover v-slot="{hover}">
+                        <v-btn v-if="User.role_group == 'IT' || User.role_name == 'NURSERY MANAGER'" @click="() => {dialogs.confirmation.type = 'cancel';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-close-circle</v-icon> Cancel</v-btn>
+                    </v-hover>
                     <!-- Reject Button -->
                     <v-hover v-slot="{hover}">
-                        <v-btn v-if="User.role_group == 'IT' || User.role_name == 'NURSERY MANAGER'" @click="() => {dialogs.confirmation.type = 'reject';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-file-document-remove</v-icon> Reject</v-btn>
+                        <v-btn v-if="User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role == 'REGIONAL MANAGER'" @click="() => {dialogs.confirmation.type = 'reject';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-file-document-remove</v-icon> Reject</v-btn>
                     </v-hover>
                     <v-divider class="mx-2 mr-5" color="white"></v-divider>
                     <!-- verification button -->
@@ -388,6 +392,19 @@ export default {
                             show: true
                         }})
                     }
+                } else if (dialogConfirm.type == 'cancel') {
+                    this.loading.text = 'Canceling data...'
+                    urlName += 'Cancel'
+                    const cancel = await axios.post(urlName, {request_no: this.id}, apiConfig).then(res => {return res.data})
+                    if (cancel) {
+                        this.snackbar.text = cancel
+                        this.snackbar.color = 'green'
+                        this.$emit('close', {name: 'detail', snackbar: {
+                            text: 'Request canceled!',
+                            color: 'green',
+                            show: true
+                        }})
+                    }
                 }
             } catch (err) {
                 this.errorResponse(err)
@@ -447,12 +464,12 @@ export default {
 			if (type == 'request') {
 				if (el == 'color') {
 					if (status == 'requested') data = 'orange'
-					else if (status == 'rejected') data = 'red'
+					else if (status == 'rejected' || status == 'canceled') data = 'red'
 					else data = 'green'
 					return data + ' white--text'
 				} else {
 					if (status == 'requested') data = 'chat-processing'
-					else if (status == 'rejected') data = 'chat-remove'
+					else if (status == 'rejected' || status == 'canceled') data = 'chat-remove'
 					else data = 'check-decagram'
 					return 'mdi-' + data
 				}

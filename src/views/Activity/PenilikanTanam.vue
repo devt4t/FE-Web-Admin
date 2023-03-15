@@ -2055,11 +2055,10 @@
             style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
           ></v-select>
           <v-btn
-            v-if="generalSettings.landProgram.model == 'Petani'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
-            @click="() => {}"
-            :disabled="true"
+            @click="() => {exportData()}"
+            :disabled="loadtable"
             color="info white--text"
           >
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
@@ -4877,6 +4876,9 @@ export default {
     },
     lahanNoFormat(lahan_no) {
         return lahan_no.replace('[', '').replace(']', '').split(',')
+    },
+    exportData() {
+      alert('export!')
     }
   },
 };
