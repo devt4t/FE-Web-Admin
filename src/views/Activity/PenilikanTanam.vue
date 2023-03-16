@@ -2180,7 +2180,7 @@
             <v-btn v-if="generalSettings.landProgram.model == 'Umum'" :disabled="item.is_validate > 0 || (item.is_validate == 0 && (User.role_name == 'REGIONAL MANAGER' || User.role_name == 'PROGRAM MANAGER'))" color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" @click="() => {showEditUmumModal(item.monitoring_no)}">
               <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
             </v-btn>
-            <v-btn rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center" v-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Petani') && (User.role_group == 'IT' || ((item.is_validate < 2 && User.role_name == 'UNIT MANAGER') || (item.is_validate == 2 && User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
+            <v-btn rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center" v-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Petani') && (User.role_group == 'IT' || ((item.is_validate <= 2 && User.role_name == 'UNIT MANAGER') || (item.is_validate == 2 && User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
             </v-btn>
             <v-btn v-else-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Umum')" 
