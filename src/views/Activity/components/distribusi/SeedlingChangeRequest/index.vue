@@ -97,6 +97,18 @@
 					<v-btn rounded small color="orange white--text my-1" :disabled="disabledCreateRequestButton" @click="() => dialogs.create.show = true"><v-icon class="mr-1">mdi-chat-plus</v-icon> Add New Request</v-btn>
 				</v-row>
 			</template>
+			<!-- request_no column -->
+			<template v-slot:item.request_no="{item}">
+				<v-tooltip right content-class="rounded-xl">
+					<template v-slot:activator="{ on, attrs }">
+						<v-chip v-bind="attrs" v-on="on" :color="statusColorAndIcon(item.status, 'color', 'request')" @click="() => initialize()" style="text-transform: uppercase;">
+							<v-icon class="mr-1">{{ statusColorAndIcon(item.status, 'icon', 'request') }}</v-icon>
+							{{ item.request_no }}
+						</v-chip>
+					</template>
+					Requested By: {{ item.created_by }}
+				</v-tooltip>
+			</template>
 			<!-- No Lahan Column -->
 			<template v-slot:item.lahan_no="{item}">
 				<v-chip v-if="lahanNoFormat(item.lahan_no).length < 2" class="green white--text ma-1">
@@ -120,18 +132,6 @@
 					</v-chip>
 					</v-card>
 				</v-menu>
-			</template>
-			<!-- request_no column -->
-			<template v-slot:item.request_no="{item}">
-				<v-tooltip right content-class="rounded-xl">
-					<template v-slot:activator="{ on, attrs }">
-						<v-chip v-bind="attrs" v-on="on" :color="statusColorAndIcon(item.status, 'color', 'request')" @click="() => initialize()" style="text-transform: uppercase;">
-							<v-icon class="mr-1">{{ statusColorAndIcon(item.status, 'icon', 'request') }}</v-icon>
-							{{ item.request_no }}
-						</v-chip>
-					</template>
-					Requested By: {{ item.created_by }}
-				</v-tooltip>
 			</template>
 			<!-- status verified column -->
 			<template v-slot:item.verification="{item}">

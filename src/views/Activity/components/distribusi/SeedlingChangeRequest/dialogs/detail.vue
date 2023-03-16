@@ -23,7 +23,7 @@
                         </div>
                     </v-overlay>
                     <v-card class="rounded-xl">
-                        <v-card-text class="pb-0">
+                        <v-card-text class="pb-2">
                             <v-row class="align-center ma-0">
                                 <v-tooltip bottom content-class="rounded-xl">
                                     <template v-slot:activator="{ on, attrs }">
@@ -74,8 +74,12 @@
                                         <td>: {{ data.main.pic_lahan_name || '-' }}</td>
                                     </tr>
                                     <tr v-if="landProgram == 'Petani'">
-                                        <td style="max-width: fit-content;">Petani</td>
+                                        <td style="max-width: fit-content;">Farmer</td>
                                         <td>: {{ data.main.farmer_name || '-' }}</td>
+                                    </tr>
+                                    <tr v-else>
+                                        <td style="max-width: fit-content;">MoU No</td>
+                                        <td>: {{ data.main.mou_no || '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td style="max-width: fit-content;">Lahan</td>
@@ -119,7 +123,9 @@
                             <!-- Seeds Data -->
                             <v-row class="align-center mx-0 my-0 mt-2">
                                 <p class="mb-0"><v-icon>mdi-forest</v-icon> Seedling Change</p>
-                                <v-divider class="ml-2"></v-divider>
+                                <v-divider class="mx-2"></v-divider>             
+                                <v-icon class="mr-1 mb-1" :color="getTotalChangeColor">mdi-sprout</v-icon>
+                                <p class="mb-0" v-html="getTotalChange"></p>
                             </v-row>
                             <v-data-table
                                 dense
@@ -189,9 +195,9 @@
                     </v-hover>
                     <!-- Reject Button -->
                     <v-hover v-slot="{hover}">
-                        <v-btn v-if="User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role == 'REGIONAL MANAGER'" @click="() => {dialogs.confirmation.type = 'reject';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-file-document-remove</v-icon> Reject</v-btn>
+                        <v-btn v-if="User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER'" @click="() => {dialogs.confirmation.type = 'reject';dialogs.confirmation.model = true;}"  rounded :outlined="!hover" :color="`${!hover ? 'white' : 'red'} white--text`"><v-icon class="mr-1">mdi-file-document-remove</v-icon> Reject</v-btn>
                     </v-hover>
-                    <v-divider class="mx-2 mr-5" color="white"></v-divider>
+                    <v-divider :class="`mx-2 mr-5 ${(User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER' || User.role_group == 'IT') ? '' : 'my-2 transparent'}`" color="white"></v-divider>
                     <!-- verification button -->
                     <v-tooltip left content-class="rounded-xl">
                         <template v-slot:activator="{on,attrs}">
@@ -300,6 +306,28 @@ export default {
                 if (data.seeds.filter(s => s.is_checked === true ).length != data.seeds.length) disabled = true
             } else disabled = true
             return disabled
+        },
+        getTotalChange() {
+            const seeds = this.data.seeds
+            let totalOld = 0
+            let totalNew = 0
+            seeds.map(val => {
+                totalOld += parseInt(val.old_amount)
+                totalNew += parseInt(val.new_amount) 
+            })
+            return `<b>${totalOld}</b> >> <b>${totalNew}</b>`
+        },
+        getTotalChangeColor() {
+            let color = ''
+            const seeds = this.data.seeds
+            let totalOld = 0
+            let totalNew = 0
+            seeds.map(val => {
+                totalOld += parseInt(val.old_amount)
+                totalNew += parseInt(val.new_amount) 
+            })
+            if (totalOld != totalNew) color = 'orange'
+            return color
         },
         verificationStatus() {
             const data = this.data.main
