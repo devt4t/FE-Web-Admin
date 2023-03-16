@@ -3,23 +3,22 @@
     <v-row style="margin-top: -15px">
       <v-col cols="12" md="12" data-aos="fade-down" >
         <v-card rounded="xl" :dark="$store.state.theme == 'dark'">
-          <v-card-title class="fontall" v-if="isMorning()">
-            Good Morning, {{ fullnameadmin }}</v-card-title
-          >
+          <v-card-title class="fontall" v-if="time.isMorning()">
+            Good Morning, {{ User.name || '-' }}
+          </v-card-title>
           <v-card-title class="fontall" v-else>
-            Good Afternoon, {{ fullnameadmin }}</v-card-title
-          >
-          <!-- <v-card-title>Good {{ greeting }}, {{ fullnameadmin }}</v-card-title> -->
+            Good Afternoon, {{ User.name || '-' }}
+          </v-card-title>
           <v-card-subtitle>
             it's
-            {{
-              new Date().toLocaleDateString(undefined, {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            }}
+            <span v-if="time.date">
+              {{ time.date || '-' }}
+            </span>
+            <v-progress-circular v-else
+                indeterminate
+                color="white"
+                size="15"
+            ></v-progress-circular>
           </v-card-subtitle>
           <v-card-text>
             <v-row>
@@ -86,70 +85,38 @@
       </v-col>
     </v-row>
 
+    <!-- Total Datas -->
     <v-row class="">
-      <!-- TOGGLE BUTTON -->
-      <v-col cols="12" md="3" class="">
+      <v-col v-for="n in 4" cols="12" md="3" class="">
         <v-card
-          v-if="loading == false"
           data-aos="fade-down"
-          data-aos-delay="300"
-          class="rounded-xl shadow-lg overflow-hidden"
-          @click="() => {}"
-        >
-          <v-list-item three-line>
-            <v-list-item-content class="px-3">
-              <div class="mb-2">
-                Survival Rates
-              </div>
-              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                <number
-                  ref="survivalRatesNumber"
-                  animationPaused
-                  :key="componentKeys.survivalRatesNumber"
-                  :from="0"
-                  :to="100"
-                  :duration="5"
-                  :delay="0"
-                  easing="Power1.easeOut"/>%
-              </v-list-item-title>
-              <v-list-item-subtitle></v-list-item-subtitle>
-            </v-list-item-content>
-            <img
-              data-aos="zoom-in"
-              data-aos-delay="700"
-              style="max-width: 113px;"            
-              :src="require('@/assets/plant.gif')"
-            />
-          </v-list-item>
-        </v-card>
-      </v-col>
-      <!-- Total Petani -->
-      <v-col cols="12" md="3" class="">
-        <v-card
-          v-if="loading == false"
-          data-aos="fade-down"
-          data-aos-delay="400"
+          :data-aos-delay="totalData[`data${n}`].dataAosDelay + 300"
           class="rounded-xl shadow-lg"
-          @click="$router.push('Farmer')"
+          @click="$router.push(totalData[`data${n}`].link)"
         >
           <v-list-item three-line>
             <v-list-item-content class="px-3">
               <div class="mb-2">
-                {{ data1.Judul }}
+                {{ totalData[`data${n}`].Judul }}
               </div>
               <v-list-item-title class="text-h5 mb-1 font-weight-bold">
                 <number
-                  ref="totalFarmerNumber"
-                  :key="componentKeys.totalFarmerNumber"
+                  v-if="loading == false"
+                  :ref="totalData[`data${n}`].ref"
+                  :key="totalData[`data${n}`].key"
                   :format="numberFormat"
-                  animationPaused
                   :from="0"
-                  :to="data1.Count"
+                  :to="totalData[`data${n}`].Count"
                   :duration="5"
                   :delay="0"
                   easing="Power2.easeInOut"/>
+                <v-progress-circular v-else
+                    indeterminate
+                    :color="totalData[`data${n}`].color"
+                    size="27"
+                ></v-progress-circular>
               </v-list-item-title>
-              <v-list-item-subtitle>NIK</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ totalData[`data${n}`].sub }}</v-list-item-subtitle>
             </v-list-item-content>
   
             <v-list-item-avatar
@@ -157,194 +124,15 @@
               data-aos-delay="800"
               tile
               size="80"
-              color="grey darken-3"
+              :color="totalData[`data${n}`].color"
               class="rounded-circle"
             >
               
-            <v-icon
-              style="font-size: 35px !important"
-              color="white"
-              >mdi-nature-people
+            <v-icon style="font-size: 35px !important" color="white">
+              {{ totalData[`data${n}`].icon }}
             </v-icon>
             </v-list-item-avatar>
           </v-list-item>
-        </v-card>
-      </v-col>
-      <!-- Total Lahan -->
-      <v-col cols="12" md="3" class="">
-        <v-card
-          v-if="loading == false"
-          data-aos="fade-down"
-          data-aos-delay="500"
-          @click="$router.push('Lahan')"
-          class="rounded-xl shadow-lg"
-        >
-          <v-list-item three-line>
-            <v-list-item-content class="px-3">
-              <div class="mb-2">
-                {{ data2.Judul }}
-              </div>
-              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                <number
-                  ref="totalLandNumber"
-                  :key="componentKeys.totalLandNumber"
-                  :format="numberFormat"
-                  animationPaused
-                  :from="0"
-                  :to="data2.Count"
-                  :duration="5"
-                  :delay="0"
-                  easing="Power2.easeInOut"/>
-              </v-list-item-title>
-              <v-list-item-subtitle>Lahan</v-list-item-subtitle>
-            </v-list-item-content>
-  
-            <v-list-item-avatar
-              data-aos="zoom-in"
-              data-aos-delay="900"
-              tile
-              size="80"
-              color="brown"
-              class="rounded-circle"
-            >
-              
-            <v-icon
-              style="font-size: 35px !important"
-              color="white"
-              >mdi-land-fields
-            </v-icon>
-            </v-list-item-avatar>
-          </v-list-item>
-        </v-card>
-      </v-col>
-      <!-- Total Pohon -->
-      <v-col cols="12" md="3" class="">
-        <v-card
-          v-if="loading == false"
-          class="rounded-xl shadow-lg"
-          data-aos="fade-down"
-          data-aos-delay="600"
-        >
-          <v-list-item three-line>
-            <v-list-item-content class="px-3">
-              <div class="mb-2">
-                {{ data3.Judul }}
-              </div>
-              <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                <number
-                  ref="totalTreeNumber"
-                  :key="componentKeys.totalTreeNumber"
-                  :format="numberFormat"
-                  animationPaused
-                  :from="0"
-                  :to="data3.Count"
-                  :duration="5"
-                  :delay="0"
-                  easing="Power2.easeInOut"/>
-              </v-list-item-title>
-              <v-list-item-subtitle>Pohon</v-list-item-subtitle>
-            </v-list-item-content>
-  
-            <v-list-item-avatar
-              data-aos="zoom-in"
-              data-aos-delay="1000"
-              tile
-              size="80"
-              color="green darken-2"
-              class="rounded-circle"
-            >
-              
-            <v-icon
-              style="font-size: 35px !important"
-              color="white"
-              >mdi-forest
-            </v-icon>
-            </v-list-item-avatar>
-          </v-list-item>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row dense class="mt-3">
-      <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card 
-          v-if="loading == false"
-          data-aos="zoom-in"
-          data-aos-delay="800" class="d-none d-md-inline-block overflow-hidden" elevation="5" rounded="xl">
-          <v-card-text class="py-1 px-1">
-            <GChart
-              type="ColumnChart"
-              :data="chartDataColom1"
-              :options="colomchartOptionsGoogle1"
-            />
-          </v-card-text>
-        </v-card>
-
-        <v-card 
-          v-if="loading == false"
-          data-aos="zoom-in"
-          data-aos-delay="800" class="d-sm-inline-block d-md-none overflow-hidden" elevation="5" rounded="xl">
-          <v-card-text class="py-1 px-1">
-            <GChart
-              type="ColumnChart"
-              :data="chartDataColom1"
-              :options="colomchartOptionsGoogleMobile1"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card
-          v-if="loading == false"
-          data-aos="zoom-in"
-          data-aos-delay="900" class="d-none d-md-inline-block overflow-hidden" elevation="5" rounded="xl">
-          <v-card-text class="py-1 px-1">
-            <GChart
-              type="ColumnChart"
-              :data="chartDataColom2"
-              :options="colomchartOptionsGoogle2"
-            />
-          </v-card-text>
-        </v-card>
-
-        <v-card
-          v-if="loading == false"
-          data-aos="zoom-in"
-          data-aos-delay="900" class="d-sm-inline-block d-md-none overflow-hidden" elevation="5" rounded="xl">
-          <v-card-text class="py-1 px-1">
-            <GChart
-              type="ColumnChart"
-              :data="chartDataColom2"
-              :options="colomchartOptionsGoogleMobile2"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
-      <v-col class="px-1 py-1 mt-1" cols="12" sm="4" md="4">
-        <v-card
-          v-if="loading == false"
-          data-aos="zoom-in"
-          data-aos-delay="1000" class="d-none d-md-inline-block overflow-hidden" elevation="5" rounded="xl">
-          <v-card-text class="py-1 px-1">
-            <GChart
-              type="ColumnChart"
-              :data="chartDataColom3"
-              :options="colomchartOptionsGoogle3"
-            />
-          </v-card-text>
-        </v-card>
-
-        <v-card
-          v-if="loading == false"
-          data-aos="zoom-in"
-          data-aos-delay="1000" class="d-sm-inline-block d-md-none overflow-hidden" elevation="5" rounded="xl">
-          <v-card-text class="py-1 px-1">
-            <GChart
-              type="ColumnChart"
-              :data="chartDataColom3"
-              :options="colomchartOptionsGoogleMobile3"
-            />
-          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -354,172 +142,10 @@
 <script>
 import axios from "axios";
 
-// import VueApexCharts from "vue-apexcharts";
-
-const gradients = [
-  ["#222"],
-  ["#42b3f4"],
-  ["red", "orange", "black"],
-  ["purple", "violet"],
-  ["#FF0", "#F0F", "#00c6ff"],
-  ["#1feaea", "#ffd200", "#f72047"],
-];
-
 export default {
   name: "Dashboard",
-
-  components: {
-    // apexchart: VueApexCharts,
-  },
   data: () => ({
     loading: false,
-    isMorning() {
-      return new Date().getHours() < 12 ? true : false;
-    },
-    componentKeys: {
-      survivalRatesNumber: 42342345,
-      totalFarmerNumber: 12335123,
-      totalLandNumber: 142,
-      totalTreeNumber: 5234,
-    },
-    greeting: "Morning",
-    date: "01 December 2021",
-    day: "Sunday",
-
-    drawer: null,
-    BaseUrlGet: "",
-    authtoken: "",
-
-    dialogDetailSales: false,
-    dialogDetailSale: false,
-
-    itemssale: [],
-    itemssales: [],
-    from_date_sales: "",
-    to_date_sales: "",
-
-    defaultItem: {
-      code: "",
-      nama: "",
-      email: "",
-      status: "",
-      status_name: "",
-    },
-
-    data1: {
-      Judul: "Total Petani",
-      Count: "1",
-      link: "/",
-    },
-    data2: {
-      Judul: "Total Lahan",
-      Count: "11",
-      link: "/",
-    },
-    data3: {
-      Judul: "Total Pohon",
-      Count: "111",
-      link: "/",
-    },
-
-    gradientDirection: "top",
-    gradients,
-    gradient: gradients[10],
-    labelsSparkline: [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "August",
-      "Sept",
-      "Okt",
-      "Nop",
-      "Dec",
-    ],
-    valueSparkline: [350, 200, 410, 390, 310, 460, 250, 240, 0, 0, 0, 0],
-    srcimage: "https://cdn.vuetifyjs.com/images/cards/foster.jpg",
-    datacollection: null,
-    namaAdmin: "Nama Admin",
-
-    chartDataColom1: [
-      ["Tempat", "Total"],
-      ["Oktober", 1000],
-      ["November", 1100],
-      ["Desember", 1160],
-      ["Januari", 1160],
-      ["Februari", 1160],
-    ],
-    chartDataColom2: [
-      ["Tempat", "Total"],
-      ["Oktober", 1000],
-      ["November", 1100],
-      ["Desember", 1160],
-      ["Januari", 1160],
-      ["Februari", 1160],
-    ],
-    chartDataColom3: [
-      ["Tempat", "Total"],
-      ["Oktober", 1000],
-      ["November", 1100],
-      ["Desember", 1160],
-      ["Januari", 1160],
-      ["Februari", 1160],
-    ],
-    colomchartOptionsGoogle1: {
-      title: "Pohon Kayu",
-      // pieHole: 0.4,
-      // is3D: true,
-      legend: "none",
-      pieSliceText: "label",
-      width: $(window).width() * 0.25,
-      height: $(window).height() * 0.45,
-    },
-    colomchartOptionsGoogleMobile1: {
-      title: "Pohon Kayu",
-      // pieHole: 0.4,
-      // is3D: true,
-      legend: "none",
-      pieSliceText: "label",
-    },
-    colomchartOptionsGoogle2: {
-      title: "Pohon MPTS",
-      // pieHole: 0.4,
-      // is3D: true,
-      legend: "none",
-      pieSliceText: "label",
-      width: $(window).width() * 0.25,
-      height: $(window).height() * 0.45,
-    },
-    colomchartOptionsGoogleMobile2: {
-      title: "Pohon MPTS",
-      // pieHole: 0.4,
-      // is3D: true,
-      legend: "none",
-      pieSliceText: "label",
-    },
-    colomchartOptionsGoogle3: {
-      title: "CROPS",
-      // pieHole: 0.4,
-      // is3D: true,
-      legend: "none",
-      pieSliceText: "label",
-      width: $(window).width() * 0.25,
-      height: $(window).height() * 0.45,
-    },
-    colomchartOptionsGoogleMobile3: {
-      title: "CROPS",
-      // pieHole: 0.4,
-      // is3D: true,
-      legend: "none",
-      pieSliceText: "label",
-    },
-
-    fullnameadmin: "",
-    nameadmin: "",
-
     options: {
       programYear: '',
       province: {
@@ -539,98 +165,121 @@ export default {
           }]
       },
       source: {
-        model: 'Sosialisasi Tanam',
-        options: ['Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi', 'Realisasi Tanam']
+        model: 'Pendataan',
+        options: ['Pendataan', 'Sosialisasi Tanam', 'Penilikan Lubang', 'Distribusi', 'Realisasi Tanam']
       },
     },
-    SR: {
-      show: false
-    }
+    time: {
+      isMorning() {
+        return new Date().getHours() < 12 ? true : false;
+      },
+      date: ''
+    },
+    totalData: {
+      data1: {
+        Judul: "Total FF",
+        Count: "1",
+        link: "FieldFacilitator",
+        icon: 'mdi-account',
+        color: 'blue',
+        sub: 'Field Facilitator',
+        ref: 'totalFFNumber',
+        key: 123,
+        dataAosDelay: 100
+      },
+      data2: {
+        Judul: "Total Petani",
+        Count: "1",
+        link: "Farmer",
+        icon: 'mdi-nature-people',
+        color: 'orange',
+        sub: 'Petani',
+        ref: 'totalFarmerNumber',
+        key: 321,
+        dataAosDelay: 200
+      },
+      data3: {
+        Judul: "Total Lahan",
+        Count: "11",
+        link: "Lahan",
+        icon: 'mdi-land-fields',
+        color: 'brown',
+        sub: 'Lahan',
+        ref: 'totalLahanNumber',
+        key: 222,
+        dataAosDelay: 300
+      },
+      data4: {
+        Judul: "Total Pohon",
+        Count: "111",
+        link: "Dashboard",
+        icon: 'mdi-forest',
+        color: 'green',
+        sub: 'Pohon',
+        ref: 'totalPohonNumber',
+        key: 111,
+        dataAosDelay: 400
+      },
+    },
+    User: {}
   }),
   mounted() {
-    this.authtoken = localStorage.getItem("token")
-    this.BaseUrlGet = localStorage.getItem("BaseUrlGet")
-    this.User = JSON.parse(localStorage.getItem("User"))
+    this.User = this.$store.state.User
     this.options.programYear = this.$store.state.programYear.model
-    if (this.User) {
-      var name = this.User.name
-      this.fullnameadmin = name
-      const arrayname = name.split(" ")
-      this.nameadmin = arrayname[0]
-    }
     this.initialize();
-    this.$store.state.maintenanceOverlay = false
+    // this.$store.state.maintenanceOverlay = true
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
     this.$store.state.loadingOverlay = false
     this.$store.state.loadingOverlayText = null
   },
+  computed: {
+  },
   methods: {
+    dateTimeNow() {
+      setInterval(() => {
+        this.time.date = new Date().toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          })
+      }, 1000)
+    },
     async initialize() {
-      this.loading = true;
-      this.$store.state.loadingOverlayText = 'Loading...'
-      this.$store.state.loadingOverlay = true
       try {
-        const response = await axios.get(this.BaseUrlGet + "Dashboard", {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        })
-
+        this.loading = true;
+        this.dateTimeNow()
+        this.$store.state.loadingOverlayText = 'Loading...'
+        this.$store.state.loadingOverlay = true
         this.$store.state.loadingOverlayText = `Getting datas from ${this.options.source.model}...`
         const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardAll?${new URLSearchParams({
           program_year: this.options.programYear,
           source: this.options.source.model,
           province: this.options.province.model
-        })}`), this.$store.state.apiConfig)
-        // console.log(totalData)
-        if (response.data.length != 0 && totalData.data) {
-          // this.loading = false;
-          // console.log(response.data.data.result)
-          this.greeting = response.data.data.result.greeting
-          this.day = response.data.data.result.day
-          this.date = response.data.data.result.dateformat
-          this.data1.Count = totalData.data.data.result.total.farmer
-          this.data2.Count = totalData.data.data.result.total.land_total
-          this.data3.Count = totalData.data.data.result.total.trees
-          this.chartDataColom1 = response.data.data.result.listarraytotalkayu
-          this.chartDataColom2 = response.data.data.result.listarraytotalmpts
-          this.chartDataColom3 = response.data.data.result.listarraytotalcrops
-          this.startNumberAnimation()
-          // this.chartData = response.data.data.result.listarraysales;
-          // this.profils = response.data.data.result.listvalcust;
-        } else {
-          console.log("Kosong");
-          this.loading = false
-        }
+        })}`), this.$store.state.apiConfig).then(res => {return res.data.data.result})
+        const tdEl = this.totalData
+        tdEl.data1.Count = await totalData.total.ff
+        tdEl.data2.Count = await totalData.total.farmer
+        tdEl.data3.Count = await totalData.total.land_total
+        tdEl.data4.Count = await totalData.total.trees
       } catch (error) {
         console.error(error);
         if (error.response.status == 401) {
-          this.loading = false;
           localStorage.removeItem("token");
           this.$router.push("/");
         } else {
-          this.loading = false;
           this.dataobject = [];
         }
       } finally {
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
-          this.loading = false
+        this.loading = false
       }
-    },
-    async startNumberAnimation () {
-      this.componentKeys.survivalRatesNumber += 1
-      this.componentKeys.totalFarmerNumber += 1
-      this.componentKeys.totalLandNumber += 1
-      this.componentKeys.totalTreeNumber += 1
-      await setTimeout(() => {
-        this.$refs.survivalRatesNumber.play()
-        this.$refs.totalFarmerNumber.play()
-        this.$refs.totalLandNumber.play()
-        this.$refs.totalTreeNumber.play()
-      }, 100)
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID', {
