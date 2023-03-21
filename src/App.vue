@@ -246,7 +246,7 @@ export default {
         }
 
         var rslt = itemroutecheck.includes(this.$route.name);
-        var exceptionPage = ['SeedlingChangeRequest']
+        var exceptionPage = ['SeedlingChangeRequest', 'GekoManual']
         const checkExceptionPage = exceptionPage.includes(this.$route.name)
         // console.log(this.$route.name);
         // console.log(itemroutecheck);
@@ -261,12 +261,15 @@ export default {
             if (notspaceauthtoken.length > 0) {
               return this.$route.name != "Login";
             } else {
-              console.log("auth 0");
-              this.$router.push("/");
+              if (this.$route.name != 'GekoManual') {
+                this.$router.push("/");
+              }
             }
           } else {
-            console.log("auth null");
-            this.$router.push("/");
+            // console.log("auth null");
+              if (this.$route.name != 'GekoManual') {
+                this.$router.push("/");
+              }
           }
         } else {
           console.log("route false");
@@ -280,25 +283,28 @@ export default {
             } else {
               console.log("auth 0");
               this.$router.push("/");
+              this.$store.state.User = ''
             }
           } else {
-            console.log("auth null");
-            console.log("logout system");
+            // console.log("auth null");
+            // console.log("logout system");
             if (this.logoutvalue == true) {
               this.logoutvalue = false;
               location.reload();
             } else if (this.$route.name == "Login") {
-              console.log("page " + this.$route.name);
+              // console.log("page " + this.$route.name);
             } else {
               this.$router.push("/");
             }
           }
         }
       } else {
-        localStorage.removeItem("token");
-        localStorage.removeItem("User");
-        localStorage.removeItem("BaseUrlUpload");
-        this.$router.push("/");
+        if (this.$route.name != 'GekoManual') {
+          localStorage.removeItem("token");
+          localStorage.removeItem("User");
+          localStorage.removeItem("BaseUrlUpload");
+          this.$router.push("/");
+        }
       }
     },
   },
@@ -351,6 +357,9 @@ export default {
       handler(newVal) {
         console.log(newVal)
       }
+    },
+    isLogin(val) {
+      if (val != true) this.$store.state.User = '' 
     }
   },
   methods: {

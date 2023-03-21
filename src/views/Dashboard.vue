@@ -53,8 +53,10 @@
                   outlined
                   class="mt-2 mx-1"
                   @change="initialize"
+                  style="max-width: 250px;"
                 ></v-autocomplete>
                 <v-autocomplete
+                  v-if="options.province.show"
                   dense
                   color="success"
                   item-color="success"
@@ -68,6 +70,7 @@
                   outlined
                   class="mt-2 ml-1"
                   @change="initialize"
+                  style="max-width: 250px;"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="3" class="d-none d-md-block">
@@ -84,13 +87,35 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-card class="mt-2 rounded-xl" dark data-aos="fade-down" data-aos-delay="350">
+      <v-card-text class="">
+        <v-row class="mx-0 align-center">
+          <v-badge content="NEW">
+            <p class="mb-0"><v-icon>mdi-book</v-icon> Manual Book</p>
+          </v-badge>
+          <v-divider class="mx-2"></v-divider>
+          <!-- <v-tooltip left content-class="rounded-xl">
+            <template v-slot:activator="{on, attrs}">
+              <v-btn v-bind="attrs" v-on="on" rounded color="green white--text" class="my-2 mr-2" small @click="() => {$router.push('GekoManual')}"><v-icon class="mr-1">mdi-book-open-variant</v-icon> Open</v-btn>
+            </template>
+            Click to open the manual book in new page
+          </v-tooltip> -->
+          <v-tooltip left content-class="rounded-xl">
+            <template v-slot:activator="{on, attrs}">
+              <v-btn v-bind="attrs" v-on="on" rounded color="blue white--text" class="my-2" small @click="() => downloadManualBook()"><v-icon class="mr-1">mdi-download</v-icon> Download</v-btn>
+            </template>
+            Click to download the manual book
+          </v-tooltip>
+        </v-row>
+      </v-card-text>
+    </v-card>
 
     <!-- Total Datas -->
-    <v-row class="">
+    <v-row class="mt-0">
       <v-col v-for="n in 4" cols="12" md="3" class="">
         <v-card
           data-aos="fade-down"
-          :data-aos-delay="totalData[`data${n}`].dataAosDelay + 300"
+          :data-aos-delay="totalData[`data${n}`].dataAosDelay + 700"
           class="rounded-xl shadow-lg"
           @click="$router.push(totalData[`data${n}`].link)"
         >
@@ -149,6 +174,8 @@ export default {
     options: {
       programYear: '',
       province: {
+        disabled: false,
+        show: true,
         model: 'all',
         options: [
           { 
@@ -226,6 +253,8 @@ export default {
   mounted() {
     this.User = this.$store.state.User
     this.options.programYear = this.$store.state.programYear.model
+    console.log(this.User)
+    if (this.User.ff.ff.length > 0) this.options.province.show = false
     this.initialize();
     // this.$store.state.maintenanceOverlay = true
   },
@@ -257,11 +286,15 @@ export default {
         this.$store.state.loadingOverlayText = 'Loading...'
         this.$store.state.loadingOverlay = true
         this.$store.state.loadingOverlayText = `Getting datas from ${this.options.source.model}...`
-        const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardAll?${new URLSearchParams({
+        let params = new URLSearchParams({
           program_year: this.options.programYear,
           source: this.options.source.model,
           province: this.options.province.model
-        })}`), this.$store.state.apiConfig).then(res => {return res.data.data.result})
+        })
+        if (this.User.ff.ff) {
+          params.set('ff', this.User.ff.ff.toString())
+        }
+        const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardAll?${params}`), this.$store.state.apiConfig).then(res => {return res.data.data.result})
         const tdEl = this.totalData
         tdEl.data1.Count = await totalData.total.ff
         tdEl.data2.Count = await totalData.total.farmer
@@ -286,6 +319,10 @@ export default {
           maximumFractionDigits: 0
         }).format(num)
     },
+    downloadManualBook() {
+      const url = `https://trees4trees.sharepoint.com/:b:/g/EdnPK5LSmNVIvauAiE1qy5MBb5zC9UhWdUUFokVeI9FV2g?e=3wlCiA`
+      window.open(url, '_blank')
+    }
   },
 };
 </script>
