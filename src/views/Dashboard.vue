@@ -31,6 +31,7 @@
                   hide-details
                   rounded
                   v-model="options.programYear"
+                  :disabled="loading"
                   :items="$store.state.programYear.options"
                   label="Program Year"
                   :rules="[(v) => !!v || 'Field is required']"
@@ -48,6 +49,7 @@
                   rounded
                   v-model="options.source.model"
                   :items="options.source.options"
+                  :disabled="loading"
                   label="Source Data"
                   :rules="[(v) => !!v || 'Field is required']"
                   outlined
@@ -65,6 +67,7 @@
                   rounded
                   v-model="options.province.model"
                   :items="options.province.options"
+                  :disabled="loading"
                   label="Province"
                   :rules="[(v) => !!v || 'Field is required']"
                   outlined
@@ -253,7 +256,7 @@ export default {
   mounted() {
     this.User = this.$store.state.User
     this.options.programYear = this.$store.state.programYear.model
-    console.log(this.User)
+    // console.log(this.User)
     if (this.User.ff.ff.length > 0) this.options.province.show = false
     this.initialize();
     // this.$store.state.maintenanceOverlay = true
@@ -284,7 +287,7 @@ export default {
         this.loading = true;
         this.dateTimeNow()
         this.$store.state.loadingOverlayText = 'Loading...'
-        this.$store.state.loadingOverlay = true
+        // this.$store.state.loadingOverlay = true
         this.$store.state.loadingOverlayText = `Getting datas from ${this.options.source.model}...`
         let params = new URLSearchParams({
           program_year: this.options.programYear,

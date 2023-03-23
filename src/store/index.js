@@ -55,6 +55,11 @@ export default new Vuex.Store({
     capitalizeFirstLetter: () => (string) => {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
+    ktpRules: (state) => (val) => {
+      const ktpRegex = /^[0-9]{16}$/;
+      const check = ktpRegex.test(val)
+      return check
+    },
     numberFormat: () => (num) =>  {
         return new Intl.NumberFormat('id-ID', {
             maximumFractionDigits: 0

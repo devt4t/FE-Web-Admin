@@ -149,7 +149,7 @@
                                     <v-col cols="12" sm="12" md="12" lg="6">
                                         <v-text-field
                                             color="success"
-                                            hide-details
+                                            dense
                                             item-color="success"
                                             :label="inputs.picKtp.label"
                                             :loading="inputs.picKtp.loading"
@@ -158,7 +158,7 @@
                                             :disabled="inputs.mou.exist"
                                             outlined
                                             rounded
-                                            :rules="[(v) => !!v || 'Field is required']"
+                                            :rules="[(v) => $store.getters.ktpRules(v) || 'Format yang diinput salah! Wajib 16 digit angka.']"
                                             v-model="inputs.picKtp.model"
                                         ></v-text-field>
                                     </v-col>
@@ -1194,6 +1194,10 @@
                         style="max-width: 300px"
                     ></v-text-field>
                     <v-divider class="mx-2"></v-divider>
+                    <v-btn color="info" rounded @click="() => exportLahanUmum()" class="pl-2 mr-2" :disabled="tables.lahan.loading">
+                        <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
+                        Export
+                    </v-btn>
                     <v-btn color="info" rounded @click="dialogActions('createData', true)" class="pl-2">
                         <v-icon class="mr-1">mdi-plus-circle</v-icon>
                         Create Data
@@ -2362,6 +2366,16 @@ export default {
                 console.error(err)
             })
             return responseName
+        },
+        exportLahanUmum() {
+            let params = new URLSearchParams({
+                program_year: this.tables.lahan.programYear.model
+            })
+            const roles = ['REGIONAL MANAGER', 'PROGRAM MANAGER']
+            if (!roles.includes(this.User.role_name) && this.User.role_group != 'IT') params.set('created_by', this.User.email)
+            const url = this.$store.state.apiUrl.replace('api/', '') + `ExportLahanUmum?${params}`
+            // console.log(url)
+            window.open(url, 'blank')
         }
     }
 }
