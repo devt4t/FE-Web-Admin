@@ -1322,6 +1322,7 @@
                     item-color="success"
                     v-model="generalSettings.programYear"
                     :items="['2021','2022','2023']"
+                    :disabled="generalSettings.nursery.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
                     outlined
                     dense
                     hide-details
@@ -2220,6 +2221,7 @@
                                                 offset-y
                                                 :close-on-content-click="true"
                                                 v-model="distributionReport.datePicker.show"
+                                                :disabled="distributionReport.table.loading"
                                             >
                                                 <template v-slot:activator="{ on: menu, attrs }">
                                                     <v-tooltip top>
@@ -2266,10 +2268,10 @@
                                             <!-- Export Button -->
                                             <v-btn
                                                 readonly
-                                                @click="() => {}"
-                                                color="info white--text"
+                                                @click="() => exportExcel('distribution_report')"
+                                                color="green white--text"
                                                 class="mr-1"
-                                                :disabled="true"
+                                                :disabled="distributionReport.table.loading || distributionReport.table.items.length == 0 || generalSettings.type.model == 'Umum'"
                                                 rounded
                                                 small
                                             >
@@ -2277,12 +2279,12 @@
                                             </v-btn>
                                             <!-- Refresh Button -->
                                             <v-btn
-                                                dark
                                                 readonly
                                                 @click="getDistributionReportTable()"
-                                                color="info"
+                                                color="info white--text"
                                                 rounded
                                                 small
+                                                :disabled="distributionReport.table.loading"
                                             >
                                                 <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
                                             </v-btn>
@@ -2527,7 +2529,7 @@ export default {
                 disabled: false,
             },
             type: {
-                model: 'Umum',
+                model: 'Petani',
                 options: ['Petani', 'Umum'],
                 disabled: false,
             },
@@ -4066,7 +4068,8 @@ export default {
         dateFormat(date, format) {
             return moment(date).format(format)
         },
-        exportExcel(type, data) {
+        exportExcel(type, data = null) {
+            let url = null
             if (type == 'bibit_by_ff') {
                 const params = new URLSearchParams({
                     ff_no: data.datas.FF.toString(),
@@ -4074,10 +4077,7 @@ export default {
                     activity: data.datas.activity,
                     distribution_date: data.distribution_date
                 })
-                window.open(
-                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
-                    "ExportBibitExcel?" + params
-                )
+                url = this.$store.state.apiUrl.replace('/api/', '/') + "ExportBibitExcel?" + params
             } else if (type == 'bibit_by_lahan') {
                 const params = new URLSearchParams({
                     lahan_no: data.datas.lahan_no.toString(),
@@ -4085,11 +4085,29 @@ export default {
                     activity: data.datas.activity,
                     distribution_date: data.distribution_date
                 })
-                window.open(
-                    this.apiConfig.baseUrl.substring(0, this.apiConfig.baseUrl.length - 4) +
-                    "ExportBibitLahanUmumExcel?" + params
-                )
+                url = this.$store.state.apiUrl.replace('/api/', '/') + "ExportBibitLahanUmumExcel?" + params
+            } else if (type == 'distribution_report') {
+                const params = new URLSearchParams({
+                    program_year: this.generalSettings.programYear,
+                    distribution_date: this.distributionReport.datePicker.model,
+                    nursery: this.generalSettings.nursery.model
+                })
+                const role_name = this.User.role_name
+                const role_group = this.User.role_group
+                if (this.generalSettings.type.model == 'Umum') {
+                    const managers = ['PROGRAM MANAGER', 'REGIONAL MANAGER', 'NURSERY MANAGER', 'NURSERY']
+                    if (!managers.includes(role_name) && role_group != 'IT') params.set('created_by', this.User.email)
+                } else {
+                    const ff = this.User.ff.ff
+                    if (ff) if (ff != '-') params.set('ff', ff.toString())
+                }
+                url = this.$store.state.apiUrl.replace('/api/', '/') + `ExportDistributionReport?${params}`
+                if (this.generalSettings.type.model == 'Umum') url = url.replace('Report?', 'ReportLahanUmum?')
+                // console.log(this.generalSettings.type.model)
+                // console.log(url)
             }
+
+            if (url) window.open(url, "blank")
         },
         async firstAccessPage() {
             this.packingLabel.loadingText = 'Getting packing label data...'

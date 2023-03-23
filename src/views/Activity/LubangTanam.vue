@@ -2079,7 +2079,7 @@ export default {
       }
     },
     land_program: {
-        model: 'Umum',
+        model: 'Petani',
         options: ['Petani', 'Umum'],
         disabled: false,
     },
