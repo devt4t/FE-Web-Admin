@@ -1878,6 +1878,7 @@
               </v-list-item>
             </v-list>
           </v-menu>
+          <v-btn v-else rounded color="blue white--text" class="mr-2" @click="() => exportLahanUmum()" :disabled="loadtable || $store.state.loadingOverlay"><v-icon>mdi-microsoft-excel</v-icon> Export</v-btn>
           <!-- Add Lahan umum planting hole -->
           <v-btn
             v-if="land_program.model == 'Umum'"
@@ -2078,7 +2079,7 @@ export default {
       }
     },
     land_program: {
-        model: 'Petani',
+        model: 'Umum',
         options: ['Petani', 'Umum'],
         disabled: false,
     },
@@ -4434,6 +4435,16 @@ export default {
         const url = `${this.BaseUrlGet.substring(0, this.BaseUrlGet.length - 4)}ExportExcelPenilikanLubang?${params}`
         window.open(url)
       }
+    },
+    exportLahanUmum() {
+        let params = new URLSearchParams({
+            program_year: this.program_year
+        })
+        const roles = ['REGIONAL MANAGER', 'PROGRAM MANAGER']
+        if (!roles.includes(this.User.role_name) && this.User.role_group != 'IT') params.set('created_by', this.User.email)
+        const url = this.$store.state.apiUrl.replace('api/', '') + `ExportLahanUmumPenilikanLubang?${params}`
+        // console.log(url)
+        window.open(url, 'blank')
     },
     photo1FileChanged (event) {
         if (event) {
