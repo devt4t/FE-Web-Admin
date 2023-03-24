@@ -1920,6 +1920,86 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <!-- Modal Export Filter -->
+      <v-dialog v-model="dialogs.exportFilter.model" content-class="rounded-xl" max-width="500">
+        <v-card>
+          <v-card-title>
+            Export Filter
+            <v-divider class="mx-2"></v-divider>
+            <v-icon color="red" @click="() => dialogs.exportFilter.model = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <v-row class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Regional Manager"
+                  :loading="dialogs.exportFilter.filters.rm.loading"
+                  :item-value="dialogs.exportFilter.filters.rm.itemVal"
+                  :item-text="dialogs.exportFilter.filters.rm.itemText"
+                  :items="dialogs.exportFilter.filters.rm.options"
+                  v-model="dialogs.exportFilter.filters.rm.model"
+                  :disabled="disabledExportFilterRM"
+                  @change="($event) => getFiltersOptions('um', $event)"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Unit Manager"
+                  :loading="dialogs.exportFilter.filters.um.loading"
+                  :item-value="dialogs.exportFilter.filters.um.itemVal"
+                  :item-text="dialogs.exportFilter.filters.um.itemText"
+                  :items="dialogs.exportFilter.filters.um.options"
+                  v-model="dialogs.exportFilter.filters.um.model"
+                  :disabled="disabledExportFilterUM"
+                  @change="($event) => {getFiltersOptions('fc', $event);}"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Coordinator"
+                  :loading="dialogs.exportFilter.filters.fc.loading"
+                  :item-value="dialogs.exportFilter.filters.fc.itemVal"
+                  :item-text="dialogs.exportFilter.filters.fc.itemText"
+                  :items="dialogs.exportFilter.filters.fc.options"
+                  v-model="dialogs.exportFilter.filters.fc.model"
+                  :disabled="disabledExportFilterFC"
+                  @change="($event) => setFiltersFF('FC', $event)"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+            <v-alert dark color="green" dense class="rounded-xl mt-3 mb-0" icon="mdi-information" >{{ whatTodoTextExport }}</v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-divider class="mx-2"></v-divider>
+            <v-hover v-slot="{hover}">
+              <v-btn rounded :color="`green ${hover ? 'white--text' : ''}`" :outlined="!hover" @click="() => exportData()" :disabled="dialogs.exportFilter.filters.ff.model.length < 1 || dialogs.exportFilter.filters.ff.loading"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
+            </v-hover>
+            <v-divider class="mx-2"></v-divider>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     <!-- END: MODAL -->
 
     <v-data-table
@@ -2055,9 +2135,10 @@
             style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
           ></v-select>
           <v-btn
+            v-if="generalSettings.landProgram.model == 'Petani'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
-            @click="() => {exportData()}"
+            @click="() => {openExportFilter()}"
             :disabled="loadtable"
             color="info white--text"
           >
@@ -2324,6 +2405,38 @@ export default {
         qty_std: 0
       },
       loading: false
+    },
+    dialogs: {
+      exportFilter: {
+        model: false,
+        filters: {
+          rm: {
+            itemVal: 'nik',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          um: {
+            itemVal: 'nik',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          fc: {
+            itemVal: 'nik',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          ff: {
+            loading: false,
+            model: []
+          }
+        }
+      }
     },
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
@@ -2645,9 +2758,6 @@ export default {
     dialogDelete: false,
   }),
   computed: {
-    // formTitle() {
-    //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    // },
     disabledEditSeedInDetailModal() {
       let User = this.User
       let defaultItem = this.defaultItem
@@ -2660,6 +2770,41 @@ export default {
           else return false
         }
       } else return false
+    },
+    disabledExportFilterRM() {
+      const user = this.User
+      let status = false
+      const disabledPositions = [
+        'REGIONAL MANAGER',
+        'UNIT MANAGER',
+        'NURSERY',
+        'NURSERY MANAGER'
+      ]
+      if (disabledPositions.includes(user.role_name)) status = true
+      return status
+    },
+    disabledExportFilterUM() {
+      const filters = this.dialogs.exportFilter.filters
+      const user = this.User
+      let status = false
+      if (!filters.rm.model) status = true
+      if (user.role_name == 'UNIT MANAGER') status = true
+      return status
+    },
+    disabledExportFilterFC() {
+      const filters = this.dialogs.exportFilter.filters
+      let status = false
+      if (!filters.um.model) status = true
+      return status
+    },
+    whatTodoTextExport() {
+      const filters = this.dialogs.exportFilter.filters
+      let text = 'Select Regional Manager.'
+      if (filters.rm.model) text = 'Select Unit Manager.'
+      if (filters.um.model) text = 'Select Field Coordinator.'
+      if (filters.fc.model) text = filters.ff.model.length + ' Field Facilitator'
+      if (filters.ff.loading) text = 'Getting FF datas...'
+      return text
     }
   },
   async mounted() {
@@ -4877,8 +5022,103 @@ export default {
     lahanNoFormat(lahan_no) {
         return lahan_no.replace('[', '').replace(']', '').split(',')
     },
-    exportData() {
-      alert('export!')
+    async openExportFilter() {
+      const dialog = this.dialogs.exportFilter
+      const filters = dialog.filters
+      // reset data
+      filters.rm.model = ''
+      filters.rm.options = []
+      filters.um.model = ''
+      filters.um.options = []
+      filters.fc.model = ''
+      filters.fc.options = []
+      filters.ff.model = []
+
+      const user = this.User
+      if (user.role_name == 'FIELD COORDINATOR') {
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Getting FF datas...'
+        await this.setFiltersFF('FC', user.employee_no)
+        await this.exportData()
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = ''
+      } else dialog.model = true
+      dialog.loading = true
+      await this.getFiltersOptions('rm')
+      if (user.role_name == 'UNIT MANAGER') {
+        const managerCode = await user.EmployeeStructure.manager_code
+        filters.rm.model = managerCode
+        await this.getFiltersOptions('um', managerCode)
+        filters.um.model = user.employee_no
+        await this.getFiltersOptions('fc', user.employee_no)
+      } else if (user.role_name == 'REGIONAL MANAGER') {
+        filters.rm.model = user.employee_no
+        await this.getFiltersOptions('um', user.employee_no)
+      } else if (user.role_name == 'NURSERY') {
+        const managerCode = await user.EmployeeStructure.manager_code
+        filters.um.model = managerCode
+        await this.getFiltersOptions('fc', managerCode)
+      }
+      dialog.loading = false
+    },
+    async exportData() {
+      const dialog = this.dialogs.exportFilter
+      dialog.model = false
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoring?'
+
+      const params = new URLSearchParams({
+        program_year: this.generalSettings.programYear,
+        land_program: this.generalSettings.landProgram.model,
+        ff: this.dialogs.exportFilter.filters.ff.model.toString()
+      })
+      url += params.toString()
+      window.open(url, "blank")
+    },
+    async getFiltersOptions(type, data = null) {
+      const filters = this.dialogs.exportFilter.filters[type]
+      try {
+        filters.loading = true
+        let url = ''
+        if (type == 'rm') url = this.$store.getters.getApiUrl('GetEmployeebyPosition?position_code=23')
+        else if (type == 'um' && data) url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=20`)
+        else if (type == 'fc' && data) url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=19`)
+        filters.model = ''
+        this.dialogs.exportFilter.filters.ff.model = []
+        if (url) {
+          const list = await axios.get(url, this.$store.state.apiConfig).then(res => {return res.data.data.result.data})
+          filters.options = list.sort((a, b) => a.name.localeCompare(b.name))
+        }
+        // console.log(data)
+      } catch (err) {
+        this.errorResponse(err)
+      } finally {
+        filters.loading = false
+      }
+    },
+    async setFiltersFF(position, id_code) {
+      const filters = this.dialogs.exportFilter.filters.ff
+      try {
+        filters.loading = true
+        let url = this.$store.getters.getApiUrl(`GetFFbyUMandFC?position=${position}&code=${id_code}`)
+        const ff = await axios.get(url, this.$store.state.apiConfig).then(res => {return res.data.data.result.data})
+        // console.log(ff)
+        filters.model = ff
+      } catch (err) {
+        this.errorResponse(err)
+      } finally {
+        filters.loading = false
+      }
+    },
+    errorResponse(error) {
+      console.log(error)
+      if (error.response) {
+        if (error.response.status) {
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        }
+      }
     }
   },
 };
