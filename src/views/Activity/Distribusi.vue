@@ -2271,7 +2271,7 @@
                                                 @click="() => exportExcel('distribution_report')"
                                                 color="green white--text"
                                                 class="mr-1"
-                                                :disabled="distributionReport.table.loading || distributionReport.table.items.length == 0 || generalSettings.type.model == 'Umum'"
+                                                :disabled="distributionReport.table.loading || distributionReport.table.items.length == 0"
                                                 rounded
                                                 small
                                             >
@@ -2308,7 +2308,7 @@
                                     <template v-slot:item.status="{item}">
                                         <v-chip v-if="(item.status == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
                                         <v-chip v-else-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'FC' : 'PIC T4T' }}</v-chip>
-                                        <v-chip v-else-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'UM' : 'PM' }}</v-chip>
+                                        <v-chip v-else-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'UM' : 'PM / RM' }}</v-chip>
                                     </template>
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
