@@ -1,5 +1,6 @@
 <template>
   <v-container class="mt-5 pl-3 pl-lg-6" fluid>
+    <!-- Greetings -->
     <v-row style="margin-top: -15px">
       <v-col cols="12" md="12" data-aos="fade-down" >
         <v-card rounded="xl" :dark="$store.state.theme == 'dark'">
@@ -90,6 +91,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <!-- Manual Books -->
     <v-card class="mt-2 rounded-xl" dark data-aos="fade-down" data-aos-delay="350">
       <v-card-text class="">
         <v-row class="mx-0 align-center">
@@ -164,16 +166,77 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- Maps -->
+    <v-card class="rounded-xl mt-3" data-aos="fade-up" data-aos-delay="1000">
+      <v-card-title>
+        <v-icon>mdi-map</v-icon>
+        <v-badge content="Develop" color="warning">Maps</v-badge>
+      </v-card-title>
+      <v-card-text style="position: relative;">
+        <v-overlay v-if="maps.loading.show" justify-center align-center>
+            <div class="d-flex flex-column align-center justify-center">
+                <v-progress-circular
+                    :size="80"
+                    :width="7"
+                    indeterminate
+                    color="white"
+                >
+                </v-progress-circular>
+                <p class="mb-0 text-center mt-4">{{ maps.loading.text || 'Loading...' }}</p>
+            </div>
+        </v-overlay>
+        <l-map
+          style="height: 300px; z-index: 1"
+          :zoom="9"
+          :center="[-7.0667, 110.41667]"
+          class="rounded-xl"
+        >
+          <l-tile-layer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            :attribution="maps.attribution"
+          ></l-tile-layer>
+          <l-marker
+            v-for="star in maps.listMarker"
+            :lat-lng="LatLng(star.latitude, star.longitude)"
+            :key="star.name"
+            @click="() => showPopup(star)"
+          >
+            <l-popup>
+              <h4>Lahan No : {{ star.lahan_no }}</h4>
+              <h4>Petani : {{ star.farmer_name }}</h4>
+              <h4>Luas Tanam : {{ star.planting_area }} m<sup>2</sup></h4>
+              <h4>{{ star.longitude }},{{ star.latitude }}</h4>
+            </l-popup>
+          </l-marker>
+        </l-map>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
 
 export default {
   name: "Dashboard",
+  components: {
+    LMap,
+    LTileLayer,
+    LMarker,
+    LPopup,
+  },
   data: () => ({
     loading: false,
+    maps:{
+      attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      listMarker: [],
+      loading: {
+        show: false,
+        text: 'Loading...'
+      }
+    },
     options: {
       programYear: '',
       province: {
@@ -253,12 +316,16 @@ export default {
     },
     User: {}
   }),
-  mounted() {
+  async mounted() {
+    this.maps.loading.show = true
+    this.maps.loading.text = 'Initializing...'
     this.User = this.$store.state.User
     this.options.programYear = this.$store.state.programYear.model
     // console.log(this.User)
     if (this.User.ff.ff.length > 0) this.options.province.show = false
-    this.initialize();
+    await this.initialize();
+    await this.getMapsData()
+
     // this.$store.state.maintenanceOverlay = true
   },
   destroyed() {
@@ -325,7 +392,44 @@ export default {
     downloadManualBook() {
       const url = `https://trees4trees.sharepoint.com/:b:/g/EdnPK5LSmNVIvauAiE1qy5MBb5zC9UhWdUUFokVeI9FV2g?e=3wlCiA`
       window.open(url, '_blank')
-    }
+    },
+    // maps
+    async getMapsData() {
+      try {
+        this.maps.loading.show = true
+        this.maps.loading.text = 'Getting maps data...'
+        const params = new URLSearchParams({
+          program_year: this.options.programYear,
+          source: this.options.source.model,
+          province: this.options.province.model
+        })
+        const url = this.$store.getters.getApiUrl(`GetDashboardMapData?${params}`)
+        const listLahan = await axios.get(url, this.$store.state.apiConfig).then(res => {return res.data.list})
+        // this.maps.listMarker = listLahan
+      } catch (err) {this.catchingError(err)} finally {
+        this.maps.loading.show = false
+        this.maps.loading.text = 'Loading...'
+      }
+    },
+    LatLng(lat, lng) {
+      const array = [parseFloat(lat), parseFloat(lng)];
+      return array;
+    },
+    showPopup(data) {
+      alert(data.farmer_name || '-')
+    },
+    // Utilities
+    catchingError(error) {
+        if (error.response) {
+          if (typeof error.response.status != undefined) {
+              if (error.response.status == 401) {
+                  localStorage.removeItem("token")
+                  this.$router.push("/")
+              }
+          }
+        }
+        console.log(error)
+    },
   },
 };
 </script>
