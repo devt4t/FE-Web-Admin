@@ -2145,6 +2145,16 @@
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <v-btn
+            v-else
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
+            @click="() => {exportLahanUmum()}"
+            :disabled="loadtable"
+            color="info white--text"
+          >
+            <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
+          </v-btn>
+          <v-btn
             v-if="generalSettings.landProgram.model == 'Umum' && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER'"
             dark
             rounded
@@ -5071,6 +5081,20 @@ export default {
         land_program: this.generalSettings.landProgram.model,
         ff: this.dialogs.exportFilter.filters.ff.model.toString()
       })
+      url += params.toString()
+      window.open(url, "blank")
+    },
+    async exportLahanUmum() {
+      const dialog = this.dialogs.exportFilter
+      dialog.model = false
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoringLahanUmum?'
+
+      let params = new URLSearchParams({
+        program_year: this.generalSettings.programYear,
+        land_program: this.generalSettings.landProgram.model
+      })
+      const user = this.User
+      if (user.role_name != 'REGIONAL MANAGER' && user.role_name != 'UNIT MANAGER' && user.role_group != 'IT') params.set('created_by', user.email)
       url += params.toString()
       window.open(url, "blank")
     },
