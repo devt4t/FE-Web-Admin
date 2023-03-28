@@ -52,6 +52,11 @@
                 </v-radio-group>
               </div>
             </l-control> -->
+            <l-geo-json
+              :geojson="maps.geojson"
+              :options="geoJsonOptions"
+              :options-style="geoJsonStyleFunction"
+            />
             <l-marker
                 v-for="star in maps.listMarker"
                 :lat-lng="LatLng(star.latitude, star.longitude)"
@@ -77,7 +82,7 @@
   </div>
 </template>
 <script>
-import { LMap, LTileLayer, LMarker, LPopup, LIcon, LControl } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LPopup, LIcon, LControl, LGeoJson } from "vue2-leaflet";
 import axios from "axios";
 
 export default {
@@ -87,7 +92,8 @@ export default {
     LMarker,
     LPopup,
     LIcon,
-    LControl
+    LControl,
+    LGeoJson
   },
   props: {
     options: {
@@ -108,7 +114,8 @@ export default {
         show: false,
         text: 'Loading...'
       },
-      zoom: 9
+      zoom: 9,
+      geojson: null
     },
     user() {
       return this.$store.state.User
@@ -136,10 +143,53 @@ export default {
       } catch (err) {
         this.catchingError(err)
       }
+    },
+    // geojson
+    geoJsonOptions() {
+      return {
+        onEachFeature: this.onEachFeatureFunction
+      };
+    },
+    geoJsonStyleFunction() {
+      const fillColor = '#f00'; // important! need touch fillColor in computed for re-calculate when change fillColor
+      return () => {
+        return {
+          weight: 2,
+          color: "#ECEFF1",
+          opacity: 1,
+          fillColor: fillColor,
+          fillOpacity: 1
+        };
+      };
+    },
+    onEachFeatureFunction() {
+      if (!this.enableTooltip) {
+        return () => {};
+      }
+      return (feature, layer) => {
+        layer.bindTooltip(
+          "<div>code:" +
+            feature.properties.code +
+            "</div><div>nom: " +
+            feature.properties.nom +
+            "</div>",
+          { permanent: false, sticky: true }
+        );
+      };
     }
   },
   async mounted() {
     this.getMapsData()
+    const response = await fetch("http://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson",{
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    })
+    const data = await response.json();
+    console.log(data)
+    this.maps.geojson = data;
   },
   methods: {
     // maps
