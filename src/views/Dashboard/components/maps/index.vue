@@ -31,31 +31,18 @@
             class="rounded-xl"
             @zoomend="handleZoomEnd"
             @move="handleMove"
-            style="min-height: 300px; z-index: 1;resize: vertical;max-height: 500px;"
+            style="min-height: 300px;height: 400px; z-index: 1;resize: vertical;max-height: 500px;"
           >
             <l-tile-layer
                 :url="maps.url"
                 :attribution="maps.attribution"
             ></l-tile-layer>
-            <!-- <l-control :position="'topright'">
-              <div class="legend text-center white pa-2 pb-0 rounded-lg">
-                <h5>Show Data</h5>
-                <v-radio-group 
-                  column
-                  v-model="maps.legends.model"
-                  class="my-0"
-                >
-                  <v-radio
-                    :label="`Lahan`"
-                    value="lahan"
-                  ></v-radio>
-                </v-radio-group>
-              </div>
-            </l-control> -->
             <l-geo-json
               :geojson="maps.geojson"
               :options="geoJsonOptions"
               :options-style="geoJsonStyleFunction"
+              v-on:layeradd="onLayerAdd"
+              @click="($event) => showPopup($event)"
             />
             <l-marker
                 v-for="star in maps.listMarker"
@@ -104,7 +91,7 @@ export default {
   data: () => ({
     maps:{
       attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
-      center: [-7.0667, 110.41667],
+      center: [-7.081814, 107.75086],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       legends: {
         model: ''
@@ -114,7 +101,7 @@ export default {
         show: false,
         text: 'Loading...'
       },
-      zoom: 9,
+      zoom: 10,
       geojson: null
     },
     user() {
@@ -133,7 +120,7 @@ export default {
         const options = this.options
         const user = this.user()
         let message = options.programYear
-        if (user.ff.ff) if (user.ff.ff != '-') {
+        if (user.ff.ff) if (user.ff.ff != '-') if (user.ff.ff.length > 0) {
           message += ` > ${user.ff.ff.length} FF`
         } else {
           const province = options.province.options.find(prov => prov.value == options.province.model)
@@ -151,11 +138,11 @@ export default {
       };
     },
     geoJsonStyleFunction() {
-      const fillColor = '#f00'; // important! need touch fillColor in computed for re-calculate when change fillColor
+      const fillColor = '#00ff0022'; // important! need touch fillColor in computed for re-calculate when change fillColor
       return () => {
         return {
           weight: 2,
-          color: "#ECEFF1",
+          color: "#0f0",
           opacity: 1,
           fillColor: fillColor,
           fillOpacity: 1
@@ -163,15 +150,13 @@ export default {
       };
     },
     onEachFeatureFunction() {
-      if (!this.enableTooltip) {
-        return () => {};
-      }
+      // if (!this.enableTooltip) {
+      //   return () => {};
+      // }
       return (feature, layer) => {
         layer.bindTooltip(
-          "<div>code:" +
-            feature.properties.code +
-            "</div><div>nom: " +
-            feature.properties.nom +
+            "<div>" +
+            feature.properties.name +
             "</div>",
           { permanent: false, sticky: true }
         );
@@ -179,17 +164,7 @@ export default {
     }
   },
   async mounted() {
-    this.getMapsData()
-    const response = await fetch("http://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson",{
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      },
-    })
-    const data = await response.json();
-    console.log(data)
-    this.maps.geojson = data;
+    await this.getMapsData()
   },
   methods: {
     // maps
@@ -208,8 +183,17 @@ export default {
         }
         const url = this.$store.getters.getApiUrl(`GetDashboardMapData?${params}`)
         const listLahan = await axios.get(url, this.$store.state.apiConfig).then(res => {return res.data.list})
-        this.maps.listMarker = listLahan
-        if (listLahan.length > 0) this.maps.center = [listLahan[0].latitude, listLahan[0].longitude]
+        // this.maps.listMarker = listLahan
+        // if (listLahan.length > 0) this.maps.center = [listLahan[0].latitude, listLahan[0].longitude]
+        
+        this.maps.loading.text = 'Getting polygon data...'
+        // const geojsonUrl = "https://rawgit.com/gregoiredavid/france-geojson/master/regions/pays-de-la-loire/communes-pays-de-la-loire.geojson"
+        const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson"
+        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/SubDAS.geojson"
+        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/MU-Ciminyak-1.geojson"
+        const response = await fetch(geojsonUrl)
+        const data = await response.json();
+        this.maps.geojson = data;
       } catch (err) {this.catchingError(err)} finally {
         this.maps.loading.show = false
         this.maps.loading.text = 'Loading...'
@@ -230,8 +214,14 @@ export default {
       const array = [parseFloat(lat), parseFloat(lng)];
       return array;
     },
+    onLayerAdd(event) {
+      const layer = event.layer;
+      const _bounds = layer._bounds
+      console.log(layer)
+      // this.maps.center = [_bounds._southWest.lat, _bounds._southWest.lng]
+    },
     showPopup(data) {
-      // alert(data.farmer_name || '-')
+      console.log(data)
     },
     // Utilities
     catchingError(error) {
