@@ -46,7 +46,7 @@ export default {
       model: null,
       attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
       // center: [-7.081814, 107.75086],
-      center: [107.75086, -7.081814],
+      center: [107.52657620636666, -7.0917231719],
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       legends: {
         model: ''
@@ -56,7 +56,7 @@ export default {
         show: false,
         text: 'Loading...'
       },
-      zoom: 10,
+      zoom: 0,
       geojson: {},
       key: 111
     },
@@ -138,22 +138,26 @@ export default {
           zoom: options.zoom,
           projection: 'globe'
         });
-        this.maps.model.on('style.load', () => {
-          this.maps.model.addSource('mapbox-dem', {
+        const map = this.maps.model
+        map.on('style.load', () => {
+          map.addSource('mapbox-dem', {
             'type': 'raster-dem',
             'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
             'tileSize': 512,
             'maxzoom': 14
           });
           // add the DEM source as a terrain layer with exaggerated height
-          this.maps.model.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
-          this.maps.model.setFog({
+          map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+          map.setFog({
             color: 'rgb(186, 210, 235)', // Lower atmosphere
             'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
             'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
             'space-color': 'rgb(11, 11, 25)', // Background color
             'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
           });
+          // Add zoom and rotation controls to the map.
+          map.addControl(new mapboxgl.NavigationControl());
+          map.flyTo({zoom: 10, duration: 13 * 1000})
         });
       } catch (err) {this.catchingError(err)}
     },
@@ -186,7 +190,7 @@ export default {
         // this.maps.geojson = data;
         
         await this.demoGeoJson()
-        // await this.demoKMZ()
+        await this.demoKMZ()
       } catch (err) {this.catchingError(err)} finally {
         this.maps.loading.show = false
         this.maps.loading.text = 'Loading...'
@@ -196,8 +200,8 @@ export default {
     async demoGeoJson() {
       try {
         const map = this.maps.model
-        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson"
-        const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/MU-Ciminyak-1.geojson"
+        const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson"
+        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/MU-Ciminyak-1.geojson"
         // const geojsonUrl = "https://docs.mapbox.com/mapbox-gl-js/assets/us_states.geojson"
         const responseJson = await fetch(geojsonUrl)
         const dataJson = await responseJson.json();
@@ -215,74 +219,99 @@ export default {
         });
         // await map.flyTo({ center: [-100.486052, 37.830348]})
           
-          // Add a new layer to visualize the polygon.
-          await map.addLayer({
-            'id': 'maine-fills',
-            'type': 'fill',
-            'source': 'maine', // reference the data source
-            'layout': {},
-            'paint': {
-              'fill-color': '#0080ff', // blue color fill
-              'fill-opacity': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                1,
-                0.5
-              ]
+        // Add a new layer to visualize the polygon.
+        await map.addLayer({
+          'id': 'maine-fills',
+          'type': 'fill',
+          'source': 'maine', // reference the data source
+          'layout': {},
+          'paint': {
+            'fill-color': '#0080ff', // blue color fill
+            'fill-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              1,
+              0.5
+            ]
+          }
+        });
+        
+        // Add a black outline around the polygon.
+        await map.addLayer({
+          'id': 'outline',
+          'type': 'line',
+          'source': 'maine',
+          'layout': {},
+          'paint': {
+            'line-color': '#000',
+            'line-width': 2
             }
           });
           
-          // Add a black outline around the polygon.
-          await map.addLayer({
-            'id': 'outline',
-            'type': 'line',
-            'source': 'maine',
-            'layout': {},
-            'paint': {
-              'line-color': '#000',
-              'line-width': 2
-              }
+          // Create a popup, but don't add it to the map yet.
+          const popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+          });
+          // Center the map on the coordinates of any clicked circle from the 'circle' layer.
+          map.on('click', 'maine-fills', (e) => {
+            const coor = e.lngLat
+            console.log(coor)
+            map.flyTo({
+              center: [coor.lng, coor.lat],
+              zoom: 10
             });
-              // Center the map on the coordinates of any clicked circle from the 'circle' layer.
-              map.on('click', 'maine-fills', (e) => {
-                const coor = e.lngLat
-                console.log(coor)
-                map.flyTo({
-                  center: [coor.lng, coor.lat],
-                  zoom: 10
-                });
-              });
-            // When the user moves their mouse over the state-fill layer, we'll update the
-            // feature state for the feature under the mouse.
-            map.on('mousemove', 'maine-fills', (e) => {
-              if (e.features.length > 0) {
-                if (hoveredStateId !== null) {
-                  map.setFeatureState(
-                    { source: 'maine', id: hoveredStateId },
-                    { hover: false }
-                  );
-                }
-                hoveredStateId = e.features[0].id;
-                map.setFeatureState(
-                  { source: 'maine', id: hoveredStateId },
-                  { hover: true }
-                );
-                if (hoveredStateId) map.getCanvas().style.cursor = 'pointer';
+          });
+        // When the user moves their mouse over the state-fill layer, we'll update the
+        // feature state for the feature under the mouse.
+        map.on('mousemove', 'maine-fills', (e) => {
+          const coor = e.lngLat
+          if (e.features.length > 0) {
+            if (hoveredStateId !== null) {
+              map.setFeatureState(
+                { source: 'maine', id: hoveredStateId },
+                { hover: false }
+              );
+            }
+            hoveredStateId = e.features[0].id;
+            map.setFeatureState(
+              { source: 'maine', id: hoveredStateId },
+              { hover: true }
+            );
+            if (hoveredStateId) {
+              map.getCanvas().style.cursor = 'pointer';
+              // popup
+              map.getCanvas().style.cursor = 'pointer';
+              // Copy coordinates array.
+              const coordinates = [coor.lng, coor.lat]
+              const description = JSON.stringify(e.features[0].properties);
+              // Ensure that if the map is zoomed out such that multiple
+              // copies of the feature are visible, the popup appears
+              // over the copy being pointed to.
+              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
               }
-            });
-            
-            // When the mouse leaves the state-fill layer, update the feature state of the
-            // previously hovered feature.
-            map.on('mouseleave', 'maine-fills', () => {
-              if (hoveredStateId !== null) {
-                map.setFeatureState(
-                  { source: 'maine', id: hoveredStateId },
-                  { hover: false }
-                );
-              }
-              hoveredStateId = null;
-              map.getCanvas().style.cursor = '';
-            });
+              // Populate the popup and set its coordinates
+              // based on the feature found.
+              popup.setLngLat(coordinates).setHTML(description).addTo(map);
+            }
+          }
+        });
+        
+        // When the mouse leaves the state-fill layer, update the feature state of the
+        // previously hovered feature.
+        map.on('mouseleave', 'maine-fills', () => {
+          if (hoveredStateId !== null) {
+            map.setFeatureState(
+              { source: 'maine', id: hoveredStateId },
+              { hover: false }
+            );
+          }
+          hoveredStateId = null;
+          map.getCanvas().style.cursor = '';
+          
+          popup.remove();
+        });
       } catch (err) {this.catchingError(err)}
     },
     async demoKMZ() {
