@@ -26,67 +26,15 @@
           <!-- Mapbox -->
           <div id="mapbox" ref="mapbox" style="height: 600px;min-height: 300px;max-height: 600px;resize: vertical;" :key="maps.key" class="rounded-xl overflow-hidden">
           </div>
-          <!-- MAPS -->
-          <!-- <l-map
-            ref="map"
-            :zoom="maps.zoom"
-            :center="maps.center"
-            class="rounded-xl"
-            @zoomend="handleZoomEnd"
-            @move="handleMove"
-            style="min-height: 300px;height: 400px; z-index: 1;resize: vertical;max-height: 500px;"
-          >
-            <l-tile-layer
-                :url="maps.url"
-                :attribution="maps.attribution"
-            ></l-tile-layer>
-            <l-geo-json
-              :geojson="maps.geojson"
-              :options="geoJsonOptions"
-              :options-style="geoJsonStyleFunction"
-              v-on:layeradd="onLayerAdd"
-              @click="($event) => showPopup($event)"
-            />
-            <l-marker
-                v-for="star in maps.listMarker"
-                :lat-lng="LatLng(star.latitude, star.longitude)"
-                :key="star.name"
-                @click="() => showPopup(star)"
-            >
-              <l-icon>
-                <v-btn fab x-small class="elevation-0">
-                  <v-icon color="brown darken-1">mdi-land-fields</v-icon>
-                </v-btn>
-              </l-icon>
-              <l-popup>
-                <h4>Lahan No : {{ star.lahan_no }}</h4>
-                <h4>FF : {{ star.ff_name }}</h4>
-                <h4>Petani : {{ star.farmer_name }}</h4>
-                <h4>Luas Tanam : {{ star.planting_area }} m<sup>2</sup></h4>
-                <h4>{{ star.longitude }},{{ star.latitude }}</h4>
-              </l-popup>
-            </l-marker>
-          </l-map> -->
       </v-card-text>
     </v-card>
   </div>
 </template>
 <script>
-import { LMap, LTileLayer, LMarker, LPopup, LIcon, LControl, LGeoJson } from "vue2-leaflet";
 import axios from "axios";
-import * as fs from 'fs';
-import togeojson from 'togeojson'
 
 export default {
-  components: {
-    LMap,
-    LTileLayer,
-    LMarker,
-    LPopup,
-    LIcon,
-    LControl,
-    LGeoJson,
-  },
+  components: {},
   props: {
     options: {
       type: Object,
@@ -352,30 +300,6 @@ export default {
         // var convertedWithStyles = tj.kml(kml, { styles: true });
 
       } catch (err) {this.catchingError(err)}
-    },
-    // maps utilities
-    handleZoomEnd() {
-      const zoomLevel = this.$refs.map.mapObject.getZoom()
-      console.log(`Map Zoom: ${zoomLevel}`)
-      if (zoomLevel >= 9) {
-      }
-    },
-    handleMove() {
-      const center = this.$refs.map.mapObject.getCenter()
-      // console.log(`Map Center: ${center}`)
-    },
-    LatLng(lat, lng) {
-      const array = [parseFloat(lat), parseFloat(lng)];
-      return array;
-    },
-    onLayerAdd(event) {
-      const layer = event.layer;
-      const _bounds = layer._bounds
-      // console.log(layer)
-      // this.maps.center = [_bounds._southWest.lat, _bounds._southWest.lng]
-    },
-    showPopup(data) {
-      console.log(data)
     },
     // Utilities
     catchingError(error) {
