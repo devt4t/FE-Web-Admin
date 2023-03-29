@@ -34,6 +34,10 @@ export default new Vuex.Store({
     taskForceTeam: {
       emails: TaskForceEmail
     },
+    maps: {
+      accessToken: 'pk.eyJ1IjoidmlydHVhbGVzdGF0ZSIsImEiOiJja3JxOGV5aTQxbnZmMnBub3d5MjRkcWtwIn0.wsiGxsh4YBe2wBynfZpH2A',
+      mapStyle: 'mapbox://styles/mapbox/satellite-streets-v12'
+    },
     nurseryTeam: {
       emails: {
         Arjasari: Arjasari || [],
