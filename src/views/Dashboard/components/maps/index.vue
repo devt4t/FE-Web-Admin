@@ -6,7 +6,7 @@
           <v-badge content="Develop" color="warning">Maps</v-badge>
           <v-divider class="mx-2"></v-divider>
           <small>
-            {{ showMapsOptions }}
+            {{ showMapsOptions  }}
           </small>
       </v-card-title>
       <v-card-text style="position: relative;">
@@ -50,8 +50,7 @@
   </div>
 </template>
 <script>
-import axios from "axios";
-import JSZip from "jszip"
+import axios from "axios"
 
 // Create a popup, but don't add it to the map yet.
 const popup = new mapboxgl.Popup({
@@ -86,12 +85,13 @@ export default {
       geojson: {},
       key: 111,
       layerId: 0,
+      hoveredStateId: 0,
       layerStyle: {
         outline: {
           color: '#000000'
         },
         fill: {
-          color: '#ff0000'
+          color: '#f06800'
         },
       },
       popup: {
@@ -111,9 +111,9 @@ export default {
       try {
         // get maps data every options changed
         this.maps.loading.show = true
-        // setTimeout(() => {
-        //   this.getMapsData()
-        // }, 1000);
+        setTimeout(() => {
+          this.getMapsData()
+        }, 1000)
         // set return data
         const options = this.options
         const user = this.user()
@@ -127,6 +127,7 @@ export default {
         return message 
       } catch (err) {
         this.catchingError(err)
+        return '-'
       }
     },
   },
@@ -140,6 +141,7 @@ export default {
     // maps
     async initializeMap() {
       try {
+        this.maps.loading.show = true
         const options = this.maps
         this.maps.model = new mapboxgl.Map({
           container: 'mapbox', // container ID
@@ -150,7 +152,7 @@ export default {
           projection: 'globe'
         });
         const map = this.maps.model
-        map.on('style.load', () => {
+        map.on('load', () => {
           map.addSource('mapbox-dem', {
             'type': 'raster-dem',
             'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -170,18 +172,21 @@ export default {
           map.addControl(new mapboxgl.NavigationControl());
           map.flyTo({zoom: 10, duration: 12 * 1000})
         });
-      } catch (err) {this.catchingError(err)}
+      } catch (err) {this.catchingError(err)} finally {
+        this.maps.loading.show = false
+      }
     },
     async getMapsData() {
       try {
         this.maps.loading.show = true
         this.maps.loading.text = 'Getting maps data...'
-        const params = new URLSearchParams({
-          program_year: this.options.programYear,
-          source: this.options.source.model,
-          province: this.options.province.model
-        })
+        const options = this.options;
         const user = this.user()
+        const params = new URLSearchParams({
+          program_year: options.programYear,
+          source: options.source.model,
+          province: options.province.model
+        })
         if (user.ff.ff) if (user.ff.ff != '-') {
           params.set('ff', user.ff.ff.toString())
         }
@@ -191,16 +196,6 @@ export default {
         // if (listLahan.length > 0) this.maps.center = [listLahan[0].latitude, listLahan[0].longitude]
         
         this.maps.loading.text = 'Getting polygon data...'
-        // const geojsonUrl = "https://rawgit.com/gregoiredavid/france-geojson/master/regions/pays-de-la-loire/communes-pays-de-la-loire.geojson"
-        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson"
-        // // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/SubDAS.geojson"
-        // // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/MU-Ciminyak-1.geojson"
-        // const response = await fetch(geojsonUrl)
-        // const data = await response.json();
-        // // console.log(data)
-        // this.maps.geojson = data;
-        
-        // await this.demoGeoJson()
         await this.demoKMZ()
       } catch (err) {this.catchingError(err)} finally {
         this.maps.loading.show = false
@@ -208,159 +203,36 @@ export default {
       }
     },
     // demo
-    async demoGeoJson() {
-      try {
-        const map = this.maps.model
-        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/nor2.geojson"
-        const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/maps/testing/Target_Area.geojson"
-        // const geojsonUrl = "https://t4tadmin.kolaborasikproject.com/geojson/reals/MU-Ciminyak-1.geojson"
-        // const geojsonUrl = "https://docs.mapbox.com/mapbox-gl-js/assets/us_states.geojson"
-        const responseJson = await fetch(geojsonUrl)
-        const dataJson = await responseJson.json();
-        let code_id = 0
-        await dataJson.features.map(val => {
-          val.id = code_id += 1
-        })
-        console.log(dataJson)
-        
-        // Add a data source containing GeoJSON data.
-        await map.addSource('maine', {
-          'type': 'geojson',
-          'data': dataJson
-        });
-        // await map.flyTo({ center: [-100.486052, 37.830348]})
-          
-        // Add a new layer to visualize the polygon.
-        await map.addLayer({
-          'id': 'maine-fills',
-          'type': 'fill',
-          'source': 'maine', // reference the data source
-          'layout': {},
-          'paint': {
-            'fill-color': '#0080ff', // blue color fill
-            'fill-opacity': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              1,
-              0.5
-            ]
-          }
-        });
-        
-        // Add a black outline around the polygon.
-        await map.addLayer({
-          'id': 'outline',
-          'type': 'line',
-          'source': 'maine',
-          'layout': {},
-          'paint': {
-            'line-color': '#000',
-            'line-width': 2
-            }
-          });
-          
-          // Center the map on the coordinates of any clicked circle from the 'circle' layer.
-          map.on('click', 'maine-fills', (e) => {
-            const coor = e.lngLat
-            console.log(coor)
-            map.flyTo({
-              center: [coor.lng, coor.lat],
-              zoom: 10
-            });
-          });
-          // When the user moves their mouse over the state-fill layer, we'll update the
-          // feature state for the feature under the mouse.
-          map.on('mousemove', 'maine-fills', (e) => {
-            const coor = e.lngLat
-            if (e.features.length > 0) {
-              if (hoveredStateId !== null) {
-                map.setFeatureState(
-                  { source: 'maine', id: hoveredStateId },
-                  { hover: false }
-                );
-              }
-              hoveredStateId = e.features[0].id;
-              map.setFeatureState(
-                { source: 'maine', id: hoveredStateId },
-                { hover: true }
-              );
-              if (hoveredStateId) {
-                map.getCanvas().style.cursor = 'pointer';
-                // popup
-                map.getCanvas().style.cursor = 'pointer';
-                // Copy coordinates array.
-                const coordinates = [coor.lng, coor.lat]
-                const description = JSON.stringify(e.features[0].properties);
-                // Ensure that if the map is zoomed out such that multiple
-                // copies of the feature are visible, the popup appears
-                // over the copy being pointed to.
-                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                  coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-                }
-                // Populate the popup and set its coordinates
-                // based on the feature found.
-                popup.setLngLat(coordinates).setHTML(description).addTo(map);
-              }
-            }
-          });
-          
-          // When the mouse leaves the state-fill layer, update the feature state of the
-          // previously hovered feature.
-          map.on('mouseleave', 'maine-fills', () => {
-            if (hoveredStateId !== null) {
-              map.setFeatureState(
-                { source: 'maine', id: hoveredStateId },
-                { hover: false }
-              );
-            }
-            hoveredStateId = null;
-            map.getCanvas().style.cursor = '';
-            
-            popup.remove();
-          });
-      } catch (err) {this.catchingError(err)}
-    },
     async demoKMZ() {
       try {
-        this.maps.loading.show = true
         const map = this.maps.model
         const layerStyle = this.maps.layerStyle
         const popupEl = this.maps.popup
         let layerId = this.maps.layerId
+        let hoveredStateId = this.maps.hoveredStateId;
+
+        const sourceId = this._utils.generateRandomString(5) + Date.now()
+        console.log(sourceId)
+        layerStyle.fill.color = this._utils.getRandomColor()
+
         const url = "https://t4tadmin.kolaborasikproject.com/maps/testing/Unit_Management.kml"
         var runLayer = await omnivore.kml(url).on("ready", function() {
           const GeoJsonData = runLayer.toGeoJSON()
+          // console.log(GeoJsonData)
           GeoJsonData.features.map((val, i) => { 
             val.id = layerId += 1
            })
-          // console.log(runLayer.toGeoJSON())
           map.on("load", function() {
-          // simple way to add polygon to map
-          //   map.addLayer({
-          //     id: "runLayer",
-          //     type: "fill",
-          //     source: {
-          //       type: "geojson",
-          //       data: runLayer.toGeoJSON()
-          //     },
-          //     layout: {},
-          //     paint: {
-          //       'fill-color': '#0080ff'
-          //     }
-          //   });
-
-            let hoveredStateId = null;
             // Add a data source containing GeoJSON data.
-            map.addSource('maine', {
+            map.addSource(sourceId, {
               'type': 'geojson',
               'data': GeoJsonData
             });
-
             // Add a new layer to visualize the polygon.
             map.addLayer({
-              'id': 'maine-fills',
+              'id': `${sourceId}-fills`,
               'type': 'fill',
-              'source': 'maine', // reference the data source
+              'source': sourceId, // reference the data source
               'layout': {},
               'paint': {
                 'fill-color': layerStyle.fill.color, // blue color fill
@@ -374,48 +246,47 @@ export default {
             });
             // Add a black outline around the polygon.
             map.addLayer({
-              'id': 'outline',
+              'id': `${sourceId}-outline`,
               'type': 'line',
-              'source': 'maine',
+              'source': sourceId,
               'layout': {},
               'paint': {
                 'line-color': layerStyle.outline.color,
                 'line-width': 2
               }
             });
-            // Center the map on the coordinates of any clicked circle from the 'circle' layer.
-            map.on('click', 'maine-fills', (e) => {
+            // on click event
+            map.on('click', `${sourceId}-fills`, (e) => {
               const coor = e.lngLat
               const mapZoom = map.getZoom()
               setTimeout(() => {
                 popupEl.model = true
-              }, 200);
-              // console.log(mapZoom)
-              map.flyTo({
-                center: [coor.lng, coor.lat],
-                zoom: mapZoom < 10 ? 10 : mapZoom,
-              });
+              }, 300);
+              // console.log(e)
               if (e.features.length > 0) { 
                 const title = e.features[0].properties.name
                 const description = e.features[0].properties.description
                 popupEl.content.title = title
                 popupEl.content.description = description
+                map.flyTo({
+                  center: [coor.lng, coor.lat],
+                  zoom: mapZoom < 10 ? 10 : mapZoom,
+                });
               }
             });
-            // When the user moves their mouse over the state-fill layer, we'll update the
-            // feature state for the feature under the mouse.
-            map.on('mousemove', 'maine-fills', (e) => {
+            // mousemove event
+            map.on('mousemove', `${sourceId}-fills`, (e) => {
               const coor = e.lngLat
               if (e.features.length > 0) {
                 if (hoveredStateId !== null) {
                   map.setFeatureState(
-                    { source: 'maine', id: hoveredStateId },
+                    { source: sourceId, id: hoveredStateId },
                     { hover: false }
                   );
                 }
                 hoveredStateId = e.features[0].id;
                 map.setFeatureState(
-                  { source: 'maine', id: hoveredStateId },
+                  { source: sourceId, id: hoveredStateId },
                   { hover: true }
                 );
                 if (hoveredStateId) {
@@ -437,12 +308,11 @@ export default {
                 }
               }
             });
-            // When the mouse leaves the state-fill layer, update the feature state of the
-            // previously hovered feature.
-            map.on('mouseleave', 'maine-fills', () => {
+            // mouseleave event
+            map.on('mouseleave', `${sourceId}-fills`, () => {
               if (hoveredStateId !== null) {
                 map.setFeatureState(
-                  { source: 'maine', id: hoveredStateId },
+                  { source: sourceId, id: hoveredStateId },
                   { hover: false }
                 );
               }
@@ -453,24 +323,18 @@ export default {
             });
           })
         });
-      } catch (err) {this.catchingError(err)} finally {
-        this.maps.loading.show = false
-      }
+      } catch (err) {this.catchingError(err)}
     },
     async getMapsDetail(properties) {
       alert(properties)
     },
     // Utilities
     catchingError(error) {
-        if (error.response) {
-          if (typeof error.response.status != undefined) {
-              if (error.response.status == 401) {
-                  localStorage.removeItem("token")
-                  this.$router.push("/")
-              }
-          }
-        }
-        console.log(error)
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        this.$router.push("/");
+      }
+      console.log(error);
     },
   },
 }

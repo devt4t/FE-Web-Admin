@@ -10,6 +10,7 @@ import VueNumber from 'vue-number-animation'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Vue2Editor from "vue2-editor";
+import './utils/index'
 
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
