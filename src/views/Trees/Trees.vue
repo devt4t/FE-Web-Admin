@@ -6,6 +6,7 @@
       :items="itemsbr"
       divider=">"
       large
+      data-aos="fade-right"
     ></v-breadcrumbs>
     <!-- Modal -->
     <!-- Detail -->
@@ -467,7 +468,9 @@
     </v-dialog>
     <!-- END:Modal -->
     
-    <v-container fluid>
+    <v-container fluid
+      data-aos="fade-up"
+      data-aos-delay="200">
       <!-- Expansions Panels -->
       <v-expansion-panels multiple v-model="expansions.model">
         <!-- Main Tree Section -->

@@ -17,6 +17,8 @@
       :items="dataobject"
       :search="search"
       class="rounded-xl elevation-6 mx-3 pa-1"
+      @update:page="($p) => page = $p"
+      @update:items-per-page="($p) => itemsPerPage = $p"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
@@ -24,12 +26,16 @@
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            placeholder="Search..."
             hide-details
+            dense
+            rounded
+            outlined
+            color="green"
+            style="max-width: 350px;"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn dark class="mb-2" @click="showAddModal()" color="green" rounded>
+          <v-divider class="mx-2"></v-divider>
+          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px" content-class="rounded-xl">
@@ -120,6 +126,9 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.no="{ index }">
+        {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
           mdi-pencil
@@ -144,6 +153,8 @@ import axios from "axios";
 export default {
   name: "Vilage",
   data: () => ({
+    page: 1,
+    itemsPerPage: 10,
     itemsbr: [
       {
         text: "Utilities",
@@ -164,7 +175,7 @@ export default {
     authtoken: "",
     BaseUrlGet: "",
     headers: [
-      { text: "ID", value: "id" },
+      { text: "No", value: "no", width: '70' },
       { text: "Desa", value: "namaDesa" },
       { text: "Kode_Desa", value: "kode_desa" },
       { text: "Kecamatan", value: "namaKecamatan" },

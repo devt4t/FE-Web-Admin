@@ -292,7 +292,7 @@ export default {
         }
 
         var rslt = itemroutecheck.includes(this.$route.name);
-        var exceptionPage = ['SeedlingChangeRequest', 'GekoManual']
+        var exceptionPage = ['SeedlingChangeRequest', 'GekoManual', 'ITPlayground']
         const checkExceptionPage = exceptionPage.includes(this.$route.name)
         // console.log(this.$route.name);
         // console.log(itemroutecheck);
