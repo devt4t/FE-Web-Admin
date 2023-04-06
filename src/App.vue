@@ -225,13 +225,19 @@
     <!-- loading overlay -->
     <v-overlay :value="$store.state.loadingOverlay">
       <div class="d-flex flex-column align-center justify-center">
-        <v-progress-circular
+        <!-- <v-progress-circular
             indeterminate
             color="white"
             size="64"
             data-aos="zoom-in"
             data-aos-duration="1000"
-        ></v-progress-circular>
+        ></v-progress-circular> -->
+        <LottieAnimation
+          ref="anim"
+          :animationData="lottie.data.loading"
+          :loop="true"
+          style="height: 64px;"
+        />
         <p class="mt-2 mb-0" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="800" v-if="$store.state.loadingOverlayText" v-html="$store.state.loadingOverlayText"></p>
       </div>
     </v-overlay>
@@ -239,14 +245,13 @@
     <!-- Maintenance Overlay -->
     <v-overlay :value="$store.state.maintenanceOverlay">
       <div class="d-flex flex-column align-center position-relative">
-        <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="" data-aos="zoom-in">
-        <h4 class="white--text mt-3 position-absolute" style="position: absolute;bottom: 40px;" data-aos="zoom-in" data-aos-delay="200">GEKO Maintenance...
-          <v-progress-circular
-              indeterminate
-              color="white"
-              size="16"
-          ></v-progress-circular>
-        </h4>
+        <!-- <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="" data-aos="zoom-in"> -->
+        <LottieAnimation
+          ref="anim2"
+          :animationData="lottie.data.maintenance"
+          :loop="true"
+          style="width: 550px;max-width: 100%;"
+        />
       </div>
     </v-overlay>
 
@@ -262,8 +267,14 @@
 
 <script>
 import axios from "axios";
+import treeAnimation from '@/assets/lottie/tree.json'
+import maintenanceAnimation from '@/assets/lottie/maintenance.json'
+import LottieAnimation from 'lottie-web-vue'
 
 export default {
+  components: {
+    LottieAnimation
+  },
   data: () => ({
     drawer: null,
     nameadmin: "admin web",
@@ -277,7 +288,13 @@ export default {
     authtoken: "",
     listValMenu: [],
     logoutvalue: false,
-    isFullScreen: false
+    isFullScreen: false,
+    lottie: {
+      data: {
+        loading: treeAnimation,
+        maintenance: maintenanceAnimation
+      }
+    }
   }),
   computed: {
     isLogin() {

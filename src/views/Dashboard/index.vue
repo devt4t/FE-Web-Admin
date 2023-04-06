@@ -84,6 +84,13 @@
                     :src="require('@/assets/female-investors.gif')"
                     style="position: absolute;top: -10px;"
                   ></v-img>
+                  
+                  <!-- <LottieAnimation
+                    ref="anim"
+                    :animationData="lottie.planting"
+                    :loop="true"
+                    style="position: absolute;top: -10px;max-width: 200px;"
+                  /> -->
                 </v-row>
               </v-col>
             </v-row>
@@ -175,14 +182,20 @@
 <script>
 import axios from "axios";
 import DMap from './components/maps'
+import LottieAnimation from 'lottie-web-vue'
+import plantingAnimation from '@/assets/lottie/planting.json'
 
 export default {
   name: "Dashboard",
   components: {
-    DMap
+    DMap,
+    LottieAnimation
   },
   data: () => ({
     loading: false,
+    lottie: {
+      planting: plantingAnimation
+    },
     maps:{
       attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       listMarker: [],
@@ -276,7 +289,6 @@ export default {
     // console.log(this.User)
     if (this.User.ff.ff.length > 0) this.options.province.show = false
     await this.initialize();
-
     // this.$store.state.maintenanceOverlay = true
   },
   destroyed() {
