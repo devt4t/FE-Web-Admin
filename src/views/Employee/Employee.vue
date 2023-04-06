@@ -16,26 +16,26 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      @update:page="($p) => page = $p"
+      @update:items-per-page="($p) => itemsPerPage = $p"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            placeholder="Search..."
             hide-details
-          ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn
-            v-if="RoleAccesCRUDShow == true"
-            dark
-            class="mb-2"
-            @click="showAddModal()"
+            dense
+            rounded
+            outlined
             color="green"
-          >
+            style="max-width: 350px;"
+          ></v-text-field>
+          <v-divider class="mx-2"></v-divider>
+          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
           <!-- Modal Add Edit -->
@@ -497,6 +497,9 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.no="{ index }">
+        {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-3" @click="showDetail(item)" small color="info">
           mdi-information-outline
@@ -535,6 +538,8 @@ import axios from "axios";
 export default {
   name: "Employee",
   data: () => ({
+    page: 1,
+    itemsPerPage: 10,
     menu2: "",
     valid: true,
     datepicker: new Date().toISOString().substr(0, 10),
@@ -565,6 +570,7 @@ export default {
       (value) => (value && value.length >= 1) || "Min 1 characters",
     ],
     headers: [
+      { text: "No", value: "no", width: '70' },
       // { text: "ID", value: "id" },
       { text: "NIK", value: "nik" },
       { text: "Nama Emp", value: "name" },

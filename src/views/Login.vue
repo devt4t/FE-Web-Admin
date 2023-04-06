@@ -14,9 +14,12 @@
         class="mx-auto px-5 pb-2 rounded-xl"
         style="margin-top: 50px"
         elevation="7"
+        data-aos="zoom-in"
       >
         <v-row align="center" justify="center">
           <v-img
+            data-aos="zoom-in"
+            data-aos-delay="200"
             max-width="250"
             src="/images/Logo_Login.png"
             style="margin-top: 5px"
@@ -24,52 +27,39 @@
         </v-row>
         <!-- <v-card-title>LOGIN PAGE</v-card-title> -->
         <v-card-text class="pt-1 pb-0 px-3">
-          <v-text-field
-            label="Email"
-            name="email"
-            v-model="email"
-            placeholder="Masukkan Email"
-            prepend-inner-icon="mdi-email"
-            filled
-            required
-            rounded
-            dense
-            v-on:keyup="submitLogin"
-          ></v-text-field>
-          <v-text-field
-            label="Password"
-            v-model="password"
-            placeholder="Masukkan Password"
-            :type="showPassword ? 'text' : 'password'"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append="showPassword = !showPassword"
-            prepend-inner-icon="mdi-lock"
-            filled
-            required
-            rounded
-            dense
-            v-on:keyup="submitLogin"
-          ></v-text-field>
-          <!-- <v-text-field
-            v-model="email"
-            label="Email"
-            prepend-icon="mdi-account-circle"
-            v-on:keyup="submitLogin"
-            :rules="[(v) => !!v || 'Field is required']"
-          />
-          <v-text-field
-            v-model="password"
-            label="Password"
-            :type="showPassword ? 'text' : 'password'"
-            prepend-icon="mdi-lock"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append="showPassword = !showPassword"
-            v-on:keyup="submitLogin"
-            :rules="[(v) => !!v || 'Field is required']"
-          /> -->
+          <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">
+            <v-text-field
+              label="Email"
+              name="email"
+              v-model="email"
+              placeholder="Masukkan Email"
+              prepend-inner-icon="mdi-email"
+              filled
+              required
+              rounded
+              dense
+              v-on:keyup="submitLogin"
+            ></v-text-field>
+          </div>
+          <div data-aos="fade-right"  data-aos-duration="500" data-aos-delay="500">
+            <v-text-field
+              label="Password"
+              v-model="password"
+              placeholder="Masukkan Password"
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              @click:append="showPassword = !showPassword"
+              prepend-inner-icon="mdi-lock"
+              filled
+              required
+              rounded
+              dense
+              v-on:keyup="submitLogin"
+            ></v-text-field>
+          </div>
         </v-card-text>
 
-        <v-card-actions class="pt-0 pb-2 px-3 mb-4">
+        <v-card-actions class="pt-0 pb-2 px-3 mb-4" data-aos="zoom-in" data-aos-delay="700">
           <v-btn
             block
             large

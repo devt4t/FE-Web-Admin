@@ -47,6 +47,21 @@
                                     class="mx-auto mx-lg-2 mb-2 mb-lg-0"
                                     style="max-width: 200px"
                                 ></v-select>
+                                <!-- Nursery -->
+                                <v-select
+                                    color="success"
+                                    item-color="success"
+                                    v-model="tables.truck.nursery.model"
+                                    :items="tables.truck.nursery.options"
+                                    outlined
+                                    dense
+                                    hide-details
+                                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                    rounded
+                                    label="Nursery"
+                                    class="mx-auto mx-lg-2 mb-2 mb-lg-0"
+                                    style="max-width: 200px"
+                                ></v-select>
                                 <!-- Search Input -->
                                 <v-text-field
                                     v-model="tables.truck.search"
@@ -215,6 +230,10 @@ export default {
         tables: {
             truck: {
                 programYear: "2022",
+                nursery: {
+                    model: 'All',
+                    options: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati']
+                },
                 items: [],
                 headers: [
                     { text: "Nursery", value: "nursery" },

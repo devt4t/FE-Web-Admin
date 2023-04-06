@@ -1,5 +1,24 @@
 import Vue from "vue";
 const utils = {
+    // T4T Utils
+    // Get type sppt lahan
+    getTypeSpptLahan(type) {
+        let res = '-'
+        if (type == 0) {
+            res = "Pribadi";
+        }
+        if (type == 1) {
+            res = "Keterkaitan Keluarga";
+        }
+        if (type == 2) {
+            res = "Umum";
+        }
+        if (type == 3) {
+            res = "Lain-lain";
+        }
+        return res
+    },
+    // Global Utils
     // Capitalize first letter
     capitalizeFirstLetter (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)

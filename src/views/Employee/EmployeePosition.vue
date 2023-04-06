@@ -16,22 +16,25 @@
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      @update:page="($p) => page = $p"
+      @update:items-per-page="($p) => itemsPerPage = $p"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            placeholder="Search..."
             hide-details
+            dense
+            rounded
+            outlined
+            color="green"
+            style="max-width: 350px;"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <!-- <v-btn dark class="mb-2" @click="showAddModal()" color="green">
-            <v-icon small>mdi-plus</v-icon> Add Item
-          </v-btn> -->
+          <v-divider class="ml-2"></v-divider>
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
@@ -73,6 +76,9 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.no="{ index }">
+        {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
           mdi-pencil
@@ -97,6 +103,8 @@ import axios from "axios";
 export default {
   name: "Employee",
   data: () => ({
+    page: 1,
+    itemsPerPage: 10,
     itemsbr: [
       {
         text: "Employee",
@@ -116,6 +124,7 @@ export default {
     authtoken: "",
     BaseUrlGet: "",
     headers: [
+      { text: "No", value: "no", width: '70' },
       { text: "NIK", value: "nik" },
       { text: "Nama Emp", value: "name" },
       { text: "Position Group", value: "position_group" },
