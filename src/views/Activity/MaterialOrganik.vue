@@ -304,7 +304,7 @@
                             class="mt-2"
                             rounded
                             small
-                            :disabled="item.status"
+                            :disabled="item.status == 1"
                             @click="dialogs.confirmation.show = true;dialogs.confirmation.title = 'Ar u sure want to PERMANENT DELETE this data?';dialogs.confirmation.okText = 'Delete';dialogs.confirmation.model = item.organic_no"
                         >
                             <v-icon small class="mr-1">mdi-delete</v-icon>
