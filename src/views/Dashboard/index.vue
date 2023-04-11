@@ -1,103 +1,107 @@
 <template>
   <v-container class="mt-5 pl-3 pl-lg-6" fluid>
     <!-- Greetings -->
-    <v-row style="margin-top: -15px">
-      <v-col cols="12" md="12" data-aos="fade-down" >
-        <v-card rounded="xl" :dark="$store.state.theme == 'dark'">
-          <v-card-title class="fontall" v-if="time.isMorning()">
-            Good Morning, {{ User.name || '-' }}
-          </v-card-title>
-          <v-card-title class="fontall" v-else>
-            Good Afternoon, {{ User.name || '-' }}
-          </v-card-title>
-          <v-card-subtitle>
-            it's
-            <span v-if="time.date">
-              {{ time.date || '-' }}
-            </span>
-            <v-progress-circular v-else
-                indeterminate
-                color="white"
-                size="15"
-            ></v-progress-circular>
-          </v-card-subtitle>
-          <v-card-text>
-            <v-row>
-              <v-col cols="9" class="d-flex flex-column flex-lg-row align-items-center justify-content-center">
-                <v-select
-                  dense
-                  color="success"
-                  item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
-                  hide-details
-                  rounded
-                  v-model="options.programYear"
-                  :disabled="loading"
-                  :items="$store.state.programYear.options"
-                  label="Program Year"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  outlined
-                  class="mt-2 mr-1"
-                  style="max-width: 175px;"
-                  @change="initialize"
-                ></v-select>
-                <v-autocomplete
-                  dense
-                  color="success"
-                  item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
-                  hide-details
-                  rounded
-                  v-model="options.source.model"
-                  :items="options.source.options"
-                  :disabled="loading"
-                  label="Source Data"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  outlined
-                  class="mt-2 mx-1"
-                  @change="initialize"
-                  style="max-width: 250px;"
-                ></v-autocomplete>
-                <v-autocomplete
-                  v-if="options.province.show"
-                  dense
-                  color="success"
-                  item-color="success"
-                  :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
-                  hide-details
-                  rounded
-                  v-model="options.province.model"
-                  :items="options.province.options"
-                  :disabled="loading"
-                  label="Province"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  outlined
-                  class="mt-2 ml-1"
-                  @change="initialize"
-                  style="max-width: 250px;"
-                ></v-autocomplete>
-              </v-col>
-              <v-col cols="3" class="d-none d-md-block">
-                <v-row align="center" justify="center" class="mb-0">
-                  <v-img
-                    max-width="170px"
-                    :src="require('@/assets/female-investors.gif')"
-                    style="position: absolute;top: -10px;"
-                  ></v-img>
-                  
-                  <!-- <LottieAnimation
-                    ref="anim"
-                    :animationData="lottie.planting"
-                    :loop="true"
-                    style="position: absolute;top: -10px;max-width: 200px;"
-                  /> -->
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <div data-aos="fade-down">
+      <v-card  rounded="xl" :dark="$store.state.theme == 'dark'">
+        <v-card-text>
+          <v-row style="margin-top: -15px" class="flex-column-reverse flex-lg-row">
+            <v-col cols="12" md="12" lg="9">
+              <v-card class="transparent elevation-0">
+                <v-card-title class="fontall" v-if="time.isMorning()">
+                  Good Morning, {{ User.name || '-' }}
+                </v-card-title>
+                <v-card-title class="fontall" v-else>
+                  Good Afternoon, {{ User.name || '-' }}
+                </v-card-title>
+                <v-card-subtitle>
+                  it's
+                  <span v-if="time.date">
+                    {{ time.date || '-' }}
+                  </span>
+                  <v-progress-circular v-else
+                      indeterminate
+                      color="white"
+                      size="15"
+                  ></v-progress-circular>
+                </v-card-subtitle>
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12" class="d-flex flex-column flex-lg-row align-items-center justify-content-center">
+                      <v-select
+                        dense
+                        color="success"
+                        item-color="success"
+                        :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
+                        hide-details
+                        rounded
+                        v-model="options.programYear"
+                        :disabled="loading"
+                        :items="$store.state.programYear.options"
+                        label="Program Year"
+                        :rules="[(v) => !!v || 'Field is required']"
+                        outlined
+                        class="mt-2 mr-1"
+                        style="max-width: 175px;"
+                        @change="initialize"
+                      ></v-select>
+                      <v-autocomplete
+                        dense
+                        color="success"
+                        item-color="success"
+                        :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
+                        hide-details
+                        rounded
+                        v-model="options.source.model"
+                        :items="options.source.options"
+                        :disabled="loading"
+                        label="Source Data"
+                        :rules="[(v) => !!v || 'Field is required']"
+                        outlined
+                        class="mt-2 mx-1"
+                        @change="initialize"
+                        style="max-width: 250px;"
+                      ></v-autocomplete>
+                      <v-autocomplete
+                        v-if="options.province.show"
+                        dense
+                        color="success"
+                        item-color="success"
+                        :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
+                        hide-details
+                        rounded
+                        v-model="options.province.model"
+                        :items="options.province.options"
+                        :disabled="loading"
+                        label="Province"
+                        :rules="[(v) => !!v || 'Field is required']"
+                        outlined
+                        class="mt-2 ml-1"
+                        @change="initialize"
+                        style="max-width: 250px;"
+                      ></v-autocomplete>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+            <v-col cols="12" lg="3" class="pa-0">
+              <v-img
+                max-width="170px"
+                :src="require('@/assets/female-investors.gif')"
+              ></v-img>
+              
+              <!-- <LottieAnimation
+                ref="anim"
+                :animationData="lottie.planting"
+                :loop="true"
+                :key="lottie.key"
+                style="height: 175px;padding: 0px;"
+              /> -->
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </div>
     <!-- Manual Books -->
     <v-card class="mt-2 rounded-xl" dark data-aos="fade-down" data-aos-delay="350">
       <v-card-text class="">
@@ -184,6 +188,11 @@ import axios from "axios";
 import DMap from './components/maps'
 import LottieAnimation from 'lottie-web-vue'
 import plantingAnimation from '@/assets/lottie/planting.json'
+import plant1 from '@/assets/lottie/plant-1.json'
+import plant2 from '@/assets/lottie/plant-2.json'
+import plant3 from '@/assets/lottie/plant-3.json'
+import plant4 from '@/assets/lottie/plant-4.json'
+import moneyTree from '@/assets/lottie/money-tree.json'
 
 export default {
   name: "Dashboard",
@@ -194,7 +203,8 @@ export default {
   data: () => ({
     loading: false,
     lottie: {
-      planting: plantingAnimation
+      planting: moneyTree,
+      key: 1101
     },
     maps:{
       attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -327,6 +337,7 @@ export default {
         if (this.User.ff.ff) {
           params.set('ff', this.User.ff.ff.toString())
         }
+        await this.setDashboardAnimation(this.options.source.model)
         const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardAll?${params}`), this.$store.state.apiConfig).then(res => {return res.data.data.result})
         const tdEl = this.totalData
         tdEl.data1.Count = await totalData.total.ff
@@ -368,6 +379,12 @@ export default {
         }
         console.log(error)
     },
+    async setDashboardAnimation(source) {
+      if (source == 'Penilikan Lubang') this.lottie.planting = await plant1;
+      else this.lottie.planting = await moneyTree
+      
+      this.lottie.key += 1; 
+    }
   },
 };
 </script>

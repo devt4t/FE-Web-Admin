@@ -448,7 +448,7 @@
                               <template v-slot:activator="{ on, attrs }">
                                 <v-avatar v-bind="attrs" v-on="on" color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = item;preview.petani.modal = true;}" >
                                   <img
-                                    :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
+                                    :src="`${$store.state.apiUrlImage}Uploads/fphoto_${item.nik}.jpg`"
                                     :alt="`Foto petani ${item.nama}`"
                                   >
                                 </v-avatar>
@@ -498,7 +498,7 @@
                         >
                         <template v-slot:item="data">
                           <v-list-item-avatar>
-                            <img :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${data.item.nik}.jpg`">
+                            <img :src="`${$store.state.apiUrlImage}Uploads/fphoto_${data.item.nik}.jpg`">
                           </v-list-item-avatar>
                           <v-list-item-content>
                             <v-list-item-title v-html="data.item.nama"></v-list-item-title>
@@ -931,7 +931,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-avatar color="secondary" size="56" class="my-1 cursor-pointer" @click="() => {preview.petani.data = {kode: item.farmer_no, nik: item.nik, nama: item.name};preview.petani.modal = true;}" v-bind="attrs" v-on="on" >
                             <img
-                              :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${item.nik}.jpg`"
+                              :src="`${$store.state.apiUrlImage}Uploads/fphoto_${item.nik}.jpg`"
                               :alt="`Foto petani ${item.nama}`"
                             >
                           </v-avatar>
@@ -1047,8 +1047,8 @@
             <v-container>
               <v-img
                 class="w-100 rounded-lg"
-                :lazy-src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.petani.data.nik}.jpg`"
-                :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.petani.data.nik}.jpg`"
+                :lazy-src="`${$store.state.apiUrlImage}Uploads/fphoto_${preview.petani.data.nik}.jpg`"
+                :src="`${$store.state.apiUrlImage}Uploads/fphoto_${preview.petani.data.nik}.jpg`"
               ></v-img>
             </v-container>
           </v-card-text>
@@ -1150,8 +1150,8 @@
                 <v-col lg="6">
                   <v-img
                     class="w-100 rounded-lg"
-                    :lazy-src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.addParticipant.data.nik}.jpg`"
-                    :src="`https://t4tadmin.kolaborasikproject.com/Uploads/fphoto_${preview.addParticipant.data.nik}.jpg`"
+                    :lazy-src="`${$store.state.apiUrlImage}Uploads/fphoto_${preview.addParticipant.data.nik}.jpg`"
+                    :src="`${$store.state.apiUrlImage}Uploads/fphoto_${preview.addParticipant.data.nik}.jpg`"
                   ></v-img>
                 </v-col>
               </v-row>
@@ -1385,8 +1385,8 @@ export default {
     absensiPreview: '',
     absensiPreview2: '',
     dokumentasiPreview: '',
-    absensiFTUrl: 'https://t4tadmin.kolaborasikproject.com/farmer-training/absensi-images/',
-    dokumentasiFTUrl: 'https://t4tadmin.kolaborasikproject.com/farmer-training/documentation-photos/',
+    absensiFTUrl: '${$store.state.apiUrlImage}farmer-training/absensi-images/',
+    dokumentasiFTUrl: '${$store.state.apiUrlImage}farmer-training/documentation-photos/',
 
     tables: {
       farmerListDetailModal: {
@@ -2004,7 +2004,7 @@ export default {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
       this.loadsave = true
-      this.overlay = true
+      this.$store.state.loadingOverlay = true;this.$store.state.loadingOverlayText = 'Loading...';
       this.dialogAddonly = false
       this.showedAbsensi2 = false
       // insert UM FC FF data
@@ -2074,13 +2074,13 @@ export default {
         this.sessionEnd(error)
       } finally {
         this.loadsave = false
-        this.overlay = false
+        this.$store.state.loadingOverlay = false
         this.close()
       }
     },
 
     async showDetailFarmerTraining(training_no) {
-      this.overlay = true
+      this.$store.state.loadingOverlay = true;this.$store.state.loadingOverlayText = 'Loading...';
       try {
         const response = await axios.get(
           this.BaseUrlGet + "DetailFarmerTraining?training_no=" + training_no,
@@ -2108,7 +2108,7 @@ export default {
         this.sessionEnd(error)
         console.log(error.response.data.data);
       } finally {
-        this.overlay = false
+        this.$store.state.loadingOverlay = false
       }
     },
 
@@ -2311,7 +2311,7 @@ export default {
       this.dialogFilterEmp = false;
     },
     async showAddModal() {
-      this.overlay = true
+      this.$store.state.loadingOverlay = true;this.$store.state.loadingOverlayText = 'Loading...';
       if (this.$refs.form) {
         this.$refs.form.reset();
       }
@@ -2327,7 +2327,7 @@ export default {
         await this.getOrganicMaterialsOption()
       }
       
-      this.overlay = false
+      this.$store.state.loadingOverlay = false
       this.formTitle = "Form Pelatihan Petani";
       this.dialogAddonly = true;
 
@@ -2354,7 +2354,7 @@ export default {
 
     async deleteItemConfirm() {
       this.dialogDelete = false
-      this.overlay = true
+      this.$store.state.loadingOverlay = true;this.$store.state.loadingOverlayText = 'Loading...';
       try {
         const response = await axios.post(
           this.BaseUrlGet + 'DeleteFarmerTraining',
@@ -2379,7 +2379,7 @@ export default {
         console.log(error);
       } finally {
         this.idDelete = null
-        this.overlay = false
+        this.$store.state.loadingOverlay = false
       }
     },
     close() {
@@ -2405,7 +2405,7 @@ export default {
     async deleteExternalAbsensiImage(imagesName) {
       try {
         await axios.post(
-          'https://t4tadmin.kolaborasikproject.com/farmer-training/delete.php', this.generateFormData({
+          '${$store.state.apiUrlImage}farmer-training/delete.php', this.generateFormData({
             nama: imagesName,
           }),
           {

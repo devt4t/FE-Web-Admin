@@ -1048,8 +1048,8 @@
                     lazy-src=""
                     class="rounded-lg cursor-pointer elevation-5"
                     transition="fade-transition"
-                    :src="(`https://t4tadmin.kolaborasikproject.com/${defaultItem.signature}`)"
-                    @click="() => {preview.signature.url = (`https://t4tadmin.kolaborasikproject.com/${defaultItem.signature}`); preview.signature.modal = true}"
+                    :src="(`${$store.state.apiUrlImage}${defaultItem.signature}`)"
+                    @click="() => {preview.signature.url = (`${$store.state.apiUrlImage}${defaultItem.signature}`); preview.signature.modal = true}"
                   >
                     <template v-slot:placeholder>
                       <v-skeleton-loader
@@ -1461,6 +1461,12 @@
         <span v-if="loadtable == false">
           {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
         </span>
+        <v-progress-circular
+          v-else
+          indeterminate
+          color="green"
+          size="20"
+        ></v-progress-circular>
       </template>
 
       <!-- Luas Lahan kolom -->

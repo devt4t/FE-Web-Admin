@@ -184,6 +184,8 @@
             :loading="tables.main.loading"
             :loading-text="tables.main.loadingText"
             :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
+            @update:page="($p) => tables.main.page = $p"
+            @update:items-per-page="($p) => tables.main.itemsPerPage = $p"
         >
             <!-- Toolbars -->
             <template v-slot:top>
@@ -257,6 +259,10 @@
                         Add
                     </v-btn>
                 </v-row>
+            </template>
+            <!-- No Columns -->
+            <template v-slot:item.no="{ index }">
+                {{ (tables.main.itemsPerPage * (tables.main.page-1)) + index + 1 }}
             </template>
             <!-- Created At Column -->
             <template v-slot:item.created_at="{item}">
@@ -394,7 +400,10 @@ export default {
         },
         tables: {
             main: {
+                page: 1,
+                itemsPerPage: 10,
                 headers: [
+                    { text: "No", value: "no", width: '70' },
                     { text: "Organic No", value: "organic_no" },
                     { text: "Date", value: "created_at" },
                     { text: "FF Name", value: "ff_name" },
@@ -405,6 +414,7 @@ export default {
                     { text: "Actions", value: "actions", align: 'right' },
                 ],
                 headers2: [
+                    { text: "No", value: "no", width: '70' },
                     { text: "MOU No", value: "mou_no" },
                     { text: "Date", value: "created_at" },
                     { text: "PIC T4T", value: "employee_name" },

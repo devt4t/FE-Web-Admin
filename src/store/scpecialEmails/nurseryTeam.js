@@ -21,6 +21,7 @@ const Kebumen = [
 ]
 
 const Pati = [
+    'um_pati@t4t.org',
     'falah.nurwirana@trees4trees.org',
     'rika@trees4trees.org'
 ]

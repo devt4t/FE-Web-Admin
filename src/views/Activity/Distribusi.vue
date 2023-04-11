@@ -1809,7 +1809,7 @@
                         </v-sheet>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
-                <!-- Packing Label Section -->
+                <!-- Print Label & Receipt Section -->
                 <v-expansion-panel v-if="accessModul.packingLabel" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-printer</v-icon> Print Label & Receipt</h3>

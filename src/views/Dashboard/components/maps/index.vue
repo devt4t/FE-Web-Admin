@@ -215,7 +215,7 @@ export default {
         console.log(sourceId)
         layerStyle.fill.color = this._utils.getRandomColor()
 
-        const url = "https://t4tadmin.kolaborasikproject.com/maps/testing/Unit_Management.kml"
+        const url = `${this.$store.state.apiUrlImage}maps/testing/Unit_Management.kml`
         var runLayer = await omnivore.kml(url).on("ready", function() {
           const GeoJsonData = runLayer.toGeoJSON()
           // console.log(GeoJsonData)
