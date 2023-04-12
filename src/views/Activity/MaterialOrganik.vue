@@ -186,6 +186,7 @@
             :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
             @update:page="($p) => tables.main.page = $p"
             @update:items-per-page="($p) => tables.main.itemsPerPage = $p"
+            @current-items="($p) => checkCurrentItems($p)"
         >
             <!-- Toolbars -->
             <template v-slot:top>
@@ -254,6 +255,10 @@
                         style="max-width: 200px"
                     ></v-select>
                     <v-divider class="mx-2"></v-divider>
+                    <v-btn color="green white--text" :disabled="tables.main.loading" rounded class="pl-2" @click="() => exportExcel()">
+                        <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
+                        Export
+                    </v-btn>
                     <v-btn v-if="land_program.model == 'Umum'" color="info" rounded class="pl-2" @click="dialogs.add.show = true">
                         <v-icon class="mr-1">mdi-plus-circle</v-icon>
                         Add
@@ -509,8 +514,28 @@ export default {
                 this.$store.state.loadingOverlay = false
             })
         },
+        checkCurrentItems(items) {
+        },
         dateFormat(date, format) {
             return moment(date).format(format)
+        },
+        async exportExcel() {
+            try {
+                let params = new URLSearchParams({
+                    token: localStorage.getItem('token'),
+                    program_year: this.programYear,
+                    land_program: this.land_program.model,
+                    organic_type: this.organicType
+                })
+
+                if (this.User.ff.ff) if (this.User.ff.ff != '-') if (this.User.ff.ff.length > 0) params.set('ff', this.User.ff.ff.toString())
+
+                const url = this.$store.getters.getApiUrl(`ExportMaterialOrganic?${params}`);
+
+                window.open(url, '_blank');
+            } catch (err) {
+                this.sessionEnd(err)
+            }
         },
         async firstAccessPage() {
             this.programYear = this.$store.state.programYear.model
