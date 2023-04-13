@@ -1239,13 +1239,20 @@
             ></v-select>
             <!-- Refresh Button -->
             <v-btn
-              dark
               @click="initialize()"
-              color="info"
+              color="info white--text"
               rounded
               class="mb-2 mb-lg-0"
+              :disabled="loadtable"
             >
-              <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+              <v-icon v-if="!loadtable" small class="mr-1">mdi-refresh</v-icon> 
+              <v-progress-circular
+                v-else
+                indeterminate
+                size="15"
+                class="mr-1"
+              ></v-progress-circular>
+              Refresh
             </v-btn>
             <v-divider class="d-none d-md-block mx-2"></v-divider>
             <v-text-field
@@ -1264,6 +1271,7 @@
               @click="() => exportToExcel()"
               color="green white--text"
               rounded
+              :disabled="loadtable"
             >
               <v-icon small>mdi-microsoft-excel</v-icon> Export
             </v-btn>
@@ -1273,6 +1281,7 @@
               @click="() => showAddModal()"
               color="info white--text"
               rounded
+              :disabled="loadtable"
             >
               <v-icon small>mdi-plus</v-icon> Add
             </v-btn>
@@ -1280,12 +1289,12 @@
               <v-btn
                 class="d-lg-none mb-16"
                 color="info white--text"
-                dark
                 fixed
                 bottom
                 right
                 fab
                 @click="showAddModal()"
+                :disabled="loadtable"
               >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -1639,13 +1648,17 @@ export default {
       handler(newValue) {
         console.log(newValue)
       }
+    },
+    'tables.programYear': {
+      handler() {
+        this.initialize()
+      }
     }
   },
 
-  mounted() {
-    this.firstAccessPage();
-
-    if (this.User.email != 'iyas.muzani@trees4trees.org') this.$store.state.maintenanceOverlay = true
+  async mounted() {
+    await this.firstAccessPage();
+    // if (this.User.email != 'iyas.muzani@trees4trees.org') this.$store.state.maintenanceOverlay = true
   },
 
   methods: {
@@ -1694,13 +1707,11 @@ export default {
         }
       }
     },
-    async exportExcel() {
+    async exportToExcel() {
       try {
         let params = new URLSearchParams({
           token: localStorage.getItem('token'),
-          program_year: this.programYear,
-          land_program: this.land_program.model,
-          organic_type: this.organicType
+          program_year: this.tables.programYear,
         })
 
         if (this.User.ff.ff) if (this.User.ff.ff != '-') if (this.User.ff.ff.length > 0) params.set('ff', this.User.ff.ff.toString())
@@ -1712,7 +1723,7 @@ export default {
         this.sessionEnd(err)
       }
     },
-    firstAccessPage() {
+    async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
@@ -1722,15 +1733,15 @@ export default {
       this.employee_no = this.User.employee_no;
       this.absensiFTUrl = `${this.$store.state.apiUrlImage}farmer-training/absensi-images/`
       this.dokumentasiFTUrl = `${this.$store.state.apiUrlImage}farmer-training/documentation-photos/`
-      this.dataToStore.program_year = this.$store.state.programYear.model
       this.tables.programYear = this.$store.state.programYear.model
+      this.dataToStore.program_year = this.tables.programYear
       this.dataToStore.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
       // this.fc_no_global = this.User.fc.fc;
-      this.checkRoleAccess();
-      this.initialize();
-      this.getMU();
-      this.getFF();
-      this.getUMAll();
+      await this.checkRoleAccess();
+      await this.initialize();
+      await this.getMU();
+      await this.getFF();
+      await this.getUMAll();
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
     },
 
@@ -2531,7 +2542,7 @@ export default {
         materi_1: 'TR010',
         materi_2: null,
         material_organic: ['ORG22090001', 'ORG22090002'],
-        program_year: new Date().getFullYear().toString(),
+        program_year: this.tables.programYear,
         date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
         farmers: []
       }
