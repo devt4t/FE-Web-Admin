@@ -1221,6 +1221,22 @@
     >
       <template v-slot:top>
           <v-row class="pa-4 align-center px-5 justify-center">
+            <!-- Program Year -->
+            <v-select
+              color="success"
+              item-color="success"
+              v-model="tables.programYear"
+              :items="$store.state.programYear.options"
+              :disabled="loadtable"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Program Year"
+              class="mr-2"
+              style="max-width: 200px"
+            ></v-select>
             <!-- Refresh Button -->
             <v-btn
               dark
@@ -1242,11 +1258,20 @@
               dense
               hide-details
             ></v-text-field>
+            <!-- Export Button -->
             <v-btn
-              dark
+              class="mb-2 mr-1 mt-2 mt-lg-0"
+              @click="() => exportToExcel()"
+              color="green white--text"
+              rounded
+            >
+              <v-icon small>mdi-microsoft-excel</v-icon> Export
+            </v-btn>
+            <!-- Add Button -->
+            <v-btn
               class="mb-2 mr-1 mt-2 mt-lg-0 d-none d-lg-inline-block"
-              @click="showAddModal()"
-              color="green"
+              @click="() => showAddModal()"
+              color="info white--text"
               rounded
             >
               <v-icon small>mdi-plus</v-icon> Add
@@ -1254,7 +1279,7 @@
             <v-fab-transition>
               <v-btn
                 class="d-lg-none mb-16"
-                color="green"
+                color="info white--text"
                 dark
                 fixed
                 bottom
@@ -1385,10 +1410,12 @@ export default {
     absensiPreview: '',
     absensiPreview2: '',
     dokumentasiPreview: '',
-    absensiFTUrl: '${$store.state.apiUrlImage}farmer-training/absensi-images/',
-    dokumentasiFTUrl: '${$store.state.apiUrlImage}farmer-training/documentation-photos/',
+    absensiFTUrl: '',
+    dokumentasiFTUrl: '',
 
     tables: {
+      // filter main table
+      programYear: '',
       farmerListDetailModal: {
         headers: [
         { text: "No", value: "index", width: "15%" },
@@ -1399,7 +1426,7 @@ export default {
         items: [],
         loading: false,
         search: ''
-      }
+      },
     },
 
     options: {
@@ -1615,10 +1642,10 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
     this.firstAccessPage();
-    this.dataToStore.program_year = new Date().getFullYear().toString()
-    this.dataToStore.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
+
+    if (this.User.email != 'iyas.muzani@trees4trees.org') this.$store.state.maintenanceOverlay = true
   },
 
   methods: {
@@ -1633,6 +1660,8 @@ export default {
             this.valueTA +
             "&village=" +
             this.valueVillage +
+            "&program_year=" +
+            this.tables.programYear +
             "&typegetdata=" +
             this.typegetdata +
             "&ff=" +
@@ -1665,6 +1694,24 @@ export default {
         }
       }
     },
+    async exportExcel() {
+      try {
+        let params = new URLSearchParams({
+          token: localStorage.getItem('token'),
+          program_year: this.programYear,
+          land_program: this.land_program.model,
+          organic_type: this.organicType
+        })
+
+        if (this.User.ff.ff) if (this.User.ff.ff != '-') if (this.User.ff.ff.length > 0) params.set('ff', this.User.ff.ff.toString())
+
+        const url = this.$store.getters.getApiUrl(`ExportFarmerTraining?${params}`);
+
+        window.open(url, '_blank');
+      } catch (err) {
+        this.sessionEnd(err)
+      }
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
@@ -1673,6 +1720,11 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
+      this.absensiFTUrl = `${this.$store.state.apiUrlImage}farmer-training/absensi-images/`
+      this.dokumentasiFTUrl = `${this.$store.state.apiUrlImage}farmer-training/documentation-photos/`
+      this.dataToStore.program_year = this.$store.state.programYear.model
+      this.tables.programYear = this.$store.state.programYear.model
+      this.dataToStore.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
       // this.fc_no_global = this.User.fc.fc;
       this.checkRoleAccess();
       this.initialize();
@@ -2405,7 +2457,7 @@ export default {
     async deleteExternalAbsensiImage(imagesName) {
       try {
         await axios.post(
-          '${$store.state.apiUrlImage}farmer-training/delete.php', this.generateFormData({
+          `${this.$store.state.apiUrlImage}farmer-training/delete.php`, this.generateFormData({
             nama: imagesName,
           }),
           {
