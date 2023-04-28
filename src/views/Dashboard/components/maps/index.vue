@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="rounded-xl mt-3 overflow-hidden" data-aos="fade-up" data-aos-delay="1000">
+    <v-card class="rounded-xl mt-3 overflow-hidden">
       <v-card-title>
           <v-icon>mdi-map-legend</v-icon>
           <v-badge content="Develop" color="warning">Maps</v-badge>
@@ -260,14 +260,16 @@ export default {
               const coor = e.lngLat
               const mapZoom = map.getZoom()
               setTimeout(() => {
-                popupEl.model = true
+                popupEl.model = true;
               }, 300);
               // console.log(e)
               if (e.features.length > 0) { 
                 const title = e.features[0].properties.name
                 const description = e.features[0].properties.description
-                popupEl.content.title = title
-                popupEl.content.description = description
+                setTimeout(() => {
+                  popupEl.content.title = title
+                  popupEl.content.description = description
+                }, 300);
                 map.flyTo({
                   center: [coor.lng, coor.lat],
                   zoom: mapZoom < 10 ? 10 : mapZoom,

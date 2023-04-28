@@ -106,9 +106,7 @@
     <v-card class="mt-2 rounded-xl" dark data-aos="fade-down" data-aos-delay="350">
       <v-card-text class="">
         <v-row class="mx-0 align-center">
-          <v-badge content="NEW">
-            <p class="mb-0"><v-icon>mdi-book</v-icon> Manual Book</p>
-          </v-badge>
+          <p class="mb-0"><v-icon>mdi-book</v-icon> Manual Book</p>
           <v-divider class="mx-2"></v-divider>
           <!-- <v-tooltip left content-class="rounded-xl">
             <template v-slot:activator="{on, attrs}">
@@ -179,7 +177,24 @@
     </v-row>
 
     <!-- Maps -->
-    <DMap :options="options" />
+    <DMap :options="options" data-aos="fade-up" data-aos-delay="1000" />
+
+    <!-- Try Cam360 -->
+    <v-card class="rounded-xl mt-3" data-aos="fade-up" >
+      <v-card-title>
+          <v-icon class="mr-1">mdi-panorama-variant</v-icon>
+          <v-badge content="Develop" color="warning">360<sup>o</sup> View</v-badge>
+          <v-divider class="mx-2"></v-divider>
+          <small>
+            {{ showMapsOptions  }}
+          </small>
+      </v-card-title>
+      <v-card-text>
+        <div style="width: 100%;height: 400px;resize: vertical;overflow: hidden;min-height: 300px;max-height: 80vh;">
+          <iframe class="ku-embed rounded-xl" style="width: 100%;height: 100%;" frameborder="0" allow="xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen scrolling="no" src="https://kuula.co/share/NwzZH?logo=1&info=1&fs=1&vr=0&zoom=1&sd=1&initload=0&thumbs=1"></iframe>
+        </div>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 

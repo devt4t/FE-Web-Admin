@@ -584,8 +584,7 @@
               Delete
             </v-btn>
             <v-btn
-              v-if="User.role_group == 'IT' && item.active == 1"
-              dark
+              v-if="item.active == 1"
               rounded
               @click="nonactivateFF(item)"
               color="red white--text"
@@ -599,8 +598,7 @@
               Nonactivate
             </v-btn>
             <v-btn
-              v-if="User.role_group == 'IT' && item.active == 0"
-              dark
+              v-if="item.active == 0"
               rounded
               @click="activateFF(item)"
               color="green white--text"
@@ -614,7 +612,6 @@
               Activate
             </v-btn>
             <v-btn
-              dark
               rounded
               @click="() => {dialogs.changeFF.id = item.id;dialogs.changeFF.show = true;}"
               color="red white--text"
