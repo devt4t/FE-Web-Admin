@@ -9,6 +9,207 @@
       large
     ></v-breadcrumbs>
     <!-- Dialogs -->
+      <!-- Modal Add Edit -->
+      <AddFFModal :show="dialogs.addEditFF.show" :id="dialogs.addEditFF.id" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @refreshTable="initialize"/>
+      <!-- dialog detail -->
+      <v-dialog v-model="dialogdetail" max-width="700px" content-class="rounded-xl" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="">Detail FF</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-container v-if="load == false">
+              <v-row>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>FF Number</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.ff_no }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>No KTP</h5>
+                    <h3 class="ml-2">{{ defaultItem.ktp_no }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <div>
+                    <h5>Nama FF</h5>
+                    <h3 class="ml-2">{{ defaultItem.name }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <div>
+                    <h5>Alamat FF</h5>
+                    <h3 class="ml-2">{{ defaultItem.address }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Desa</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.village }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="8">
+                  <div>
+                    <h5>Kode Pos</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.post_code }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Kecamatan</h5>
+                    <h3 class="ml-2">{{ defaultItem.kecamatan }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Kabupaten/Kota</h5>
+                    <h3 class="ml-2">{{ defaultItem.city }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Provinsi</h5>
+                    <h3 class="ml-2">{{ defaultItem.province }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Working Area</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.namaWorkingArea }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Target Area</h5>
+                    <h3 class="ml-2">{{ defaultItem.namaTA }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Management Unit</h5>
+                    <h3 class="ml-2">{{ defaultItem.namaMU }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>No Hp</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.phone }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Jenis Kelamin</h5>
+                    <h3 class="ml-2">{{ defaultItem.gender }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Agama</h5>
+                    <h3 class="ml-2">{{ defaultItem.religion }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>Tanggal Lahir</h5>
+                    <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>Status Perkawinan</h5>
+                    <h3 class="ml-2">{{ defaultItem.marrital }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Akun Bank</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.bank_account }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Bank Branch</h5>
+                    <h3 class="ml-2">{{ defaultItem.bank_branch }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Bank Name</h5>
+                    <h3 class="ml-2">{{ defaultItem.bank_name }}</h3>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+              <v-divider class="mx-2"></v-divider>
+              <v-btn v-if="defaultItem.active == 1" rounded color="red white--text" class="px-5" @click="nonactivateFF(defaultItem)">
+                <v-icon class="mr-1">mdi-account-off</v-icon>
+                Nonactivate
+              </v-btn>
+              <v-btn
+                v-else
+                dark
+                rounded
+                @click="activateFF(defaultItem)"
+                color="green white--text"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-account-check
+              </v-icon>
+                Activate
+              </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- dialog delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeDelete"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- Confirmation -->
       <v-dialog v-model="dialogs.nonactivateConfirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
         <v-card class="rounded-xl" v-if="dialogs.nonactivateConfirmation.model">
@@ -72,448 +273,6 @@
           >
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px" content-class="rounded-xl">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-container v-if="load == false">
-                    <v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="12">
-                          <v-select
-                            v-model="defaultItem.fc_no"
-                            :items="itemsfc"
-                            item-text="name"
-                            item-value="nik"
-                            label="Pilih Field Coordinator"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.ktp_no"
-                            label="No KTP"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.name"
-                            label="Nama"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.mu_no"
-                            :items="itemsMU"
-                            item-text="name"
-                            item-value="mu_no"
-                            label="Management Unit"
-                            outlined
-                            clearable
-                            :rules="rules"
-                            v-on:change="selectedMUForm"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.target_area"
-                            :items="itemsTAForm"
-                            item-text="name"
-                            item-value="area_code"
-                            label="Target Area"
-                            outlined
-                            clearable
-                            :rules="rules"
-                            v-on:change="selectedTAForm"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.working_area"
-                            :items="itemsVillageForm"
-                            item-text="name"
-                            item-value="kode_desa"
-                            label="Working Area"
-                            outlined
-                            clearable
-                            :rules="rules"
-                            v-on:change="selectedVillageForm"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-menu v-model="menu2" transition="scale-transition">
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-text-field
-                                v-model="datepicker"
-                                slot="activator"
-                                label="Tanggal Lahir"
-                                outlined
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                                :rules="rules"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="datepicker"
-                              @input="menu2 = false"
-                            ></v-date-picker>
-                          </v-menu>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.religion"
-                            :items="itemsagama"
-                            item-text="text"
-                            item-value="value"
-                            label="Agama"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.gender"
-                            :items="itemsgender"
-                            item-text="text"
-                            item-value="value"
-                            label="Jenis Kelamin"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.phone"
-                            label="No HP"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-select
-                            v-model="defaultItem.marrital"
-                            :items="itemsmarrital"
-                            item-text="text"
-                            item-value="value"
-                            label="Marrital Status"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="12">
-                          <v-textarea
-                            v-model="defaultItem.address"
-                            label="Alamat"
-                            outlined
-                            rows="3"
-                            :rules="rules"
-                          ></v-textarea>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.village"
-                            label="Desa"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.post_code"
-                            label="Kode Pos"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.kecamatan"
-                            label="Kecamatan"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.city"
-                            label="Kab/Kota"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.province"
-                            label="Provinsi"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.bank_account"
-                            label="Akun Bank"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.bank_name"
-                            label="Bank Name"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.bank_branch"
-                            label="Bank Branch"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-                </v-card-actions>
-              </v-form>
-            </v-card>
-          </v-dialog>
-          <!-- dialog detail -->
-          <v-dialog v-model="dialogdetail" max-width="700px" content-class="rounded-xl" scrollable>
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="">Detail FF</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-row>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>FF Number</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.ff_no }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>No KTP</h5>
-                        <h3 class="ml-2">{{ defaultItem.ktp_no }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <div>
-                        <h5>Nama FF</h5>
-                        <h3 class="ml-2">{{ defaultItem.name }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <div>
-                        <h5>Alamat FF</h5>
-                        <h3 class="ml-2">{{ defaultItem.address }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Desa</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.village }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="8">
-                      <div>
-                        <h5>Kode Pos</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.post_code }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Kecamatan</h5>
-                        <h3 class="ml-2">{{ defaultItem.kecamatan }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Kabupaten/Kota</h5>
-                        <h3 class="ml-2">{{ defaultItem.city }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Provinsi</h5>
-                        <h3 class="ml-2">{{ defaultItem.province }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Working Area</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.namaWorkingArea }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Target Area</h5>
-                        <h3 class="ml-2">{{ defaultItem.namaTA }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Management Unit</h5>
-                        <h3 class="ml-2">{{ defaultItem.namaMU }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>No Hp</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.phone }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Jenis Kelamin</h5>
-                        <h3 class="ml-2">{{ defaultItem.gender }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Agama</h5>
-                        <h3 class="ml-2">{{ defaultItem.religion }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>Tanggal Lahir</h5>
-                        <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>Status Perkawinan</h5>
-                        <h3 class="ml-2">{{ defaultItem.marrital }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Akun Bank</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.bank_account }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Bank Branch</h5>
-                        <h3 class="ml-2">{{ defaultItem.bank_branch }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Bank Name</h5>
-                        <h3 class="ml-2">{{ defaultItem.bank_name }}</h3>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                  <v-divider class="mx-2"></v-divider>
-                  <v-btn v-if="defaultItem.active == 1" rounded color="red white--text" class="px-5" @click="nonactivateFF(defaultItem)">
-                    <v-icon class="mr-1">mdi-account-off</v-icon>
-                    Nonactivate
-                  </v-btn>
-                  <v-btn
-                    v-else
-                    dark
-                    rounded
-                    @click="activateFF(defaultItem)"
-                    color="green white--text"
-                  >
-                  <v-icon class="mr-1" small color="white">
-                    mdi-account-check
-                  </v-icon>
-                    Activate
-                  </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <!-- dialog delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
       </template>
       <!-- Status Column -->
@@ -643,12 +402,17 @@
 <script>
 import axios from "axios";
 import ChangeFFModal from "./components/FF/ChangeFFModal.vue"
+import AddFFModal from "./components/FF/AddFFModal.vue"
 
 export default {
   name: "FieldFacilitator",
-  components: { ChangeFFModal },
+  components: { ChangeFFModal, AddFFModal },
   data: () => ({
     dialogs: {
+      addEditFF: {
+        show: false,
+        id: ''
+      },
       changeFF: {
         show: false,
         id: ''
@@ -930,7 +694,7 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemsfc = response.data.data.result.data;
           // this.dataobject = response.data.data.result;
@@ -1067,7 +831,7 @@ export default {
         bank_name: this.defaultItem.bank_name,
         user_id: this.user_id,
       };
-      console.log(datapost);
+      // console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
@@ -1279,31 +1043,8 @@ export default {
       this.getDetail(item, "detail");
     },
     showAddModal() {
-      this.load = false;
-      this.defaultItem.id = "";
-      this.defaultItem.name = "";
-      this.defaultItem.ktp_no = "";
-      this.defaultItem.fc_no = "";
-      this.defaultItem.birthday = "";
-      this.defaultItem.gender = "";
-      this.defaultItem.religion = "";
-      this.defaultItem.post_code = "";
-      this.defaultItem.village = "";
-      this.defaultItem.kecamatan = "";
-      this.defaultItem.city = "";
-      this.defaultItem.province = "";
-      this.defaultItem.address = "";
-      this.defaultItem.mu_no = "";
-      this.defaultItem.target_area = "";
-      this.defaultItem.working_area = "";
-      this.defaultItem.bank_account = "";
-      this.defaultItem.bank_branch = "";
-      this.defaultItem.bank_name = "";
-      this.defaultItem.marrital = "";
-      this.defaultItem.phone = "";
-
-      this.formTitle = "Add Item";
-      this.dialog = true;
+      this.dialogs.addEditFF.id = ''
+      this.dialogs.addEditFF.show = true
     },
     async editItem(item) {
       console.log(item);
@@ -1312,47 +1053,6 @@ export default {
       await this.getTA("form");
       await this.getVillage("form");
       this.formTitle = "Edit Item";
-    },
-
-    save() {
-      this.$refs.form.validate();
-
-      if (
-        this.defaultItem.ktp_no.length != 0 &&
-        this.defaultItem.name.length != 0 &&
-        // this.datepicker.length != 0 &&
-        // this.defaultItem.birthday.length != 0 &&
-        this.defaultItem.religion != null &&
-        this.defaultItem.address.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.marrital != null &&
-        this.defaultItem.phone.length != 0 &&
-        this.defaultItem.gender != null &&
-        this.defaultItem.mu_no != null &&
-        this.defaultItem.fc_no != null &&
-        this.defaultItem.target_area != null &&
-        this.defaultItem.working_area != null
-      ) {
-        if (this.defaultItem.id) {
-          console.log("testupdate");
-          console.log(this.datepicker);
-          this.updateData();
-        } else {
-          if (this.defaultItem.ktp_no) {
-            console.log("testadd");
-            console.log(this.datepicker);
-            this.addData();
-          }
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar =
-          "Gagal Simpan, Kolom required tidak boleh ada yang kosong";
-      }
     },
 
     deleteItem(item) {

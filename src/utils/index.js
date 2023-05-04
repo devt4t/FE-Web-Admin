@@ -58,6 +58,15 @@ const utils = {
             maximumFractionDigits: 0
         }).format(num)
     },
+    // phone number
+    formatPhoneNumber(phoneNumber) {
+        let cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        let match = cleaned.match(/^(\d{3})(\d{4})(\d{4})$/);
+        if (match) {
+          return match[1] + '-' + match[2] + '-' + match[3];
+        }
+        return null;
+      }
 }
 
 Vue.prototype._utils = utils

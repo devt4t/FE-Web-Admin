@@ -1789,7 +1789,7 @@
             color="success"
             item-color="success"
             v-model="program_year"
-            :items="['2021','2022']"
+            :items="$store.state.programYear.options"
             outlined
             dense
             hide-details

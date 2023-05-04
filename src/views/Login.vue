@@ -21,8 +21,8 @@
             data-aos="zoom-in"
             data-aos-delay="200"
             max-width="250"
-            src="/images/Logo_Login.png"
-            style="margin-top: 5px"
+            src="/images/GEKO_short2.png"
+            class="my-5 mb-10"
           ></v-img>
         </v-row>
         <!-- <v-card-title>LOGIN PAGE</v-card-title> -->

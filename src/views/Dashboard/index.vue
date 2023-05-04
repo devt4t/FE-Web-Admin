@@ -186,7 +186,6 @@
           <v-badge content="Develop" color="warning">360<sup>o</sup> View</v-badge>
           <v-divider class="mx-2"></v-divider>
           <small>
-            {{ showMapsOptions  }}
           </small>
       </v-card-title>
       <v-card-text>
