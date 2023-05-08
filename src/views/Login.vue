@@ -5,14 +5,16 @@
       background-repeat: no-repeat;
       background-attachment: fixed;
       background-size: 100% 100%;
+      width: 100vw;
       height: 100vh;
+      display: grid;
+      align-items: center;
     "
   >
-    <v-form ref="form" v-model="valid" lazy-validation>
+    <v-form ref="form" v-model="valid" lazy-validation class="">
       <v-card
         max-width="325"
         class="mx-auto px-5 pb-2 rounded-xl"
-        style="margin-top: 50px"
         elevation="7"
         data-aos="zoom-in"
       >

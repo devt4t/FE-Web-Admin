@@ -105,12 +105,12 @@
   filter: brightness(20000%);
   position: absolute;
   left: 50%;top: 50%;
-  transform: translate(-50%, -28%);
+  transform: translate(-50%, -50%);
 }
 .geko-loading-wrapper img:last-child {
-  width: 50px;
+  width: 47px;
+  top: 38.5%;
   filter: unset;
-  left: 184.5px;
-  transform: translateY(-50%);
+  left: 186px;
   animation: animateGEKOWorld 1s linear infinite;
 }
