@@ -8,7 +8,6 @@
     ></v-breadcrumbs>
 
     <v-card class="mx-auto my-2" max-width="1000">
-      <v-img max-height="500" src="/images/UnderMaintenanceWeb.jpg"></v-img>
     </v-card>
   </div>
 </template>
@@ -30,5 +29,11 @@ export default {
       },
     ],
   }),
+  mounted() {
+    this.$store.state.maintenanceOverlay = true
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
+  }
 };
 </script>

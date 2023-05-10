@@ -2689,6 +2689,9 @@ export default {
         User: JSON.parse(localStorage.getItem("User"))
     }),
     async mounted() {
+        // set program year
+        this.generalSettings.programYear = this.$store.state.programYear.model
+
         await this.getUserException()
         if (this.User.ff.value_data == '-') this.User.ff.value_data = 'all'
         await this.firstAccessPage()
@@ -2754,13 +2757,8 @@ export default {
         },
         'generalSettings.programYear': {
             async handler(newValue) {
-                if (newValue == '2022') {
-                    this.calendar.range = [ moment().format('Y-MM-DD'), '2023-01-31']
-                } else if (newValue == '2023') {
-                    this.calendar.range = [ '2023-11-24', '2024-01-31']
-                } else {
-                    this.calendar.range = ['2021-11-24', '2022-01-31']
-                }
+                this.calendar.range = [ moment().format('Y-MM-DD'), `${newValue + 1}-01-31`]
+                
                 this.packingLabel.loadingText = 'Waiting for completed get distribution calendar data...'
                 this.packingLabel.loading = true
                 this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'

@@ -26,7 +26,7 @@ import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
 import Progression from '../views/Activity/Progression.vue'
 import Distribusi from '../views/Activity/Distribusi.vue'
 import SeedlingChangeRequest from '../views/Activity/components/distribusi/SeedlingChangeRequest/index.vue'
-import GekoManual from '../views/GekoManual/index.vue'
+import RraPra from '../views/Activity/RraPra/index.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -53,9 +53,9 @@ const routes = [
     component: Login
   },
   {
-    path: '/GekoManual',
-    name: 'GekoManual',
-    component: GekoManual
+    path: '/RraPra',
+    name: 'RraPra',
+    component: RraPra
   },
   // {
   //   path: '/Uploads',
@@ -127,11 +127,11 @@ const routes = [
     name: 'Trees',
     component: Trees
   },
-  {
-    path: '/FormMinat',
-    name: 'FormMinat',
-    component: FormMinat
-  },
+  // {
+  //   path: '/FormMinat',
+  //   name: 'FormMinat',
+  //   component: FormMinat
+  // },
   {
     path: '/Activity',
     name: 'Activity',

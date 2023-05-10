@@ -385,20 +385,22 @@ export default {
             if (activitiesRearrange.includes(valMenuItem) == false) {
               if (valMenuItem.title === 'Progression') {
                 activitiesRearrange[0] = valMenuItem
-              } else if (valMenuItem.title === 'Sosialisasi Tanam') {
+              } else if (valMenuItem.title === 'RRA & PRA') {
                 activitiesRearrange[1] = valMenuItem
-              } else if (valMenuItem.title === 'Pelatihan Petani') { 
+              } else if (valMenuItem.title === 'Sosialisasi Tanam') {
                 activitiesRearrange[2] = valMenuItem
-              } else if (valMenuItem.title === 'Lubang Tanam') { 
+              } else if (valMenuItem.title === 'Pelatihan Petani') { 
                 activitiesRearrange[3] = valMenuItem
-              } else if (valMenuItem.title === 'Material Organik') { 
+              } else if (valMenuItem.title === 'Lubang Tanam') { 
                 activitiesRearrange[4] = valMenuItem
-              } else if (valMenuItem.title === 'Distribusi') { 
+              } else if (valMenuItem.title === 'Material Organik') { 
                 activitiesRearrange[5] = valMenuItem
-              } else if (valMenuItem.title === 'Realisasi Tanam') { 
+              } else if (valMenuItem.title === 'Distribusi') { 
                 activitiesRearrange[6] = valMenuItem
-              } else if (valMenuItem.title === 'Monitoring 2') { 
+              } else if (valMenuItem.title === 'Realisasi Tanam') { 
                 activitiesRearrange[7] = valMenuItem
+              } else if (valMenuItem.title === 'Monitoring 2') { 
+                activitiesRearrange[8] = valMenuItem
               }
             }
           })
