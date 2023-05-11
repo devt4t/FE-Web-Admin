@@ -42,11 +42,11 @@
         "sedang",
         "terbuka"
     ],
-    "waterSource": [
+    "water_source": [
         "Sungai",
         "Waduk/Danau"
     ],
-    "curahHujan": [
+    "rainfall": [
         "0 - 500",
         "500 - 1000",
         "1000 - 1500",
@@ -54,19 +54,19 @@
         "2000 - 2500",
         "2500 - 3000"
     ],
-    "agroforestryType": [
+    "agroforestry_type": [
         "High intensive",
         "Low intensive",
         "Conservation"
     ],
-    "governmentPlace": [
-        "Kantor Bupatii",
+    "government_place": [
+        "Kantor Bupati",
         "Kantor Camat",
         "Kantor Lurah",
         "Kanfor Kepala Desa", 
         "Kantor Polisi"
     ],
-    "landCoverage": [
+    "land_coverage": [
         "Hutan Rimba",
         "Perkebunan/Kebun",
         "Pemukiman",
@@ -74,7 +74,7 @@
         "Semak Belukar",
         "Tegalan/Ladang"
     ],
-    "electricitySource": [
+    "electricity_source": [
         "PLN",
         "Solarcell"
     ],

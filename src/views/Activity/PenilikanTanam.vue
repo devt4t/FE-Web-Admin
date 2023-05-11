@@ -2098,9 +2098,9 @@
             dense
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
-            label="Kolom Search"
+            label="Kolom"
             class="centered-select"
-            style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+            style="width: 50%;max-width: 130px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
           ></v-select>
           <!-- Search Input -->
           <v-text-field
@@ -2114,7 +2114,7 @@
             rounded
             label="Search"
             hide-details
-            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;max-width: 200px;"
             :loading="pagination.search.options.column_loading"
           ></v-text-field>
           <v-select

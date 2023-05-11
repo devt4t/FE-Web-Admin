@@ -250,8 +250,9 @@
           ref="anim2"
           :animationData="lottie.data.maintenance"
           :loop="true"
-          style="width: 550px;max-width: 100%;"
+          style="max-width: 550px;max-width: 100%;"
         />
+        <v-btn rounded @click="$router.push('/')"><v-icon class="mr-1">mdi-view-dashboard</v-icon>Back to Dashboard</v-btn>
       </div>
     </v-overlay>
 
