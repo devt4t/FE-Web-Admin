@@ -15,7 +15,7 @@ import Lahan from '../views/Lahan/Lahan.vue'
 import LahanUmum from '../views/Lahan/LahanUmum.vue'
 import TruckDriver from '../views/TruckDriver/TruckDriver.vue'
 import Trees from '../views/Trees/Trees.vue'
-import FormMinat from '../views/FormMinat/FormMinat.vue'
+import SosialisasiProgram from '../views/Activity/SosialisasiProgram/index.vue'
 import Activity from '../views/Activity/Activity.vue'
 import SosialisasiTanam from '../views/Activity/SosialisasiTanam.vue'
 import LubangTanam from '../views/Activity/LubangTanam.vue'
@@ -27,6 +27,7 @@ import Progression from '../views/Activity/Progression.vue'
 import Distribusi from '../views/Activity/Distribusi.vue'
 import SeedlingChangeRequest from '../views/Activity/components/distribusi/SeedlingChangeRequest/index.vue'
 import RraPra from '../views/Activity/RraPra/index.vue'
+import ScopingVisit from '../views/Activity/ScopingVisit/index.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -127,15 +128,20 @@ const routes = [
     name: 'Trees',
     component: Trees
   },
-  // {
-  //   path: '/FormMinat',
-  //   name: 'FormMinat',
-  //   component: FormMinat
-  // },
+  {
+    path: '/SosialisasiProgram',
+    name: 'SosialisasiProgram',
+    component: SosialisasiProgram
+  },
   {
     path: '/Activity',
     name: 'Activity',
     component: Activity
+  },
+  {
+    path: '/ScopingVisit',
+    name: 'ScopingVisit',
+    component: ScopingVisit
   },
   {
     path: '/SosialisasiTanam',

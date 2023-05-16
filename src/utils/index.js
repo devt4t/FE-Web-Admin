@@ -1,4 +1,6 @@
 import Vue from "vue";
+import moment from "moment";
+
 const utils = {
     // T4T Utils
     // Get type sppt lahan
