@@ -47,7 +47,7 @@
                     <tbody>
                         <tr v-for="(e, i) in data" :key="i">
                             <td>{{ i + 1 }}</td>
-                            <td>{{ e.nik }}</td>
+                            <td>'{{ e.nik }}</td>
                             <td>{{ e.name }}</td>
                             <td>{{ e.email }}</td>
                             <td>{{ e.emp_position }}</td>
@@ -102,7 +102,7 @@ export default {
             const wb = XLSX.utils.table_to_book(table);
 
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, "SheetJSTable.xlsx");
+            XLSX.writeFile(wb, "T4T - Employee.xlsx");
         }
     }
 }
