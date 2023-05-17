@@ -147,6 +147,97 @@
         "Trade",
         "Peternakan"
     ],
+    "marketingTradeMethod": [
+        "Direct Selling ( Pasar, warung, pinggir jalan)",
+        "Indirect Selling ( Tengkulak, broker, dll)"
+    ],
+    "marketingContractDetails": [
+        "Per Harvest Time",
+        "Per Season",
+        "Etc"
+    ],
+    "wsConsumptions": [
+        "Domestic",
+        "Irigation"
+    ],
+    "wsCategories": [
+        "Sungai",
+        "Sumur",
+        "Mata Air",
+        "Others"
+    ],
+    "wsTypes": [
+        "Natural",
+        "Artificial"
+    ],
+    "wsSeasonal": [
+        "Q 1",
+        "Q 2",
+        "Q 3",
+        "Q 4"
+    ],
+    "problemCategories": [
+        "Birokrasi",
+        "Animal related",
+        "Force Majeur",
+        "Water related",
+        "Others"
+    ],
+    "problemTypes": [
+        "Longsor",
+        "Kekeringan",
+        "Others"
+    ],
+    "problemRank": [
+        "Ringan",
+        "Sedang",
+        "Berat"
+    ],
+    "problemStakeholder": [
+        "Government",
+        "NGO",
+        "Private Organization"
+    ],
+    "problemStatus": [
+        "Solved",
+        "Not Solved",
+        "Rarely",
+        "Repeated"
+    ],
+    "problemOwnership": [
+        "Locally Own",
+        "Not Locally Own"
+    ],
+    "pesticide_categories": [
+        "Natural",
+        "Chemical",
+        "Both"
+    ],
+    "pesticide_types": [
+        "Akarisida",
+        "Algasida",
+        "Alvisida",
+        "Bakterisida",
+        "Fungisida",
+        "Herbisida",
+        "Insektisida",
+        "Moluskisida"
+    ],
+    "pesticide_names": [
+        "Yosan",
+        "Konfidor",
+        "Gramoxon"
+    ],
+    "pesticide_sources": [
+        "Government",
+        "Procurement",
+        "Others"
+    ],
+    "planting_categories": [
+        "Trees",
+        "Crops",
+        "MPTS"
+    ],
     "floraCategories": [
         "Flora Asli",
         "Holikultur",
@@ -161,12 +252,6 @@
         "Anggrek",
         "Caringin",
         "Kiara",
-        "Others"
-    ],
-    "floraWaterSource": [
-        "Sungai",
-        "Sumur",
-        "Mata Air",
         "Others"
     ],
     "floraStatus": [
@@ -219,106 +304,10 @@
         "Ornamental",
         "Industrial"
     ],
-    "incomeCropsNames": [
-        "Coffee",
-        "Kapulaga",
-        "Etc"
-    ],
     "economicDistribution": [
         "UMKM",
         "KUD",
         "Broker",
         "Others"
-    ],
-    "marketingTradeMethod": [
-        "Direct Selling ( Pasar, warung, pinggir jalan)",
-        "Indirect Selling ( Tengkulak, broker, dll)"
-    ],
-    "marketingContractDetails": [
-        "Per Harvest Time",
-        "Per Season",
-        "Etc"
-    ],
-    "wsConsumptions": [
-        "Domestic",
-        "Irigation"
-    ],
-    "wsCategories": [
-        "Sungai",
-        "Sumur",
-        "Mata Air",
-        "Others"
-    ],
-    "wsTypes": [
-        "Natural",
-        "Artificial"
-    ],
-    "wsSeasonal": [
-        "Q 1",
-        "Q 2",
-        "Q 3",
-        "Q 4"
-    ],
-    "luCategories": [
-        "Birokrasi",
-        "Animal related",
-        "Force Majeur",
-        "Water related",
-        "Others"
-    ],
-    "luTypes": [
-        "Longsor",
-        "Kekeringan",
-        "Others"
-    ],
-    "luProblemRank": [
-        "Ringan",
-        "Sedang",
-        "Berat"
-    ],
-    "luStakeHolder": [
-        "Government",
-        "NGO",
-        "Private Organization"
-    ],
-    "luStatus": [
-        "Solved",
-        "Not Solved",
-        "Rarely",
-        "Repeated"
-    ],
-    "luOwnership": [
-        "Locally Own",
-        "Not Locally Own"
-    ],
-    "pesticideCategories": [
-        "Natural",
-        "Chemical",
-        "Both"
-    ],
-    "pesticideTypes": [
-        "Akarisida",
-        "Algasida",
-        "Alvisida",
-        "Bakterisida",
-        "Fungisida",
-        "Herbisida",
-        "Insektisida",
-        "Moluskisida"
-    ],
-    "pesticideNames": [
-        "Yosan",
-        "Konfidor",
-        "Gramoxon"
-    ],
-    "pesticideSource": [
-        "Government",
-        "Procurement",
-        "Others"
-    ],
-    "plantingCategories": [
-        "Trees",
-        "Crops",
-        "MPTS"
     ]
 }

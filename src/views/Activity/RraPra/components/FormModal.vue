@@ -673,7 +673,7 @@
                                                                 v-model="disaster_data.year"
                                                             ></v-text-field>
                                                         </v-col>
-                                                        <!-- disaster_data year -->
+                                                        <!-- disaster_data fatalities -->
                                                         <v-col cols="12" sm="12" md="6" lg="4">
                                                             <v-text-field
                                                                 dense
@@ -689,7 +689,7 @@
                                                                 v-model="disaster_data.fatalities"
                                                             ></v-text-field>
                                                         </v-col>
-                                                        <!-- disaster_data year -->
+                                                        <!-- disaster_data details -->
                                                         <v-col cols="12" sm="12" md="6" lg="8">
                                                             <v-text-field
                                                                 dense
@@ -725,10 +725,195 @@
                                                 </v-btn>
                                             </v-row>
                                         </v-col>
+                                        <!-- Problem Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-book-alert</v-icon>Riwayat Masalah</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(problem_data, problem_data_index) in inputs.problem_data.model" 
+                                                :key="`problem_data_${problem_data_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ problem_data_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- problem_data categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.problem_data.options.categories.items"
+                                                                :label="inputs.problem_data.options.categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- problem_data types -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.problem_data.options.types.items"
+                                                                :label="inputs.problem_data.options.types.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.types"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- problem_data date -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Tanggal"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.date"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- problem_data rank -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.problem_data.options.rank.items"
+                                                                :label="inputs.problem_data.options.rank.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.rank"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- problem_data source -->
+                                                        <v-col cols="12" sm="12" md="12" lg="12">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Sumber"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.source"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- problem_data solution -->
+                                                        <v-col cols="12" sm="12" md="12" lg="12">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Solusi"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.solution"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- problem_data stakeholder -->
+                                                        <v-col cols="12" sm="12" md="6" lg="4">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.problem_data.options.stakeholder.items"
+                                                                :label="inputs.problem_data.options.stakeholder.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.stakeholder"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- problem_data status -->
+                                                        <v-col cols="12" sm="12" md="6" lg="4">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.problem_data.options.status.items"
+                                                                :label="inputs.problem_data.options.status.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.status"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- problem_data ownership -->
+                                                        <v-col cols="12" sm="12" md="6" lg="4">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.problem_data.options.ownership.items"
+                                                                :label="inputs.problem_data.options.ownership.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="problem_data.ownership"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.problem_data.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`problem_data_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'problem_data')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.problem_data.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`problem_data_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'problem_data')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
                                         <!-- Fertilizer Section -->
                                         <v-col cols="12">
                                             <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-land-plots-circle-variant</v-icon>Data Pupuk</p>
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-beer</v-icon>Data Pupuk</p>
                                                 <v-divider class="mx-2"></v-divider>
                                             </div>
                                         </v-col>
@@ -826,6 +1011,112 @@
                                                     :key="`fertilizer_data_minus_btn`" 
                                                     fab small color="red" outlined class="mx-1"
                                                     @click="() => modifyTotalSubData('-', 'fertilizer_data')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
+                                        <!-- Pesticide Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-heat-wave</v-icon>Data Pestisida</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(pesticide_data, pesticide_data_index) in inputs.pesticide_data.model" 
+                                                :key="`pesticide_data_${pesticide_data_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ pesticide_data_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- pesticide_data name -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Nama"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="pesticide_data.name"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- pesticide_data categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.pesticide_data.options.categories.items"
+                                                                :label="inputs.pesticide_data.options.categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="pesticide_data.categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- pesticide_data types -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.pesticide_data.options.types.items"
+                                                                :label="inputs.pesticide_data.options.types.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="pesticide_data.types"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- pesticide_data sources -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.pesticide_data.options.sources.items"
+                                                                :label="inputs.pesticide_data.options.sources.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="pesticide_data.sources"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.pesticide_data.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`pesticide_data_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'pesticide_data')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.pesticide_data.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`pesticide_data_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'pesticide_data')"
                                                 >
                                                     <v-icon>mdi-minus</v-icon>
                                                 </v-btn>
@@ -1176,6 +1467,95 @@
                                                 </v-btn>
                                             </v-row>
                                         </v-col>
+                                        <!-- Planting Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-forest</v-icon>Data Penanaman</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(planting_data, planting_data_index) in inputs.planting_data.model" 
+                                                :key="`planting_data_${planting_data_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ planting_data_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- planting_data categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="3">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.planting_data.options.categories.items"
+                                                                :label="inputs.planting_data.options.categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="planting_data.categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- planting_data types -->
+                                                        <v-col cols="12" sm="12" md="6" lg="3">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.planting_data.options.types.items"
+                                                                :label="inputs.planting_data.options.types.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="planting_data.types"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- marketing_data start_period -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Periode"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="planting_data.start_period"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.planting_data.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`planting_data_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'planting_data')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.planting_data.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`planting_data_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'planting_data')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
                                     </v-row>
                                 </v-card-text>
                             </v-card>
@@ -1198,6 +1578,556 @@
                                 </v-card-title>
                                 <v-card-text>
                                     <v-row>
+                                        <!-- Flora Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-flower</v-icon>Data Tumbuhan</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(flora_data, flora_data_index) in inputs.flora_data.model" 
+                                                :key="`flora_data_${flora_data_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ flora_data_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- flora_data categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.flora_data.options.categories.items"
+                                                                :label="inputs.flora_data.options.categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- flora_data types -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.flora_data.options.types.items"
+                                                                :label="inputs.flora_data.options.types.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.types"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- flora_data name -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Nama"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.name"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- flora_data population -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Populasi"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                type="number"
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.population"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- flora_data water_source -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.flora_data.options.water_source.items"
+                                                                :label="inputs.flora_data.options.water_source.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.water_source"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- flora_data status -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.flora_data.options.status.items"
+                                                                :label="inputs.flora_data.options.status.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.status"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- flora_data habitat -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Habitat"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="flora_data.habitat"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.flora_data.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`flora_data_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'flora_data')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.flora_data.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`flora_data_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'flora_data')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
+                                        <!-- Fauna Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-cat</v-icon>Data Hewan</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(fauna_data, fauna_data_index) in inputs.fauna_data.model" 
+                                                :key="`fauna_data_${fauna_data_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ fauna_data_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- fauna_data categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.fauna_data.options.categories.items"
+                                                                :label="inputs.fauna_data.options.categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- fauna_data types -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.fauna_data.options.types.items"
+                                                                :label="inputs.fauna_data.options.types.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.types"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- fauna_data name -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Nama"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.name"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- fauna_data population -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Populasi"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                type="number"
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.population"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- fauna_data food_source -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.fauna_data.options.food_source.items"
+                                                                :label="inputs.fauna_data.options.food_source.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.food_source"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- fauna_data status -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.fauna_data.options.status.items"
+                                                                :label="inputs.fauna_data.options.status.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.status"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- fauna_data habitat -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Habitat"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="fauna_data.habitat"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.fauna_data.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`fauna_data_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'fauna_data')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.fauna_data.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`fauna_data_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'fauna_data')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
+                                        <!-- Income Data Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-hand-coin</v-icon>Data Income</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(income_data_si, income_data_si_index) in inputs.income_data_si.model" 
+                                                :key="`income_data_si_${income_data_si_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ income_data_si_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- income_data_si categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.income_data_si.options.categories.items"
+                                                                :label="inputs.income_data_si.options.categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="income_data_si.categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- income_data_si crops_categories -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.income_data_si.options.crops_categories.items"
+                                                                :label="inputs.income_data_si.options.crops_categories.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="income_data_si.crops_categories"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- income_data_si crops_types -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.income_data_si.options.crops_types.items"
+                                                                :label="inputs.income_data_si.options.crops_types.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="income_data_si.crops_types"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- income_data_si crops_name -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.income_data_si.options.crops_name.items"
+                                                                :label="inputs.income_data_si.options.crops_name.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="income_data_si.crops_name"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- income_data_si production_capacity -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Kapasitas Produksi"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                type="number"
+                                                                suffix="kg"
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="income_data_si.production_capacity"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- income_data_si total_farming_family -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Jumlah Keluarga Petani"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                type="number"
+                                                                suffix="Keluarga"
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="income_data_si.total_farming_family"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.income_data_si.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`income_data_si_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'income_data_si')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.income_data_si.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`income_data_si_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'income_data_si')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
+                                        <!-- Economic Section -->
+                                        <v-col cols="12">
+                                            <div class="d-flex align-center">
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-cash-multiple</v-icon>Data Ekonomi</p>
+                                                <v-divider class="mx-2"></v-divider>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-row 
+                                                v-for="(economic_data_si, economic_data_si_index) in inputs.economic_data_si.model" 
+                                                :key="`economic_data_si_${economic_data_si_index}`"
+                                                data-aos="fade-right"
+                                                data-aos-offset="-10000"
+                                            >
+                                                <v-col cols="auto">
+                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ economic_data_si_index + 1 }}</v-btn>
+                                                </v-col>
+                                                <v-col cols="11">
+                                                    <v-row>
+                                                        <!-- economic_data_si trade_method -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.economic_data_si.options.trade_method.items"
+                                                                :label="inputs.economic_data_si.options.trade_method.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="economic_data_si.trade_method"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- economic_data_si start_period -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Periode"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="economic_data_si.start_period"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                        <!-- economic_data_si distribution -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-autocomplete
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                item-color="success"
+                                                                :items="inputs.economic_data_si.options.distribution.items"
+                                                                :label="inputs.economic_data_si.options.distribution.label"
+                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="economic_data_si.distribution"
+                                                            ></v-autocomplete>
+                                                        </v-col>
+                                                        <!-- economic_data_si revenue -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Pendapatan"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                type="number"
+                                                                prefix="Rp"
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                                v-model="economic_data_si.revenue"
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row class="justify-center">
+                                                <v-btn v-if="inputs.economic_data_si.model.length < localConfig.maxSubDataTotal" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`economic_data_si_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'economic_data_si')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.economic_data_si.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`economic_data_si_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'economic_data_si')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
                                     </v-row>
                                 </v-card-text>
                             </v-card>
@@ -1454,6 +2384,47 @@ export default {
                     }
                 ]
             },
+            problem_data: {
+                options: {
+                    categories: {
+                        label: 'Kategori',
+                        items: formOptions.problemCategories
+                    },
+                    types: {
+                        label: 'Jenis',
+                        items: formOptions.problemTypes
+                    },
+                    rank: {
+                        label: 'Tingkat',
+                        items: formOptions.problemRank
+                    },
+                    stakeholder: {
+                        label: 'Stakeholder',
+                        items: formOptions.problemStakeholder
+                    },
+                    status: {
+                        label: 'Status',
+                        items: formOptions.problemStatus
+                    },
+                    ownership: {
+                        label: 'Ownership',
+                        items: formOptions.problemOwnership
+                    },
+                },
+                model: [
+                    {
+                        categories: '',
+                        types: '',
+                        date: moment().format('YYYY-MM-DD'),
+                        rank: '',
+                        source: '',
+                        solution: '',
+                        stakeholder: '',
+                        status: '',
+                        ownership: '',
+                    }
+                ]
+            },
             fertilizer_data: {
                 options: {
                     categories: {
@@ -1465,8 +2436,32 @@ export default {
                         items: formOptions.fertilizer_types
                     },
                     sources: {
-                        label: 'Tipe',
+                        label: 'Sumber',
                         items: formOptions.fertilizer_sources
+                    },
+                },
+                model: [
+                    {
+                        name: '',
+                        categories: '',
+                        types: '',
+                        sources: '',
+                    }
+                ]
+            },
+            pesticide_data: {
+                options: {
+                    categories: {
+                        label: 'Kategori',
+                        items: formOptions.pesticide_categories
+                    },
+                    types: {
+                        label: 'Tipe',
+                        items: formOptions.pesticide_types
+                    },
+                    sources: {
+                        label: 'Sumber',
+                        items: formOptions.pesticide_sources
                     },
                 },
                 model: [
@@ -1542,6 +2537,140 @@ export default {
                         name: '',
                         total: '',
                         seasonal: '',
+                    }
+                ]
+            },
+            planting_data: {
+                options: {
+                    types: {
+                        label: 'Jenis',
+                        items: []
+                    },
+                    categories: {
+                        label: 'Kategori',
+                        items: ['Kayu', 'MPTS', 'Crops']
+                    }
+                },
+                model: [
+                    {
+                        types: '',
+                        categories: '',
+                        start_period: '',
+                        end_period: ''
+                    }
+                ]
+            },
+            // social impact
+            flora_data: {
+                options: {
+                    categories: {
+                        label: 'Kategori',
+                        items: formOptions.floraCategories
+                    },
+                    types: {
+                        label: 'Jenis',
+                        items: formOptions.floraTypes
+                    },
+                    status: {
+                        label: 'Status',
+                        items: formOptions.floraStatus
+                    },
+                    water_source: {
+                        label: 'Sumber Air',
+                        items: formOptions.wsCategories
+                    },
+                },
+                model: [
+                    {
+                        categories: '',
+                        types: '',
+                        name: '',
+                        population: 0,
+                        water_source: '',
+                        status: '',
+                        habitat: ''
+                    }
+                ]
+            },
+            fauna_data: {
+                options: {
+                    categories: {
+                        label: 'Kategori',
+                        items: formOptions.faunaCategories
+                    },
+                    types: {
+                        label: 'Jenis',
+                        items: formOptions.faunaTypes
+                    },
+                    status: {
+                        label: 'Status',
+                        items: formOptions.faunaStatus
+                    },
+                    food_source: {
+                        label: 'Sumber Makanan',
+                        items: formOptions.faunaFoodSource
+                    },
+                },
+                model: [
+                    {
+                        categories: '',
+                        types: '',
+                        name: '',
+                        population: 0,
+                        food_source: '',
+                        status: '',
+                        habitat: ''
+                    }
+                ]
+            },
+            income_data_si: {
+                options: {
+                    categories: {
+                        label: 'Kategori',
+                        items: formOptions.incomeCategories
+                    },
+                    crops_categories: {
+                        label: 'Kategori Crops',
+                        items: formOptions.incomeCropsCategories
+                    },
+                    crops_types: {
+                        label: 'Jenis Crops',
+                        items: formOptions.incomeCropsTypes
+                    },
+                    crops_name: {
+                        label: 'Nama Crops',
+                        items: []
+                    },
+                },
+                model: [
+                    {
+                        categories: '',
+                        crops_categories: '',
+                        crops_types: '',
+                        crops_name: '',
+                        crops_production_capacity: 0,
+                        total_farming_families: 0,
+                    }
+                ]
+            },
+            economic_data_si: {
+                options: {
+                    trade_method: {
+                        label: 'Metode',
+                        items: formOptions.marketingTradeMethod
+                    },
+                    distribution: {
+                        label: 'Jenis',
+                        items: formOptions.economicDistribution
+                    },
+                },
+                model: [
+                    {
+                        trade_method: '',
+                        start_period: '',
+                        end_period: '',
+                        distribution: '',
+                        revenue: 0
                     }
                 ]
             },
@@ -1669,7 +2798,19 @@ export default {
                         fatalities: 0,
                         details: '',
                     }
-                } else if (name == 'fertilizer_data') {
+                } else if (name == 'problem_data') {
+                    inputs = {
+                        categories: '',
+                        types: '',
+                        date: moment().format('YYYY-MM-DD'),
+                        rank: '',
+                        source: '',
+                        solution: '',
+                        stakeholder: '',
+                        status: '',
+                        ownership: '',
+                    }
+                } else if (['fertilizer_data', 'pesticide_data'].includes(name)) {
                     inputs = {
                         name: '',
                         categories: '',
@@ -1699,6 +2840,41 @@ export default {
                         name: '',
                         total: '',
                         seasonal: '',
+                    }
+                } else if (name == 'planting_data') {
+                    inputs = {
+                        types: '',
+                        categories: '',
+                        start_period: '',
+                        end_period: ''
+                    }
+                } else if (['flora_data', 'fauna_data'].includes(name)) {
+                    inputs = {
+                        categories: '',
+                        types: '',
+                        name: '',
+                        population: 0,
+                        status: '',
+                        habitat: ''
+                    }
+                    if (name == 'flora_data') inputs.water_source = ''
+                    else inputs.food_source = ''
+                } else if (name == 'income_data_si') {
+                    inputs = {
+                        categories: '',
+                        crops_categories: '',
+                        crops_types: '',
+                        crops_name: '',
+                        crops_production_capacity: 0,
+                        total_farming_families: 0,
+                    }
+                } else if (name == 'economic_data_si') {
+                    inputs = {
+                        trade_method: '',
+                        start_period: '',
+                        end_period: '',
+                        distribution: '',
+                        revenue: 0
                     }
                 }
                 
