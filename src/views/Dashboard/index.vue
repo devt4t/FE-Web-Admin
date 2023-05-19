@@ -123,7 +123,9 @@
         </v-row>
       </v-card-text>
     </v-card>
-
+    <!-- <div style="width: 300px;height: 300px;overflow: hidden;display: flex;justify-content: center;align-items: center;">
+      <spline-viewer url="https://prod.spline.design/sDCa1WJtTdVGmbP7/scene.splinecode"></spline-viewer>
+    </div> -->
     <!-- Total Datas -->
     <v-row class="mt-0">
       <v-col v-for="n in 4" cols="12" md="3" class="">

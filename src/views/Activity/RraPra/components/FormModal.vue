@@ -1298,7 +1298,7 @@
                                                                 dense
                                                                 color="success"
                                                                 hide-details
-                                                                label="Nomor Kontak"
+                                                                label="Marketing Details"
                                                                 :disabled="false"
                                                                 outlined
                                                                 rounded
@@ -2494,7 +2494,7 @@ export default {
                         items: formOptions.marketingTradeMethod
                     },
                     contract_details: {
-                        label: 'Metode',
+                        label: 'Contract Detail',
                         items: formOptions.marketingContractDetails
                     },
                 },
@@ -2711,12 +2711,6 @@ export default {
         this.$nextTick(() => {
             window.addEventListener('resize', this.onResize)
         })
-
-        for (let index = 0; index < 1; index++) {
-            setTimeout(() => {
-                this.stepper.model += 1
-            }, 1000 * index);
-        }
     },
     methods: {
         errorResponse(error) {

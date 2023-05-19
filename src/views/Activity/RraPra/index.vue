@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import FormModal from './components/FormModal.vue'
 
 export default {
@@ -117,6 +118,17 @@ export default {
         this.firstAccessPage()
     },
     methods: {
+        errorResponse(error) {
+            console.log(error)
+            if (error.response) {
+                if (error.response.status) {
+                if (error.response.status == 401) {
+                    localStorage.removeItem("token");
+                    this.$router.push("/");
+                }
+                }
+            }
+        },
         async firstAccessPage() {
             // set general config to local config
             this.user = this.$store.state.User

@@ -126,10 +126,10 @@
                             min-width="100"
                             offset-y
                             :close-on-content-click="true"
-                            v-model="inputs.scoping_date.show"
+                            v-model="inputs.scooping_date.show"
                         >
                             <template v-slot:activator="{ on: menu, attrs }">
-                                <v-tooltip top>
+                                <v-tooltip top content-class="rounded-xl">
                                     <template v-slot:activator="{ on: tooltip }">
                                         <v-text-field
                                             dense
@@ -137,19 +137,23 @@
                                             class="mb-2 mb-lg-0 mr-0 mr-lg-2"
                                             hide-details
                                             outlined
-                                            label="Scoping Date"
                                             rounded
                                             v-bind="attrs"
                                             v-on="{...menu, ...tooltip}"
                                             readonly
-                                            v-model="inputs.scoping_date.modelShow"
-                                        ></v-text-field>
+                                            v-model="inputs.scooping_date.modelShow"
+                                        >
+                                            <template v-slot:label>
+                                                {{ inputs.scooping_date.label }} 
+                                                <sup><v-icon v-if="inputs.scooping_date.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                            </template>
+                                        </v-text-field>
                                     </template>
                                     <span>Klik untuk memunculkan datepicker</span>
                                 </v-tooltip>
                             </template>
                             <div class="rounded-xl pb-2 white">
-                                <v-overlay :value="inputs.scoping_date.loading">
+                                <v-overlay :value="inputs.scooping_date.loading">
                                     <div class="d-flex flex-column align-center justify-center">
                                         <v-progress-circular
                                             indeterminate
@@ -162,7 +166,7 @@
                                 <div class="d-flex flex-column align-center rounded-xl">
                                     <v-date-picker 
                                         color="green lighten-1 rounded-xl" 
-                                        v-model="inputs.scoping_date.model"
+                                        v-model="inputs.scooping_date.model"
                                         min="2022-11-24"
                                     ></v-date-picker>
                                 </div>
@@ -189,6 +193,10 @@
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.land_area.model"
                         >
+                            <template v-slot:label>
+                                {{ inputs.land_area.label }} 
+                                <sup><v-icon v-if="inputs.land_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
                             <template v-slot:append>
                                 <div class="mt-1 ml-1">
                                     m<sup>2</sup>
@@ -216,7 +224,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.land_type.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.land_type.label }} 
+                                <sup><v-icon v-if="inputs.land_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- land_slope -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -238,7 +251,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.land_slope.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.land_slope.label }} 
+                                <sup><v-icon v-if="inputs.land_slope.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- land_height -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -261,7 +279,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.land_height.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.land_height.label }} 
+                                <sup><v-icon v-if="inputs.land_height.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- vegetation_density -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -283,7 +306,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.vegetation_density.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.vegetation_density.label }} 
+                                <sup><v-icon v-if="inputs.vegetation_density.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- water_source -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -305,7 +333,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.water_source.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.water_source.label }} 
+                                <sup><v-icon v-if="inputs.water_source.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- rainfall -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -328,7 +361,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.rainfall.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.rainfall.label }} 
+                                <sup><v-icon v-if="inputs.rainfall.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- agroforestry_type -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -350,7 +388,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.agroforestry_type.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.agroforestry_type.label }} 
+                                <sup><v-icon v-if="inputs.agroforestry_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- government_place -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -372,7 +415,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.government_place.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.government_place.label }} 
+                                <sup><v-icon v-if="inputs.government_place.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- land_coverage -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -394,7 +442,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.land_coverage.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.land_coverage.label }} 
+                                <sup><v-icon v-if="inputs.land_coverage.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- electricity_source -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -416,7 +469,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.electricity_source.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.electricity_source.label }} 
+                                <sup><v-icon v-if="inputs.electricity_source.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- dry_land_area -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -432,6 +490,10 @@
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.dry_land_area.model"
                         >
+                            <template v-slot:label>
+                                {{ inputs.dry_land_area.label }} 
+                                <sup><v-icon v-if="inputs.dry_land_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
                             <template v-slot:append>
                                 <div class="mt-1 ml-1">
                                     m<sup>2</sup>
@@ -461,7 +523,12 @@
                             :label="inputs.village_polygon.label"
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.village_polygon.model"
-                        ></v-file-input>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.village_polygon.label }} 
+                                <sup><v-icon v-if="inputs.village_polygon.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-file-input>
                     </v-col>
                     <!-- dry_land_polygon -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -478,7 +545,12 @@
                             :label="inputs.dry_land_polygon.label"
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.dry_land_polygon.model"
-                        ></v-file-input>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.dry_land_polygon.label }} 
+                                <sup><v-icon v-if="inputs.dry_land_polygon.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-file-input>
                     </v-col>
                     <!-- critical_land_polygon -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -495,7 +567,12 @@
                             :label="inputs.critical_land_polygon.label"
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.critical_land_polygon.model"
-                        ></v-file-input>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.critical_land_polygon.label }} 
+                                <sup><v-icon v-if="inputs.critical_land_polygon.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-file-input>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -516,7 +593,9 @@
                     color="primary white--text"
                     class=""
                     rounded
-                    :key="`saveButton`"
+                    :key="`saveButton${disabledSave}`"
+                    :disabled="disabledSave"
+                    @click="() => save()"
                 >
                     <v-icon class="mr-1">mdi-content-save</v-icon>
                     Save
@@ -557,121 +636,142 @@ export default {
                 label: 'Provinsi',
                 model: '',
                 items: [],
-                loading: false
+                loading: false,
+                required: true,
             },
             regency: {
                 label: 'Kabupaten / Kota',
                 model: '',
                 items: [],
-                loading: false
+                loading: false,
+                required: true,
             },
             district: {
                 label: 'Kecamatan',
                 model: '',
                 items: [],
-                loading: false
+                loading: false,
+                required: true,
             },
             village: {
                 items: [],
                 label: 'Desa',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             // scoping date
-            scoping_date: {
+            scooping_date: {
                 loading: false,
+                label: 'Tanggal Scooping',
                 model: moment().format('Y-MM-DD'),
                 modelShow: moment().format('DD MMMM Y'),
                 show: false,
+                required: true,
             },
             // scoping visit inputs
             land_area: {
                 label: 'Luas Desa',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             land_type: {
                 items: formOptions.land_type.sort(),
                 label: 'Jenis Tanah',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             land_slope: {
                 items: formOptions.land_slope,
                 label: 'Kelerengan Tanah',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             land_height: {
                 items: formOptions.land_height.sort(),
                 label: 'Ketinggian Tanah',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             vegetation_density: {
                 items: formOptions.vegetation_density.sort(),
                 label: 'Kerapatan Vegetasi',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             water_source: {
                 items: formOptions.water_source.sort(),
                 label: 'Sumber Air',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             rainfall: {
                 items: formOptions.rainfall.sort(),
                 label: 'Curah Hujan',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             agroforestry_type: {
                 items: formOptions.agroforestry_type.sort(),
                 label: 'Tipe Agroforestry',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             government_place: {
                 items: formOptions.government_place.sort(),
                 label: 'Tempat Pemerintahan',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             land_coverage: {
                 items: formOptions.land_coverage.sort(),
                 label: 'Cakupan Lahan',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             electricity_source: {
                 items: formOptions.electricity_source.sort(),
                 label: 'Sumber Listrik',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             dry_land_area: {
                 label: 'Luas Lahan Kering',
                 model: '',
-                loading: false
+                loading: false,
+                required: true,
             },
             village_polygon: {
                 label: 'Polygon Desa *.kmz file',
                 accept: '.kmz',
                 model: null,
-                loading: false
+                loading: false,
+                required: false,
             },
             dry_land_polygon: {
                 label: 'Polygon Lahan Kering *.kmz file',
                 accept: '.kmz',
                 model: null,
-                loading: false
+                loading: false,
+                required: false,
             },
             critical_land_polygon: {
                 label: 'Polygon Lahan Kritis *.kmz file',
                 accept: '.kmz',
                 model: null,
-                loading: false
+                loading: false,
+                required: false,
             },
         },
         loading: {
@@ -681,18 +781,23 @@ export default {
         localConfig: {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
+            requiredInputIcon: 'mdi-alert-decagram'
         },
     }),
     watch: {
-        'inputs.scoping_date.model': {
+        'inputs.scooping_date.model': {
             async handler(newVal) {
-                this.inputs.scoping_date.modelShow = this._utils.dateFormat(newVal, 'DD MMMM Y')
+                this.inputs.scooping_date.modelShow = this._utils.dateFormat(newVal, 'DD MMMM Y')
             }
         }
     },
     computed: {
         showModal: {
             get: function () {
+                if (this.show == true) {
+                    this.inputs.program_year.model = this.$store.state.programYear.model
+                    this.getDummiesData()
+                }
                 return this.show
             },
             set: function(newVal) {
@@ -703,6 +808,16 @@ export default {
                     }
                 } else this.$emit('action', {type: 'close', name: 'form'})
             }
+        },
+        disabledSave() {
+            let requiredEmpty = 0
+            for (const [key, value] of Object.entries(this.inputs)) {
+                if (value.required) if (!value.model) {
+                    requiredEmpty += 1
+                    console.log(key)
+                }
+            }
+            return requiredEmpty > 0 ? true : false
         }
     },
     async mounted() {
@@ -710,7 +825,6 @@ export default {
             window.addEventListener('resize', this.onResize)
         })
         await this.getOptionsData({type: 'province'})
-        await this.getDummiesData()
     },
     methods: {
         errorResponse(error) {
@@ -778,7 +892,17 @@ export default {
                 this.inputs.village.model = village
 
                 this.inputs.land_area.model = 200
-                this.inputs.land_type.model = ['Aluvial', 'Entisol', 'Nitosol']
+                this.inputs.land_type.model = formOptions.land_type
+                this.inputs.land_slope.model = formOptions.land_slope
+                this.inputs.land_height.model = formOptions.land_height
+                this.inputs.vegetation_density.model = formOptions.vegetation_density
+                this.inputs.water_source.model = formOptions.water_source
+                this.inputs.rainfall.model = formOptions.rainfall
+                this.inputs.agroforestry_type.model = formOptions.agroforestry_type
+                this.inputs.government_place.model = formOptions.government_place
+                this.inputs.land_coverage.model = formOptions.land_coverage
+                this.inputs.electricity_source.model = formOptions.electricity_source
+                this.inputs.dry_land_area.model = 130
             } catch (err) {
                 this.errorResponse(err)
             } finally {
@@ -787,6 +911,28 @@ export default {
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
+        },
+        async save() {
+            try {
+                this.showModal = false
+                this.$store.state.loadingOverlay = true
+                this.$store.state.loadingOverlayText = 'Saving scoping data...'
+                let data = {
+                    village: this.inputs.village.model,
+                    province: this.inputs.province.model,
+                    city: this.inputs.regency.model,
+                    district: this.inputs.district.model,
+                    land_area: this.inputs.land_area.model,
+                    scooping_date: this.inputs.scooping_date.model,
+                    user_id: this.$store.state.User.email
+                }
+                console.log(data)
+                const res = await axios.post(this.$store.getters.getApiUrl('AddScooping'), data, this.$store.state.apiConfig)
+                if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data scooping saved!'})
+            } catch (err) {this.errorResponse(err)} finally {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = 'Loading...'
+            }
         }
     }
 }
