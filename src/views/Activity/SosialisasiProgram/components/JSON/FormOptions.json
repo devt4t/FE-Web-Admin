@@ -37,10 +37,10 @@
         "> 1900"
     ],
     "vegetation_density": [
-        "tinggi",
-        "rendah",
-        "sedang",
-        "terbuka"
+        "Tinggi",
+        "Rendah",
+        "Sedang",
+        "Terbuka"
     ],
     "water_source": [
         "Sungai",

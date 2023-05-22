@@ -840,7 +840,7 @@ export default {
             get: function () {
                 if (this.show == true) {
                     this.resetData()
-                    this.inputs.program_year.model = this.$store.state.programYear.model
+                    this.inputs.program_year.model = this.programYear
                     if (this.id) this.getData(this.id)
                     else this.getDummiesData()
                 }
@@ -849,9 +849,6 @@ export default {
             set: function(newVal) {
                 if (newVal) {
                     this.inputs.program_year.model = this.programYear
-                    if (this.id) {
-                        this.getDetailData(this.id)
-                    }
                 } else this.$emit('action', {type: 'close', name: 'form'})
             }
         },

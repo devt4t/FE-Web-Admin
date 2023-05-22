@@ -11,6 +11,7 @@
         ></v-breadcrumbs>
         <!-- Modals -->
         <FormModal :show="modals.form.show" :id="modals.form.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
+        <DetailModal :show="modals.detail.show" :id="modals.detail.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.detail.key"/>
         <!-- Main Table -->
         <v-data-table
             data-aos="fade-up"
@@ -107,12 +108,14 @@
 
 <script>
 import FormModal from './components/FormModal.vue'
+import DetailModal from './components/DetailModal.vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
 export default {
     components: {
         FormModal,
+        DetailModal
     },
     data: () => ({
         breadcrumbs: [
@@ -135,6 +138,11 @@ export default {
                 show: false,
                 data: null,
                 key: 29291,
+            },
+            detail: {
+                show: false,
+                data: null,
+                key: 89238292,
             }
         },
         table: {
@@ -196,7 +204,7 @@ export default {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
                 this.modals[val.name].data = null
-            }
+            } else if (val.type == 'refresh-table') this.getTableData()
         },
         async showModal(name, data) {
             this.modals[name].data = await data.data_no
