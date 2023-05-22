@@ -385,7 +385,7 @@ export default {
           valMenu.items.forEach((valMenuItem, indexMenuItem) => {
             if (activitiesRearrange.includes(valMenuItem) == false) {
               if (valMenuItem.title === 'Progression') activitiesRearrange[0] = valMenuItem
-              else if (valMenuItem.title === 'Scoping Visit') activitiesRearrange[1] = valMenuItem
+              else if (valMenuItem.title === 'Scooping Visit') activitiesRearrange[1] = valMenuItem
               else if (valMenuItem.title === 'RRA & PRA') activitiesRearrange[2] = valMenuItem
               else if (valMenuItem.title === 'Sosialisasi Program') activitiesRearrange[3] = valMenuItem
               else if (valMenuItem.title === 'Sosialisasi Tanam') activitiesRearrange[4] = valMenuItem

@@ -10,7 +10,7 @@
             large
         ></v-breadcrumbs>
         <!-- Modals -->
-        <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
+        <FormModal :show="modals.form.show" :id="modals.form.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
         <!-- Main Table -->
         <v-data-table
             data-aos="fade-up"
@@ -72,6 +72,35 @@
             <template v-slot:item.no="{index}">
                 {{ index + 1 }}
             </template>
+            <!-- Status Column -->
+            <template v-slot:item.is_verify="{item}">
+                <v-chip :color="item.is_verify > 0 ? `${ item.is_verify == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
+                <v-icon class="mr-1">mdi-{{ item.is_verify > 0 ? `${ item.is_verify == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
+                {{ item.is_verify > 0 ? `Verified ${item.is_verify == 1 ? 'Officer' : 'RM / PM'}` : 'Unverified' }}
+                </v-chip>
+            </template>
+      
+            <!-- Action Column -->
+            <template v-slot:item.actions="{ item }">
+                <v-menu content-class="rounded-xl">
+                <template v-slot:activator="{attrs, on}">
+                    <v-btn v-bind="attrs" v-on="on" small fab icon>
+                    <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                </template>
+                <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+                    <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="showModal('detail', item)">
+                        <v-icon class="mr-1">mdi-information</v-icon> Detail
+                    </v-btn>
+                    <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" @click="() => {showModal('form', item)}">
+                        <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
+                    </v-btn>
+                    <!-- <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
+                        <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
+                    </v-btn> -->
+                </v-card>
+                </v-menu>
+            </template>
         </v-data-table>
     </div>
 </template>
@@ -93,7 +122,7 @@ export default {
                 href: "breadcrumbs_dashboard",
             },
             {
-                text: 'Scoping Visit',
+                text: 'Scooping Visit',
                 disabled: true,
                 href: "breadcrumbs_link_1",
             },
@@ -116,7 +145,8 @@ export default {
                 {text: 'Luas Desa', value: 'land_area'},
                 {text: 'Tanggal', value: 'scooping_date'},
                 {text: 'Created By', value: 'user_id'},
-                {text: 'Status', value: 'is_verify'},
+                {text: 'Status', value: 'is_verify', align: 'center'},
+                {text: 'Actions', value: 'actions', align: 'right'},
             ],
             items: [],
             loading: {
@@ -165,7 +195,12 @@ export default {
         modalActions(val) {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
+                this.modals[val.name].data = null
             }
+        },
+        async showModal(name, data) {
+            this.modals[name].data = await data.data_no
+            this.modals[name].show = await true
         },
         swalActions(val) {
             this.getTableData()

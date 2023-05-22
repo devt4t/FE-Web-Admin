@@ -27,7 +27,7 @@ import Progression from '../views/Activity/Progression.vue'
 import Distribusi from '../views/Activity/Distribusi.vue'
 import SeedlingChangeRequest from '../views/Activity/components/distribusi/SeedlingChangeRequest/index.vue'
 import RraPra from '../views/Activity/RraPra/index.vue'
-import ScopingVisit from '../views/Activity/ScopingVisit/index.vue'
+import ScoopingVisit from '../views/Activity/ScopingVisit/index.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -139,9 +139,9 @@ const routes = [
     component: Activity
   },
   {
-    path: '/ScopingVisit',
-    name: 'ScopingVisit',
-    component: ScopingVisit
+    path: '/ScoopingVisit',
+    name: 'ScoopingVisit',
+    component: ScoopingVisit
   },
   {
     path: '/SosialisasiTanam',

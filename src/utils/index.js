@@ -29,6 +29,24 @@ const utils = {
     dateFormat (date, format) {
         return moment(date).format(format)
     },
+    // generate form data (for file upload)
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
+    },
     // Random String
     generateRandomString(length) {
         let result = '';

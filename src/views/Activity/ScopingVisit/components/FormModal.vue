@@ -13,15 +13,23 @@
             <v-card-text class="pa-0">
                 <!-- Loading -->
                 <v-overlay absolute :value="loading.show">
-                    <div class="d-flex flex-column"></div>
-                    <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="white"
-                    >
-                    </v-progress-circular>
-                    <p class="mt-2 mb-0">{{ loading.text }}</p>
+                    <div class="d-flex flex-column justify-center align-center">
+                        <LottieAnimation
+                            ref="anim"
+                            :animationData="lottie.data.loading"
+                            :loop="true"
+                            style="height: 64px;"
+                        />
+                        <p class="mt-2 mb-0">{{ loading.text }}
+                            <v-progress-circular
+                                :size="17"
+                                :width="3"
+                                indeterminate
+                                color="white"
+                            >
+                            </v-progress-circular>
+                        </p>
+                    </div>
                 </v-overlay>
                 <!-- SELECT VILLAGE -->
                 <v-row class="ma-0 mx-5">
@@ -106,7 +114,6 @@
                             item-text="name"
                             item-value="kode_desa"
                             :items="inputs.village.items"
-                            :label="inputs.village.label"
                             :loading="inputs.village.loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                             :no-data-text="inputs.village.loading ? 'Loading...' : 'No Data'"
@@ -115,7 +122,12 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.village.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                {{ inputs.village.label }} 
+                                <sup><v-icon v-if="inputs.village.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- Tanggal Scoping -->
                     <v-col cols="12" sm="12" md="6" lg="4">
@@ -580,7 +592,7 @@
                 <v-btn 
                     data-aos="zoom-in"
                     data-aos-duration="300"
-                    data-aos-offset="-200" 
+                    data-aos-offset="-200"
                     text rounded color="red" class="pl-2">
                     <v-icon class="mr-1">mdi-close-circle</v-icon>
                     Close
@@ -608,9 +620,15 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import LottieAnimation from 'lottie-web-vue'
+
 import formOptions from '@/assets/json/rraPraOptions.json'
+import treeAnimation from '@/assets/lottie/tree.json'
 
 export default {
+    components: {
+        LottieAnimation
+    },
     props: {
         show: {
             type: Boolean,
@@ -629,7 +647,8 @@ export default {
         inputs: {
             program_year: {
                 model: '',
-                required: true
+                required: true,
+                type: 'String'
             },
             // village location inputs
             province: {
@@ -638,6 +657,7 @@ export default {
                 items: [],
                 loading: false,
                 required: true,
+                type: 'String'
             },
             regency: {
                 label: 'Kabupaten / Kota',
@@ -645,6 +665,7 @@ export default {
                 items: [],
                 loading: false,
                 required: true,
+                type: 'String'
             },
             district: {
                 label: 'Kecamatan',
@@ -652,6 +673,7 @@ export default {
                 items: [],
                 loading: false,
                 required: true,
+                type: 'String'
             },
             village: {
                 items: [],
@@ -659,6 +681,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'String'
             },
             // scoping date
             scooping_date: {
@@ -668,6 +691,7 @@ export default {
                 modelShow: moment().format('DD MMMM Y'),
                 show: false,
                 required: true,
+                type: 'Date'
             },
             // scoping visit inputs
             land_area: {
@@ -675,6 +699,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Number'
             },
             land_type: {
                 items: formOptions.land_type.sort(),
@@ -682,6 +707,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             land_slope: {
                 items: formOptions.land_slope,
@@ -689,6 +715,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             land_height: {
                 items: formOptions.land_height.sort(),
@@ -696,6 +723,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             vegetation_density: {
                 items: formOptions.vegetation_density.sort(),
@@ -703,6 +731,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             water_source: {
                 items: formOptions.water_source.sort(),
@@ -710,6 +739,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             rainfall: {
                 items: formOptions.rainfall.sort(),
@@ -717,6 +747,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             agroforestry_type: {
                 items: formOptions.agroforestry_type.sort(),
@@ -724,6 +755,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             government_place: {
                 items: formOptions.government_place.sort(),
@@ -731,6 +763,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             land_coverage: {
                 items: formOptions.land_coverage.sort(),
@@ -738,6 +771,7 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             electricity_source: {
                 items: formOptions.electricity_source.sort(),
@@ -745,12 +779,14 @@ export default {
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Multiple'
             },
             dry_land_area: {
                 label: 'Luas Lahan Kering',
                 model: '',
                 loading: false,
                 required: true,
+                type: 'Number'
             },
             village_polygon: {
                 label: 'Polygon Desa *.kmz file',
@@ -758,6 +794,7 @@ export default {
                 model: null,
                 loading: false,
                 required: false,
+                type: 'File'
             },
             dry_land_polygon: {
                 label: 'Polygon Lahan Kering *.kmz file',
@@ -765,6 +802,7 @@ export default {
                 model: null,
                 loading: false,
                 required: false,
+                type: 'File'
             },
             critical_land_polygon: {
                 label: 'Polygon Lahan Kritis *.kmz file',
@@ -772,11 +810,17 @@ export default {
                 model: null,
                 loading: false,
                 required: false,
+                type: 'File'
             },
         },
         loading: {
             show: false,
             text: 'Loading...'
+        },
+        lottie: {
+            data: {
+                loading: treeAnimation,
+            }
         },
         localConfig: {
             windowWidth: window.innerWidth,
@@ -795,8 +839,10 @@ export default {
         showModal: {
             get: function () {
                 if (this.show == true) {
+                    this.resetData()
                     this.inputs.program_year.model = this.$store.state.programYear.model
-                    this.getDummiesData()
+                    if (this.id) this.getData(this.id)
+                    else this.getDummiesData()
                 }
                 return this.show
             },
@@ -838,6 +884,63 @@ export default {
                 }
             }
         },
+        async getData(id) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Getting scooping data...'
+
+                const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
+                const data = res.data.data.result
+                for (const [key, value] of Object.entries(data)) {
+                    if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key)) this.inputs[key].model = value
+                    if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value.split(",")
+                }
+                this.inputs.province.model = data.province
+                await this.getOptionsData({type: 'regency', id: data.province})
+                this.inputs.regency.model = data.city
+                await this.getOptionsData({type: 'district', id: data.city})
+                this.inputs.district.model = data.district
+                await this.getOptionsData({type: 'village', id: data.district})
+                this.inputs.village.model = data.village
+                console.log(data)
+            } catch (err) {
+                this.errorResponse(err)
+                this.$emit('action', {type: 'close', name: 'form'})
+            } finally {
+                this.loading.show = false
+            }
+        },
+        async getDummiesData() {
+            try {
+                const province = 'JT'
+                const regency = '33'
+                const district = '33.74.15'
+                const village = '33.74.15.1001'
+                this.inputs.province.model = province
+                await this.getOptionsData({type: 'regency', id: province})
+                this.inputs.regency.model = regency
+                await this.getOptionsData({type: 'district', id: regency})
+                this.inputs.district.model = district
+                await this.getOptionsData({type: 'village', id: district})
+                this.inputs.village.model = village
+
+                this.inputs.land_area.model = 200
+                this.inputs.land_type.model = formOptions.land_type
+                this.inputs.land_slope.model = formOptions.land_slope
+                this.inputs.land_height.model = formOptions.land_height
+                this.inputs.vegetation_density.model = formOptions.vegetation_density
+                this.inputs.water_source.model = formOptions.water_source
+                this.inputs.rainfall.model = formOptions.rainfall
+                this.inputs.agroforestry_type.model = formOptions.agroforestry_type
+                this.inputs.government_place.model = formOptions.government_place
+                this.inputs.land_coverage.model = formOptions.land_coverage
+                this.inputs.electricity_source.model = formOptions.electricity_source
+                this.inputs.dry_land_area.model = 130
+            } catch (err) {
+                this.errorResponse(err)
+            } finally {
+            }
+        },
         async getOptionsData(inputs) {
             try {
                 // prepare for calling api
@@ -877,40 +980,38 @@ export default {
                 this.inputs[inputs.type].loading = false
             }
         },
-        async getDummiesData() {
-            try {
-                const province = 'JT'
-                const regency = '33'
-                const district = '33.74.15'
-                const village = '33.74.15.1001'
-                this.inputs.province.model = province
-                await this.getOptionsData({type: 'regency', id: province})
-                this.inputs.regency.model = regency
-                await this.getOptionsData({type: 'district', id: regency})
-                this.inputs.district.model = district
-                await this.getOptionsData({type: 'village', id: district})
-                this.inputs.village.model = village
-
-                this.inputs.land_area.model = 200
-                this.inputs.land_type.model = formOptions.land_type
-                this.inputs.land_slope.model = formOptions.land_slope
-                this.inputs.land_height.model = formOptions.land_height
-                this.inputs.vegetation_density.model = formOptions.vegetation_density
-                this.inputs.water_source.model = formOptions.water_source
-                this.inputs.rainfall.model = formOptions.rainfall
-                this.inputs.agroforestry_type.model = formOptions.agroforestry_type
-                this.inputs.government_place.model = formOptions.government_place
-                this.inputs.land_coverage.model = formOptions.land_coverage
-                this.inputs.electricity_source.model = formOptions.electricity_source
-                this.inputs.dry_land_area.model = 130
-            } catch (err) {
-                this.errorResponse(err)
-            } finally {
-            }
-        },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
+        },
+        resetData() {
+            try {
+                for (const [key, value] of Object.entries(this.inputs)) {
+                    if (this.separateInputsPerType().date.includes(key)) value.model = moment().format('YYYY-MM-DD')
+                    else value.model = null
+                }
+            } catch (err) {this.errorResponse(err)}
+        },
+        separateInputsPerType() {  
+            let inputsString = []
+            let inputsNumber = []
+            let inputsDate = []
+            let inputsMultiple = []
+            let inputsFile = []
+            for (const [key, value] of Object.entries(this.inputs)) {
+                if (value.type == 'String') inputsString.push(key)
+                if (value.type == 'Number') inputsNumber.push(key)
+                if (value.type == 'Date') inputsDate.push(key)
+                if (value.type == 'Multiple') inputsMultiple.push(key)
+                if (value.type == 'File') inputsFile.push(key)
+            }
+            return {
+                string: inputsString,
+                number: inputsNumber,
+                date: inputsDate,
+                multiple: inputsMultiple,
+                file: inputsFile
+            }
         },
         async save() {
             try {
@@ -924,15 +1025,59 @@ export default {
                     district: this.inputs.district.model,
                     land_area: this.inputs.land_area.model,
                     scooping_date: this.inputs.scooping_date.model,
-                    user_id: this.$store.state.User.email
+                    land_type: this.inputs.land_type.model.toString(),
+                    slope: this.inputs.land_slope.model.toString(),
+                    altitude: this.inputs.land_height.model.toString(),
+                    dry_land_area: this.inputs.dry_land_area.model,
+                    vegetation_density: this.inputs.vegetation_density.model.toString(),
+                    rainfall: this.inputs.rainfall.model.toString(),
+                    agroforestry_type: this.inputs.agroforestry_type.model.toString(),
+                    government_place: this.inputs.government_place.model.toString(),
+                    water_source: this.inputs.water_source.model.toString(),
+                    land_coverage: this.inputs.land_coverage.model.toString(),
+                    electricity_source: this.inputs.electricity_source.model.toString(),
+                    user_id: this.$store.state.User.email,
                 }
+                // upload village polygon
+                if (this.inputs.village_polygon.model) {
+                    data.village_polygon = await this.uploadPhotos('Polygon Desa', this.inputs.village_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}`)
+                }
+                // upload dry_land polygon
+                if (this.inputs.dry_land_polygon.model) {
+                    data.dry_land_polygon = await this.uploadPhotos('Polygon Lahan Kering Desa', this.inputs.dry_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-dry_land`)
+                }
+                // upload critical_land polygon
+                if (this.inputs.critical_land_polygon.model) {
+                    data.critical_land_polygon = await this.uploadPhotos('Polygon Lahan Kritis Desa', this.inputs.critical_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-critical_land`)
+                }
+                this.$store.state.loadingOverlayText = 'Saving scoping data...'
                 console.log(data)
-                const res = await axios.post(this.$store.getters.getApiUrl('AddScooping'), data, this.$store.state.apiConfig)
+                let url = ''
+                if (this.id) url = `UpdateScooping?data_no=${this.id}`
+                else url = 'AddScooping'
+                const res = await axios.post(this.$store.getters.getApiUrl(url), data, this.$store.state.apiConfig)
                 if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data scooping saved!'})
             } catch (err) {this.errorResponse(err)} finally {
                 this.$store.state.loadingOverlay = false
                 this.$store.state.loadingOverlayText = 'Loading...'
             }
+        },
+        async uploadPhotos(type, file, prefix, dir, name) {
+            try {
+                this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+                const url = `${this.$store.state.apiUrlImage}${prefix}/upload.php`
+                const data = this._utils.generateFormData({
+                    dir: dir,
+                    nama: name,
+                    fileToUpload: file
+                })
+                let responseName = null
+                const res = await axios.post(url,data)
+                if (res) {
+                    responseName = res.data.data.new_name
+                    return `${prefix}/${responseName}`
+                }
+            } catch (err) {this.errorResponse(err)}
         }
     }
 }
