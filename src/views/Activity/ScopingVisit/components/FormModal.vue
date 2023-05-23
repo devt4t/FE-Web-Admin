@@ -31,8 +31,8 @@
                         </p>
                     </div>
                 </v-overlay>
-                <!-- SELECT VILLAGE -->
                 <v-row class="ma-0 mx-5">
+                    <!-- SELECT VILLAGE -->
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">mdi-city</v-icon>Lokasi & Tangal Scoping</p>
@@ -185,6 +185,7 @@
                             </div>
                         </v-menu>
                     </v-col>
+                    <!-- Scooping Form -->
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">mdi-format-columns</v-icon>Scoping Visit Form</p>
@@ -586,6 +587,118 @@
                             </template>
                         </v-file-input>
                     </v-col>
+                    <!-- Scooping Form -->
+                    <v-col cols="12">
+                        <div class="d-flex align-center">
+                            <p class="mb-0"><v-icon class="mr-2">mdi-account-cowboy-hat</v-icon>Tokoh Desa</p>
+                            <v-divider class="mx-2"></v-divider>
+                        </div>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-row 
+                            v-for="(village_figure, village_figure_index) in inputs.village_figures.model" 
+                            :key="`village_figure_${village_figure_index}`"
+                            data-aos="fade-right"
+                            data-aos-offset="-10000"
+                        >
+                            <v-col cols="auto">
+                                <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ village_figure_index + 1 }}</v-btn>
+                            </v-col>
+                            <v-col cols="11">
+                                <v-row>
+                                    <!-- village_figure name -->
+                                    <v-col cols="12" sm="12" md="6" lg="6">
+                                        <v-text-field
+                                            dense
+                                            color="success"
+                                            hide-details
+                                            :disabled="false"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="village_figure.name"
+                                        >
+                                            <template v-slot:label>
+                                                Nama
+                                                <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                            </template>
+                                        </v-text-field>
+                                    </v-col>
+                                    <!-- village_figure position -->
+                                    <v-col cols="12" sm="12" md="6" lg="6">
+                                        <v-text-field
+                                            dense
+                                            color="success"
+                                            hide-details
+                                            :disabled="false"
+                                            outlined
+                                            rounded
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="village_figure.position"
+                                        >
+                                            <template v-slot:label>
+                                                Jabatan
+                                                <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                            </template>
+                                        </v-text-field>
+                                    </v-col>
+                                    <!-- village_figure phone -->
+                                    <v-col cols="12" sm="12" md="6" lg="6">
+                                        <v-text-field
+                                            dense
+                                            color="success"
+                                            hide-details
+                                            prepend-icon="mdi-phone"
+                                            :disabled="false"
+                                            outlined
+                                            rounded
+                                            type="number"
+                                            :rules="[(v) => !!v || 'Field is required']"
+                                            v-model="village_figure.phone"
+                                        >
+                                            <template v-slot:label>
+                                                Nomor HP
+                                                <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                            </template>
+                                        </v-text-field>
+                                    </v-col>
+                                    <!-- village_figure whatsapp -->
+                                    <v-col cols="12" sm="12" md="6" lg="6">
+                                        <v-text-field
+                                            dense
+                                            color="success"
+                                            hide-details
+                                            label="Whatsapp"
+                                            :disabled="false"
+                                            outlined
+                                            rounded
+                                            prepend-icon="mdi-whatsapp"
+                                            type="number"
+                                            v-model="village_figure.whatsapp"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                        <v-row class="justify-center mb-2">
+                            <v-btn v-if="inputs.village_figures.model.length < 5" 
+                                data-aos="fade-right" data-aos-offset="-10000" 
+                                :key="`village_figures_plus_btn`" 
+                                fab small color="green white--text" class="mx-1" 
+                                @click="() => modifyTotalSubData('+', 'village_figures')"
+                            >
+                                <v-icon>mdi-plus</v-icon>
+                            </v-btn>
+                            <v-btn v-if="inputs.village_figures.model.length > 1" 
+                                data-aos="fade-left" data-aos-offset="-10000" 
+                                :key="`village_figures_minus_btn`" 
+                                fab small color="red" outlined class="mx-1"
+                                @click="() => modifyTotalSubData('-', 'village_figures')"
+                            >
+                                <v-icon>mdi-minus</v-icon>
+                            </v-btn>
+                        </v-row>
+                    </v-col>
                 </v-row>
             </v-card-text>
             <v-card-actions>
@@ -789,29 +902,42 @@ export default {
                 type: 'Number'
             },
             village_polygon: {
-                label: 'Polygon Desa *.kmz file',
-                accept: '.kmz',
+                label: 'Polygon Desa *.kml file',
+                accept: '.kml',
                 model: null,
                 loading: false,
                 required: false,
                 type: 'File'
             },
             dry_land_polygon: {
-                label: 'Polygon Lahan Kering *.kmz file',
-                accept: '.kmz',
+                label: 'Polygon Lahan Kering *.kml file',
+                accept: '.kml',
                 model: null,
                 loading: false,
                 required: false,
                 type: 'File'
             },
             critical_land_polygon: {
-                label: 'Polygon Lahan Kritis *.kmz file',
-                accept: '.kmz',
+                label: 'Polygon Lahan Kritis *.kml file',
+                accept: '.kml',
                 model: null,
                 loading: false,
                 required: false,
                 type: 'File'
             },
+            village_figures: {
+                label: 'Polygon Lahan Kritis *.kml file',
+                model: [],
+                default: [{
+                        name: null,
+                        position: null,
+                        phone: null,
+                        whatsapp: null
+                }],
+                loading: false,
+                required: true,
+                type: 'MultipleInput'
+            }
         },
         loading: {
             show: false,
@@ -827,23 +953,28 @@ export default {
             breakLayoutFrom: 1140,
             requiredInputIcon: 'mdi-alert-decagram'
         },
+        showedModal: false,
     }),
     watch: {
         'inputs.scooping_date.model': {
             async handler(newVal) {
                 this.inputs.scooping_date.modelShow = this._utils.dateFormat(newVal, 'DD MMMM Y')
             }
+        },
+        showedModal(val, oldVal) {
+            if (oldVal != val && val == true) {
+                console.log(val)
+                this.resetData()
+                this.inputs.program_year.model = this.programYear
+                if (this.id) this.getData(this.id)
+                else this.getDummiesData()
+            }
         }
     },
     computed: {
         showModal: {
             get: function () {
-                if (this.show == true) {
-                    this.resetData()
-                    this.inputs.program_year.model = this.programYear
-                    if (this.id) this.getData(this.id)
-                    else this.getDummiesData()
-                }
+                this.showedModal = this.show
                 return this.show
             },
             set: function(newVal) {
@@ -855,7 +986,13 @@ export default {
         disabledSave() {
             let requiredEmpty = 0
             for (const [key, value] of Object.entries(this.inputs)) {
-                if (value.required) if (!value.model) {
+                if ((key == 'village_figures')) {
+                    if (value.required) if (value.model.length > 0) {
+                        value.model.forEach(vm => {
+                            if (!vm.name || !vm.position || !vm.phone) requiredEmpty += 1
+                        })
+                    }
+                } else if (value.required) if (!value.model) {
                     requiredEmpty += 1
                     console.log(key)
                 }
@@ -921,7 +1058,7 @@ export default {
                 await this.getOptionsData({type: 'village', id: district})
                 this.inputs.village.model = village
 
-                this.inputs.land_area.model = 200
+                this.inputs.land_area.model = 400000
                 this.inputs.land_type.model = formOptions.land_type
                 this.inputs.land_slope.model = formOptions.land_slope
                 this.inputs.land_height.model = formOptions.land_height
@@ -932,7 +1069,13 @@ export default {
                 this.inputs.government_place.model = formOptions.government_place
                 this.inputs.land_coverage.model = formOptions.land_coverage
                 this.inputs.electricity_source.model = formOptions.electricity_source
-                this.inputs.dry_land_area.model = 130
+                this.inputs.dry_land_area.model = 130500
+                this.inputs.village_figures.model = [{
+                    name: 'Qwerty',
+                    position: 'Keyboard',
+                    phone: '1234567890',
+                    whatsapp: '0987654321'
+                }]
             } catch (err) {
                 this.errorResponse(err)
             } finally {
@@ -977,6 +1120,20 @@ export default {
                 this.inputs[inputs.type].loading = false
             }
         },
+        modifyTotalSubData(type, name) {
+            if (type == '+') {
+                let inputs = {}
+                if (name == 'village_figures') {
+                    inputs = {
+                        name: null,
+                        position: null,
+                        phone: null,
+                    }
+                }
+                
+                this.inputs[name].model.push(inputs)
+            } else if (type == '-') this.inputs[name].model.pop()
+        },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
@@ -985,8 +1142,10 @@ export default {
             try {
                 for (const [key, value] of Object.entries(this.inputs)) {
                     if (this.separateInputsPerType().date.includes(key)) value.model = moment().format('YYYY-MM-DD')
+                    else if (this.separateInputsPerType().multipleInput.includes(key)) value.model = value.default
                     else value.model = null
                 }
+                console.log(this.separateInputsPerType().multipleInput)
             } catch (err) {this.errorResponse(err)}
         },
         separateInputsPerType() {  
@@ -994,12 +1153,14 @@ export default {
             let inputsNumber = []
             let inputsDate = []
             let inputsMultiple = []
+            let inputsMultipleInput = []
             let inputsFile = []
             for (const [key, value] of Object.entries(this.inputs)) {
                 if (value.type == 'String') inputsString.push(key)
                 if (value.type == 'Number') inputsNumber.push(key)
                 if (value.type == 'Date') inputsDate.push(key)
                 if (value.type == 'Multiple') inputsMultiple.push(key)
+                if (value.type == 'MultipleInput') inputsMultipleInput.push(key)
                 if (value.type == 'File') inputsFile.push(key)
             }
             return {
@@ -1007,6 +1168,7 @@ export default {
                 number: inputsNumber,
                 date: inputsDate,
                 multiple: inputsMultiple,
+                multipleInput: inputsMultipleInput,
                 file: inputsFile
             }
         },
@@ -1033,6 +1195,7 @@ export default {
                     water_source: this.inputs.water_source.model.toString(),
                     land_coverage: this.inputs.land_coverage.model.toString(),
                     electricity_source: this.inputs.electricity_source.model.toString(),
+                    village_figures: this.inputs.village_figures.model,
                     user_id: this.$store.state.User.email,
                 }
                 // upload village polygon
@@ -1048,7 +1211,7 @@ export default {
                     data.critical_land_polygon = await this.uploadPhotos('Polygon Lahan Kritis Desa', this.inputs.critical_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-critical_land`)
                 }
                 this.$store.state.loadingOverlayText = 'Saving scoping data...'
-                console.log(data)
+                console.log(data.village_figures)
                 let url = ''
                 if (this.id) url = `UpdateScooping?data_no=${this.id}`
                 else url = 'AddScooping'
@@ -1061,7 +1224,7 @@ export default {
         },
         async uploadPhotos(type, file, prefix, dir, name) {
             try {
-                this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+                this.$store.state.loadingOverlayText = `Saving file "${type}"...`
                 const url = `${this.$store.state.apiUrlImage}${prefix}/upload.php`
                 const data = this._utils.generateFormData({
                     dir: dir,

@@ -75,9 +75,9 @@
             </template>
             <!-- Status Column -->
             <template v-slot:item.is_verify="{item}">
-                <v-chip :color="item.is_verify > 0 ? `${ item.is_verify == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
-                <v-icon class="mr-1">mdi-{{ item.is_verify > 0 ? `${ item.is_verify == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
-                {{ item.is_verify > 0 ? `Verified ${item.is_verify == 1 ? 'Officer' : 'RM / PM'}` : 'Unverified' }}
+                <v-chip :color="item.is_verify == 1 ? 'green' : 'red'" class="white--text pl-1">
+                <v-icon class="mr-1">mdi-{{ item.is_verify  == 1 ? 'check' : 'close' }}-circle</v-icon>
+                {{ item.is_verify == 1 ? 'Verified' : 'Unverified' }}
                 </v-chip>
             </template>
       

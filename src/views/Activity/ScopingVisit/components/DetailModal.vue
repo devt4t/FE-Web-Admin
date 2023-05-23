@@ -31,6 +31,18 @@
                         </p>
                     </div>
                 </v-overlay>
+                <!-- Polygon Data -->
+                <v-row class="ma-0 mx-2">
+                    <v-col cols="12">
+                        <div class="d-flex align-center">
+                            <p class="mb-0"><v-icon class="mr-2">mdi-vector-polygon-variant</v-icon>Polygon Data</p>
+                            <v-divider class="mx-2"></v-divider>
+                        </div>
+                    </v-col>
+                    <v-col cols="12">
+                        <DetailModalMap v-if="showModal == true" :data="map.data" :key="map.key" />
+                    </v-col>
+                </v-row>
                 <!-- data -->
                 <div 
                     v-for="data in datas" 
@@ -42,6 +54,45 @@
                                 <v-divider class="mx-2"></v-divider>
                             </div>
                         </v-col>
+                    </v-row>
+                    <v-row v-if="data.type == 'table'" class="ma-0 mx-2">
+                        <v-data-table
+                            hide-default-footer
+                            :items-per-page="-1"
+                            multi-sort
+                            class="rounded-xl mx-4"
+                            style="width: 100%;"
+                            :headers="data.table.headers"
+                            :items="data.table.items"
+                        >
+                            <template v-slot:item.no="{index}">
+                                {{ index + 1 }}
+                            </template>
+                            <template v-slot:item.phone="{item}">
+                                <v-tooltip top content-class="rounded-xl">
+                                    Click here for calling
+                                    <template v-slot:activator="{on, attrs}">
+                                        <a :href="`tel:${item.phone}`" v-bind="attrs" v-on="on" style="text-decoration: none;" class="grey--text text--darken-3">
+                                            <v-btn fab x-small color="grey darken-3 white--text" class="elevation-0 mr-1"><v-icon>mdi-phone</v-icon></v-btn>
+                                        </a> 
+                                    </template>
+                                </v-tooltip>
+                                {{ item.phone }}
+                            </template>
+                            <template v-slot:item.whatsapp="{item}">
+                                <v-tooltip top content-class="rounded-xl">
+                                    Click here for chat
+                                    <template v-slot:activator="{on, attrs}">
+                                        <a :href="`https://wa.me/${whatsappPhone(item.whatsapp)}`" target="_blank" v-bind="attrs" v-on="on" style="text-decoration: none;" class="grey--text text--darken-3">
+                                            <v-btn fab x-small color="green white--text" class="elevation-0 mr-1"><v-icon>mdi-whatsapp</v-icon></v-btn>
+                                        </a> 
+                                    </template>
+                                </v-tooltip>
+                                {{ item.whatsapp }}
+                            </template>
+                        </v-data-table>
+                    </v-row>
+                    <v-row v-else class="ma-0 mx-4">
                         <v-col v-for="item in data.items" 
                             :key="item.key"
                             cols="12" :lg="item.lg" :md="item.md"
@@ -58,6 +109,8 @@
                                 <span v-else>
                                     <span v-if="item.model">
                                         <span v-if="item.type == 'Multiple'">{{ item.model.replaceAll(',', ', ') }}</span>
+                                        <span v-else-if="item.type == 'Date'">{{ _utils.dateFormat(item.model, 'DD MMMM YYYY') }}</span>
+                                        <span v-else-if="item.type == 'Number'">{{ _utils.numberFormat(item.model) }}</span>
                                         <span v-else>{{ item.model }}</span>
                                         <span v-if="item.suffix" v-html="item.suffix" class="ml-1"></span>
                                     </span>
@@ -68,9 +121,9 @@
                     </v-row>
                 </div>
             </v-card-text>
-            <v-card-actions class="justify-center">
-                <v-btn rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
-                <!-- <v-btn rounded color="red" outlined class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn> -->
+            <v-card-actions class="justify-center" v-if="verificationAccess">
+                <v-btn v-if="verified_data == 0" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
+                <v-btn v-if="verified_data == 1" rounded color="red" outlined class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -84,10 +137,12 @@ import Swal from 'sweetalert2'
 
 import formOptions from '@/assets/json/rraPraOptions.json'
 import treeAnimation from '@/assets/lottie/tree.json'
+import DetailModalMap from './DetailModalMap.vue'
 
 export default {
     components: {
-        LottieAnimation
+        LottieAnimation,
+        DetailModalMap
     },
     props: {
         show: {
@@ -104,6 +159,7 @@ export default {
             {
                 title: 'Lokasi & Tanggal Scooping Visit',
                 icon: 'mdi-city',
+                type: 'column',
                 items: [
                     {
                         key: 'province_name',
@@ -139,7 +195,7 @@ export default {
                     },
                     {
                         key: 'scooping_date',
-                        title: 'Tanggal Scooping',
+                        title: `Tanggal Scooping`,
                         model: null,
                         type: 'Date',
                         lg: 4,
@@ -150,6 +206,7 @@ export default {
             {
                 title: 'Scooping Data',
                 icon: 'mdi-text-box',
+                type: 'column',
                 items: [
                     {
                         key: 'land_area',
@@ -244,8 +301,25 @@ export default {
                 ]
             },
             {
+                title: 'Tokoh Desa',
+                icon: 'mdi-account-cowboy-hat',
+                type: 'table',
+                key: 'scooping_figures',
+                table: {
+                    headers: [
+                        {text: 'No', value: 'no', width: '75px'},
+                        {text: 'Nama', value: 'name'},
+                        {text: 'Jabatan', value: 'position'},
+                        {text: 'No HP', value: 'phone'},
+                        {text: 'Whatsapp', value: 'whatsapp'},
+                    ],
+                    items: []
+                }
+            },
+            {
                 title: 'Log',
                 icon: 'mdi-clock',
+                type: 'column',
                 items: [
                     {
                         key: 'created_at',
@@ -298,6 +372,15 @@ export default {
                 ]
             }
         ],
+        verified_data: 0,
+        map: {
+            key: 11101203,
+            data: {
+                village_polygon: null,
+                dry_land_polygon: null,
+                critical_land_polygon: null
+            }
+        },
         loading: {
             show: false,
             text: 'Loading...'
@@ -313,6 +396,9 @@ export default {
             get: function () {
                 if (this.show) {
                     if (this.id) this.getData(this.id)
+                    setTimeout(() => {
+                        this.map.key += 1
+                    }, 100);
                 }
                 return this.show
             },
@@ -320,9 +406,18 @@ export default {
                 if (!newVal) this.$emit('action', {type: 'close', name: 'detail'})
             }
         },
+        verificationAccess() {
+            const user = this.$store.state.User
+            const role_group = user.role_group
+            const role_name = user.role_name
+            if (role_group == 'IT') return true
+            if (role_name == 'SOCIAL OFFICER') return true
+            return false
+        }
     },
     methods: {
-        confirmVerification() {
+        confirmVerification(type) {
+            const url = type == 'Verif' ? 'VerificationScooping' : 'UnverificationScooping'
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -336,7 +431,7 @@ export default {
                 if (result.isConfirmed) {
                     this.loading.show = true
                     this.loading.text = 'Verifying data...'
-                    axios.post(this.$store.getters.getApiUrl('VerificationScooping'), {data_no: this.id}, this.$store.state.apiConfig)
+                    axios.post(this.$store.getters.getApiUrl(url), {data_no: this.id}, this.$store.state.apiConfig)
                     .then(res => {
                         Swal.fire({
                             title: 'Verified!',
@@ -379,14 +474,22 @@ export default {
 
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
-                
+                this.verified_data = data.is_verify
                 for (const [key, value] of Object.entries(data)) {
                     this.datas.forEach(localData => {
-                        const findData = localData.items.find(scopingData => scopingData.key === key)
-                        if (findData) findData.model = value
+                        if (localData.type == 'table') {
+                            if (localData.key == key) localData.table.items = value
+                        } else {
+                            const findData = localData.items.find(scopingData => scopingData.key === key)
+                            if (findData) findData.model = value
+                        }
                     });
                 }
-                console.log(data)
+                this.map.data = {
+                    village_polygon: data.village_polygon,
+                    critical_land_polygon: data.critical_land_polygon,
+                    dry_land_polygon: data.dry_land_polygon
+                }
             } catch (err) {
                 this.errorResponse(err)
                 this.$emit('action', {type: 'close', name: 'detail'})
@@ -394,6 +497,9 @@ export default {
                 this.loading.show = false
             }
         },
+        whatsappPhone(no) {
+            return no.replace(/^0/, "62");
+        }
     }
 }
 </script>
