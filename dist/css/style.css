@@ -216,3 +216,11 @@ body * {
     top: 0;bottom: 0;
     z-index: -1;
   }
+
+  /* SWAL / SWEET ALERT2 */
+  .swal2-container.swal2-center>.swal2-popup, .swal2-popup.swal2-toast {
+    border-radius: 25px;
+  }
+  .swal2-styled.swal2-confirm, .swal2-styled.swal2-cancel {
+    border-radius: 100px!important;
+  }
