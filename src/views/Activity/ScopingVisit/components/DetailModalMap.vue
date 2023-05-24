@@ -73,7 +73,8 @@ export default {
         maps:{
             model: null,
             attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
-            center: [39.826204, 21.422484],
+            center: [113.921300, -0.789300],
+            // center: [39.826204, 21.422484],
             // center: [107.52657620636666, -7.0917231719],
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             legends: {
@@ -84,7 +85,7 @@ export default {
                 show: false,
                 text: 'Loading...'
             },
-            zoom: 8,
+            zoom: 3,
             geojson: {},
             key: 111,
             layerId: 0,
@@ -192,33 +193,23 @@ export default {
                     this.maps.model = new mapboxgl.Map({
                         container: 'mapboxContainer', // container ID
                         accessToken: this.$store.state.maps.accessToken,
-                        style: this.$store.state.maps.mapStyle, // style URL
+                        style: 'mapbox://styles/mapbox/satellite-v9', // style URL
                         center: options.center,
                         zoom: options.zoom,
-                        projection: 'globe'
+                        projection: 'equirectangular'
                     });
                 }
                 if (this.maps.model) {
                     const map = this.maps.model
+                    // disable map rotation using right click + drag
+                    map.dragRotate.disable();
+                    // disable map rotation using touch rotation gesture
+                    map.touchZoomRotate.disableRotation();
+                    // add fullscreen function
+                    map.addControl(new mapboxgl.FullscreenControl());
                     map.on('load', () => {
-                        map.addSource('mapbox-dem', {
-                            'type': 'raster-dem',
-                            'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
-                            'tileSize': 512,
-                            'maxzoom': 14
-                        });
-                        // add the DEM source as a terrain layer with exaggerated height
-                        map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
-                        map.setFog({
-                            color: 'rgb(186, 210, 235)', // Lower atmosphere
-                            'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
-                            'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
-                            'space-color': 'rgb(11, 11, 25)', // Background color
-                            'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
-                        });
                         // Add zoom and rotation controls to the map.
                         map.addControl(new mapboxgl.NavigationControl());
-                        map.flyTo({zoom: 10, duration: 12 * 1000})
                     });
                 }
             } catch (err) {this.errorResponse(err)} finally {
@@ -286,7 +277,7 @@ export default {
                             map.flyTo({
                                 center: [centerCoordinates[0], centerCoordinates[1]],
                                 zoom: 9,
-                                duration: 15 * 1000
+                                duration: 7 * 1000
                             });
                         })
                     })

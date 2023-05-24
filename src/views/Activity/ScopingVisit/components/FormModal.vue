@@ -31,114 +31,50 @@
                         </p>
                     </div>
                 </v-overlay>
-                <v-row class="ma-0 mx-5">
-                    <!-- SELECT VILLAGE -->
+                <v-row class="ma-0 mx-5" v-for="(ig, igIndex) in inputsGroup" :key="`IG-${igIndex}`">
+                    <!-- Title -->
                     <v-col cols="12">
                         <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-city</v-icon>Lokasi & Tangal Scoping</p>
+                            <p class="mb-0"><v-icon class="mr-2">{{ ig.icon }}</v-icon>{{ ig.title }}</p>
                             <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
-                    <!-- Province -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
+                    <!-- Inputs -->
+                    <v-col v-for="(itemKey, iKIndex) in ig.items_key" :key="`Inputs-${itemKey}-${iKIndex}`" cols="12" sm="12" md="6" :lg="inputs[itemKey].lgView" >
+                        <!-- autocomplete -->
                         <v-autocomplete
+                            v-if="inputs[itemKey].inputType == 'autocomplete'"
                             dense
+                            :multiple="inputs[itemKey].type == 'Multiple'"
                             color="success"
                             hide-details
                             item-color="success"
-                            item-text="name"
-                            item-value="province_code"
-                            :items="inputs.province.items"
-                            :label="inputs.province.label"
-                            :loading="inputs.province.loading"
+                            :item-text="inputs[itemKey].itemText"
+                            :item-value="inputs[itemKey].itemValue"
+                            :items="inputs[itemKey].items"
+                            :label="inputs[itemKey].label"
+                            :loading="inputs[itemKey].loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.province.loading ? 'Loading...' : 'No Data'"
+                            :no-data-text="inputs[itemKey].loading ? 'Loading...' : 'No Data'"
                             outlined
                             rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.province.model"
-                            v-on:change="getOptionsData({type: 'regency'})"
-                        ></v-autocomplete>
-                    </v-col>
-                    <!-- Regency -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
-                        <v-autocomplete
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kabupaten_no"
-                            :items="inputs.regency.items"
-                            :label="inputs.regency.label"
-                            :loading="inputs.regency.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.regency.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.regency.model"
-                            v-on:change="getOptionsData({type: 'district'})"
-                        ></v-autocomplete>
-                    </v-col>
-                    <!-- District -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
-                        <v-autocomplete
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_kecamatan"
-                            :items="inputs.district.items"
-                            :label="inputs.district.label"
-                            :loading="inputs.district.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.district.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.district.model"
-                            v-on:change="getOptionsData({type: 'village'})"
-                        ></v-autocomplete>
-                    </v-col>
-                    <!-- Village -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
-                        <v-autocomplete
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.village.items"
-                            :loading="inputs.village.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.village.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.village.model"
+                            v-model="inputs[itemKey].model"
                         >
                             <template v-slot:label>
-                                {{ inputs.village.label }} 
-                                <sup><v-icon v-if="inputs.village.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                {{ inputs[itemKey].label }} 
+                                <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
                         </v-autocomplete>
-                    </v-col>
-                    <!-- Tanggal Scoping -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
+                        <!-- datepicker -->
                         <v-menu 
+                            v-else-if="inputs[itemKey].inputType == 'datepicker'"
                             rounded="xl"
                             transition="slide-x-transition"
                             bottom
                             min-width="100"
                             offset-y
                             :close-on-content-click="true"
-                            v-model="inputs.scooping_date.show"
+                            v-model="inputs[itemKey].show"
                         >
                             <template v-slot:activator="{ on: menu, attrs }">
                                 <v-tooltip top content-class="rounded-xl">
@@ -153,11 +89,11 @@
                                             v-bind="attrs"
                                             v-on="{...menu, ...tooltip}"
                                             readonly
-                                            v-model="inputs.scooping_date.modelShow"
+                                            v-model="inputs[itemKey].modelShow"
                                         >
                                             <template v-slot:label>
-                                                {{ inputs.scooping_date.label }} 
-                                                <sup><v-icon v-if="inputs.scooping_date.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                {{ inputs[itemKey].label }} 
+                                                <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                             </template>
                                         </v-text-field>
                                     </template>
@@ -165,7 +101,7 @@
                                 </v-tooltip>
                             </template>
                             <div class="rounded-xl pb-2 white">
-                                <v-overlay :value="inputs.scooping_date.loading">
+                                <v-overlay :value="inputs[itemKey].loading">
                                     <div class="d-flex flex-column align-center justify-center">
                                         <v-progress-circular
                                             indeterminate
@@ -178,416 +114,71 @@
                                 <div class="d-flex flex-column align-center rounded-xl">
                                     <v-date-picker 
                                         color="green lighten-1 rounded-xl" 
-                                        v-model="inputs.scooping_date.model"
+                                        v-model="inputs[itemKey].model"
                                         min="2022-11-24"
                                     ></v-date-picker>
                                 </div>
                             </div>
                         </v-menu>
-                    </v-col>
-                    <!-- Scooping Form -->
-                    <v-col cols="12">
-                        <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-format-columns</v-icon>Scoping Visit Form</p>
-                            <v-divider class="mx-2"></v-divider>
-                        </div>
-                    </v-col>
-                    <!-- land_area -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
+                        <!-- text-field -->
                         <v-text-field
+                            v-else-if="inputs[itemKey].inputType == 'text-field'"
                             dense
                             color="success"
                             hide-details
-                            :label="inputs.land_area.label"
-                            :disabled="false"
+                            :label="inputs[itemKey].label"
                             outlined
                             rounded
-                            type="number"
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.land_area.model"
+                            :type="inputs[itemKey].type == 'Number' ? 'number' : 'text'"
+                            v-model="inputs[itemKey].model"
                         >
                             <template v-slot:label>
-                                {{ inputs.land_area.label }} 
-                                <sup><v-icon v-if="inputs.land_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                {{ inputs[itemKey].label }} 
+                                <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
                             <template v-slot:append>
-                                <div class="mt-1 ml-1">
-                                    m<sup>2</sup>
-                                </div>
+                                <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
                             </template>
                         </v-text-field>
-                    </v-col>
-                    <!-- land_type -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            dense
-                            multiple
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.land_type.items"
-                            :label="inputs.land_type.label"
-                            :loading="inputs.land_type.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.land_type.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.land_type.model"
+                        <!-- file-input -->
+                        <div
+                            v-else-if="inputs[itemKey].inputType == 'file-input'"
                         >
-                            <template v-slot:label>
-                                {{ inputs.land_type.label }} 
-                                <sup><v-icon v-if="inputs.land_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- land_slope -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.land_slope.items"
-                            :label="inputs.land_slope.label"
-                            :loading="inputs.land_slope.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.land_slope.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.land_slope.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.land_slope.label }} 
-                                <sup><v-icon v-if="inputs.land_slope.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- land_height -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            suffix="mdpl"
-                            :items="inputs.land_height.items"
-                            :label="inputs.land_height.label"
-                            :loading="inputs.land_height.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.land_height.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.land_height.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.land_height.label }} 
-                                <sup><v-icon v-if="inputs.land_height.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- vegetation_density -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.vegetation_density.items"
-                            :label="inputs.vegetation_density.label"
-                            :loading="inputs.vegetation_density.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.vegetation_density.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.vegetation_density.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.vegetation_density.label }} 
-                                <sup><v-icon v-if="inputs.vegetation_density.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- water_source -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.water_source.items"
-                            :label="inputs.water_source.label"
-                            :loading="inputs.water_source.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.water_source.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.water_source.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.water_source.label }} 
-                                <sup><v-icon v-if="inputs.water_source.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- rainfall -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            suffix="mm"
-                            :items="inputs.rainfall.items"
-                            :label="inputs.rainfall.label"
-                            :loading="inputs.rainfall.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.rainfall.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.rainfall.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.rainfall.label }} 
-                                <sup><v-icon v-if="inputs.rainfall.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- agroforestry_type -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.agroforestry_type.items"
-                            :label="inputs.agroforestry_type.label"
-                            :loading="inputs.agroforestry_type.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.agroforestry_type.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.agroforestry_type.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.agroforestry_type.label }} 
-                                <sup><v-icon v-if="inputs.agroforestry_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- government_place -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.government_place.items"
-                            :label="inputs.government_place.label"
-                            :loading="inputs.government_place.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.government_place.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.government_place.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.government_place.label }} 
-                                <sup><v-icon v-if="inputs.government_place.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- land_coverage -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.land_coverage.items"
-                            :label="inputs.land_coverage.label"
-                            :loading="inputs.land_coverage.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.land_coverage.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.land_coverage.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.land_coverage.label }} 
-                                <sup><v-icon v-if="inputs.land_coverage.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- electricity_source -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            multiple
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.electricity_source.items"
-                            :label="inputs.electricity_source.label"
-                            :loading="inputs.electricity_source.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.electricity_source.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.electricity_source.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.electricity_source.label }} 
-                                <sup><v-icon v-if="inputs.electricity_source.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <!-- dry_land_area -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-text-field
-                            dense
-                            color="success"
-                            hide-details
-                            :label="inputs.dry_land_area.label"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            type="number"
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.dry_land_area.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.dry_land_area.label }} 
-                                <sup><v-icon v-if="inputs.dry_land_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                            <template v-slot:append>
-                                <div class="mt-1 ml-1">
-                                    m<sup>2</sup>
-                                </div>
-                            </template>
-                        </v-text-field>
-                    </v-col>
-                    <!-- POLYGON INPUTS -->
-                    <v-col cols="12">
-                        <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-map-marker-path</v-icon>Upload File Polygon</p>
-                            <v-divider class="mx-2"></v-divider>
+                            <v-file-input
+                                color="success"
+                                dense
+                                hide-details
+                                outlined
+                                rounded
+                                show-size
+                                :prepend-icon="inputs[itemKey].prependIcon"
+                                :accept="inputs[itemKey].accept"
+                                :disabled="false"
+                                :label="inputs[itemKey].label"
+                                v-model="inputs[itemKey].model"
+                            >
+                                <template v-slot:label>
+                                    {{ inputs[itemKey].label }} 
+                                    <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                </template>
+                            </v-file-input>
+                            <v-card 
+                                class="rounded-xl mt-2"
+                                v-if="inputs[itemKey].accept.includes('jpg') && inputs[itemKey].preview"
+                            >
+                                <v-img
+                                    height="300"
+                                    v-bind:src="inputs[itemKey].preview"
+                                    class="my-2 mb-4 rounded-xl cursor-pointer"
+                                    id="photo1"
+                                    @click="showLightbox(inputs[itemKey].preview)"
+                                ></v-img>
+                            </v-card>
                         </div>
                     </v-col>
-                    <!-- village_polygon -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-file-input
-                            color="success"
-                            dense
-                            hide-details
-                            outlined
-                            rounded
-                            show-size
-                            prepend-icon="mdi-vector-polygon"
-                            :accept="inputs.village_polygon.accept"
-                            :disabled="false"
-                            :label="inputs.village_polygon.label"
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.village_polygon.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.village_polygon.label }} 
-                                <sup><v-icon v-if="inputs.village_polygon.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-file-input>
-                    </v-col>
-                    <!-- dry_land_polygon -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-file-input
-                            color="success"
-                            dense
-                            hide-details
-                            outlined
-                            rounded
-                            show-size
-                            prepend-icon="mdi-vector-polygon"
-                            :accept="inputs.dry_land_polygon.accept"
-                            :disabled="false"
-                            :label="inputs.dry_land_polygon.label"
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.dry_land_polygon.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.dry_land_polygon.label }} 
-                                <sup><v-icon v-if="inputs.dry_land_polygon.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-file-input>
-                    </v-col>
-                    <!-- critical_land_polygon -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-file-input
-                            color="success"
-                            dense
-                            hide-details
-                            outlined
-                            rounded
-                            show-size
-                            prepend-icon="mdi-vector-polygon"
-                            :accept="inputs.critical_land_polygon.accept"
-                            :disabled="false"
-                            :label="inputs.critical_land_polygon.label"
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.critical_land_polygon.model"
-                        >
-                            <template v-slot:label>
-                                {{ inputs.critical_land_polygon.label }} 
-                                <sup><v-icon v-if="inputs.critical_land_polygon.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                        </v-file-input>
-                    </v-col>
-                    <!-- Scooping Form -->
+                </v-row>
+                <!-- Tokoh Desa -->
+                <v-row class="ma-0 mx-5">
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">mdi-account-cowboy-hat</v-icon>Tokoh Desa</p>
@@ -700,6 +291,78 @@
                         </v-row>
                     </v-col>
                 </v-row>
+                <!-- Dusun Data -->
+                <v-row class="ma-0 mx-5">
+                    <v-col cols="12">
+                        <div class="d-flex align-center">
+                            <p class="mb-0"><v-icon class="mr-2">mdi-home-group</v-icon>Data Dusun</p>
+                            <v-divider class="mx-2"></v-divider>
+                        </div>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-expansion-panels class="rounded-xl">
+                            <v-expansion-panel v-for="(hm, hmIndex) in inputs.hamlets.model" :key="`hamlet-${hmIndex}`" class="rounded-xl">
+                                <v-expansion-panel-header>
+                                    <template v-slot:default="{ open }">
+                                        <v-row no-gutters>
+                                            <v-col cols="4">
+                                                Dusun {{ hmIndex + 1 }}
+                                            </v-col>
+                                            <v-col
+                                                cols="8"
+                                                class="text--secondary"
+                                            >
+                                                <v-fade-transition leave-absolute>
+                                                    <span
+                                                        v-if="open"
+                                                        key="0"
+                                                    >
+                                                        Isi data...
+                                                    </span>
+                                                    <span
+                                                        v-else
+                                                        key="1"
+                                                    >
+                                                        {{ hm.hamlet_name || 'Isi data nama dusun' }}
+                                                    </span>
+                                                </v-fade-transition>
+                                            </v-col>
+                                        </v-row>
+                                    </template>
+                                </v-expansion-panel-header>
+                                <v-expansion-panel-content>
+                                    <v-row>
+                                        <!-- Inputs -->
+                                        <v-col v-for="(hmInputs, hmInputIndex) in Object.entries(inputs.hamlets.form)" :key="`Inputs-${hmIndex}-${hmInputIndex}`" cols="12" sm="12" md="6" :lg="hmInputs.lgView" >
+                                            <!-- text-field -->
+                                            <v-text-field
+                                                dense
+                                                color="success"
+                                                hide-details
+                                                :label="hmInputs[1].label"
+                                                outlined
+                                                rounded
+                                                :type="hmInputs[1].type"
+                                                v-model="hm[hmInputs[0]]"
+                                            >
+                                                <template v-slot:label>
+                                                    {{ hmInputs[1].label }} 
+                                                    <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                </template>
+                                                <template v-slot:append>
+                                                    <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                </template>
+                                            </v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
+                        </v-expansion-panels>
+                    </v-col>
+                    <!-- Inputs -->
+                    <!-- <v-col v-for="(item, itemIndex) in inputs.hamlets.form" :key="`Inputs-hamlets-${itemIndex}`" cols="12" sm="12" md="6" :lg="item.lgView" >
+                    </v-col> -->
+                </v-row>
             </v-card-text>
             <v-card-actions>
                 <v-btn 
@@ -734,6 +397,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import LottieAnimation from 'lottie-web-vue'
+import Swal from 'sweetalert2'
 
 import formOptions from '@/assets/json/rraPraOptions.json'
 import treeAnimation from '@/assets/lottie/tree.json'
@@ -757,6 +421,7 @@ export default {
         }
     },
     data: () => ({
+        trip: {name: ''},
         inputs: {
             program_year: {
                 model: '',
@@ -768,6 +433,10 @@ export default {
                 label: 'Provinsi',
                 model: '',
                 items: [],
+                itemText: 'name',
+                itemValue: 'province_code',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'String'
@@ -776,6 +445,10 @@ export default {
                 label: 'Kabupaten / Kota',
                 model: '',
                 items: [],
+                itemText: 'name',
+                itemValue: 'kabupaten_no',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'String'
@@ -784,6 +457,10 @@ export default {
                 label: 'Kecamatan',
                 model: '',
                 items: [],
+                itemText: 'name',
+                itemValue: 'kode_kecamatan',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'String'
@@ -792,6 +469,10 @@ export default {
                 items: [],
                 label: 'Desa',
                 model: '',
+                itemText: 'name',
+                itemValue: 'kode_desa',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'String'
@@ -802,6 +483,8 @@ export default {
                 label: 'Tanggal Scooping',
                 model: moment().format('Y-MM-DD'),
                 modelShow: moment().format('DD MMMM Y'),
+                inputType: 'datepicker',
+                lgView: 6,
                 show: false,
                 required: true,
                 type: 'Date'
@@ -810,14 +493,33 @@ export default {
             land_area: {
                 label: 'Luas Desa',
                 model: '',
+                inputType: 'text-field',
+                lgView: 6,
+                append: 'm<sup>2</sup>',
                 loading: false,
                 required: true,
                 type: 'Number'
+            },
+            accessibility: {
+                items: formOptions.accessibility,
+                label: 'Aksesibilitas',
+                model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
+                loading: false,
+                required: true,
+                type: 'Select'
             },
             land_type: {
                 items: formOptions.land_type.sort(),
                 label: 'Jenis Tanah',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -826,6 +528,10 @@ export default {
                 items: formOptions.land_slope,
                 label: 'Kelerengan Tanah',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -834,14 +540,22 @@ export default {
                 items: formOptions.land_height.sort(),
                 label: 'Ketinggian Tanah',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
             },
             vegetation_density: {
-                items: formOptions.vegetation_density.sort(),
+                items: formOptions.vegetation_density,
                 label: 'Kerapatan Vegetasi',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -850,6 +564,10 @@ export default {
                 items: formOptions.water_source.sort(),
                 label: 'Sumber Air',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -858,6 +576,10 @@ export default {
                 items: formOptions.rainfall.sort(),
                 label: 'Curah Hujan',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -866,6 +588,10 @@ export default {
                 items: formOptions.agroforestry_type.sort(),
                 label: 'Tipe Agroforestry',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -874,6 +600,10 @@ export default {
                 items: formOptions.government_place.sort(),
                 label: 'Tempat Pemerintahan',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -882,6 +612,10 @@ export default {
                 items: formOptions.land_coverage.sort(),
                 label: 'Cakupan Lahan',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -890,6 +624,10 @@ export default {
                 items: formOptions.electricity_source.sort(),
                 label: 'Sumber Listrik',
                 model: '',
+                itemText: 'value',
+                itemValue: 'value',
+                inputType: 'autocomplete',
+                lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -897,6 +635,9 @@ export default {
             dry_land_area: {
                 label: 'Luas Lahan Kering',
                 model: '',
+                inputType: 'text-field',
+                lgView: 6,
+                append: 'm<sup>2</sup>',
                 loading: false,
                 required: true,
                 type: 'Number'
@@ -905,6 +646,9 @@ export default {
                 label: 'Polygon Desa *.kml file',
                 accept: '.kml',
                 model: null,
+                inputType: 'file-input',
+                lgView: 6,
+                prependIcon: 'mdi-vector-polygon',
                 loading: false,
                 required: false,
                 type: 'File'
@@ -913,20 +657,53 @@ export default {
                 label: 'Polygon Lahan Kering *.kml file',
                 accept: '.kml',
                 model: null,
+                inputType: 'file-input',
+                lgView: 6,
+                prependIcon: 'mdi-vector-polygon',
                 loading: false,
                 required: false,
                 type: 'File'
             },
-            critical_land_polygon: {
-                label: 'Polygon Lahan Kritis *.kml file',
-                accept: '.kml',
+            // photos
+            accessibility_photo: {
+                label: 'Akses Jalan',
+                accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
+                preview: null,
+                inputType: 'file-input',
+                lgView: 4,
+                prependIcon: 'mdi-camera',
                 loading: false,
                 required: false,
                 type: 'File'
             },
+            meeting_photo: {
+                label: 'Pertemuan dengan Tokoh Desa',
+                accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
+                model: null,
+                preview: null,
+                inputType: 'file-input',
+                lgView: 4,
+                prependIcon: 'mdi-camera',
+                loading: false,
+                required: false,
+                type: 'File'
+            },
+            dry_land_photo: {
+                label: 'Lahan Kering',
+                accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
+                model: null,
+                preview: null,
+                inputType: 'file-input',
+                lgView: 4,
+                prependIcon: 'mdi-camera',
+                loading: false,
+                required: false,
+                type: 'File'
+            },
+            // Tokoh Desa
             village_figures: {
-                label: 'Polygon Lahan Kritis *.kml file',
+                label: 'Tokoh Desa',
                 model: [],
                 default: [{
                         name: null,
@@ -937,8 +714,133 @@ export default {
                 loading: false,
                 required: true,
                 type: 'MultipleInput'
-            }
+            },
+            // Dusun Data
+            hamlets: {
+                label: 'Data Dusun',
+                form: {
+                    hamlet_name: {
+                        label: 'Nama Dusun',
+                        type: 'text',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    number_of_families: {
+                        label: 'Jumlah KK',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    number_of_farmer_families: {
+                        label: 'Jumlah KK Petani',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    number_of_souls: {
+                        label: 'Jumlah Jiwa',
+                        type: 'number',
+                        suffix: 'jiwa',
+                        lgView: 6
+                    },
+                    avg_family_member: {
+                        label: 'Rata - Rata Anggota Keluarga',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_jr_highschool: {
+                        label: 'SD - SMP',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_sr_highschool: {
+                        label: 'SMA',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_university: {
+                        label: 'Kuliah',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_productive: {
+                        label: 'Produktif',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_not_productive: {
+                        label: 'Tidak Produktif',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_farmers: {
+                        label: 'Petani',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_farmer_workers: {
+                        label: 'Buruh Tani',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                    total_of_other_profession: {
+                        label: 'Profesi Lain',
+                        type: 'number',
+                        suffix: '',
+                        lgView: 6
+                    },
+                },
+                model: [],
+                default: [{
+                    hamlet_name: null,
+                    number_of_families: 0,
+                    number_of_farmer_families: 0,
+                    number_of_souls: 0,
+                    avg_family_member: 0,
+                    total_of_jr_highschool: 0,
+                    total_of_sr_highschool: 0,
+                    total_of_university: 0,
+                    total_of_productive: 0,
+                    total_of_not_productive: 0,
+                    total_of_farmers: 0,
+                    total_of_farmer_workers: 0,
+                    total_of_other_profession: 0,
+                }],
+                loading: false,
+                required: true,
+                type: 'MultipleInput'
+            },
         },
+        inputsGroup: [
+            {
+                title: 'Lokasi & Tanggal Kegiatan Scooping',
+                icon: 'mdi-calendar',
+                items_key: ["province", "regency", "district", "village", "scooping_date"]
+            },
+            {
+                title: 'Data General Desa',
+                icon: 'mdi-home',
+                items_key: ["land_area", "accessibility", "land_type", "land_slope", "land_height", "vegetation_density", "water_source", "rainfall", "agroforestry_type", "government_place", "land_coverage", "electricity_source", "dry_land_area"]
+            },
+            {
+                title: 'Upload Photo File',
+                icon: 'mdi-image-multiple',
+                items_key: ["accessibility_photo", "meeting_photo", "dry_land_photo"],
+            },
+            {
+                title: 'Upload Polygon File (GIS)',
+                icon: 'mdi-map-marker-path',
+                items_key: ["village_polygon", "dry_land_polygon"],
+            }
+        ],
         loading: {
             show: false,
             text: 'Loading...'
@@ -963,13 +865,43 @@ export default {
         },
         showedModal(val, oldVal) {
             if (oldVal != val && val == true) {
-                console.log(val)
+                // console.log(val)
                 this.resetData()
                 this.inputs.program_year.model = this.programYear
                 if (this.id) this.getData(this.id)
-                else this.getDummiesData()
+                // else this.getDummiesData()
             }
-        }
+        },
+        'inputs.province.model': {
+            handler(val) {
+                if (val) this.getOptionsData({type: 'regency'})
+            }
+        },
+        'inputs.regency.model': {
+            handler(val) {
+                if (val) this.getOptionsData({type: 'district'})
+            }
+        },
+        'inputs.district.model': {
+            handler(val) {
+                if (val) this.getOptionsData({type: 'village'})
+            }
+        },
+        'inputs.accessibility_photo.model': {
+            async handler(val) {
+                await this.photoFileChanged(val, 'accessibility_photo')
+            }
+        },
+        'inputs.meeting_photo.model': {
+            async handler(val) {
+                await this.photoFileChanged(val, 'meeting_photo')
+            }
+        },
+        'inputs.dry_land_photo.model': {
+            async handler(val) {
+                await this.photoFileChanged(val, 'dry_land_photo')
+            }
+        },
     },
     computed: {
         showModal: {
@@ -994,7 +926,7 @@ export default {
                     }
                 } else if (value.required) if (!value.model) {
                     requiredEmpty += 1
-                    console.log(key)
+                    // console.log(key)
                 }
             }
             return requiredEmpty > 0 ? true : false
@@ -1004,6 +936,7 @@ export default {
         this.$nextTick(() => {
             window.addEventListener('resize', this.onResize)
         })
+        // console.log(formOptions)
         await this.getOptionsData({type: 'province'})
     },
     methods: {
@@ -1011,10 +944,10 @@ export default {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token");
-                    this.$router.push("/");
-                }
+                    if (error.response.status == 401) {
+                        localStorage.removeItem("token");
+                        this.$router.push("/");
+                    }
                 }
             }
         },
@@ -1026,7 +959,7 @@ export default {
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
                 for (const [key, value] of Object.entries(data)) {
-                    if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key)) this.inputs[key].model = value
+                    if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key) || this.separateInputsPerType().select.includes(key)) this.inputs[key].model = value
                     if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value.split(",")
                 }
                 this.inputs.province.model = data.province
@@ -1138,6 +1071,28 @@ export default {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
         },
+        photoFileChanged (event, inputKey) {
+            if (event) {
+                let fileSize = event.size / 1000000
+                // console.log(fileSize)
+                if (fileSize < 10) {
+                    this.inputs[inputKey].model = event
+                    this.inputs[inputKey].preview = URL.createObjectURL(event)
+                } else {
+                    Swal.fire({
+                        title: 'Too Big!',
+                        text: `Please change your photo file, it's too big. Max 10mb.`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    })
+                    this.inputs[inputKey].model = null
+                    this.inputs[inputKey].preview = null
+                }
+            } else {
+                this.inputs[inputKey].model = null
+                this.inputs[inputKey].preview = null
+            }
+        },
         resetData() {
             try {
                 for (const [key, value] of Object.entries(this.inputs)) {
@@ -1148,10 +1103,87 @@ export default {
                 console.log(this.separateInputsPerType().multipleInput)
             } catch (err) {this.errorResponse(err)}
         },
+        async save() {
+            try {
+                const confirm = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2e7d32',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Tidak Jadi',
+                    confirmButtonText: 'Ya, Lanjutkan!'
+                })
+                if (confirm.isConfirmed) {
+                    this.showModal = false
+                    this.$store.state.loadingOverlay = true
+                    this.$store.state.loadingOverlayText = 'Saving scoping data...'
+                    let data = {
+                        village: this.inputs.village.model,
+                        province: this.inputs.province.model,
+                        city: this.inputs.regency.model,
+                        district: this.inputs.district.model,
+                        land_area: this.inputs.land_area.model,
+                        scooping_date: this.inputs.scooping_date.model,
+                        land_type: this.inputs.land_type.model.toString(),
+                        slope: this.inputs.land_slope.model.toString(),
+                        altitude: this.inputs.land_height.model.toString(),
+                        dry_land_area: this.inputs.dry_land_area.model,
+                        vegetation_density: this.inputs.vegetation_density.model.toString(),
+                        rainfall: this.inputs.rainfall.model.toString(),
+                        agroforestry_type: this.inputs.agroforestry_type.model.toString(),
+                        government_place: this.inputs.government_place.model.toString(),
+                        water_source: this.inputs.water_source.model.toString(),
+                        land_coverage: this.inputs.land_coverage.model.toString(),
+                        electricity_source: this.inputs.electricity_source.model.toString(),
+                        village_figures: this.inputs.village_figures.model,
+                        user_id: this.$store.state.User.email,
+                    }
+                    // upload village_polygon
+                    if (this.inputs.village_polygon.model) {
+                        data.village_polygon = await this.uploadFiles('polygon', 'Polygon Desa', this.inputs.village_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}`)
+                    }
+                    // upload dry_land polygon
+                    if (this.inputs.dry_land_polygon.model) {
+                        data.dry_land_polygon = await this.uploadFiles('polygon', 'Polygon Lahan Kering Desa', this.inputs.dry_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-dry_land`)
+                    }
+                    // upload accessibility_photo
+                    if (this.inputs.accessibility_photo.model) {
+                        data.accessibility_photo = await this.uploadFiles('photo', 'Foto Akses Jalan', this.inputs.accessibility_photo.model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-accessibility`)
+                    }
+                    // upload meeting_photo
+                    if (this.inputs.meeting_photo.model) {
+                        data.meeting_photo = await this.uploadFiles('photo', 'Foto Akses Jalan', this.inputs.meeting_photo.model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-stakeholder_meeting`)
+                    }
+                    // upload dry_land_photo
+                    if (this.inputs.dry_land_photo.model) {
+                        data.dry_land_photo = await this.uploadFiles('photo', 'Foto Akses Jalan', this.inputs.dry_land_photo.model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-dry_land`)
+                    }
+                    this.$store.state.loadingOverlayText = 'Saving scoping data...'
+                    console.log(data.village_figures)
+                    let url = ''
+                    if (this.id) url = `UpdateScooping?data_no=${this.id}`
+                    else url = 'AddScooping'
+                    const res = await axios.post(this.$store.getters.getApiUrl(url), data, this.$store.state.apiConfig)
+                    if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data scooping saved!'})
+                    else Swal.fire({
+                        title: 'Error!',
+                        text: `Data failed to save.`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    })
+                }
+            } catch (err) {this.errorResponse(err)} finally {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = 'Loading...'
+            }
+        },
         separateInputsPerType() {  
             let inputsString = []
             let inputsNumber = []
             let inputsDate = []
+            let inputsSelect = []
             let inputsMultiple = []
             let inputsMultipleInput = []
             let inputsFile = []
@@ -1159,6 +1191,7 @@ export default {
                 if (value.type == 'String') inputsString.push(key)
                 if (value.type == 'Number') inputsNumber.push(key)
                 if (value.type == 'Date') inputsDate.push(key)
+                if (value.type == 'Select') inputsSelect.push(key)
                 if (value.type == 'Multiple') inputsMultiple.push(key)
                 if (value.type == 'MultipleInput') inputsMultipleInput.push(key)
                 if (value.type == 'File') inputsFile.push(key)
@@ -1167,69 +1200,29 @@ export default {
                 string: inputsString,
                 number: inputsNumber,
                 date: inputsDate,
+                select: inputsSelect,
                 multiple: inputsMultiple,
                 multipleInput: inputsMultipleInput,
                 file: inputsFile
             }
         },
-        async save() {
-            try {
-                this.showModal = false
-                this.$store.state.loadingOverlay = true
-                this.$store.state.loadingOverlayText = 'Saving scoping data...'
-                let data = {
-                    village: this.inputs.village.model,
-                    province: this.inputs.province.model,
-                    city: this.inputs.regency.model,
-                    district: this.inputs.district.model,
-                    land_area: this.inputs.land_area.model,
-                    scooping_date: this.inputs.scooping_date.model,
-                    land_type: this.inputs.land_type.model.toString(),
-                    slope: this.inputs.land_slope.model.toString(),
-                    altitude: this.inputs.land_height.model.toString(),
-                    dry_land_area: this.inputs.dry_land_area.model,
-                    vegetation_density: this.inputs.vegetation_density.model.toString(),
-                    rainfall: this.inputs.rainfall.model.toString(),
-                    agroforestry_type: this.inputs.agroforestry_type.model.toString(),
-                    government_place: this.inputs.government_place.model.toString(),
-                    water_source: this.inputs.water_source.model.toString(),
-                    land_coverage: this.inputs.land_coverage.model.toString(),
-                    electricity_source: this.inputs.electricity_source.model.toString(),
-                    village_figures: this.inputs.village_figures.model,
-                    user_id: this.$store.state.User.email,
-                }
-                // upload village polygon
-                if (this.inputs.village_polygon.model) {
-                    data.village_polygon = await this.uploadPhotos('Polygon Desa', this.inputs.village_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}`)
-                }
-                // upload dry_land polygon
-                if (this.inputs.dry_land_polygon.model) {
-                    data.dry_land_polygon = await this.uploadPhotos('Polygon Lahan Kering Desa', this.inputs.dry_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-dry_land`)
-                }
-                // upload critical_land polygon
-                if (this.inputs.critical_land_polygon.model) {
-                    data.critical_land_polygon = await this.uploadPhotos('Polygon Lahan Kritis Desa', this.inputs.critical_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-critical_land`)
-                }
-                this.$store.state.loadingOverlayText = 'Saving scoping data...'
-                console.log(data.village_figures)
-                let url = ''
-                if (this.id) url = `UpdateScooping?data_no=${this.id}`
-                else url = 'AddScooping'
-                const res = await axios.post(this.$store.getters.getApiUrl(url), data, this.$store.state.apiConfig)
-                if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data scooping saved!'})
-            } catch (err) {this.errorResponse(err)} finally {
-                this.$store.state.loadingOverlay = false
-                this.$store.state.loadingOverlayText = 'Loading...'
-            }
+        showLightbox(imgs, index) {
+            if (imgs) this.$store.state.lightbox.imgs = imgs
+            
+            if (index) this.$store.state.lightbox.index = index
+            else this.$store.state.lightbox.index = 0
+
+            this.$store.state.lightbox.show = true
         },
-        async uploadPhotos(type, file, prefix, dir, name) {
+        async uploadFiles(type, typeName, file, prefix, dir, name) {
             try {
-                this.$store.state.loadingOverlayText = `Saving file "${type}"...`
+                this.$store.state.loadingOverlayText = `Saving file "${typeName}"...`
                 const url = `${this.$store.state.apiUrlImage}${prefix}/upload.php`
                 const data = this._utils.generateFormData({
                     dir: dir,
                     nama: name,
-                    fileToUpload: file
+                    fileToUpload: file,
+                    type: type
                 })
                 let responseName = null
                 const res = await axios.post(url,data)
@@ -1238,7 +1231,7 @@ export default {
                     return `${prefix}/${responseName}`
                 }
             } catch (err) {this.errorResponse(err)}
-        }
+        },
     }
 }
 </script>

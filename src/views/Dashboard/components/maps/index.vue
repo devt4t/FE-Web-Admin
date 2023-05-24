@@ -152,6 +152,9 @@ export default {
           projection: 'globe'
         });
         const map = this.maps.model
+        
+        map.addControl(new mapboxgl.FullscreenControl());
+        
         map.on('load', () => {
           map.addSource('mapbox-dem', {
             'type': 'raster-dem',

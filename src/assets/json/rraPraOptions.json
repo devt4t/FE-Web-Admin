@@ -1,4 +1,7 @@
 {
+    "accessibility": [
+        "Mudah", "Sedang", "Sulit"
+    ],
     "land_type" : [
         "Andosol",
         "Kambisol",
@@ -37,10 +40,10 @@
         "> 1900"
     ],
     "vegetation_density": [
-        "tinggi",
-        "rendah",
-        "sedang",
-        "terbuka"
+        "Tinggi",
+        "Sedang",
+        "Rendah",
+        "Terbuka"
     ],
     "water_source": [
         "Sungai",
