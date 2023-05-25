@@ -378,7 +378,6 @@ export default {
             data: {
                 village_polygon: null,
                 dry_land_polygon: null,
-                critical_land_polygon: null
             }
         },
         loading: {
@@ -487,7 +486,6 @@ export default {
                 }
                 this.map.data = {
                     village_polygon: data.village_polygon,
-                    critical_land_polygon: data.critical_land_polygon,
                     dry_land_polygon: data.dry_land_polygon
                 }
             } catch (err) {

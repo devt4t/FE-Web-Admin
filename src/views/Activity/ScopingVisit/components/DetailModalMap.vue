@@ -57,6 +57,7 @@
 </template>
 <script>
 import axios from "axios"
+import Swal from 'sweetalert2'
 
 export default {
     props: {
@@ -64,13 +65,14 @@ export default {
             type: Object,
             default: {
                 village_polygon: null,
-                dry_land_polygon: null,
-                critical_land_polygon: null
+                dry_land_polygon: null
             }
         }
     },
     data: () => ({
         maps:{
+            accessToken: '',
+            mapStyle: '',
             model: null,
             attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
             center: [113.921300, -0.789300],
@@ -117,12 +119,6 @@ export default {
                     url: ''
                 },
                 {
-                    key: 'critical_land_polygon', 
-                    text: 'Lahan Kritis',
-                    icon: 'mdi-land-fields',
-                    url: ''
-                },
-                {
                     key: 'dry_land_polygon', 
                     text: 'Lahan Kering',
                     icon: 'mdi-land-plots-circle',
@@ -132,6 +128,8 @@ export default {
         }
     }),
     async mounted() {
+        this.maps.accessToken = this.$store.state.maps.accessToken
+        this.maps.mapStyle = this.$store.state.maps.mapStyle
         if (this.showPolygonData) {}
     },
     computed: {
@@ -145,16 +143,11 @@ export default {
                 this.layers.items[0].url = data.village_polygon
                 this.layers.selected = 0
             } else this.layers.items[0].url = null
-            if (data.critical_land_polygon) {
-                exists += 1
-                this.layers.items[1].url = data.critical_land_polygon
-                if (exists === 1) this.layers.selected = 1
-            } else this.layers.items[1].url = null
             if (data.dry_land_polygon) {
                 exists += 1
-                this.layers.items[2].url = data.dry_land_polygon
-                if (exists === 1) this.layers.selected = 2
-            } else this.layers.items[2].url = null
+                this.layers.items[1].url = data.dry_land_polygon
+                if (exists === 1) this.layers.selected = 1
+            } else this.layers.items[1].url = null
             return exists > 0 ? true : false
         },
         fileNotFound() {
@@ -177,122 +170,139 @@ export default {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token");
-                    this.$router.push("/");
-                }
-                }
+                    if (error.response.status == 401) {
+                        localStorage.removeItem("token");
+                        this.$router.push("/");
+                    } else Swal.fire({
+                        title: 'Error!',
+                        text: `${error.response.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    }) 
+                } else Swal.fire({
+                    title: 'Error!',
+                    text: `${error.message}`,
+                    icon: 'error',
+                    confirmButtonColor: '#f44336',
+                }) 
             }
         },
         // maps
-        async initializeMap() {
-            try {
-                this.maps.loading.show = true
-                const options = this.maps
-                if (!this.maps.model) {
-                    this.maps.model = new mapboxgl.Map({
-                        container: 'mapboxContainer', // container ID
-                        accessToken: this.$store.state.maps.accessToken,
-                        style: 'mapbox://styles/mapbox/satellite-v9', // style URL
-                        center: options.center,
-                        zoom: options.zoom,
-                        projection: 'equirectangular'
-                    });
-                }
-                if (this.maps.model) {
-                    const map = this.maps.model
-                    // disable map rotation using right click + drag
-                    map.dragRotate.disable();
-                    // disable map rotation using touch rotation gesture
-                    map.touchZoomRotate.disableRotation();
-                    // add fullscreen function
-                    map.addControl(new mapboxgl.FullscreenControl());
-                    map.on('load', () => {
-                        // Add zoom and rotation controls to the map.
-                        map.addControl(new mapboxgl.NavigationControl());
-                    });
-                }
-            } catch (err) {this.errorResponse(err)} finally {
-                this.maps.loading.show = false
-            }
-        },
         async getPolygonData(layIndex) {
             try {
-                this.maps.model = null
-                await this.initializeMap()
-                this.maps.loading.show = true
+                const mapOptions = this.maps
+                // console.log(mapOptions)
                 const layers = this.layers.items
-                if (layers[layIndex].url && this.maps.model) {
-                    console.log(layers[layIndex].url)
-                    const url = `${this.$store.state.apiUrlImage}${layers[layIndex].url}`
-                    const map = this.maps.model
-                    let layerId = this.maps.layerId
-                    const layerStyle = this.maps.layerStyle
-                    const sourceId = this._utils.generateRandomString(5) + Date.now()
-                    
-                    layerStyle.fill.color = this._utils.getRandomColor()
-                    var runLayer = await omnivore.kml(url).on("ready", function() {
-                        const GeoJsonData = runLayer.toGeoJSON()
-                        GeoJsonData.features.map((val, i) => { 
-                            val.id = layerId += 1
-                        })
-                        console.log(GeoJsonData)
-                        map.on("load", function() {
-                            // Add a data source containing GeoJSON data.
-                            map.addSource(sourceId, {
-                                'type': 'geojson',
-                                'data': GeoJsonData
-                            });
-                            // Add a new layer to visualize the polygon.
-                            map.addLayer({
-                                'id': `${sourceId}-fills`,
-                                'type': 'fill',
-                                'source': sourceId, // reference the data source
-                                'layout': {},
-                                'paint': {
-                                    'fill-color': layerStyle.fill.color, // blue color fill
-                                    'fill-opacity': [
-                                    'case',
-                                    ['boolean', ['feature-state', 'hover'], false],
-                                    0.1,
-                                    0.5
-                                    ]
-                                }
-                            });
-                            // Add a black outline around the polygon.
-                            map.addLayer({
-                                'id': `${sourceId}-outline`,
-                                'type': 'line',
-                                'source': sourceId,
-                                'layout': {},
-                                'paint': {
-                                    'line-color': layerStyle.outline.color,
-                                    'line-width': 2
-                                }
-                            });
-                            // Centering view
-                            var center = turf.center(GeoJsonData);
-                            const centerCoordinates = center.geometry.coordinates
-                            // console.log(centerCoordinates)
-                            map.flyTo({
-                                center: [centerCoordinates[0], centerCoordinates[1]],
-                                zoom: 9,
-                                duration: 7 * 1000
-                            });
-                        })
-                    })
+                mapboxgl.accessToken = mapOptions.accessToken
+                if (!mapboxgl.supported()) {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: `Your browser does not support Mapbox GL.`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    }) 
                 } else {
                     if (layers[layIndex].url) {
-                        this.layers.selected = null
-                        setTimeout(() => {
-                            this.layers.selected = layIndex
-                        }, 100);
+                        mapOptions.loading.show = true
+                        // console.log(layers[layIndex].url)
+                        const url = `${this.$store.state.apiUrlImage}${layers[layIndex].url}`
+                        let layerId = mapOptions.layerId
+                        const layerStyle = mapOptions.layerStyle
+                        const sourceId = this._utils.generateRandomString(5) + Date.now()
+                        
+                        layerStyle.fill.color = this._utils.getRandomColor()
+                        mapOptions.loading.text = 'Getting polygon data...'
+                        var runLayer = await omnivore.kml(url).on("ready", async function() {
+                            const GeoJsonData = await runLayer.toGeoJSON()
+                            await GeoJsonData.features.map((val, i) => { 
+                                val.id = layerId += 1
+                            })
+                            // console.log(GeoJsonData)
+                            if (GeoJsonData.features.length === 0) { 
+                                mapOptions.loading.show = await false
+                                await Swal.fire({
+                                    title: 'Error!',
+                                    text: `Polygon Features is 0.`,
+                                    icon: 'error',
+                                    confirmButtonColor: '#f44336',
+                                }) 
+                            } else {
+                                mapOptions.loading.text = 'Initialize map...'
+                                let map = await new mapboxgl.Map({
+                                    container: 'mapboxContainer', // container ID
+                                    style: mapOptions.mapStyle, // style URL
+                                    center: mapOptions.center,
+                                    zoom: mapOptions.zoom,
+                                    projection: 'globe'
+                                    // projection: 'equirectangular'
+                                });
+                                // console.log('map')
+                                // disable map rotation using right click + drag
+                                await map.dragRotate.disable();
+                                // disable map rotation using touch rotation gesture
+                                await map.touchZoomRotate.disableRotation();
+                                // add fullscreen function
+                                await map.addControl(new mapboxgl.FullscreenControl());
+                                await map.on("load", async function() {
+                                    // add fog
+                                    await map.setFog({
+                                        color: 'rgb(186, 210, 235)', // Lower atmosphere
+                                        'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+                                        'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                                        'space-color': 'rgb(11, 11, 25)', // Background color
+                                        'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+                                    });
+                                    // Add zoom and rotation controls to the map.
+                                    await map.addControl(new mapboxgl.NavigationControl());
+                                    // Add a data source containing GeoJSON data.
+                                    await map.addSource(sourceId, {
+                                        'type': 'geojson',
+                                        'data': GeoJsonData
+                                    });
+                                    // Add a new layer to visualize the polygon.
+                                    await map.addLayer({
+                                        'id': `${sourceId}-fills`,
+                                        'type': 'fill',
+                                        'source': sourceId, // reference the data source
+                                        'layout': {},
+                                        'paint': {
+                                            'fill-color': layerStyle.fill.color, // blue color fill
+                                            'fill-opacity': [
+                                            'case',
+                                            ['boolean', ['feature-state', 'hover'], false],
+                                            0.1,
+                                            0.5
+                                            ]
+                                        }
+                                    });
+                                    // Add a black outline around the polygon.
+                                    await map.addLayer({
+                                        'id': `${sourceId}-outline`,
+                                        'type': 'line',
+                                        'source': sourceId,
+                                        'layout': {},
+                                        'paint': {
+                                            'line-color': layerStyle.outline.color,
+                                            'line-width': 2
+                                        }
+                                    });
+                                    // Centering view
+                                    var center = turf.center(GeoJsonData);
+                                    const centerCoordinates = center.geometry.coordinates
+                                    // console.log(centerCoordinates)
+                                    await map.flyTo({
+                                        center: [centerCoordinates[0], centerCoordinates[1]],
+                                        zoom: 9,
+                                        duration: 7 * 1000
+                                    });
+                                    mapOptions.loading.show = await false
+                                })
+                            }
+                        })
                     }
                 }
-                setTimeout(() => {
-                    this.maps.loading.show = false
-                }, 500);
-            } catch (err) {this.errorResponse(err)}
+            } catch (err) {this.errorResponse(err)} finally {
+            }
         }
     }
 }
