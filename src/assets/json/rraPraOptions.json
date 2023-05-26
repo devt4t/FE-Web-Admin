@@ -47,7 +47,8 @@
     ],
     "water_source": [
         "Sungai",
-        "Waduk/Danau"
+        "Waduk/Danau",
+        "Pam Desa"
     ],
     "rainfall": [
         "0 - 500",
@@ -58,8 +59,8 @@
         "2500 - 3000"
     ],
     "agroforestry_type": [
-        "High intensive",
-        "Low intensive",
+        "Agroforestry High intensive",
+        "Agroforestry Low intensive",
         "Conservation"
     ],
     "government_place": [

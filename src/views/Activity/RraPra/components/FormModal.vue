@@ -412,7 +412,7 @@
                                                                 outlined
                                                                 rounded
                                                                 type="number"
-                                                                suffix="%"
+                                                                suffix="Ha"
                                                                 max="100"
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="land_tenure.percentage"
@@ -579,7 +579,7 @@
                                                                 dense
                                                                 color="success"
                                                                 hide-details
-                                                                label="Kapasitas Produksi"
+                                                                label="Rating"
                                                                 :disabled="false"
                                                                 outlined
                                                                 rounded
@@ -728,7 +728,7 @@
                                         <!-- Problem Section -->
                                         <v-col cols="12">
                                             <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-book-alert</v-icon>Riwayat Masalah</p>
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-book-alert</v-icon>Permasalahan Yang Ada</p>
                                                 <v-divider class="mx-2"></v-divider>
                                             </div>
                                         </v-col>
@@ -744,6 +744,19 @@
                                                 </v-col>
                                                 <v-col cols="11">
                                                     <v-row>
+                                                        <!-- problem_data name -->
+                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                            <v-text-field
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                label="Nama Masalah"
+                                                                :disabled="false"
+                                                                outlined
+                                                                rounded
+                                                                :rules="[(v) => !!v || 'Field is required']"
+                                                            ></v-text-field>
+                                                        </v-col>
                                                         <!-- problem_data categories -->
                                                         <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
@@ -762,7 +775,7 @@
                                                             ></v-autocomplete>
                                                         </v-col>
                                                         <!-- problem_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
                                                                 dense
                                                                 color="success"
@@ -777,7 +790,7 @@
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="problem_data.types"
                                                             ></v-autocomplete>
-                                                        </v-col>
+                                                        </v-col> -->
                                                         <!-- problem_data date -->
                                                         <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-text-field
@@ -825,7 +838,9 @@
                                                         </v-col>
                                                         <!-- problem_data solution -->
                                                         <v-col cols="12" sm="12" md="12" lg="12">
-                                                            <v-text-field
+                                                            <label for="">Solusi</label>
+                                                            <VueEditor />
+                                                            <!-- <v-textarea
                                                                 dense
                                                                 color="success"
                                                                 hide-details
@@ -835,7 +850,7 @@
                                                                 rounded
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="problem_data.solution"
-                                                            ></v-text-field>
+                                                            ></v-textarea> -->
                                                         </v-col>
                                                         <!-- problem_data stakeholder -->
                                                         <v-col cols="12" sm="12" md="6" lg="4">
@@ -1164,12 +1179,13 @@
                                                                 dense
                                                                 color="success"
                                                                 hide-details
-                                                                label="Percentage"
+                                                                label="Penghasilan (Per-Bulan)"
                                                                 :disabled="false"
                                                                 outlined
                                                                 rounded
                                                                 type="number"
-                                                                suffix="%"
+                                                                prefix="Rp"
+                                                                suffix=""
                                                                 max="100"
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="income_data.percentage"
@@ -1200,7 +1216,7 @@
                                         <!-- Marketing Section -->
                                         <v-col cols="12">
                                             <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-store</v-icon>Data Marketing</p>
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-store</v-icon>Data Pemasaran Komoditas</p>
                                                 <v-divider class="mx-2"></v-divider>
                                             </div>
                                         </v-col>
@@ -1293,8 +1309,8 @@
                                                             ></v-autocomplete>
                                                         </v-col>
                                                         <!-- marketing_data details -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
+                                                        <v-col cols="12" sm="12" md="12" lg="12">
+                                                            <v-textarea
                                                                 dense
                                                                 color="success"
                                                                 hide-details
@@ -1304,7 +1320,7 @@
                                                                 rounded
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="marketing_data.details"
-                                                            ></v-text-field>
+                                                            ></v-textarea>
                                                         </v-col>
                                                     </v-row>
                                                 </v-col>
@@ -1470,7 +1486,7 @@
                                         <!-- Planting Section -->
                                         <v-col cols="12">
                                             <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-forest</v-icon>Data Penanaman</p>
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-forest</v-icon>Data Penanaman Yang Sudah Ada</p>
                                                 <v-divider class="mx-2"></v-divider>
                                             </div>
                                         </v-col>
@@ -1581,7 +1597,7 @@
                                         <!-- Flora Section -->
                                         <v-col cols="12">
                                             <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-flower</v-icon>Data Tumbuhan</p>
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-flower</v-icon>Data Flora Endemik</p>
                                                 <v-divider class="mx-2"></v-divider>
                                             </div>
                                         </v-col>
@@ -1598,7 +1614,7 @@
                                                 <v-col cols="11">
                                                     <v-row>
                                                         <!-- flora_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
                                                                 dense
                                                                 color="success"
@@ -1613,7 +1629,7 @@
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="flora_data.categories"
                                                             ></v-autocomplete>
-                                                        </v-col>
+                                                        </v-col> -->
                                                         <!-- flora_data types -->
                                                         <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
@@ -1733,7 +1749,7 @@
                                         <!-- Fauna Section -->
                                         <v-col cols="12">
                                             <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-cat</v-icon>Data Hewan</p>
+                                                <p class="mb-0"><v-icon class="mr-2">mdi-cat</v-icon>Data Satwa Endemik</p>
                                                 <v-divider class="mx-2"></v-divider>
                                             </div>
                                         </v-col>
@@ -1750,7 +1766,7 @@
                                                 <v-col cols="11">
                                                     <v-row>
                                                         <!-- fauna_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
                                                                 dense
                                                                 color="success"
@@ -1765,7 +1781,7 @@
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="fauna_data.categories"
                                                             ></v-autocomplete>
-                                                        </v-col>
+                                                        </v-col> -->
                                                         <!-- fauna_data types -->
                                                         <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
@@ -1902,7 +1918,7 @@
                                                 <v-col cols="11">
                                                     <v-row>
                                                         <!-- income_data_si categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
+                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete
                                                                 dense
                                                                 color="success"
@@ -1917,7 +1933,7 @@
                                                                 :rules="[(v) => !!v || 'Field is required']"
                                                                 v-model="income_data_si.categories"
                                                             ></v-autocomplete>
-                                                        </v-col>
+                                                        </v-col> -->
                                                         <!-- income_data_si crops_categories -->
                                                         <v-col cols="12" sm="12" md="6" lg="6">
                                                             <v-autocomplete

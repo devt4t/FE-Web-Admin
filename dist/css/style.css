@@ -224,3 +224,8 @@ body * {
   .swal2-styled.swal2-confirm, .swal2-styled.swal2-cancel {
     border-radius: 100px!important;
   }
+
+  /* Text EDITOR */
+  .quillWrapper {
+    border-radius: 25px!important;
+  }

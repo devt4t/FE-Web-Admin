@@ -41,10 +41,19 @@
                         </div>
                     </v-col>
                     <!-- Inputs -->
-                    <v-col v-for="(itemKey, iKIndex) in ig.items_key" :key="`Inputs-${itemKey}-${iKIndex}`" cols="12" sm="12" md="6" :lg="inputs[itemKey].lgView" >
+                    <v-col v-for="(itemKey, iKIndex) in ig.items_key" :key="`Inputs-${itemKey}-${iKIndex}`" cols="12" sm="12" :md="inputs[itemKey].lgView == 12 ? 12 : 6" :lg="inputs[itemKey].lgView" >
+                        <!-- Khususon: potential_description -->
+                        <div v-if="itemKey === 'potential_description' && inputs.total_hamlet_potential.model !== null && inputs.total_hamlet_potential.model > 0">
+                            <label for="">
+                                <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                {{ inputs[itemKey].label }} 
+                                <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </label>
+                            <VueEditor />
+                        </div>
                         <!-- autocomplete -->
                         <v-autocomplete
-                            v-if="inputs[itemKey].inputType == 'autocomplete'"
+                            v-else-if="inputs[itemKey].inputType == 'autocomplete'"
                             dense
                             :multiple="inputs[itemKey].type == 'Multiple'"
                             color="success"
@@ -62,6 +71,7 @@
                             v-model="inputs[itemKey].model"
                         >
                             <template v-slot:label>
+                                <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
                                 {{ inputs[itemKey].label }} 
                                 <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
@@ -74,7 +84,7 @@
                             bottom
                             min-width="100"
                             offset-y
-                            :close-on-content-click="true"
+                            :close-on-content-click="false"
                             v-model="inputs[itemKey].show"
                         >
                             <template v-slot:activator="{ on: menu, attrs }">
@@ -114,6 +124,7 @@
                                 </v-overlay>
                                 <div class="d-flex flex-column align-center rounded-xl">
                                     <v-date-picker 
+                                        :range="inputs[itemKey].dateType === 'range'"
                                         color="green lighten-1 rounded-xl" 
                                         v-model="inputs[itemKey].model"
                                         min="2022-11-24"
@@ -134,6 +145,7 @@
                             v-model="inputs[itemKey].model"
                         >
                             <template v-slot:label>
+                                <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
                                 {{ inputs[itemKey].label }} 
                                 <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
@@ -191,7 +203,7 @@
                 <v-row class="ma-0 mx-5">
                     <v-col cols="12">
                         <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-account-cowboy-hat</v-icon>Tokoh Desa</p>
+                            <p class="mb-0"><v-icon class="mr-2">mdi-card-account-phone</v-icon>Tokoh Desa</p>
                             <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
@@ -300,126 +312,6 @@
                             </v-btn>
                         </v-row>
                     </v-col>
-                </v-row>
-                <!-- Dusun Data -->
-                <v-row class="ma-0 mx-5">
-                    <v-col cols="12">
-                        <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-home-group</v-icon>Data Scoooping per-Dusun</p>
-                            <v-divider class="mx-2"></v-divider>
-                        </div>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-expansion-panels class="rounded-xl" v-model="inputs.hamlets.expansionModel">
-                            <v-expansion-panel v-for="(hm, hmIndex) in inputs.hamlets.model" :key="`hamlet-${hmIndex}`" class="rounded-xl">
-                                <v-expansion-panel-header>
-                                    <template v-slot:default="{ open }">
-                                        <v-row no-gutters>
-                                            <v-col cols="6">
-                                                <span v-if="hm.hamlet_name && !open">
-                                                    <v-icon>mdi-numeric-{{ hmIndex+1 }}-circle</v-icon>
-                                                    {{ hm.hamlet_name }}
-                                                </span>
-                                                <span v-else>
-                                                    Dusun {{ hmIndex + 1 }}
-                                                </span>
-                                            </v-col>
-                                            <v-col
-                                                cols="6"
-                                                class="text--secondary text-right"
-                                            >
-                                                <v-fade-transition leave-absolute>
-                                                    <span
-                                                        key="0"
-                                                        class="mr-2"
-                                                    >
-                                                        Kelengkapan Data: {{ Object.entries(hm).filter(val => val[1] !== null && val[1] !== 0).length }} / {{ Object.entries(inputs.hamlets.form).filter(val => val[1].type !== 'divider').length }}
-                                                    </span>
-                                                </v-fade-transition>
-                                            </v-col>
-                                        </v-row>
-                                    </template>
-                                </v-expansion-panel-header>
-                                <v-expansion-panel-content>
-                                    <v-row>
-                                        <!-- Inputs -->
-                                        <v-col v-for="(hmInputs, hmInputIndex) in Object.entries(inputs.hamlets.form)" :key="`Inputs-${hmInputs[0]}-${hmIndex}-${hmInputIndex}`" cols="12" sm="12" md="6" :lg="hmInputs[1].lgView" >
-                                            <div v-if="hmInputs[1].type === 'divider'" class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">{{ hmInputs[1].labelIcon }}</v-icon>{{ hmInputs[1].label }}</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                            <!-- text-field -->
-                                            <v-text-field
-                                                v-else-if="hmInputs[1].type === 'number' || hmInputs[1].type === 'text'"
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="hmInputs[1].label"
-                                                :prepend-icon="hmInputs[1].prependIcon"
-                                                outlined
-                                                rounded
-                                                :suffix="hmInputs[1].suffix"
-                                                :type="hmInputs[1].type"
-                                                v-model="hm[hmInputs[0]]"
-                                            >
-                                                <template v-slot:label>
-                                                    <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
-                                                    {{ hmInputs[1].label }} 
-                                                    <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                </template>
-                                                <template v-slot:append>
-                                                    <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
-                                                </template>
-                                            </v-text-field>
-                                            <!-- autocomplete -->
-                                            <v-autocomplete
-                                                v-else-if="hmInputs[1].inputType == 'autocomplete'"
-                                                dense
-                                                :multiple="hmInputs[1].type == 'Multiple'"
-                                                color="success"
-                                                hide-details
-                                                item-color="success"
-                                                :item-text="hmInputs[1].itemText"
-                                                :item-value="hmInputs[1].itemValue"
-                                                :items="hmInputs[1].items"
-                                                :label="hmInputs[1].label"
-                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                outlined
-                                                rounded
-                                                v-model="hm[hmInputs[0]]"
-                                            >
-                                                <template v-slot:label>
-                                                    {{ hmInputs[1].label }} 
-                                                    <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                </template>
-                                            </v-autocomplete>
-                                        </v-col>
-                                    </v-row>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
-                        <v-row class="justify-center my-2">
-                            <v-btn v-if="inputs.hamlets.model.length < 5" 
-                                data-aos="fade-right" data-aos-offset="-10000" 
-                                :key="`hamlets_plus_btn`" 
-                                fab small color="green white--text" class="mx-1" 
-                                @click="() => modifyTotalSubData('+', 'hamlets')"
-                            >
-                                <v-icon>mdi-plus</v-icon>
-                            </v-btn>
-                            <v-btn v-if="inputs.hamlets.model.length > 1" 
-                                data-aos="fade-left" data-aos-offset="-10000" 
-                                :key="`hamlets_minus_btn`" 
-                                fab small color="red" outlined class="mx-1"
-                                @click="() => modifyTotalSubData('-', 'hamlets')"
-                            >
-                                <v-icon>mdi-minus</v-icon>
-                            </v-btn>
-                        </v-row>
-                    </v-col>
-                    <!-- Inputs -->
-                    <!-- <v-col v-for="(item, itemIndex) in inputs.hamlets.form" :key="`Inputs-hamlets-${itemIndex}`" cols="12" sm="12" md="6" :lg="item.lgView" >
-                    </v-col> -->
                 </v-row>
             </v-card-text>
             <v-card-actions>
@@ -542,6 +434,7 @@ export default {
                 model: moment().format('Y-MM-DD'),
                 modelShow: moment().format('DD MMMM Y'),
                 inputType: 'datepicker',
+                dateType: 'range',
                 lgView: 6,
                 show: false,
                 required: true,
@@ -553,7 +446,7 @@ export default {
                 model: '',
                 inputType: 'text-field',
                 lgView: 6,
-                append: 'm<sup>2</sup>',
+                append: 'Ha',
                 loading: false,
                 required: true,
                 type: 'Number'
@@ -565,10 +458,38 @@ export default {
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
+                labelIcon: 'mdi-road-variant',
                 lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Select'
+            },
+            number_of_male: {
+                label: 'Jumlah Laki - Laki',
+                inputType: 'text-field',
+                type: 'number',
+                append: 'orang',
+                lgView: 6,
+                labelIcon: 'mdi-human-male',
+                required: true
+            },
+            number_of_female: {
+                label: 'Jumlah Perempuan',
+                inputType: 'text-field',
+                type: 'number',
+                append: 'orang',
+                lgView: 6,
+                labelIcon: 'mdi-human-female',
+                required: true
+            },
+            number_of_families: {
+                label: 'Jumlah Keluarga (KK)',
+                inputType: 'text-field',
+                type: 'number',
+                append: 'KK',
+                lgView: 6,
+                labelIcon: 'mdi-human-male-female-child',
+                required: true
             },
             land_type: {
                 items: formOptions.land_type.sort(),
@@ -579,7 +500,7 @@ export default {
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Multiple'
             },
             land_slope: {
@@ -591,7 +512,7 @@ export default {
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Multiple'
             },
             land_height: {
@@ -603,7 +524,7 @@ export default {
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Multiple'
             },
             vegetation_density: {
@@ -625,6 +546,7 @@ export default {
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
+                labelIcon: 'mdi-water-pump',
                 lgView: 6,
                 loading: false,
                 required: true,
@@ -639,12 +561,12 @@ export default {
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Multiple'
             },
             agroforestry_type: {
                 items: formOptions.agroforestry_type.sort(),
-                label: 'Tipe Agroforestry',
+                label: 'Pola Tanam Lahan Kering',
                 model: '',
                 itemText: 'value',
                 itemValue: 'value',
@@ -661,6 +583,7 @@ export default {
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
+                labelIcon: 'mdi-domain',
                 lgView: 6,
                 loading: false,
                 required: true,
@@ -685,17 +608,47 @@ export default {
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
+                labelIcon: 'mdi-home-lightning-bolt',
                 lgView: 6,
                 loading: false,
                 required: true,
                 type: 'Multiple'
+            },
+            total_hamlet: {
+                label: 'Total Dusun',
+                model: '',
+                inputType: 'text-field',
+                lgView: 6,
+                append: 'dusun',
+                loading: false,
+                required: true,
+                type: 'Number'
+            },
+            total_hamlet_potential: {
+                label: 'Total Dusun yang Berpotensi',
+                model: '',
+                inputType: 'text-field',
+                lgView: 6,
+                append: 'dusun',
+                loading: false,
+                required: true,
+                type: 'Number'
+            },
+            potential_description: {
+                label: 'Deskripsi Potensi',
+                model: '',
+                inputType: 'text-editor',
+                lgView: 12,
+                loading: false,
+                required: true,
+                type: 'String'
             },
             dry_land_area: {
                 label: 'Luas Lahan Kering / Kritis',
                 model: '',
                 inputType: 'text-field',
                 lgView: 6,
-                append: 'm<sup>2</sup>',
+                append: 'Ha',
                 loading: false,
                 required: true,
                 type: 'Number'
@@ -759,6 +712,18 @@ export default {
                 required: false,
                 type: 'File'
             },
+            village_profile: {
+                label: 'Profil Desa',
+                accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
+                model: null,
+                preview: null,
+                inputType: 'file-input',
+                lgView: 4,
+                prependIcon: 'mdi-camera',
+                loading: false,
+                required: false,
+                type: 'File'
+            },
             // Tokoh Desa
             village_figures: {
                 label: 'Tokoh Desa',
@@ -776,6 +741,9 @@ export default {
             // Dusun Data
             hamlets: {
                 expansionModel: 0,
+                loading: false,
+                required: true,
+                type: 'MultipleInput',
                 label: 'Data Dusun',
                 form: {
                     divider5: {
@@ -1158,11 +1126,12 @@ export default {
                 default: [{
                     hamlet_name: null,
                     land_area: 0,
-                    land_coverage: 0,
+                    land_coverage: [],
                     dry_land_area: 0,
                     hamlet_pic_name: 0,
                     hamlet_pic_position: 0,
                     hamlet_pic_phone: 0,
+                    hamlet_pic_whatsapp: 0,
                     number_of_rw: 0,
                     number_of_rt: 0,
                     number_of_male: 0,
@@ -1183,9 +1152,6 @@ export default {
                     total_of_entrepreneur: 0,
                     total_of_other_profession: 0,
                 }],
-                loading: false,
-                required: true,
-                type: 'MultipleInput'
             },
             // Batas Wilayah
         },
@@ -1197,14 +1163,24 @@ export default {
             },
             {
                 title: 'Data General Desa',
-                icon: 'mdi-home',
+                icon: 'mdi-list-box',
                 // items_key: ["land_area", "accessibility", "land_type", "land_slope", "land_height", "vegetation_density", "water_source", "rainfall", "agroforestry_type", "government_place", "land_coverage", "electricity_source", "dry_land_area"]
-                items_key: ["land_area", "accessibility", "land_type", "land_slope", "land_height", "vegetation_density", "water_source", "rainfall", "agroforestry_type", "government_place", "electricity_source"]
+                items_key: ["land_area", "accessibility", "water_source", "government_place", "electricity_source"]
             },
+            {
+                title: 'Data Populasi Dan Wilayah',
+                icon: 'mdi-account-group',
+                items_key: ["total_hamlet", "total_hamlet_potential", "potential_description", "number_of_male", "number_of_female", "number_of_families"],
+            }, 
             {
                 title: 'Upload Photo File',
                 icon: 'mdi-image-multiple',
-                items_key: ["accessibility_photo", "meeting_photo", "dry_land_photo"],
+                items_key: ["accessibility_photo", "meeting_photo", "dry_land_photo", "village_profile"],
+            }, 
+            {
+                title: 'Kelengkapan Data Lahan Kering',
+                icon: 'mdi-land-fields',
+                items_key: ["dry_land_area", "land_type", "land_slope", "land_height", "land_coverage", "vegetation_density", "agroforestry_type", "rainfall"]
             },
             {
                 title: 'Upload Polygon File (GIS)',
@@ -1231,7 +1207,8 @@ export default {
     watch: {
         'inputs.scooping_date.model': {
             async handler(newVal) {
-                this.inputs.scooping_date.modelShow = this._utils.dateFormat(newVal, 'DD MMMM Y')
+                // console.log(newVal[0])
+                this.inputs.scooping_date.modelShow = this._utils.dateFormat(newVal[0], 'DD MMMM Y') + ' ~ ' + this._utils.dateFormat(newVal[1], 'DD MMMM Y')
             }
         },
         showedModal(val, oldVal) {
@@ -1397,6 +1374,13 @@ export default {
                 }]
                 this.inputs.hamlets.model = [{
                     hamlet_name: 'Durian',
+                    land_area: 0,
+                    land_coverage: 0,
+                    dry_land_area: 0,
+                    hamlet_pic_name: 'Epin',
+                    hamlet_pic_position: 'Humas',
+                    hamlet_pic_phone: null,
+                    hamlet_pic_whatsapp: null,
                     number_of_families: 543,
                     number_of_farmer_families: 300,
                     number_of_souls: 2300,
