@@ -97,8 +97,16 @@
                             :key="item.key"
                             cols="12" :lg="item.lg" :md="item.md"
                         >
-                            <span v-html="item.title"></span>
+                            <span>
+                                <span v-if="item.labelIcon">
+                                    <v-icon class="mr-1">{{ item.labelIcon }}</v-icon>
+                                </span>
+                                <span v-html="item.title"></span>
+                            </span>
                             <h4>
+                                <span v-if="item.prependIcon">
+                                    <v-icon class="mr-1">{{ item.prependIcon }}</v-icon>
+                                </span>
                                 <v-progress-circular
                                     :size="17"
                                     :width="3"
@@ -111,7 +119,21 @@
                                         <span v-if="item.type == 'Multiple'">{{ item.model.replaceAll(',', ', ') }}</span>
                                         <span v-else-if="item.type == 'Date'">{{ _utils.dateFormat(item.model, 'DD MMMM YYYY') }}</span>
                                         <span v-else-if="item.type == 'Number'">{{ _utils.numberFormat(item.model) }}</span>
-                                        <span v-else>{{ item.model }}</span>
+                                        <span v-else-if="item.type == 'Image'">
+                                            <v-card 
+                                                class="rounded-xl mt-2"
+                                            >
+                                                <v-img
+                                                    height="300"
+                                                    v-bind:src="item.model"
+                                                    class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                    :key="imageKeyComponent"
+                                                    id="photo1"
+                                                    @click="showLightbox(item.model)"
+                                                ></v-img>
+                                            </v-card>
+                                        </span>
+                                        <span v-else v-html="item.model"></span>
                                         <span v-if="item.suffix" v-html="item.suffix" class="ml-1"></span>
                                     </span>
                                     <span v-else>-</span>
@@ -194,8 +216,16 @@ export default {
                         md: 6
                     },
                     {
-                        key: 'scooping_date',
-                        title: `Tanggal Scooping`,
+                        key: 'start_scooping_date',
+                        title: `Mulai Scooping`,
+                        model: null,
+                        type: 'Date',
+                        lg: 4,
+                        md: 6
+                    },
+                    {
+                        key: 'end_scooping_date',
+                        title: `Selesai Scooping`,
                         model: null,
                         type: 'Date',
                         lg: 4,
@@ -213,22 +243,122 @@ export default {
                         title: 'Luas Desa',
                         model: null,
                         type: 'Number',
-                        suffix: `m<sup>2</sup>`,
-                        lg: 4,
+                        suffix: `Ha`,
+                        lg: 6,
                         md: 6
                     },
+                    {
+                        key: 'accessibility',
+                        title: 'Aksesibilitas',
+                        model: null,
+                        type: 'Multiple',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'water_source',
+                        title: 'Sumber Air',
+                        model: null,
+                        type: 'Multiple',
+                        lg: 6,
+                        md: 12
+                    },
+                    {
+                        key: 'electricity_source',
+                        title: 'Sumber Listrik',
+                        model: null,
+                        type: 'Multiple',
+                        lg: 6,
+                        md: 12
+                    },
+                    {
+                        key: 'government_place',
+                        title: 'Tempat Pemerintahan',
+                        model: null,
+                        type: 'Multiple',
+                        lg: 12,
+                        md: 12
+                    },
+                ]
+            },
+            {
+                title: 'Data Populasi & Wilayah',
+                icon: 'mdi-account-group',
+                type: 'column',
+                items: [
+                    {
+                        key: 'total_kk',
+                        title: 'Total Keluarga (KK)',
+                        prependIcon: 'mdi-human-male-female-child',
+                        model: null,
+                        type: 'Number',
+                        lg: 12,
+                        md: 12
+                    },
+                    {
+                        key: 'total_male',
+                        title: 'Total Laki - Laki',
+                        prependIcon: 'mdi-human-male',
+                        model: null,
+                        type: 'Number',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'total_female',
+                        title: 'Total Perempuan',
+                        prependIcon: 'mdi-human-female',
+                        model: null,
+                        type: 'Number',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'total_dusun',
+                        title: 'Total Dusun',
+                        prependIcon: 'mdi-home',
+                        model: null,
+                        type: 'Number',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'potential_dusun',
+                        title: 'Dusun Berpotensi',
+                        prependIcon: 'mdi-home-lightbulb',
+                        model: null,
+                        type: 'Number',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'potential_description',
+                        title: 'Deskripsi Potensi',
+                        labelIcon: 'mdi-note',
+                        model: null,
+                        type: 'Text',
+                        lg: 12,
+                        md: 12
+                    },
+                ]
+            },
+            {
+                title: 'Kelengkapan Data Lahan Kering',
+                icon: 'mdi-land-fields',
+                type: 'column',
+                items: [
                     {
                         key: 'dry_land_area',
                         title: 'Luas Lahan Kering',
                         model: null,
                         type: 'Number',
-                        suffix: `m<sup>2</sup>`,
+                        suffix: `Ha`,
                         lg: 4,
                         md: 6
                     },
                     {
                         key: 'land_type',
-                        title: 'Tipe Lahan',
+                        title: 'Jenis Tanah',
                         model: null,
                         type: 'Multiple',
                         lg: 12,
@@ -236,7 +366,7 @@ export default {
                     },
                     {
                         key: 'land_height',
-                        title: 'Ketinggian Lahan (mdpl)',
+                        title: 'Ketinggian Tanah (mdpl)',
                         model: null,
                         type: 'Multiple',
                         lg: 12,
@@ -244,7 +374,7 @@ export default {
                     },
                     {
                         key: 'land_slope',
-                        title: 'Kelerengan Lahan (<sup>o</sup>)',
+                        title: 'Kelerengan Tanah (<sup>o</sup>)',
                         model: null,
                         type: 'Multiple',
                         lg: 12,
@@ -260,31 +390,7 @@ export default {
                     },
                     {
                         key: 'land_coverage',
-                        title: 'Tutupan Lahan',
-                        model: null,
-                        type: 'Multiple',
-                        lg: 12,
-                        md: 12
-                    },
-                    {
-                        key: 'government_place',
-                        title: 'Tempat Pemerintahan',
-                        model: null,
-                        type: 'Multiple',
-                        lg: 12,
-                        md: 12
-                    },
-                    {
-                        key: 'electricity_source',
-                        title: 'Sumber Listrik',
-                        model: null,
-                        type: 'Multiple',
-                        lg: 12,
-                        md: 12
-                    },
-                    {
-                        key: 'water_source',
-                        title: 'Sumber Air',
+                        title: 'Cakupan Lahan',
                         model: null,
                         type: 'Multiple',
                         lg: 12,
@@ -292,7 +398,15 @@ export default {
                     },
                     {
                         key: 'agroforestry_type',
-                        title: 'Tipe Agroforestry',
+                        title: 'Pola Tanam Lahan Kering',
+                        model: null,
+                        type: 'Multiple',
+                        lg: 12,
+                        md: 12
+                    },
+                    {
+                        key: 'rainfall',
+                        title: 'Curah Hujan (mm)',
                         model: null,
                         type: 'Multiple',
                         lg: 12,
@@ -317,13 +431,56 @@ export default {
                 }
             },
             {
+                title: 'Gallery',
+                icon: 'mdi-image-multiple',
+                type: 'column',
+                items: [
+                    {
+                        key: 'photo_road_access',
+                        title: 'Akses Jalan',
+                        labelIcon: 'mdi-road-variant',
+                        model: null,
+                        type: 'Image',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'photo_meeting',
+                        title: 'Dokumentasi Pertemuan',
+                        prependIcon: '',
+                        model: null,
+                        type: 'Image',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'photo_dry_land',
+                        title: 'Lahan Kering',
+                        prependIcon: '',
+                        model: null,
+                        type: 'Image',
+                        lg: 6,
+                        md: 6
+                    },
+                    {
+                        key: 'village_profile',
+                        title: 'Profil Desa',
+                        prependIcon: '',
+                        model: null,
+                        type: 'Image',
+                        lg: 6,
+                        md: 6
+                    },
+                ]
+            },
+            {
                 title: 'Log',
                 icon: 'mdi-clock',
                 type: 'column',
                 items: [
                     {
                         key: 'created_at',
-                        title: 'Dibuat',
+                        title: 'Waktu Dibuat',
                         model: null,
                         type: 'Time',
                         lg: 6,
@@ -339,7 +496,7 @@ export default {
                     },
                     {
                         key: 'updated_at',
-                        title: 'Terakhir Dirubah',
+                        title: 'Waktu Terakhir Dirubah',
                         model: null,
                         type: 'Time',
                         lg: 6,
@@ -355,7 +512,7 @@ export default {
                     },
                     {
                         key: 'verified_at',
-                        title: 'Diverifikasi',
+                        title: 'Waktu Verifikasi',
                         model: null,
                         type: 'Time',
                         lg: 6,
@@ -372,6 +529,7 @@ export default {
                 ]
             }
         ],
+        imageKeyComponent: 71625327,
         verified_data: 0,
         map: {
             key: 11101203,
@@ -416,7 +574,7 @@ export default {
     },
     methods: {
         confirmVerification(type) {
-            const url = type == 'Verif' ? 'VerificationScooping' : 'UnverificationScooping'
+            const url = type == 'verify' ? 'VerificationScooping' : 'UnverificationScooping'
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -429,8 +587,8 @@ export default {
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.loading.show = true
-                    this.loading.text = 'Verifying data...'
-                    axios.post(this.$store.getters.getApiUrl(url), {data_no: this.id}, this.$store.state.apiConfig)
+                    this.loading.text = `${type == 'verify' ? 'Verifying' : 'Unverifying'} data...`
+                    axios.post(this.$store.getters.getApiUrl(url), {data_no: this.id, verified_by: this.$store.state.User.email}, this.$store.state.apiConfig)
                     .then(res => {
                         Swal.fire({
                             title: 'Verified!',
@@ -470,7 +628,7 @@ export default {
             try {
                 this.loading.show = true
                 this.loading.text = `Getting scooping ${this.id} data...`
-
+                this.imageKeyComponent += 1
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
                 this.verified_data = data.is_verify
@@ -480,7 +638,12 @@ export default {
                             if (localData.key == key) localData.table.items = value
                         } else {
                             const findData = localData.items.find(scopingData => scopingData.key === key)
-                            if (findData) findData.model = value
+                            if (findData) {
+                                if (findData.type === 'Image') {
+                                    if (value) findData.model = this.$store.state.apiUrlImage + value
+                                    else findData.model = "/images/noimage.png"
+                                } else findData.model = value
+                            }
                         }
                     });
                 }
@@ -494,6 +657,14 @@ export default {
             } finally {
                 this.loading.show = false
             }
+        },
+        showLightbox(imgs, index) {
+            if (imgs) this.$store.state.lightbox.imgs = imgs
+            
+            if (index) this.$store.state.lightbox.index = index
+            else this.$store.state.lightbox.index = 0
+
+            this.$store.state.lightbox.show = true
         },
         whatsappPhone(no) {
             return no.replace(/^0/, "62");

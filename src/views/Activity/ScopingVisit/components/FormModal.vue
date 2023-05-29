@@ -49,7 +49,7 @@
                                 {{ inputs[itemKey].label }} 
                                 <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </label>
-                            <VueEditor v-if="inputs.total_hamlet_potential.model !== null && inputs.total_hamlet_potential.model > 0" 
+                            <VueEditor v-if="inputs.potential_dusun.model !== null && inputs.potential_dusun.model > 0" 
                                 placeholder="Deskripsi / alasan dusun berpotensi"
                                 v-model="inputs.potential_description.model"
                             />
@@ -189,6 +189,7 @@
                                     class="my-2 mb-4 rounded-xl cursor-pointer"
                                     id="photo1"
                                     @click="showLightbox(inputs[itemKey].preview)"
+                                    :key="imageKeyComponent"
                                 ></v-img>
                             </v-card>
                         </div>
@@ -366,7 +367,8 @@ export default {
         }
     },
     data: () => ({
-        trip: {name: ''},
+        editId: null,
+        imageKeyComponent: 82726366,
         inputs: {
             program_year: {
                 model: '',
@@ -426,8 +428,8 @@ export default {
             scooping_date: {
                 loading: false,
                 label: 'Tanggal Scooping',
-                model: moment().format('Y-MM-DD'),
-                modelShow: moment().format('DD MMMM Y'),
+                model: [],
+                modelShow: '',
                 inputType: 'datepicker',
                 dateType: 'range',
                 lgView: 6,
@@ -459,28 +461,28 @@ export default {
                 required: true,
                 type: 'Select'
             },
-            number_of_male: {
+            total_male: {
                 label: 'Jumlah Laki - Laki',
                 inputType: 'text-field',
-                type: 'number',
+                type: 'Number',
                 append: 'orang',
                 lgView: 6,
                 labelIcon: 'mdi-human-male',
                 required: true
             },
-            number_of_female: {
+            total_female: {
                 label: 'Jumlah Perempuan',
                 inputType: 'text-field',
-                type: 'number',
+                type: 'Number',
                 append: 'orang',
                 lgView: 6,
                 labelIcon: 'mdi-human-female',
                 required: true
             },
-            number_of_families: {
+            total_kk: {
                 label: 'Jumlah Keluarga (KK)',
                 inputType: 'text-field',
-                type: 'number',
+                type: 'Number',
                 append: 'KK',
                 lgView: 6,
                 labelIcon: 'mdi-human-male-female-child',
@@ -579,7 +581,7 @@ export default {
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 labelIcon: 'mdi-domain',
-                lgView: 6,
+                lgView: 12,
                 loading: false,
                 required: true,
                 type: 'Multiple'
@@ -609,7 +611,7 @@ export default {
                 required: true,
                 type: 'Multiple'
             },
-            total_hamlet: {
+            total_dusun: {
                 label: 'Total Dusun',
                 model: '',
                 inputType: 'text-field',
@@ -619,7 +621,7 @@ export default {
                 required: true,
                 type: 'Number'
             },
-            total_hamlet_potential: {
+            potential_dusun: {
                 label: 'Total Dusun yang Berpotensi',
                 model: '',
                 inputType: 'text-field',
@@ -671,7 +673,7 @@ export default {
                 type: 'File'
             },
             // photos
-            accessibility_photo: {
+            photo_road_access: {
                 label: 'Akses Jalan',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
@@ -683,7 +685,7 @@ export default {
                 required: false,
                 type: 'File'
             },
-            meeting_photo: {
+            photo_meeting: {
                 label: 'Pertemuan dengan Tokoh Desa',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
@@ -695,7 +697,7 @@ export default {
                 required: false,
                 type: 'File'
             },
-            dry_land_photo: {
+            photo_dry_land: {
                 label: 'Lahan Kering',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
@@ -707,7 +709,7 @@ export default {
                 required: false,
                 type: 'File'
             },
-            village_profile_photo: {
+            village_profile: {
                 label: 'Profil Desa',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
@@ -744,17 +746,17 @@ export default {
                 title: 'Data General Desa',
                 icon: 'mdi-list-box',
                 // items_key: ["land_area", "accessibility", "land_type", "land_slope", "land_height", "vegetation_density", "water_source", "rainfall", "agroforestry_type", "government_place", "land_coverage", "electricity_source", "dry_land_area"]
-                items_key: ["land_area", "accessibility", "water_source", "government_place", "electricity_source"]
+                items_key: ["land_area", "accessibility", "water_source", "electricity_source", "government_place"]
             },
             {
                 title: 'Data Populasi Dan Wilayah',
                 icon: 'mdi-account-group',
-                items_key: ["total_hamlet", "total_hamlet_potential", "potential_description", "number_of_male", "number_of_female", "number_of_families"],
+                items_key: ["total_dusun", "potential_dusun", "potential_description", "total_male", "total_female", "total_kk"],
             }, 
             {
                 title: 'Upload Photo File',
                 icon: 'mdi-image-multiple',
-                items_key: ["accessibility_photo", "meeting_photo", "dry_land_photo", "village_profile_photo"],
+                items_key: ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"],
             }, 
             {
                 title: 'Kelengkapan Data Lahan Kering',
@@ -787,7 +789,10 @@ export default {
         'inputs.scooping_date.model': {
             async handler(newVal) {
                 // console.log(newVal[0])
-                this.inputs.scooping_date.modelShow = this._utils.dateFormat(newVal[0], 'DD MMMM Y') + ' ~ ' + this._utils.dateFormat(newVal[1], 'DD MMMM Y')
+                let range = JSON.parse(JSON.stringify(newVal))
+                range.sort()
+                // console.log(range)
+                this.inputs.scooping_date.modelShow = this._utils.dateFormat(range[0], 'DD MMMM Y') + ' ~ ' + this._utils.dateFormat(range[1], 'DD MMMM Y')
             }
         },
         showedModal(val, oldVal) {
@@ -795,8 +800,13 @@ export default {
                 // console.log(val)
                 this.resetData()
                 this.inputs.program_year.model = this.programYear
-                if (this.id) this.getData(this.id)
-                else this.getDummiesData()
+                if (this.id) {
+                    this.editId = JSON.parse(JSON.stringify(this.id))
+                    this.getData(this.id)
+                } else {
+                    this.editId = null
+                    this.getDummiesData()
+                }
             }
         },
         'inputs.province.model': {
@@ -814,24 +824,24 @@ export default {
                 if (val) this.getOptionsData({type: 'village'})
             }
         },
-        'inputs.accessibility_photo.model': {
+        'inputs.photo_road_access.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'accessibility_photo')
+                await this.photoFileChanged(val, 'photo_road_access')
             }
         },
-        'inputs.meeting_photo.model': {
+        'inputs.photo_meeting.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'meeting_photo')
+                await this.photoFileChanged(val, 'photo_meeting')
             }
         },
-        'inputs.dry_land_photo.model': {
+        'inputs.photo_dry_land.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'dry_land_photo')
+                await this.photoFileChanged(val, 'photo_dry_land')
             }
         },
-        'inputs.village_profile_photo.model': {
+        'inputs.village_profile.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'village_profile_photo')
+                await this.photoFileChanged(val, 'village_profile')
             }
         }
     },
@@ -897,13 +907,14 @@ export default {
             try {
                 this.loading.show = true
                 this.loading.text = 'Getting scooping data...'
-
+                this.imageKeyComponent += 1
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
                 for (const [key, value] of Object.entries(data)) {
                     if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key) || this.separateInputsPerType().select.includes(key)) this.inputs[key].model = value
                     if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value.split(",")
                 }
+                this.inputs.scooping_date.model = [data.start_scooping_date, data.end_scooping_date]
                 this.inputs.province.model = data.province
                 await this.getOptionsData({type: 'regency', id: data.province})
                 this.inputs.regency.model = data.city
@@ -911,6 +922,14 @@ export default {
                 this.inputs.district.model = data.district
                 await this.getOptionsData({type: 'village', id: data.district})
                 this.inputs.village.model = data.village
+                // village figures
+                this.inputs.village_figures.model = data.scooping_figures
+                // photos
+                const imageKeyInput = ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"]
+                imageKeyInput.forEach(inputKey => {
+                    if (data[inputKey]) this.inputs[inputKey].preview = this.$store.state.apiUrlImage + data[inputKey]
+                    else this.inputs[inputKey].preview = "/images/noimage.png"
+                })
                 // console.log(data)
             } catch (err) {
                 this.errorResponse(err)
@@ -938,14 +957,14 @@ export default {
                 this.inputs.water_source.model = formOptions.water_source
                 this.inputs.government_place.model = formOptions.government_place
                 this.inputs.electricity_source.model = formOptions.electricity_source
-                this.inputs.total_hamlet.model = 243
-                this.inputs.total_hamlet_potential.model = 50
+                this.inputs.total_dusun.model = 243
+                this.inputs.potential_dusun.model = 50
                 this.inputs.potential_description.model = `Masih terdapat banyak lahan kering yang kosong.`
-                this.inputs.number_of_male.model = 654
-                this.inputs.number_of_female.model = 987
-                this.inputs.number_of_families.model = 321
-                this.inputs.total_hamlet_potential.model = 50
-                this.inputs.total_hamlet_potential.model = 50
+                this.inputs.total_male.model = 654
+                this.inputs.total_female.model = 987
+                this.inputs.total_kk.model = 321
+                this.inputs.potential_dusun.model = 50
+                this.inputs.potential_dusun.model = 50
                 this.inputs.land_type.model = formOptions.land_type
                 this.inputs.land_slope.model = formOptions.land_slope
                 this.inputs.land_height.model = formOptions.land_height
@@ -1043,7 +1062,7 @@ export default {
         resetData() {
             try {
                 for (const [key, value] of Object.entries(this.inputs)) {
-                    if (this.separateInputsPerType().date.includes(key)) value.model = moment().format('YYYY-MM-DD')
+                    if (this.separateInputsPerType().date.includes(key)) value.model = [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
                     else if (this.separateInputsPerType().multipleInput.includes(key)) value.model = JSON.parse(JSON.stringify(value.default))
                     else value.model = null
                 }
@@ -1066,26 +1085,44 @@ export default {
                     this.showModal = false
                     this.$store.state.loadingOverlay = true
                     this.$store.state.loadingOverlayText = 'Saving scoping data...'
+                    const scoopingDateRange = JSON.parse(JSON.stringify(this.inputs.scooping_date.model)).sort()
                     let data = {
                         village: this.inputs.village.model,
                         province: this.inputs.province.model,
                         city: this.inputs.regency.model,
                         district: this.inputs.district.model,
+                        start_scooping_date: scoopingDateRange[0],
+                        end_scooping_date: scoopingDateRange[1],
                         land_area: this.inputs.land_area.model,
-                        scooping_date: this.inputs.scooping_date.model,
+                        accessibility: this.inputs.accessibility.model,
+                        water_source: this.inputs.water_source.model.toString(),
+                        government_place: this.inputs.government_place.model.toString(),
+                        electricity_source: this.inputs.electricity_source.model.toString(),
+                        total_dusun: this.inputs.total_dusun.model,
+                        potential_dusun: this.inputs.potential_dusun.model,
+                        potential_description: this.inputs.potential_description.model,
+                        total_male: this.inputs.total_male.model,
+                        total_female: this.inputs.total_female.model,
+                        total_kk: this.inputs.total_kk.model,
+                        dry_land_area: this.inputs.dry_land_area.model,
                         land_type: this.inputs.land_type.model.toString(),
                         slope: this.inputs.land_slope.model.toString(),
                         altitude: this.inputs.land_height.model.toString(),
-                        dry_land_area: this.inputs.dry_land_area.model,
+                        land_coverage: this.inputs.land_coverage.model.toString(),
                         vegetation_density: this.inputs.vegetation_density.model.toString(),
                         rainfall: this.inputs.rainfall.model.toString(),
                         agroforestry_type: this.inputs.agroforestry_type.model.toString(),
-                        government_place: this.inputs.government_place.model.toString(),
-                        water_source: this.inputs.water_source.model.toString(),
-                        land_coverage: this.inputs.land_coverage.model.toString(),
-                        electricity_source: this.inputs.electricity_source.model.toString(),
                         village_figures: this.inputs.village_figures.model,
                         user_id: this.$store.state.User.email,
+                    }
+                    
+                    // upload photos
+                    var imageKeyInput = ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"]
+                    for (let index = 0; index < imageKeyInput.length; index++) {
+                        let imgKey = imageKeyInput[index]
+                        if (this.inputs[imgKey].model) {
+                            data[imgKey] = await this.uploadFiles('photo', `Foto "${imgKey}"`, this.inputs[imgKey].model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-${imgKey.replace("photo_", "")}`)
+                        } else if (this.inputs[imgKey].preview && !this.inputs[imgKey].preview.includes('noimage')) data[imgKey] = this.inputs[imgKey].preview.replace(this.$store.state.apiUrlImage, "")
                     }
                     // upload village_polygon
                     if (this.inputs.village_polygon.model) {
@@ -1095,23 +1132,12 @@ export default {
                     if (this.inputs.dry_land_polygon.model) {
                         data.dry_land_polygon = await this.uploadFiles('polygon', 'Polygon Lahan Kering Desa', this.inputs.dry_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-dry_land`)
                     }
-                    // upload accessibility_photo
-                    if (this.inputs.accessibility_photo.model) {
-                        data.accessibility_photo = await this.uploadFiles('photo', 'Foto Akses Jalan', this.inputs.accessibility_photo.model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-accessibility`)
-                    }
-                    // upload meeting_photo
-                    if (this.inputs.meeting_photo.model) {
-                        data.meeting_photo = await this.uploadFiles('photo', 'Foto Akses Jalan', this.inputs.meeting_photo.model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-stakeholder_meeting`)
-                    }
-                    // upload dry_land_photo
-                    if (this.inputs.dry_land_photo.model) {
-                        data.dry_land_photo = await this.uploadFiles('photo', 'Foto Akses Jalan', this.inputs.dry_land_photo.model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-dry_land`)
-                    }
                     this.$store.state.loadingOverlayText = 'Saving scoping data...'
                     // console.log(data.village_figures)
                     let url = ''
-                    if (this.id) url = `UpdateScooping?data_no=${this.id}`
+                    if (this.editId) url = `UpdateScooping?data_no=${this.editId}`
                     else url = 'AddScooping'
+                    // console.log(data)
                     const res = await axios.post(this.$store.getters.getApiUrl(url), data, this.$store.state.apiConfig)
                     if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data scooping saved!'})
                     else Swal.fire({
