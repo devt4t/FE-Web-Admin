@@ -43,13 +43,17 @@
                     <!-- Inputs -->
                     <v-col v-for="(itemKey, iKIndex) in ig.items_key" :key="`Inputs-${itemKey}-${iKIndex}`" cols="12" sm="12" :md="inputs[itemKey].lgView == 12 ? 12 : 6" :lg="inputs[itemKey].lgView" >
                         <!-- Khususon: potential_description -->
-                        <div v-if="itemKey === 'potential_description' && inputs.total_hamlet_potential.model !== null && inputs.total_hamlet_potential.model > 0">
+                        <div v-if="itemKey === 'potential_description'">
                             <label for="">
                                 <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
                                 {{ inputs[itemKey].label }} 
                                 <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </label>
-                            <VueEditor />
+                            <VueEditor v-if="inputs.total_hamlet_potential.model !== null && inputs.total_hamlet_potential.model > 0" 
+                                placeholder="Deskripsi / alasan dusun berpotensi"
+                                v-model="inputs.potential_description.model"
+                            />
+                            <v-textarea v-else hide-details disabled outlined class="rounded-xl" placeholder="Deskripsi disabled. Total dusun berpotensi 0."></v-textarea>
                         </div>
                         <!-- autocomplete -->
                         <v-autocomplete
@@ -187,15 +191,6 @@
                                     @click="showLightbox(inputs[itemKey].preview)"
                                 ></v-img>
                             </v-card>
-                        </div>
-                    </v-col>
-                </v-row>
-                <!-- Batas Wilayah -->
-                <v-row class="ma-0 mx-5">
-                    <v-col cols="12">
-                        <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-compass-rose</v-icon>Batas Wilayah Desa</p>
-                            <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
                 </v-row>
@@ -536,7 +531,7 @@ export default {
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Multiple'
             },
             water_source: {
@@ -598,7 +593,7 @@ export default {
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Multiple'
             },
             electricity_source: {
@@ -640,7 +635,7 @@ export default {
                 inputType: 'text-editor',
                 lgView: 12,
                 loading: false,
-                required: true,
+                required: false,
                 type: 'String'
             },
             dry_land_area: {
@@ -712,7 +707,7 @@ export default {
                 required: false,
                 type: 'File'
             },
-            village_profile: {
+            village_profile_photo: {
                 label: 'Profil Desa',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
@@ -738,422 +733,6 @@ export default {
                 required: true,
                 type: 'MultipleInput'
             },
-            // Dusun Data
-            hamlets: {
-                expansionModel: 0,
-                loading: false,
-                required: true,
-                type: 'MultipleInput',
-                label: 'Data Dusun',
-                form: {
-                    divider5: {
-                        label: 'General Data',
-                        type: 'divider',
-                        lgView: 12,
-                        labelIcon: 'mdi-list-box',
-                    },
-                    hamlet_name: {
-                        label: 'Nama Dusun',
-                        type: 'text',
-                        suffix: '',
-                        lgView: 6,
-                        labelIcon: 'mdi-tag',
-                        required: true
-                    },
-                    land_area: {
-                        label: 'Luas Dusun',
-                        model: '',
-                        inputType: 'text-field',
-                        lgView: 6,
-                        suffix: '',
-                        append: 'm<sup>2</sup>',
-                        loading: false,
-                        required: true,
-                        type: 'number'
-                    },
-                    // accessibility: {
-                    //     items: formOptions.accessibility,
-                    //     label: 'Aksesibilitas',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Select'
-                    // },
-                    // land_type: {
-                    //     items: formOptions.land_type.sort(),
-                    //     label: 'Jenis Tanah',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // land_slope: {
-                    //     items: formOptions.land_slope,
-                    //     label: 'Kelerengan Tanah',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // land_height: {
-                    //     items: formOptions.land_height.sort(),
-                    //     label: 'Ketinggian Tanah',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // vegetation_density: {
-                    //     items: formOptions.vegetation_density,
-                    //     label: 'Kerapatan Vegetasi',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // water_source: {
-                    //     items: formOptions.water_source.sort(),
-                    //     label: 'Sumber Air',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // rainfall: {
-                    //     items: formOptions.rainfall.sort(),
-                    //     label: 'Curah Hujan',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // agroforestry_type: {
-                    //     items: formOptions.agroforestry_type.sort(),
-                    //     label: 'Tipe Agroforestry',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    // government_place: {
-                    //     items: formOptions.government_place.sort(),
-                    //     label: 'Tempat Pemerintahan',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    land_coverage: {
-                        items: formOptions.land_coverage.sort(),
-                        label: 'Cakupan Lahan',
-                        model: '',
-                        itemText: 'value',
-                        itemValue: 'value',
-                        inputType: 'autocomplete',
-                        lgView: 6,
-                        loading: false,
-                        required: true,
-                        type: 'Multiple'
-                    },
-                    // electricity_source: {
-                    //     items: formOptions.electricity_source.sort(),
-                    //     label: 'Sumber Listrik',
-                    //     model: '',
-                    //     itemText: 'value',
-                    //     itemValue: 'value',
-                    //     inputType: 'autocomplete',
-                    //     lgView: 6,
-                    //     loading: false,
-                    //     required: true,
-                    //     type: 'Multiple'
-                    // },
-                    dry_land_area: {
-                        label: 'Luas Lahan Kering / Kritis',
-                        model: '',
-                        inputType: 'text-field',
-                        lgView: 6,
-                        append: 'm<sup>2</sup>',
-                        loading: false,
-                        required: true,
-                        type: 'number'
-                    },
-                    divider6: {
-                        label: 'PIC Dusun',
-                        type: 'divider',
-                        lgView: 12,
-                        labelIcon: 'mdi-account-star',
-                    },
-                    hamlet_pic_name: {
-                        label: 'Nama',
-                        type: 'text',
-                        suffix: '',
-                        lgView: 6,
-                        labelIcon: '',
-                        required: true
-                    },
-                    hamlet_pic_position: {
-                        label: 'Jabatan',
-                        type: 'text',
-                        suffix: '',
-                        lgView: 6,
-                        labelIcon: '',
-                        required: true
-                    },
-                    hamlet_pic_phone: {
-                        label: 'No HP',
-                        type: 'number',
-                        suffix: '',
-                        prependIcon: 'mdi-phone',
-                        lgView: 6,
-                        labelIcon: '',
-                        required: true
-                    },
-                    hamlet_pic_whatsapp: {
-                        label: 'Whatsapp',
-                        type: 'number',
-                        suffix: '',
-                        prependIcon: 'mdi-whatsapp',
-                        lgView: 6,
-                        labelIcon: '',
-                        required: false
-                    },
-                    divider1: {
-                        label: 'Data Jumlah Keluarga',
-                        type: 'divider',
-                        lgView: 12,
-                        labelIcon: 'mdi-human-male-female-child',
-                    },
-                    number_of_rw: {
-                        label: 'RW',
-                        type: 'number',
-                        suffix: 'RW',
-                        lgView: 6,
-                        labelIcon: 'mdi-sigma',
-                        required: true
-                    },
-                    number_of_rt: {
-                        label: 'RT',
-                        type: 'number',
-                        suffix: 'RT',
-                        lgView: 6,
-                        labelIcon: 'mdi-sigma',
-                        required: true
-                    },
-                    number_of_male: {
-                        label: 'Jumlah Laki - Laki',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-human-male',
-                        required: true
-                    },
-                    number_of_female: {
-                        label: 'Jumlah Perempuan',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-human-female',
-                        required: true
-                    },
-                    number_of_families: {
-                        label: 'Jumlah Keluarga (KK)',
-                        type: 'number',
-                        suffix: 'KK',
-                        lgView: 6,
-                        labelIcon: 'mdi-sigma',
-                        required: true
-                    },
-                    number_of_farmer_families: {
-                        label: 'Jumlah Keluarga Petani (KK)',
-                        type: 'number',
-                        suffix: 'KK',
-                        lgView: 6,
-                        labelIcon: 'mdi-sigma',
-                        required: true
-                    },
-                    avg_family_member: {
-                        label: 'Rata - Rata Anggota Keluarga',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-sigma',
-                        required: true
-                    },
-                    divider2: {
-                        label: 'Data Edukasi',
-                        type: 'divider',
-                        lgView: 12,
-                        labelIcon: 'mdi-book-education',
-                    },
-                    total_of_jr_highschool: {
-                        label: 'SD - SMP',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-bus-school',
-                        required: true
-                    },
-                    total_of_sr_highschool: {
-                        label: 'SMA',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-school',
-                        required: true
-                    },
-                    total_of_university: {
-                        label: 'Kuliah',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-account-school',
-                        required: true
-                    },
-                    divider3: {
-                        label: 'Produktifitas',
-                        type: 'divider',
-                        lgView: 12,
-                        labelIcon: 'mdi-face-man-shimmer',
-                    },
-                    total_of_productive: {
-                        label: 'Produktif',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-cash-check',
-                        required: true
-                    },
-                    total_of_not_productive: {
-                        label: 'Tidak Produktif',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-cash-off',
-                        required: true
-                    },
-                    divider4: {
-                        label: 'Mata Pencaharian Masyarakat',
-                        type: 'divider',
-                        lgView: 12,
-                        labelIcon: 'mdi-hand-coin',
-                    },
-                    total_of_farmers: {
-                        label: 'Petani',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-beekeeper',
-                        required: true
-                    },
-                    total_of_farmer_workers: {
-                        label: 'Buruh Tani',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-beekeeper',
-                        required: true
-                    },
-                    total_of_priv_employee: {
-                        label: 'Karyawan Swasta',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-account-supervisor',
-                        required: true
-                    },
-                    total_of_gov_employee: {
-                        label: 'ASN (Guru, TNI, Polri)',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-account-tie',
-                        required: true
-                    },
-                    total_of_entrepreneur: {
-                        label: 'Wiraswasta',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-account-cash',
-                        required: true
-                    },
-                    total_of_other_profession: {
-                        label: 'Profesi Lain (Peternakan, Buruh Peternakan, Pensiunan)',
-                        type: 'number',
-                        suffix: 'orang',
-                        lgView: 6,
-                        labelIcon: 'mdi-account-question',
-                        required: true
-                    },
-                },
-                model: [],
-                default: [{
-                    hamlet_name: null,
-                    land_area: 0,
-                    land_coverage: [],
-                    dry_land_area: 0,
-                    hamlet_pic_name: 0,
-                    hamlet_pic_position: 0,
-                    hamlet_pic_phone: 0,
-                    hamlet_pic_whatsapp: 0,
-                    number_of_rw: 0,
-                    number_of_rt: 0,
-                    number_of_male: 0,
-                    number_of_female: 0,
-                    number_of_families: 0,
-                    number_of_farmer_families: 0,
-                    number_of_souls: 0,
-                    avg_family_member: 0,
-                    total_of_jr_highschool: 0,
-                    total_of_sr_highschool: 0,
-                    total_of_university: 0,
-                    total_of_productive: 0,
-                    total_of_not_productive: 0,
-                    total_of_farmers: 0,
-                    total_of_farmer_workers: 0,
-                    total_of_priv_employee: 0,
-                    total_of_gov_employee: 0,
-                    total_of_entrepreneur: 0,
-                    total_of_other_profession: 0,
-                }],
-            },
-            // Batas Wilayah
         },
         inputsGroup: [
             {
@@ -1175,7 +754,7 @@ export default {
             {
                 title: 'Upload Photo File',
                 icon: 'mdi-image-multiple',
-                items_key: ["accessibility_photo", "meeting_photo", "dry_land_photo", "village_profile"],
+                items_key: ["accessibility_photo", "meeting_photo", "dry_land_photo", "village_profile_photo"],
             }, 
             {
                 title: 'Kelengkapan Data Lahan Kering',
@@ -1250,8 +829,9 @@ export default {
                 await this.photoFileChanged(val, 'dry_land_photo')
             }
         },
-        'inputs.hamlets.model': {
-            handler(val) {
+        'inputs.village_profile_photo.model': {
+            async handler(val) {
+                await this.photoFileChanged(val, 'village_profile_photo')
             }
         }
     },
@@ -1355,47 +935,30 @@ export default {
 
                 this.inputs.land_area.model = 400000
                 this.inputs.accessibility.model = 'Sulit'
+                this.inputs.water_source.model = formOptions.water_source
+                this.inputs.government_place.model = formOptions.government_place
+                this.inputs.electricity_source.model = formOptions.electricity_source
+                this.inputs.total_hamlet.model = 243
+                this.inputs.total_hamlet_potential.model = 50
+                this.inputs.potential_description.model = `Masih terdapat banyak lahan kering yang kosong.`
+                this.inputs.number_of_male.model = 654
+                this.inputs.number_of_female.model = 987
+                this.inputs.number_of_families.model = 321
+                this.inputs.total_hamlet_potential.model = 50
+                this.inputs.total_hamlet_potential.model = 50
                 this.inputs.land_type.model = formOptions.land_type
                 this.inputs.land_slope.model = formOptions.land_slope
                 this.inputs.land_height.model = formOptions.land_height
                 this.inputs.vegetation_density.model = formOptions.vegetation_density
-                this.inputs.water_source.model = formOptions.water_source
                 this.inputs.rainfall.model = formOptions.rainfall
                 this.inputs.agroforestry_type.model = formOptions.agroforestry_type
-                this.inputs.government_place.model = formOptions.government_place
                 this.inputs.land_coverage.model = formOptions.land_coverage
-                this.inputs.electricity_source.model = formOptions.electricity_source
                 this.inputs.dry_land_area.model = 130500
                 this.inputs.village_figures.model = [{
                     name: 'Qwerty',
                     position: 'Keyboard',
                     phone: '1234567890',
                     whatsapp: '0987654321'
-                }]
-                this.inputs.hamlets.model = [{
-                    hamlet_name: 'Durian',
-                    land_area: 0,
-                    land_coverage: 0,
-                    dry_land_area: 0,
-                    hamlet_pic_name: 'Epin',
-                    hamlet_pic_position: 'Humas',
-                    hamlet_pic_phone: null,
-                    hamlet_pic_whatsapp: null,
-                    number_of_families: 543,
-                    number_of_farmer_families: 300,
-                    number_of_souls: 2300,
-                    avg_family_member: 4,
-                    total_of_jr_highschool: 100,
-                    total_of_sr_highschool: 200,
-                    total_of_university: 200,
-                    total_of_productive: 400,
-                    total_of_not_productive: 100,
-                    total_of_farmers: 400,
-                    total_of_farmer_workers: 500,
-                    total_of_priv_employee: 300,
-                    total_of_gov_employee: 200,
-                    total_of_entrepreneur: 100,
-                    total_of_other_profession: 1200,
                 }]
             } catch (err) {
                 this.errorResponse(err)
@@ -1447,10 +1010,8 @@ export default {
                     let inputs = JSON.parse(JSON.stringify(this.inputs[name].default[0]))
                     // console.log(inputs)
                     this.inputs[name].model.push(inputs)
-                    // console.log(this.inputs.hamlets.expansionModel)
                 } else if (type == '-') this.inputs[name].model.pop()
             } catch (err) {this.errorResponse(err)} finally {
-                if (name == 'hamlets') this.inputs.hamlets.expansionModel = this.inputs.hamlets.model.length - 1
             }
         },
         onResize() {
