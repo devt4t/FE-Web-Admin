@@ -95,6 +95,7 @@ export default {
         ],
         modals: {
             form: {
+                id: null,
                 show: false,
                 data: null,
                 key: 29291,

@@ -13,44 +13,52 @@
             <v-card-text class="pa-0">
                 <!-- Loading -->
                 <v-overlay absolute :value="loading.show">
-                    <div class="d-flex flex-column"></div>
-                    <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="white"
-                    >
-                    </v-progress-circular>
-                    <p class="mt-2 mb-0">{{ loading.text }}</p>
+                    <div class="d-flex flex-column justify-center align-center">
+                        <v-progress-circular
+                            :size="80"
+                            :width="10"
+                            indeterminate
+                            color="white"
+                        >
+                        </v-progress-circular>
+                        <p class="mt-2 mb-0">{{ loading.text }}</p>
+                    </div>
                 </v-overlay>
-                <!-- SELECT VILLAGE -->
+                <!-- SELECT Scooping Data -->
                 <v-row class="ma-0 mx-5">
                     <v-col cols="12">
                         <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-city</v-icon>Lokasi Desa</p>
+                            <p class="mb-0"><v-icon class="mr-2">mdi-form-select</v-icon>Data Scooping Visit</p>
                             <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
-                    <!-- Village -->
+                    <!-- Scooping Data -->
                     <v-col cols="12" sm="12" md="6" lg="4">
                         <v-autocomplete
                             dense
                             color="success"
                             hide-details
                             item-color="success"
-                            item-text="name"
-                            item-value="kode_desa"
-                            :items="inputs.village.items"
-                            :label="inputs.village.label"
-                            :loading="inputs.village.loading"
+                            item-text="data_no"
+                            item-value="data_no"
+                            :items="inputs.scooping_form_no.items"
+                            :label="inputs.scooping_form_no.label"
+                            :loading="inputs.scooping_form_no.loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.village.loading ? 'Loading...' : 'No Data'"
+                            :no-data-text="inputs.scooping_form_no.loading ? 'Loading...' : 'No Data'"
                             :disabled="false"
                             outlined
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.village.model"
-                        ></v-autocomplete>
+                            v-model="inputs.scooping_form_no.model"
+                        >
+                            <template v-slot:item="data">
+                              <v-list-item-content>
+                                <v-list-item-title v-html="data.item.data_no"></v-list-item-title>
+                                <v-list-item-subtitle>Desa: {{ data.item.village_name }}</v-list-item-subtitle>
+                              </v-list-item-content>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                 </v-row>
                 <!-- Stepper -->
@@ -99,217 +107,313 @@
                                     <span class="grey--text text--darken-2"><v-icon class="mr-2" size="27" style="transform: translateY(-2px);">mdi-{{ stepper.steps_icon[0] }}</v-icon>{{ stepper.steps[0] }}</span>
                                 </v-card-title>
                                 <v-card-text>
-                                    <v-row>
-                                        <!-- Villagers Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-account-group</v-icon>Penduduk</p>
-                                                <v-divider class="mx-2"></v-divider>
+                                    <div  v-for="(rraInput, rraInputIndex) in groupingInputs.rra" :key="`RRAInputSection-${rraInputIndex}`">
+                                        <!-- Title -->
+                                        <div class="d-flex align-center my-2">
+                                            <p class="mb-0"><v-icon class="mr-2">{{ rraInput.icon }}</v-icon>{{ rraInput.title }}</p>
+                                            <v-divider class="mx-2"></v-divider>
+                                            <v-switch
+                                                v-if="rraInput.required === false"
+                                                color="green"
+                                                v-model="rraInput.optional"
+                                                inset
+                                                :label="`${rraInput.optional ? 'Ada' : 'Tidak Ada'}`"
+                                            ></v-switch>
+                                        </div>
+                                        <div v-if="(rraInput.required === false && rraInput.optional === true) || rraInput.required">
+                                            <!-- column type -->
+                                            <v-row v-if="rraInput.type === 'column'">
+                                                <!-- Inputs -->
+                                                <v-col v-for="(itemKey, iKIndex) in rraInput.items" :key="`Inputs-${itemKey}-${iKIndex}`" 
+                                                    cols="12" sm="12" :md="inputs[itemKey].lgView == 12 ? 12 : 6" :lg="inputs[itemKey].lgView" >
+                                                    <!-- text-field -->
+                                                    <v-text-field
+                                                        v-if="inputs[itemKey].inputType == 'text-field'"
+                                                        dense
+                                                        color="success"
+                                                        hide-details
+                                                        :label="inputs[itemKey].label"
+                                                        outlined
+                                                        rounded
+                                                        :placeholder="inputs[itemKey].placeholder"
+                                                        :readonly="inputs[itemKey].readonly"
+                                                        :suffix="inputs[itemKey].suffix"
+                                                        :type="inputs[itemKey].type"
+                                                        v-model="inputs[itemKey].model"
+                                                    >
+                                                        <template v-slot:label>
+                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                            {{ inputs[itemKey].label }} 
+                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                        </template>
+                                                        <template v-slot:append>
+                                                            <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
+                                                        </template>
+                                                    </v-text-field>
+                                                    <!-- textarea -->
+                                                    <v-textarea
+                                                        v-else-if="inputs[itemKey].inputType == 'textarea'"
+                                                        dense
+                                                        color="success"
+                                                        hide-details
+                                                        :label="inputs[itemKey].label"
+                                                        outlined
+                                                        rounded
+                                                        :placeholder="inputs[itemKey].placeholder"
+                                                        :readonly="inputs[itemKey].readonly"
+                                                        :suffix="inputs[itemKey].suffix"
+                                                        :type="inputs[itemKey].type"
+                                                        v-model="inputs[itemKey].model"
+                                                    >
+                                                        <template v-slot:label>
+                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                            {{ inputs[itemKey].label }} 
+                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                        </template>
+                                                        <template v-slot:append>
+                                                            <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
+                                                        </template>
+                                                    </v-textarea>
+                                                </v-col>
+                                            </v-row>
+                                            <!-- multiple-input type -->
+                                            <div v-else-if="rraInput.type === 'multiple-input'">
+                                                <div v-for="(multipleInputHead, multipleInputHeadIndex) in rraInput.items" :key="`multipleInputHead-${multipleInputHead}`">
+                                                    <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`">
+                                                        <v-col cols="auto" class="d-flex align-center">
+                                                            <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ multipleInputItemIndex + 1 }}</v-icon></v-btn>
+                                                        </v-col>
+                                                        <!-- Inputs -->
+                                                        <v-col
+                                                            v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
+                                                            :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
+                                                            cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" >
+                                                                <!-- combobox -->
+                                                                <v-combobox
+                                                                    v-if="multipleInputForm[1].inputType == 'combobox'"
+                                                                    dense
+                                                                    :multiple="multipleInputForm[1].multiple"
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :small-chips="multipleInputForm[1].chip"
+                                                                    :hide-selected="multipleInputForm[1].hideSelected"
+                                                                    item-color="success"
+                                                                    :items="multipleInputForm[1].items"
+                                                                    :label="multipleInputForm[1].label"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:no-data>
+                                                                        <v-list-item>
+                                                                        <v-list-item-content>
+                                                                            <v-list-item-title>
+                                                                            No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                            </v-list-item-title>
+                                                                        </v-list-item-content>
+                                                                        </v-list-item>
+                                                                    </template>
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                    <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                        <v-chip
+                                                                            v-bind="attrs"
+                                                                            :input-value="selected"
+                                                                            label
+                                                                            small
+                                                                            class="rounded-pill"
+                                                                        >
+                                                                        <span class="pr-2">
+                                                                            {{ item }}
+                                                                        </span>
+                                                                        <v-icon
+                                                                            small
+                                                                            @click="parent.selectItem(item)"
+                                                                        >
+                                                                            mdi-close-circle
+                                                                        </v-icon>
+                                                                        </v-chip>
+                                                                    </template>
+                                                                </v-combobox>
+                                                                <!-- autocomplete -->
+                                                                <v-autocomplete
+                                                                    v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
+                                                                    dense
+                                                                    :multiple="multipleInputForm[1].multiple"
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :item-text="multipleInputForm[1].itemText"
+                                                                    :item-value="multipleInputForm[1].itemValue"
+                                                                    :items="multipleInputForm[1].items"
+                                                                    :label="multipleInputForm[1].label"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    outlined
+                                                                    rounded
+                                                                    :readonly="multipleInputForm[1].readonly"
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                </v-autocomplete>
+                                                                <!-- text-field -->
+                                                                <v-text-field
+                                                                    v-else-if="multipleInputForm[1].inputType == 'text-field'"
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :label="multipleInputForm[1].label"
+                                                                    outlined
+                                                                    rounded
+                                                                    :placeholder="multipleInputForm[1].placeholder"
+                                                                    :readonly="multipleInputForm[1].readonly"
+                                                                    :suffix="multipleInputForm[1].suffix"
+                                                                    :type="multipleInputForm[1].type"
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                    <template v-slot:append>
+                                                                        <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
+                                                                    </template>
+                                                                </v-text-field>
+                                                                <!-- textarea -->
+                                                                <v-textarea
+                                                                    v-else-if="multipleInputForm[1].inputType == 'textarea'"
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :label="multipleInputForm[1].label"
+                                                                    outlined
+                                                                    rounded
+                                                                    :placeholder="multipleInputForm[1].placeholder"
+                                                                    :readonly="multipleInputForm[1].readonly"
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                </v-textarea>
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-row v-if="inputs[multipleInputHead].totalCanChange === true" class="justify-center">
+                                                        <v-btn v-if="inputs[multipleInputHead].model.length < localConfig.maxSubDataTotal" 
+                                                            data-aos="fade-right" data-aos-offset="-10000" 
+                                                            :key="`${multipleInputHead}_plus_btn`" 
+                                                            fab small color="green white--text" class="mx-1" 
+                                                            @click="() => modifyTotalSubData('+', multipleInputHead)"
+                                                        >
+                                                            <v-icon>mdi-plus</v-icon>
+                                                        </v-btn>
+                                                        <v-btn v-if="inputs[multipleInputHead].model.length > 1" 
+                                                            data-aos="fade-left" data-aos-offset="-10000" 
+                                                            :key="`${multipleInputHead}_minus_btn`" 
+                                                            fab small color="red" outlined class="mx-1"
+                                                            @click="() => modifyTotalSubData('-', multipleInputHead)"
+                                                        >
+                                                            <v-icon>mdi-minus</v-icon>
+                                                        </v-btn>
+                                                    </v-row>
+                                                </div>
                                             </div>
-                                        </v-col>
-                                        <!-- number_of_families -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.number_of_families.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.number_of_families.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- number_of_souls -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.number_of_souls.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.number_of_souls.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- avg_family_member -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.avg_family_member.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.avg_family_member.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Education Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-book-education</v-icon>Pendidikan</p>
-                                                <v-divider class="mx-2"></v-divider>
+                                            <!-- khususon: village-border -->
+                                            <div v-else-if="rraInput.type === 'village-border'">
+                                                <v-row v-for="(point, pointIndex) in rraInput.items" :key="`village-border-${pointIndex}`">
+                                                    <v-col cols="auto">
+                                                        <v-btn fab class="mr-2 elevation-0" color="green white--text" x-small >{{ pointIndex + 1 }}</v-btn>
+                                                    </v-col>
+                                                    <v-col cols="auto">
+                                                        <v-btn rounded color="green white--text" class="elevation-0" style="width: 100px;">
+                                                            {{ inputs.village_border[point].label }}
+                                                        </v-btn>
+                                                    </v-col>
+                                                    <v-col cols="12" md="6" :lg="inputs.village_border[point].type.lgView">
+                                                        <v-select
+                                                            dense
+                                                            color="success"
+                                                            hide-details
+                                                            item-color="success"
+                                                            :items="inputs.village_border[point].type.items"
+                                                            :label="inputs.village_border[point].type.label"
+                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                            outlined
+                                                            rounded
+                                                            v-model="inputs.village_border[point].type.model"
+                                                        ></v-select>
+                                                    </v-col>
+                                                    <v-col cols="12" :lg="inputs.village_border[point].kabupaten.lgView">
+                                                        <v-autocomplete
+                                                            dense
+                                                            color="success"
+                                                            hide-details
+                                                            item-color="success"
+                                                            item-text="name"
+                                                            item-value="kabupaten_no"
+                                                            :items="inputs.village_border[point].kabupaten.items"
+                                                            :label="inputs.village_border[point].kabupaten.label"
+                                                            :loading="inputs.village_border[point].kabupaten.loading"
+                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                            :no-data-text="inputs.village_border[point].kabupaten.loading ? 'Loading...' : 'No Data'"
+                                                            outlined
+                                                            rounded
+                                                            v-model="inputs.village_border[point].kabupaten.model"
+                                                        >
+                                                        </v-autocomplete>
+                                                    </v-col>
+                                                    <v-col cols="12" :lg="inputs.village_border[point].kecamatan.lgView" v-if="inputs.village_border[point].type.model == 'Kecamatan' || inputs.village_border[point].type.model == 'Desa'">
+                                                        <v-autocomplete
+                                                            dense
+                                                            color="success"
+                                                            hide-details
+                                                            item-color="success"
+                                                            item-text="name"
+                                                            item-value="kode_kecamatan"
+                                                            :items="inputs.village_border[point].kecamatan.items"
+                                                            :label="inputs.village_border[point].kecamatan.label"
+                                                            :loading="inputs.village_border[point].kecamatan.loading"
+                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                            :no-data-text="inputs.village_border[point].kecamatan.loading ? 'Loading...' : 'No Data'"
+                                                            outlined
+                                                            rounded
+                                                            v-model="inputs.village_border[point].kecamatan.model"
+                                                        >
+                                                        </v-autocomplete>
+                                                    </v-col>
+                                                    <v-col cols="12" :lg="inputs.village_border[point].desa.lgView" v-if="inputs.village_border[point].type.model == 'Desa'">
+                                                        <v-autocomplete
+                                                            dense
+                                                            color="success"
+                                                            hide-details
+                                                            item-color="success"
+                                                            item-text="name"
+                                                            item-value="kode_desa"
+                                                            :items="inputs.village_border[point].desa.items"
+                                                            :label="inputs.village_border[point].desa.label"
+                                                            :loading="inputs.village_border[point].desa.loading"
+                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                            :no-data-text="inputs.village_border[point].desa.loading ? 'Loading...' : 'No Data'"
+                                                            outlined
+                                                            rounded
+                                                            v-model="inputs.village_border[point].desa.model"
+                                                        >
+                                                        </v-autocomplete>
+                                                    </v-col>
+                                                </v-row>
                                             </div>
-                                        </v-col>
-                                        <!-- SD - SMP -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_jr_highschool.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_jr_highschool.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- SMA -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_sr_highschool.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_sr_highschool.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Univ -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_university.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_university.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Age Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-account-arrow-up</v-icon>Umur Produktivitas</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <!-- Productive -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_productive.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_productive.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Not Productive -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_not_productive.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_not_productive.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Job Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-hand-coin</v-icon>Pekerjaan</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <!-- Farmer -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_farmers.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_farmers.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Farmer Workers -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_farmer_workers.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_farmer_workers.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                        <!-- Other Jobs -->
-                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                            <v-text-field
-                                                dense
-                                                color="success"
-                                                hide-details
-                                                :label="inputs.percentage_of_other_profession.label"
-                                                :disabled="false"
-                                                outlined
-                                                rounded
-                                                type="number"
-                                                suffix="%"
-                                                max="100"
-                                                :rules="[(v) => !!v || 'Field is required']"
-                                                v-model="inputs.percentage_of_other_profession.model"
-                                            ></v-text-field>
-                                        </v-col>
-                                    </v-row>
+                                        </div>
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-stepper-content>
@@ -2079,13 +2183,748 @@ export default {
         }
     },
     data: () => ({
+        groupingInputs: {
+            rra: [
+                {
+                    title: 'Batas Wilayah',
+                    icon: 'mdi-compass-rose',        
+                    type: 'village-border',
+                    items: ["north", "east", "south", "west"],
+                    required: true,
+                    optional: false,
+                },
+                {
+                    title: 'Landscape Desa',
+                    icon: 'mdi-panorama',        
+                    type: 'column',
+                    required: true,
+                    optional: false,
+                    items: [
+                        'land_area', 
+                        'paddy_land', 
+                        'field', 
+                        'resident', 
+                        'yard', 
+                        'marshland', 
+                        'lake', 
+                        'people_plantation_land', 
+                        'state_plantation_land', 
+                        'private_plantation_land', 
+                        'protected_forest', 
+                        'people_forest', 
+                        'public_facilities', 
+                        'types_of_land_by_people'
+                    ] 
+                },
+                {
+                    title: 'Pola Pemanfaatan Lahan',
+                    icon: 'mdi-land-fields',        
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    items: [
+                        'land_use_patterns',
+                    ] 
+                },
+                {
+                    title: 'Tanaman Yang Sudah Ada',
+                    icon: 'mdi-flower',        
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    items: [
+                        'existing_plants',
+                    ] 
+                },
+                {
+                    title: 'Kelembagaan Masyarakat',
+                    icon: 'mdi-account-cowboy-hat',        
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    items: [
+                        'community_institutions',
+                    ] 
+                },
+                {
+                    title: 'Potensi Pertanian Organik',
+                    icon: 'mdi-barn',        
+                    type: 'multiple-input',
+                    required: false,
+                    optional: false,
+                    items: [
+                        'organic_farming_potential',
+                    ] 
+                },
+                {
+                    title: 'Pemasaran Hasil Produksi',
+                    icon: 'mdi-store',        
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    items: [
+                        'production_marketing',
+                    ] 
+                },
+                {
+                    title: 'Identifikasi Petani Inovatif',
+                    icon: 'mdi-account-star',        
+                    type: 'multiple-input',
+                    required: false,
+                    optional: false,
+                    items: [
+                        'identification_of_innovative_farmers',
+                    ] 
+                }
+            ]
+        },
         inputs: {
             program_year: {
+                inputType: 'hidden',
                 model: '',
                 required: true
             },
+            scooping_form_no: {
+                inputType: 'autocomplete',
+                items: [],
+                label: 'Scooping Form No',
+                model: '',
+                loading: false
+            },
+            // village borderline
+            village_border: {
+                inputType: 'custom',
+                north: {
+                    label: 'Utara',
+                    type: {
+                        label: 'Tipe',
+                        items: ['Kabupaten', 'Kecamatan', 'Desa'],
+                        model: 'Kabupaten',
+                        lgView: 4
+                    },
+                    kabupaten: {
+                        label: 'Kabupaten',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    kecamatan: {
+                        label: 'Kecamatan',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    desa: {
+                        label: 'Desa',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    }
+                },
+                east: {
+                    label: 'Timur',
+                    type: {
+                        label: 'Tipe',
+                        items: ['Kabupaten', 'Kecamatan', 'Desa'],
+                        model: 'Kabupaten',
+                        lgView: 4
+                    },
+                    kabupaten: {
+                        label: 'Kabupaten',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    kecamatan: {
+                        label: 'Kecamatan',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    desa: {
+                        label: 'Desa',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    }
+                },
+                south: {
+                    label: 'Selatan',
+                    type: {
+                        label: 'Tipe',
+                        items: ['Kabupaten', 'Kecamatan', 'Desa'],
+                        model: 'Kabupaten',
+                        lgView: 4
+                    },
+                    kabupaten: {
+                        label: 'Kabupaten',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    kecamatan: {
+                        label: 'Kecamatan',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    desa: {
+                        label: 'Desa',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    }
+                },
+                west: {
+                    label: 'Barat',
+                    type: {
+                        label: 'Tipe',
+                        items: ['Kabupaten', 'Kecamatan', 'Desa'],
+                        model: 'Kabupaten',
+                        lgView: 4
+                    },
+                    kabupaten: {
+                        label: 'Kabupaten',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    kecamatan: {
+                        label: 'Kecamatan',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    },
+                    desa: {
+                        label: 'Desa',
+                        items: [],
+                        loading: false,
+                        model: null,
+                        lgView: 4
+                    }
+                },
+            },
+            // landscape desa
+            land_area: {
+                label: 'Luas Wilayah',
+                model: '',
+                itemText: 'value',
+                placeholder: `Pilih terlebih dahulu "Scooping Form No" diatas!`,
+                itemValue: 'value',
+                inputType: 'text-field',
+                lgView: 12,
+                suffix: 'Ha',
+                loading: false,
+                required: true,
+                readonly: true,
+                type: 'number'
+            },
+            paddy_land: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Tanah Sawah',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            field: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Tegal / Ladang',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            resident: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Pemukiman',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            yard: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Pekarangan',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            marshland: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Tanah Rawa',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            lake: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Situ / Waduk / Danau',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            people_plantation_land: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Tanah Perkebunan Rakyat',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            state_plantation_land: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Tanah Perkebunan Negara',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            private_plantation_land: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Tanah Perkebunan Swasta',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            protected_forest: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Hutan Lindung',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            people_forest: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Hutan Rakyat',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            public_facilities: {
+                inputType: 'text-field',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Fasilitas Umum',
+                lgView: 6,
+                loading: false,
+                model: 0,
+                placeholder: `0`,
+                readonly: false,
+                required: true,
+                suffix: 'Ha',
+                type: 'number'
+            },
+            types_of_land_by_people: {
+                inputType: 'textarea',
+                itemText: 'value',
+                itemValue: 'value',
+                label: 'Jenis Lahan Menurut Masyarakat',
+                lgView: 12,
+                loading: false,
+                model: '',
+                placeholder: ``,
+                readonly: false,
+                required: true,
+                suffix: '',
+                type: 'text'
+            },
+            // pola pemanfaatan lahan
+            land_use_patterns: {
+                inputType: 'multiple-input',
+                form: {
+                    pattern: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [
+                            'Agroforestry Intensitas Tinggi',
+                            'Agroforestry Intensitas Rendah',
+                            'Konservasi',
+                        ],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Pola',
+                        multiple: false,
+                        required: true,
+                        lgView: 4
+                    },
+                    plants: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: [],
+                        hideSelected: true,
+                        label: 'Tanaman',
+                        multiple: true,
+                        chip: true,
+                        required: true,
+                        lgView: 7
+                    }
+                },
+                model: [],
+                default: [{
+                    pattern: null,
+                    plants: []
+                }],
+                totalCanChange: true
+            },
+            // pola pemanfaatan lahan
+            existing_plants: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [
+                            'KAYU',
+                            'MPTS',
+                            'CROPS',
+                        ],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Kategori',
+                        multiple: false,
+                        required: true,
+                        readonly: true,
+                        lgView: 4
+                    },
+                    plants: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: [],
+                        hideSelected: true,
+                        label: 'Tanaman',
+                        multiple: true,
+                        chip: true,
+                        required: true,
+                        lgView: 7
+                    }
+                },
+                model: [],
+                default: [{
+                    category: 'KAYU',
+                    plants: []
+                },{
+                    category: 'MPTS',
+                    plants: []
+                },{
+                    category: 'CROPS',
+                    plants: []
+                }],
+                totalCanChange: false
+            },
+            // kelembagaan masyarakat
+            community_institutions: {
+                inputType: 'multiple-input',
+                form: {
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama Lembaga',
+                        required: true,
+                        readonly: false,
+                        lgView: 5
+                    },
+                    role: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: [],
+                        hideSelected: true,
+                        label: 'Peran',
+                        multiple: true,
+                        chip: true,
+                        required: true,
+                        lgView: 6
+                    },
+                    description: {
+                        inputType: 'textarea',
+                        type: 'text',
+                        label: 'Deskripsi',
+                        required: true,
+                        readonly: false,
+                        lgView: 12
+                    },
+                },
+                model: [],
+                default: [{
+                    name: null,
+                    role: [],
+                    description: null
+                }],
+                totalCanChange: true
+            },
+            // potensi pertanian organik
+            organic_farming_potential: {
+                inputType: 'multiple-input',
+                form: {
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: true,
+                        readonly: false,
+                        lgView: 7
+                    },
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Kategori Potensi',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 4
+                    },
+                    source: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Sumber',
+                        required: true,
+                        readonly: false,
+                        lgView: 12
+                    },
+                    description: {
+                        inputType: 'textarea',
+                        type: 'text',
+                        label: 'Deskripsi',
+                        required: true,
+                        readonly: false,
+                        lgView: 12
+                    },
+                },
+                model: [],
+                default: [{
+                    name: null,
+                    category: null,
+                    source: null,
+                    description: null
+                }],
+                totalCanChange: true
+            },
+            // pemasaran hasil produksi
+            production_marketing: {
+                inputType: 'multiple-input',
+                form: {
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama Komoditas',
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    capacity: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Kapasitas Komoditas',
+                        required: true,
+                        readonly: false,
+                        suffix: 'kg',
+                        lgView: 5
+                    },
+                    method: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: [],
+                        hideSelected: true,
+                        label: 'Metode',
+                        multiple: false,
+                        chip: false,
+                        required: true,
+                        lgView: 4
+                    },
+                    period: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Periode Pemasaran Komoditas',
+                        required: true,
+                        readonly: false,
+                        lgView: 8
+                    },
+                    description: {
+                        inputType: 'textarea',
+                        type: 'text',
+                        label: 'Deskripsi',
+                        required: true,
+                        readonly: false,
+                        lgView: 12
+                    },
+                    buyer_name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama Pembeli',
+                        required: false,
+                        readonly: false,
+                        lgView: 4
+                    },
+                    buyer_phone: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'No Telp',
+                        required: false,
+                        readonly: false,
+                        lgView: 4
+                    },
+                    buyer_email: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Email',
+                        required: false,
+                        readonly: false,
+                        lgView: 4
+                    },
+                },
+                model: [],
+                default: [{
+                    name: null,
+                    capacity: 0,
+                    method: null,
+                    period: null,
+                    description: null,
+                    buyer_name: null,
+                    buyer_phone: null,
+                    buyer_email: null,
+                }],
+                totalCanChange: true
+            },
+            // pemasaran hasil produksi
+            identification_of_innovative_farmers: {
+                inputType: 'multiple-input',
+                form: {
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama Petani',
+                        required: true,
+                        readonly: false,
+                        lgView: 5
+                    },
+                    speciality: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Spesialisasi Petani',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    potential: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Potensial',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 12
+                    },
+                    description: {
+                        inputType: 'textarea',
+                        type: 'text',
+                        label: 'Deskripsi',
+                        required: false,
+                        readonly: false,
+                        lgView: 12
+                    },
+                },
+                model: [],
+                default: [{
+                    name: null,
+                    speciality: null,
+                    potential: null,
+                    description: null,
+                }],
+                totalCanChange: true
+            },
             // village location inputs
             province: {
+                inputType: 'autocomplete',
                 label: 'Provinsi',
                 model: '',
                 items: [],
@@ -2546,27 +3385,32 @@ export default {
         localConfig: {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
-            maxSubDataTotal: 5
+            maxSubDataTotal: 5,
+            requiredInputIcon: 'mdi-alert-decagram'
         },
         stepper: {
             model: 1,
             steps: ['RRA', 'PRA', 'Social Impact'],
             steps_icon: ['home-analytics', 'home-group', 'home-alert']
-        }
+        },
     }),
     watch: {
     },
     computed: {
         showModal: {
             get: function () {
+                if (this.show) {
+                    this.inputs.program_year.model = this.programYear
+                    if (this.id) {
+                        // this.getDetailData(this.id)
+                    } else {
+                        this.setDefaultData()
+                    }
+                }
                 return this.show
             },
             set: function(newVal) {
                 if (newVal) {
-                    this.inputs.program_year.model = this.programYear
-                    if (this.id) {
-                        this.getDetailData(this.id)
-                    }
                 } else this.$emit('action', {type: 'close', name: 'form'})
             }
         }
@@ -2587,6 +3431,15 @@ export default {
                 }
                 }
             }
+        },
+        async getOptionsDataReturn(name, urlSuffix) {
+            try {
+                this.loading.text = `Get ${name}...`
+                const url = this.$store.getters.getApiUrl(urlSuffix)
+                const res = await axios.get(url, this.$store.state.apiConfig)
+                const data = res.data.data.result
+                return data
+            } catch (err) {this.errorResponse(err)}
         },
         async getOptionsData(inputs) {
             try {
@@ -2627,9 +3480,19 @@ export default {
                 this.inputs[inputs.type].loading = false
             }
         },
+        async getScoopingListItems() {
+            try {
+                this.loading.text = 'Get list scooping user...'
+                const url = this.$store.getters.getApiUrl('GetScoopingAll')
+                const res = await axios.get(url, this.$store.state.apiConfig)
+                const data = res.data.data.result.filter(val => val.is_verify === 1)
+                // console.log(data)
+                this.inputs.scooping_form_no.items = data
+            } catch (err) {this.errorResponse(err)}
+        },
         modifyTotalSubData(type, name) {
             if (type == '+') {
-                let inputs = {}
+                let inputs = null
                 if (name == 'land_tenure') {
                     inputs = {
                         type: '',
@@ -2735,13 +3598,40 @@ export default {
                         revenue: 0
                     }
                 }
-                
-                this.inputs[name].model.push(inputs)
+                if (inputs) this.inputs[name].model.push(inputs)
+                else {
+                    const defaultData = JSON.parse(JSON.stringify(this.inputs[name].default[0]))
+                    this.inputs[name].model.push(defaultData)
+                }
             } else if (type == '-') this.inputs[name].model.pop()
         },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
+        },
+        async setDefaultData() {
+            try {
+                this.loading.show = true
+                // set default data for multiple inputs
+                this.loading.text = 'Setting default data...'
+                for (const [key, value] of Object.entries(this.inputs)) {
+                    if (value.inputType) if (value.inputType === 'multiple-input') {
+                        const defaultData = await JSON.parse(JSON.stringify(value.default))
+                        value.model = defaultData
+                    }            
+                }
+                // get scooping list item
+                await this.getScoopingListItems()
+                // get pola tanam options
+                // this.inputs.land_use_patterns.form.pattern.items = await this.getOptionsDataReturn('List Opsi Tanam', 'GetOpsiPolaTanamOptions')
+                // get list nama pohon
+                const resTrees = await this.getOptionsDataReturn('Pohon Data', 'GetTreesAll')
+                const listTrees = await resTrees.data.map(tree => {return tree.tree_name})
+                this.inputs.land_use_patterns.form.plants.items = listTrees
+                this.inputs.existing_plants.form.plants.items = listTrees
+            } catch (err) {this.errorResponse(err)} finally {
+                this.loading.show = false
+            }
         }
     }
 }
