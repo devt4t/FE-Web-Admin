@@ -414,6 +414,129 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- Dusun Data -->
+                                    <div class="d-flex align-center">
+                                        <p class="mb-0"><v-icon class="mr-2">mdi-home-group</v-icon>Data Dusun</p>
+                                        <v-divider class="mx-2"></v-divider>
+                                    </div>
+                                    <v-row class="ma-0 mx-2">
+                                        <v-col cols="12">
+                                            <v-expansion-panels class="rounded-xl" v-model="inputs.hamlets.expansionModel">
+                                                <v-expansion-panel v-for="(hm, hmIndex) in inputs.hamlets.model" :key="`hamlet-${hmIndex}`" class="rounded-xl">
+                                                    <v-expansion-panel-header>
+                                                        <template v-slot:default="{ open }">
+                                                            <v-row no-gutters>
+                                                                <v-col cols="6">
+                                                                    <span v-if="hm.hamlet_name && !open">
+                                                                        <v-icon>mdi-numeric-{{ hmIndex+1 }}-circle</v-icon>
+                                                                        {{ hm.hamlet_name }}
+                                                                    </span>
+                                                                    <span v-else>
+                                                                        Dusun {{ hmIndex + 1 }}
+                                                                    </span>
+                                                                </v-col>
+                                                                <v-col
+                                                                    cols="6"
+                                                                    class="text--secondary text-right"
+                                                                >
+                                                                    <v-fade-transition leave-absolute>
+                                                                        <!-- <span
+                                                                            key="0"
+                                                                            class="mr-2"
+                                                                        >
+                                                                            Kelengkapan Data: {{ Object.entries(hm).filter(val => val[1] !== null && val[1] !== 0).length }} / {{ Object.entries(inputs.hamlets.form).filter(val => val[1].type !== 'divider').length }}
+                                                                        </span> -->
+                                                                    </v-fade-transition>
+                                                                </v-col>
+                                                            </v-row>
+                                                        </template>
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content>
+                                                        <v-row>
+                                                            <!-- Inputs -->
+                                                            <v-col v-if="(hmInputs[1].potentialRequirement === true && hm.potential) || hmInputs[1].potentialRequirement === false" v-for="(hmInputs, hmInputIndex) in Object.entries(inputs.hamlets.form)" :key="`Inputs-${hmInputs[0]}-${hmIndex}-${hmInputIndex}`" cols="12" sm="12" md="6" :lg="hmInputs[1].lgView" >
+                                                                <div v-if="hmInputs[1].type === 'divider'" class="d-flex align-center">
+                                                                    <p class="mb-0"><v-icon class="mr-2">{{ hmInputs[1].labelIcon }}</v-icon>{{ hmInputs[1].label }}</p>
+                                                                    <v-divider class="mx-2"></v-divider>
+                                                                    <div v-if="hmInputs[1].label === 'General Data'">
+                                                                        <v-switch    
+                                                                            color="green"
+                                                                            v-model="hm.potential"
+                                                                            inset
+                                                                            :label="`Dusun ini ${hm.potential ? 'berpotensi' : 'tidak berpotensi'}.`"
+                                                                        ></v-switch>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- text-field -->
+                                                                <v-text-field
+                                                                    v-else-if="hmInputs[1].type === 'number' || hmInputs[1].type === 'text'"
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :label="hmInputs[1].label"
+                                                                    :prepend-icon="hmInputs[1].prependIcon"
+                                                                    outlined
+                                                                    rounded
+                                                                    :suffix="hmInputs[1].suffix"
+                                                                    :type="hmInputs[1].type"
+                                                                    v-model="hm[hmInputs[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                        {{ hmInputs[1].label }} 
+                                                                        <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                    <template v-slot:append>
+                                                                        <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                    </template>
+                                                                </v-text-field>
+                                                                <!-- autocomplete -->
+                                                                <v-autocomplete
+                                                                    v-else-if="hmInputs[1].inputType == 'autocomplete'"
+                                                                    dense
+                                                                    :multiple="hmInputs[1].type == 'Multiple'"
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :item-text="hmInputs[1].itemText"
+                                                                    :item-value="hmInputs[1].itemValue"
+                                                                    :items="hmInputs[1].items"
+                                                                    :label="hmInputs[1].label"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="hm[hmInputs[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        {{ hmInputs[1].label }} 
+                                                                        <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                </v-autocomplete>
+                                                            </v-col>
+                                                        </v-row>
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+                                            </v-expansion-panels>
+                                            <v-row class="justify-center my-2">
+                                                <v-btn v-if="inputs.hamlets.model.length < 5" 
+                                                    data-aos="fade-right" data-aos-offset="-10000" 
+                                                    :key="`hamlets_plus_btn`" 
+                                                    fab small color="green white--text" class="mx-1" 
+                                                    @click="() => modifyTotalSubData('+', 'hamlets')"
+                                                >
+                                                    <v-icon>mdi-plus</v-icon>
+                                                </v-btn>
+                                                <v-btn v-if="inputs.hamlets.model.length > 1" 
+                                                    data-aos="fade-left" data-aos-offset="-10000" 
+                                                    :key="`hamlets_minus_btn`" 
+                                                    fab small color="red" outlined class="mx-1"
+                                                    @click="() => modifyTotalSubData('-', 'hamlets')"
+                                                >
+                                                    <v-icon>mdi-minus</v-icon>
+                                                </v-btn>
+                                            </v-row>
+                                        </v-col>
+                                    </v-row>
                                 </v-card-text>
                             </v-card>
                         </v-stepper-content>
@@ -2921,6 +3044,333 @@ export default {
                     description: null,
                 }],
                 totalCanChange: true
+            },// Dusun Data
+            hamlets: {
+                expansionModel: 0,
+                loading: false,
+                required: true,
+                inputType: 'multiple-input',
+                type: 'MultipleInput',
+                label: 'Data Dusun',
+                form: {
+                    divider5: {
+                        label: 'General Data',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-list-box',
+                        potentialRequirement: false
+                    },
+                    hamlet_name: {
+                        label: 'Nama Dusun',
+                        type: 'text',
+                        suffix: '',
+                        lgView: 6,
+                        labelIcon: 'mdi-tag',
+                        required: true,
+                        potentialRequirement: false,
+                    },
+                    land_area: {
+                        label: 'Luas Dusun',
+                        model: '',
+                        inputType: 'text-field',
+                        lgView: 6,
+                        suffix: '',
+                        append: 'm<sup>2</sup>',
+                        loading: false,
+                        required: true,
+                        type: 'number',
+                        potentialRequirement: true,
+                    },
+                    accessibility: {
+                        items: formOptions.accessibility,
+                        label: 'Aksesibilitas',
+                        model: '',
+                        itemText: 'value',
+                        itemValue: 'value',
+                        inputType: 'autocomplete',
+                        lgView: 6,
+                        loading: false,
+                        required: true,
+                        type: 'Select',
+                        potentialRequirement: true,
+                    },
+                    dry_land_area: {
+                        label: 'Luas Lahan Kering / Kritis',
+                        model: '',
+                        inputType: 'text-field',
+                        lgView: 6,
+                        append: 'm<sup>2</sup>',
+                        loading: false,
+                        required: true,
+                        type: 'number',
+                        potentialRequirement: true,
+                    },
+                    divider6: {
+                        label: 'PIC Dusun',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-account-star',
+                        potentialRequirement: true,
+                    },
+                    hamlet_pic_name: {
+                        label: 'Nama',
+                        type: 'text',
+                        suffix: '',
+                        lgView: 6,
+                        labelIcon: '',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    hamlet_pic_position: {
+                        label: 'Jabatan',
+                        type: 'text',
+                        suffix: '',
+                        lgView: 6,
+                        labelIcon: '',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    hamlet_pic_phone: {
+                        label: 'No HP',
+                        type: 'number',
+                        suffix: '',
+                        prependIcon: 'mdi-phone',
+                        lgView: 6,
+                        labelIcon: '',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    hamlet_pic_whatsapp: {
+                        label: 'Whatsapp',
+                        type: 'number',
+                        suffix: '',
+                        prependIcon: 'mdi-whatsapp',
+                        lgView: 6,
+                        labelIcon: '',
+                        required: false,
+                        potentialRequirement: true,
+                    },
+                    divider1: {
+                        label: 'Data Jumlah Keluarga',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-human-male-female-child',
+                        potentialRequirement: true,
+                    },
+                    number_of_rw: {
+                        label: 'RW',
+                        type: 'number',
+                        suffix: 'RW',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    number_of_rt: {
+                        label: 'RT',
+                        type: 'number',
+                        suffix: 'RT',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    number_of_male: {
+                        label: 'Jumlah Laki - Laki',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-human-male',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    number_of_female: {
+                        label: 'Jumlah Perempuan',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-human-female',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    number_of_families: {
+                        label: 'Jumlah Keluarga (KK)',
+                        type: 'number',
+                        suffix: 'KK',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: true,
+                        potentialRequirement: false,
+                    },
+                    number_of_farmer_families: {
+                        label: 'Jumlah Keluarga Petani (KK)',
+                        type: 'number',
+                        suffix: 'KK',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    avg_family_member: {
+                        label: 'Rata - Rata Anggota Keluarga',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    divider2: {
+                        label: 'Data Edukasi',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-book-education',
+                        potentialRequirement: true,
+                    },
+                    total_of_jr_highschool: {
+                        label: 'SD - SMP',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-bus-school',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_sr_highschool: {
+                        label: 'SMA',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-school',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_university: {
+                        label: 'Kuliah',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-account-school',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    divider3: {
+                        label: 'Produktifitas',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-face-man-shimmer',
+                        potentialRequirement: true,
+                    },
+                    total_of_productive: {
+                        label: 'Produktif',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-cash-check',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_not_productive: {
+                        label: 'Tidak Produktif',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-cash-off',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    divider4: {
+                        label: 'Mata Pencaharian Masyarakat',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-hand-coin',
+                        potentialRequirement: true,
+                    },
+                    total_of_farmers: {
+                        label: 'Petani',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-beekeeper',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_farmer_workers: {
+                        label: 'Buruh Tani',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-beekeeper',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_priv_employee: {
+                        label: 'Karyawan Swasta',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-account-supervisor',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_gov_employee: {
+                        label: 'ASN (Guru, TNI, Polri)',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-account-tie',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_entrepreneur: {
+                        label: 'Wiraswasta',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-account-cash',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                    total_of_other_profession: {
+                        label: 'Profesi Lain (Peternakan, Buruh Peternakan, Pensiunan)',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-account-question',
+                        required: true,
+                        potentialRequirement: true,
+                    },
+                },
+                model: [],
+                default: [{
+                    hamlet_name: null,
+                    potential: false,
+                    land_area: 0,
+                    accessibility: null,
+                    dry_land_area: 0,
+                    hamlet_pic_name: 0,
+                    hamlet_pic_position: 0,
+                    hamlet_pic_phone: 0,
+                    hamlet_pic_whatsapp: 0,
+                    number_of_rw: 0,
+                    number_of_rt: 0,
+                    number_of_male: 0,
+                    number_of_female: 0,
+                    number_of_families: 0,
+                    number_of_farmer_families: 0,
+                    avg_family_member: 0,
+                    total_of_jr_highschool: 0,
+                    total_of_sr_highschool: 0,
+                    total_of_university: 0,
+                    total_of_productive: 0,
+                    total_of_not_productive: 0,
+                    total_of_farmers: 0,
+                    total_of_farmer_workers: 0,
+                    total_of_priv_employee: 0,
+                    total_of_gov_employee: 0,
+                    total_of_entrepreneur: 0,
+                    total_of_other_profession: 0,
+                }],
             },
             // village location inputs
             province: {
@@ -2950,62 +3400,6 @@ export default {
             },
             address: {
                 label: 'Address',
-                model: '',
-                loading: false
-            },
-            // RRA
-            number_of_families: {
-                label: 'Jumlah KK',
-                model: '',
-                loading: false
-            },
-            number_of_souls: {
-                label: 'Jumlah Jiwa',
-                model: '',
-                loading: false
-            },
-            avg_family_member: {
-                label: 'Rata - Rata Anggota Keluarga',
-                model: '',
-                loading: false
-            },
-            percentage_of_jr_highschool: {
-                label: 'SD - SMP',
-                model: '',
-                loading: false
-            },
-            percentage_of_sr_highschool: {
-                label: 'SMA',
-                model: '',
-                loading: false
-            },
-            percentage_of_university: {
-                label: 'Kuliah',
-                model: '',
-                loading: false
-            },
-            percentage_of_productive: {
-                label: 'Produktif',
-                model: '',
-                loading: false
-            },
-            percentage_of_not_productive: {
-                label: 'Tidak Produktif',
-                model: '',
-                loading: false
-            },
-            percentage_of_farmers: {
-                label: 'Petani',
-                model: '',
-                loading: false
-            },
-            percentage_of_farmer_workers: {
-                label: 'Buruh Tani',
-                model: '',
-                loading: false
-            },
-            percentage_of_other_profession: {
-                label: 'Profesi Lain',
                 model: '',
                 loading: false
             },
@@ -3604,6 +3998,8 @@ export default {
                     this.inputs[name].model.push(defaultData)
                 }
             } else if (type == '-') this.inputs[name].model.pop()
+
+            if (name == 'hamlets') this.inputs.hamlets.expansionModel = this.inputs.hamlets.model.length - 1
         },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
