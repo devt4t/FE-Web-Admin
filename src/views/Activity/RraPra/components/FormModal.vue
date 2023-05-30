@@ -557,1097 +557,306 @@
                                     <span class="grey--text text--darken-2"><v-icon class="mr-2" size="27" style="transform: translateY(-2px);">mdi-{{ stepper.steps_icon[1] }}</v-icon>{{ stepper.steps[1] }}</span>
                                 </v-card-title>
                                 <v-card-text>
-                                    <v-row>
-                                        <!-- Land Tenure Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-land-plots</v-icon>Penguasaan Lahan</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(land_tenure, land_tenure_index) in inputs.land_tenure.model" 
-                                                :key="`land_tenure_${land_tenure_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ land_tenure_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- land tenure type -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.land_tenure.options.type.items"
-                                                                :label="inputs.land_tenure.options.type.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="land_tenure.type"
-                                                            ></v-autocomplete>
+                                    <div  v-for="(praInput, praInputIndex) in groupingInputs.pra" :key="`pRAInputSection-${praInputIndex}`">
+                                        <!-- Title -->
+                                        <div class="d-flex align-center my-2">
+                                            <p class="mb-0"><v-icon class="mr-2">{{ praInput.icon }}</v-icon>{{ praInput.title }}</p>
+                                            <v-divider class="mx-2"></v-divider>
+                                            <v-switch
+                                                v-if="praInput.required === false"
+                                                color="green"
+                                                v-model="praInput.optional"
+                                                inset
+                                                :label="`${praInput.optional ? 'Ada' : 'Tidak Ada'}`"
+                                            ></v-switch>
+                                        </div>
+                                        <div v-if="(praInput.required === false && praInput.optional === true) || praInput.required">
+                                            <!-- multiple-input type -->
+                                            <div v-if="praInput.type === 'multiple-input'">
+                                                <div v-for="(multipleInputHead, multipleInputHeadIndex) in praInput.items" :key="`multipleInputHead-${multipleInputHead}`">
+                                                    <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`">
+                                                        <v-col cols="auto" class="d-flex align-center">
+                                                            <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ multipleInputItemIndex + 1 }}</v-icon></v-btn>
                                                         </v-col>
-                                                        <!-- land tenure function -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.land_tenure.options.func.items"
-                                                                :label="inputs.land_tenure.options.func.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="land_tenure.func"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- land tenure land type -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.land_tenure.options.land_type.items"
-                                                                :label="inputs.land_tenure.options.land_type.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="land_tenure.land_type"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- Unit -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Unit"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                suffix="Ha"
-                                                                max="100"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="land_tenure.percentage"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- land tenure status -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.land_tenure.options.status.items"
-                                                                :label="inputs.land_tenure.options.status.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="land_tenure.status"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.land_tenure.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`land_tenure_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'land_tenure')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.land_tenure.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`land_tenure_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'land_tenure')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Disaster Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-heart-broken</v-icon>Riwayat Bencana</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(disaster_data, disaster_data_index) in inputs.disaster_data.model" 
-                                                :key="`disaster_data_${disaster_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ disaster_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- disaster_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="disaster_data.name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- disaster_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.disaster_data.options.categories.items"
-                                                                :label="inputs.disaster_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="disaster_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- disaster_data year -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Tahun"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="disaster_data.year"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- disaster_data fatalities -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Korban Jiwa"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                suffix="jiwa"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="disaster_data.fatalities"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- disaster_data details -->
-                                                        <v-col cols="12" sm="12" md="6" lg="8">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Detail"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="disaster_data.details"
-                                                            ></v-text-field>
+                                                        <!-- Inputs -->
+                                                        <v-col
+                                                            v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
+                                                            v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.category === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
+                                                            :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
+                                                            cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" 
+                                                        >
+                                                            <div>
+                                                                <!-- combobox -->
+                                                                <v-combobox
+                                                                    v-if="multipleInputForm[1].inputType == 'combobox'"
+                                                                    dense
+                                                                    :multiple="multipleInputForm[1].multiple"
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :small-chips="multipleInputForm[1].chip"
+                                                                    :hide-selected="multipleInputForm[1].hideSelected"
+                                                                    item-color="success"
+                                                                    :items="multipleInputForm[1].items"
+                                                                    :label="multipleInputForm[1].label"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:no-data>
+                                                                        <v-list-item>
+                                                                        <v-list-item-content>
+                                                                            <v-list-item-title>
+                                                                            No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                            </v-list-item-title>
+                                                                        </v-list-item-content>
+                                                                        </v-list-item>
+                                                                    </template>
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                    <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                        <v-chip
+                                                                            v-bind="attrs"
+                                                                            :input-value="selected"
+                                                                            label
+                                                                            small
+                                                                            class="rounded-pill"
+                                                                        >
+                                                                        <span class="pr-2">
+                                                                            {{ item }}
+                                                                        </span>
+                                                                        <v-icon
+                                                                            small
+                                                                            @click="parent.selectItem(item)"
+                                                                        >
+                                                                            mdi-close-circle
+                                                                        </v-icon>
+                                                                        </v-chip>
+                                                                    </template>
+                                                                </v-combobox>
+                                                                <!-- autocomplete -->
+                                                                <v-autocomplete
+                                                                    v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
+                                                                    dense
+                                                                    :multiple="multipleInputForm[1].multiple"
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :item-text="multipleInputForm[1].itemText"
+                                                                    :item-value="multipleInputForm[1].itemValue"
+                                                                    :items="multipleInputForm[1].items"
+                                                                    :label="multipleInputForm[1].label"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    outlined
+                                                                    rounded
+                                                                    :readonly="multipleInputForm[1].readonly"
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                </v-autocomplete>
+                                                                <!-- text-field -->
+                                                                <v-text-field
+                                                                    v-else-if="multipleInputForm[1].inputType == 'text-field'"
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :label="multipleInputForm[1].label"
+                                                                    outlined
+                                                                    rounded
+                                                                    :placeholder="multipleInputForm[1].placeholder"
+                                                                    :readonly="multipleInputForm[1].readonly"
+                                                                    :suffix="multipleInputForm[1].suffix"
+                                                                    :type="multipleInputForm[1].type"
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                    <template v-slot:append>
+                                                                        <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
+                                                                    </template>
+                                                                </v-text-field>
+                                                                <!-- textarea -->
+                                                                <v-textarea
+                                                                    v-else-if="multipleInputForm[1].inputType == 'textarea'"
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    :label="multipleInputForm[1].label"
+                                                                    outlined
+                                                                    rounded
+                                                                    :placeholder="multipleInputForm[1].placeholder"
+                                                                    :readonly="multipleInputForm[1].readonly"
+                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                >
+                                                                    <template v-slot:label>
+                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                        {{ multipleInputForm[1].label }} 
+                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
+                                                                </v-textarea>
+                                                            </div>
                                                         </v-col>
                                                     </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.disaster_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`disaster_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'disaster_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.disaster_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`disaster_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'disaster_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Problem Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-book-alert</v-icon>Permasalahan Yang Ada</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(problem_data, problem_data_index) in inputs.problem_data.model" 
-                                                :key="`problem_data_${problem_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ problem_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- problem_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama Masalah"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- problem_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.problem_data.options.categories.items"
-                                                                :label="inputs.problem_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- problem_data types -->
-                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.problem_data.options.types.items"
-                                                                :label="inputs.problem_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.types"
-                                                            ></v-autocomplete>
-                                                        </v-col> -->
-                                                        <!-- problem_data date -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Tanggal"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.date"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- problem_data rank -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.problem_data.options.rank.items"
-                                                                :label="inputs.problem_data.options.rank.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.rank"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- problem_data source -->
-                                                        <v-col cols="12" sm="12" md="12" lg="12">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Sumber"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.source"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- problem_data solution -->
-                                                        <v-col cols="12" sm="12" md="12" lg="12">
-                                                            <label for="">Solusi</label>
-                                                            <VueEditor />
-                                                            <!-- <v-textarea
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Solusi"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.solution"
-                                                            ></v-textarea> -->
-                                                        </v-col>
-                                                        <!-- problem_data stakeholder -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.problem_data.options.stakeholder.items"
-                                                                :label="inputs.problem_data.options.stakeholder.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.stakeholder"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- problem_data status -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.problem_data.options.status.items"
-                                                                :label="inputs.problem_data.options.status.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.status"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- problem_data ownership -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.problem_data.options.ownership.items"
-                                                                :label="inputs.problem_data.options.ownership.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="problem_data.ownership"
-                                                            ></v-autocomplete>
-                                                        </v-col>
+                                                    <v-row v-if="inputs[multipleInputHead].totalCanChange === true" class="justify-center">
+                                                        <v-btn v-if="inputs[multipleInputHead].model.length < localConfig.maxSubDataTotal" 
+                                                            data-aos="fade-right" data-aos-offset="-10000" 
+                                                            :key="`${multipleInputHead}_plus_btn`" 
+                                                            fab small color="green white--text" class="mx-1" 
+                                                            @click="() => modifyTotalSubData('+', multipleInputHead)"
+                                                        >
+                                                            <v-icon>mdi-plus</v-icon>
+                                                        </v-btn>
+                                                        <v-btn v-if="inputs[multipleInputHead].model.length > 1" 
+                                                            data-aos="fade-left" data-aos-offset="-10000" 
+                                                            :key="`${multipleInputHead}_minus_btn`" 
+                                                            fab small color="red" outlined class="mx-1"
+                                                            @click="() => modifyTotalSubData('-', multipleInputHead)"
+                                                        >
+                                                            <v-icon>mdi-minus</v-icon>
+                                                        </v-btn>
                                                     </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.problem_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`problem_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'problem_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.problem_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`problem_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'problem_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Fertilizer Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-beer</v-icon>Data Pupuk</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(fertilizer_data, fertilizer_data_index) in inputs.fertilizer_data.model" 
-                                                :key="`fertilizer_data_${fertilizer_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ fertilizer_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- fertilizer_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fertilizer_data.name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- fertilizer_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fertilizer_data.options.categories.items"
-                                                                :label="inputs.fertilizer_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fertilizer_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- fertilizer_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fertilizer_data.options.types.items"
-                                                                :label="inputs.fertilizer_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fertilizer_data.types"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- fertilizer_data sources -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fertilizer_data.options.sources.items"
-                                                                :label="inputs.fertilizer_data.options.sources.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fertilizer_data.sources"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.fertilizer_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`fertilizer_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'fertilizer_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.fertilizer_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`fertilizer_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'fertilizer_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Pesticide Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-heat-wave</v-icon>Data Pestisida</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(pesticide_data, pesticide_data_index) in inputs.pesticide_data.model" 
-                                                :key="`pesticide_data_${pesticide_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ pesticide_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- pesticide_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="pesticide_data.name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- pesticide_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.pesticide_data.options.categories.items"
-                                                                :label="inputs.pesticide_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="pesticide_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- pesticide_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.pesticide_data.options.types.items"
-                                                                :label="inputs.pesticide_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="pesticide_data.types"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- pesticide_data sources -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.pesticide_data.options.sources.items"
-                                                                :label="inputs.pesticide_data.options.sources.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="pesticide_data.sources"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.pesticide_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`pesticide_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'pesticide_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.pesticide_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`pesticide_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'pesticide_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Income Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-cash-multiple</v-icon>Data Penghasilan</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(income_data, income_data_index) in inputs.income_data.model" 
-                                                :key="`income_data_${income_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ income_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- income_data employment -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.income_data.options.employment.items"
-                                                                :label="inputs.income_data.options.employment.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data.employment"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- income_data percentage -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Penghasilan (Per-Bulan)"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                prefix="Rp"
-                                                                suffix=""
-                                                                max="100"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data.percentage"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.income_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`income_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'income_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.income_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`income_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'income_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Marketing Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-store</v-icon>Data Pemasaran Komoditas</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(marketing_data, marketing_data_index) in inputs.marketing_data.model" 
-                                                :key="`marketing_data_${marketing_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ marketing_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- marketing_data trade_method -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.marketing_data.options.trade_method.items"
-                                                                :label="inputs.marketing_data.options.trade_method.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="marketing_data.trade_method"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- marketing_data start_period -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Periode"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="marketing_data.start_period"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- marketing_data contact_name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama Kontak"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="marketing_data.contact_name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- marketing_data contact_number -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nomor Kontak"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="marketing_data.contact_number"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- marketing_data contract_details -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.marketing_data.options.contract_details.items"
-                                                                :label="inputs.marketing_data.options.contract_details.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="marketing_data.contract_details"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- marketing_data details -->
-                                                        <v-col cols="12" sm="12" md="12" lg="12">
+                                                    <v-row v-if="praInput.description === true">
+                                                        <v-col cols="12">
+                                                            <!-- textarea -->
                                                             <v-textarea
                                                                 dense
                                                                 color="success"
                                                                 hide-details
-                                                                label="Marketing Details"
-                                                                :disabled="false"
+                                                                :label="inputs[multipleInputHead].description.label"
                                                                 outlined
                                                                 rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="marketing_data.details"
-                                                            ></v-textarea>
+                                                                :placeholder="inputs[multipleInputHead].description.placeholder"
+                                                                :readonly="inputs[multipleInputHead].description.readonly"
+                                                                v-model="inputs[multipleInputHead].description.model"
+                                                            >
+                                                                <template v-slot:label>
+                                                                    <v-icon v-if="inputs[multipleInputHead].description.labelIcon" class="mr-1">{{ inputs[multipleInputHead].description.labelIcon }}</v-icon>
+                                                                    {{ inputs[multipleInputHead].description.label }} 
+                                                                    <sup><v-icon v-if="inputs[multipleInputHead].description.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                </template>
+                                                            </v-textarea>
                                                         </v-col>
                                                     </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.marketing_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`marketing_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'marketing_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.marketing_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`marketing_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'marketing_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Water Source Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-waves</v-icon>Sumber Air</p>
-                                                <v-divider class="mx-2"></v-divider>
+                                                </div>
                                             </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(water_source_data, water_source_data_index) in inputs.water_source_data.model" 
-                                                :key="`water_source_data_${water_source_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ water_source_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- water_source_data consumptions -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.water_source_data.options.consumptions.items"
-                                                                :label="inputs.water_source_data.options.consumptions.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="water_source_data.consumptions"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- water_source_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.water_source_data.options.categories.items"
-                                                                :label="inputs.water_source_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="water_source_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- water_source_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.water_source_data.options.types.items"
-                                                                :label="inputs.water_source_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="water_source_data.types"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- water_source_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="water_source_data.name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- water_source_data total -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Total Unit"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="water_source_data.total"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- water_source_data seasonal -->
-                                                        <v-col cols="12" sm="12" md="6" lg="4">
-                                                            <v-autocomplete
-                                                                multiple
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.water_source_data.options.seasonal.items"
-                                                                :label="inputs.water_source_data.options.seasonal.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="water_source_data.seasonal"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                    </v-row>
+                                            <!-- column type -->
+                                            <v-row v-else-if="praInput.type === 'column'">
+                                                <!-- Inputs -->
+                                                <v-col v-for="(itemKey, iKIndex) in praInput.items" :key="`Inputs-${itemKey}-${iKIndex}`" 
+                                                    cols="12" sm="12" :md="inputs[itemKey].lgView == 12 ? 12 : 6" :lg="inputs[itemKey].lgView" >
+                                                    <!-- text-field -->
+                                                    <v-text-field
+                                                        v-if="inputs[itemKey].inputType == 'text-field'"
+                                                        dense
+                                                        color="success"
+                                                        hide-details
+                                                        :label="inputs[itemKey].label"
+                                                        outlined
+                                                        rounded
+                                                        :placeholder="inputs[itemKey].placeholder"
+                                                        :readonly="inputs[itemKey].readonly"
+                                                        :suffix="inputs[itemKey].suffix"
+                                                        :type="inputs[itemKey].type"
+                                                        v-model="inputs[itemKey].model"
+                                                    >
+                                                        <template v-slot:label>
+                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                            {{ inputs[itemKey].label }} 
+                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                        </template>
+                                                        <template v-slot:append>
+                                                            <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
+                                                        </template>
+                                                    </v-text-field>
+                                                    <!-- textarea -->
+                                                    <v-textarea
+                                                        v-else-if="inputs[itemKey].inputType == 'textarea'"
+                                                        dense
+                                                        color="success"
+                                                        hide-details
+                                                        :label="inputs[itemKey].label"
+                                                        outlined
+                                                        rounded
+                                                        :placeholder="inputs[itemKey].placeholder"
+                                                        :readonly="inputs[itemKey].readonly"
+                                                        :suffix="inputs[itemKey].suffix"
+                                                        :type="inputs[itemKey].type"
+                                                        v-model="inputs[itemKey].model"
+                                                    >
+                                                        <template v-slot:label>
+                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                            {{ inputs[itemKey].label }} 
+                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                        </template>
+                                                        <template v-slot:append>
+                                                            <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
+                                                        </template>
+                                                    </v-textarea>
+                                                    <!-- combobox -->
+                                                    <v-combobox
+                                                        v-if="inputs[itemKey].inputType == 'combobox'"
+                                                        dense
+                                                        :multiple="inputs[itemKey].multiple"
+                                                        color="success"
+                                                        hide-details
+                                                        :small-chips="inputs[itemKey].chip"
+                                                        :hide-selected="inputs[itemKey].hideSelected"
+                                                        item-color="success"
+                                                        :items="inputs[itemKey].items"
+                                                        :label="inputs[itemKey].label"
+                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                        outlined
+                                                        rounded
+                                                        v-model="inputs[itemKey].model"
+                                                    >
+                                                        <template v-slot:no-data>
+                                                            <v-list-item>
+                                                            <v-list-item-content>
+                                                                <v-list-item-title>
+                                                                No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                </v-list-item-title>
+                                                            </v-list-item-content>
+                                                            </v-list-item>
+                                                        </template>
+                                                        <template v-slot:label>
+                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                            {{ inputs[itemKey].label }} 
+                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                        </template>
+                                                        <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                            <v-chip
+                                                                v-bind="attrs"
+                                                                :input-value="selected"
+                                                                label
+                                                                small
+                                                                class="rounded-pill"
+                                                            >
+                                                            <span class="pr-2">
+                                                                {{ item }}
+                                                            </span>
+                                                            <v-icon
+                                                                small
+                                                                @click="parent.selectItem(item)"
+                                                            >
+                                                                mdi-close-circle
+                                                            </v-icon>
+                                                            </v-chip>
+                                                        </template>
+                                                    </v-combobox>
                                                 </v-col>
                                             </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.water_source_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`water_source_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'water_source_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.water_source_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`water_source_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'water_source_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Planting Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-forest</v-icon>Data Penanaman Yang Sudah Ada</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(planting_data, planting_data_index) in inputs.planting_data.model" 
-                                                :key="`planting_data_${planting_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ planting_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- planting_data categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="3">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.planting_data.options.categories.items"
-                                                                :label="inputs.planting_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="planting_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- planting_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="3">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.planting_data.options.types.items"
-                                                                :label="inputs.planting_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="planting_data.types"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- marketing_data start_period -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Periode"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="planting_data.start_period"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.planting_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`planting_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'planting_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.planting_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`planting_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'planting_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                    </v-row>
+                                        </div>
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-stepper-content>
@@ -2399,6 +1608,103 @@ export default {
                         'identification_of_innovative_farmers',
                     ] 
                 }
+            ],
+            pra: [
+                {
+                    title: 'Kepemilikan Lahan',
+                    icon: 'mdi-land-fields',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [
+                        'land_ownership',
+                    ] 
+                },
+                {
+                    title: 'Penyebaran Lokasi Lahan Kering / Kritis',
+                    icon: 'mdi-land-fields',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [
+                        'distribution_of_critical_land_locations',
+                    ] 
+                },
+                {
+                    title: 'Pendapatan Keluarga Petani',
+                    icon: 'mdi-land-fields',       
+                    type: 'custom',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [] 
+                },
+                {
+                    title: 'Hasil Ekonomi Pemanfaatan Lahan',
+                    icon: 'mdi-hand-coin',
+                    type: 'column',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [
+                        "economic_result_source",
+                        "economic_result_plant_type",
+                        "economic_result_description",
+                    ] 
+                },
+                {
+                    title: 'Pupuk Dalam Pemanfaatan Lahan',
+                    icon: 'mdi-land-fields',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [
+                    ] 
+                },
+                {
+                    title: 'Pestisida Dalam Pemanfaatan Lahan',
+                    icon: 'mdi-land-fields',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [
+                    ] 
+                },
+                {
+                    title: 'Bencana',
+                    icon: 'mdi-land-fields',       
+                    type: 'multiple-input',
+                    required: false,
+                    optional: false,
+                    description: true,
+                    items: [
+                    ] 
+                },
+                {
+                    title: 'Permasalahan Yang Ada',
+                    icon: 'mdi-land-fields',       
+                    type: 'multiple-input',
+                    required: false,
+                    optional: false,
+                    description: true,
+                    items: [
+                    ] 
+                },
+                {
+                    title: 'Sumber Air',
+                    icon: 'mdi-water-pump',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: true,
+                    items: [
+                        'water_source',
+                    ] 
+                },
             ]
         },
         inputs: {
@@ -2414,6 +1720,7 @@ export default {
                 model: '',
                 loading: false
             },
+            // RRA
             // village borderline
             village_border: {
                 inputType: 'custom',
@@ -2742,11 +2049,7 @@ export default {
                     pattern: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [
-                            'Agroforestry Intensitas Tinggi',
-                            'Agroforestry Intensitas Rendah',
-                            'Konservasi',
-                        ],
+                        items: [],
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -2997,7 +2300,7 @@ export default {
                 }],
                 totalCanChange: true
             },
-            // pemasaran hasil produksi
+            // identifikasi petani inovatif
             identification_of_innovative_farmers: {
                 inputType: 'multiple-input',
                 form: {
@@ -3044,7 +2347,8 @@ export default {
                     description: null,
                 }],
                 totalCanChange: true
-            },// Dusun Data
+            },
+            // Dusun Data
             hamlets: {
                 expansionModel: 0,
                 loading: false,
@@ -3220,6 +2524,15 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
+                    avg_farmer_family_member: {
+                        label: 'Rata - Rata Anggota Keluarga Petani',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: true,
+                        potentialRequirement: true,
+                    },
                     divider2: {
                         label: 'Data Edukasi',
                         type: 'divider',
@@ -3359,6 +2672,7 @@ export default {
                     number_of_families: 0,
                     number_of_farmer_families: 0,
                     avg_family_member: 0,
+                    avg_farmer_family_member: 0,
                     total_of_jr_highschool: 0,
                     total_of_sr_highschool: 0,
                     total_of_university: 0,
@@ -3372,38 +2686,240 @@ export default {
                     total_of_other_profession: 0,
                 }],
             },
-            // village location inputs
-            province: {
-                inputType: 'autocomplete',
-                label: 'Provinsi',
-                model: '',
-                items: [],
-                loading: false
-            },
-            regency: {
-                label: 'Kabupaten / Kota',
-                model: '',
-                items: [],
-                loading: false
-            },
-            district: {
-                label: 'Kecamatan',
-                model: '',
-                items: [],
-                loading: false
-            },
-            village: {
-                items: [],
-                label: 'Desa',
-                model: '',
-                loading: false
-            },
-            address: {
-                label: 'Address',
-                model: '',
-                loading: false
-            },
             // PRA
+            // kepemilikan lahan
+            land_ownership: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [
+                            'Milik Petani',
+                            'Diluar Milik Petani'
+                        ],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Kategori Kepemilikan',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 4
+                    },
+                    type: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [
+                            'Orang Luar Desa (Perorangan)',
+                            'Lahan Desa',
+                            'Negara'
+                        ],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Jenis Kepemilikan',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 4
+                    },
+                    percentage: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Presentase',
+                        required: true,
+                        readonly: false,
+                        suffix: '%',
+                        lgView: 3
+                    }
+                },
+                model: [],
+                default: [{
+                    category: null,
+                    type: null,
+                    percentage: 0,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi Kepemilikan Lahan',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true,
+            },
+            // penyebaran lokasi lahan kritis
+            distribution_of_critical_land_locations: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Nama Dusun',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 5
+                    },
+                    pattern: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Pola Pemanfaatan Lahan',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                },
+                model: [],
+                default: [{
+                    category: null,
+                    type: null,
+                    percentage: 0,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi Kepemilikan Lahan',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true,
+            },
+            // Hasil Ekonomi Pemanfaatan Lahan
+            economic_result_source: {
+                label: 'Sumber Data',
+                model: '',
+                itemText: 'value',
+                placeholder: ``,
+                itemValue: 'value',
+                inputType: 'text-field',
+                lgView: 4,
+                suffix: '',
+                loading: false,
+                required: true,
+                readonly: false,
+                type: 'text'
+            },
+            economic_result_plant_type: {
+                inputType: 'combobox',
+                chip: true,
+                items: [],
+                hideSelected: true,
+                label: 'Jenis Tanaman',
+                multiple: true,
+                model: null,
+                chip: false,
+                required: true,
+                lgView: 8
+            },
+            economic_result_description: {
+                label: 'Deskripsi',
+                model: '',
+                itemText: 'value',
+                placeholder: ``,
+                itemValue: 'value',
+                inputType: 'textarea',
+                lgView: 12,
+                suffix: '',
+                loading: false,
+                required: false,
+                readonly: false,
+                type: 'text'
+            },
+            // Water Source
+            water_source: {
+                inputType: 'multiple-input',
+                form: {
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: true,
+                        readonly: false,
+                        lgView: 5
+                    },
+                    category: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: ['Sungai', 'Mata Air', 'Danau', 'Waduk'],
+                        hideSelected: true,
+                        label: 'Jenis',
+                        multiple: false,
+                        chip: false,
+                        required: true,
+                        lgView: 6
+                    },
+                    condition: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: ['Jernih', 'Keruh'],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Kondisi',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 3
+                    },
+                    utilization_status: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: ['Ya', 'Tidak'],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Pemanfaatan Oleh Masyarakat',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 3
+                    },
+                    utilization: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: ['Domestik', 'Irigasi'],
+                        hideSelected: true,
+                        label: 'Pemanfaatan',
+                        multiple: false,
+                        chip: false,
+                        required: true,
+                        lgView: 6
+                    },
+                },
+                model: [],
+                default: [{
+                    name: null,
+                    category: null,
+                    condition: null,
+                    utilization_status: null,
+                    utilization: null,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi Sumber Air',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true
+            },
             land_tenure: {
                 options: {
                     type: {
@@ -4020,11 +3536,19 @@ export default {
                 await this.getScoopingListItems()
                 // get pola tanam options
                 // this.inputs.land_use_patterns.form.pattern.items = await this.getOptionsDataReturn('List Opsi Tanam', 'GetOpsiPolaTanamOptions')
+                const polaTanam = [
+                    'Agroforestry Intensitas Tinggi',
+                    'Agroforestry Intensitas Rendah',
+                    'Konservasi',
+                ]
+                this.inputs.land_use_patterns.form.pattern.items = polaTanam
+                this.inputs.distribution_of_critical_land_locations.form.pattern.items = polaTanam
                 // get list nama pohon
                 const resTrees = await this.getOptionsDataReturn('Pohon Data', 'GetTreesAll')
                 const listTrees = await resTrees.data.map(tree => {return tree.tree_name})
                 this.inputs.land_use_patterns.form.plants.items = listTrees
                 this.inputs.existing_plants.form.plants.items = listTrees
+                this.inputs.economic_result_plant_type.items = listTrees
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }
