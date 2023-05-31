@@ -50,8 +50,8 @@
                     <v-row class="ma-0 mx-2">
                         <v-col cols="12">
                             <div class="d-flex align-center">
-                                <p class="mb-0"><v-icon class="mr-2">{{ data.icon }}</v-icon>{{ data.title }}</p>
-                                <v-divider class="mx-2"></v-divider>
+                                <p class="mb-0 grey--text text--darken-3"><v-icon color="grey darken-3" class="mr-2">{{ data.icon }}</v-icon>{{ data.title }}</p>
+                                <v-divider class="mx-2" color="black"></v-divider>
                             </div>
                         </v-col>
                     </v-row>
@@ -97,48 +97,54 @@
                             :key="item.key"
                             cols="12" :lg="item.lg" :md="item.md"
                         >
-                            <span>
-                                <span v-if="item.labelIcon">
-                                    <v-icon class="mr-1">{{ item.labelIcon }}</v-icon>
-                                </span>
-                                <span v-html="item.title"></span>
-                            </span>
-                            <h4>
-                                <span v-if="item.prependIcon">
-                                    <v-icon class="mr-1">{{ item.prependIcon }}</v-icon>
-                                </span>
-                                <v-progress-circular
-                                    :size="17"
-                                    :width="3"
-                                    indeterminate
-                                    v-if="loading.show"
-                                >
-                                </v-progress-circular>
-                                <span v-else>
-                                    <span v-if="item.model">
-                                        <span v-if="item.type == 'Multiple'">{{ item.model.replaceAll(',', ', ') }}</span>
-                                        <span v-else-if="item.type == 'Date'">{{ _utils.dateFormat(item.model, 'DD MMMM YYYY') }}</span>
-                                        <span v-else-if="item.type == 'Number'">{{ _utils.numberFormat(item.model) }}</span>
-                                        <span v-else-if="item.type == 'Image'">
-                                            <v-card 
-                                                class="rounded-xl mt-2"
-                                            >
-                                                <v-img
-                                                    height="300"
-                                                    v-bind:src="item.model"
-                                                    class="my-2 mb-4 rounded-xl cursor-pointer"
-                                                    :key="imageKeyComponent"
-                                                    id="photo1"
-                                                    @click="showLightbox(item.model)"
-                                                ></v-img>
-                                            </v-card>
+                            <v-card class="rounded-lg">
+                                <v-card-title class="grey darken-3 white--text pa-1 px-3">
+                                    <span style="font-size: 13px">
+                                        <span v-if="item.labelIcon">
+                                            <v-icon color="white" class="mr-1">{{ item.labelIcon }}</v-icon>
                                         </span>
-                                        <span v-else v-html="item.model"></span>
-                                        <span v-if="item.suffix" v-html="item.suffix" class="ml-1"></span>
+                                        <span v-html="item.title"></span>
                                     </span>
-                                    <span v-else>-</span>
-                                </span>
-                            </h4>
+                                </v-card-title>
+                                <v-card-text class="pa-3">
+                                    <h4>
+                                        <span v-if="item.prependIcon">
+                                            <v-icon color="grey darken-3" class="mr-1">{{ item.prependIcon }}</v-icon>
+                                        </span>
+                                        <v-progress-circular
+                                            :size="17"
+                                            :width="3"
+                                            indeterminate
+                                            v-if="loading.show"
+                                        >
+                                        </v-progress-circular>
+                                        <span v-else>
+                                            <span v-if="item.model">
+                                                <span v-if="item.type == 'Multiple'">{{ item.model.replaceAll(',', ', ') }}</span>
+                                                <span v-else-if="item.type == 'Date'">{{ _utils.dateFormat(item.model, 'DD MMMM YYYY') }}</span>
+                                                <span v-else-if="item.type == 'Number'">{{ _utils.numberFormat(item.model) }}</span>
+                                                <span v-else-if="item.type == 'Image'">
+                                                    <v-card 
+                                                        class="rounded-xl mt-2"
+                                                    >
+                                                        <v-img
+                                                            height="300"
+                                                            v-bind:src="item.model"
+                                                            class="my-2 mb-4 rounded-xl cursor-pointer"
+                                                            :key="imageKeyComponent"
+                                                            id="photo1"
+                                                            @click="showLightbox(item.model)"
+                                                        ></v-img>
+                                                    </v-card>
+                                                </span>
+                                                <span v-else v-html="item.model"></span>
+                                                <span v-if="item.suffix" v-html="item.suffix" class="ml-1"></span>
+                                            </span>
+                                            <span v-else>-</span>
+                                        </span>
+                                    </h4>
+                                </v-card-text>
+                            </v-card>
                         </v-col>
                     </v-row>
                 </div>

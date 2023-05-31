@@ -157,8 +157,8 @@
                                 <v-card-text>
                                     <div  v-for="(rraInput, rraInputIndex) in groupingInputs.rra" :key="`RRAInputSection-${rraInputIndex}`">
                                         <!-- Title -->
-                                        <div class="d-flex align-center my-2">
-                                            <p class="mb-0"><v-icon class="mr-2">{{ rraInput.icon }}</v-icon>{{ rraInput.title }}</p>
+                                        <div class="d-flex align-center my-8">
+                                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">{{ rraInput.icon }}</v-icon>{{ rraInput.title }}</p>
                                             <v-divider class="mx-2"></v-divider>
                                             <v-switch
                                                 v-if="rraInput.required === false"
@@ -228,132 +228,136 @@
                                             <div v-else-if="rraInput.type === 'multiple-input'">
                                                 <div v-for="(multipleInputHead, multipleInputHeadIndex) in rraInput.items" :key="`multipleInputHead-${multipleInputHead}`">
                                                     <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`">
-                                                        <v-col cols="auto" class="d-flex align-center">
+                                                        <v-col cols="auto" class="d-flex align-start">
                                                             <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ multipleInputItemIndex + 1 }}</v-icon></v-btn>
                                                         </v-col>
-                                                        <!-- Inputs -->
-                                                        <v-col
-                                                            v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
-                                                            :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
-                                                            cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" >
-                                                                <!-- combobox -->
-                                                                <v-combobox
-                                                                    v-if="multipleInputForm[1].inputType == 'combobox'"
-                                                                    dense
-                                                                    :multiple="multipleInputForm[1].multiple"
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :small-chips="multipleInputForm[1].chip"
-                                                                    :hide-selected="multipleInputForm[1].hideSelected"
-                                                                    item-color="success"
-                                                                    :items="multipleInputForm[1].items"
-                                                                    :label="multipleInputForm[1].label"
-                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                    outlined
-                                                                    rounded
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:no-data>
-                                                                        <v-list-item>
-                                                                        <v-list-item-content>
-                                                                            <v-list-item-title>
-                                                                            No results matching. Press <kbd>enter</kbd> to create a new one
-                                                                            </v-list-item-title>
-                                                                        </v-list-item-content>
-                                                                        </v-list-item>
-                                                                    </template>
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                    <template v-slot:selection="{ attrs, item, parent, selected }">
-                                                                        <v-chip
-                                                                            v-bind="attrs"
-                                                                            :input-value="selected"
-                                                                            label
-                                                                            small
-                                                                            class="rounded-pill"
+                                                        <v-col cols="12" lg="11">
+                                                            <v-row>
+                                                                <!-- Inputs -->
+                                                                <v-col
+                                                                    v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
+                                                                    :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
+                                                                    cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" >
+                                                                        <!-- combobox -->
+                                                                        <v-combobox
+                                                                            v-if="multipleInputForm[1].inputType == 'combobox'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :small-chips="multipleInputForm[1].chip"
+                                                                            :hide-selected="multipleInputForm[1].hideSelected"
+                                                                            item-color="success"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
                                                                         >
-                                                                        <span class="pr-2">
-                                                                            {{ item }}
-                                                                        </span>
-                                                                        <v-icon
-                                                                            small
-                                                                            @click="parent.selectItem(item)"
+                                                                            <template v-slot:no-data>
+                                                                                <v-list-item>
+                                                                                <v-list-item-content>
+                                                                                    <v-list-item-title>
+                                                                                    No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                                    </v-list-item-title>
+                                                                                </v-list-item-content>
+                                                                                </v-list-item>
+                                                                            </template>
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                            <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                                <v-chip
+                                                                                    v-bind="attrs"
+                                                                                    :input-value="selected"
+                                                                                    label
+                                                                                    small
+                                                                                    class="rounded-pill"
+                                                                                >
+                                                                                <span class="pr-2">
+                                                                                    {{ item }}
+                                                                                </span>
+                                                                                <v-icon
+                                                                                    small
+                                                                                    @click="parent.selectItem(item)"
+                                                                                >
+                                                                                    mdi-close-circle
+                                                                                </v-icon>
+                                                                                </v-chip>
+                                                                            </template>
+                                                                        </v-combobox>
+                                                                        <!-- autocomplete -->
+                                                                        <v-autocomplete
+                                                                            v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            item-color="success"
+                                                                            :item-text="multipleInputForm[1].itemText"
+                                                                            :item-value="multipleInputForm[1].itemValue"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
                                                                         >
-                                                                            mdi-close-circle
-                                                                        </v-icon>
-                                                                        </v-chip>
-                                                                    </template>
-                                                                </v-combobox>
-                                                                <!-- autocomplete -->
-                                                                <v-autocomplete
-                                                                    v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
-                                                                    dense
-                                                                    :multiple="multipleInputForm[1].multiple"
-                                                                    color="success"
-                                                                    hide-details
-                                                                    item-color="success"
-                                                                    :item-text="multipleInputForm[1].itemText"
-                                                                    :item-value="multipleInputForm[1].itemValue"
-                                                                    :items="multipleInputForm[1].items"
-                                                                    :label="multipleInputForm[1].label"
-                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                    outlined
-                                                                    rounded
-                                                                    :readonly="multipleInputForm[1].readonly"
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                </v-autocomplete>
-                                                                <!-- text-field -->
-                                                                <v-text-field
-                                                                    v-else-if="multipleInputForm[1].inputType == 'text-field'"
-                                                                    dense
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :label="multipleInputForm[1].label"
-                                                                    outlined
-                                                                    rounded
-                                                                    :placeholder="multipleInputForm[1].placeholder"
-                                                                    :readonly="multipleInputForm[1].readonly"
-                                                                    :suffix="multipleInputForm[1].suffix"
-                                                                    :type="multipleInputForm[1].type"
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                    <template v-slot:append>
-                                                                        <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
-                                                                    </template>
-                                                                </v-text-field>
-                                                                <!-- textarea -->
-                                                                <v-textarea
-                                                                    v-else-if="multipleInputForm[1].inputType == 'textarea'"
-                                                                    dense
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :label="multipleInputForm[1].label"
-                                                                    outlined
-                                                                    rounded
-                                                                    :placeholder="multipleInputForm[1].placeholder"
-                                                                    :readonly="multipleInputForm[1].readonly"
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                </v-textarea>
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-autocomplete>
+                                                                        <!-- text-field -->
+                                                                        <v-text-field
+                                                                            v-else-if="multipleInputForm[1].inputType == 'text-field'"
+                                                                            dense
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :label="multipleInputForm[1].label"
+                                                                            outlined
+                                                                            rounded
+                                                                            :placeholder="multipleInputForm[1].placeholder"
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            :suffix="multipleInputForm[1].suffix"
+                                                                            :type="multipleInputForm[1].type"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                            <template v-slot:append>
+                                                                                <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
+                                                                            </template>
+                                                                        </v-text-field>
+                                                                        <!-- textarea -->
+                                                                        <v-textarea
+                                                                            v-else-if="multipleInputForm[1].inputType == 'textarea'"
+                                                                            dense
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :label="multipleInputForm[1].label"
+                                                                            outlined
+                                                                            rounded
+                                                                            :placeholder="multipleInputForm[1].placeholder"
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-textarea>
+                                                                </v-col>
+                                                            </v-row>
                                                         </v-col>
                                                     </v-row>
                                                     <v-row v-if="inputs[multipleInputHead].totalCanChange === true" class="justify-center">
@@ -607,8 +611,8 @@
                                 <v-card-text>
                                     <div  v-for="(praInput, praInputIndex) in groupingInputs.pra" :key="`pRAInputSection-${praInputIndex}`">
                                         <!-- Title -->
-                                        <div class="d-flex align-center my-4">
-                                            <p class="mb-0"><v-icon class="mr-2">{{ praInput.icon }}</v-icon>{{ praInput.title }}</p>
+                                        <div class="d-flex align-center my-8">
+                                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">{{ praInput.icon }}</v-icon>{{ praInput.title }}</p>
                                             <v-divider class="mx-2"></v-divider>
                                             <v-switch
                                                 v-if="praInput.required === false"
@@ -623,181 +627,185 @@
                                             <div v-if="praInput.type === 'multiple-input'">
                                                 <div v-for="(multipleInputHead, multipleInputHeadIndex) in praInput.items" :key="`multipleInputHead-${multipleInputHead}`">
                                                     <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`">
-                                                        <v-col cols="auto" class="d-flex align-center">
+                                                        <v-col cols="auto" class="d-flex align-start">
                                                             <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ multipleInputItemIndex + 1 }}</v-icon></v-btn>
                                                         </v-col>
-                                                        <!-- Inputs -->
-                                                        <v-col
-                                                            v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
-                                                            v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.category === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
-                                                            :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
-                                                            cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" 
-                                                        >
-                                                            <div>
-                                                                <!-- combobox -->
-                                                                <v-combobox
-                                                                    v-if="multipleInputForm[1].inputType == 'combobox'"
-                                                                    dense
-                                                                    :multiple="multipleInputForm[1].multiple"
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :small-chips="multipleInputForm[1].chip"
-                                                                    :hide-selected="multipleInputForm[1].hideSelected"
-                                                                    item-color="success"
-                                                                    :items="multipleInputForm[1].items"
-                                                                    :label="multipleInputForm[1].label"
-                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                    outlined
-                                                                    rounded
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
+                                                        <v-col cols="12" lg="11">
+                                                            <v-row>
+                                                                <!-- Inputs -->
+                                                                <v-col
+                                                                    v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
+                                                                    v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.category === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
+                                                                    :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
+                                                                    cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" 
                                                                 >
-                                                                    <template v-slot:no-data>
-                                                                        <v-list-item>
-                                                                        <v-list-item-content>
-                                                                            <v-list-item-title>
-                                                                            No results matching. Press <kbd>enter</kbd> to create a new one
-                                                                            </v-list-item-title>
-                                                                        </v-list-item-content>
-                                                                        </v-list-item>
-                                                                    </template>
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                    <template v-slot:selection="{ attrs, item, parent, selected }">
-                                                                        <v-chip
-                                                                            v-bind="attrs"
-                                                                            :input-value="selected"
-                                                                            label
-                                                                            small
-                                                                            class="rounded-pill"
+                                                                    <div>
+                                                                        <!-- combobox -->
+                                                                        <v-combobox
+                                                                            v-if="multipleInputForm[1].inputType == 'combobox'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :small-chips="multipleInputForm[1].chip"
+                                                                            :hide-selected="multipleInputForm[1].hideSelected"
+                                                                            item-color="success"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
                                                                         >
-                                                                        <span class="pr-2">
-                                                                            {{ item }}
-                                                                        </span>
-                                                                        <v-icon
-                                                                            small
-                                                                            @click="parent.selectItem(item)"
-                                                                        >
-                                                                            mdi-close-circle
-                                                                        </v-icon>
-                                                                        </v-chip>
-                                                                    </template>
-                                                                </v-combobox>
-                                                                <!-- autocomplete -->
-                                                                <v-autocomplete
-                                                                    v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
-                                                                    dense
-                                                                    :multiple="multipleInputForm[1].multiple"
-                                                                    color="success"
-                                                                    hide-details
-                                                                    item-color="success"
-                                                                    :item-text="multipleInputForm[1].itemText"
-                                                                    :item-value="multipleInputForm[1].itemValue"
-                                                                    :items="multipleInputForm[1].items"
-                                                                    :label="multipleInputForm[1].label"
-                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                    outlined
-                                                                    rounded
-                                                                    :readonly="multipleInputForm[1].readonly"
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                </v-autocomplete>
-                                                                <!-- text-field -->
-                                                                <v-text-field
-                                                                    v-else-if="multipleInputForm[1].inputType == 'text-field'"
-                                                                    dense
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :label="multipleInputForm[1].label"
-                                                                    outlined
-                                                                    rounded
-                                                                    :placeholder="multipleInputForm[1].placeholder"
-                                                                    :readonly="multipleInputForm[1].readonly"
-                                                                    :suffix="multipleInputForm[1].suffix"
-                                                                    :type="multipleInputForm[1].type"
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                    <template v-slot:append>
-                                                                        <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
-                                                                    </template>
-                                                                </v-text-field>
-                                                                <!-- textarea -->
-                                                                <v-textarea
-                                                                    v-else-if="multipleInputForm[1].inputType == 'textarea'"
-                                                                    dense
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :label="multipleInputForm[1].label"
-                                                                    outlined
-                                                                    rounded
-                                                                    :placeholder="multipleInputForm[1].placeholder"
-                                                                    :readonly="multipleInputForm[1].readonly"
-                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                        {{ multipleInputForm[1].label }} 
-                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                </v-textarea>
-                                                                <!-- datepicker -->
-                                                                <v-menu 
-                                                                    v-else-if="multipleInputForm[1].inputType == 'datepicker'"
-                                                                    rounded="xl"
-                                                                    transition="slide-x-transition"
-                                                                    bottom
-                                                                    min-width="100"
-                                                                    offset-y
-                                                                    :close-on-content-click="false"
-                                                                    v-model="multipleInputForm[1].show"
-                                                                >
-                                                                    <template v-slot:activator="{ on: menu, attrs }">
-                                                                        <v-tooltip top content-class="rounded-xl">
-                                                                            <template v-slot:activator="{ on: tooltip }">
-                                                                                <v-text-field
-                                                                                    dense
-                                                                                    color="green"
-                                                                                    class="mb-2 mb-lg-0 mr-0 mr-lg-2"
-                                                                                    hide-details
-                                                                                    outlined
-                                                                                    rounded
-                                                                                    v-bind="attrs"
-                                                                                    v-on="{...menu, ...tooltip}"
-                                                                                    readonly
-                                                                                    v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                                >
-                                                                                    <template v-slot:label>
-                                                                                        {{ multipleInputForm[1].label }} 
-                                                                                        <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                                    </template>
-                                                                                </v-text-field>
+                                                                            <template v-slot:no-data>
+                                                                                <v-list-item>
+                                                                                <v-list-item-content>
+                                                                                    <v-list-item-title>
+                                                                                    No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                                    </v-list-item-title>
+                                                                                </v-list-item-content>
+                                                                                </v-list-item>
                                                                             </template>
-                                                                            <span>Klik untuk memunculkan datepicker</span>
-                                                                        </v-tooltip>
-                                                                    </template>
-                                                                    <div class="rounded-xl pb-2 white">
-                                                                        <div class="d-flex flex-column align-center rounded-xl">
-                                                                            <v-date-picker 
-                                                                                :range="multipleInputForm[1].dateType === 'range'"
-                                                                                color="green lighten-1 rounded-xl" 
-                                                                                v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                            ></v-date-picker>
-                                                                        </div>
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                            <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                                <v-chip
+                                                                                    v-bind="attrs"
+                                                                                    :input-value="selected"
+                                                                                    label
+                                                                                    small
+                                                                                    class="rounded-pill"
+                                                                                >
+                                                                                <span class="pr-2">
+                                                                                    {{ item }}
+                                                                                </span>
+                                                                                <v-icon
+                                                                                    small
+                                                                                    @click="parent.selectItem(item)"
+                                                                                >
+                                                                                    mdi-close-circle
+                                                                                </v-icon>
+                                                                                </v-chip>
+                                                                            </template>
+                                                                        </v-combobox>
+                                                                        <!-- autocomplete -->
+                                                                        <v-autocomplete
+                                                                            v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            item-color="success"
+                                                                            :item-text="multipleInputForm[1].itemText"
+                                                                            :item-value="multipleInputForm[1].itemValue"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-autocomplete>
+                                                                        <!-- text-field -->
+                                                                        <v-text-field
+                                                                            v-else-if="multipleInputForm[1].inputType == 'text-field'"
+                                                                            dense
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :label="multipleInputForm[1].label"
+                                                                            outlined
+                                                                            rounded
+                                                                            :placeholder="multipleInputForm[1].placeholder"
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            :suffix="multipleInputForm[1].suffix"
+                                                                            :type="multipleInputForm[1].type"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                            <template v-slot:append>
+                                                                                <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
+                                                                            </template>
+                                                                        </v-text-field>
+                                                                        <!-- textarea -->
+                                                                        <v-textarea
+                                                                            v-else-if="multipleInputForm[1].inputType == 'textarea'"
+                                                                            dense
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :label="multipleInputForm[1].label"
+                                                                            outlined
+                                                                            rounded
+                                                                            :placeholder="multipleInputForm[1].placeholder"
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-textarea>
+                                                                        <!-- datepicker -->
+                                                                        <v-menu 
+                                                                            v-else-if="multipleInputForm[1].inputType == 'datepicker'"
+                                                                            rounded="xl"
+                                                                            transition="slide-x-transition"
+                                                                            bottom
+                                                                            min-width="100"
+                                                                            offset-y
+                                                                            :close-on-content-click="false"
+                                                                            v-model="multipleInputForm[1].show"
+                                                                        >
+                                                                            <template v-slot:activator="{ on: menu, attrs }">
+                                                                                <v-tooltip top content-class="rounded-xl">
+                                                                                    <template v-slot:activator="{ on: tooltip }">
+                                                                                        <v-text-field
+                                                                                            dense
+                                                                                            color="green"
+                                                                                            class="mb-2 mb-lg-0 mr-0 mr-lg-2"
+                                                                                            hide-details
+                                                                                            outlined
+                                                                                            rounded
+                                                                                            v-bind="attrs"
+                                                                                            v-on="{...menu, ...tooltip}"
+                                                                                            readonly
+                                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                        >
+                                                                                            <template v-slot:label>
+                                                                                                {{ multipleInputForm[1].label }} 
+                                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                            </template>
+                                                                                        </v-text-field>
+                                                                                    </template>
+                                                                                    <span>Klik untuk memunculkan datepicker</span>
+                                                                                </v-tooltip>
+                                                                            </template>
+                                                                            <div class="rounded-xl pb-2 white">
+                                                                                <div class="d-flex flex-column align-center rounded-xl">
+                                                                                    <v-date-picker 
+                                                                                        :range="multipleInputForm[1].dateType === 'range'"
+                                                                                        color="green lighten-1 rounded-xl" 
+                                                                                        v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                    ></v-date-picker>
+                                                                                </div>
+                                                                            </div>
+                                                                        </v-menu>
                                                                     </div>
-                                                                </v-menu>
-                                                            </div>
+                                                                </v-col>
+                                                            </v-row>
                                                         </v-col>
                                                     </v-row>
                                                     <v-row v-if="inputs[multipleInputHead].totalCanChange === true" class="justify-center">
@@ -950,154 +958,158 @@
                                             </v-row>
                                             <!-- custom -->
                                             <div v-else> 
-                                                <div v-if="praInput.type === 'custom-pra_farmer_income'">
+                                                <div v-if="praInput.type === 'custom-family_farmer_income'">
                                                     <v-row>
-                                                        <v-col cols="12" md="6" :lg="inputs.pra_farmer_income.collection_type.lgView">
+                                                        <v-col cols="12" md="6" :lg="inputs.family_farmer_income.collection_type.lgView">
                                                             <!-- autocomplete -->
                                                             <v-autocomplete
                                                                 dense
                                                                 color="success"
                                                                 hide-details
                                                                 item-color="success"
-                                                                :items="inputs.pra_farmer_income.collection_type.items"
-                                                                :label="inputs.pra_farmer_income.collection_type.label"
+                                                                :items="inputs.family_farmer_income.collection_type.items"
+                                                                :label="inputs.family_farmer_income.collection_type.label"
                                                                 :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                                                 outlined
                                                                 rounded
-                                                                :readonly="inputs.pra_farmer_income.collection_type.readonly"
-                                                                v-model="inputs.pra_farmer_income.collection_type.model"
+                                                                :readonly="inputs.family_farmer_income.collection_type.readonly"
+                                                                v-model="inputs.family_farmer_income.collection_type.model"
                                                             >
                                                                 <template v-slot:label>
-                                                                    <v-icon v-if="inputs.pra_farmer_income.collection_type.labelIcon" class="mr-1">{{ inputs.pra_farmer_income.collection_type.labelIcon }}</v-icon>
-                                                                    {{ inputs.pra_farmer_income.collection_type.label }} 
-                                                                    <sup><v-icon v-if="inputs.pra_farmer_income.collection_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    <v-icon v-if="inputs.family_farmer_income.collection_type.labelIcon" class="mr-1">{{ inputs.family_farmer_income.collection_type.labelIcon }}</v-icon>
+                                                                    {{ inputs.family_farmer_income.collection_type.label }} 
+                                                                    <sup><v-icon v-if="inputs.family_farmer_income.collection_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                                                 </template>
                                                             </v-autocomplete>
                                                         </v-col>
                                                     </v-row>
                                                     <div>
-                                                        <div v-for="(genderIncome, genderIncomeIndex) in ['male', 'female']" :key="`pra_farmer_income-${genderIncomeIndex}`">
+                                                        <div v-for="(genderIncome, genderIncomeIndex) in ['male', 'female']" :key="`family_farmer_income-${genderIncomeIndex}`">
                                                             <v-chip color="grey darken-1 white--text" class="my-2">
                                                                 <v-icon class="mr-1">mdi-human-{{ genderIncome }}</v-icon>
                                                                 {{ genderIncome == 'male' ? 'Laki - Laki' : 'Perempuan' }}
                                                             </v-chip>
                                                             <!-- IF not selected -->
-                                                            <div v-if="!inputs.pra_farmer_income.collection_type.model" class="d-flex align-center">
+                                                            <div v-if="!inputs.family_farmer_income.collection_type.model" class="d-flex align-center">
                                                                 Silahkan pilih terlebih dahulu cara pengumpulan data!
                                                             </div>
                                                             <!-- IF Sampling -->
-                                                            <v-row v-if="inputs.pra_farmer_income.collection_type.model == 'Sampling'" 
-                                                                v-for="(genderInput, genderInputIndex) in inputs.pra_farmer_income[`${genderIncome}_data`]" 
+                                                            <v-row v-if="inputs.family_farmer_income.collection_type.model == 'Sampling'" 
+                                                                v-for="(genderInput, genderInputIndex) in inputs.family_farmer_income[`${genderIncome}_data`]" 
                                                                 :key="genderInputIndex"
                                                             >
-                                                                <v-col cols="auto" class="d-flex align-center">
+                                                                <v-col cols="auto" class="d-flex align-start">
                                                                     <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ genderInputIndex + 1 }}</v-icon></v-btn>
                                                                 </v-col>
-                                                                <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.pra_farmer_income.sampling_form)" 
-                                                                    :key="`praFiForm-${genderIncomeIndex}-${genderInputIndex}-${praFiFormIndex}`"
-                                                                    cols="12"
-                                                                    md="6"
-                                                                    :lg="praFiForm[1].lgView"    
-                                                                >
-                                                                    <!-- text-field -->
-                                                                    <v-text-field
-                                                                        v-if="praFiForm[1].inputType == 'text-field'"
-                                                                        dense
-                                                                        color="success"
-                                                                        hide-details
-                                                                        :label="praFiForm[1].label"
-                                                                        outlined
-                                                                        rounded
-                                                                        :placeholder="praFiForm[1].placeholder"
-                                                                        :readonly="praFiForm[1].readonly"
-                                                                        :prefix="praFiForm[1].prefix"
-                                                                        :suffix="praFiForm[1].suffix"
-                                                                        :type="praFiForm[1].type"
-                                                                        v-model="genderInput[praFiForm[0]]"
-                                                                    >
-                                                                        <template v-slot:label>
-                                                                            <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
-                                                                            {{ praFiForm[1].label }} 
-                                                                            <sup><v-icon v-if="praFiForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                        </template>
-                                                                        <template v-slot:append>
-                                                                            <div class="mt-1 ml-1" v-html="praFiForm[1].append"></div>
-                                                                        </template>
-                                                                    </v-text-field>
-                                                                    <!-- combobox -->
-                                                                    <v-combobox
-                                                                        v-if="praFiForm[1].inputType == 'combobox'"
-                                                                        dense
-                                                                        :multiple="praFiForm[1].multiple"
-                                                                        color="success"
-                                                                        hide-details
-                                                                        :small-chips="praFiForm[1].chip"
-                                                                        :hide-selected="praFiForm[1].hideSelected"
-                                                                        item-color="success"
-                                                                        :items="praFiForm[1].items"
-                                                                        :label="praFiForm[1].label"
-                                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                        outlined
-                                                                        rounded
-                                                                        v-model="genderInput[praFiForm[0]]"
-                                                                    >
-                                                                        <template v-slot:no-data>
-                                                                            <v-list-item>
-                                                                            <v-list-item-content>
-                                                                                <v-list-item-title>
-                                                                                No results matching. Press <kbd>enter</kbd> to create a new one
-                                                                                </v-list-item-title>
-                                                                            </v-list-item-content>
-                                                                            </v-list-item>
-                                                                        </template>
-                                                                        <template v-slot:label>
-                                                                            <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
-                                                                            {{ praFiForm[1].label }} 
-                                                                            <sup><v-icon v-if="praFiForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                        </template>
-                                                                        <template v-slot:selection="{ attrs, item, parent, selected }">
-                                                                            <v-chip
-                                                                                v-bind="attrs"
-                                                                                :input-value="selected"
-                                                                                label
-                                                                                small
-                                                                                class="rounded-pill"
+                                                                <v-col cols="12" lg="11">
+                                                                    <v-row>
+                                                                        <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.family_farmer_income.sampling_form)" 
+                                                                            :key="`praFiForm-${genderIncomeIndex}-${genderInputIndex}-${praFiFormIndex}`"
+                                                                            cols="12"
+                                                                            md="6"
+                                                                            :lg="praFiForm[1].lgView"    
+                                                                        >
+                                                                            <!-- text-field -->
+                                                                            <v-text-field
+                                                                                v-if="praFiForm[1].inputType == 'text-field'"
+                                                                                dense
+                                                                                color="success"
+                                                                                hide-details
+                                                                                :label="praFiForm[1].label"
+                                                                                outlined
+                                                                                rounded
+                                                                                :placeholder="praFiForm[1].placeholder"
+                                                                                :readonly="praFiForm[1].readonly"
+                                                                                :prefix="praFiForm[1].prefix"
+                                                                                :suffix="praFiForm[1].suffix"
+                                                                                :type="praFiForm[1].type"
+                                                                                v-model="genderInput[praFiForm[0]]"
                                                                             >
-                                                                            <span class="pr-2">
-                                                                                {{ item }}
-                                                                            </span>
-                                                                            <v-icon
-                                                                                small
-                                                                                @click="parent.selectItem(item)"
+                                                                                <template v-slot:label>
+                                                                                    <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
+                                                                                    {{ praFiForm[1].label }} 
+                                                                                    <sup><v-icon v-if="praFiForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                </template>
+                                                                                <template v-slot:append>
+                                                                                    <div class="mt-1 ml-1" v-html="praFiForm[1].append"></div>
+                                                                                </template>
+                                                                            </v-text-field>
+                                                                            <!-- combobox -->
+                                                                            <v-combobox
+                                                                                v-if="praFiForm[1].inputType == 'combobox'"
+                                                                                dense
+                                                                                :multiple="praFiForm[1].multiple"
+                                                                                color="success"
+                                                                                hide-details
+                                                                                :small-chips="praFiForm[1].chip"
+                                                                                :hide-selected="praFiForm[1].hideSelected"
+                                                                                item-color="success"
+                                                                                :items="praFiForm[1].items"
+                                                                                :label="praFiForm[1].label"
+                                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                outlined
+                                                                                rounded
+                                                                                v-model="genderInput[praFiForm[0]]"
                                                                             >
-                                                                                mdi-close-circle
-                                                                            </v-icon>
-                                                                            </v-chip>
-                                                                        </template>
-                                                                    </v-combobox>
+                                                                                <template v-slot:no-data>
+                                                                                    <v-list-item>
+                                                                                    <v-list-item-content>
+                                                                                        <v-list-item-title>
+                                                                                        No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                                        </v-list-item-title>
+                                                                                    </v-list-item-content>
+                                                                                    </v-list-item>
+                                                                                </template>
+                                                                                <template v-slot:label>
+                                                                                    <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
+                                                                                    {{ praFiForm[1].label }} 
+                                                                                    <sup><v-icon v-if="praFiForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                </template>
+                                                                                <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                                    <v-chip
+                                                                                        v-bind="attrs"
+                                                                                        :input-value="selected"
+                                                                                        label
+                                                                                        small
+                                                                                        class="rounded-pill"
+                                                                                    >
+                                                                                    <span class="pr-2">
+                                                                                        {{ item }}
+                                                                                    </span>
+                                                                                    <v-icon
+                                                                                        small
+                                                                                        @click="parent.selectItem(item)"
+                                                                                    >
+                                                                                        mdi-close-circle
+                                                                                    </v-icon>
+                                                                                    </v-chip>
+                                                                                </template>
+                                                                            </v-combobox>
+                                                                        </v-col>
+                                                                    </v-row>
                                                                 </v-col>
                                                             </v-row>
-                                                            <v-row v-if="inputs.pra_farmer_income.collection_type.model == 'Sampling'" class="justify-center">
-                                                                <v-btn v-if="inputs.pra_farmer_income[`${genderIncome}_data`].length < localConfig.maxSubDataTotal" 
+                                                            <v-row v-if="inputs.family_farmer_income.collection_type.model == 'Sampling'" class="justify-center">
+                                                                <v-btn v-if="inputs.family_farmer_income[`${genderIncome}_data`].length < localConfig.maxSubDataTotal" 
                                                                     data-aos="fade-right" data-aos-offset="-10000" 
-                                                                    :key="`pra_farmer_income-${genderIncome}-plus_btn`" 
+                                                                    :key="`family_farmer_income-${genderIncome}-plus_btn`" 
                                                                     fab small color="green white--text" class="mx-1" 
-                                                                    @click="() => modifyTotalSubData('+', `pra_farmer_income-${genderIncome}`)"
+                                                                    @click="() => modifyTotalSubData('+', `family_farmer_income-${genderIncome}`)"
                                                                 >
                                                                     <v-icon>mdi-plus</v-icon>
                                                                 </v-btn>
-                                                                <v-btn v-if="inputs.pra_farmer_income[`${genderIncome}_data`].length > 2" 
+                                                                <v-btn v-if="inputs.family_farmer_income[`${genderIncome}_data`].length > 2" 
                                                                     data-aos="fade-left" data-aos-offset="-10000" 
-                                                                    :key="`pra_farmer_income-${genderIncome}-minus_btn`" 
+                                                                    :key="`family_farmer_income-${genderIncome}-minus_btn`" 
                                                                     fab small color="red" outlined class="mx-1"
-                                                                    @click="() => modifyTotalSubData('-', `pra_farmer_income-${genderIncome}`)"
+                                                                    @click="() => modifyTotalSubData('-', `family_farmer_income-${genderIncome}`)"
                                                                 >
                                                                     <v-icon>mdi-minus</v-icon>
                                                                 </v-btn>
                                                             </v-row>
                                                             <!-- IF Bukan Sampling -->
-                                                            <v-row v-if="inputs.pra_farmer_income.collection_type.model == 'Bukan Sampling'">
-                                                                <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.pra_farmer_income.static_form)" 
+                                                            <v-row v-if="inputs.family_farmer_income.collection_type.model == 'Bukan Sampling'">
+                                                                <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.family_farmer_income.static_form)" 
                                                                     :key="`praFiForm-${genderIncomeIndex}-${praFiFormIndex}`"
                                                                     cols="12"
                                                                     md="6"
@@ -1207,558 +1219,249 @@
                                     <span class="grey--text text--darken-2"><v-icon class="mr-2" size="27" style="transform: translateY(-2px);">mdi-{{ stepper.steps_icon[2] }}</v-icon>{{ stepper.steps[2] }}</span>
                                 </v-card-title>
                                 <v-card-text>
-                                    <v-row>
-                                        <!-- Flora Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-flower</v-icon>Data Flora Endemik</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(flora_data, flora_data_index) in inputs.flora_data.model" 
-                                                :key="`flora_data_${flora_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ flora_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- flora_data categories -->
-                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.flora_data.options.categories.items"
-                                                                :label="inputs.flora_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col> -->
-                                                        <!-- flora_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.flora_data.options.types.items"
-                                                                :label="inputs.flora_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.types"
-                                                            ></v-autocomplete>
+                                    <div  v-for="(socImpInput, socImpInputIndex) in groupingInputs.socImp" :key="`socImpInputSection-${socImpInputIndex}`">
+                                        <!-- Title -->
+                                        <div class="d-flex align-center my-8">
+                                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">{{ socImpInput.icon }}</v-icon>{{ socImpInput.title }}</p>
+                                            <v-divider class="mx-2"></v-divider>
+                                            <v-switch
+                                                v-if="socImpInput.required === false"
+                                                color="green"
+                                                v-model="socImpInput.optional"
+                                                inset
+                                                :label="`${socImpInput.optional ? 'Ada' : 'Tidak Ada'}`"
+                                            ></v-switch>
+                                        </div>
+                                        <div v-if="(socImpInput.required === false && socImpInput.optional === true) || socImpInput.required">
+                                            <!-- multiple-input type -->
+                                            <div v-if="socImpInput.type === 'multiple-input'">
+                                                <div v-for="(multipleInputHead, multipleInputHeadIndex) in socImpInput.items" :key="`multipleInputHead-${multipleInputHead}`">
+                                                    <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`">
+                                                        <v-col cols="auto" class="d-flex align-start justify-center">
+                                                            <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ multipleInputItemIndex + 1 }}</v-icon></v-btn>
                                                         </v-col>
-                                                        <!-- flora_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- flora_data population -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Populasi"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.population"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- flora_data water_source -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.flora_data.options.water_source.items"
-                                                                :label="inputs.flora_data.options.water_source.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.water_source"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- flora_data status -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.flora_data.options.status.items"
-                                                                :label="inputs.flora_data.options.status.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.status"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- flora_data habitat -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Habitat"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="flora_data.habitat"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.flora_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`flora_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'flora_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.flora_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`flora_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'flora_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Fauna Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-cat</v-icon>Data Satwa Endemik</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(fauna_data, fauna_data_index) in inputs.fauna_data.model" 
-                                                :key="`fauna_data_${fauna_data_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ fauna_data_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- fauna_data categories -->
-                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fauna_data.options.categories.items"
-                                                                :label="inputs.fauna_data.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col> -->
-                                                        <!-- fauna_data types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fauna_data.options.types.items"
-                                                                :label="inputs.fauna_data.options.types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.types"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- fauna_data name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Nama"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.name"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- fauna_data population -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Populasi"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.population"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- fauna_data food_source -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fauna_data.options.food_source.items"
-                                                                :label="inputs.fauna_data.options.food_source.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.food_source"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- fauna_data status -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.fauna_data.options.status.items"
-                                                                :label="inputs.fauna_data.options.status.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.status"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- fauna_data habitat -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Habitat"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="fauna_data.habitat"
-                                                            ></v-text-field>
+                                                        <v-col cols="12" lg="11">
+                                                            <v-row>
+                                                                <!-- Inputs -->
+                                                                <v-col
+                                                                    v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
+                                                                    v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.category === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
+                                                                    :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
+                                                                    cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" 
+                                                                >
+                                                                    <div>
+                                                                        <!-- combobox -->
+                                                                        <v-combobox
+                                                                            v-if="multipleInputForm[1].inputType == 'combobox'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :small-chips="multipleInputForm[1].chip"
+                                                                            :hide-selected="multipleInputForm[1].hideSelected"
+                                                                            item-color="success"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:no-data>
+                                                                                <v-list-item>
+                                                                                <v-list-item-content>
+                                                                                    <v-list-item-title>
+                                                                                    No results matching. Press <kbd>enter</kbd> to create a new one
+                                                                                    </v-list-item-title>
+                                                                                </v-list-item-content>
+                                                                                </v-list-item>
+                                                                            </template>
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                            <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                                <v-chip
+                                                                                    v-bind="attrs"
+                                                                                    :input-value="selected"
+                                                                                    label
+                                                                                    small
+                                                                                    class="rounded-pill"
+                                                                                >
+                                                                                <span class="pr-2">
+                                                                                    {{ item }}
+                                                                                </span>
+                                                                                <v-icon
+                                                                                    small
+                                                                                    @click="parent.selectItem(item)"
+                                                                                >
+                                                                                    mdi-close-circle
+                                                                                </v-icon>
+                                                                                </v-chip>
+                                                                            </template>
+                                                                        </v-combobox>
+                                                                        <!-- autocomplete -->
+                                                                        <v-autocomplete
+                                                                            v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            item-color="success"
+                                                                            :item-text="multipleInputForm[1].itemText"
+                                                                            :item-value="multipleInputForm[1].itemValue"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-autocomplete>
+                                                                        <!-- text-field -->
+                                                                        <v-text-field
+                                                                            v-else-if="multipleInputForm[1].inputType == 'text-field'"
+                                                                            dense
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :label="multipleInputForm[1].label"
+                                                                            outlined
+                                                                            rounded
+                                                                            :placeholder="multipleInputForm[1].placeholder"
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            :suffix="multipleInputForm[1].suffix"
+                                                                            :type="multipleInputForm[1].type"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                            <template v-slot:append>
+                                                                                <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
+                                                                            </template>
+                                                                        </v-text-field>
+                                                                        <!-- textarea -->
+                                                                        <v-textarea
+                                                                            v-else-if="multipleInputForm[1].inputType == 'textarea'"
+                                                                            dense
+                                                                            color="success"
+                                                                            hide-details
+                                                                            :label="multipleInputForm[1].label"
+                                                                            outlined
+                                                                            rounded
+                                                                            :placeholder="multipleInputForm[1].placeholder"
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-textarea>
+                                                                        <!-- datepicker -->
+                                                                        <v-menu 
+                                                                            v-else-if="multipleInputForm[1].inputType == 'datepicker'"
+                                                                            rounded="xl"
+                                                                            transition="slide-x-transition"
+                                                                            bottom
+                                                                            min-width="100"
+                                                                            offset-y
+                                                                            :close-on-content-click="false"
+                                                                            v-model="multipleInputForm[1].show"
+                                                                        >
+                                                                            <template v-slot:activator="{ on: menu, attrs }">
+                                                                                <v-tooltip top content-class="rounded-xl">
+                                                                                    <template v-slot:activator="{ on: tooltip }">
+                                                                                        <v-text-field
+                                                                                            dense
+                                                                                            color="green"
+                                                                                            class="mb-2 mb-lg-0 mr-0 mr-lg-2"
+                                                                                            hide-details
+                                                                                            outlined
+                                                                                            rounded
+                                                                                            v-bind="attrs"
+                                                                                            v-on="{...menu, ...tooltip}"
+                                                                                            readonly
+                                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                        >
+                                                                                            <template v-slot:label>
+                                                                                                {{ multipleInputForm[1].label }} 
+                                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                            </template>
+                                                                                        </v-text-field>
+                                                                                    </template>
+                                                                                    <span>Klik untuk memunculkan datepicker</span>
+                                                                                </v-tooltip>
+                                                                            </template>
+                                                                            <div class="rounded-xl pb-2 white">
+                                                                                <div class="d-flex flex-column align-center rounded-xl">
+                                                                                    <v-date-picker 
+                                                                                        :range="multipleInputForm[1].dateType === 'range'"
+                                                                                        color="green lighten-1 rounded-xl" 
+                                                                                        v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                    ></v-date-picker>
+                                                                                </div>
+                                                                            </div>
+                                                                        </v-menu>
+                                                                    </div>
+                                                                </v-col>
+                                                            </v-row>
                                                         </v-col>
                                                     </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.fauna_data.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`fauna_data_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'fauna_data')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.fauna_data.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`fauna_data_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'fauna_data')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Income Data Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-hand-coin</v-icon>Data Income</p>
-                                                <v-divider class="mx-2"></v-divider>
-                                            </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(income_data_si, income_data_si_index) in inputs.income_data_si.model" 
-                                                :key="`income_data_si_${income_data_si_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ income_data_si_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- income_data_si categories -->
-                                                        <!-- <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
+                                                    <v-row v-if="inputs[multipleInputHead].totalCanChange === true" class="justify-center">
+                                                        <v-btn v-if="inputs[multipleInputHead].model.length < localConfig.maxSubDataTotal" 
+                                                            data-aos="fade-right" data-aos-offset="-10000" 
+                                                            :key="`${multipleInputHead}_plus_btn`" 
+                                                            fab small color="green white--text" class="mx-1" 
+                                                            @click="() => modifyTotalSubData('+', multipleInputHead)"
+                                                        >
+                                                            <v-icon>mdi-plus</v-icon>
+                                                        </v-btn>
+                                                        <v-btn v-if="inputs[multipleInputHead].model.length > 1" 
+                                                            data-aos="fade-left" data-aos-offset="-10000" 
+                                                            :key="`${multipleInputHead}_minus_btn`" 
+                                                            fab small color="red" outlined class="mx-1"
+                                                            @click="() => modifyTotalSubData('-', multipleInputHead)"
+                                                        >
+                                                            <v-icon>mdi-minus</v-icon>
+                                                        </v-btn>
+                                                    </v-row>
+                                                    <v-row v-if="socImpInput.description === true">
+                                                        <v-col cols="12">
+                                                            <!-- textarea -->
+                                                            <v-textarea
                                                                 dense
                                                                 color="success"
                                                                 hide-details
-                                                                item-color="success"
-                                                                :items="inputs.income_data_si.options.categories.items"
-                                                                :label="inputs.income_data_si.options.categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
+                                                                :label="inputs[multipleInputHead].description.label"
                                                                 outlined
                                                                 rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data_si.categories"
-                                                            ></v-autocomplete>
-                                                        </v-col> -->
-                                                        <!-- income_data_si crops_categories -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.income_data_si.options.crops_categories.items"
-                                                                :label="inputs.income_data_si.options.crops_categories.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data_si.crops_categories"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- income_data_si crops_types -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.income_data_si.options.crops_types.items"
-                                                                :label="inputs.income_data_si.options.crops_types.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data_si.crops_types"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- income_data_si crops_name -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.income_data_si.options.crops_name.items"
-                                                                :label="inputs.income_data_si.options.crops_name.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data_si.crops_name"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- income_data_si production_capacity -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Kapasitas Produksi"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                suffix="kg"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data_si.production_capacity"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- income_data_si total_farming_family -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Jumlah Keluarga Petani"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                suffix="Keluarga"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="income_data_si.total_farming_family"
-                                                            ></v-text-field>
+                                                                :placeholder="inputs[multipleInputHead].description.placeholder"
+                                                                :readonly="inputs[multipleInputHead].description.readonly"
+                                                                v-model="inputs[multipleInputHead].description.model"
+                                                            >
+                                                                <template v-slot:label>
+                                                                    <v-icon v-if="inputs[multipleInputHead].description.labelIcon" class="mr-1">{{ inputs[multipleInputHead].description.labelIcon }}</v-icon>
+                                                                    {{ inputs[multipleInputHead].description.label }} 
+                                                                    <sup><v-icon v-if="inputs[multipleInputHead].description.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                </template>
+                                                            </v-textarea>
                                                         </v-col>
                                                     </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.income_data_si.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`income_data_si_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'income_data_si')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.income_data_si.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`income_data_si_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'income_data_si')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                        <!-- Economic Section -->
-                                        <v-col cols="12">
-                                            <div class="d-flex align-center">
-                                                <p class="mb-0"><v-icon class="mr-2">mdi-cash-multiple</v-icon>Data Ekonomi</p>
-                                                <v-divider class="mx-2"></v-divider>
+                                                </div>
                                             </div>
-                                        </v-col>
-                                        <v-col cols="12">
-                                            <v-row 
-                                                v-for="(economic_data_si, economic_data_si_index) in inputs.economic_data_si.model" 
-                                                :key="`economic_data_si_${economic_data_si_index}`"
-                                                data-aos="fade-right"
-                                                data-aos-offset="-10000"
-                                            >
-                                                <v-col cols="auto">
-                                                    <v-btn fab class="mr-2 elevation-0" color="green white--text" small >{{ economic_data_si_index + 1 }}</v-btn>
-                                                </v-col>
-                                                <v-col cols="11">
-                                                    <v-row>
-                                                        <!-- economic_data_si trade_method -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.economic_data_si.options.trade_method.items"
-                                                                :label="inputs.economic_data_si.options.trade_method.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="economic_data_si.trade_method"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- economic_data_si start_period -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Periode"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="economic_data_si.start_period"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                        <!-- economic_data_si distribution -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-autocomplete
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                item-color="success"
-                                                                :items="inputs.economic_data_si.options.distribution.items"
-                                                                :label="inputs.economic_data_si.options.distribution.label"
-                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="economic_data_si.distribution"
-                                                            ></v-autocomplete>
-                                                        </v-col>
-                                                        <!-- economic_data_si revenue -->
-                                                        <v-col cols="12" sm="12" md="6" lg="6">
-                                                            <v-text-field
-                                                                dense
-                                                                color="success"
-                                                                hide-details
-                                                                label="Pendapatan"
-                                                                :disabled="false"
-                                                                outlined
-                                                                rounded
-                                                                type="number"
-                                                                prefix="Rp"
-                                                                :rules="[(v) => !!v || 'Field is required']"
-                                                                v-model="economic_data_si.revenue"
-                                                            ></v-text-field>
-                                                        </v-col>
-                                                    </v-row>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row class="justify-center">
-                                                <v-btn v-if="inputs.economic_data_si.model.length < localConfig.maxSubDataTotal" 
-                                                    data-aos="fade-right" data-aos-offset="-10000" 
-                                                    :key="`economic_data_si_plus_btn`" 
-                                                    fab small color="green white--text" class="mx-1" 
-                                                    @click="() => modifyTotalSubData('+', 'economic_data_si')"
-                                                >
-                                                    <v-icon>mdi-plus</v-icon>
-                                                </v-btn>
-                                                <v-btn v-if="inputs.economic_data_si.model.length > 1" 
-                                                    data-aos="fade-left" data-aos-offset="-10000" 
-                                                    :key="`economic_data_si_minus_btn`" 
-                                                    fab small color="red" outlined class="mx-1"
-                                                    @click="() => modifyTotalSubData('-', 'economic_data_si')"
-                                                >
-                                                    <v-icon>mdi-minus</v-icon>
-                                                </v-btn>
-                                            </v-row>
-                                        </v-col>
-                                    </v-row>
+                                        </div>
+                                    </div>
                                 </v-card-text>
                             </v-card>
                         </v-stepper-content>
@@ -1965,7 +1668,7 @@ export default {
                 {
                     title: 'Pendapatan Keluarga Petani',
                     icon: 'mdi-hand-coin',       
-                    type: 'custom-pra_farmer_income',
+                    type: 'custom-family_farmer_income',
                     required: true,
                     optional: false,
                     description: true,
@@ -2037,6 +1740,52 @@ export default {
                     description: true,
                     items: [
                         'water_source',
+                    ] 
+                },
+            ],
+            socImp: [
+                {
+                    title: 'Data Flora Endemik',
+                    icon: 'mdi-flower',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: false,
+                    items: [
+                        "flora_data"
+                    ] 
+                },
+                {
+                    title: 'Data Fauna Endemik',
+                    icon: 'mdi-cat',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: false,
+                    items: [
+                        "fauna_data"
+                    ] 
+                },
+                {
+                    title: 'Data Penghasilan',
+                    icon: 'mdi-hand-coin',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: false,
+                    items: [
+                        "income_data"
+                    ] 
+                },
+                {
+                    title: 'Data Ekonomi',
+                    icon: 'mdi-cash-multiple',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: false,
+                    items: [
+                        "economic_data"
                     ] 
                 },
             ]
@@ -2413,7 +2162,7 @@ export default {
                         multiple: true,
                         chip: true,
                         required: true,
-                        lgView: 7
+                        lgView: 8
                     }
                 },
                 model: [],
@@ -2453,7 +2202,7 @@ export default {
                         multiple: true,
                         chip: true,
                         required: true,
-                        lgView: 7
+                        lgView: 8
                     }
                 },
                 model: [],
@@ -2479,7 +2228,7 @@ export default {
                         label: 'Nama Lembaga',
                         required: true,
                         readonly: false,
-                        lgView: 5
+                        lgView: 6
                     },
                     role: {
                         inputType: 'combobox',
@@ -2579,7 +2328,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: 'kg',
-                        lgView: 5
+                        lgView: 6
                     },
                     method: {
                         inputType: 'combobox',
@@ -2656,7 +2405,7 @@ export default {
                         label: 'Nama Petani',
                         required: true,
                         readonly: false,
-                        lgView: 5
+                        lgView: 6
                     },
                     speciality: {
                         inputType: 'text-field',
@@ -3101,18 +2850,18 @@ export default {
             distribution_of_critical_land_locations: {
                 inputType: 'multiple-input',
                 form: {
-                    category: {
+                    hamlet_name: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [],
-                        itemText: 'value',
-                        itemValue: 'value',
+                        itemText: 'hamlet_name',
+                        itemValue: 'hamlet_name',
                         hideSelected: false,
                         label: 'Nama Dusun',
                         multiple: false,
                         required: true,
                         readonly: false,
-                        lgView: 5
+                        lgView: 6
                     },
                     pattern: {
                         inputType: 'autocomplete',
@@ -3130,9 +2879,8 @@ export default {
                 },
                 model: [],
                 default: [{
-                    category: null,
-                    type: null,
-                    percentage: 0,
+                    hamlet_name: null,
+                    pattern: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3146,7 +2894,7 @@ export default {
                 totalCanChange: true,
             },
             // Pendapatan keluarga petani
-            pra_farmer_income: {
+            family_farmer_income: {
                 collection_type: {
                     items: ['Sampling', 'Bukan Sampling'],
                     label: 'Cara Pengumpulan Data',
@@ -3163,7 +2911,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 5
+                        lgView: 6
                     },
                     amount: {
                         inputType: 'text-field',
@@ -3172,7 +2920,7 @@ export default {
                         required: true,
                         readonly: false,
                         prefix: 'Rp',
-                        lgView: 5
+                        lgView: 6
                     },
                     source: {
                         inputType: 'combobox',
@@ -3287,7 +3035,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 5
+                        lgView: 6
                     },
                     category: {
                         inputType: 'autocomplete',
@@ -3358,7 +3106,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 5
+                        lgView: 6
                     },
                     category: {
                         inputType: 'autocomplete',
@@ -3429,7 +3177,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 5
+                        lgView: 6
                     },
                     category: {
                         inputType: 'autocomplete',
@@ -3451,7 +3199,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 4
+                        lgView: 6
                     },
                     fatalities: {
                         inputType: 'text-field',
@@ -3460,7 +3208,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: 'orang',
-                        lgView: 4
+                        lgView: 6
                     },
                     detail: {
                         inputType: 'text-field',
@@ -3501,7 +3249,7 @@ export default {
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 5
+                        lgView: 6
                     },
                     category: {
                         inputType: 'autocomplete',
@@ -3613,7 +3361,7 @@ export default {
                         label: 'Nama',
                         required: true,
                         readonly: false,
-                        lgView: 5
+                        lgView: 6
                     },
                     category: {
                         inputType: 'combobox',
@@ -3685,117 +3433,327 @@ export default {
             },
             // SOCIAL IMPACT
             flora_data: {
-                options: {
-                    categories: {
-                        label: 'Kategori',
-                        items: formOptions.floraCategories
-                    },
-                    types: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [...formOptions.floraCategories, ...formOptions.floraTypes],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
                         label: 'Jenis',
-                        items: formOptions.floraTypes
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
                     },
-                    status: {
-                        label: 'Status',
-                        items: formOptions.floraStatus
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    population: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Populasi',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
                     },
                     water_source: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.wsCategories,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
                         label: 'Sumber Air',
-                        items: formOptions.wsCategories
-                    },
-                },
-                model: [
-                    {
-                        categories: '',
-                        types: '',
-                        name: '',
-                        population: 0,
-                        water_source: '',
-                        status: '',
-                        habitat: ''
-                    }
-                ]
-            },
-            fauna_data: {
-                options: {
-                    categories: {
-                        label: 'Kategori',
-                        items: formOptions.faunaCategories
-                    },
-                    types: {
-                        label: 'Jenis',
-                        items: formOptions.faunaTypes
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
                     },
                     status: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.floraStatus,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
                         label: 'Status',
-                        items: formOptions.faunaStatus
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    habitat: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Habitat',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                },
+                model: [],
+                default: [{
+                    category: null,
+                    name: null,
+                    population: 0,
+                    water_source: null,
+                    status: null,
+                    habitat: null,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi Kepemilikan Lahan',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true,
+            },
+            fauna_data: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [...formOptions.faunaCategories, ...formOptions.faunaTypes],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Jenis',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    population: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Populasi',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
                     },
                     food_source: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.faunaFoodSource,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
                         label: 'Sumber Makanan',
-                        items: formOptions.faunaFoodSource
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    status: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.faunaStatus,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Status',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    habitat: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Habitat',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
                     },
                 },
-                model: [
-                    {
-                        categories: '',
-                        types: '',
-                        name: '',
-                        population: 0,
-                        food_source: '',
-                        status: '',
-                        habitat: ''
-                    }
-                ]
+                model: [],
+                default: [{
+                    category: null,
+                    name: null,
+                    population: 0,
+                    food_source: null,
+                    status: null,
+                    habitat: null,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi Kepemilikan Lahan',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true,
             },
-            income_data_si: {
-                options: {
-                    categories: {
+            income_data: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.incomeCategories,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
                         label: 'Kategori',
-                        items: formOptions.incomeCategories
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
                     },
-                    crops_categories: {
-                        label: 'Kategori Crops',
-                        items: formOptions.incomeCropsCategories
-                    },
-                    crops_types: {
-                        label: 'Jenis Crops',
-                        items: formOptions.incomeCropsTypes
-                    },
-                    crops_name: {
-                        label: 'Nama Crops',
-                        items: []
-                    },
-                },
-                model: [
-                    {
-                        categories: '',
-                        crops_categories: '',
-                        crops_types: '',
-                        crops_name: '',
-                        crops_production_capacity: 0,
-                        total_farming_families: 0,
-                    }
-                ]
-            },
-            economic_data_si: {
-                options: {
-                    trade_method: {
-                        label: 'Metode',
-                        items: formOptions.marketingTradeMethod
-                    },
-                    distribution: {
+                    type: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.incomeCropsTypes,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
                         label: 'Jenis',
-                        items: formOptions.economicDistribution
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    capacity: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Kapasitas Produksi',
+                        required: true,
+                        readonly: false,
+                        suffix: 'kg',
+                        lgView: 6
+                    },
+                    total_farming_families: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Jumlah Keluarga Petani',
+                        required: true,
+                        readonly: false,
+                        suffix: 'orang',
+                        lgView: 6
                     },
                 },
-                model: [
-                    {
-                        trade_method: '',
-                        start_period: '',
-                        end_period: '',
-                        distribution: '',
-                        revenue: 0
-                    }
-                ]
+                model: [],
+                default: [{
+                    category: null,
+                    type: null,
+                    name: null,
+                    capacity: 0,
+                    total_farming_families: 0,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi Kepemilikan Lahan',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true,
+            },
+            economic_data: {
+                inputType: 'multiple-input',
+                form: {
+                    category: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.marketingTradeMethod,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Metode',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Periode',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    type: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.economicDistribution,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Jenis',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    revenue: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Pendapatan (Perbulan)',
+                        required: true,
+                        readonly: false,
+                        prefix: 'Rp',
+                        suffix: '',
+                        lgView: 6
+                    },
+                },
+                model: [],
+                default: [{
+                    category: null,
+                    name: null,
+                    type: null,
+                    revenue: 0,
+                }],
+                description: {
+                    inputType: 'textarea',
+                    type: 'text',
+                    label: 'Deskripsi',
+                    model: null,
+                    required: false,
+                    readonly: false,
+                    lgView: 12
+                },
+                totalCanChange: true,
             },
         },
         loading: {
@@ -3952,7 +3910,7 @@ export default {
                     }
                 }
 
-                if (name.includes('pra_farmer_income')) {
+                if (name.includes('family_farmer_income')) {
                     const splitName = name.split('-')
                     const defaultData = JSON.parse(JSON.stringify(this.inputs[splitName[0]].default[0]))
                     this.inputs[splitName[0]][`${splitName[1]}_data`].push(defaultData)
@@ -3964,7 +3922,7 @@ export default {
                     this.inputs[name].model.push(defaultData)
                 }
             } else if (type == '-') {
-                if (name.includes('pra_farmer_income')) {
+                if (name.includes('family_farmer_income')) {
                     const splitName = name.split('-')
                     this.inputs[splitName[0]][`${splitName[1]}_data`].pop()
                 } else this.inputs[name].model.pop()
@@ -3984,16 +3942,19 @@ export default {
                 // set default data for multiple inputs
                 this.loading.text = 'Setting default data...'
                 for (const [key, value] of Object.entries(this.inputs)) {
-                    if (key == 'pra_farmer_income') {
-                        value.male_data = JSON.parse(JSON.stringify(value.default))
-                        value.female_data = JSON.parse(JSON.stringify(value.default))
+                    if (key == 'family_farmer_income') {
+                        value.male_data = await JSON.parse(JSON.stringify(value.default))
+                        value.female_data = await JSON.parse(JSON.stringify(value.default))
                     } else {
                         if (value.inputType) if (value.inputType === 'multiple-input') {
                             const defaultData = await JSON.parse(JSON.stringify(value.default))
-                            value.model = defaultData
+                            value.model = await defaultData
                         }            
                     }
                 }
+                // set list dusun di penyebaran lokasi lahan kering / kritis
+                this.inputs.distribution_of_critical_land_locations.form.hamlet_name.items = this.inputs.hamlets.model
+                // console.log(this.inputs.hamlets.model.map(ham => {return ham.hamlet_name}))
                 // get scooping list item
                 await this.getScoopingListItems()
                 // get pola tanam options
@@ -4011,8 +3972,8 @@ export default {
                 this.inputs.land_use_patterns.form.plants.items = listTrees
                 this.inputs.existing_plants.form.plants.items = listTrees
                 this.inputs.economic_result_plant_type.items = listTrees
-                this.inputs.pra_farmer_income.sampling_form.source.items = listTrees
-                this.inputs.pra_farmer_income.static_form.source.items = listTrees
+                this.inputs.family_farmer_income.sampling_form.source.items = listTrees
+                this.inputs.family_farmer_income.static_form.source.items = listTrees
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }

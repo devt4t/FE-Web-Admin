@@ -806,7 +806,7 @@ export default {
                     this.getData(this.id)
                 } else {
                     this.editId = null
-                    this.getDummiesData()
+                    // this.getDummiesData()
                 }
             }
         },
