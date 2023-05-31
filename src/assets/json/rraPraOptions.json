@@ -289,10 +289,8 @@
         "Endangered"
     ],
     "incomeCategories": [
-        "Farmer",
-        "Enterpreneur",
-        "Employees",
-        "Others"
+        "Keluarga Petani",
+        "Bukan Keluarga Petani"
     ],
     "incomeCropsCategories": [
         "MPTS",

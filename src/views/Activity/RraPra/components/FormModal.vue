@@ -985,7 +985,7 @@
                                                     </v-row>
                                                     <div>
                                                         <div v-for="(genderIncome, genderIncomeIndex) in ['male', 'female']" :key="`family_farmer_income-${genderIncomeIndex}`">
-                                                            <v-chip color="grey darken-1 white--text" class="my-2">
+                                                            <v-chip color="grey darken-1 white--text" class="my-4">
                                                                 <v-icon class="mr-1">mdi-human-{{ genderIncome }}</v-icon>
                                                                 {{ genderIncome == 'male' ? 'Laki - Laki' : 'Perempuan' }}
                                                             </v-chip>
@@ -1004,10 +1004,11 @@
                                                                 <v-col cols="12" lg="11">
                                                                     <v-row>
                                                                         <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.family_farmer_income.sampling_form)" 
+                                                                            v-if="(praFiForm[0] === 'indirect_method' && genderInput.method === 'Indirect') || (praFiForm[0] === 'job' && genderInput.family_type === 'Keluarga Non-Petani') || (praFiForm[0] !== 'job' && praFiForm[0] !== 'indirect_method')"
                                                                             :key="`praFiForm-${genderIncomeIndex}-${genderInputIndex}-${praFiFormIndex}`"
                                                                             cols="12"
                                                                             md="6"
-                                                                            :lg="praFiForm[1].lgView"    
+                                                                            :lg="praFiForm[1].lgView"
                                                                         >
                                                                             <!-- text-field -->
                                                                             <v-text-field
@@ -1024,6 +1025,7 @@
                                                                                 :suffix="praFiForm[1].suffix"
                                                                                 :type="praFiForm[1].type"
                                                                                 v-model="genderInput[praFiForm[0]]"
+                                                                                :disabled="praFiForm[0] === 'amount' && (genderInput.method === 'Konsumsi Sendiri' || !genderInput.method)"
                                                                             >
                                                                                 <template v-slot:label>
                                                                                     <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
@@ -1085,6 +1087,35 @@
                                                                                     </v-chip>
                                                                                 </template>
                                                                             </v-combobox>
+                                                                            <!-- autocomplete -->
+                                                                            <div
+                                                                                v-else-if="praFiForm[1].inputType == 'autocomplete'"
+                                                                            >
+                                                                                <div>
+                                                                                    <v-autocomplete
+                                                                                        dense
+                                                                                        :multiple="praFiForm[1].multiple"
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        item-color="success"
+                                                                                        :item-text="praFiForm[1].itemText"
+                                                                                        :item-value="praFiForm[1].itemValue"
+                                                                                        :items="praFiForm[1].items"
+                                                                                        :label="praFiForm[1].label"
+                                                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        :readonly="praFiForm[1].readonly"
+                                                                                        v-model="genderInput[praFiForm[0]]"
+                                                                                    >
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
+                                                                                            {{ praFiForm[1].label }} 
+                                                                                            <sup><v-icon v-if="praFiForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                    </v-autocomplete>
+                                                                                </div>
+                                                                            </div>
                                                                         </v-col>
                                                                     </v-row>
                                                                 </v-col>
@@ -1191,6 +1222,30 @@
                                                                             </v-chip>
                                                                         </template>
                                                                     </v-combobox>
+                                                                    <!-- autocomplete -->
+                                                                    <v-autocomplete
+                                                                        v-else-if="praFiForm[1].inputType == 'autocomplete'"
+                                                                        dense
+                                                                        :multiple="praFiForm[1].multiple"
+                                                                        color="success"
+                                                                        hide-details
+                                                                        item-color="success"
+                                                                        :item-text="praFiForm[1].itemText"
+                                                                        :item-value="praFiForm[1].itemValue"
+                                                                        :items="praFiForm[1].items"
+                                                                        :label="praFiForm[1].label"
+                                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                        outlined
+                                                                        rounded
+                                                                        :readonly="praFiForm[1].readonly"
+                                                                        v-model="praFiForm[1][`${genderIncome}_model`]"
+                                                                    >
+                                                                        <template v-slot:label>
+                                                                            <v-icon v-if="praFiForm[1].labelIcon" class="mr-1">{{ praFiForm[1].labelIcon }}</v-icon>
+                                                                            {{ praFiForm[1].label }} 
+                                                                            <sup><v-icon v-if="praFiForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                        </template>
+                                                                    </v-autocomplete>
                                                                 </v-col>
                                                             </v-row>
                                                         </div>
@@ -1517,6 +1572,7 @@
                     class=""
                     rounded
                     :key="`saveButton`"
+                    @click="() => save()"
                     v-else
                 >
                     <v-icon class="mr-1">mdi-content-save</v-icon>
@@ -1531,6 +1587,7 @@
 import axios from 'axios'
 import moment from 'moment'
 import formOptions from '@/assets/json/rraPraOptions.json'
+import Swal from 'sweetalert2'
 
 export default {
     props: {
@@ -1666,7 +1723,7 @@ export default {
                     ] 
                 },
                 {
-                    title: 'Pendapatan Keluarga Petani',
+                    title: 'Pendapatan dan Pemasaran Komoditas (Ekonomi)',
                     icon: 'mdi-hand-coin',       
                     type: 'custom-family_farmer_income',
                     required: true,
@@ -1764,28 +1821,6 @@ export default {
                     description: false,
                     items: [
                         "fauna_data"
-                    ] 
-                },
-                {
-                    title: 'Data Penghasilan',
-                    icon: 'mdi-hand-coin',       
-                    type: 'multiple-input',
-                    required: true,
-                    optional: false,
-                    description: false,
-                    items: [
-                        "income_data"
-                    ] 
-                },
-                {
-                    title: 'Data Ekonomi',
-                    icon: 'mdi-cash-multiple',       
-                    type: 'multiple-input',
-                    required: true,
-                    optional: false,
-                    description: false,
-                    items: [
-                        "economic_data"
                     ] 
                 },
             ]
@@ -1943,7 +1978,7 @@ export default {
             // landscape desa
             land_area: {
                 label: 'Luas Wilayah',
-                model: '',
+                model: 0,
                 itemText: 'value',
                 placeholder: `Pilih terlebih dahulu "Scooping Form No" diatas!`,
                 itemValue: 'value',
@@ -2904,6 +2939,97 @@ export default {
                     lgView: 4
                 },
                 sampling_form: {
+                    family_type: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: ['Keluarga Petani', 'Keluarga Non-Petani'],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Jenis Keluarga',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    job: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: [],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Pekerjaan',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    comodity_name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama Komoditas',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    method: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: ['Direct', 'Indirect', 'Konsumsi Sendiri'],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Metode Pemasaran Komoditas',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    indirect_method: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.economicDistribution,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Metode Indirect Selling',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 6
+                    },
+                    period: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Periode Pemasaran',
+                        placeholder: 'Mingguan, Bulanan, Musiman, Tahunan, dll',
+                        required: true,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    capacity: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Kapasitas',
+                        placeholder: '0',
+                        required: true,
+                        readonly: false,
+                        suffix: 'kg',
+                        lgView: 6
+                    },
+                    family_member: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Jumlah Keluarga',
+                        placeholder: '',
+                        required: true,
+                        readonly: false,
+                        suffix: 'orang',
+                        lgView: 6
+                    },
                     name: {
                         inputType: 'text-field',
                         type: 'text',
@@ -2927,7 +3053,7 @@ export default {
                         chip: true,
                         items: [],
                         hideSelected: true,
-                        label: 'Sumber (Tanaman)',
+                        label: 'Sumber (Tanaman & Yang lainnya)',
                         multiple: true,
                         chip: true,
                         required: true,
@@ -2935,6 +3061,85 @@ export default {
                     },
                 },
                 static_form: {
+                    source: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Sumber',
+                        placeholder: 'Pertanian, Ternak, dll',
+                        required: true,
+                        readonly: false,
+                        prefix: '',
+                        male_model: null,
+                        female_model: null,
+                        lgView: 12
+                    },
+                    comodity_name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama Komoditas',
+                        placeholder: '',
+                        required: true,
+                        readonly: false,
+                        prefix: '',
+                        male_model: null,
+                        female_model: null,
+                        lgView: 6
+                    },
+                    method: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: ['Direct', 'Indirect'],
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Metode Pemasaran Komoditas',
+                        multiple: true,
+                        required: true,
+                        readonly: false,
+                        lgView: 6,
+                        male_model: null,
+                        female_model: null,
+                    },
+                    indirect_method: {
+                        inputType: 'autocomplete',
+                        chip: false,
+                        items: formOptions.economicDistribution,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        hideSelected: false,
+                        label: 'Metode Indirect Selling',
+                        multiple: true,
+                        required: true,
+                        readonly: false,
+                        lgView: 6,
+                        male_model: null,
+                        female_model: null,
+                    },
+                    avg_period: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Rata - Rata Periode Pemasaran',
+                        placeholder: '',
+                        required: true,
+                        readonly: false,
+                        prefix: '',
+                        male_model: null,
+                        female_model: null,
+                        lgView: 6
+                    },
+                    avg_capacity: {
+                        inputType: 'text-field',
+                        type: 'number',
+                        label: 'Rata - Rata Kapasitas Komoditas',
+                        placeholder: '',
+                        required: true,
+                        readonly: false,
+                        prefix: '',
+                        suffix: 'kg',
+                        male_model: null,
+                        female_model: null,
+                        lgView: 6
+                    },
                     min_amount: {
                         inputType: 'text-field',
                         type: 'number',
@@ -2944,7 +3149,7 @@ export default {
                         prefix: 'Rp',
                         male_model: 0,
                         female_model: 0,
-                        lgView: 5
+                        lgView: 6
                     },
                     max_amount: {
                         inputType: 'text-field',
@@ -2955,27 +3160,30 @@ export default {
                         prefix: 'Rp',
                         male_model: 0,
                         female_model: 0,
-                        lgView: 5
-                    },
-                    source: {
-                        inputType: 'combobox',
-                        chip: true,
-                        items: [],
-                        hideSelected: true,
-                        label: 'Sumber (Tanaman)',
-                        multiple: true,
-                        chip: true,
-                        required: true,
-                        male_model: null,
-                        female_model: null,
-                        lgView: 12
+                        lgView: 6
                     },
                 },
                 default: [{
+                    family_type: null,
+                    job: null,
+                    comodity_name: null,
+                    method: null,
+                    indirect_method: null,
+                    period: null,
+                    capacity: null,
+                    family_member: null,
                     name: null,
                     amount: 0,
                     source: null
                 },{
+                    family_type: null,
+                    job: null,
+                    comodity_name: null,
+                    method: null,
+                    indirect_method: null,
+                    period: null,
+                    capacity: null,
+                    family_member: null,
                     name: null,
                     amount: 0,
                     source: null
@@ -3934,6 +4142,34 @@ export default {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
         },
+        async save() {
+            try {
+                const confirm = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2e7d32',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Tidak Jadi',
+                    confirmButtonText: 'Ya, Lanjutkan!'
+                })
+                if (confirm.isConfirmed) {
+                    this.loading.show = true
+                    this.loading.text = 'Saving data...'
+                    const url = this.$store.getters.getApiUrl('AddRraPra')
+                    let inputs = Object.entries(this.inputs)
+                    let data = {}
+
+                    for (const [key, value] of Object.entries(this.inputs)) {
+                        if (value.model !== undefined) data[key] = await value.model
+                    }
+                    console.log(data)
+                }
+            } catch(err) {this.errorResponse(err)} finally {
+                this.loading.show = false
+            }
+        },
         async setDefaultData() {
             try {
                 this.loading.show = true
@@ -3954,7 +4190,16 @@ export default {
                 }
                 // set list dusun di penyebaran lokasi lahan kering / kritis
                 this.inputs.distribution_of_critical_land_locations.form.hamlet_name.items = this.inputs.hamlets.model
-                // console.log(this.inputs.hamlets.model.map(ham => {return ham.hamlet_name}))
+                // set sampling job list
+                const jobs = [
+                    'Petani',
+                    'Buruh Tani',
+                    'Karyawan Swasta',
+                    'ASN',
+                    'Wiraswasta',
+                    'Profesi Lain'
+                ]
+                this.inputs.family_farmer_income.sampling_form.job.items = jobs
                 // get scooping list item
                 await this.getScoopingListItems()
                 // get pola tanam options
@@ -3976,6 +4221,24 @@ export default {
                 this.inputs.family_farmer_income.static_form.source.items = listTrees
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
+            }
+        },
+        async zwitchKeyName() {
+            const rename = {
+                sccoping_form_no: 'form_no',
+                paddy_land: 'tanah_sawah',
+                field: 'tegal_ladang',
+                resident: 'pemukiman',
+                yard: 'pekarangan',
+                marshland: 'tanah_rawa',
+                lake: 'waduk_danau',
+                people_plantation_land: 'tanah_perkebunan_rakyat',
+                state_plantation_land: 'tanah_perkebunan_negara',
+                private_plantation_land: 'tanah_perkebunan_swasta',
+                protected_forest: 'hutan_lindung',
+                people_forest: 'hutan_rakyat',
+                public_facilities: 'fasilitas_umum',
+                types_of_land_by_people: 'lahan_menurut_masyarakat',
             }
         }
     }
