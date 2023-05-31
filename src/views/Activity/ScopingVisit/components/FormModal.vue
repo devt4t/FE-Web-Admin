@@ -38,6 +38,7 @@
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">{{ ig.icon }}</v-icon>{{ ig.title }}</p>
                             <v-divider class="mx-2"></v-divider>
+                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering'" rounded color="blue white--text" small ><v-icon class="mr-1">mdi-email-arrow-right</v-icon>Email to GIS</v-btn>
                         </div>
                     </v-col>
                     <!-- Inputs -->
@@ -513,7 +514,7 @@ export default {
                 type: 'Multiple'
             },
             land_height: {
-                items: formOptions.land_height.sort(),
+                items: formOptions.land_height,
                 label: 'Ketinggian Tanah',
                 model: '',
                 itemText: 'value',
@@ -550,7 +551,7 @@ export default {
                 type: 'Multiple'
             },
             rainfall: {
-                items: formOptions.rainfall.sort(),
+                items: formOptions.rainfall,
                 label: 'Curah Hujan',
                 model: '',
                 itemText: 'value',
