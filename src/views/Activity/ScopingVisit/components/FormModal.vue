@@ -782,7 +782,7 @@ export default {
         localConfig: {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
-            requiredInputIcon: 'mdi-alert-decagram'
+            requiredInputIcon: 'mdi-star'
         },
         showedModal: false,
     }),

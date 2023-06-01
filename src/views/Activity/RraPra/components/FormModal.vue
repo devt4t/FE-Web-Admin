@@ -227,7 +227,11 @@
                                             <!-- multiple-input type -->
                                             <div v-else-if="rraInput.type === 'multiple-input'">
                                                 <div v-for="(multipleInputHead, multipleInputHeadIndex) in rraInput.items" :key="`multipleInputHead-${multipleInputHead}`">
-                                                    <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`">
+                                                    <v-row v-for="(multipleInputItem, multipleInputItemIndex) in inputs[multipleInputHead].model" 
+                                                        :key="`MultipleInputs-${multipleInputHead}-${multipleInputItemIndex}`"
+                                                        data-aos="fade-right"
+                                                        data-aos-offset="-10000000"
+                                                    >
                                                         <v-col cols="auto" class="d-flex align-start">
                                                             <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ multipleInputItemIndex + 1 }}</v-icon></v-btn>
                                                         </v-col>
@@ -391,18 +395,18 @@
                                                             {{ inputs.village_border[point].label }}
                                                         </v-btn>
                                                     </v-col>
-                                                    <v-col cols="12" md="6" :lg="inputs.village_border[point].type.lgView">
+                                                    <v-col cols="12" md="6" :lg="inputs.village_border[point].border_type.lgView">
                                                         <v-select
                                                             dense
                                                             color="success"
                                                             hide-details
                                                             item-color="success"
-                                                            :items="inputs.village_border[point].type.items"
-                                                            :label="inputs.village_border[point].type.label"
+                                                            :items="inputs.village_border[point].border_type.items"
+                                                            :label="inputs.village_border[point].border_type.label"
                                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                                             outlined
                                                             rounded
-                                                            v-model="inputs.village_border[point].type.model"
+                                                            v-model="inputs.village_border[point].border_type.model"
                                                         ></v-select>
                                                     </v-col>
                                                     <v-col cols="12" :lg="inputs.village_border[point].kabupaten.lgView">
@@ -424,7 +428,7 @@
                                                         >
                                                         </v-autocomplete>
                                                     </v-col>
-                                                    <v-col cols="12" :lg="inputs.village_border[point].kecamatan.lgView" v-if="inputs.village_border[point].type.model == 'Kecamatan' || inputs.village_border[point].type.model == 'Desa'">
+                                                    <v-col cols="12" :lg="inputs.village_border[point].kecamatan.lgView" v-if="inputs.village_border[point].border_type.model == 'Kecamatan' || inputs.village_border[point].border_type.model == 'Desa'">
                                                         <v-autocomplete
                                                             dense
                                                             color="success"
@@ -443,7 +447,7 @@
                                                         >
                                                         </v-autocomplete>
                                                     </v-col>
-                                                    <v-col cols="12" :lg="inputs.village_border[point].desa.lgView" v-if="inputs.village_border[point].type.model == 'Desa'">
+                                                    <v-col cols="12" :lg="inputs.village_border[point].desa.lgView" v-if="inputs.village_border[point].border_type.model == 'Desa'">
                                                         <v-autocomplete
                                                             dense
                                                             color="success"
@@ -467,8 +471,8 @@
                                         </div>
                                     </div>
                                     <!-- Dusun Data -->
-                                    <div class="d-flex align-center">
-                                        <p class="mb-0"><v-icon class="mr-2">mdi-home-group</v-icon>Data Dusun</p>
+                                    <div class="d-flex align-center mt-8 mb-2">
+                                        <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-home-group</v-icon>Data Dusun</p>
                                         <v-divider class="mx-2"></v-divider>
                                     </div>
                                     <v-row class="ma-0 mx-2">
@@ -479,9 +483,9 @@
                                                         <template v-slot:default="{ open }">
                                                             <v-row no-gutters>
                                                                 <v-col cols="6">
-                                                                    <span v-if="hm.hamlet_name && !open">
+                                                                    <span v-if="hm.dusun_name && !open">
                                                                         <v-icon>mdi-numeric-{{ hmIndex+1 }}-circle</v-icon>
-                                                                        {{ hm.hamlet_name }}
+                                                                        {{ hm.dusun_name }}
                                                                     </span>
                                                                     <span v-else>
                                                                         Dusun {{ hmIndex + 1 }}
@@ -1856,7 +1860,7 @@ export default {
                 inputType: 'custom',
                 north: {
                     label: 'Utara',
-                    type: {
+                    border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
                         model: 'Kabupaten',
@@ -1886,7 +1890,7 @@ export default {
                 },
                 east: {
                     label: 'Timur',
-                    type: {
+                    border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
                         model: 'Kabupaten',
@@ -1916,7 +1920,7 @@ export default {
                 },
                 south: {
                     label: 'Selatan',
-                    type: {
+                    border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
                         model: 'Kabupaten',
@@ -1946,7 +1950,7 @@ export default {
                 },
                 west: {
                     label: 'Barat',
-                    type: {
+                    border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
                         model: 'Kabupaten',
@@ -2188,7 +2192,7 @@ export default {
                         required: true,
                         lgView: 4
                     },
-                    plants: {
+                    plant: {
                         inputType: 'combobox',
                         chip: true,
                         items: [],
@@ -2203,15 +2207,15 @@ export default {
                 model: [],
                 default: [{
                     pattern: null,
-                    plants: []
+                    plant: []
                 }],
                 totalCanChange: true
             },
-            // pola pemanfaatan lahan
+            // tanaman yang sudah ada
             existing_plants: {
                 inputType: 'multiple-input',
                 form: {
-                    category: {
+                    plant_type: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [
@@ -2228,7 +2232,7 @@ export default {
                         readonly: true,
                         lgView: 4
                     },
-                    plants: {
+                    plant: {
                         inputType: 'combobox',
                         chip: true,
                         items: [],
@@ -2242,14 +2246,14 @@ export default {
                 },
                 model: [],
                 default: [{
-                    category: 'KAYU',
-                    plants: []
+                    plant_type: 'KAYU',
+                    plant: []
                 },{
-                    category: 'MPTS',
-                    plants: []
+                    plant_type: 'MPTS',
+                    plant: []
                 },{
-                    category: 'CROPS',
-                    plants: []
+                    plant_type: 'CROPS',
+                    plant: []
                 }],
                 totalCanChange: false
             },
@@ -2257,7 +2261,7 @@ export default {
             community_institutions: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    institution_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama Lembaga',
@@ -2287,7 +2291,7 @@ export default {
                 },
                 model: [],
                 default: [{
-                    name: null,
+                    institution_name: null,
                     role: [],
                     description: null
                 }],
@@ -2305,18 +2309,16 @@ export default {
                         readonly: false,
                         lgView: 7
                     },
-                    category: {
-                        inputType: 'autocomplete',
-                        chip: false,
-                        items: [],
-                        itemText: 'value',
-                        itemValue: 'value',
-                        hideSelected: false,
+                    potential_category: {
+                        inputType: 'combobox',
+                        chip: true,
+                        items: formOptions.potential_categories,
+                        hideSelected: true,
                         label: 'Kategori Potensi',
                         multiple: false,
+                        chip: true,
                         required: true,
-                        readonly: false,
-                        lgView: 4
+                        lgView: 5
                     },
                     source: {
                         inputType: 'text-field',
@@ -2338,7 +2340,7 @@ export default {
                 model: [],
                 default: [{
                     name: null,
-                    category: null,
+                    potential_category: null,
                     source: null,
                     description: null
                 }],
@@ -2494,7 +2496,7 @@ export default {
                         labelIcon: 'mdi-list-box',
                         potentialRequirement: false
                     },
-                    hamlet_name: {
+                    dusun_name: {
                         label: 'Nama Dusun',
                         type: 'text',
                         suffix: '',
@@ -2546,7 +2548,7 @@ export default {
                         labelIcon: 'mdi-account-star',
                         potentialRequirement: true,
                     },
-                    hamlet_pic_name: {
+                    pic_name: {
                         label: 'Nama',
                         type: 'text',
                         suffix: '',
@@ -2555,7 +2557,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    hamlet_pic_position: {
+                    position: {
                         label: 'Jabatan',
                         type: 'text',
                         suffix: '',
@@ -2564,7 +2566,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    hamlet_pic_phone: {
+                    phone: {
                         label: 'No HP',
                         type: 'number',
                         suffix: '',
@@ -2574,7 +2576,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    hamlet_pic_whatsapp: {
+                    whatsapp: {
                         label: 'Whatsapp',
                         type: 'number',
                         suffix: '',
@@ -2591,7 +2593,7 @@ export default {
                         labelIcon: 'mdi-human-male-female-child',
                         potentialRequirement: true,
                     },
-                    number_of_rw: {
+                    total_rw: {
                         label: 'RW',
                         type: 'number',
                         suffix: 'RW',
@@ -2600,7 +2602,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    number_of_rt: {
+                    total_rt: {
                         label: 'RT',
                         type: 'number',
                         suffix: 'RT',
@@ -2609,7 +2611,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    number_of_male: {
+                    total_male: {
                         label: 'Jumlah Laki - Laki',
                         type: 'number',
                         suffix: 'orang',
@@ -2618,7 +2620,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    number_of_female: {
+                    total_female: {
                         label: 'Jumlah Perempuan',
                         type: 'number',
                         suffix: 'orang',
@@ -2627,7 +2629,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    number_of_families: {
+                    total_kk: {
                         label: 'Jumlah Keluarga (KK)',
                         type: 'number',
                         suffix: 'KK',
@@ -2636,7 +2638,7 @@ export default {
                         required: true,
                         potentialRequirement: false,
                     },
-                    number_of_farmer_families: {
+                    total_farmer_family: {
                         label: 'Jumlah Keluarga Petani (KK)',
                         type: 'number',
                         suffix: 'KK',
@@ -2645,7 +2647,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    avg_family_member: {
+                    average_family_member: {
                         label: 'Rata - Rata Anggota Keluarga',
                         type: 'number',
                         suffix: 'orang',
@@ -2654,7 +2656,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    avg_farmer_family_member: {
+                    average_farmer_family_member: {
                         label: 'Rata - Rata Anggota Keluarga Petani',
                         type: 'number',
                         suffix: 'orang',
@@ -2670,7 +2672,7 @@ export default {
                         labelIcon: 'mdi-book-education',
                         potentialRequirement: true,
                     },
-                    total_of_jr_highschool: {
+                    education_elementary_junior_hs: {
                         label: 'SD - SMP',
                         type: 'number',
                         suffix: 'orang',
@@ -2679,7 +2681,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_sr_highschool: {
+                    education_senior_hs: {
                         label: 'SMA',
                         type: 'number',
                         suffix: 'orang',
@@ -2688,7 +2690,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_university: {
+                    education_college: {
                         label: 'Kuliah',
                         type: 'number',
                         suffix: 'orang',
@@ -2704,7 +2706,7 @@ export default {
                         labelIcon: 'mdi-face-man-shimmer',
                         potentialRequirement: true,
                     },
-                    total_of_productive: {
+                    age_productive: {
                         label: 'Produktif',
                         type: 'number',
                         suffix: 'orang',
@@ -2713,7 +2715,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_not_productive: {
+                    age_non_productive: {
                         label: 'Tidak Produktif',
                         type: 'number',
                         suffix: 'orang',
@@ -2729,7 +2731,7 @@ export default {
                         labelIcon: 'mdi-hand-coin',
                         potentialRequirement: true,
                     },
-                    total_of_farmers: {
+                    job_farmer: {
                         label: 'Petani',
                         type: 'number',
                         suffix: 'orang',
@@ -2738,7 +2740,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_farmer_workers: {
+                    job_farm_workers: {
                         label: 'Buruh Tani',
                         type: 'number',
                         suffix: 'orang',
@@ -2747,7 +2749,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_priv_employee: {
+                    job_private_employee: {
                         label: 'Karyawan Swasta',
                         type: 'number',
                         suffix: 'orang',
@@ -2756,7 +2758,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_gov_employee: {
+                    job_state_emplyee: {
                         label: 'ASN (Guru, TNI, Polri)',
                         type: 'number',
                         suffix: 'orang',
@@ -2765,7 +2767,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_entrepreneur: {
+                    job_enterpreneur: {
                         label: 'Wiraswasta',
                         type: 'number',
                         suffix: 'orang',
@@ -2774,7 +2776,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    total_of_other_profession: {
+                    job_others: {
                         label: 'Profesi Lain (Peternakan, Buruh Peternakan, Pensiunan)',
                         type: 'number',
                         suffix: 'orang',
@@ -2786,34 +2788,34 @@ export default {
                 },
                 model: [],
                 default: [{
-                    hamlet_name: null,
+                    dusun_name: null,
                     potential: false,
                     land_area: 0,
                     accessibility: null,
                     dry_land_area: 0,
-                    hamlet_pic_name: 0,
-                    hamlet_pic_position: 0,
-                    hamlet_pic_phone: 0,
-                    hamlet_pic_whatsapp: 0,
-                    number_of_rw: 0,
-                    number_of_rt: 0,
-                    number_of_male: 0,
-                    number_of_female: 0,
-                    number_of_families: 0,
-                    number_of_farmer_families: 0,
-                    avg_family_member: 0,
-                    avg_farmer_family_member: 0,
-                    total_of_jr_highschool: 0,
-                    total_of_sr_highschool: 0,
-                    total_of_university: 0,
-                    total_of_productive: 0,
-                    total_of_not_productive: 0,
-                    total_of_farmers: 0,
-                    total_of_farmer_workers: 0,
-                    total_of_priv_employee: 0,
-                    total_of_gov_employee: 0,
-                    total_of_entrepreneur: 0,
-                    total_of_other_profession: 0,
+                    pic_name: null,
+                    position: null,
+                    phone: null,
+                    whatsapp: null,
+                    total_rw: 0,
+                    total_rt: 0,
+                    total_male: 0,
+                    total_female: 0,
+                    total_kk: 0,
+                    total_farmer_family: 0,
+                    average_family_member: 0,
+                    average_farmer_family_member: 0,
+                    education_elementary_junior_hs: 0,
+                    education_senior_hs: 0,
+                    education_college: 0,
+                    age_productive: 0,
+                    age_non_productive: 0,
+                    job_farmer: 0,
+                    job_farm_workers: 0,
+                    job_private_employee: 0,
+                    job_state_emplyee: 0,
+                    job_enterpreneur: 0,
+                    job_others: 0,
                 }],
             },
             // PRA
@@ -2885,12 +2887,12 @@ export default {
             distribution_of_critical_land_locations: {
                 inputType: 'multiple-input',
                 form: {
-                    hamlet_name: {
+                    dusun_name: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [],
-                        itemText: 'hamlet_name',
-                        itemValue: 'hamlet_name',
+                        itemText: 'dusun_name',
+                        itemValue: 'dusun_name',
                         hideSelected: false,
                         label: 'Nama Dusun',
                         multiple: false,
@@ -2914,7 +2916,7 @@ export default {
                 },
                 model: [],
                 default: [{
-                    hamlet_name: null,
+                    dusun_name: null,
                     pattern: null,
                 }],
                 description: {
@@ -3248,7 +3250,7 @@ export default {
                     category: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.fertilizer_categories,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3261,7 +3263,7 @@ export default {
                     type: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.fertilizer_types,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3274,7 +3276,7 @@ export default {
                     source: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.fertilizer_sources,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3972,7 +3974,7 @@ export default {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
             maxSubDataTotal: 5,
-            requiredInputIcon: 'mdi-alert-decagram'
+            requiredInputIcon: 'mdi-star'
         },
         stepper: {
             model: 1,
@@ -4189,7 +4191,7 @@ export default {
                     }
                 }
                 // set list dusun di penyebaran lokasi lahan kering / kritis
-                this.inputs.distribution_of_critical_land_locations.form.hamlet_name.items = this.inputs.hamlets.model
+                this.inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model
                 // set sampling job list
                 const jobs = [
                     'Petani',
@@ -4214,14 +4216,162 @@ export default {
                 // get list nama pohon
                 const resTrees = await this.getOptionsDataReturn('Pohon Data', 'GetTreesAll')
                 const listTrees = await resTrees.data.map(tree => {return tree.tree_name})
-                this.inputs.land_use_patterns.form.plants.items = listTrees
-                this.inputs.existing_plants.form.plants.items = listTrees
+                this.inputs.land_use_patterns.form.plant.items = listTrees
+                this.inputs.existing_plants.form.plant.items = listTrees
                 this.inputs.economic_result_plant_type.items = listTrees
                 this.inputs.family_farmer_income.sampling_form.source.items = listTrees
                 this.inputs.family_farmer_income.static_form.source.items = listTrees
+
+                // await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }
+        },
+        async setDummyData() {
+            try {
+                this.loading.text = 'Set dummies data...'
+                // setting optional data to TRUE
+                for (const [key, value] of Object.entries(this.groupingInputs)) {
+                    value.map(async function (val) {
+                        if (val.required == false) val.optional = true
+                    })
+                }
+                let inputs = this.inputs
+                inputs.land_area.model = 0 // get from scooping data
+                inputs.paddy_land.model = 100
+                inputs.field.model = 100
+                inputs.resident.model = 100
+                inputs.yard.model = 100
+                inputs.marshland.model = 100
+                inputs.lake.model = 100
+                inputs.people_plantation_land.model = 100
+                inputs.state_plantation_land.model = 100
+                inputs.private_plantation_land.model = 100
+                inputs.protected_forest.model = 100
+                inputs.people_forest.model = 100
+                inputs.public_facilities.model = 100
+                inputs.types_of_land_by_people.model = 'Lahan masih banyak yang kosong.'
+                inputs.land_use_patterns.model = [{
+                    pattern: 'Konservasi',
+                    plant: ['Jabon', 'Sengon', 'Jati']
+                },{
+                    pattern: 'Agroforestry Intensitas Tinggi',
+                    plant: ['Api Api']
+                }]
+                inputs.existing_plants.model = [{
+                    plant_type: 'KAYU',
+                    plant: ['Jabon', 'Jati', 'Sengon']
+                },{
+                    plant_type: 'MPTS',
+                    plant: ['Alpukat', 'Durian']
+                },{
+                    plant_type: 'CROPS',
+                    plant: ['Jahe Merah']
+                }]
+                inputs.community_institutions.model = [{
+                    institution_name: 'SSB Desa',
+                    role: ['Olahraga', 'Sepak Bola'],
+                    description: 'Pelatihan sepak bola untuk mempersiapkan turnamen - turnamen antar desa.'
+                }]
+                inputs.organic_farming_potential.model = [{
+                    name: 'Asep',
+                    potential_category: 'Profitable',
+                    source: 'Penananman jagung',
+                    description: 'Jagung yang ditanam oleh kang asep selalu berkwalitas tinggi'
+                }]
+                inputs.production_marketing.model = [{
+                    name: 'Kopi',
+                    capacity: 100,
+                    method: null,
+                    period: 'Bulanan',
+                    description: null,
+                    buyer_name: null,
+                    buyer_phone: null,
+                    buyer_email: null,
+                }]
+                inputs.identification_of_innovative_farmers.model = [{
+                    name: 'Asep 2',
+                    speciality: 'Nyangkul',
+                    potential: 'Penyangkul tercepat di desa',
+                    description: 'Nyangkulnya cepet bangeet!',
+                }]
+                inputs.hamlets.model = [{
+                    dusun_name: 'Dusun 1',
+                    potential: true,
+                    land_area: 50,
+                    accessibility: 'Mudah',
+                    dry_land_area: 50,
+                    pic_name: 'Asep 3',
+                    position: 'Top 1 Farmer',
+                    phone: '082233132849',
+                    whatsapp: '082233132849',
+                    total_rw: 2,
+                    total_rt: 9,
+                    total_male: 100,
+                    total_female: 200,
+                    total_kk: 20,
+                    total_farmer_family: 15,
+                    average_family_member: 4,
+                    average_farmer_family_member: 3,
+                    education_elementary_junior_hs: 30,
+                    education_senior_hs: 30,
+                    education_college: 20,
+                    age_productive: 60,
+                    age_non_productive: 20,
+                    job_farmer: 70,
+                    job_farm_workers: 30,
+                    job_private_employee: 10,
+                    job_state_emplyee: 10,
+                    job_enterpreneur: 10,
+                    job_others: 30,
+                }]
+                
+                this.stepper.model = 2
+                inputs.land_ownership.model = [{
+                    category: 'Milik Petani',
+                    type: null,
+                    percentage: 40,
+                },{
+                    category: 'Diluar Milik Petani',
+                    type: 'Lahan Desa',
+                    percentage: 60,
+                }]
+                inputs.land_ownership.description.model = 'Lahan petani kebanyakan masih kosong'
+                inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model
+                inputs.distribution_of_critical_land_locations.model = [{
+                    dusun_name: 'Dusun 1',
+                    pattern: 'Konservasi'
+                }]
+                inputs.distribution_of_critical_land_locations.description.model = 'Di dusun 1 masih banyak lahan kering yang memungkinkan untuk ditanami dengan pola Konservasi'
+                inputs.family_farmer_income.collection_type.model = 'Bukan Sampling'
+                inputs.family_farmer_income.static_form.source.male_model = 'Penjualan hasil tanaman'
+                inputs.family_farmer_income.static_form.comodity_name.male_model = 'Beras, Kopi'
+                inputs.family_farmer_income.static_form.method.male_model = ['Direct', 'Indirect']
+                inputs.family_farmer_income.static_form.indirect_method.male_model = ['UMKM']
+                inputs.family_farmer_income.static_form.avg_period.male_model = 'Musiman'
+                inputs.family_farmer_income.static_form.avg_capacity.male_model = 200
+                inputs.family_farmer_income.static_form.min_amount.male_model = 3000000
+                inputs.family_farmer_income.static_form.max_amount.male_model = 9000000
+                inputs.family_farmer_income.static_form.source.female_model = 'Penjualan hasil tanaman'
+                inputs.family_farmer_income.static_form.comodity_name.female_model = 'Sayur, Jagung, Kopi'
+                inputs.family_farmer_income.static_form.method.female_model = ['Direct', 'Indirect']
+                inputs.family_farmer_income.static_form.indirect_method.female_model = ['UMKM']
+                inputs.family_farmer_income.static_form.avg_period.female_model = 'Bulanan'
+                inputs.family_farmer_income.static_form.avg_capacity.female_model = 200
+                inputs.family_farmer_income.static_form.min_amount.female_model = 2000000
+                inputs.family_farmer_income.static_form.max_amount.female_model = 7000000
+                inputs.economic_result_source.model = 'Sawah'
+                inputs.economic_result_plant_type.model = ['Padi', 'Jagung']
+                inputs.economic_result_description.model = 'Jual padi dan jagung'
+                inputs.fertilizer_in_land_use.model = [
+                    {
+                        name: 'Kompos',
+                        category: null,
+                        type: null,
+                        source: null,
+                    }
+                ]
+            } catch (err) {this.errorResponse(err)}
         },
         async zwitchKeyName() {
             const rename = {
@@ -4239,7 +4389,9 @@ export default {
                 people_forest: 'hutan_rakyat',
                 public_facilities: 'fasilitas_umum',
                 types_of_land_by_people: 'lahan_menurut_masyarakat',
+                hamlets: 'dusuns',
             }
+            return rename
         }
     }
 }

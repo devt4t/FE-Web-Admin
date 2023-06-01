@@ -27,7 +27,7 @@
                 <v-row class="ma-0 mx-5">
                     <v-col cols="12">
                         <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-city</v-icon>Lokasi Desa</p>
+                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-city</v-icon>Lokasi Desa</p>
                             <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
@@ -118,6 +118,45 @@
                         ></v-autocomplete>
                     </v-col>
                 </v-row>
+                <v-row class="ma-0 mx-5">
+                    <v-col cols="12">
+                        <div class="d-flex align-center">
+                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-file-document</v-icon>Form Minat Petani</p>
+                            <v-divider class="mx-2"></v-divider>
+                            <v-switch
+                                color="green"
+                                v-model="inputs.interest.model"
+                                inset
+                                :label="`${inputs.interest.model ? 'Berminat' : 'Tidak Berminat'}`"
+                            ></v-switch>
+                        </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" :md="6" :lg="6" >
+                        <!-- text-field -->
+                        <v-text-field
+                            dense
+                            color="success"
+                            hide-details
+                            :label="inputs.name.label"
+                            outlined
+                            rounded
+                            :placeholder="inputs.name.placeholder"
+                            :readonly="inputs.name.readonly"
+                            :suffix="inputs.name.suffix"
+                            :type="inputs.name.type"
+                            v-model="inputs.name.model"
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.name.labelIcon" class="mr-1">{{ inputs.name.labelIcon }}</v-icon>
+                                {{ inputs.name.label }} 
+                                <sup><v-icon v-if="inputs.name.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                            <template v-slot:append>
+                                <div class="mt-1 ml-1" v-html="inputs.name.append"></div>
+                            </template>
+                        </v-text-field>
+                    </v-col>
+                </v-row>
             </v-card-text>
             <v-card-actions>
                 <v-btn 
@@ -196,99 +235,17 @@ export default {
                 model: '',
                 loading: false
             },
-            address: {
-                label: 'Address',
-                model: '',
-                loading: false
-            },
-            // scoping visit inputs
-            land_area: {
-                label: 'Luas Desa',
-                model: '',
-                loading: false
-            },
-            land_type: {
-                items: formOptions.land_type.sort(),
-                label: 'Jenis Tanah',
-                model: '',
-                loading: false
-            },
-            land_slope: {
-                items: formOptions.land_slope.sort(),
-                label: 'Kelerengan Tanah',
-                model: '',
-                loading: false
-            },
-            land_height: {
-                items: formOptions.land_height.sort(),
-                label: 'Ketinggian Tanah',
-                model: '',
-                loading: false
-            },
-            vegetation_density: {
-                items: formOptions.vegetation_density.sort(),
-                label: 'Kerapatan Vegetasi',
-                model: '',
-                loading: false
-            },
-            water_source: {
-                items: formOptions.water_source.sort(),
-                label: 'Sumber Air',
-                model: '',
-                loading: false
-            },
-            rainfall: {
-                items: formOptions.rainfall.sort(),
-                label: 'Curah Hujan',
-                model: '',
-                loading: false
-            },
-            agroforestry_type: {
-                items: formOptions.agroforestry_type.sort(),
-                label: 'Tipe Agroforestry',
-                model: '',
-                loading: false
-            },
-            government_place: {
-                items: formOptions.government_place.sort(),
-                label: 'Tempat Pemerintahan',
-                model: '',
-                loading: false
-            },
-            land_coverage: {
-                items: formOptions.land_coverage.sort(),
-                label: 'Cakupan Lahan',
-                model: '',
-                loading: false
-            },
-            electricity_source: {
-                items: formOptions.electricity_source.sort(),
-                label: 'Sumber Listrik',
-                model: '',
-                loading: false
-            },
-            dry_land_area: {
-                label: 'Luas Lahan Kering',
-                model: '',
-                loading: false
-            },
-            village_polygon: {
-                label: 'Polygon Desa *.kmz file',
-                accept: '.kmz',
-                model: '',
-                loading: false
-            },
-            dry_land_polygon: {
-                label: 'Polygon Lahan Kering *.kmz file',
-                accept: '.kmz',
-                model: '',
-                loading: false
-            },
-            critical_land_polygon: {
-                label: 'Polygon Lahan Kritis *.kmz file',
-                accept: '.kmz',
-                model: '',
-                loading: false
+            interest: {model: false},
+            name: {
+                inputType: 'text-field',
+                label: 'Nama Petani',
+                loading: false,
+                model: null,
+                placeholder: ``,
+                required: true,
+                readonly: false,
+                suffix: '',
+                type: 'text'
             },
         },
         loading: {
@@ -298,6 +255,7 @@ export default {
         localConfig: {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
+            requiredInputIcon: 'mdi-star'
         },
     }),
     watch: {
