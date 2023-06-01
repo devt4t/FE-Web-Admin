@@ -893,13 +893,22 @@ export default {
         await this.getOptionsData({type: 'province'})
     },
     methods: {
-        errorResponse(error) {
+        async errorResponse(error) {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
                     if (error.response.status == 401) {
-                        localStorage.removeItem("token");
-                        this.$router.push("/");
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) {
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
                     }
                 }
             }

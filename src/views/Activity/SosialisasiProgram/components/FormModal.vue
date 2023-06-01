@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="showModal"
         content-class="rounded-xl mx-1"
-        max-width="1200"
+        max-width="777"
         scrollable
         persistent
     >
@@ -13,15 +13,16 @@
             <v-card-text class="pa-0">
                 <!-- Loading -->
                 <v-overlay absolute :value="loading.show">
-                    <div class="d-flex flex-column"></div>
-                    <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="white"
-                    >
-                    </v-progress-circular>
-                    <p class="mt-2 mb-0">{{ loading.text }}</p>
+                    <div class="d-flex flex-column justify-center align-center">
+                        <v-progress-circular
+                            :size="80"
+                            :width="10"
+                            indeterminate
+                            color="white"
+                        >
+                        </v-progress-circular>
+                        <p class="mt-2 mb-0">{{ loading.text }}</p>
+                    </div>
                 </v-overlay>
                 <!-- SELECT VILLAGE -->
                 <v-row class="ma-0 mx-5">
@@ -32,7 +33,7 @@
                         </div>
                     </v-col>
                     <!-- Province -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
+                    <v-col cols="12" sm="12" md="6" lg="6">
                         <v-autocomplete
                             dense
                             color="success"
@@ -53,7 +54,7 @@
                         ></v-autocomplete>
                     </v-col>
                     <!-- Regency -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
+                    <v-col cols="12" sm="12" md="6" lg="6">
                         <v-autocomplete
                             dense
                             color="success"
@@ -75,7 +76,7 @@
                         ></v-autocomplete>
                     </v-col>
                     <!-- District -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
+                    <v-col cols="12" sm="12" md="6" lg="6">
                         <v-autocomplete
                             dense
                             color="success"
@@ -97,7 +98,7 @@
                         ></v-autocomplete>
                     </v-col>
                     <!-- Village -->
-                    <v-col cols="12" sm="12" md="6" lg="4">
+                    <v-col cols="12" sm="12" md="6" lg="6">
                         <v-autocomplete
                             dense
                             color="success"
@@ -118,7 +119,7 @@
                         ></v-autocomplete>
                     </v-col>
                 </v-row>
-                <v-row class="ma-0 mx-5">
+                <v-row class="ma-0 mx-lg-5">
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-file-document</v-icon>Form Minat Petani</p>
@@ -131,8 +132,8 @@
                             ></v-switch>
                         </div>
                     </v-col>
-                    <v-col cols="12" sm="12" :md="6" :lg="6" >
-                        <!-- text-field -->
+                    <v-col cols="12">
+                        <!-- nama petani -->
                         <v-text-field
                             dense
                             color="success"
@@ -156,13 +157,110 @@
                             </template>
                         </v-text-field>
                     </v-col>
+                    <v-col cols="12">
+                        <!-- pelatihan -->
+                        <v-autocomplete
+                            dense
+                            :multiple="inputs.farmer_training.multiple"
+                            color="success"
+                            hide-details
+                            item-color="success"
+                            :item-text="inputs.farmer_training.itemText"
+                            :item-value="inputs.farmer_training.itemValue"
+                            :items="inputs.farmer_training.items"
+                            :label="inputs.farmer_training.label"
+                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                            outlined
+                            rounded
+                            :readonly="inputs.farmer_training.readonly"
+                            v-model="inputs.farmer_training.model"
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.farmer_training.labelIcon" class="mr-1">{{ inputs.farmer_training.labelIcon }}</v-icon>
+                                {{ inputs.farmer_training.label }} 
+                                <sup><v-icon v-if="inputs.farmer_training.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                            <template v-slot:item="data">
+                                <v-list-item-content>
+                                    <v-list-item-title v-html="data.item[inputs.farmer_training.itemTitle]"></v-list-item-title>
+                                    <v-list-item-subtitle v-if="inputs.farmer_training.itemSub">{{ data.item[inputs.farmer_training.itemSub] }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </template>
+                        </v-autocomplete>
+                    </v-col>
+                    <v-col cols="12">
+                        <!-- tree kayu -->
+                        <v-autocomplete
+                            :dense="inputs.kayu.dense"
+                            :multiple="inputs.kayu.multiple"
+                            :chips="inputs.kayu.chip"
+                            color="success"
+                            hide-details
+                            item-color="success"
+                            :item-text="inputs.kayu.itemText"
+                            :item-value="inputs.kayu.itemValue"
+                            :items="inputs.kayu.items"
+                            :label="inputs.kayu.label"
+                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                            outlined
+                            rounded
+                            :readonly="inputs.kayu.readonly"
+                            v-model="inputs.kayu.model"
+                            :disabled="inputs.kayu.disabled"
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.kayu.labelIcon" class="mr-1">{{ inputs.kayu.labelIcon }}</v-icon>
+                                {{ inputs.kayu.label }} 
+                                <sup><v-icon v-if="inputs.kayu.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                            <template v-slot:item="data">
+                                <v-list-item-content>
+                                    <v-list-item-title v-html="data.item[inputs.kayu.itemTitle]"></v-list-item-title>
+                                    <v-list-item-subtitle v-if="inputs.kayu.itemSub">{{ data.item[inputs.kayu.itemSub] }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </template>
+                        </v-autocomplete>
+                    </v-col>
+                    <v-col cols="12">
+                        <!-- tree mpts -->
+                        <v-autocomplete
+                            :dense="inputs.mpts.dense"
+                            :multiple="inputs.mpts.multiple"
+                            :chips="inputs.mpts.chip"
+                            color="success"
+                            hide-details
+                            item-color="success"
+                            :item-text="inputs.mpts.itemText"
+                            :item-value="inputs.mpts.itemValue"
+                            :items="inputs.mpts.items"
+                            :label="inputs.mpts.label"
+                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                            outlined
+                            rounded
+                            :readonly="inputs.mpts.readonly"
+                            v-model="inputs.mpts.model"
+                            :disabled="inputs.mpts.disabled"
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.mpts.labelIcon" class="mr-1">{{ inputs.mpts.labelIcon }}</v-icon>
+                                {{ inputs.mpts.label }} 
+                                <sup><v-icon v-if="inputs.mpts.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                            <template v-slot:item="data">
+                                <v-list-item-content>
+                                    <v-list-item-title v-html="data.item[inputs.mpts.itemTitle]"></v-list-item-title>
+                                    <v-list-item-subtitle v-if="inputs.mpts.itemSub">{{ data.item[inputs.mpts.itemSub] }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </template>
+                        </v-autocomplete>
+                    </v-col>
                 </v-row>
             </v-card-text>
             <v-card-actions>
                 <v-btn 
                     data-aos="zoom-in"
                     data-aos-duration="300"
-                    data-aos-offset="-200" 
+                    data-aos-offset="-100000" 
                     text rounded color="red" class="pl-2">
                     <v-icon class="mr-1">mdi-close-circle</v-icon>
                     Close
@@ -170,12 +268,13 @@
                 <v-divider class="mx-2"></v-divider>
                 <v-btn
                     data-aos="zoom-in"
-                    data-aos-duration="300"
-                    data-aos-offset="-200" 
+                    data-aos-duration="700"
+                    data-aos-offset="-100000" 
                     color="primary white--text"
                     class=""
                     rounded
-                    :key="`saveButton`"
+                    :key="`saveButton${disableSave}`"
+                    :disabled="disableSave"
                 >
                     <v-icon class="mr-1">mdi-content-save</v-icon>
                     Save
@@ -187,6 +286,9 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
+import Swal from 'sweetalert2'
+
 import formOptions from './JSON/FormOptions.json'
 
 export default {
@@ -197,11 +299,11 @@ export default {
         },
         id: {
             type: String,
-            default: '0'
+            default: null
         },
         programYear: {
             type: String,
-            default: '0'
+            default: moment().format('YYYY')
         }
     },
     data: () => ({
@@ -212,33 +314,46 @@ export default {
             },
             // village location inputs
             province: {
+                type: 'text',
                 label: 'Provinsi',
                 model: '',
+                required: true,
                 items: [],
                 loading: false
             },
             regency: {
+                type: 'text',
                 label: 'Kabupaten / Kota',
                 model: '',
+                required: true,
                 items: [],
                 loading: false
             },
             district: {
+                type: 'text',
                 label: 'Kecamatan',
                 model: '',
+                required: true,
                 items: [],
                 loading: false
             },
             village: {
+                type: 'text',
                 items: [],
                 label: 'Desa',
+                required: true,
                 model: '',
                 loading: false
             },
-            interest: {model: false},
+            interest: {
+                type: 'bool',
+                model: false,
+                required: true
+            },
             name: {
                 inputType: 'text-field',
                 label: 'Nama Petani',
+                labelIcon: 'mdi-account-tag',
                 loading: false,
                 model: null,
                 placeholder: ``,
@@ -246,6 +361,63 @@ export default {
                 readonly: false,
                 suffix: '',
                 type: 'text'
+            },
+            farmer_training: {
+                type: 'text',
+                chip: false,
+                hideSelected: false,
+                inputType: 'autocomplete',
+                items: [],
+                itemTitle: 'material_name',
+                itemSub: 'material_no',
+                itemText: 'material_name',
+                itemValue: 'material_no',
+                label: 'Materi Pelatihan',
+                labelIcon: 'mdi-book-open-variant',
+                lgView: 6,
+                multiple: false,
+                required: true,
+                readonly: false,
+            },
+            kayu: {
+                dense: false,
+                disabled: false,
+                type: 'array',
+                chip: true,
+                hideSelected: false,
+                inputType: 'autocomplete',
+                items: [],
+                itemTitle: 'tree_name',
+                itemSub: '',
+                itemText: 'tree_name',
+                itemValue: 'tree_code',
+                label: 'KAYU',
+                labelIcon: 'mdi-tree',
+                lgView: 6,
+                model: [],
+                multiple: true,
+                required: true,
+                readonly: false,
+            },
+            mpts: {
+                dense: false,
+                disabled: false,
+                type: 'array',
+                chip: true,
+                hideSelected: false,
+                inputType: 'autocomplete',
+                items: [],
+                itemTitle: 'tree_name',
+                itemSub: '',
+                itemText: 'tree_name',
+                itemValue: 'tree_code',
+                label: 'MPTS',
+                labelIcon: 'mdi-food-apple',
+                lgView: 6,
+                model: [],
+                multiple: true,
+                required: false,
+                readonly: false,
             },
         },
         loading: {
@@ -259,38 +431,119 @@ export default {
         },
     }),
     watch: {
+        'inputs.kayu.model': {
+            async handler(val, oldVal) {
+                const kayu = val.length
+                const mpts = this.inputs.mpts.model.length
+                if ((kayu + mpts) > 3) {
+                    const confirm = await Swal.fire({
+                        title: 'Melebihi Batas!',
+                        text: "Batas maksimal jumlah jenis adalah 3.",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.inputs.kayu.model = oldVal
+                }
+            }
+        },
+        'inputs.mpts.model': {
+            async handler(val, oldVal) {
+                const mpts = val.length
+                const kayu = this.inputs.kayu.model.length
+                console.log(kayu)
+                if (kayu === 0  && mpts > 2) {
+                    const confirm = await Swal.fire({
+                        title: 'Belum Pilih KAYU!',
+                        text: "Minimal pilh 1 jenis kayu.",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.inputs.mpts.model = oldVal
+                }
+                if ((kayu + mpts) > 3) {
+                    const confirm = await Swal.fire({
+                        title: 'Melebihi Batas!',
+                        text: "Batas maksimal jumlah jenis adalah 3.",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.inputs.mpts.model = oldVal
+                }
+            }
+        }
     },
     computed: {
         showModal: {
             get: function () {
+                if (this.show) {
+                    this.inputs.program_year.model = this.programYear
+                    this.getDefaultData()
+                    if (this.id) {
+                        this.getDetailData(this.id)
+                    }
+                }
                 return this.show
             },
             set: function(newVal) {
                 if (newVal) {
-                    this.inputs.program_year.model = this.programYear
-                    if (this.id) {
-                        this.getDetailData(this.id)
-                    }
                 } else this.$emit('action', {type: 'close', name: 'form'})
             }
-        }
+        },
+        disableSave() {
+            let requiredEmpty = 0
+            for (const [key, val] of Object.entries(this.inputs)) {
+                if (val.required === true) {
+                    if (val.type !== 'bool' && val.type !== 'array') if (!val.model) requiredEmpty += 1
+                    if (val.type === 'array') if (val.model.length === 0) requiredEmpty += 1
+                }
+            }
+            return requiredEmpty > 0 ? true : false
+        },
     },
     mounted() {
         this.$nextTick(() => {
             window.addEventListener('resize', this.onResize)
         })
-        this.getOptionsData({type: 'province'})
     },
     methods: {
-        errorResponse(error) {
+        async errorResponse(error) {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token");
-                    this.$router.push("/");
+                    if (error.response.status == 401) {
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) {
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
+                    }
                 }
-                }
+            }
+        },
+        async getDefaultData() {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Getting list provinces...'
+                await this.getOptionsData({type: 'province'})
+                this.loading.text = 'Getting list materi pelatihan...'
+                this.inputs.farmer_training.items = await this.callApiGet('GetTrainingMaterials')
+                this.loading.text = 'Getting trees data...'
+                const listTrees = await this.callApiGet('GetTreesAll')
+                const kayu = await listTrees.data.filter(lt => lt.tree_category === 'Pohon_Kayu')
+                const mpts = await listTrees.data.filter(lt => lt.tree_category === 'Pohon_Buah')
+                this.inputs.kayu.items = kayu
+                this.inputs.mpts.items = mpts
+            } catch (err) {this.errorResponse(err)} finally {
+                this.loading.show = false
             }
         },
         async getOptionsData(inputs) {
@@ -331,6 +584,15 @@ export default {
                 this.$store.state.loadingOverlayText = null
                 this.inputs[inputs.type].loading = false
             }
+        },
+        async callApiGet(url) {
+            try {
+                const response = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                if (response) {
+                    const data = response.data.data.result
+                    return data
+                } else return null
+            } catch (error) { this.errorResponse(error)}
         },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
