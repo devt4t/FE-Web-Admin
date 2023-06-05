@@ -93,7 +93,9 @@
                     <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="showModal('detail', item)">
                         <v-icon class="mr-1">mdi-information</v-icon> Detail
                     </v-btn>
-                    <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" @click="() => {showModal('form', item)}">
+                    <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" 
+                        :disabled="item.is_verify === 1"
+                        @click="() => {showModal('form', item)}">
                         <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
                     </v-btn>
                     <!-- <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">

@@ -26,6 +26,9 @@
                 </v-overlay>
                 <!-- SELECT Scooping Data -->
                 <v-row class="ma-0 mx-5">
+                    <v-col cols="12" class="d-flex justify-end">
+                        <p class="mb-0 red--text">Tanda "<v-icon color="red" class="">{{ localConfig.requiredInputIcon }}</v-icon>" menandakan WAJIB DIISI.</p>
+                    </v-col>
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">mdi-form-select</v-icon>Data Scooping Visit</p>
@@ -52,6 +55,10 @@
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.scooping_form_no.model"
                         >
+                            <template v-slot:label>
+                                {{ inputs.scooping_form_no.label }} 
+                                <sup><v-icon v-if="inputs.scooping_form_no.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
                             <template v-slot:item="data">
                               <v-list-item-content>
                                 <v-list-item-title v-html="data.item.data_no"></v-list-item-title>
@@ -280,17 +287,21 @@
                                                                                     label
                                                                                     small
                                                                                     class="rounded-pill"
+                                                                                    v-if="multipleInputForm[1].chip"
                                                                                 >
-                                                                                <span class="pr-2">
+                                                                                    <span class="pr-2">
+                                                                                        {{ item }}
+                                                                                    </span>
+                                                                                    <v-icon
+                                                                                        small
+                                                                                        @click="parent.selectItem(item)"
+                                                                                    >
+                                                                                        mdi-close-circle
+                                                                                    </v-icon>
+                                                                                </v-chip>
+                                                                                <span v-else>
                                                                                     {{ item }}
                                                                                 </span>
-                                                                                <v-icon
-                                                                                    small
-                                                                                    @click="parent.selectItem(item)"
-                                                                                >
-                                                                                    mdi-close-circle
-                                                                                </v-icon>
-                                                                                </v-chip>
                                                                             </template>
                                                                         </v-combobox>
                                                                         <!-- autocomplete -->
@@ -388,83 +399,84 @@
                                             <div v-else-if="rraInput.type === 'village-border'">
                                                 <v-row v-for="(point, pointIndex) in rraInput.items" :key="`village-border-${pointIndex}`">
                                                     <v-col cols="auto">
-                                                        <v-btn fab class="mr-2 elevation-0" color="green white--text" x-small >{{ pointIndex + 1 }}</v-btn>
-                                                    </v-col>
-                                                    <v-col cols="auto">
                                                         <v-btn rounded color="green white--text" class="elevation-0" style="width: 100px;">
                                                             {{ inputs.village_border[point].label }}
                                                         </v-btn>
                                                     </v-col>
-                                                    <v-col cols="12" md="6" :lg="inputs.village_border[point].border_type.lgView">
-                                                        <v-select
-                                                            dense
-                                                            color="success"
-                                                            hide-details
-                                                            item-color="success"
-                                                            :items="inputs.village_border[point].border_type.items"
-                                                            :label="inputs.village_border[point].border_type.label"
-                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                            outlined
-                                                            rounded
-                                                            v-model="inputs.village_border[point].border_type.model"
-                                                        ></v-select>
-                                                    </v-col>
-                                                    <v-col cols="12" :lg="inputs.village_border[point].kabupaten.lgView">
-                                                        <v-autocomplete
-                                                            dense
-                                                            color="success"
-                                                            hide-details
-                                                            item-color="success"
-                                                            item-text="name"
-                                                            item-value="kabupaten_no"
-                                                            :items="inputs.village_border[point].kabupaten.items"
-                                                            :label="inputs.village_border[point].kabupaten.label"
-                                                            :loading="inputs.village_border[point].kabupaten.loading"
-                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                            :no-data-text="inputs.village_border[point].kabupaten.loading ? 'Loading...' : 'No Data'"
-                                                            outlined
-                                                            rounded
-                                                            v-model="inputs.village_border[point].kabupaten.model"
-                                                        >
-                                                        </v-autocomplete>
-                                                    </v-col>
-                                                    <v-col cols="12" :lg="inputs.village_border[point].kecamatan.lgView" v-if="inputs.village_border[point].border_type.model == 'Kecamatan' || inputs.village_border[point].border_type.model == 'Desa'">
-                                                        <v-autocomplete
-                                                            dense
-                                                            color="success"
-                                                            hide-details
-                                                            item-color="success"
-                                                            item-text="name"
-                                                            item-value="kode_kecamatan"
-                                                            :items="inputs.village_border[point].kecamatan.items"
-                                                            :label="inputs.village_border[point].kecamatan.label"
-                                                            :loading="inputs.village_border[point].kecamatan.loading"
-                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                            :no-data-text="inputs.village_border[point].kecamatan.loading ? 'Loading...' : 'No Data'"
-                                                            outlined
-                                                            rounded
-                                                            v-model="inputs.village_border[point].kecamatan.model"
-                                                        >
-                                                        </v-autocomplete>
-                                                    </v-col>
-                                                    <v-col cols="12" :lg="inputs.village_border[point].desa.lgView" v-if="inputs.village_border[point].border_type.model == 'Desa'">
-                                                        <v-autocomplete
-                                                            dense
-                                                            color="success"
-                                                            hide-details
-                                                            item-color="success"
-                                                            item-text="name"
-                                                            item-value="kode_desa"
-                                                            :items="inputs.village_border[point].desa.items"
-                                                            :label="inputs.village_border[point].desa.label"
-                                                            :loading="inputs.village_border[point].desa.loading"
-                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                            :no-data-text="inputs.village_border[point].desa.loading ? 'Loading...' : 'No Data'"
-                                                            outlined
-                                                            rounded
-                                                            v-model="inputs.village_border[point].desa.model"
-                                                        >
-                                                        </v-autocomplete>
+                                                    <v-col cols="12" md="10">
+                                                        <v-row>
+                                                            <v-col cols="12" md="6" :lg="inputs.village_border[point].border_type.lgView">
+                                                                <v-select
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :items="inputs.village_border[point].border_type.items"
+                                                                    :label="inputs.village_border[point].border_type.label"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="inputs.village_border[point].border_type.model"
+                                                                ></v-select>
+                                                            </v-col>
+                                                            <v-col cols="12" :lg="inputs.village_border[point].kabupaten.lgView">
+                                                                <v-autocomplete
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    item-text="name"
+                                                                    item-value="kabupaten_no"
+                                                                    :items="inputs.village_border[point].kabupaten.items"
+                                                                    :label="inputs.village_border[point].kabupaten.label"
+                                                                    :loading="inputs.village_border[point].kabupaten.loading"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    :no-data-text="inputs.village_border[point].kabupaten.loading ? 'Loading...' : 'No Data'"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="inputs.village_border[point].kabupaten.model"
+                                                                >
+                                                                </v-autocomplete>
+                                                            </v-col>
+                                                            <v-col cols="12" :lg="inputs.village_border[point].kecamatan.lgView" v-if="inputs.village_border[point].border_type.model == 'Kecamatan' || inputs.village_border[point].border_type.model == 'Desa'">
+                                                                <v-autocomplete
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    item-text="name"
+                                                                    item-value="kode_kecamatan"
+                                                                    :items="inputs.village_border[point].kecamatan.items"
+                                                                    :label="inputs.village_border[point].kecamatan.label"
+                                                                    :loading="inputs.village_border[point].kecamatan.loading"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    :no-data-text="inputs.village_border[point].kecamatan.loading ? 'Loading...' : 'No Data'"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="inputs.village_border[point].kecamatan.model"
+                                                                >
+                                                                </v-autocomplete>
+                                                            </v-col>
+                                                            <v-col cols="12" :lg="inputs.village_border[point].desa.lgView" v-if="inputs.village_border[point].border_type.model == 'Desa'">
+                                                                <v-autocomplete
+                                                                    dense
+                                                                    color="success"
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    item-text="name"
+                                                                    item-value="kode_desa"
+                                                                    :items="inputs.village_border[point].desa.items"
+                                                                    :label="inputs.village_border[point].desa.label"
+                                                                    :loading="inputs.village_border[point].desa.loading"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    :no-data-text="inputs.village_border[point].desa.loading ? 'Loading...' : 'No Data'"
+                                                                    outlined
+                                                                    rounded
+                                                                    v-model="inputs.village_border[point].desa.model"
+                                                                >
+                                                                </v-autocomplete>
+                                                            </v-col>
+                                                        </v-row>
                                                     </v-col>
                                                 </v-row>
                                             </div>
@@ -639,7 +651,7 @@
                                                                 <!-- Inputs -->
                                                                 <v-col
                                                                     v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
-                                                                    v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.category === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
+                                                                    v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.type_ownership === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
                                                                     :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
                                                                     cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" 
                                                                 >
@@ -682,17 +694,21 @@
                                                                                     label
                                                                                     small
                                                                                     class="rounded-pill"
+                                                                                    v-if="multipleInputForm[1].chip"
                                                                                 >
-                                                                                <span class="pr-2">
+                                                                                    <span class="pr-2">
+                                                                                        {{ item }}
+                                                                                    </span>
+                                                                                    <v-icon
+                                                                                        small
+                                                                                        @click="parent.selectItem(item)"
+                                                                                    >
+                                                                                        mdi-close-circle
+                                                                                    </v-icon>
+                                                                                </v-chip>
+                                                                                <span v-else>
                                                                                     {{ item }}
                                                                                 </span>
-                                                                                <v-icon
-                                                                                    small
-                                                                                    @click="parent.selectItem(item)"
-                                                                                >
-                                                                                    mdi-close-circle
-                                                                                </v-icon>
-                                                                                </v-chip>
                                                                             </template>
                                                                         </v-combobox>
                                                                         <!-- autocomplete -->
@@ -962,44 +978,44 @@
                                             </v-row>
                                             <!-- custom -->
                                             <div v-else> 
-                                                <div v-if="praInput.type === 'custom-family_farmer_income'">
+                                                <div v-if="praInput.type === 'custom-farmer_income'">
                                                     <v-row>
-                                                        <v-col cols="12" md="6" :lg="inputs.family_farmer_income.collection_type.lgView">
+                                                        <v-col cols="12" md="6" :lg="inputs.farmer_income.collection_type.lgView">
                                                             <!-- autocomplete -->
                                                             <v-autocomplete
                                                                 dense
                                                                 color="success"
                                                                 hide-details
                                                                 item-color="success"
-                                                                :items="inputs.family_farmer_income.collection_type.items"
-                                                                :label="inputs.family_farmer_income.collection_type.label"
+                                                                :items="inputs.farmer_income.collection_type.items"
+                                                                :label="inputs.farmer_income.collection_type.label"
                                                                 :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                                                 outlined
                                                                 rounded
-                                                                :readonly="inputs.family_farmer_income.collection_type.readonly"
-                                                                v-model="inputs.family_farmer_income.collection_type.model"
+                                                                :readonly="inputs.farmer_income.collection_type.readonly"
+                                                                v-model="inputs.farmer_income.collection_type.model"
                                                             >
                                                                 <template v-slot:label>
-                                                                    <v-icon v-if="inputs.family_farmer_income.collection_type.labelIcon" class="mr-1">{{ inputs.family_farmer_income.collection_type.labelIcon }}</v-icon>
-                                                                    {{ inputs.family_farmer_income.collection_type.label }} 
-                                                                    <sup><v-icon v-if="inputs.family_farmer_income.collection_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    <v-icon v-if="inputs.farmer_income.collection_type.labelIcon" class="mr-1">{{ inputs.farmer_income.collection_type.labelIcon }}</v-icon>
+                                                                    {{ inputs.farmer_income.collection_type.label }} 
+                                                                    <sup><v-icon v-if="inputs.farmer_income.collection_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                                                 </template>
                                                             </v-autocomplete>
                                                         </v-col>
                                                     </v-row>
                                                     <div>
-                                                        <div v-for="(genderIncome, genderIncomeIndex) in ['male', 'female']" :key="`family_farmer_income-${genderIncomeIndex}`">
+                                                        <div v-for="(genderIncome, genderIncomeIndex) in ['male', 'female']" :key="`farmer_income-${genderIncomeIndex}`">
                                                             <v-chip color="grey darken-1 white--text" class="my-4">
                                                                 <v-icon class="mr-1">mdi-human-{{ genderIncome }}</v-icon>
                                                                 {{ genderIncome == 'male' ? 'Laki - Laki' : 'Perempuan' }}
                                                             </v-chip>
                                                             <!-- IF not selected -->
-                                                            <div v-if="!inputs.family_farmer_income.collection_type.model" class="d-flex align-center">
+                                                            <div v-if="!inputs.farmer_income.collection_type.model" class="d-flex align-center">
                                                                 Silahkan pilih terlebih dahulu cara pengumpulan data!
                                                             </div>
                                                             <!-- IF Sampling -->
-                                                            <v-row v-if="inputs.family_farmer_income.collection_type.model == 'Sampling'" 
-                                                                v-for="(genderInput, genderInputIndex) in inputs.family_farmer_income[`${genderIncome}_data`]" 
+                                                            <v-row v-if="inputs.farmer_income.collection_type.model == 'Sampling'" 
+                                                                v-for="(genderInput, genderInputIndex) in inputs.farmer_income[`${genderIncome}_data`]" 
                                                                 :key="genderInputIndex"
                                                             >
                                                                 <v-col cols="auto" class="d-flex align-start">
@@ -1007,7 +1023,7 @@
                                                                 </v-col>
                                                                 <v-col cols="12" lg="11">
                                                                     <v-row>
-                                                                        <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.family_farmer_income.sampling_form)" 
+                                                                        <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.farmer_income.sampling_form)" 
                                                                             v-if="(praFiForm[0] === 'indirect_method' && genderInput.method === 'Indirect') || (praFiForm[0] === 'job' && genderInput.family_type === 'Keluarga Non-Petani') || (praFiForm[0] !== 'job' && praFiForm[0] !== 'indirect_method')"
                                                                             :key="`praFiForm-${genderIncomeIndex}-${genderInputIndex}-${praFiFormIndex}`"
                                                                             cols="12"
@@ -1124,27 +1140,27 @@
                                                                     </v-row>
                                                                 </v-col>
                                                             </v-row>
-                                                            <v-row v-if="inputs.family_farmer_income.collection_type.model == 'Sampling'" class="justify-center">
-                                                                <v-btn v-if="inputs.family_farmer_income[`${genderIncome}_data`].length < localConfig.maxSubDataTotal" 
+                                                            <v-row v-if="inputs.farmer_income.collection_type.model == 'Sampling'" class="justify-center">
+                                                                <v-btn v-if="inputs.farmer_income[`${genderIncome}_data`].length < localConfig.maxSubDataTotal" 
                                                                     data-aos="fade-right" data-aos-offset="-10000" 
-                                                                    :key="`family_farmer_income-${genderIncome}-plus_btn`" 
+                                                                    :key="`farmer_income-${genderIncome}-plus_btn`" 
                                                                     fab small color="green white--text" class="mx-1" 
-                                                                    @click="() => modifyTotalSubData('+', `family_farmer_income-${genderIncome}`)"
+                                                                    @click="() => modifyTotalSubData('+', `farmer_income-${genderIncome}`)"
                                                                 >
                                                                     <v-icon>mdi-plus</v-icon>
                                                                 </v-btn>
-                                                                <v-btn v-if="inputs.family_farmer_income[`${genderIncome}_data`].length > 2" 
+                                                                <v-btn v-if="inputs.farmer_income[`${genderIncome}_data`].length > 2" 
                                                                     data-aos="fade-left" data-aos-offset="-10000" 
-                                                                    :key="`family_farmer_income-${genderIncome}-minus_btn`" 
+                                                                    :key="`farmer_income-${genderIncome}-minus_btn`" 
                                                                     fab small color="red" outlined class="mx-1"
-                                                                    @click="() => modifyTotalSubData('-', `family_farmer_income-${genderIncome}`)"
+                                                                    @click="() => modifyTotalSubData('-', `farmer_income-${genderIncome}`)"
                                                                 >
                                                                     <v-icon>mdi-minus</v-icon>
                                                                 </v-btn>
                                                             </v-row>
                                                             <!-- IF Bukan Sampling -->
-                                                            <v-row v-if="inputs.family_farmer_income.collection_type.model == 'Bukan Sampling'">
-                                                                <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.family_farmer_income.static_form)" 
+                                                            <v-row v-if="inputs.farmer_income.collection_type.model == 'Bukan Sampling'">
+                                                                <v-col v-for="(praFiForm, praFiFormIndex) in Object.entries(inputs.farmer_income.static_form)" 
                                                                     :key="`praFiForm-${genderIncomeIndex}-${praFiFormIndex}`"
                                                                     cols="12"
                                                                     md="6"
@@ -1729,7 +1745,7 @@ export default {
                 {
                     title: 'Pendapatan dan Pemasaran Komoditas (Ekonomi)',
                     icon: 'mdi-hand-coin',       
-                    type: 'custom-family_farmer_income',
+                    type: 'custom-farmer_income',
                     required: true,
                     optional: false,
                     description: true,
@@ -1743,9 +1759,9 @@ export default {
                     optional: false,
                     description: true,
                     items: [
-                        "economic_result_source",
-                        "economic_result_plant_type",
-                        "economic_result_description",
+                        "land_utilization_source",
+                        "land_utilization_plant_type",
+                        "land_utilization_description",
                     ] 
                 },
                 {
@@ -1756,7 +1772,7 @@ export default {
                     optional: false,
                     description: false,
                     items: [
-                        "fertilizer_in_land_use",
+                        "pra_fertilizer",
                     ] 
                 },
                 {
@@ -1767,7 +1783,7 @@ export default {
                     optional: false,
                     description: false,
                     items: [
-                        "pesticide_in_land_use",
+                        "pra_pesticide",
                     ] 
                 },
                 {
@@ -1839,8 +1855,12 @@ export default {
                 inputType: 'autocomplete',
                 items: [],
                 label: 'Scooping Form No',
+                required: true,
                 model: '',
                 loading: false
+            },
+            village: {
+                model: null,
             },
             rra_pra_date_range: {
                 loading: false,
@@ -1863,7 +1883,7 @@ export default {
                     border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
-                        model: 'Kabupaten',
+                        model: 'Desa',
                         lgView: 4
                     },
                     kabupaten: {
@@ -1893,7 +1913,7 @@ export default {
                     border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
-                        model: 'Kabupaten',
+                        model: 'Desa',
                         lgView: 4
                     },
                     kabupaten: {
@@ -1923,7 +1943,7 @@ export default {
                     border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
-                        model: 'Kabupaten',
+                        model: 'Desa',
                         lgView: 4
                     },
                     kabupaten: {
@@ -1953,7 +1973,7 @@ export default {
                     border_type: {
                         label: 'Tipe',
                         items: ['Kabupaten', 'Kecamatan', 'Desa'],
-                        model: 'Kabupaten',
+                        model: 'Desa',
                         lgView: 4
                     },
                     kabupaten: {
@@ -2350,7 +2370,7 @@ export default {
             production_marketing: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    commodity_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama Komoditas',
@@ -2394,7 +2414,7 @@ export default {
                         readonly: false,
                         lgView: 12
                     },
-                    buyer_name: {
+                    customer: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama Pembeli',
@@ -2402,7 +2422,7 @@ export default {
                         readonly: false,
                         lgView: 4
                     },
-                    buyer_phone: {
+                    phone: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'No Telp',
@@ -2410,7 +2430,7 @@ export default {
                         readonly: false,
                         lgView: 4
                     },
-                    buyer_email: {
+                    email: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Email',
@@ -2421,14 +2441,14 @@ export default {
                 },
                 model: [],
                 default: [{
-                    name: null,
+                    commodity_name: null,
                     capacity: 0,
                     method: null,
                     period: null,
                     description: null,
-                    buyer_name: null,
-                    buyer_phone: null,
-                    buyer_email: null,
+                    customer: null,
+                    phone: null,
+                    email: null,
                 }],
                 totalCanChange: true
             },
@@ -2436,7 +2456,7 @@ export default {
             identification_of_innovative_farmers: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    farmer_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama Petani',
@@ -2444,7 +2464,7 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
-                    speciality: {
+                    specialitation: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Spesialisasi Petani',
@@ -2473,8 +2493,8 @@ export default {
                 },
                 model: [],
                 default: [{
-                    name: null,
-                    speciality: null,
+                    farmer_name: null,
+                    specialitation: null,
                     potential: null,
                     description: null,
                 }],
@@ -2548,7 +2568,7 @@ export default {
                         labelIcon: 'mdi-account-star',
                         potentialRequirement: true,
                     },
-                    pic_name: {
+                    pic_dusun: {
                         label: 'Nama',
                         type: 'text',
                         suffix: '',
@@ -2758,7 +2778,7 @@ export default {
                         required: true,
                         potentialRequirement: true,
                     },
-                    job_state_emplyee: {
+                    job_state_employee: {
                         label: 'ASN (Guru, TNI, Polri)',
                         type: 'number',
                         suffix: 'orang',
@@ -2793,7 +2813,7 @@ export default {
                     land_area: 0,
                     accessibility: null,
                     dry_land_area: 0,
-                    pic_name: null,
+                    pic_dusun: null,
                     position: null,
                     phone: null,
                     whatsapp: null,
@@ -2813,7 +2833,7 @@ export default {
                     job_farmer: 0,
                     job_farm_workers: 0,
                     job_private_employee: 0,
-                    job_state_emplyee: 0,
+                    job_state_employee: 0,
                     job_enterpreneur: 0,
                     job_others: 0,
                 }],
@@ -2823,7 +2843,7 @@ export default {
             land_ownership: {
                 inputType: 'multiple-input',
                 form: {
-                    category: {
+                    type_ownership: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [
@@ -2839,7 +2859,7 @@ export default {
                         readonly: false,
                         lgView: 4
                     },
-                    type: {
+                    land_ownership: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [
@@ -2868,8 +2888,8 @@ export default {
                 },
                 model: [],
                 default: [{
-                    category: null,
-                    type: null,
+                    type_ownership: null,
+                    land_ownership: null,
                     percentage: 0,
                 }],
                 description: {
@@ -2931,7 +2951,7 @@ export default {
                 totalCanChange: true,
             },
             // Pendapatan keluarga petani
-            family_farmer_income: {
+            farmer_income: {
                 collection_type: {
                     items: ['Sampling', 'Bukan Sampling'],
                     label: 'Cara Pengumpulan Data',
@@ -3194,7 +3214,7 @@ export default {
                 female_data: []
             },
             // Hasil Ekonomi Pemanfaatan Lahan
-            economic_result_source: {
+            land_utilization_source: {
                 label: 'Sumber Data',
                 model: '',
                 itemText: 'value',
@@ -3208,7 +3228,7 @@ export default {
                 readonly: false,
                 type: 'text'
             },
-            economic_result_plant_type: {
+            land_utilization_plant_type: {
                 inputType: 'combobox',
                 chip: true,
                 items: [],
@@ -3220,7 +3240,7 @@ export default {
                 required: true,
                 lgView: 8
             },
-            economic_result_description: {
+            land_utilization_description: {
                 label: 'Deskripsi',
                 model: '',
                 itemText: 'value',
@@ -3235,10 +3255,10 @@ export default {
                 type: 'text'
             },
             // pupuk dalam pemanfaatan lahan
-            fertilizer_in_land_use: {
+            pra_fertilizer: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    fertilizer_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama',
@@ -3247,7 +3267,7 @@ export default {
                         suffix: '',
                         lgView: 6
                     },
-                    category: {
+                    fertilizer_categories: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.fertilizer_categories,
@@ -3260,20 +3280,20 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
-                    type: {
+                    fertilizer_type: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.fertilizer_types,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
-                        label: 'Tipe',
+                        label: 'Jenis',
                         multiple: false,
                         required: true,
                         readonly: false,
                         lgView: 6
                     },
-                    source: {
+                    fertilizer_source: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.fertilizer_sources,
@@ -3286,13 +3306,23 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
+                    fertilizer_description: {
+                        inputType: 'textarea',
+                        hideSelected: false,
+                        label: 'Deskripsi',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 12
+                    },
                 },
                 model: [],
                 default: [{
-                    name: null,
-                    category: null,
-                    type: null,
-                    source: null,
+                    fertilizer_name: null,
+                    fertilizer_categories: null,
+                    fertilizer_type: null,
+                    fertilizer_source: null,
+                    fertilizer_description: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3306,10 +3336,10 @@ export default {
                 totalCanChange: true,
             },
             // pestisida dalam pemanfaatan lahan
-            pesticide_in_land_use: {
+            pra_pesticide: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    pesticide_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama',
@@ -3318,23 +3348,23 @@ export default {
                         suffix: '',
                         lgView: 6
                     },
-                    category: {
+                    pesticide_categories: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.pesticide_categories,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
-                        label: 'Kategori Pupuk',
+                        label: 'Kategori Pestisida',
                         multiple: false,
                         required: true,
                         readonly: false,
                         lgView: 6
                     },
-                    type: {
+                    pesticide_type: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.pesticide_types,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3344,10 +3374,10 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
-                    source: {
+                    pesticide_source: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.pesticide_sources,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3357,13 +3387,23 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
+                    pesticide_description: {
+                        inputType: 'textarea',
+                        hideSelected: false,
+                        label: 'Deskripsi',
+                        multiple: false,
+                        required: true,
+                        readonly: false,
+                        lgView: 12
+                    },
                 },
                 model: [],
                 default: [{
-                    name: null,
-                    category: null,
-                    type: null,
-                    source: null,
+                    pesticide_name: null,
+                    pesticide_categories: null,
+                    pesticide_type: null,
+                    pesticide_source: null,
+                    pesticide_description: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3380,7 +3420,7 @@ export default {
             disaster_history: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    disaster_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama',
@@ -3389,10 +3429,10 @@ export default {
                         suffix: '',
                         lgView: 6
                     },
-                    category: {
+                    disaster_categories: {
                         inputType: 'autocomplete',
                         chip: false,
-                        items: [],
+                        items: formOptions.disaster_categories,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3432,10 +3472,11 @@ export default {
                 },
                 model: [],
                 default: [{
-                    name: null,
-                    category: null,
-                    type: null,
-                    source: null,
+                    disaster_name: null,
+                    disaster_categories: null,
+                    year: null,
+                    fatalities: null,
+                    detail: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3452,7 +3493,7 @@ export default {
             problem_existing: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    problem_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama Masalah',
@@ -3461,10 +3502,10 @@ export default {
                         suffix: '',
                         lgView: 6
                     },
-                    category: {
-                        inputType: 'autocomplete',
+                    problem_categories: {
+                        inputType: 'combobox',
                         chip: false,
-                        items: [],
+                        items: formOptions.problemCategories,
                         itemText: 'value',
                         itemValue: 'value',
                         hideSelected: false,
@@ -3484,7 +3525,7 @@ export default {
                         suffix: '',
                         lgView: 4
                     },
-                    source: {
+                    problem_source: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Sumber',
@@ -3493,7 +3534,7 @@ export default {
                         suffix: '',
                         lgView: 8
                     },
-                    rank_people_feel: {
+                    impact_to_people: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Yang Dirasakan Banyak Orang',
@@ -3502,7 +3543,7 @@ export default {
                         suffix: '1 - 10',
                         lgView: 3
                     },
-                    rank_often: {
+                    interval_problem: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Sering Terjadi',
@@ -3511,7 +3552,7 @@ export default {
                         suffix: '1 - 10',
                         lgView: 3
                     },
-                    rank_priority: {
+                    priority: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Prioritas',
@@ -3520,7 +3561,7 @@ export default {
                         suffix: '1 - 10',
                         lgView: 3
                     },
-                    rank_potential: {
+                    potential: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Potensi',
@@ -3529,7 +3570,7 @@ export default {
                         suffix: '1 - 10',
                         lgView: 3
                     },
-                    solution: {
+                    problem_solution: {
                         inputType: 'textarea',
                         type: 'text',
                         label: 'Solusi',
@@ -3540,15 +3581,15 @@ export default {
                 },
                 model: [],
                 default: [{
-                    name: null,
-                    category: null,
+                    problem_name: null,
+                    problem_categories: null,
                     date: [moment().format('YYYY-MM-DD'),moment().format('YYYY-MM-DD')],
-                    source: null,
-                    rank_people_feel: 0,
-                    rank_often: 0,
-                    rank_priority: 0,
-                    rank_potential: 0,
-                    solution: null,
+                    problem_source: null,
+                    impact_to_people: 0,
+                    interval_problem: 0,
+                    priority: 0,
+                    potential: 0,
+                    problem_solution: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3565,7 +3606,7 @@ export default {
             water_source: {
                 inputType: 'multiple-input',
                 form: {
-                    name: {
+                    watersource_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama',
@@ -3573,7 +3614,7 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
-                    category: {
+                    watersource_type: {
                         inputType: 'combobox',
                         chip: true,
                         items: ['Sungai', 'Mata Air', 'Danau', 'Waduk'],
@@ -3584,7 +3625,7 @@ export default {
                         required: true,
                         lgView: 6
                     },
-                    condition: {
+                    watersource_condition: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: ['Jernih', 'Keruh'],
@@ -3597,7 +3638,7 @@ export default {
                         readonly: false,
                         lgView: 3
                     },
-                    utilization_status: {
+                    consumption: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: ['Ya', 'Tidak'],
@@ -3610,7 +3651,7 @@ export default {
                         readonly: false,
                         lgView: 3
                     },
-                    utilization: {
+                    watersource_utilization: {
                         inputType: 'combobox',
                         chip: true,
                         items: ['Domestik', 'Irigasi'],
@@ -3624,11 +3665,11 @@ export default {
                 },
                 model: [],
                 default: [{
-                    name: null,
-                    category: null,
-                    condition: null,
-                    utilization_status: null,
-                    utilization: null,
+                    watersource_name: null,
+                    watersource_type: null,
+                    watersource_condition: null,
+                    consumption: null,
+                    watersource_utilization: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3645,7 +3686,16 @@ export default {
             flora_data: {
                 inputType: 'multiple-input',
                 form: {
-                    category: {
+                    flora_name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: false,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    flora_categories: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [...formOptions.floraCategories, ...formOptions.floraTypes],
@@ -3654,29 +3704,20 @@ export default {
                         hideSelected: false,
                         label: 'Jenis',
                         multiple: false,
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 6
                     },
-                    name: {
-                        inputType: 'text-field',
-                        type: 'text',
-                        label: 'Nama',
-                        required: true,
-                        readonly: false,
-                        suffix: '',
-                        lgView: 6
-                    },
-                    population: {
+                    flora_population: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Populasi',
-                        required: true,
+                        required: false,
                         readonly: false,
                         suffix: '',
                         lgView: 6
                     },
-                    water_source: {
+                    flora_foodsource: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.wsCategories,
@@ -3685,11 +3726,11 @@ export default {
                         hideSelected: false,
                         label: 'Sumber Air',
                         multiple: false,
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 6
                     },
-                    status: {
+                    flora_status: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.floraStatus,
@@ -3698,15 +3739,15 @@ export default {
                         hideSelected: false,
                         label: 'Status',
                         multiple: false,
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 6
                     },
-                    habitat: {
+                    flora_habitat: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Habitat',
-                        required: true,
+                        required: false,
                         readonly: false,
                         suffix: '',
                         lgView: 6
@@ -3714,12 +3755,12 @@ export default {
                 },
                 model: [],
                 default: [{
-                    category: null,
-                    name: null,
-                    population: 0,
-                    water_source: null,
-                    status: null,
-                    habitat: null,
+                    flora_categories: null,
+                    flora_name: null,
+                    flora_population: 0,
+                    flora_foodsource: null,
+                    flora_status: null,
+                    flora_habitat: null,
                 }],
                 description: {
                     inputType: 'textarea',
@@ -3735,7 +3776,16 @@ export default {
             fauna_data: {
                 inputType: 'multiple-input',
                 form: {
-                    category: {
+                    fauna_name: {
+                        inputType: 'text-field',
+                        type: 'text',
+                        label: 'Nama',
+                        required: false,
+                        readonly: false,
+                        suffix: '',
+                        lgView: 6
+                    },
+                    fauna_categories: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [...formOptions.faunaCategories, ...formOptions.faunaTypes],
@@ -3744,29 +3794,20 @@ export default {
                         hideSelected: false,
                         label: 'Jenis',
                         multiple: false,
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 6
                     },
-                    name: {
-                        inputType: 'text-field',
-                        type: 'text',
-                        label: 'Nama',
-                        required: true,
-                        readonly: false,
-                        suffix: '',
-                        lgView: 6
-                    },
-                    population: {
+                    fauna_population: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Populasi',
-                        required: true,
+                        required: false,
                         readonly: false,
                         suffix: '',
                         lgView: 6
                     },
-                    food_source: {
+                    fauna_foodsource: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.faunaFoodSource,
@@ -3775,11 +3816,11 @@ export default {
                         hideSelected: false,
                         label: 'Sumber Makanan',
                         multiple: false,
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 6
                     },
-                    status: {
+                    fauna_status: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: formOptions.faunaStatus,
@@ -3788,15 +3829,15 @@ export default {
                         hideSelected: false,
                         label: 'Status',
                         multiple: false,
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 6
                     },
-                    habitat: {
+                    fauna_habitat: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Habitat',
-                        required: true,
+                        required: false,
                         readonly: false,
                         suffix: '',
                         lgView: 6
@@ -3804,160 +3845,17 @@ export default {
                 },
                 model: [],
                 default: [{
-                    category: null,
-                    name: null,
-                    population: 0,
-                    food_source: null,
-                    status: null,
-                    habitat: null,
+                    fauna_categories: null,
+                    fauna_name: null,
+                    fauna_population: 0,
+                    fauna_foodsource: null,
+                    fauna_status: null,
+                    fauna_habitat: null,
                 }],
                 description: {
                     inputType: 'textarea',
                     type: 'text',
                     label: 'Deskripsi Kepemilikan Lahan',
-                    model: null,
-                    required: false,
-                    readonly: false,
-                    lgView: 12
-                },
-                totalCanChange: true,
-            },
-            income_data: {
-                inputType: 'multiple-input',
-                form: {
-                    category: {
-                        inputType: 'autocomplete',
-                        chip: false,
-                        items: formOptions.incomeCategories,
-                        itemText: 'value',
-                        itemValue: 'value',
-                        hideSelected: false,
-                        label: 'Kategori',
-                        multiple: false,
-                        required: true,
-                        readonly: false,
-                        lgView: 6
-                    },
-                    type: {
-                        inputType: 'autocomplete',
-                        chip: false,
-                        items: formOptions.incomeCropsTypes,
-                        itemText: 'value',
-                        itemValue: 'value',
-                        hideSelected: false,
-                        label: 'Jenis',
-                        multiple: false,
-                        required: true,
-                        readonly: false,
-                        lgView: 6
-                    },
-                    name: {
-                        inputType: 'text-field',
-                        type: 'text',
-                        label: 'Nama',
-                        required: true,
-                        readonly: false,
-                        suffix: '',
-                        lgView: 6
-                    },
-                    capacity: {
-                        inputType: 'text-field',
-                        type: 'number',
-                        label: 'Kapasitas Produksi',
-                        required: true,
-                        readonly: false,
-                        suffix: 'kg',
-                        lgView: 6
-                    },
-                    total_farming_families: {
-                        inputType: 'text-field',
-                        type: 'number',
-                        label: 'Jumlah Keluarga Petani',
-                        required: true,
-                        readonly: false,
-                        suffix: 'orang',
-                        lgView: 6
-                    },
-                },
-                model: [],
-                default: [{
-                    category: null,
-                    type: null,
-                    name: null,
-                    capacity: 0,
-                    total_farming_families: 0,
-                }],
-                description: {
-                    inputType: 'textarea',
-                    type: 'text',
-                    label: 'Deskripsi Kepemilikan Lahan',
-                    model: null,
-                    required: false,
-                    readonly: false,
-                    lgView: 12
-                },
-                totalCanChange: true,
-            },
-            economic_data: {
-                inputType: 'multiple-input',
-                form: {
-                    category: {
-                        inputType: 'autocomplete',
-                        chip: false,
-                        items: formOptions.marketingTradeMethod,
-                        itemText: 'value',
-                        itemValue: 'value',
-                        hideSelected: false,
-                        label: 'Metode',
-                        multiple: false,
-                        required: true,
-                        readonly: false,
-                        lgView: 6
-                    },
-                    name: {
-                        inputType: 'text-field',
-                        type: 'text',
-                        label: 'Periode',
-                        required: true,
-                        readonly: false,
-                        suffix: '',
-                        lgView: 6
-                    },
-                    type: {
-                        inputType: 'autocomplete',
-                        chip: false,
-                        items: formOptions.economicDistribution,
-                        itemText: 'value',
-                        itemValue: 'value',
-                        hideSelected: false,
-                        label: 'Jenis',
-                        multiple: false,
-                        required: true,
-                        readonly: false,
-                        lgView: 6
-                    },
-                    revenue: {
-                        inputType: 'text-field',
-                        type: 'number',
-                        label: 'Pendapatan (Perbulan)',
-                        required: true,
-                        readonly: false,
-                        prefix: 'Rp',
-                        suffix: '',
-                        lgView: 6
-                    },
-                },
-                model: [],
-                default: [{
-                    category: null,
-                    name: null,
-                    type: null,
-                    revenue: 0,
-                }],
-                description: {
-                    inputType: 'textarea',
-                    type: 'text',
-                    label: 'Deskripsi',
                     model: null,
                     required: false,
                     readonly: false,
@@ -3992,6 +3890,171 @@ export default {
                 this.inputs.rra_pra_date_range.modelShow = this._utils.dateFormat(range[0], 'DD MMMM Y') + ' ~ ' + this._utils.dateFormat(range[1], 'DD MMMM Y')
             }
         },
+        'inputs.scooping_form_no.model': {
+            async handler(val) {
+                try {
+                    this.loading.show = true
+                    this.loading.text = 'Get scooping data...'
+                    const params = new URLSearchParams({
+                        data_no: val
+                    })
+                    // get scooping data + set land_area
+                    const scoopingData = await this.callApiGet(`GetDetailScooping`, `?${params}` )
+                    this.inputs.land_area.model = scoopingData.land_area
+                    // set village
+                    this.inputs.village.model = scoopingData.village
+                    // set list kabupaten & reset data
+                    this.loading.text = 'Get list kabupaten...'
+                    const list_kabupaten = await this.callApiGet(`GetKabupaten`, `?province_code=${scoopingData.province}`)
+                    const points = ['north', 'east', 'south', 'west']
+                    points.map(point => {
+                        this.inputs.village_border[point].kabupaten.items = list_kabupaten
+                        this.inputs.village_border[point].kecamatan.items = []
+                        this.inputs.village_border[point].kecamatan.model = null
+                        this.inputs.village_border[point].desa.items = []
+                        this.inputs.village_border[point].desa.model = null
+                    })
+                } catch (err) {this.errorResponse(err)} finally {
+                    this.loading.show = false
+                }
+            }
+        },
+        'inputs.village_border.north.kabupaten.model': {
+            async handler(val) {
+                let north = this.inputs.village_border.north
+                try {
+                    north.kecamatan.loading = true
+                    if (north.border_type.model != 'Kabupaten') {
+                        north.kecamatan.loading = true
+                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                        north.kecamatan.items = list_kecamatan
+                        north.kecamatan.model = null
+                        north.desa.items = []
+                        north.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    north.kecamatan.loading = false
+                }
+            }
+        },
+        'inputs.village_border.north.kecamatan.model': {
+            async handler(val) {
+                let north = this.inputs.village_border.north
+                try {
+                    north.desa.loading = true
+                    if (north.border_type.model == 'Desa') {
+                        north.desa.loading = true
+                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                        north.desa.items = list_desa
+                        north.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    north.desa.loading = false
+                }
+            }
+        },
+        'inputs.village_border.east.kabupaten.model': {
+            async handler(val) {
+                let east = this.inputs.village_border.east
+                try {
+                    east.kecamatan.loading = true
+                    if (east.border_type.model != 'Kabupaten') {
+                        east.kecamatan.loading = true
+                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                        east.kecamatan.items = list_kecamatan
+                        east.kecamatan.model = null
+                        east.desa.items = []
+                        east.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    east.kecamatan.loading = false
+                }
+            }
+        },
+        'inputs.village_border.east.kecamatan.model': {
+            async handler(val) {
+                let east = this.inputs.village_border.east
+                try {
+                    east.desa.loading = true
+                    if (east.border_type.model == 'Desa') {
+                        east.desa.loading = true
+                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                        east.desa.items = list_desa
+                        east.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    east.desa.loading = false
+                }
+            }
+        },
+        'inputs.village_border.south.kabupaten.model': {
+            async handler(val) {
+                let south = this.inputs.village_border.south
+                try {
+                    south.kecamatan.loading = true
+                    if (south.border_type.model != 'Kabupaten') {
+                        south.kecamatan.loading = true
+                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                        south.kecamatan.items = list_kecamatan
+                        south.kecamatan.model = null
+                        south.desa.items = []
+                        south.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    south.kecamatan.loading = false
+                }
+            }
+        },
+        'inputs.village_border.south.kecamatan.model': {
+            async handler(val) {
+                let south = this.inputs.village_border.south
+                try {
+                    south.desa.loading = true
+                    if (south.border_type.model == 'Desa') {
+                        south.desa.loading = true
+                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                        south.desa.items = list_desa
+                        south.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    south.desa.loading = false
+                }
+            }
+        },
+        'inputs.village_border.west.kabupaten.model': {
+            async handler(val) {
+                let west = this.inputs.village_border.west
+                try {
+                    west.kecamatan.loading = true
+                    if (west.border_type.model != 'Kabupaten') {
+                        west.kecamatan.loading = true
+                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                        west.kecamatan.items = list_kecamatan
+                        west.kecamatan.model = null
+                        west.desa.items = []
+                        west.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    west.kecamatan.loading = false
+                }
+            }
+        },
+        'inputs.village_border.west.kecamatan.model': {
+            async handler(val) {
+                let west = this.inputs.village_border.west
+                try {
+                    west.desa.loading = true
+                    if (west.border_type.model == 'Desa') {
+                        west.desa.loading = true
+                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                        west.desa.items = list_desa
+                        west.desa.model = null
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    west.desa.loading = false
+                }
+            }
+        },
     },
     computed: {
         showModal: {
@@ -4018,14 +4081,41 @@ export default {
         })
     },
     methods: {
-        errorResponse(error) {
+        async callApiGet(route, params = '') {
+            try {
+                const url = this.$store.getters.getApiUrl(`${route}${params}`)
+                const response = await axios.get(url, this.$store.state.apiConfig)
+                const res = response.data.data.result
+                return res
+            } catch (err) {this.errorResponse(err)}
+        },
+        async errorResponse(error) {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token");
-                    this.$router.push("/");
-                }
+                    if (error.response.status == 401) {
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) { 
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
+                    }
+                    if (error.response.status === 500) {
+                        let errMessage = error.response.data.message
+                        if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `${errMessage}`,
+                            icon: 'error',
+                            confirmButtonColor: '#f44336',
+                        })
+                    }
                 }
             }
         },
@@ -4120,7 +4210,7 @@ export default {
                     }
                 }
 
-                if (name.includes('family_farmer_income')) {
+                if (name.includes('farmer_income')) {
                     const splitName = name.split('-')
                     const defaultData = JSON.parse(JSON.stringify(this.inputs[splitName[0]].default[0]))
                     this.inputs[splitName[0]][`${splitName[1]}_data`].push(defaultData)
@@ -4132,7 +4222,7 @@ export default {
                     this.inputs[name].model.push(defaultData)
                 }
             } else if (type == '-') {
-                if (name.includes('family_farmer_income')) {
+                if (name.includes('farmer_income')) {
                     const splitName = name.split('-')
                     this.inputs[splitName[0]][`${splitName[1]}_data`].pop()
                 } else this.inputs[name].model.pop()
@@ -4162,13 +4252,60 @@ export default {
                     const url = this.$store.getters.getApiUrl('AddRraPra')
                     let inputs = Object.entries(this.inputs)
                     let data = {}
-
-                    for (const [key, value] of Object.entries(this.inputs)) {
-                        if (value.model !== undefined) data[key] = await value.model
+                    const database_adj_name = await this.zwitchKeyName()
+                    for (const [key, value] of inputs) {
+                        if (value.model !== undefined) {
+                            if (database_adj_name[key]) data[database_adj_name[key]] = await value.model
+                            else if (key === 'rra_pra_date_range') {
+                                data.rra_pra_date_start = await value.model[0]
+                                if (value.model[1]) data.rra_pra_date_end = await value.model[1]
+                            } else {
+                                data[key] = await value.model
+                                if (value.description) data[`${key}_description`] = value.description.model
+                            }
+                        } else if (key === 'village_border') {
+                            const points = ['north', 'east', 'south', 'west']
+                            data.village_border = await []
+                            points.map(async function (point) {
+                                await data.village_border.push({
+                                    point: point,
+                                    border_type: value[point].border_type.model,
+                                    kabupaten_no: value[point].kabupaten.model,
+                                    kode_kecamatan: value[point].kecamatan.model,
+                                    kode_desa: value[point].desa.model,
+                                })
+                            })
+                        } else if (key === 'farmer_income') {
+                            if (value.collection_type.model === 'Bukan Sampling') {
+                                data.farmer_income = []
+                                data.man_source = value.static_form.source.male_model
+                                data.man_commodity_name = value.static_form.comodity_name.male_model
+                                data.man_method = value.static_form.method.male_model.toString()
+                                data.man_marketing = value.static_form.indirect_method.male_model.toString()
+                                data.man_period = value.static_form.avg_period.male_model
+                                data.man_average_capacity = value.static_form.avg_capacity.male_model
+                                data.man_min_income = value.static_form.min_amount.male_model
+                                data.man_max_income = value.static_form.max_amount.male_model
+                                data.woman_source = value.static_form.source.female_model
+                                data.woman_commodity_name = value.static_form.comodity_name.female_model
+                                data.woman_method = value.static_form.method.female_model.toString()
+                                data.woman_marketing = value.static_form.indirect_method.female_model.toString()
+                                data.woman_period = value.static_form.avg_period.female_model
+                                data.woman_average_capacity = value.static_form.avg_capacity.female_model
+                                data.woman_min_income = value.static_form.min_amount.female_model
+                                data.woman_max_income = value.static_form.max_amount.female_model
+                            }
+                        } 
                     }
-                    console.log(data)
+                    const res = await axios.post(url, data, this.$store.state.apiConfig)
+                    if (res) {
+                        this.showModal = false
+                        this.$emit('swal', {type: 'success', message: 'Yey! Data RRA-PRA saved!'})
+                    }
                 }
-            } catch(err) {this.errorResponse(err)} finally {
+            } catch(err) {
+                this.errorResponse(err)
+            } finally {
                 this.loading.show = false
             }
         },
@@ -4180,7 +4317,7 @@ export default {
                 // set default data for multiple inputs
                 this.loading.text = 'Setting default data...'
                 for (const [key, value] of Object.entries(this.inputs)) {
-                    if (key == 'family_farmer_income') {
+                    if (key == 'farmer_income') {
                         value.male_data = await JSON.parse(JSON.stringify(value.default))
                         value.female_data = await JSON.parse(JSON.stringify(value.default))
                     } else {
@@ -4201,7 +4338,7 @@ export default {
                     'Wiraswasta',
                     'Profesi Lain'
                 ]
-                this.inputs.family_farmer_income.sampling_form.job.items = jobs
+                this.inputs.farmer_income.sampling_form.job.items = jobs
                 // get scooping list item
                 await this.getScoopingListItems()
                 // get pola tanam options
@@ -4218,9 +4355,9 @@ export default {
                 const listTrees = await resTrees.data.map(tree => {return tree.tree_name})
                 this.inputs.land_use_patterns.form.plant.items = listTrees
                 this.inputs.existing_plants.form.plant.items = listTrees
-                this.inputs.economic_result_plant_type.items = listTrees
-                this.inputs.family_farmer_income.sampling_form.source.items = listTrees
-                this.inputs.family_farmer_income.static_form.source.items = listTrees
+                this.inputs.land_utilization_plant_type.items = listTrees
+                this.inputs.farmer_income.sampling_form.source.items = listTrees
+                this.inputs.farmer_income.static_form.source.items = listTrees
 
                 // await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
@@ -4237,6 +4374,8 @@ export default {
                     })
                 }
                 let inputs = this.inputs
+                // set scooping form
+                inputs.scooping_form_no.model = 'SCP-0015'
                 inputs.land_area.model = 0 // get from scooping data
                 inputs.paddy_land.model = 100
                 inputs.field.model = 100
@@ -4280,18 +4419,18 @@ export default {
                     description: 'Jagung yang ditanam oleh kang asep selalu berkwalitas tinggi'
                 }]
                 inputs.production_marketing.model = [{
-                    name: 'Kopi',
+                    commodity_name: 'Kopi',
                     capacity: 100,
-                    method: null,
+                    method: 'Direct',
                     period: 'Bulanan',
                     description: null,
-                    buyer_name: null,
-                    buyer_phone: null,
-                    buyer_email: null,
+                    customer: 'Fulanah',
+                    phone: '0823123894329',
+                    email: 'fulanah@email',
                 }]
                 inputs.identification_of_innovative_farmers.model = [{
-                    name: 'Asep 2',
-                    speciality: 'Nyangkul',
+                    farmer_name: 'Asep 2',
+                    specialitation: 'Nyangkul',
                     potential: 'Penyangkul tercepat di desa',
                     description: 'Nyangkulnya cepet bangeet!',
                 }]
@@ -4301,7 +4440,7 @@ export default {
                     land_area: 50,
                     accessibility: 'Mudah',
                     dry_land_area: 50,
-                    pic_name: 'Asep 3',
+                    pic_dusun: 'Asep 3',
                     position: 'Top 1 Farmer',
                     phone: '082233132849',
                     whatsapp: '082233132849',
@@ -4321,19 +4460,19 @@ export default {
                     job_farmer: 70,
                     job_farm_workers: 30,
                     job_private_employee: 10,
-                    job_state_emplyee: 10,
+                    job_state_employee: 10,
                     job_enterpreneur: 10,
                     job_others: 30,
                 }]
                 
                 this.stepper.model = 2
                 inputs.land_ownership.model = [{
-                    category: 'Milik Petani',
-                    type: null,
+                    type_ownership: 'Milik Petani',
+                    land_ownership: null,
                     percentage: 40,
                 },{
-                    category: 'Diluar Milik Petani',
-                    type: 'Lahan Desa',
+                    type_ownership: 'Diluar Milik Petani',
+                    land_ownership: 'Lahan Desa',
                     percentage: 60,
                 }]
                 inputs.land_ownership.description.model = 'Lahan petani kebanyakan masih kosong'
@@ -4343,39 +4482,93 @@ export default {
                     pattern: 'Konservasi'
                 }]
                 inputs.distribution_of_critical_land_locations.description.model = 'Di dusun 1 masih banyak lahan kering yang memungkinkan untuk ditanami dengan pola Konservasi'
-                inputs.family_farmer_income.collection_type.model = 'Bukan Sampling'
-                inputs.family_farmer_income.static_form.source.male_model = 'Penjualan hasil tanaman'
-                inputs.family_farmer_income.static_form.comodity_name.male_model = 'Beras, Kopi'
-                inputs.family_farmer_income.static_form.method.male_model = ['Direct', 'Indirect']
-                inputs.family_farmer_income.static_form.indirect_method.male_model = ['UMKM']
-                inputs.family_farmer_income.static_form.avg_period.male_model = 'Musiman'
-                inputs.family_farmer_income.static_form.avg_capacity.male_model = 200
-                inputs.family_farmer_income.static_form.min_amount.male_model = 3000000
-                inputs.family_farmer_income.static_form.max_amount.male_model = 9000000
-                inputs.family_farmer_income.static_form.source.female_model = 'Penjualan hasil tanaman'
-                inputs.family_farmer_income.static_form.comodity_name.female_model = 'Sayur, Jagung, Kopi'
-                inputs.family_farmer_income.static_form.method.female_model = ['Direct', 'Indirect']
-                inputs.family_farmer_income.static_form.indirect_method.female_model = ['UMKM']
-                inputs.family_farmer_income.static_form.avg_period.female_model = 'Bulanan'
-                inputs.family_farmer_income.static_form.avg_capacity.female_model = 200
-                inputs.family_farmer_income.static_form.min_amount.female_model = 2000000
-                inputs.family_farmer_income.static_form.max_amount.female_model = 7000000
-                inputs.economic_result_source.model = 'Sawah'
-                inputs.economic_result_plant_type.model = ['Padi', 'Jagung']
-                inputs.economic_result_description.model = 'Jual padi dan jagung'
-                inputs.fertilizer_in_land_use.model = [
+                inputs.farmer_income.collection_type.model = 'Bukan Sampling'
+                inputs.farmer_income.static_form.source.male_model = 'Penjualan hasil tanaman'
+                inputs.farmer_income.static_form.comodity_name.male_model = 'Beras, Kopi'
+                inputs.farmer_income.static_form.method.male_model = ['Direct', 'Indirect']
+                inputs.farmer_income.static_form.indirect_method.male_model = ['UMKM']
+                inputs.farmer_income.static_form.avg_period.male_model = 'Musiman'
+                inputs.farmer_income.static_form.avg_capacity.male_model = 200
+                inputs.farmer_income.static_form.min_amount.male_model = 3000000
+                inputs.farmer_income.static_form.max_amount.male_model = 9000000
+                inputs.farmer_income.static_form.source.female_model = 'Penjualan hasil tanaman'
+                inputs.farmer_income.static_form.comodity_name.female_model = 'Sayur, Jagung, Kopi'
+                inputs.farmer_income.static_form.method.female_model = ['Direct', 'Indirect']
+                inputs.farmer_income.static_form.indirect_method.female_model = ['UMKM']
+                inputs.farmer_income.static_form.avg_period.female_model = 'Bulanan'
+                inputs.farmer_income.static_form.avg_capacity.female_model = 200
+                inputs.farmer_income.static_form.min_amount.female_model = 2000000
+                inputs.farmer_income.static_form.max_amount.female_model = 7000000
+                inputs.land_utilization_source.model = 'Sawah'
+                inputs.land_utilization_plant_type.model = ['Padi', 'Jagung']
+                inputs.land_utilization_description.model = 'Jual padi dan jagung'
+                inputs.pra_fertilizer.model = [
                     {
-                        name: 'Kompos',
-                        category: null,
-                        type: null,
-                        source: null,
+                        fertilizer_name: 'Pupuk 1',
+                        fertilizer_categories: 'Natural',
+                        fertilizer_type: 'Urea',
+                        fertilizer_source: 'Self Production',
+                        fertilizer_description: 'Puup puk'
                     }
                 ]
+                inputs.pra_pesticide.model = [
+                    {
+                        pesticide_name: 'Pestisida 1',
+                        pesticide_categories: 'Natural',
+                        pesticide_type: 'Akarisida',
+                        pesticide_source: 'Procurement',
+                        pesticide_description: 'Pestisidaaaa'
+                    }
+                ]
+                inputs.disaster_history.model = [{
+                    disaster_name: 'Banjir',
+                    disaster_categories: 'Water related',
+                    year: 2022,
+                    fatalities: 10,
+                    detail: 'Astaga banjir'
+                }]
+                inputs.problem_existing.model = [{
+                    problem_name: 'Masalah Masalah',
+                    problem_categories: 'Birokrasi',
+                    date: [moment().format('YYYY-MM-DD')],
+                    problem_source: 'Sumber Masalah',
+                    impact_to_people: 3,
+                    interval_problem: 4,
+                    priority: 6,
+                    potential: 3,
+                    problem_solution: `Solusi - solusiiiiiiiiiii`,
+                }]
+                inputs.water_source.model = [{
+                    watersource_name: 'Sungai A',
+                    watersource_type: 'Sungai',
+                    watersource_condition: 'Jernih',
+                    consumption: 'Ya',
+                    watersource_utilization: 'Buat apa aja bisa',
+                }]
+                inputs.water_source.description.model = 'Air banyak'
+
+                this.stepper.model = 3
+                inputs.flora_data.model = [{
+                    flora_name: 'Flora A',
+                    flora_categories: 'Flora Asli',
+                    flora_population: 230,
+                    flora_foodsource: 'Mata Air',
+                    flora_status: 'Pest',
+                    flora_habitat: ``,
+                }]
+                inputs.fauna_data.model = [{
+                    fauna_name: 'Fauna A',
+                    fauna_categories: 'Peralihan',
+                    fauna_population: 230,
+                    fauna_foodsource: 'Nabati',
+                    fauna_status: 'Pest',
+                    fauna_habitat: ``,
+                }]
             } catch (err) {this.errorResponse(err)}
         },
         async zwitchKeyName() {
             const rename = {
-                sccoping_form_no: 'form_no',
+                scooping_form_no: 'form_no',
                 paddy_land: 'tanah_sawah',
                 field: 'tegal_ladang',
                 resident: 'pemukiman',
@@ -4390,6 +4583,7 @@ export default {
                 public_facilities: 'fasilitas_umum',
                 types_of_land_by_people: 'lahan_menurut_masyarakat',
                 hamlets: 'dusuns',
+                water_source: 'pra_watersource',
             }
             return rename
         }

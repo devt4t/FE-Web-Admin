@@ -10,7 +10,7 @@
             large
         ></v-breadcrumbs>
         <!-- Modals -->
-        <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" :key="modals.form.key"/>
+        <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
         <!-- Main Table -->
         <v-data-table
             data-aos="fade-up"
@@ -68,6 +68,45 @@
                     </div>
                 </v-row>
             </template>
+            <!-- No -->
+            <template v-slot:item.no="{index}">
+                {{ index + 1 }}
+            </template>
+            <!-- Tanggal Column -->
+            <template v-slot:item.rra_pra_date_start="{item}">
+                {{ _utils.dateFormat(item.rra_pra_date_start, 'DD MMMM Y') }}
+                <span v-if="item.rra_pra_date_start != item.rra_pra_date_end">
+                    ~
+                    {{ _utils.dateFormat(item.rra_pra_date_end, 'DD MMMM Y') }}
+                </span>
+            </template>
+            <!-- Status Column -->
+            <template v-slot:item.is_verify="{item}">
+                <v-chip :color="item.is_verify == 1 ? 'green' : 'red'" class="white--text pl-1">
+                <v-icon class="mr-1">mdi-{{ item.is_verify  == 1 ? 'check' : 'close' }}-circle</v-icon>
+                {{ item.is_verify == 1 ? 'Verified' : 'Unverified' }}
+                </v-chip>
+            </template>
+            <!-- Action Column -->
+            <template v-slot:item.actions="{ item }">
+                <v-menu content-class="rounded-xl">
+                <template v-slot:activator="{attrs, on}">
+                    <v-btn v-bind="attrs" v-on="on" small fab icon>
+                    <v-icon>mdi-dots-vertical</v-icon>
+                    </v-btn>
+                </template>
+                <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+                    <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="() => showModal('detail', item)">
+                        <v-icon class="mr-1">mdi-information</v-icon> Detail
+                    </v-btn>
+                    <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" 
+                        :disabled="item.is_verify === 1"
+                        @click="() => {showModal('form', item)}">
+                        <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
+                    </v-btn>
+                </v-card>
+                </v-menu>
+            </template>
         </v-data-table>
     </div>
 </template>
@@ -75,6 +114,7 @@
 <script>
 import axios from 'axios';
 import FormModal from './components/FormModal.vue'
+import Swal from 'sweetalert2'
 
 export default {
     components: {
@@ -105,7 +145,14 @@ export default {
             programYear: '',
         },
         table: {
-            headers: [],
+            headers: [
+                {text: 'No', value: 'no'},
+                {text: 'Form No', value: 'form_no'},
+                {text: 'Tanggal', value: 'rra_pra_date_start'},
+                {text: 'PIC Email', value: 'user_id'},
+                {text: 'Status', value: 'is_verify', align: 'center'},
+                {text: 'Actions', value: 'actions', align: 'right'},
+            ],
             items: [],
             loading: {
                 show: false,
@@ -119,14 +166,23 @@ export default {
         this.firstAccessPage()
     },
     methods: {
-        errorResponse(error) {
+        async errorResponse(error) {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token");
-                    this.$router.push("/");
-                }
+                    if (error.response.status == 401) {
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) {
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
+                    }
                 }
             }
         },
@@ -134,11 +190,43 @@ export default {
             // set general config to local config
             this.user = this.$store.state.User
             this.localConfig.programYear = this.$store.state.programYear.model
+            await this.getTableData()
+        },
+        async getTableData() {
+            try {
+                this.table.loading.show = true
+                let url = this.$store.getters.getApiUrl(`GetRraPraAll`)
+                const res = await axios.get(url, this.$store.state.apiConfig)
+                this.table.items = res.data.data.result
+                // console.log(this.table.items)
+                 
+            } catch (err) { this.errorResponse(err) } finally {
+                this.table.loading.show = false
+            }
         },
         modalActions(val) {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
             }
+        },
+        swalActions(val) {
+            this.getTableData()
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 10000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            Toast.fire({
+                icon: val.type,
+                title: val.message
+            })
         }
     },
 }

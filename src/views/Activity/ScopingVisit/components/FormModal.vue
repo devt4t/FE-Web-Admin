@@ -31,6 +31,12 @@
                         </p>
                     </div>
                 </v-overlay>
+                <!-- NB -->
+                <v-row class="ma-0 mx-5">
+                    <v-col cols="12" class="d-flex justify-end">
+                        <p class="mb-0 red--text">Tanda "<v-icon color="red" class="">{{ localConfig.requiredInputIcon }}</v-icon>" menandakan WAJIB DIISI.</p>
+                    </v-col>
+                </v-row>
                 <!-- Dynamic Inputs -->
                 <v-row class="ma-0 mx-5" v-for="(ig, igIndex) in inputsGroup" :key="`IG-${igIndex}`">
                     <!-- Title -->
@@ -806,7 +812,7 @@ export default {
                     this.getData(this.id)
                 } else {
                     this.editId = null
-                    // this.getDummiesData()
+                    this.getDummiesData()
                 }
             }
         },
