@@ -83,7 +83,7 @@
                                 <v-tooltip top content-class="rounded-xl">
                                     Click here for chat
                                     <template v-slot:activator="{on, attrs}">
-                                        <a :href="`https://wa.me/${whatsappPhone(item.whatsapp)}`" target="_blank" v-bind="attrs" v-on="on" style="text-decoration: none;" class="grey--text text--darken-3">
+                                        <a :href="`https://wa.me/${_utils.whatsappPhone(item.whatsapp)}`" target="_blank" v-bind="attrs" v-on="on" style="text-decoration: none;" class="grey--text text--darken-3">
                                             <v-btn fab x-small color="green white--text" class="elevation-0 mr-1"><v-icon>mdi-whatsapp</v-icon></v-btn>
                                         </a> 
                                     </template>
@@ -479,61 +479,61 @@ export default {
                     },
                 ]
             },
-            {
-                title: 'Log',
-                icon: 'mdi-clock',
-                type: 'column',
-                items: [
-                    {
-                        key: 'created_at',
-                        title: 'Waktu Dibuat',
-                        model: null,
-                        type: 'Time',
-                        lg: 6,
-                        md: 6
-                    },
-                    {
-                        key: 'user_id',
-                        title: 'Dibuat Oleh',
-                        model: null,
-                        type: 'Time',
-                        lg: 6,
-                        md: 6
-                    },
-                    {
-                        key: 'updated_at',
-                        title: 'Waktu Terakhir Dirubah',
-                        model: null,
-                        type: 'Time',
-                        lg: 6,
-                        md: 6
-                    },
-                    {
-                        key: 'updated_by',
-                        title: 'Terakhir Dirubah Oleh',
-                        model: null,
-                        type: 'Time',
-                        lg: 6,
-                        md: 6
-                    },
-                    {
-                        key: 'verified_at',
-                        title: 'Waktu Verifikasi',
-                        model: null,
-                        type: 'Time',
-                        lg: 6,
-                        md: 6
-                    },
-                    {
-                        key: 'verified_by',
-                        title: 'Diverifikasi Oleh',
-                        model: null,
-                        type: 'Time',
-                        lg: 6,
-                        md: 6
-                    },
-                ]
-            }
+            // {
+            //     title: 'Log',
+            //     icon: 'mdi-clock',
+            //     type: 'column',
+            //     items: [
+            //         {
+            //             key: 'created_at',
+            //             title: 'Waktu Dibuat',
+            //             model: null,
+            //             type: 'Time',
+            //             lg: 6,
+            //             md: 6
+            //         },
+            //         {
+            //             key: 'user_id',
+            //             title: 'Dibuat Oleh',
+            //             model: null,
+            //             type: 'Time',
+            //             lg: 6,
+            //             md: 6
+            //         },
+            //         {
+            //             key: 'updated_at',
+            //             title: 'Waktu Terakhir Dirubah',
+            //             model: null,
+            //             type: 'Time',
+            //             lg: 6,
+            //             md: 6
+            //         },
+            //         {
+            //             key: 'updated_by',
+            //             title: 'Terakhir Dirubah Oleh',
+            //             model: null,
+            //             type: 'Time',
+            //             lg: 6,
+            //             md: 6
+            //         },
+            //         {
+            //             key: 'verified_at',
+            //             title: 'Waktu Verifikasi',
+            //             model: null,
+            //             type: 'Time',
+            //             lg: 6,
+            //             md: 6
+            //         },
+            //         {
+            //             key: 'verified_by',
+            //             title: 'Diverifikasi Oleh',
+            //             model: null,
+            //             type: 'Time',
+            //             lg: 6,
+            //             md: 6
+            //         },
+            //     ]
+            // }
         ],
         imageKeyComponent: 71625327,
         verified_data: 0,
@@ -671,9 +671,6 @@ export default {
             else this.$store.state.lightbox.index = 0
 
             this.$store.state.lightbox.show = true
-        },
-        whatsappPhone(no) {
-            return no.replace(/^0/, "62");
         }
     }
 }

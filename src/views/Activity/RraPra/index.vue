@@ -11,6 +11,7 @@
         ></v-breadcrumbs>
         <!-- Modals -->
         <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
+        <DetailModal :show="modals.detail.show" :id="modals.detail.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.detail.key"/>
         <!-- Main Table -->
         <v-data-table
             data-aos="fade-up"
@@ -113,12 +114,15 @@
 
 <script>
 import axios from 'axios';
-import FormModal from './components/FormModal.vue'
 import Swal from 'sweetalert2'
+
+import FormModal from './components/FormModal.vue'
+import DetailModal from './components/DetailModal.vue'
 
 export default {
     components: {
         FormModal,
+        DetailModal
     },
     data: () => ({
         breadcrumbs: [
@@ -134,11 +138,16 @@ export default {
             },
         ],
         modals: {
+            detail: {
+                show: false,
+                data: null,
+                key: 8990458,
+            },
             form: {
                 id: null,
                 show: false,
                 data: null,
-                key: 29291,
+                key: 7892345,
             }
         },
         localConfig: {
@@ -208,6 +217,10 @@ export default {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
             }
+        },
+        async showModal(name, data) {
+            this.modals[name].data = await data.form_no
+            this.modals[name].show = await true
         },
         swalActions(val) {
             this.getTableData()

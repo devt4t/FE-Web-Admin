@@ -86,7 +86,11 @@ const utils = {
           return match[1] + '-' + match[2] + '-' + match[3];
         }
         return null;
-      }
+      },
+    //   whatsapp
+    whatsappPhone(no) {
+        return no.replace(/^0/, "62");
+    }
 }
 
 Vue.prototype._utils = utils

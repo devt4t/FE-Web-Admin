@@ -73,6 +73,14 @@
             <template v-slot:item.no="{index}">
                 {{ index + 1 }}
             </template>
+            <!-- Tanggal Column -->
+            <template v-slot:item.start_scooping_date="{item}">
+                {{ _utils.dateFormat(item.start_scooping_date, 'DD MMMM Y') }}
+                <span v-if="item.start_scooping_date != item.end_scooping_date">
+                    ~
+                    {{ _utils.dateFormat(item.rra_pra_date_end, 'DD MMMM Y') }}
+                </span>
+            </template>
             <!-- Status Column -->
             <template v-slot:item.is_verify="{item}">
                 <v-chip :color="item.is_verify == 1 ? 'green' : 'red'" class="white--text pl-1">
@@ -153,7 +161,7 @@ export default {
                 {text: 'Form No', value: 'data_no'},
                 {text: 'Desa', value: 'village_name'},
                 {text: 'Luas Desa', value: 'land_area'},
-                {text: 'Tanggal', value: 'scooping_date'},
+                {text: 'Tanggal', value: 'start_scooping_date'},
                 {text: 'Created By', value: 'user_id'},
                 {text: 'Status', value: 'is_verify', align: 'center'},
                 {text: 'Actions', value: 'actions', align: 'right'},

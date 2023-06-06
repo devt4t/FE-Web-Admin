@@ -1801,7 +1801,7 @@ export default {
                     title: 'Permasalahan Yang Ada',
                     icon: 'mdi-book-alert',       
                     type: 'multiple-input',
-                    required: false,
+                    required: true,
                     optional: false,
                     description: false,
                     items: [
@@ -2390,7 +2390,7 @@ export default {
                     method: {
                         inputType: 'combobox',
                         chip: true,
-                        items: [],
+                        items: ['Direct', 'Indirect'],
                         hideSelected: true,
                         label: 'Metode',
                         multiple: false,
@@ -2565,7 +2565,7 @@ export default {
                         label: 'PIC Dusun',
                         type: 'divider',
                         lgView: 12,
-                        labelIcon: 'mdi-account-star',
+                        labelIcon: 'mdi-account-tag',
                         potentialRequirement: true,
                     },
                     pic_dusun: {
@@ -2607,7 +2607,7 @@ export default {
                         potentialRequirement: true,
                     },
                     divider1: {
-                        label: 'Data Jumlah Keluarga',
+                        label: 'Data Populasi',
                         type: 'divider',
                         lgView: 12,
                         labelIcon: 'mdi-human-male-female-child',
@@ -3877,7 +3877,7 @@ export default {
         stepper: {
             model: 1,
             steps: ['RRA', 'PRA', 'Social Impact'],
-            steps_icon: ['home-analytics', 'home-group', 'home-alert']
+            steps_icon: ['home-group', 'home-analytics', 'home-alert']
         },
     }),
     watch: {
@@ -3894,11 +3894,11 @@ export default {
             async handler(val) {
                 try {
                     this.loading.show = true
+                    // get scooping data + set land_area
                     this.loading.text = 'Get scooping data...'
                     const params = new URLSearchParams({
                         data_no: val
                     })
-                    // get scooping data + set land_area
                     const scoopingData = await this.callApiGet(`GetDetailScooping`, `?${params}` )
                     this.inputs.land_area.model = scoopingData.land_area
                     // set village
@@ -4170,45 +4170,18 @@ export default {
         async getScoopingListItems() {
             try {
                 this.loading.text = 'Get list scooping user...'
-                const url = this.$store.getters.getApiUrl('GetScoopingAll')
-                const res = await axios.get(url, this.$store.state.apiConfig)
-                const data = res.data.data.result.filter(val => val.is_verify === 1)
-                // console.log(data)
-                this.inputs.scooping_form_no.items = data
+                // get rra pra list
+                const res1 = await this.callApiGet(`GetRraPraAll`)
+                const data1 = res1.map(val => {return val.form_no})
+                // get scooping list
+                const res2 = await this.callApiGet(`GetScoopingAll`)
+                const data2 = res2.filter(val => val.is_verify === 1 && !data1.includes(val.data_no))
+                this.inputs.scooping_form_no.items = data2
             } catch (err) {this.errorResponse(err)}
         },
         modifyTotalSubData(type, name) {
             if (type == '+') {
                 let inputs = null
-                if (['flora_data', 'fauna_data'].includes(name)) {
-                    inputs = {
-                        categories: '',
-                        types: '',
-                        name: '',
-                        population: 0,
-                        status: '',
-                        habitat: ''
-                    }
-                    if (name == 'flora_data') inputs.water_source = ''
-                    else inputs.food_source = ''
-                } else if (name == 'income_data_si') {
-                    inputs = {
-                        categories: '',
-                        crops_categories: '',
-                        crops_types: '',
-                        crops_name: '',
-                        crops_production_capacity: 0,
-                        total_farming_families: 0,
-                    }
-                } else if (name == 'economic_data_si') {
-                    inputs = {
-                        trade_method: '',
-                        start_period: '',
-                        end_period: '',
-                        distribution: '',
-                        revenue: 0
-                    }
-                }
 
                 if (name.includes('farmer_income')) {
                     const splitName = name.split('-')
@@ -4359,7 +4332,7 @@ export default {
                 this.inputs.farmer_income.sampling_form.source.items = listTrees
                 this.inputs.farmer_income.static_form.source.items = listTrees
 
-                // await this.setDummyData()
+                await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }

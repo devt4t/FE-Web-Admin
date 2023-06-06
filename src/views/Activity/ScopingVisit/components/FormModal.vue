@@ -812,7 +812,7 @@ export default {
                     this.getData(this.id)
                 } else {
                     this.editId = null
-                    this.getDummiesData()
+                    // this.getDummiesData()
                 }
             }
         },
@@ -829,6 +829,32 @@ export default {
         'inputs.district.model': {
             handler(val) {
                 if (val) this.getOptionsData({type: 'village'})
+            }
+        },
+        'inputs.village.model': {
+            async handler(val) {
+                try {
+                    if (val) {
+                        // check existing scooping data
+                        this.loading.show = true
+                        this.loading.text = 'Check existing scooping data...'
+                        const url = this.$store.getters.getApiUrl('GetScoopingAll')
+                        const res = await axios.get(url, this.$store.state.apiConfig)
+                        const listScooping = res.data.data.result.map(val => {return val.village})
+                        if (listScooping.includes(val)) {
+                            const confirm = await Swal.fire({
+                                title: 'Exist!',
+                                text: `Kode desa "${val}" sudah memiliki data scooping!`,
+                                icon: 'warning',
+                                confirmButtonColor: '#2e7d32',
+                                confirmButtonText: 'Okay'
+                            })
+                            this.inputs.village.model = null
+                        }
+                    }
+                } catch (err) {this.errorResponse(err)} finally {
+                    this.loading.show = false
+                }
             }
         },
         'inputs.photo_road_access.model': {
