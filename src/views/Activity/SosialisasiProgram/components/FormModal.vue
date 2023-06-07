@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="showModal"
         content-class="rounded-xl mx-1"
-        max-width="777"
+        max-width="999"
         scrollable
         persistent
     >
@@ -25,14 +25,17 @@
                     </div>
                 </v-overlay>
                 <!-- SELECT VILLAGE -->
-                <v-row class="ma-0 mx-5">
+                <v-row class="ma-0 mx-2 mx-lg-5">
+                    <v-col cols="12" class="d-flex justify-end">
+                        <p class="mb-0 red--text">Tanda "<v-icon color="red" class="">{{ localConfig.requiredInputIcon }}</v-icon>" menandakan WAJIB DIISI.</p>
+                    </v-col>
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-city</v-icon>Lokasi Desa</p>
                             <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
-                    <!-- Province -->
+                    <!-- Management Unit -->
                     <v-col cols="12" sm="12" md="6" lg="6">
                         <v-autocomplete
                             dense
@@ -40,20 +43,26 @@
                             hide-details
                             item-color="success"
                             item-text="name"
-                            item-value="province_code"
-                            :items="inputs.province.items"
-                            :label="inputs.province.label"
-                            :loading="inputs.province.loading"
+                            item-value="mu_no"
+                            :items="inputs.mu.items"
+                            :label="inputs.mu.label"
+                            :loading="inputs.mu.loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.province.loading ? 'Loading...' : 'No Data'"
+                            :no-data-text="inputs.mu.loading ? 'Loading...' : 'No Data'"
                             outlined
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.province.model"
-                            v-on:change="getOptionsData({type: 'regency'})"
-                        ></v-autocomplete>
+                            v-model="inputs.mu.model"
+                            v-on:change="getOptionsData({type: 'ta'})"
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.mu.labelIcon" class="mr-1">{{ inputs.mu.labelIcon }}</v-icon>
+                                {{ inputs.mu.label }} 
+                                <sup><v-icon v-if="inputs.mu.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
-                    <!-- Regency -->
+                    <!-- Target Area -->
                     <v-col cols="12" sm="12" md="6" lg="6">
                         <v-autocomplete
                             dense
@@ -61,41 +70,25 @@
                             hide-details
                             item-color="success"
                             item-text="name"
-                            item-value="kabupaten_no"
-                            :items="inputs.regency.items"
-                            :label="inputs.regency.label"
-                            :loading="inputs.regency.loading"
+                            item-value="area_code"
+                            :items="inputs.ta.items"
+                            :label="inputs.ta.label"
+                            :loading="inputs.ta.loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.regency.loading ? 'Loading...' : 'No Data'"
+                            :no-data-text="inputs.ta.loading ? 'Loading...' : 'No Data'"
                             :disabled="false"
                             outlined
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.regency.model"
-                            v-on:change="getOptionsData({type: 'district'})"
-                        ></v-autocomplete>
-                    </v-col>
-                    <!-- District -->
-                    <v-col cols="12" sm="12" md="6" lg="6">
-                        <v-autocomplete
-                            dense
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            item-text="name"
-                            item-value="kode_kecamatan"
-                            :items="inputs.district.items"
-                            :label="inputs.district.label"
-                            :loading="inputs.district.loading"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.district.loading ? 'Loading...' : 'No Data'"
-                            :disabled="false"
-                            outlined
-                            rounded
-                            :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.district.model"
+                            v-model="inputs.ta.model"
                             v-on:change="getOptionsData({type: 'village'})"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.ta.labelIcon" class="mr-1">{{ inputs.ta.labelIcon }}</v-icon>
+                                {{ inputs.ta.label }} 
+                                <sup><v-icon v-if="inputs.ta.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                     <!-- Village -->
                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -116,143 +109,143 @@
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
                             v-model="inputs.village.model"
-                        ></v-autocomplete>
+                        >
+                            <template v-slot:label>
+                                <v-icon v-if="inputs.village.labelIcon" class="mr-1">{{ inputs.village.labelIcon }}</v-icon>
+                                {{ inputs.village.label }} 
+                                <sup><v-icon v-if="inputs.village.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                            </template>
+                        </v-autocomplete>
                     </v-col>
                 </v-row>
-                <v-row class="ma-0 mx-lg-5">
+                <!-- LIST FARMER -->
+                <v-row class="ma-0 mx-2 mx-lg-5">
                     <v-col cols="12">
                         <div class="d-flex align-center">
-                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-file-document</v-icon>Form Minat Petani</p>
+                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">{{ inputs.list_farmer.labelIcon }}</v-icon>{{ inputs.list_farmer.label }}</p>
                             <v-divider class="mx-2"></v-divider>
-                            <v-switch
-                                color="green"
-                                v-model="inputs.interest.model"
-                                inset
-                                :label="`${inputs.interest.model ? 'Berminat' : 'Tidak Berminat'}`"
-                            ></v-switch>
                         </div>
                     </v-col>
                     <v-col cols="12">
-                        <!-- nama petani -->
-                        <v-text-field
-                            dense
-                            color="success"
-                            hide-details
-                            :label="inputs.name.label"
-                            outlined
-                            rounded
-                            :placeholder="inputs.name.placeholder"
-                            :readonly="inputs.name.readonly"
-                            :suffix="inputs.name.suffix"
-                            :type="inputs.name.type"
-                            v-model="inputs.name.model"
-                        >
-                            <template v-slot:label>
-                                <v-icon v-if="inputs.name.labelIcon" class="mr-1">{{ inputs.name.labelIcon }}</v-icon>
-                                {{ inputs.name.label }} 
-                                <sup><v-icon v-if="inputs.name.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                            <template v-slot:append>
-                                <div class="mt-1 ml-1" v-html="inputs.name.append"></div>
-                            </template>
-                        </v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                        <!-- pelatihan -->
-                        <v-autocomplete
-                            dense
-                            :multiple="inputs.farmer_training.multiple"
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            :item-text="inputs.farmer_training.itemText"
-                            :item-value="inputs.farmer_training.itemValue"
-                            :items="inputs.farmer_training.items"
-                            :label="inputs.farmer_training.label"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            outlined
-                            rounded
-                            :readonly="inputs.farmer_training.readonly"
-                            v-model="inputs.farmer_training.model"
-                        >
-                            <template v-slot:label>
-                                <v-icon v-if="inputs.farmer_training.labelIcon" class="mr-1">{{ inputs.farmer_training.labelIcon }}</v-icon>
-                                {{ inputs.farmer_training.label }} 
-                                <sup><v-icon v-if="inputs.farmer_training.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                            <template v-slot:item="data">
-                                <v-list-item-content>
-                                    <v-list-item-title v-html="data.item[inputs.farmer_training.itemTitle]"></v-list-item-title>
-                                    <v-list-item-subtitle v-if="inputs.farmer_training.itemSub">{{ data.item[inputs.farmer_training.itemSub] }}</v-list-item-subtitle>
-                                </v-list-item-content>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <v-col cols="12">
-                        <!-- tree kayu -->
-                        <v-autocomplete
-                            :dense="inputs.kayu.dense"
-                            :multiple="inputs.kayu.multiple"
-                            :chips="inputs.kayu.chip"
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            :item-text="inputs.kayu.itemText"
-                            :item-value="inputs.kayu.itemValue"
-                            :items="inputs.kayu.items"
-                            :label="inputs.kayu.label"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            outlined
-                            rounded
-                            :readonly="inputs.kayu.readonly"
-                            v-model="inputs.kayu.model"
-                            :disabled="inputs.kayu.disabled"
-                        >
-                            <template v-slot:label>
-                                <v-icon v-if="inputs.kayu.labelIcon" class="mr-1">{{ inputs.kayu.labelIcon }}</v-icon>
-                                {{ inputs.kayu.label }} 
-                                <sup><v-icon v-if="inputs.kayu.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                            <template v-slot:item="data">
-                                <v-list-item-content>
-                                    <v-list-item-title v-html="data.item[inputs.kayu.itemTitle]"></v-list-item-title>
-                                    <v-list-item-subtitle v-if="inputs.kayu.itemSub">{{ data.item[inputs.kayu.itemSub] }}</v-list-item-subtitle>
-                                </v-list-item-content>
-                            </template>
-                        </v-autocomplete>
-                    </v-col>
-                    <v-col cols="12">
-                        <!-- tree mpts -->
-                        <v-autocomplete
-                            :dense="inputs.mpts.dense"
-                            :multiple="inputs.mpts.multiple"
-                            :chips="inputs.mpts.chip"
-                            color="success"
-                            hide-details
-                            item-color="success"
-                            :item-text="inputs.mpts.itemText"
-                            :item-value="inputs.mpts.itemValue"
-                            :items="inputs.mpts.items"
-                            :label="inputs.mpts.label"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            outlined
-                            rounded
-                            :readonly="inputs.mpts.readonly"
-                            v-model="inputs.mpts.model"
-                            :disabled="inputs.mpts.disabled"
-                        >
-                            <template v-slot:label>
-                                <v-icon v-if="inputs.mpts.labelIcon" class="mr-1">{{ inputs.mpts.labelIcon }}</v-icon>
-                                {{ inputs.mpts.label }} 
-                                <sup><v-icon v-if="inputs.mpts.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                            </template>
-                            <template v-slot:item="data">
-                                <v-list-item-content>
-                                    <v-list-item-title v-html="data.item[inputs.mpts.itemTitle]"></v-list-item-title>
-                                    <v-list-item-subtitle v-if="inputs.mpts.itemSub">{{ data.item[inputs.mpts.itemSub] }}</v-list-item-subtitle>
-                                </v-list-item-content>
-                            </template>
-                        </v-autocomplete>
+                        <v-row class="mx-0" v-for="(item, itemIndex) in inputs.list_farmer.model" :key="`farmer-${itemIndex}`">
+                            <v-col cols="auto" class="">
+                                <v-btn fab x-small color="green white--text" class="elevation-0 mt-1">{{ itemIndex + 1 }}</v-btn>
+                            </v-col>
+                            <v-col cols="12" md="10" lg="10">
+                                <v-row>
+                                    <v-col 
+                                        v-for="(input, inputIndex) in Object.entries(inputs.list_farmer.form)" 
+                                        :key="`input-farmer-${itemIndex}-${inputIndex}`"
+                                        :cols="input[1].cols[0]" :sm="input[1].cols[1]" :md="input[1].cols[2]" :lg="input[1].cols[3]"
+                                        v-if="inputsListFarmerRoles(input, itemIndex)"
+                                    >
+                                        <!-- text-field -->
+                                        <div v-if="input[1].inputType == 'text-field'">
+                                            <v-text-field
+                                                dense
+                                                color="success"
+                                                hide-details
+                                                :label="input[1].label"
+                                                outlined
+                                                rounded
+                                                :placeholder="input[1].placeholder"
+                                                :type="input[1].type"
+                                                v-model="item[input[0]]"
+                                            >
+                                                <template v-slot:label>
+                                                    <v-icon v-if="input[1].labelIcon" class="mr-1">{{ input[1].labelIcon }}</v-icon>
+                                                    {{ input[1].label }} 
+                                                    <sup><v-icon v-if="inputsListFarmerRequired(input, itemIndex)" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                </template>
+                                                <template v-slot:append>
+                                                    <div class="mt-1 ml-1" v-html="input[1].append"></div>
+                                                </template>
+                                            </v-text-field>
+                                        </div>
+                                        <!-- autocomplete -->
+                                        <div v-else-if="input[1].inputType == 'autocomplete'">
+                                            <v-autocomplete
+                                                :small-chips="input[1].chips"
+                                                :clearable="input[1].clearable"
+                                                color="success"
+                                                :dense="input[1].dense"
+                                                hide-details
+                                                item-color="success"
+                                                :item-text="input[1].itemText"
+                                                :item-value="input[1].itemValue"
+                                                :items="input[1].items"
+                                                :multiple="input[1].multiple"
+                                                :label="input[1].label"
+                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                outlined
+                                                rounded
+                                                :readonly="input[1].readonly"
+                                                v-model="item[input[0]]"
+                                            >
+                                                <template v-slot:label>
+                                                    <v-icon v-if="input[1].labelIcon" class="mr-1">{{ input[1].labelIcon }}</v-icon>
+                                                    {{ input[1].label }} 
+                                                    <sup><v-icon v-if="inputsListFarmerRequired(input, itemIndex)" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                </template>
+                                                <template v-slot:item="data">
+                                                    <v-list-item-content>
+                                                        <v-list-item-title v-html="data.item[input[1].itemText] || data.item"></v-list-item-title>
+                                                        <v-list-item-subtitle v-if="data.item[input[1].itemSub]">{{ data.item[input[1].itemSub] }}</v-list-item-subtitle>
+                                                    </v-list-item-content>
+                                                </template>
+                                                <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                    <v-chip
+                                                        v-bind="attrs"
+                                                        :input-value="selected"
+                                                        label
+                                                        small
+                                                        class="rounded-pill"
+                                                        v-if="input[1].chips"
+                                                    >
+                                                        <span class="pr-2">
+                                                            {{ item[input[1].itemText] || item }}
+                                                        </span>
+                                                        <v-icon
+                                                            small
+                                                            @click="parent.selectItem(item)"
+                                                        >
+                                                            mdi-close-circle
+                                                        </v-icon>
+                                                    </v-chip>
+                                                    <span v-else>
+                                                        {{ item[input[1].itemText] || item }}
+                                                    </span>
+                                                </template>
+                                            </v-autocomplete>
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="auto" lg="1" class="d-flex justify-end">
+                                <v-tooltip>
+                                    <template v-slot:activator="{on, attrs}">
+                                        <v-btn v-bind="attrs" v-on="on" fab x-small color="red white--text" class="elevation-0 mt-1" 
+                                            :disabled="itemIndex === 0"
+                                            @click="() => modifyTotalSubData('-', 'list_farmer', itemIndex)"
+                                        ><v-icon>mdi-close</v-icon></v-btn>
+                                    </template>
+                                    Remove data
+                                </v-tooltip>
+                            </v-col>
+                        </v-row>
+                        <v-row class="justify-center ma-0 mt-4">
+                            <v-btn rounded color="green white--text" class="pl-2" outlined 
+                                @click="() => modifyTotalSubData('+', 'list_farmer')"
+                            >
+                                <v-icon class="mr-1">mdi-plus-circle</v-icon>
+                                Tambah Data
+                            </v-btn>
+                            <!-- <v-btn rounded color="red white--text" class="ml-4" text 
+                                @click="() => modifyTotalSubData('-', 'list_farmer')"
+                            >
+                                <v-icon class="mr-1">mdi-minus-circle</v-icon>
+                            </v-btn> -->
+                        </v-row>
                     </v-col>
                 </v-row>
             </v-card-text>
@@ -313,25 +306,17 @@ export default {
                 required: true
             },
             // village location inputs
-            province: {
+            mu: {
                 type: 'text',
-                label: 'Provinsi',
+                label: 'Management Unit',
                 model: '',
                 required: true,
                 items: [],
                 loading: false
             },
-            regency: {
+            ta: {
                 type: 'text',
                 label: 'Kabupaten / Kota',
-                model: '',
-                required: true,
-                items: [],
-                loading: false
-            },
-            district: {
-                type: 'text',
-                label: 'Kecamatan',
                 model: '',
                 required: true,
                 items: [],
@@ -345,79 +330,101 @@ export default {
                 model: '',
                 loading: false
             },
-            interest: {
-                type: 'bool',
-                model: false,
-                required: true
-            },
-            name: {
-                inputType: 'text-field',
-                label: 'Nama Petani',
-                labelIcon: 'mdi-account-tag',
-                loading: false,
-                model: null,
-                placeholder: ``,
-                required: true,
-                readonly: false,
-                suffix: '',
-                type: 'text'
-            },
-            farmer_training: {
-                type: 'text',
-                chip: false,
-                hideSelected: false,
-                inputType: 'autocomplete',
-                items: [],
-                itemTitle: 'material_name',
-                itemSub: 'material_no',
-                itemText: 'material_name',
-                itemValue: 'material_no',
-                label: 'Materi Pelatihan',
-                labelIcon: 'mdi-book-open-variant',
-                lgView: 6,
-                multiple: false,
-                required: true,
-                readonly: false,
-            },
-            kayu: {
-                dense: false,
-                disabled: false,
-                type: 'array',
-                chip: true,
-                hideSelected: false,
-                inputType: 'autocomplete',
-                items: [],
-                itemTitle: 'tree_name',
-                itemSub: '',
-                itemText: 'tree_name',
-                itemValue: 'tree_code',
-                label: 'KAYU',
-                labelIcon: 'mdi-tree',
-                lgView: 6,
-                model: [],
-                multiple: true,
-                required: true,
-                readonly: false,
-            },
-            mpts: {
-                dense: false,
-                disabled: false,
-                type: 'array',
-                chip: true,
-                hideSelected: false,
-                inputType: 'autocomplete',
-                items: [],
-                itemTitle: 'tree_name',
-                itemSub: '',
-                itemText: 'tree_name',
-                itemValue: 'tree_code',
-                label: 'MPTS',
-                labelIcon: 'mdi-food-apple',
-                lgView: 6,
-                model: [],
-                multiple: true,
-                required: false,
-                readonly: false,
+            list_farmer: {
+                default: [{
+                    farmer_name: null,
+                    status: null,
+                    pattern: null,
+                    training_material: null,
+                    kayu: [],
+                    mpts: [],
+                }],
+                form: {
+                    farmer_name: {
+                        cols: [12, 12, 12, 12],
+                        inputType: 'text-field',
+                        label: 'Nama Petani',
+                        labelIcon: 'mdi-account-tag',
+                        type: 'text' 
+                    },
+                    status: {
+                        chips: false,
+                        clearable: false,
+                        cols: [12, 6, 6, 5],
+                        dense: true,
+                        inputType: 'autocomplete',
+                        items: ['Ya', 'Ragu - Ragu', 'Tidak'],
+                        itemSub: null,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        label: 'Berminat?',
+                        labelIcon: null,
+                        multiple: false,
+                        type: 'bool' 
+                    },
+                    pattern: {
+                        chips: false,
+                        clearable: true,
+                        cols: [12, 6, 6, 7],
+                        dense: true,
+                        inputType: 'autocomplete',
+                        items: [],
+                        itemSub: null,
+                        itemText: 'value',
+                        itemValue: 'value',
+                        label: 'Pola Tanam',
+                        labelIcon: null,
+                        multiple: false,
+                        type: 'text' 
+                    },
+                    training_material: {
+                        chips: false,
+                        clearable: true,
+                        cols: [12, 12, 12, 12],
+                        dense: true,
+                        inputType: 'autocomplete',
+                        items: [],
+                        itemSub: 'material_no',
+                        itemText: 'material_name',
+                        itemValue: 'material_no',
+                        label: 'Materi Pelatihan',
+                        labelIcon: null,
+                        multiple: false,
+                        type: 'text' 
+                    },
+                    kayu: {
+                        chips: true,
+                        clearable: true,
+                        cols: [12, 12, 12, 12],
+                        dense: false,
+                        inputType: 'autocomplete',
+                        items: [],
+                        itemSub: null,
+                        itemText: 'tree_name',
+                        itemValue: 'tree_code',
+                        label: 'Kayu',
+                        labelIcon: null,
+                        multiple: true,
+                        type: 'text' 
+                    },
+                    mpts: {
+                        chips: true,
+                        clearable: true,
+                        cols: [12, 12, 12, 12],
+                        dense: false,
+                        inputType: 'autocomplete',
+                        itemText: 'tree_name',
+                        itemValue: 'tree_code',
+                        items: [],
+                        label: 'Mpts',
+                        labelIcon: null,
+                        multiple: true,
+                        type: 'text' 
+                    },
+                },
+                label: 'List Petani',
+                labelIcon: 'mdi-list-box',
+                model: []
             },
         },
         loading: {
@@ -427,7 +434,8 @@ export default {
         localConfig: {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
-            requiredInputIcon: 'mdi-star'
+            requiredInputIcon: 'mdi-star',
+            maxTreesType: 3
         },
     }),
     watch: {
@@ -480,9 +488,10 @@ export default {
             get: function () {
                 if (this.show) {
                     this.inputs.program_year.model = this.programYear
-                    this.getDefaultData()
                     if (this.id) {
                         this.getDetailData(this.id)
+                    } else {
+                        this.getDefaultData()
                     }
                 }
                 return this.show
@@ -500,6 +509,36 @@ export default {
                     if (val.type === 'array') if (val.model.length === 0) requiredEmpty += 1
                 }
             }
+            // check list farmer
+            this.inputs.list_farmer.model.forEach(farmer => {
+                if (!farmer.farmer_name || !farmer.status) requiredEmpty += 1
+                if (farmer.status != 'Tidak') {
+                    if (farmer.status == 'Ya' && (!farmer.pattern || !farmer.training_material)) requiredEmpty += 1
+                    const kayu = farmer.kayu.length
+                    const mpts = farmer.mpts.length
+                    if (kayu === 0) requiredEmpty += 1
+                    if (mpts > (this.localConfig.maxTreesType - 1)) {
+                        Swal.fire({
+                            title: 'Melebihi Batas!',
+                            text: `Jumlah total jenis KAYU + MPTS maksimal adalah ${this.localConfig.maxTreesType}! Harap KURANGI pilihan jenis MPTS dan MINIMAL memilih 1 jenis KAYU.`,
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        requiredEmpty += 1
+                    }
+                    if (kayu + mpts > this.localConfig.maxTreesType) {
+                        Swal.fire({
+                            title: 'Melebihi Batas!',
+                            text: `Jumlah total jenis KAYU + MPTS maksimal adalah ${this.localConfig.maxTreesType}! Harap KURANGI jenis pohon untuk bisa MENYIMPAN data.`,
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        requiredEmpty += 1
+                    }
+                }
+            })
             return requiredEmpty > 0 ? true : false
         },
     },
@@ -509,6 +548,15 @@ export default {
         })
     },
     methods: {
+        async callApiGet(url) {
+            try {
+                const response = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                if (response) {
+                    const data = response.data.data.result
+                    return data
+                } else return null
+            } catch (error) { this.errorResponse(error)}
+        },
         async errorResponse(error) {
             console.log(error)
             if (error.response) {
@@ -532,16 +580,24 @@ export default {
         async getDefaultData() {
             try {
                 this.loading.show = true
-                this.loading.text = 'Getting list provinces...'
-                await this.getOptionsData({type: 'province'})
+                this.loading.text = 'Preparing "sosialisasi program" form...'
+                this.inputs.list_farmer.model = JSON.parse(JSON.stringify(this.inputs.list_farmer.default))
+                // List Management Unit
+                this.loading.text = 'Getting list management units...'
+                await this.getOptionsData({type: 'mu'})
+                // List Opsi Pola Tanam
+                this.loading.text = 'Getting list opsi pola tanam...'
+                this.inputs.list_farmer.form.pattern.items = await this.callApiGet('GetOpsiPolaTanamOptions')
+                // List Materi Pelatihan
                 this.loading.text = 'Getting list materi pelatihan...'
-                this.inputs.farmer_training.items = await this.callApiGet('GetTrainingMaterials')
+                this.inputs.list_farmer.form.training_material.items = await this.callApiGet('GetTrainingMaterials')
+                // List Pohon
                 this.loading.text = 'Getting trees data...'
                 const listTrees = await this.callApiGet('GetTreesAll')
                 const kayu = await listTrees.data.filter(lt => lt.tree_category === 'Pohon_Kayu')
                 const mpts = await listTrees.data.filter(lt => lt.tree_category === 'Pohon_Buah')
-                this.inputs.kayu.items = kayu
-                this.inputs.mpts.items = mpts
+                this.inputs.list_farmer.form.kayu.items = kayu
+                this.inputs.list_farmer.form.mpts.items = mpts
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }
@@ -552,18 +608,18 @@ export default {
                 let url = ''
                 
                 // set url
-                if (inputs.type == 'province') url = 'GetProvince'
-                else if (inputs.type == 'regency') url = 'GetKabupaten?province_code=' + this.inputs.province.model
-                else if (inputs.type == 'district') url = 'GetKecamatan?kabupaten_no=' + this.inputs.regency.model
-                else if (inputs.type == 'village') url = 'GetDesa?&kode_kecamatan=' + this.inputs.district.model
+                if (inputs.type == 'mu') url = 'GetManagementUnit'
+                else if (inputs.type == 'ta') url = 'GetTargetArea?mu_no=' + this.inputs.mu.model
+                else if (inputs.type == 'village') url = 'GetDesa?&kode_ta=' + this.inputs.ta.model
 
                 this.$store.state.loadingOverlayText = `Getting ${inputs.type} datas...`
 
                 // reset data 
-                if (inputs.type == 'regency') {
-                    this.inputs.district.model = ''
-                    this.inputs.district.items = []
-                } if (['regency', 'district'].includes(inputs.type)) { 
+                if (inputs.type == 'mu') {
+                    this.inputs.ta.model = ''
+                    this.inputs.ta.items = []
+                } 
+                if (['mu', 'ta'].includes(inputs.type)) { 
                     this.inputs.village.model = ''
                     this.inputs.village.items = []
                 }
@@ -585,14 +641,27 @@ export default {
                 this.inputs[inputs.type].loading = false
             }
         },
-        async callApiGet(url) {
-            try {
-                const response = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                if (response) {
-                    const data = response.data.data.result
-                    return data
-                } else return null
-            } catch (error) { this.errorResponse(error)}
+        inputsListFarmerRequired(input, index) {
+            if (['farmer_name', 'status'].includes(input[0])) return true
+            if (this.inputs.list_farmer.model[index].status == 'Ya') return true
+            if (this.inputs.list_farmer.model[index].status == 'Ragu - Ragu' && ['kayu', 'mpts'].includes(input[0])) return true
+            return false
+        },
+        inputsListFarmerRoles(input, index) {
+            if (['farmer_name', 'status'].includes(input[0])) return true
+            if (this.inputs.list_farmer.model[index].status) return true
+
+            return false
+        },
+        modifyTotalSubData(type, name, index = null) {
+            if (type == '+') {
+                const defaultData = JSON.parse(JSON.stringify(this.inputs[name].default[0]))
+                this.inputs[name].model.push(defaultData)
+            } else if (type == '-') {
+                if (index) {
+                    this.inputs[name].model.splice(index, 1)
+                } else this.inputs[name].model.pop()
+            }
         },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth

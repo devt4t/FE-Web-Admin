@@ -4315,7 +4315,7 @@ export default {
                 // get scooping list item
                 await this.getScoopingListItems()
                 // get pola tanam options
-                // this.inputs.land_use_patterns.form.pattern.items = await this.getOptionsDataReturn('List Opsi Tanam', 'GetOpsiPolaTanamOptions')
+                // const polaTanam = await this.getOptionsDataReturn('List Opsi Tanam', 'GetOpsiPolaTanamOptions')
                 const polaTanam = [
                     'Agroforestry Intensitas Tinggi',
                     'Agroforestry Intensitas Rendah',

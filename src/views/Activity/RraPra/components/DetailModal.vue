@@ -174,7 +174,7 @@
                                                         :headers="data.table.headers"
                                                         :items="datas[stepperName][data.dataKey]"
                                                         :items-per-page="data.table.itemsPerPage"
-                                                        :class="`rounded-xl elevation-6 mx-3 pa-1 elevation-3 overflow-hidden`"
+                                                        :class="`rounded-xl elevation-6 mx-2 mx-lg-3 pa-1 elevation-3 overflow-hidden`"
                                                         :show-expand="data.table.expand"
                                                     >
                                                         <!-- Table Index -->
@@ -312,6 +312,15 @@
                                                             </td>
                                                         </template>
                                                     </v-data-table>
+                                                    <v-card v-if="data.description" class="rounded-xl mx-2 mx-lg-3 mt-2">
+                                                        <v-card-text>
+                                                            <p class="mb-0 grey darken-3 white--text px-4 rounded-pill" style="font-size: 13px;">
+                                                                <v-icon color="white">mdi-text-box</v-icon>
+                                                                Deskripsi {{ data.label }}
+                                                            </p>
+                                                            <p class="mb-0 pa-2" v-html="datas[stepperName][data.descriptionKey]"></p>
+                                                        </v-card-text>
+                                                    </v-card>
                                                 </div>
                                                 <!-- column -->
                                                 <div v-if="data.dataType === 'column'">
@@ -919,7 +928,38 @@ export default {
                     }
                 },
             ],
-            PRA: []
+            PRA: [
+                {
+                    label: 'Kepemilikan Lahan',
+                    labelIcon: 'mdi-account-tag',
+                    dataType: 'table',
+                    dataKey: 'LandOwnership',
+                    description: true,
+                    descriptionKey: `land_ownership_description`,
+                    table: {
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                        ]
+                    }
+                },
+                {
+                    label: 'Penyebaran Lokasi Lahan Kering / Kritis',
+                    labelIcon: 'mdi-account-tag',
+                    dataType: 'table',
+                    dataKey: 'LandOwnership',
+                    description: true,
+                    descriptionKey: `land_ownership_description`,
+                    table: {
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                        ]
+                    }
+                },
+            ]
         },
         verified_data: 0,
         loading: {
@@ -1032,6 +1072,7 @@ export default {
                 this.datas = res.data.data.result
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
+                this.stepper.model = 2
                 console.log(this.datas)
             } catch (err) {
                 this.errorResponse(err)
