@@ -44,21 +44,21 @@
                             item-color="success"
                             item-text="name"
                             item-value="mu_no"
-                            :items="inputs.mu.items"
-                            :label="inputs.mu.label"
-                            :loading="inputs.mu.loading"
+                            :items="inputs.mu_no.items"
+                            :label="inputs.mu_no.label"
+                            :loading="inputs.mu_no.loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.mu.loading ? 'Loading...' : 'No Data'"
+                            :no-data-text="inputs.mu_no.loading ? 'Loading...' : 'No Data'"
                             outlined
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.mu.model"
-                            v-on:change="getOptionsData({type: 'ta'})"
+                            v-model="inputs.mu_no.model"
+                            v-on:change="getOptionsData({type: 'target_area'})"
                         >
                             <template v-slot:label>
-                                <v-icon v-if="inputs.mu.labelIcon" class="mr-1">{{ inputs.mu.labelIcon }}</v-icon>
-                                {{ inputs.mu.label }} 
-                                <sup><v-icon v-if="inputs.mu.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                <v-icon v-if="inputs.mu_no.labelIcon" class="mr-1">{{ inputs.mu_no.labelIcon }}</v-icon>
+                                {{ inputs.mu_no.label }} 
+                                <sup><v-icon v-if="inputs.mu_no.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
                         </v-autocomplete>
                     </v-col>
@@ -71,22 +71,22 @@
                             item-color="success"
                             item-text="name"
                             item-value="area_code"
-                            :items="inputs.ta.items"
-                            :label="inputs.ta.label"
-                            :loading="inputs.ta.loading"
+                            :items="inputs.target_area.items"
+                            :label="inputs.target_area.label"
+                            :loading="inputs.target_area.loading"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :no-data-text="inputs.ta.loading ? 'Loading...' : 'No Data'"
+                            :no-data-text="inputs.target_area.loading ? 'Loading...' : 'No Data'"
                             :disabled="false"
                             outlined
                             rounded
                             :rules="[(v) => !!v || 'Field is required']"
-                            v-model="inputs.ta.model"
+                            v-model="inputs.target_area.model"
                             v-on:change="getOptionsData({type: 'village'})"
                         >
                             <template v-slot:label>
-                                <v-icon v-if="inputs.ta.labelIcon" class="mr-1">{{ inputs.ta.labelIcon }}</v-icon>
-                                {{ inputs.ta.label }} 
-                                <sup><v-icon v-if="inputs.ta.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                <v-icon v-if="inputs.target_area.labelIcon" class="mr-1">{{ inputs.target_area.labelIcon }}</v-icon>
+                                {{ inputs.target_area.label }} 
+                                <sup><v-icon v-if="inputs.target_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
                         </v-autocomplete>
                     </v-col>
@@ -116,6 +116,63 @@
                                 <sup><v-icon v-if="inputs.village.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                             </template>
                         </v-autocomplete>
+                    </v-col>
+                </v-row>
+                <!-- SELECT DATE -->
+                <v-row class="ma-0 mx-2 mx-lg-5">
+                    <v-col cols="12">
+                        <div class="d-flex align-center">
+                            <p class="mb-0" style="font-size: 17px"><v-icon class="mr-2">mdi-calendar</v-icon>Tanggal</p>
+                            <v-divider class="mx-2"></v-divider>
+                        </div>
+                    </v-col>
+                    <!-- Date -->
+                    <v-col cols="12" sm="12" md="6" lg="6">
+                        <!-- datepicker -->
+                        <v-menu 
+                            rounded="xl"
+                            transition="slide-x-transition"
+                            bottom
+                            min-width="100"
+                            offset-y
+                            :close-on-content-click="false"
+                            v-model="inputs.form_date.show"
+                        >
+                            <template v-slot:activator="{ on: menu, attrs }">
+                                <v-tooltip top content-class="rounded-xl">
+                                    <template v-slot:activator="{ on: tooltip }">
+                                        <v-text-field
+                                            dense
+                                            color="green"
+                                            class="mb-2 mb-lg-0 mr-0 mr-lg-2"
+                                            hide-details
+                                            outlined
+                                            rounded
+                                            v-bind="attrs"
+                                            v-on="{...menu, ...tooltip}"
+                                            readonly
+                                            v-model="inputs.form_date.modelShow"
+                                        >
+                                            <template v-slot:label>
+                                                {{ inputs.form_date.label }} 
+                                                <sup><v-icon v-if="inputs.form_date.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                            </template>
+                                        </v-text-field>
+                                    </template>
+                                    <span>Klik untuk memunculkan datepicker</span>
+                                </v-tooltip>
+                            </template>
+                            <div class="rounded-xl pb-2 white">
+                                <div class="d-flex flex-column align-center rounded-xl">
+                                    <v-date-picker 
+                                        :range="inputs.form_date.dateType === 'range'"
+                                        color="green lighten-1 rounded-xl" 
+                                        v-model="inputs.form_date.model"
+                                        min="2022-11-24"
+                                    ></v-date-picker>
+                                </div>
+                            </div>
+                        </v-menu>
                     </v-col>
                 </v-row>
                 <!-- LIST FARMER -->
@@ -268,6 +325,7 @@
                     rounded
                     :key="`saveButton${disableSave}`"
                     :disabled="disableSave"
+                    @click="() => save()"
                 >
                     <v-icon class="mr-1">mdi-content-save</v-icon>
                     Save
@@ -306,7 +364,7 @@ export default {
                 required: true
             },
             // village location inputs
-            mu: {
+            mu_no: {
                 type: 'text',
                 label: 'Management Unit',
                 model: '',
@@ -314,9 +372,9 @@ export default {
                 items: [],
                 loading: false
             },
-            ta: {
+            target_area: {
                 type: 'text',
-                label: 'Kabupaten / Kota',
+                label: 'Target Area',
                 model: '',
                 required: true,
                 items: [],
@@ -330,24 +388,35 @@ export default {
                 model: '',
                 loading: false
             },
+            form_date: {
+                loading: false,
+                label: 'Tanggal Sosialisasi',
+                model: null,
+                modelShow: '',
+                inputType: 'datepicker',
+                dateType: 'date',
+                lgView: 4,
+                required: true,
+                type: 'Date'
+            },
             list_farmer: {
                 default: [{
-                    farmer_name: null,
-                    status: null,
+                    name: null,
+                    respond_to_programs: null,
                     pattern: null,
-                    training_material: null,
+                    training: null,
                     kayu: [],
                     mpts: [],
                 }],
                 form: {
-                    farmer_name: {
+                    name: {
                         cols: [12, 12, 12, 12],
                         inputType: 'text-field',
                         label: 'Nama Petani',
                         labelIcon: 'mdi-account-tag',
                         type: 'text' 
                     },
-                    status: {
+                    respond_to_programs: {
                         chips: false,
                         clearable: false,
                         cols: [12, 6, 6, 5],
@@ -377,7 +446,7 @@ export default {
                         multiple: false,
                         type: 'text' 
                     },
-                    training_material: {
+                    training: {
                         chips: false,
                         clearable: true,
                         cols: [12, 12, 12, 12],
@@ -439,6 +508,11 @@ export default {
         },
     }),
     watch: {
+        'inputs.form_date.model': {
+            async handler(newVal) {
+                this.inputs.form_date.modelShow = this._utils.dateFormat(newVal, 'DD MMMM Y')
+            }
+        },
         'inputs.kayu.model': {
             async handler(val, oldVal) {
                 const kayu = val.length
@@ -511,9 +585,9 @@ export default {
             }
             // check list farmer
             this.inputs.list_farmer.model.forEach(farmer => {
-                if (!farmer.farmer_name || !farmer.status) requiredEmpty += 1
-                if (farmer.status != 'Tidak') {
-                    if (farmer.status == 'Ya' && (!farmer.pattern || !farmer.training_material)) requiredEmpty += 1
+                if (!farmer.name || !farmer.respond_to_programs) requiredEmpty += 1
+                if (farmer.respond_to_programs != 'Tidak') {
+                    if (farmer.respond_to_programs == 'Ya' && (!farmer.pattern || !farmer.training)) requiredEmpty += 1
                     const kayu = farmer.kayu.length
                     const mpts = farmer.mpts.length
                     if (kayu === 0) requiredEmpty += 1
@@ -574,6 +648,16 @@ export default {
                             this.$router.push("/");
                         }
                     }
+                    if (error.response.status === 500 || error.response.status === 400) {
+                        let errMessage = error.response.data.message
+                        if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `${errMessage || error.message}`,
+                            icon: 'error',
+                            confirmButtonColor: '#f44336',
+                        })
+                    }
                 }
             }
         },
@@ -581,16 +665,17 @@ export default {
             try {
                 this.loading.show = true
                 this.loading.text = 'Preparing "sosialisasi program" form...'
+                this.inputs.form_date.model = moment().format('YYYY-MM-DD')
                 this.inputs.list_farmer.model = JSON.parse(JSON.stringify(this.inputs.list_farmer.default))
                 // List Management Unit
                 this.loading.text = 'Getting list management units...'
-                await this.getOptionsData({type: 'mu'})
+                await this.getOptionsData({type: 'mu_no'})
                 // List Opsi Pola Tanam
                 this.loading.text = 'Getting list opsi pola tanam...'
                 this.inputs.list_farmer.form.pattern.items = await this.callApiGet('GetOpsiPolaTanamOptions')
                 // List Materi Pelatihan
                 this.loading.text = 'Getting list materi pelatihan...'
-                this.inputs.list_farmer.form.training_material.items = await this.callApiGet('GetTrainingMaterials')
+                this.inputs.list_farmer.form.training.items = await this.callApiGet('GetTrainingMaterials')
                 // List Pohon
                 this.loading.text = 'Getting trees data...'
                 const listTrees = await this.callApiGet('GetTreesAll')
@@ -598,6 +683,8 @@ export default {
                 const mpts = await listTrees.data.filter(lt => lt.tree_category === 'Pohon_Buah')
                 this.inputs.list_farmer.form.kayu.items = kayu
                 this.inputs.list_farmer.form.mpts.items = mpts
+
+                await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }
@@ -608,18 +695,18 @@ export default {
                 let url = ''
                 
                 // set url
-                if (inputs.type == 'mu') url = 'GetManagementUnit'
-                else if (inputs.type == 'ta') url = 'GetTargetArea?mu_no=' + this.inputs.mu.model
-                else if (inputs.type == 'village') url = 'GetDesa?&kode_ta=' + this.inputs.ta.model
+                if (inputs.type == 'mu_no') url = 'GetManagementUnit'
+                else if (inputs.type == 'target_area') url = 'GetTargetArea?mu_no=' + this.inputs.mu_no.model
+                else if (inputs.type == 'village') url = 'GetDesa?&kode_ta=' + this.inputs.target_area.model
 
                 this.$store.state.loadingOverlayText = `Getting ${inputs.type} datas...`
 
                 // reset data 
-                if (inputs.type == 'mu') {
-                    this.inputs.ta.model = ''
-                    this.inputs.ta.items = []
+                if (inputs.type == 'mu_no') {
+                    this.inputs.target_area.model = ''
+                    this.inputs.target_area.items = []
                 } 
-                if (['mu', 'ta'].includes(inputs.type)) { 
+                if (['mu_no', 'target_area'].includes(inputs.type)) { 
                     this.inputs.village.model = ''
                     this.inputs.village.items = []
                 }
@@ -642,14 +729,14 @@ export default {
             }
         },
         inputsListFarmerRequired(input, index) {
-            if (['farmer_name', 'status'].includes(input[0])) return true
-            if (this.inputs.list_farmer.model[index].status == 'Ya') return true
-            if (this.inputs.list_farmer.model[index].status == 'Ragu - Ragu' && ['kayu', 'mpts'].includes(input[0])) return true
+            if (['name', 'respond_to_programs'].includes(input[0])) return true
+            if (this.inputs.list_farmer.model[index].respond_to_programs == 'Ya' && input[0] != 'mpts') return true
+            if (this.inputs.list_farmer.model[index].respond_to_programs == 'Ragu - Ragu' && ['kayu'].includes(input[0])) return true
             return false
         },
         inputsListFarmerRoles(input, index) {
-            if (['farmer_name', 'status'].includes(input[0])) return true
-            if (this.inputs.list_farmer.model[index].status) return true
+            if (['name', 'respond_to_programs'].includes(input[0])) return true
+            if (this.inputs.list_farmer.model[index].respond_to_programs) return true
 
             return false
         },
@@ -666,6 +753,69 @@ export default {
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
+        },
+        async save() {
+            try {
+                const confirm = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2e7d32',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Tidak Jadi',
+                    confirmButtonText: 'Ya, Lanjutkan!'
+                })
+                if (confirm) {
+                    this.loading.show = true
+                    const data = {}
+                    for (const [key, val] of Object.entries(this.inputs)) {
+                        if (key === 'list_farmer') {
+                            data[key] = val.model.map(lf => {
+                                const mergeTree = [...lf.kayu, ...lf.mpts]
+                                return {
+                                    name: lf.name,
+                                    respond_to_programs: lf.respond_to_programs,
+                                    pattern: lf.pattern,
+                                    training: lf.training,
+                                    tree1: mergeTree[0] || null,
+                                    tree2: mergeTree[1] || null,
+                                    tree3: mergeTree[2] || null,
+                                    tree4: mergeTree[3] || null,
+                                    tree5: mergeTree[4] || null,
+                                }
+                            })
+                        } else data[key] = val.model
+                    }
+                    console.log(data)
+                    const res = await axios.post(this.$store.getters.getApiUrl(`AddFormMinat`), data, this.$store.state.apiConfig)
+                    if (res) {
+                        this.showModal = false
+                        this.$emit('swal', {type: 'success', message: 'Yey! Data SosPro saved!'})
+                    }
+                }
+            } catch (err) {this.errorResponse(err)} finally {
+                this.loading.show = false
+            }
+        },
+        async setDummyData() {
+            this.loading.text = 'Set Dummies data.. :)'
+            this.inputs.mu_no.model = '021'
+            await this.getOptionsData({type: 'target_area', id: this.inputs.mu_no.model})
+            this.inputs.target_area.model = '021003'
+            await this.getOptionsData({type: 'village', id: this.inputs.target_area.model})
+            this.inputs.village.model = '32.04.39.06'
+
+            this.inputs.list_farmer.model = [
+                {
+                    name: 'Kang Asep',
+                    respond_to_programs: 'Ya',
+                    pattern: 'Pola Konservasi Pohon Kayu',
+                    training: 'TR001',
+                    kayu: ['T0009'],
+                    mpts: []
+                }
+            ]
         }
     }
 }

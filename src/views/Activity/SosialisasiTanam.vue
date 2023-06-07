@@ -161,7 +161,7 @@
       </v-dialog>
 
       <!-- Modal Create Sostam Per~FF -->
-      <v-dialog v-model="dialogAdd.show" max-width="1200px" content-class="rounded-xl" persistent scrollable>
+      <v-dialog v-model="dialogAdd.show" max-width="777" content-class="rounded-xl" persistent scrollable>
         <v-card rounded="xl" elevation="10">
           <!-- Title -->
           <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
@@ -172,26 +172,27 @@
 
           <v-card-text class="px-0 px-lg-5">
             <!-- Loading -->
-            <v-container
-              v-if="dialogAdd.loading"
-              fluid
-              fill-height
-              style="background-color: rgba(255, 255, 255, 0.5)"
-            >
-              <v-layout column justify-center align-center>
-                <v-progress-circular
-                  :size="100"
-                  :width="13"
-                  indeterminate
-                  color="green"
-                  class="mb-2"
-                >
-                </v-progress-circular>
-                Getting FF data...
-              </v-layout>
-            </v-container>
+            <v-overlay absolute :value="dialogAdd.loading">
+                <div class="d-flex flex-column justify-center align-center">
+                    <LottieAnimation
+                        ref="anim"
+                        :animationData="lottie.data.loading"
+                        :loop="true"
+                        style="height: 64px;"
+                    />
+                    <p class="mt-2 mb-0">Loading...
+                        <v-progress-circular
+                            :size="17"
+                            :width="3"
+                            indeterminate
+                            color="white"
+                        >
+                        </v-progress-circular>
+                    </p>
+                </div>
+            </v-overlay>
             <!-- Content -->
-            <v-container v-if="dialogAdd.loading == false">
+            <v-container>
               <v-row>
                 <v-col cols="12" class="d-flex justify-end">
                   <v-btn small color="info" rounded @click="getFFOptions">
@@ -202,6 +203,7 @@
                 <!-- Select FF -->
                 <v-col cols="12" sm="12" md="12">
                   <v-autocomplete
+                    dense
                     outlined
                     rounded
                     color="success"
@@ -311,13 +313,22 @@
                 </v-col>
                 <!-- Lokasi Distribusi -->
                 <v-col cols="12">
+                  <!-- map -->
+                  <div style="position: relative">
+                    <div id="mapboxDistributionLocationContainer" ref="mapbox" :key="`maps-distribution-location-${dialogAdd.show}`" style="height: 400px;width: 100%" class="rounded-xl overflow-hidden"></div>
+                    <pre id="coordinates" class="coordinates-sostam"></pre>
+                  </div>
+
                   <v-text-field
+                    dense
                     outlined
                     rounded
                     v-model="dataToStore.distribution_location"
                     label="Distribution Location"
                     :rules="[(v) => !!v || 'Field is required']"
                     hide-details
+                    readonly
+                    class="mt-3"
                   ></v-text-field>
                 </v-col>
                 <!-- Lahans Table -->
@@ -1585,14 +1596,21 @@
 
 <script>
 // import ModalFarmer from "./ModalFarmer";
+import Swal from 'sweetalert2'
 import axios from "axios";
 import moment from "moment";
+import LottieAnimation from 'lottie-web-vue'
+
+import treeAnimation from '@/assets/lottie/tree.json'
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
   name: "SosialisasiTanam",
-  authtoken: "",
+  components: {
+    LottieAnimation
+  },
   data: () => ({
+    authtoken: "",
     dialogAdd: {
       show: false,
       loading: false,
@@ -1864,7 +1882,50 @@ export default {
       planting_time: '',
       penlub_time: '',
       lahans: []
-    }
+    },
+    maps:{
+      accessToken: '',
+      mapStyle: '',
+      model: null,
+      attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
+      center: [113.921300, -0.789300],
+      // center: [39.826204, 21.422484],
+      // center: [107.52657620636666, -7.0917231719],
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      legends: {
+          model: ''
+      },
+      listMarker: [],
+      loading: {
+          show: false,
+          text: 'Loading...'
+      },
+      zoom: 3,
+      geojson: {},
+      key: 111,
+      layerId: 0,
+      hoveredStateId: 0,
+      layerStyle: {
+          outline: {
+              color: '#000000'
+          },
+          fill: {
+              color: '#f06800'
+          },
+      },
+      popup: {
+          model: false,
+          content: {
+          title: '',
+          description: ''
+          }
+      }
+    },
+    lottie: {
+        data: {
+            loading: treeAnimation,
+        }
+    },
   }),
   watch: {
     'table.options': {
@@ -1923,7 +1984,6 @@ export default {
   },
 
   mounted() {
-    this.program_year = this.$store.state.programYear.model
     this.firstAccessPage();
     // if (this.User.role_group != 'IT') {
     //   this.$store.state.maintenanceOverlay = true
@@ -1939,6 +1999,9 @@ export default {
 
   methods: {
     async firstAccessPage() {
+      this.program_year = this.$store.state.programYear.model
+      this.maps.accessToken = this.$store.state.maps.accessToken
+      this.maps.mapStyle = this.$store.state.maps.mapStyle
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
@@ -3150,6 +3213,7 @@ export default {
         this.dialogAdd.loading = true
         this.dialogAdd.show = true
         await this.getFFOptions()
+        await this.initializeMaps()
       } finally {
         this.dialogAdd.loading = false
       }
@@ -3186,7 +3250,7 @@ export default {
         const params = new URLSearchParams({
           typegetdata: this.typegetdata,
           ff: this.valueFFcode.join(),
-          program_year: 2022
+          program_year: this.program_year
         })
         
         const res = await axios.get(
@@ -3205,6 +3269,32 @@ export default {
       }
     },
     // Utilities
+    calendarGetNurseryColor(n, total, date) {
+        let maxFF = this.calendarGetMaxFF(n, date)
+        
+        if (total === maxFF) {
+            return 'green'
+        } else if (total > maxFF) {
+            return 'red'
+        } else {
+            return 'yellow'
+        }
+    },
+    calendarGetMaxFF(n, date) {
+        if (n == 'Arjasari') {
+            if (date >= '2022-12-21' && date <= '2022-12-31') {
+                return 8
+            } else if (date >= '2023-01-01' && date <= '2023-01-31') {
+                return 5
+            } else return 4
+        } else if (n == 'Ciminyak') {
+            if (date >= '2022-12-21' && date <= '2022-12-31') {
+                return 8
+            } else return 4
+        } else if (n == 'Kebumen' || n == 'Pati') {
+            return 2
+        } else return 4
+    },
     dateFormat(date, format) {
         return moment(date).format(format)
     },
@@ -3296,6 +3386,26 @@ export default {
       if (disabled > 0) {
         return true
       } else return false
+    },
+    getNurseryAlocation(mu_no) {
+        const ciminyak   = ['023', '026', '027', '021' ]
+        const arjasari   = ['022', '024', '025', '020', '029']
+        const kebumen    = ['019']
+        const pati       = ['015']
+        
+        let nursery = 'All'
+
+        if (ciminyak.includes(mu_no)) {
+            nursery = 'Ciminyak'
+        } else if (arjasari.includes(mu_no)) {
+            nursery = 'Arjasari'
+        } else if (kebumen.includes(mu_no)) {
+            nursery = 'Kebumen'
+        } else if (pati.includes(mu_no)) {
+            nursery = 'Pati'
+        }
+        
+        return nursery;
     },
     getSeedCalculation(lahan, typeReturn, indexLahan = null) {
       const calculationAgroforestry = {
@@ -3443,8 +3553,66 @@ export default {
         return exists[secParams]
       }
     },
+    async initializeMaps() {
+      try {
+        const mapOptions = this.maps
+        mapboxgl.accessToken = mapOptions.accessToken
+        if (!mapboxgl.supported()) {
+            Swal.fire({
+                title: 'Warning!',
+                text: `Your browser does not support Mapbox GL.`,
+                icon: 'error',
+                confirmButtonColor: '#f44336',
+            }) 
+        } else {
+          let map = await new mapboxgl.Map({
+              container: 'mapboxDistributionLocationContainer', // container ID
+              style: 'mapbox://styles/mapbox/streets-v12', // style URL
+              center: mapOptions.center,
+              zoom: mapOptions.zoom,
+              projection: 'globe'
+              // projection: 'equirectangular'
+          });
+          // add fullscreen function
+          await map.addControl(new mapboxgl.FullscreenControl());
+          await map.on("load", async function() {
+            // add fog
+            await map.setFog({
+                color: 'rgb(186, 210, 235)', // Lower atmosphere
+                'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+                'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                'space-color': 'rgb(11, 11, 25)', // Background color
+                'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+            });
+            // Add zoom and rotation controls to the map.
+            await map.addControl(new mapboxgl.NavigationControl());
+          })
+          // set marker
+          const marker = new mapboxgl.Marker({
+            draggable: true
+          })
+          .setLngLat(mapOptions.center)
+          .addTo(map);
+          
+          const coordinates = document.getElementById('coordinates');
+          function onDragEnd() {
+            const lngLat = marker.getLngLat();
+            coordinates.style.display = 'block';
+            coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
+          }
+          
+          marker.on('dragend', onDragEnd);
+        }
+      } catch (err) {console.log(err)} finally {
+      }
+    },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    resetJumlahBibit() {
+      this.DetailTreesLahanTemp.forEach((seed, seedIndex) => {
+        this.DetailTreesLahanTemp[seedIndex].amount = 0
+      })
     },
     showingAvailableDates(val) {
       return this.datepicker2NotAvailable.includes(val) == false
@@ -3523,57 +3691,6 @@ export default {
       this.datepicker2Loading = false
       this.datepicker2Key += 1
       this.datepicker2Key2 += 1
-    },
-    getNurseryAlocation(mu_no) {
-        const ciminyak   = ['023', '026', '027', '021' ]
-        const arjasari   = ['022', '024', '025', '020', '029']
-        const kebumen    = ['019']
-        const pati       = ['015']
-        
-        let nursery = 'All'
-
-        if (ciminyak.includes(mu_no)) {
-            nursery = 'Ciminyak'
-        } else if (arjasari.includes(mu_no)) {
-            nursery = 'Arjasari'
-        } else if (kebumen.includes(mu_no)) {
-            nursery = 'Kebumen'
-        } else if (pati.includes(mu_no)) {
-            nursery = 'Pati'
-        }
-        
-        return nursery;
-    },
-    calendarGetNurseryColor(n, total, date) {
-        let maxFF = this.calendarGetMaxFF(n, date)
-        
-        if (total === maxFF) {
-            return 'green'
-        } else if (total > maxFF) {
-            return 'red'
-        } else {
-            return 'yellow'
-        }
-    },
-    calendarGetMaxFF(n, date) {
-        if (n == 'Arjasari') {
-            if (date >= '2022-12-21' && date <= '2022-12-31') {
-                return 8
-            } else if (date >= '2023-01-01' && date <= '2023-01-31') {
-                return 5
-            } else return 4
-        } else if (n == 'Ciminyak') {
-            if (date >= '2022-12-21' && date <= '2022-12-31') {
-                return 8
-            } else return 4
-        } else if (n == 'Kebumen' || n == 'Pati') {
-            return 2
-        } else return 4
-    },
-    resetJumlahBibit() {
-      this.DetailTreesLahanTemp.forEach((seed, seedIndex) => {
-        this.DetailTreesLahanTemp[seedIndex].amount = 0
-      })
     },
     sessionEnd(error) {
         if (error.response.status == 401) {

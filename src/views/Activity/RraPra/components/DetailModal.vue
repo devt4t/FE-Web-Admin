@@ -1052,14 +1052,33 @@ export default {
                 }
             })
         },
-        errorResponse(error) {
+        async errorResponse(error) {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token");
-                    this.$router.push("/");
-                }
+                    if (error.response.status == 401) {
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) {
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
+                    }
+                    if (error.response.status === 500 || error.response.status === 400) {
+                        let errMessage = error.response.data.message
+                        if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `${errMessage || error.message}`,
+                            icon: 'error',
+                            confirmButtonColor: '#f44336',
+                        })
+                    }
                 }
             }
         },

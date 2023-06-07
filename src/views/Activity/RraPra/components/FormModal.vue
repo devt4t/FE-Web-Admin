@@ -4101,17 +4101,17 @@ export default {
                             confirmButtonColor: '#2e7d32',
                             confirmButtonText: 'Okay'
                         })
-                        if (confirm) { 
+                        if (confirm) {
                             localStorage.removeItem("token");
                             this.$router.push("/");
                         }
                     }
-                    if (error.response.status === 500) {
+                    if (error.response.status === 500 || error.response.status === 400) {
                         let errMessage = error.response.data.message
-                        if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                        if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
                         Swal.fire({
                             title: 'Error!',
-                            text: `${errMessage}`,
+                            text: `${errMessage || error.message}`,
                             icon: 'error',
                             confirmButtonColor: '#f44336',
                         })
