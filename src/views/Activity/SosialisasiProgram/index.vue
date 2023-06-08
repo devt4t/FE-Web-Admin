@@ -11,6 +11,7 @@
         ></v-breadcrumbs>
         <!-- Modals -->
         <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
+        <DetailModal :show="modals.detail.show" :id="modals.detail.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.detail.key"/>
         <!-- Main Table -->
         <v-data-table
             data-aos="fade-up"
@@ -105,10 +106,12 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 import FormModal from './components/FormModal.vue'
+import DetailModal from './components/DetailModal.vue'
 
 export default {
   components: {
         FormModal,
+        DetailModal
   },
   data: () => ({
       breadcrumbs: [
@@ -127,6 +130,11 @@ export default {
           programYear: '',
       },
       modals: {
+            detail: {
+                show: false,
+                data: null,
+                key: 65324312,
+            },
             form: {
                 show: false,
                 data: null,
@@ -203,11 +211,15 @@ export default {
             this.table.loading.show = false
         }
     },
-      modalActions(val) {
-          if (val.type == 'close') {
-              this.modals[val.name].show = false
-          }
-      },
+    modalActions(val) {
+        if (val.type == 'close') {
+            this.modals[val.name].show = false
+        }
+    },
+    async showModal(name, data) {
+        this.modals[name].data = await data.form_no
+        this.modals[name].show = await true
+    },
     swalActions(val) {
         this.getTableData()
         const Toast = Swal.mixin({

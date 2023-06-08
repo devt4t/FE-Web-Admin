@@ -161,7 +161,7 @@
                                     >
                                         <v-card-text>
                                             <div v-for="(data, dataIndex) in groupingData[stepperName]">
-                                                <div class="d-flex align-center my-8">
+                                                <div class="d-flex align-center my-8" v-if="data.label">
                                                     <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">{{ data.labelIcon }}</v-icon>{{ data.label }}</p>
                                                     <v-divider class="mx-2" color=""></v-divider>
                                                 </div>
@@ -169,12 +169,13 @@
                                                 <!-- table -->
                                                 <div v-if="data.dataType === 'table'">
                                                     <v-data-table
+                                                        :caption="data.table.caption"
                                                         multi-sort
                                                         :hide-default-footer="data.table.hideDefaultFooter"
                                                         :headers="data.table.headers"
-                                                        :items="datas[stepperName][data.dataKey]"
+                                                        :items="datas[data.dataSource || stepperName][data.dataKey]"
                                                         :items-per-page="data.table.itemsPerPage"
-                                                        :class="`rounded-xl elevation-6 mx-2 mx-lg-3 pa-1 elevation-3 overflow-hidden`"
+                                                        :class="`rounded-xl elevation-6 mx-2 mx-lg-3 pa-1 elevation-3 overflow-hidden mt-4`"
                                                         :show-expand="data.table.expand"
                                                     >
                                                         <!-- Table Index -->
@@ -187,10 +188,47 @@
                                                         </template>
                                                         <!-- Dusun: potential -->
                                                         <template v-slot:item.potential="{item}">
-                                                            <v-chip :color="item.potential == 1 ? 'green' : 'red'" class="white--text pl-1">
+                                                            <v-chip v-if="data.label == 'List Dusun'" :color="item.potential == 1 ? 'green' : 'red'" class="white--text pl-1">
                                                                 <v-icon class="mr-1">mdi-{{ item.potential  == 1 ? 'check' : 'close' }}-circle</v-icon>
                                                                 {{ item.potential == 1 ? 'Ya' : 'Tidak' }}
                                                             </v-chip>
+                                                            <span v-else >{{ item.potential }}</span>
+                                                        </template>
+                                                        <!-- LandOwnership: type_ownership -->
+                                                        <template v-slot:item.type_ownership="{item}">
+                                                            {{ item.land_ownership || item.type_ownership }}
+                                                        </template>
+                                                        <!-- LandOwnership: percentage -->
+                                                        <template v-slot:item.percentage="{item}">
+                                                            {{ item.percentage }}%
+                                                        </template>
+                                                        <!-- FarmerIncome: gender -->
+                                                        <template v-slot:item.gender="{item}">
+                                                            <v-icon>mdi-human-{{ item.gender }}</v-icon>{{ item.gender == 'male' ? 'Laki - Laki' : 'Perempuan' }}
+                                                        </template>
+                                                        <!-- FarmerIncome: capacity -->
+                                                        <template v-slot:item.capacity="{item}">
+                                                            {{ _utils.numberFormat(item.capacity) }} kg
+                                                        </template>
+                                                        <!-- FarmerIncome: source_income -->
+                                                        <template v-slot:item.source_income="{item}">
+                                                            Rp, {{ _utils.numberFormat(item.source_income) }}
+                                                        </template>
+                                                        <!-- DisasterHistory: fatalities -->
+                                                        <template v-slot:item.fatalities="{item}">
+                                                            {{ _utils.numberFormat(item.fatalities) }} orang
+                                                        </template>
+                                                        <!-- Watersource: watersource_utilization -->
+                                                        <template v-slot:item.watersource_utilization="{item}">
+                                                            {{ item.watersource_utilization || 'Belum ada pemanfaatan' }}
+                                                        </template>
+                                                        <!-- ExistingProblem: date_start -->
+                                                        <template v-slot:item.date_start="{item}">
+                                                            {{ _utils.dateFormat(item.date_start, 'DD MMMM YYYY') }}
+                                                            <span v-if="item.date_end && item.date_start != item.date_end">
+                                                                ~
+                                                                {{ _utils.dateFormat(item.date_end, 'DD MMMM YYYY') }}
+                                                            </span>
                                                         </template>
                                                         <!-- Expand -->
                                                         <template v-slot:expanded-item="{ headers, item }">
@@ -258,15 +296,15 @@
                                                                     </v-col>
                                                                 </v-row>
                                                             </td>
-                                                            <!-- Dusun -->
-                                                            <td v-else-if="data.dataKey == 'Dusun'" :colspan="headers.length" class="rounded-xl elevation-0">
+                                                            <!-- Column Detail -->
+                                                            <td v-else :colspan="headers.length" class="rounded-xl elevation-0">
                                                                 <div v-for="(exp, expIndex) in data.table.expandItem">
-                                                                    <div class="d-flex align-center my-4">
+                                                                    <div v-if="exp.label" class="d-flex align-center my-4">
                                                                         <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">{{ exp.labelIcon }}</v-icon>{{ exp.label }}</p>
                                                                         <v-divider class="mx-2" color=""></v-divider>
                                                                     </div>
-                                                                    <v-row class="mb-2">
-                                                                        <v-col v-for="(itemExp, itemExpIndex) in exp.items" :key="`dusun-${item.dusun_name}-column-item-${exp.label}-${expIndex}-${itemExpIndex}`"
+                                                                    <v-row class="my-2">
+                                                                        <v-col v-for="(itemExp, itemExpIndex) in exp.items" :key="`column-${data.label}-item-${expIndex}-${itemExpIndex}`"
                                                                             :cols="itemExp.cols[0]" :sm="itemExp.cols[1]"  :md="itemExp.cols[2]"  :lg="itemExp.cols[3]"
                                                                             :class="{'pa-2': true}"
                                                                         >
@@ -312,19 +350,10 @@
                                                             </td>
                                                         </template>
                                                     </v-data-table>
-                                                    <v-card v-if="data.description" class="rounded-xl mx-2 mx-lg-3 mt-2">
-                                                        <v-card-text>
-                                                            <p class="mb-0 grey darken-3 white--text px-4 rounded-pill" style="font-size: 13px;">
-                                                                <v-icon color="white">mdi-text-box</v-icon>
-                                                                Deskripsi {{ data.label }}
-                                                            </p>
-                                                            <p class="mb-0 pa-2" v-html="datas[stepperName][data.descriptionKey]"></p>
-                                                        </v-card-text>
-                                                    </v-card>
                                                 </div>
                                                 <!-- column -->
                                                 <div v-if="data.dataType === 'column'">
-                                                    <v-row>
+                                                    <v-row class="mx-1 my-1">
                                                         <v-col v-for="(item, itemIndex) in data.items" :key="`column-item-${data.label}-${itemIndex}`"
                                                             :cols="item.cols[0]" :sm="item.cols[1]"  :md="item.cols[2]"  :lg="item.cols[3]"
                                                             :class="{'pa-2': item.dense}"
@@ -333,9 +362,10 @@
                                                                 <v-card-text :class="{'text-center': item.centered, 'pa-2': true}">
                                                                     <p class="mb-0 grey darken-3 white--text px-4 rounded-pill" style="font-size: 13px;">{{ item.label }}</p>
                                                                     <h4 class="mb-0 pa-2">
+                                                                        <span v-if="item.prefix" v-html="item.prefix"></span>
                                                                         <span v-if="item.dataType === 'number'">
-                                                                            {{ _utils.numberFormat(datas[item.dataSource || stepperName][item.dataKey]) }}
-                                                                        </span><span v-else>{{ datas[item.dataSource || stepperName][item.dataKey] }}</span>
+                                                                            {{ _utils.numberFormat(datas[item.dataSource || stepperName][item.dataKey] || 0) }}
+                                                                        </span><span v-else>{{ datas[item.dataSource || stepperName][item.dataKey] || '-' }}</span>
                                                                         <span v-if="item.suffix" v-html="item.suffix"></span>
                                                                     </h4>
                                                                 </v-card-text>
@@ -343,6 +373,19 @@
                                                         </v-col>
                                                     </v-row>
                                                 </div>
+                                                <!-- customs -->
+                                                <div>
+                                                </div>
+                                                <!-- Deskripsi -->
+                                                <v-card v-if="data.description" class="rounded-xl mx-2 mx-lg-3 mt-2">
+                                                    <v-card-text>
+                                                        <p class="mb-0 grey darken-3 white--text px-4 rounded-pill" style="font-size: 13px;">
+                                                            <v-icon color="white">mdi-text-box</v-icon>
+                                                            Deskripsi {{ data.label }}
+                                                        </p>
+                                                        <p class="mb-0 pa-2" v-html="datas[data.dataSource || stepperName][data.descriptionKey] || '-'"></p>
+                                                    </v-card-text>
+                                                </v-card>
                                             </div>
                                         </v-card-text>
                                     </v-card>
@@ -387,6 +430,7 @@ export default {
         datas: null,
         groupingData: {
             RRA: [
+                // Batas Wilayah
                 {
                     label: 'Batas Wilayah',
                     labelIcon: 'mdi-compass-rose',
@@ -403,6 +447,7 @@ export default {
                         ]
                     }
                 },
+                // Landscape Desa
                 {
                     label: 'Landscape Desa',
                     labelIcon: 'mdi-home',
@@ -578,6 +623,7 @@ export default {
                         },
                     ]
                 },
+                // Pola Pemanfaatan Lahan
                 {
                     label: 'Pola Pemanfaatan Lahan',
                     labelIcon: 'mdi-land-fields',
@@ -593,6 +639,7 @@ export default {
                         ]
                     }
                 },
+                // Kelembagaan Masyarakat
                 {
                     label: 'Kelembagaan Masyarakat',
                     labelIcon: 'mdi-account-cowboy-hat',
@@ -609,6 +656,7 @@ export default {
                         ]
                     }
                 },
+                // Potensi Pertanian Organik
                 {
                     label: 'Potensi Pertanian Organik',
                     labelIcon: 'mdi-barn',
@@ -626,6 +674,7 @@ export default {
                         ]
                     }
                 },
+                // Pemasaran Hasil Produksi
                 {
                     label: 'Pemasaran Hasil Produksi',
                     labelIcon: 'mdi-store',
@@ -645,6 +694,7 @@ export default {
                         ]
                     }
                 },
+                // Identifikasi Petani Inovatif
                 {
                     label: 'Identifikasi Petani Inovatif',
                     labelIcon: 'mdi-account-star',
@@ -663,6 +713,7 @@ export default {
                         ]
                     }
                 },
+                // List Dusun
                 {
                     label: 'List Dusun',
                     labelIcon: 'mdi-home-group',
@@ -929,6 +980,7 @@ export default {
                 },
             ],
             PRA: [
+                // Kepemilikan Lahan
                 {
                     label: 'Kepemilikan Lahan',
                     labelIcon: 'mdi-account-tag',
@@ -941,16 +993,443 @@ export default {
                         itemsPerPage: -1,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Kategori Kepemilikan', value: 'type_ownership'},
+                            {text: 'Presentase', value: 'percentage'},
+                        ]
+                    }
+                },
+                // Penyebaran Lokasi Lahan Kering / Kritis
+                {
+                    label: 'Penyebaran Lokasi Lahan Kering / Kritis',
+                    labelIcon: 'mdi-land-fields',
+                    dataType: 'table',
+                    dataKey: 'DryLandSpread',
+                    description: true,
+                    descriptionKey: `distribution_of_critical_land_locations_description`,
+                    table: {
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Dusun', value: 'dusun_name'},
+                            {text: 'Pola Pemanfaatan Lahan', value: 'type_utilization'},
+                        ]
+                    }
+                },
+                // Pendapatan dan Pemasaran Komoditas (Ekonomi)
+                {
+                    label: 'Pendapatan dan Pemasaran Komoditas (Ekonomi)',
+                    labelIcon: 'mdi-hand-coin',
+                    dataType: 'column',
+                    items: [
+                        // Nama Komoditas
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_commodity_name',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Komoditas (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_commodity_name',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Komoditas (Perempuan)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        // Rata - Rata Periode Pemasaran
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_period',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Rata - Rata Periode Pemasaran (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_period',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Rata - Rata Periode Pemasaran (Perempuan)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        // Rata - Rata Kapasitas
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_average_capacity',
+                            dataSource: null,
+                            dataType: 'number',
+                            dense: true,
+                            label: 'Rata - Rata Kapasitas (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: 'kg',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_average_capacity',
+                            dataSource: null,
+                            dataType: 'number',
+                            dense: true,
+                            label: 'Rata - Rata Kapasitas (Perempuan)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: 'kg',
+                        },
+                        // Metode Pemasaran
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_method',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Metode Pemasaran (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_method',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Metode Pemasaran (Perempuan)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        // Sumber
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_source',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Sumber (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_source',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Sumber (Perempuan)',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        // Pendapatan Terendah
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_min_income',
+                            dataSource: null,
+                            dataType: 'number',
+                            dense: true,
+                            label: 'Pendapatan Terendah (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: 'Rp,',
+                            suffix: '',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_min_income',
+                            dataSource: null,
+                            dataType: 'number',
+                            dense: true,
+                            label: 'Pendapatan Terendah (Perempuan)',
+                            labelIcon: '',
+                            prefix: 'Rp,',
+                            suffix: '',
+                        },
+                        // Pendapatan Tertinggi
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'man_max_income',
+                            dataSource: null,
+                            dataType: 'number',
+                            dense: true,
+                            label: 'Pendapatan Tertinggi (Laki - Laki)',
+                            labelIcon: '',
+                            prefix: 'Rp,',
+                            suffix: '',
+                        },
+                        {
+                            centered: true,
+                            cols: [6,6,6,6],
+                            dataKey: 'woman_max_income',
+                            dataSource: null,
+                            dataType: 'number',
+                            dense: true,
+                            label: 'Pendapatan Tertinggi (Perempuan)',
+                            labelIcon: '',
+                            prefix: 'Rp,',
+                            suffix: '',
+                        },
+                    ]
+                },
+                {
+                    label: '',
+                    labelIcon: '',
+                    dataType: 'table',
+                    dataKey: 'FarmerIncome',
+                    description: false,
+                    descriptionKey: ``,
+                    table: {
+                        caption: 'Sampling Data',
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Gender', value: 'gender'},
+                            {text: 'Nama Komoditas', value: 'commodity_name'},
+                            {text: 'Kapasitas', value: 'capacity'},
+                            {text: 'Periode', value: 'period'},
+                            {text: 'Pendapatan', value: 'source_income'},
+                        ]
+                    }
+                },
+                // Hasil Ekonomi Pemanfaatan Lahan
+                {
+                    label: 'Hasil Ekonomi Pemanfaatan Lahan',
+                    labelIcon: 'mdi-store',
+                    dataType: 'column',
+                    description: true,
+                    descriptionKey: `land_utilization_description`,
+                    items: [
+                        // Sumber Data
+                        {
+                            centered: false,
+                            cols: [12,6,5,4],
+                            dataKey: 'land_utilization_source',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Sumber',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                        // Sumber Data
+                        {
+                            centered: false,
+                            cols: [12,6,7,8],
+                            dataKey: 'land_utilization_plant_type',
+                            dataSource: null,
+                            dataType: 'text',
+                            dense: true,
+                            label: 'Jenis Tanaman',
+                            labelIcon: '',
+                            prefix: '',
+                            suffix: '',
+                        },
+                    ]
+                },
+                // Pupuk Dalam Pemanfaatan Lahan
+                {
+                    label: 'Pupuk Dalam Pemanfaatan Lahan',
+                    labelIcon: 'mdi-beer',
+                    dataType: 'table',
+                    dataKey: 'Fertilizer',
+                    description: false,
+                    descriptionKey: ``,
+                    table: {
+                        caption: null,
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Pupuk', value: 'fertilizer_name'},
+                            {text: 'Kategori', value: 'fertilizer_categories'},
+                            {text: 'Tipe', value: 'fertilizer_type'},
+                            {text: 'Sumber', value: 'fertilizer_source'},
+                            {text: 'Deskripsi', value: 'fertilizer_description'},
+                        ]
+                    }
+                },
+                // Pestisida Dalam Pemanfaatan Lahan
+                {
+                    label: 'Pestisida Dalam Pemanfaatan Lahan',
+                    labelIcon: 'mdi-weather-windy',
+                    dataType: 'table',
+                    dataKey: 'Pesticide',
+                    description: false,
+                    descriptionKey: ``,
+                    table: {
+                        caption: null,
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Pestisida', value: 'pesticide_name'},
+                            {text: 'Kategori', value: 'pesticide_categories'},
+                            {text: 'Tipe', value: 'pesticide_type'},
+                            {text: 'Sumber', value: 'pesticide_source'},
+                            {text: 'Deskripsi', value: 'pesticide_description'},
+                        ]
+                    }
+                },
+                // Bencana
+                {
+                    label: 'Bencana',
+                    labelIcon: 'mdi-heart-broken',
+                    dataType: 'table',
+                    dataKey: 'DisasterHistory',
+                    description: false,
+                    descriptionKey: ``,
+                    table: {
+                        caption: null,
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama', value: 'disaster_name'},
+                            {text: 'Tahun', value: 'year'},
+                            {text: 'Kategori', value: 'disaster_categories'},
+                            {text: 'Korban Jiwa', value: 'fatalities'},
+                            {text: 'Detail', value: 'detail'},
+                        ]
+                    }
+                },
+                // Sumber Air
+                {
+                    label: 'Sumber Air',
+                    labelIcon: 'mdi-water-pump',
+                    dataType: 'table',
+                    dataKey: 'Watersource',
+                    description: true,
+                    descriptionKey: `watersource_description`,
+                    table: {
+                        caption: null,
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama', value: 'watersource_name'},
+                            {text: 'Tipe', value: 'watersource_type'},
+                            {text: 'Kondisi', value: 'watersource_condition'},
+                            {text: 'Pemanfaatan', value: 'watersource_utilization'},
+                        ]
+                    }
+                },
+                // Permasalahan Yang Ada
+                {
+                    label: 'Permasalahan Yang Ada',
+                    labelIcon: 'mdi-book-alert',
+                    dataType: 'table',
+                    dataKey: 'ExistingProblem',
+                    description: false,
+                    descriptionKey: ``,
+                    table: {
+                        caption: null,
+                        expand: true,
+                        expandItem: [
+                            {
+                                label: '',
+                                labelIcon: '',
+                                items: [
+                                    {
+                                        cols: [12,12,12,12],
+                                        dataKey: 'problem_solution',
+                                        dataType: 'text',
+                                        label: 'Solusi',
+                                        labelIcon: null,
+                                        suffix: ``,
+                                    },
+                                ]
+                            },
+                        ],
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama', value: 'problem_name'},
+                            {text: 'Kategori', value: 'problem_categories'},
+                            {text: 'Tanggal', value: 'date_start'},
+                            {text: 'Sumber', value: 'problem_source'},
+                            { text: 'Solusi', value: 'data-table-expand' },
                         ]
                     }
                 },
                 {
-                    label: 'Penyebaran Lokasi Lahan Kering / Kritis',
-                    labelIcon: 'mdi-account-tag',
+                    label: '',
+                    labelIcon: '',
                     dataType: 'table',
-                    dataKey: 'LandOwnership',
-                    description: true,
-                    descriptionKey: `land_ownership_description`,
+                    dataKey: 'ExistingProblem',
+                    description: false,
+                    descriptionKey: ``,
+                    table: {
+                        caption: 'Matrik Permasalahan',
+                        expand: false,
+                        expandItem: [
+                        ],
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Masalah', value: 'problem_name', align: 'center'},
+                            {text: 'Dirasakan Banyak Orang', value: 'impact_to_people', align: 'center'},
+                            {text: 'Sering Terjadi', value: 'interval_problem', align: 'center'},
+                            {text: 'Potensi', value: 'potential', align: 'center'},
+                            {text: 'Prioritas', value: 'priority', align: 'center'},
+                            {text: 'Total', value: 'total_value', align: 'center'},
+                            {text: 'Rank', value: 'ranking', align: 'center'},
+                        ]
+                    }
+                },
+            ],
+            "Flora & Fauna": [
+                {
+                    label: 'Data Flora Endemik',
+                    labelIcon: 'mdi-flower',
+                    dataType: 'table',
+                    dataSource: 'PRA',
+                    dataKey: '',
+                    table: {
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                        ]
+                    }
+                },
+                {
+                    label: 'Data Fauna Endemik',
+                    labelIcon: 'mdi-bird',
+                    dataType: 'table',
+                    dataSource: 'PRA',
+                    dataKey: '',
                     table: {
                         hideDefaultFooter: true,
                         itemsPerPage: -1,
@@ -979,15 +1458,18 @@ export default {
         },
         stepper: {
             model: 1,
-            steps: ['RRA', 'PRA'],
-            steps_icon: ['home-group', 'home-analytics']
+            steps: ['RRA', 'PRA', 'Flora & Fauna'],
+            steps_icon: ['home-group', 'home-analytics', 'cat']
         },
     }),
     computed: {
         showModal: {
             get: function () {
                 if (this.show) {
-                    if (this.id) this.getData(this.id)
+                    
+                    if (this.id) {
+                        this.getData(this.id)
+                    }
                 }
                 return this.show
             },
@@ -1007,13 +1489,13 @@ export default {
     watch: {
         'stepper.model': {
             handler(val) {
-                console.log(val)
+                // console.log(val)
             }
         }
     },
     methods: {
         confirmVerification(type) {
-            const url = type == 'verify' ? 'VerificationScooping' : 'UnverificationScooping'
+            const url = type == 'verify' ? 'VerificationRraPra' : 'UnverificationRraPra'
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -1027,7 +1509,7 @@ export default {
                 if (result.isConfirmed) {
                     this.loading.show = true
                     this.loading.text = `${type == 'verify' ? 'Verifying' : 'Unverifying'} data...`
-                    axios.post(this.$store.getters.getApiUrl(url), {data_no: this.id, verified_by: this.$store.state.User.email}, this.$store.state.apiConfig)
+                    axios.post(this.$store.getters.getApiUrl(url), {form_no: this.id, verified_by: this.$store.state.User.email}, this.$store.state.apiConfig)
                     .then(res => {
                         Swal.fire({
                             title: 'Verified!',
@@ -1036,7 +1518,7 @@ export default {
                             confirmButtonColor: '#2e7d32',
                         })
                         this.getData(this.id)
-                        this.$emit('action', {type: 'refresh-table'})
+                        this.$emit('swal', {type: 'success', message: `Data ${type == 'verify' ? 'Verified' : 'Unverified'}!`})
                     }).catch(err => {
                         this.errorResponse(err)
                         Swal.fire({
@@ -1085,14 +1567,14 @@ export default {
         async getData(id) {
             try {
                 this.loading.show = true
-                this.loading.text = `Getting Form "${this.id}" data...`
-                this.imageKeyComponent += 1
+                this.loading.text = `Getting Form "${id}" data...`
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailRraPra?form_no=${id}`), this.$store.state.apiConfig)
                 this.datas = res.data.data.result
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
                 this.stepper.model = 2
-                console.log(this.datas)
+                this.verified_data = this.datas.RRA.is_verify
+                console.log(this.verified_data)
             } catch (err) {
                 this.errorResponse(err)
                 this.$emit('action', {type: 'close', name: 'detail'})

@@ -1277,7 +1277,7 @@
                                 </v-card-text>
                             </v-card>
                         </v-stepper-content>
-                        <!-- Social Impact -->
+                        <!-- Flora & Fauna -->
                         <v-stepper-step v-if="localConfig.windowWidth < localConfig.breakLayoutFrom && stepper.steps.length >= 3" color="green" :complete="stepper.model > 3" :step="3" editable class="rounded-xl py-3 ma-1">
                             <span><v-icon :color="stepper.model > 3 ? 'green' : ''" class="mr-1">mdi-{{ stepper.steps_icon[2] }}</v-icon>{{ stepper.steps[2] }}</span>
                         </v-stepper-step>
@@ -1592,6 +1592,7 @@
                     class=""
                     rounded
                     :key="`saveButton`"
+                    :disabled="disabledSave"
                     @click="() => save()"
                     v-else
                 >
@@ -1834,7 +1835,7 @@ export default {
                 },
                 {
                     title: 'Data Fauna Endemik',
-                    icon: 'mdi-cat',       
+                    icon: 'mdi-bird',       
                     type: 'multiple-input',
                     required: true,
                     optional: false,
@@ -2920,7 +2921,7 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
-                    pattern: {
+                    type_utilization: {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [],
@@ -2937,12 +2938,12 @@ export default {
                 model: [],
                 default: [{
                     dusun_name: null,
-                    pattern: null,
+                    type_utilization: null,
                 }],
                 description: {
                     inputType: 'textarea',
                     type: 'text',
-                    label: 'Deskripsi Kepemilikan Lahan',
+                    label: 'Deskripsi Penyebaran Lokasi Lahan Kering / Kritis',
                     model: null,
                     required: false,
                     readonly: false,
@@ -2987,7 +2988,7 @@ export default {
                         readonly: false,
                         lgView: 6
                     },
-                    comodity_name: {
+                    commodity_name: {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Nama Komoditas',
@@ -3061,7 +3062,7 @@ export default {
                         suffix: '',
                         lgView: 6
                     },
-                    amount: {
+                    source_income: {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Pendapatan (Perbulan)',
@@ -3188,34 +3189,34 @@ export default {
                 default: [{
                     family_type: null,
                     job: null,
-                    comodity_name: null,
+                    commodity_name: null,
                     method: null,
                     indirect_method: null,
                     period: null,
-                    capacity: null,
+                    capacity: 0,
                     family_member: null,
                     name: null,
-                    amount: 0,
-                    source: null
+                    source_income: 0,
+                    source: []
                 },{
                     family_type: null,
                     job: null,
-                    comodity_name: null,
+                    commodity_name: null,
                     method: null,
                     indirect_method: null,
                     period: null,
-                    capacity: null,
+                    capacity: 0,
                     family_member: null,
                     name: null,
-                    amount: 0,
-                    source: null
+                    source_income: 0,
+                    source: []
                 }],
                 male_data: [],
                 female_data: []
             },
             // Hasil Ekonomi Pemanfaatan Lahan
             land_utilization_source: {
-                label: 'Sumber Data',
+                label: 'Sumber',
                 model: '',
                 itemText: 'value',
                 placeholder: ``,
@@ -3682,7 +3683,7 @@ export default {
                 },
                 totalCanChange: true
             },
-            // SOCIAL IMPACT
+            // Flora & Fauna
             flora_data: {
                 inputType: 'multiple-input',
                 form: {
@@ -3876,8 +3877,8 @@ export default {
         },
         stepper: {
             model: 1,
-            steps: ['RRA', 'PRA', 'Social Impact'],
-            steps_icon: ['home-group', 'home-analytics', 'home-alert']
+            steps: ['RRA', 'PRA', 'Flora & Fauna'],
+            steps_icon: ['home-group', 'home-analytics', 'cat']
         },
     }),
     watch: {
@@ -4073,6 +4074,9 @@ export default {
                 if (newVal) {
                 } else this.$emit('action', {type: 'close', name: 'form'})
             }
+        },
+        disabledSave() {
+            return false
         }
     },
     mounted() {
@@ -4249,6 +4253,7 @@ export default {
                                 })
                             })
                         } else if (key === 'farmer_income') {
+                            data.collection_type = value.collection_type.model
                             if (value.collection_type.model === 'Bukan Sampling') {
                                 data.farmer_income = []
                                 data.man_source = value.static_form.source.male_model
@@ -4267,9 +4272,71 @@ export default {
                                 data.woman_average_capacity = value.static_form.avg_capacity.female_model
                                 data.woman_min_income = value.static_form.min_amount.female_model
                                 data.woman_max_income = value.static_form.max_amount.female_model
+                            } else {
+                                let male_source = []
+                                let male_total_capacity = 0
+                                let male_min_income = 0
+                                let male_max_income = 0
+                                const male_data = value.male_data.map((fimdm, fimdmIndex) => {
+                                    const source_income = parseInt(fimdm.source_income || 0)
+                                    if (fimdm.source) fimdm.source.map(fimdms => {
+                                        if (!male_source.includes(fimdms)) male_source.push(fimdms)
+                                    })
+                                    male_total_capacity += parseInt(fimdm.capacity || 0)
+                                    if (fimdmIndex === 0) male_min_income = source_income
+                                    else if (male_min_income > source_income) male_min_income = source_income
+                                    if (male_max_income < source_income) male_max_income = source_income
+                                    
+                                    return {
+                                        ...fimdm,
+                                        gender: 'male',
+                                        source: fimdm.source ? fimdm.source.toString() : '',
+                                        capacity: parseInt(fimdm.capacity || 0),
+                                        source_income: source_income,
+                                    }
+                                })
+                                let female_source = []
+                                let female_total_capacity = 0
+                                let female_min_income = 0
+                                let female_max_income = 0
+                                const female_data = value.female_data.map((fimdf, fimdfIndex) => {
+                                    const source_income = parseInt(fimdf.source_income || 0)
+                                    if (fimdf.source) fimdf.source.map(fimdfs => {
+                                        if (!female_source.includes(fimdfs)) female_source.push(fimdfs)
+                                    })
+                                    female_total_capacity += parseInt(fimdf.capacity || 0)
+                                    if (fimdfIndex === 0) female_min_income = source_income
+                                    else if (female_min_income > source_income) female_min_income = source_income
+                                    if (female_max_income < source_income) female_max_income = source_income
+                                    return {
+                                        ...fimdf,
+                                        gender: 'female',
+                                        source: fimdf.source ? fimdf.source.toString() : '',
+                                        capacity: fimdf.capacity || 0,
+                                        source_income: source_income,
+                                    }
+                                })
+                                data.farmer_income = [...male_data, ...female_data]
+                                data.man_source = male_source.toString()
+                                data.man_commodity_name = null
+                                data.man_method = null
+                                data.man_marketing = null
+                                data.man_period = null
+                                data.man_average_capacity = Math.round(male_total_capacity / male_data.length)
+                                data.man_min_income = male_min_income
+                                data.man_max_income = male_max_income
+                                data.woman_source = female_source.toString()
+                                data.woman_commodity_name = null
+                                data.woman_method = null
+                                data.woman_marketing = null
+                                data.woman_period = null
+                                data.woman_average_capacity = Math.round(female_total_capacity / female_data.length)
+                                data.woman_min_income = female_min_income
+                                data.woman_max_income = female_max_income
                             }
                         } 
                     }
+                    // console.log(data)
                     const res = await axios.post(url, data, this.$store.state.apiConfig)
                     if (res) {
                         this.showModal = false
@@ -4304,8 +4371,6 @@ export default {
                 this.inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model
                 // set sampling job list
                 const jobs = [
-                    'Petani',
-                    'Buruh Tani',
                     'Karyawan Swasta',
                     'ASN',
                     'Wiraswasta',
@@ -4322,7 +4387,7 @@ export default {
                     'Konservasi',
                 ]
                 this.inputs.land_use_patterns.form.pattern.items = polaTanam
-                this.inputs.distribution_of_critical_land_locations.form.pattern.items = polaTanam
+                this.inputs.distribution_of_critical_land_locations.form.type_utilization.items = polaTanam
                 // get list nama pohon
                 const resTrees = await this.getOptionsDataReturn('Pohon Data', 'GetTreesAll')
                 const listTrees = await resTrees.data.map(tree => {return tree.tree_name})
@@ -4452,26 +4517,79 @@ export default {
                 inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model
                 inputs.distribution_of_critical_land_locations.model = [{
                     dusun_name: 'Dusun 1',
-                    pattern: 'Konservasi'
+                    type_utilization: 'Konservasi'
                 }]
                 inputs.distribution_of_critical_land_locations.description.model = 'Di dusun 1 masih banyak lahan kering yang memungkinkan untuk ditanami dengan pola Konservasi'
-                inputs.farmer_income.collection_type.model = 'Bukan Sampling'
-                inputs.farmer_income.static_form.source.male_model = 'Penjualan hasil tanaman'
-                inputs.farmer_income.static_form.comodity_name.male_model = 'Beras, Kopi'
-                inputs.farmer_income.static_form.method.male_model = ['Direct', 'Indirect']
-                inputs.farmer_income.static_form.indirect_method.male_model = ['UMKM']
-                inputs.farmer_income.static_form.avg_period.male_model = 'Musiman'
-                inputs.farmer_income.static_form.avg_capacity.male_model = 200
-                inputs.farmer_income.static_form.min_amount.male_model = 3000000
-                inputs.farmer_income.static_form.max_amount.male_model = 9000000
-                inputs.farmer_income.static_form.source.female_model = 'Penjualan hasil tanaman'
-                inputs.farmer_income.static_form.comodity_name.female_model = 'Sayur, Jagung, Kopi'
-                inputs.farmer_income.static_form.method.female_model = ['Direct', 'Indirect']
-                inputs.farmer_income.static_form.indirect_method.female_model = ['UMKM']
-                inputs.farmer_income.static_form.avg_period.female_model = 'Bulanan'
-                inputs.farmer_income.static_form.avg_capacity.female_model = 200
-                inputs.farmer_income.static_form.min_amount.female_model = 2000000
-                inputs.farmer_income.static_form.max_amount.female_model = 7000000
+                // Farmer Income Sampling
+                inputs.farmer_income.collection_type.model = 'Sampling'
+                inputs.farmer_income.male_data = [{
+                    family_type: 'Keluarga Petani',
+                    job: null,
+                    commodity_name: 'Kopi',
+                    method: 'Direct',
+                    indirect_method: null,
+                    period: 'Musiman',
+                    capacity: 1000,
+                    family_member: 5,
+                    name: 'Asep',
+                    source_income: 10000000,
+                    source: ['Kopi']
+                },{
+                    family_type: 'Keluarga Non-Petani',
+                    job: 'ASN',
+                    commodity_name: 'Mangga',
+                    method: 'Indirect',
+                    indirect_method: 'UMKM',
+                    period: 'Harian',
+                    capacity: 10,
+                    family_member: 6,
+                    name: 'Rambo',
+                    source_income: 12000000,
+                    source: ['Mangga']
+                }]
+                inputs.farmer_income.female_data = [{
+                    family_type: 'Keluarga Petani',
+                    job: null,
+                    commodity_name: 'Kopi',
+                    method: 'Direct',
+                    indirect_method: null,
+                    period: 'Musiman',
+                    capacity: 1000,
+                    family_member: 5,
+                    name: 'Asepah',
+                    source_income: 10000000,
+                    source: ['Kopi']
+                },{
+                    family_type: 'Keluarga Non-Petani',
+                    job: 'ASN',
+                    commodity_name: 'Mangga',
+                    method: 'Indirect',
+                    indirect_method: 'UMKM',
+                    period: 'Harian',
+                    capacity: 10,
+                    family_member: 6,
+                    name: 'Teh Rambo',
+                    source_income: 12000000,
+                    source: ['Mangga']
+                }]
+                // Farmer Income Not Sampling
+                // inputs.farmer_income.collection_type.model = 'Bukan Sampling'
+                // inputs.farmer_income.static_form.source.male_model = 'Penjualan hasil tanaman'
+                // inputs.farmer_income.static_form.comodity_name.male_model = 'Beras, Kopi'
+                // inputs.farmer_income.static_form.method.male_model = ['Direct', 'Indirect']
+                // inputs.farmer_income.static_form.indirect_method.male_model = ['UMKM']
+                // inputs.farmer_income.static_form.avg_period.male_model = 'Musiman'
+                // inputs.farmer_income.static_form.avg_capacity.male_model = 200
+                // inputs.farmer_income.static_form.min_amount.male_model = 3000000
+                // inputs.farmer_income.static_form.max_amount.male_model = 9000000
+                // inputs.farmer_income.static_form.source.female_model = 'Penjualan hasil tanaman'
+                // inputs.farmer_income.static_form.comodity_name.female_model = 'Sayur, Jagung, Kopi'
+                // inputs.farmer_income.static_form.method.female_model = ['Direct', 'Indirect']
+                // inputs.farmer_income.static_form.indirect_method.female_model = ['UMKM']
+                // inputs.farmer_income.static_form.avg_period.female_model = 'Bulanan'
+                // inputs.farmer_income.static_form.avg_capacity.female_model = 200
+                // inputs.farmer_income.static_form.min_amount.female_model = 2000000
+                // inputs.farmer_income.static_form.max_amount.female_model = 7000000
                 inputs.land_utilization_source.model = 'Sawah'
                 inputs.land_utilization_plant_type.model = ['Padi', 'Jagung']
                 inputs.land_utilization_description.model = 'Jual padi dan jagung'

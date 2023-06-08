@@ -161,7 +161,7 @@
       </v-dialog>
 
       <!-- Modal Create Sostam Per~FF -->
-      <v-dialog v-model="dialogAdd.show" max-width="777" content-class="rounded-xl" persistent scrollable>
+      <v-dialog v-model="dialogAdd.show" max-width="999" content-class="rounded-xl" persistent scrollable>
         <v-card rounded="xl" elevation="10">
           <!-- Title -->
           <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
@@ -312,39 +312,77 @@
                   </v-btn>
                 </v-col>
                 <!-- Lokasi Distribusi -->
+                <v-col>
+                  <div class="d-flex align-center my-0">
+                      <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-map-marker</v-icon>Pilih Lokasi Distribusi</p>
+                      <v-divider class="mx-2" color=""></v-divider>
+                  </div>
+                </v-col>
                 <v-col cols="12">
                   <!-- map -->
                   <div style="position: relative">
                     <div id="mapboxDistributionLocationContainer" ref="mapbox" :key="`maps-distribution-location-${dialogAdd.show}`" style="height: 400px;width: 100%" class="rounded-xl overflow-hidden"></div>
-                    <pre id="coordinates" class="coordinates-sostam"></pre>
+                    <!-- <pre id="coordinates" class="coordinates-sostam"></pre> -->
                   </div>
 
                   <v-text-field
+                    color="green"
                     dense
                     outlined
                     rounded
-                    v-model="dataToStore.distribution_location"
-                    label="Distribution Location"
+                    :value="`${maps.location.lng}, ${maps.location.lat}`"
+                    label="Koordinat Distribusi (Long, Lat)"
                     :rules="[(v) => !!v || 'Field is required']"
                     hide-details
                     readonly
                     class="mt-3"
                   ></v-text-field>
+                  <v-text-field
+                    color="green"
+                    dense
+                    outlined
+                    rounded
+                    placeholder="Balai Desa / Rumah Bp ... / dll"
+                    v-model="dataToStore.distribution_location"
+                    label="Detail Alamat Distribusi"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                    class="mt-3"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-autocomplete
+                      dense
+                      color="success"
+                      hide-details
+                      item-color="success"
+                      item-text="material_name"
+                      item-value="material_no"
+                      :items="training_material_items"
+                      label="Materi Pelatihan"
+                      :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                      outlined
+                      rounded
+                      readonly
+                      v-model="dataToStore.training_material"
+                  ></v-autocomplete>
                 </v-col>
                 <!-- Lahans Table -->
                 <v-col cols="12" sm="12" md="12">
-                  <v-row class="align-center mb-4 px-5">
+                  <v-row class="align-center mb-4">
                     <v-col cols="12" class="">
-                      <h4>List Lahan</h4>
-                      <v-divider class="mx-5"></v-divider>
-                      <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Lahan</p>
+                      <div class="d-flex align-center my-0">
+                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-land-fields</v-icon>List Lahan Petani</p>
+                        <v-divider class="mx-2" color=""></v-divider>
+                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Lahan</p>
+                      </div>
                     </v-col>
-                    <v-col cols="12" class="d-flex justify-end">
+                    <!-- <v-col cols="12" class="d-flex justify-end">
                       <v-btn :disabled="!options.ff.model" color="info" rounded @click="getLahansFF" small>
                         <v-icon class="mr-1" small>mdi-refresh</v-icon>
                         Refresh Lahan
                       </v-btn>
-                    </v-col>
+                    </v-col> -->
                   </v-row>
                   <v-data-table
                     color="success"
@@ -1877,34 +1915,22 @@ export default {
     dataToStore: {
       selectedFF: {},
       hasSostam: false,
+      training_material: 'TR010',
       distribution_time: '',
       distribution_location: '',
       planting_time: '',
       penlub_time: '',
       lahans: []
     },
+    training_material_items: [],
     maps:{
       accessToken: '',
-      mapStyle: '',
-      model: null,
       attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
       center: [113.921300, -0.789300],
-      // center: [39.826204, 21.422484],
-      // center: [107.52657620636666, -7.0917231719],
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      legends: {
-          model: ''
-      },
-      listMarker: [],
-      loading: {
-          show: false,
-          text: 'Loading...'
-      },
-      zoom: 3,
       geojson: {},
+      hoveredStateId: 0,
       key: 111,
       layerId: 0,
-      hoveredStateId: 0,
       layerStyle: {
           outline: {
               color: '#000000'
@@ -1913,13 +1939,26 @@ export default {
               color: '#f06800'
           },
       },
+      legends: {
+          model: ''
+      },
+      listMarker: [],
+      loading: {
+        show: false,
+        text: 'Loading...'
+      },
+      location: {lng: '', lat: ''},
+      mapStyle: '',
+      model: null,
       popup: {
           model: false,
           content: {
           title: '',
           description: ''
           }
-      }
+      },
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      zoom: 3,
     },
     lottie: {
         data: {
@@ -1998,6 +2037,36 @@ export default {
   },
 
   methods: {
+    async errorResponse(error) {
+        console.log(error)
+        if (error.response) {
+            if (error.response.status) {
+                if (error.response.status == 401) {
+                    const confirm = await Swal.fire({
+                        title: 'Session Ended!',
+                        text: "Please login again.",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    if (confirm) {
+                        localStorage.removeItem("token");
+                        this.$router.push("/");
+                    }
+                }
+                if (error.response.status === 500 || error.response.status === 400) {
+                    let errMessage = error.response.data.message
+                    if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                    Swal.fire({
+                        title: 'Error!',
+                        text: `${errMessage || error.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    })
+                }
+            }
+        }
+    },
     async firstAccessPage() {
       this.program_year = this.$store.state.programYear.model
       this.maps.accessToken = this.$store.state.maps.accessToken
@@ -2007,6 +2076,7 @@ export default {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data == '-' ? 'all' : this.User.ff.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+      this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
 
@@ -2028,7 +2098,16 @@ export default {
       await this.getJob();
       await this.getFF();
       await this.getUMAll();
-      this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
+      this.training_material_items = await this.callApiGet('GetTrainingMaterials')
+    },
+    async callApiGet(url) {
+        try {
+            const response = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+            if (response) {
+                const data = response.data.data.result
+                return data
+            } else return null
+        } catch (error) { this.errorResponse(error)}
     },
     checkRoleAccess() {
       if (this.User.role_group == "IT") {
@@ -3573,8 +3652,17 @@ export default {
               projection: 'globe'
               // projection: 'equirectangular'
           });
-          // add fullscreen function
-          await map.addControl(new mapboxgl.FullscreenControl());
+          // set geolocate for get current user location
+          const geolocate = new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true
+            },
+            // When active the map will receive updates to the device's location as it changes.
+            trackUserLocation: true,
+            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+            showUserHeading: false
+          })
+          // Map on Load
           await map.on("load", async function() {
             // add fog
             await map.setFog({
@@ -3584,24 +3672,46 @@ export default {
                 'space-color': 'rgb(11, 11, 25)', // Background color
                 'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
             });
+            // Add Geocoder
+            map.addControl(
+              new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+              })
+            );
+            // add fullscreen function
+            await map.addControl(new mapboxgl.FullscreenControl());
             // Add zoom and rotation controls to the map.
             await map.addControl(new mapboxgl.NavigationControl());
+            // Add geolocate control to the map.
+            await map.addControl(geolocate);
           })
+          mapOptions.location = {lng: mapOptions.center[0], lat: mapOptions.center[1]}
           // set marker
           const marker = new mapboxgl.Marker({
             draggable: true
           })
           .setLngLat(mapOptions.center)
           .addTo(map);
-          
-          const coordinates = document.getElementById('coordinates');
-          function onDragEnd() {
+          // Map on click
+          map.on('click', (e) => {
+            marker.setLngLat(e.lngLat)
+            showMarkerLngLat()
+          })
+          // show coordinates marker
+          // const coordinates = document.getElementById('coordinates');
+          function showMarkerLngLat() {
             const lngLat = marker.getLngLat();
-            coordinates.style.display = 'block';
-            coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
+            mapOptions.location = lngLat
+            // coordinates.style.display = 'block';
+            // coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
           }
-          
-          marker.on('dragend', onDragEnd);
+          marker.on('drag', showMarkerLngLat);
+          // geolocate event
+          geolocate.on('geolocate', () => {
+            marker.setLngLat(map.getCenter())
+            showMarkerLngLat()
+          });
         }
       } catch (err) {console.log(err)} finally {
       }
