@@ -156,14 +156,14 @@ export default {
         map.addControl(new mapboxgl.FullscreenControl());
         
         map.on('load', () => {
-          map.addSource('mapbox-dem', {
-            'type': 'raster-dem',
-            'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
-            'tileSize': 512,
-            'maxzoom': 14
-          });
+          // map.addSource('mapbox-dem', {
+          //   'type': 'raster-dem',
+          //   'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+          //   'tileSize': 512,
+          //   'maxzoom': 14
+          // });
           // add the DEM source as a terrain layer with exaggerated height
-          map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+          // map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
           map.setFog({
             color: 'rgb(186, 210, 235)', // Lower atmosphere
             'high-color': 'rgb(36, 92, 223)', // Upper atmosphere

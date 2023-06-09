@@ -3295,7 +3295,7 @@ export default {
                         lgView: 6
                     },
                     fertilizer_source: {
-                        inputType: 'autocomplete',
+                        inputType: 'combobox',
                         chip: false,
                         items: formOptions.fertilizer_sources,
                         itemText: 'value',
@@ -3376,7 +3376,7 @@ export default {
                         lgView: 6
                     },
                     pesticide_source: {
-                        inputType: 'autocomplete',
+                        inputType: 'combobox',
                         chip: false,
                         items: formOptions.pesticide_sources,
                         itemText: 'value',

@@ -372,7 +372,7 @@ export default {
             try {
                 this.loading.show = true
                 this.loading.text = `Getting Form "${id}" data...`
-                const res = await axios.get(this.$store.getters.getApiUrl(`DetailFormMinat?form_no=${id}`), this.$store.state.apiConfig)
+                const res = await axios.get(this.$store.getters.getApiUrl(`GetFormMinatDetail?form_no=${id}`), this.$store.state.apiConfig)
                 this.datas = res.data.data.result
                 for (const [key, val] of Object.entries(this.datas)) {
                 }

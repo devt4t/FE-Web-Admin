@@ -272,8 +272,8 @@
                           <v-date-picker 
                             color="green lighten-1 rounded-xl" 
                             v-model="dataToStore.distribution_time"
-                            min="2022-11-24"
-                            max="2023-01-31"
+                            min="2023-11-24"
+                            max="2024-01-31"
                             :allowed-dates="showingAvailableDates"
                             :key="datepicker2Key"
                           ></v-date-picker>
@@ -367,29 +367,32 @@
                       v-model="dataToStore.training_material"
                   ></v-autocomplete>
                 </v-col>
-                <!-- Lahans Table -->
+                <!-- Table -->
                 <v-col cols="12" sm="12" md="12">
                   <v-row class="align-center mb-4">
                     <v-col cols="12" class="">
                       <div class="d-flex align-center my-0">
-                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-land-fields</v-icon>List Lahan Petani</p>
+                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>List Petani</p>
                         <v-divider class="mx-2" color=""></v-divider>
-                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Lahan</p>
+                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani</p>
                       </div>
                     </v-col>
-                    <!-- <v-col cols="12" class="d-flex justify-end">
+                    <v-col cols="12" class="d-flex justify-end">
                       <v-btn :disabled="!options.ff.model" color="info" rounded @click="getLahansFF" small>
                         <v-icon class="mr-1" small>mdi-refresh</v-icon>
-                        Refresh Lahan
+                        Refresh
                       </v-btn>
-                    </v-col> -->
+                    </v-col>
                   </v-row>
                   <v-data-table
+                    showSelect
+                    checkbox-color="green"
                     color="success"
                     class="rounded-xl elevation-5 mb-2"
                     :headers="table.lahans.header"
                     :items="table.lahans.items"
                     :loading="table.lahans.loading"
+                    @input="($val) => selectedKehadiranPetani($val)"
                     loading-text="Loading... Please wait"
                     hide-default-footer
                     :items-per-page="-1"
@@ -469,44 +472,17 @@
                     <template v-slot:item.index="{index}">
                       {{ index + 1 }}
                     </template>
-                    <template v-slot:item.land_area="{item}">
-                      {{ numberFormat(item.land_area) }}m<sup>2</sup>
+                    <template v-slot:item.total_lahan="{item}">
+                      <v-icon class="mr-1">mdi-land-fields</v-icon>{{ numberFormat(item.total_lahan) }}
                     </template>
-                    <template v-slot:item.tutupan_lahan="{item}">
-                      {{ item.tutupan_lahan }}%
+                    <template v-slot:item.total_kayu="{item}">
+                      <v-icon class="mr-1">mdi-sprout</v-icon>{{ numberFormat(item.total_kayu) }}
                     </template>
-                    <template v-slot:item.trees="{ item, index }">
-                      <strong>{{ numberFormat(getSeedCalculation(item, 'setDataToStore', index)) }} Bibit</strong>
-                      <!-- <v-menu
-                        rounded="xl"
-                        bottom
-                        left
-                        offset-y
-                        transition="slide-y-transition"
-                        :close-on-content-click="false"
-                      >
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-icon v-bind="attrs" v-on="on" color="dark">
-                            mdi-dots-vertical
-                          </v-icon>
-                        </template>
-                        <v-list class="d-flex flex-column align-center">
-                          <v-list-item>
-                            <v-btn rounded dark small color="warning" @click="() => {table.lahans.dialogs.trees.show = true;table.lahans.dialogs.trees.datas = item}">
-                              <v-icon small class="mr-1">mdi-pencil-circle</v-icon>
-                              Set Amount
-                            </v-btn>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu> -->
+                    <template v-slot:item.total_mpts="{item}">
+                      <v-icon class="mr-1">mdi-sprout</v-icon>{{ numberFormat(item.total_mpts) }}
                     </template>
-                    <template v-slot:item.actions="{index}">
-                      <v-icon 
-                        color="red" 
-                        @click="() => {table.lahans.items.splice(index, 1)}"
-                      >
-                        mdi-close-circle
-                      </v-icon>
+                    <template v-slot:header.data-table-select="{index}">
+                      Kehadiran
                     </template>
                   </v-data-table>
                 </v-col>
@@ -521,7 +497,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn 
-              color="green px-5 white--text" 
+              color="green white--text" 
               rounded 
               @click="createSostamByFF()"
               :disabled="!dataToStore.distribution_time || !dataToStore.distribution_location || table.lahans.items.length == 0"
@@ -1876,17 +1852,16 @@ export default {
         page_options: []
       },
       options: {},
+      farmer_attendance: [],
       lahans: {
         expanded: [],
         header: [
           { text: "No", value: "index"},
-          { text: "Lahan No", value: "lahan_no"},
           { text: "Petani", value: "farmer_name"},
-          { text: "Luas Lahan", value: "land_area", align: 'center'},
-          { text: "Tutupan", value: "tutupan_lahan", align: 'center'},
-          { text: "Pola Tanam", value: "opsi_pola_tanam"},
-          { text: "Max Kayu (+ MPTS)", value: "trees", align: 'center'},
-          // { text: "Remove", value: "actions", align: 'right', sortable: false},
+          { text: "Total Lahan", value: "total_lahan"},
+          { text: "Total Kayu", value: "total_kayu", align: 'center'},
+          { text: "Total MPTS", value: "total_mpts", align: 'center'},
+          { text: "Kehadiran", value: "data-table-select", align: 'right', sortable: false},
         ],
         items: [],
         loading: false,
@@ -2226,8 +2201,11 @@ export default {
           lahans: this.table.lahans.items,
           program_year: 2022,
           distribution_time: this.dataToStore.distribution_time,
+          distribution_longitude: this.maps.location.lng,
+          distribution_latitude: this.maps.location.lat,
           distribution_location: this.dataToStore.distribution_location,
           distribution_location: this.dataToStore.distribution_location,
+          training_material: this.dataToStore.training_material,
           planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
           penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
         }
@@ -2241,19 +2219,20 @@ export default {
           this.timeoutsnackbar = 10000
           this.snackbar = true
         } else {
-          const res = await axios.post(
-            this.BaseUrlGet + "createSostamByFF",
-            dataToStore,
-            {
-              headers: {
-                Authorization: `Bearer ` + this.authtoken
-              },
-            }
-          )
+          // const res = await axios.post(
+          //   this.BaseUrlGet + "createSostamByFF",
+          //   dataToStore,
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ` + this.authtoken
+          //     },
+          //   }
+          // )
+          console.log(dataToStore)
           // reset form create value
           this.options.ff.model = ''
           this.table.lahans.items = []
-          this.dataToStore.distribution_location
+          this.dataToStore.distribution_location = ''
           
           this.initialize()
           this.colorsnackbar = 'green'
@@ -3287,6 +3266,15 @@ export default {
         this.table.search.options.pola_tanam_loading = false
       }
     },
+    async selectedKehadiranPetani(items) {
+      this.table.farmer_attendance = items.map(val => {
+        return {
+          farmer_no: val.farmer_no,
+          program_year: this.program_year
+        }
+      })
+      console.log(this.table.farmer_attendance)
+    },
     async showAddModal() {
       try {
         this.dialogAdd.loading = true
@@ -3303,7 +3291,7 @@ export default {
 
         const params = new URLSearchParams({
           ff_no: this.options.ff.model,
-          program_year: 2022
+          program_year: this.program_year
         })
         const res = await axios.get(
           this.BaseUrlGet + `getFFLahanSostam?${params}`,
@@ -3751,20 +3739,20 @@ export default {
       const distributionDateRange = [
         {
           month: '11',
-          year: '2022',
-          program_year: 2022,
+          year: '2023',
+          program_year: this.$store.state.programYear.model,
           nursery: ff_nursery
         },
         {
           month: '12',
-          year: '2022',
-          program_year: 2022,
+          year: '2023',
+          program_year: this.$store.state.programYear.model,
           nursery: ff_nursery
         },
         {
           month: '01',
-          year: '2023',
-          program_year: 2022,
+          year: '2024',
+          program_year: this.$store.state.programYear.model,
           nursery: ff_nursery
         },
       ]

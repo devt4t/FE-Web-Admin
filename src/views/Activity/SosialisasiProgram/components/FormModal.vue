@@ -441,7 +441,7 @@ export default {
                         itemSub: null,
                         itemText: 'value',
                         itemValue: 'value',
-                        label: 'Pola Tanam',
+                        label: 'Pola Tanam Sebelumnya',
                         labelIcon: null,
                         multiple: false,
                         type: 'text' 
@@ -587,7 +587,7 @@ export default {
             this.inputs.list_farmer.model.forEach(farmer => {
                 if (!farmer.name || !farmer.respond_to_programs) requiredEmpty += 1
                 if (farmer.respond_to_programs != 'Tidak') {
-                    if (farmer.respond_to_programs == 'Ya' && (!farmer.pattern || !farmer.training)) requiredEmpty += 1
+                    if (farmer.respond_to_programs == 'Ya' && (!farmer.training)) requiredEmpty += 1
                     const kayu = farmer.kayu.length
                     const mpts = farmer.mpts.length
                     if (kayu === 0) requiredEmpty += 1
@@ -730,7 +730,7 @@ export default {
         },
         inputsListFarmerRequired(input, index) {
             if (['name', 'respond_to_programs'].includes(input[0])) return true
-            if (this.inputs.list_farmer.model[index].respond_to_programs == 'Ya' && input[0] != 'mpts') return true
+            if (this.inputs.list_farmer.model[index].respond_to_programs == 'Ya' && !['mpts', 'pattern'].includes(input[0]) ) return true
             if (this.inputs.list_farmer.model[index].respond_to_programs == 'Ragu - Ragu' && ['kayu'].includes(input[0])) return true
             return false
         },
