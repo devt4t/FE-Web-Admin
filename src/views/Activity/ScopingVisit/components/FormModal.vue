@@ -654,7 +654,7 @@ export default {
                 lgView: 6,
                 append: 'Ha',
                 loading: false,
-                required: true,
+                required: false,
                 type: 'Number'
             },
             village_polygon: {
@@ -834,7 +834,7 @@ export default {
         'inputs.village.model': {
             async handler(val) {
                 try {
-                    if (val) {
+                    if (val && !this.id) {
                         // check existing scooping data
                         this.loading.show = true
                         this.loading.text = 'Check existing scooping data...'
@@ -954,7 +954,7 @@ export default {
                 const data = res.data.data.result
                 for (const [key, value] of Object.entries(data)) {
                     if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key) || this.separateInputsPerType().select.includes(key)) this.inputs[key].model = value
-                    if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value.split(",")
+                    if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value ? value.split(",") : value
                 }
                 this.inputs.scooping_date.model = [data.start_scooping_date, data.end_scooping_date]
                 this.inputs.province.model = data.province
@@ -1147,13 +1147,13 @@ export default {
                         total_female: this.inputs.total_female.model,
                         total_kk: this.inputs.total_kk.model,
                         dry_land_area: this.inputs.dry_land_area.model,
-                        land_type: this.inputs.land_type.model.toString(),
-                        slope: this.inputs.land_slope.model.toString(),
-                        altitude: this.inputs.land_height.model.toString(),
-                        land_coverage: this.inputs.land_coverage.model.toString(),
-                        vegetation_density: this.inputs.vegetation_density.model.toString(),
-                        rainfall: this.inputs.rainfall.model.toString(),
-                        agroforestry_type: this.inputs.agroforestry_type.model.toString(),
+                        land_type: this.inputs.land_type.model ? this.inputs.land_type.model.toString() : '',
+                        slope: this.inputs.land_slope.model ? this.inputs.land_slope.model.toString() : '',
+                        altitude: this.inputs.land_height.model ? this.inputs.land_height.model.toString() : '',
+                        land_coverage: this.inputs.land_coverage.model ? this.inputs.land_coverage.model.toString() : '',
+                        vegetation_density: this.inputs.vegetation_density.model ? this.inputs.vegetation_density.model.toString() : '',
+                        rainfall: this.inputs.rainfall.model ? this.inputs.rainfall.model.toString() : '',
+                        agroforestry_type: this.inputs.agroforestry_type.model ? this.inputs.agroforestry_type.model.toString() : '',
                         village_figures: this.inputs.village_figures.model,
                         user_id: this.$store.state.User.email,
                     }

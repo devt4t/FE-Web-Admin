@@ -47,30 +47,20 @@
                                         <v-col cols="12" md="6" lg="3">
                                             <v-card class="pa-2 elevation-0">
                                                 <span class="grey--text text--darken-2" style="font-size: 13px">
-                                                    Provinsi
+                                                    Management Unit
                                                 </span>
                                                 <h4>
-                                                    {{ datas.Scooping.province_name || '-' }}
+                                                    {{ datas.length > 0 ? (datas[0].mu_name || '-') : '-' }}
                                                 </h4>
                                             </v-card>
                                         </v-col>
                                         <v-col cols="12" md="6" lg="3">
                                             <v-card class="pa-2 elevation-0">
                                                 <span class="grey--text text--darken-2" style="font-size: 13px">
-                                                    Kabupaten
+                                                    Target Area
                                                 </span>
                                                 <h4>
-                                                    {{ datas.Scooping.city_name || '-' }}
-                                                </h4>
-                                            </v-card>
-                                        </v-col>
-                                        <v-col cols="12" md="6" lg="3">
-                                            <v-card class="pa-2 elevation-0">
-                                                <span class="grey--text text--darken-2" style="font-size: 13px">
-                                                    Kecamatan
-                                                </span>
-                                                <h4>
-                                                    {{ datas.Scooping.district_name || '-' }}
+                                                    {{ datas.length > 0 ? (datas[0].ta_name || '-') : '-' }}
                                                 </h4>
                                             </v-card>
                                         </v-col>
@@ -80,7 +70,7 @@
                                                     Desa
                                                 </span>
                                                 <h4>
-                                                    {{ datas.Scooping.village_name || '-' }}
+                                                    {{ datas.length > 0 ? (datas[0].namaDesa || '-') : '-' }}
                                                 </h4>
                                             </v-card>
                                         </v-col>
@@ -93,7 +83,7 @@
                                 <v-card-title class="grey darken-3 white--text pa-1 px-3">
                                     <span style="font-size: 13px">
                                         <v-icon color="white">mdi-calendar</v-icon>
-                                        Tanggal RRA - PRA
+                                        Tanggal Sosialisasi Program
                                     </span>
                                 </v-card-title>
                                 <v-card-text class="pa-3">
@@ -101,14 +91,8 @@
                                         <v-col cols="12">
                                             <v-card class="pa-2 elevation-0">
                                                 <span class="grey--text text--darken-2" style="font-size: 13px">
-                                                    {{ getIntervalDay(datas.RRA.rra_pra_date_start, datas.RRA.rra_pra_date_end) + 1 }} Hari
                                                 </span>
                                                 <h4>
-                                                    {{ _utils.dateFormat(datas.RRA.rra_pra_date_start, 'DD MMMM YYYY') || '-' }}
-                                                    <span v-if="datas.RRA.rra_pra_date_start != datas.RRA.rra_pra_date_end">
-                                                        ~
-                                                        {{ _utils.dateFormat(datas.RRA.rra_pra_date_end, 'DD MMMM YYYY') || '-' }}
-                                                    </span>
                                                 </h4>
                                             </v-card>
                                         </v-col>
@@ -119,34 +103,9 @@
                     </v-row>
                     <!-- Stepper -->
                     <v-stepper :vertical="localConfig.windowWidth < localConfig.breakLayoutFrom" v-model="stepper.model" class="rounded-xl mt-2 elevation-0">
-                        <!-- Stepper Header -->
-                        <v-stepper-header v-if="localConfig.windowWidth >= localConfig.breakLayoutFrom" class="elevation-0 mx-5">
-                            <template v-for="(stepperName, stepperIndex) in stepper.steps">
-                                <v-stepper-step
-                                    :complete="stepper.model > stepperIndex + 1"
-                                    :step="stepperIndex + 1"
-                                    editable
-                                    color="green"
-                                    class="rounded-pill"
-                                >
-                                    <span>
-                                        <v-icon :color="stepper.model > stepperIndex + 1 ? 'green' : ''" class="mr-1">mdi-{{ stepper.steps_icon[stepperIndex] }}</v-icon> 
-                                        {{ stepperName }}
-                                    </span>
-                                </v-stepper-step>
-
-                                <v-divider
-                                    v-if="(stepperIndex + 1) !== stepper.steps.length"
-                                    data-aos="fade-right"
-                                    :data-aos-delay="200 * stepperIndex + 100"
-                                    :key="(stepperIndex + 1)"
-                                ></v-divider>
-                            </template>
-                        </v-stepper-header>
                         <!-- Stepper Content -->
                         <v-stepper-items>
                             <div v-for="(stepperName, stepperIndex) in stepper.steps">
-                                <!-- RRA -->
                                 <v-stepper-step v-if="localConfig.windowWidth < localConfig.breakLayoutFrom && stepper.steps.length >= 1" color="green" :complete="stepper.model > 1" :step="1" editable class="rounded-xl py-3 ma-1">
                                     <span><v-icon :color="stepper.model > (stepperIndex + 1) ? 'green' : ''" class="mr-1">mdi-{{ stepper.steps_icon[stepperIndex] }}</v-icon>{{ stepper.steps[stepperIndex] }}</span>
                                 </v-stepper-step>
@@ -169,11 +128,12 @@
                                                 <!-- table -->
                                                 <div v-if="data.dataType === 'table'">
                                                     <v-data-table
+                                                        :dense="data.table.dense"
                                                         :caption="data.table.caption"
                                                         multi-sort
                                                         :hide-default-footer="data.table.hideDefaultFooter"
                                                         :headers="data.table.headers"
-                                                        :items="datas[data.dataSource || stepperName][data.dataKey]"
+                                                        :items="datas"
                                                         :items-per-page="data.table.itemsPerPage"
                                                         :class="`rounded-xl elevation-6 mx-2 mx-lg-3 pa-1 elevation-3 overflow-hidden mt-4`"
                                                         :show-expand="data.table.expand"
@@ -225,20 +185,26 @@ export default {
         }
     },
     data: () => ({
-        datas: null,
+        datas: [],
         groupingData: {
             "List Petani": [
                 {
                     label: 'List Petani',
                     labelIcon: 'mdi-flower',
                     dataType: 'table',
-                    dataSource: 'PRA',
+                    dataSource: '',
                     dataKey: '',
                     table: {
-                        hideDefaultFooter: true,
-                        itemsPerPage: -1,
+                        dense: true,
+                        search: true,
+                        searchValue: '',
+                        hideDefaultFooter: false,
+                        itemsPerPage: 20,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Petani', value: 'name'},
+                            {text: 'Status', value: 'respond_to_programs'},
+                            {text: 'Peminatan Pohon', value: 'tree1'},
                         ]
                     }
                 },
@@ -373,12 +339,7 @@ export default {
                 this.loading.show = true
                 this.loading.text = `Getting Form "${id}" data...`
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetFormMinatDetail?form_no=${id}`), this.$store.state.apiConfig)
-                this.datas = res.data.data.result
-                for (const [key, val] of Object.entries(this.datas)) {
-                }
-                this.stepper.model = 2
-                this.verified_data = this.datas.RRA.is_verify
-                console.log(this.verified_data)
+                this.datas = [res.data.data.result]
             } catch (err) {
                 this.errorResponse(err)
                 this.$emit('action', {type: 'close', name: 'detail'})
