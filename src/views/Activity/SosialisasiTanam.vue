@@ -334,7 +334,7 @@
                     label="Koordinat Distribusi (Long, Lat)"
                     :rules="[(v) => !!v || 'Field is required']"
                     hide-details
-                    readonly
+                    :readonly="false"
                     class="mt-3"
                   ></v-text-field>
                   <v-text-field

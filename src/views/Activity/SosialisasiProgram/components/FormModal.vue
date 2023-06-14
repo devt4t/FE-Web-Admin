@@ -471,7 +471,7 @@ export default {
                         itemSub: null,
                         itemText: 'tree_name',
                         itemValue: 'tree_code',
-                        label: 'Kayu',
+                        label: 'Pohon Kayu yang diminati',
                         labelIcon: null,
                         multiple: true,
                         type: 'text' 
@@ -485,7 +485,7 @@ export default {
                         itemText: 'tree_name',
                         itemValue: 'tree_code',
                         items: [],
-                        label: 'Mpts',
+                        label: 'Pohon Mpts yang diminati',
                         labelIcon: null,
                         multiple: true,
                         type: 'text' 
@@ -684,7 +684,7 @@ export default {
                 this.inputs.list_farmer.form.kayu.items = kayu
                 this.inputs.list_farmer.form.mpts.items = mpts
 
-                await this.setDummyData()
+                // await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }

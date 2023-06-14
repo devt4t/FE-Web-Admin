@@ -3219,7 +3219,7 @@ export default {
                 label: 'Sumber',
                 model: '',
                 itemText: 'value',
-                placeholder: ``,
+                placeholder: `Sawah / Kebun / yang lainnya`,
                 itemValue: 'value',
                 inputType: 'text-field',
                 lgView: 4,
@@ -4397,7 +4397,7 @@ export default {
                 this.inputs.farmer_income.sampling_form.source.items = listTrees
                 this.inputs.farmer_income.static_form.source.items = listTrees
 
-                // await this.setDummyData()
+                await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }

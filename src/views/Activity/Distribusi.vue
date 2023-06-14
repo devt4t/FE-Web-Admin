@@ -510,12 +510,12 @@
                                 </v-tab-item>
                                 <!-- Transport + Scan -->
                                 <v-tab-item>
-                                    <!-- <div class="pb-2 d-flex align-center">
+                                    <div class="pb-2 d-flex align-center">
                                         <p class="mb-0"><v-icon class="mr-2">mdi-car-pickup</v-icon>Transportations</p>
                                         <v-divider class="mx-2"></v-divider>
                                         <v-btn rounded small color="green white--text" class="pl-1" :disabled="!loadingLine.detailDialog.transportations[loadingLine.detailDialog.transportations.length - 1].truck_detail || !loadingLine.detailDialog.transportations[loadingLine.detailDialog.transportations.length - 1].driver_detail" @click="addMoreTransportation"><v-icon class="mr-1">mdi-plus-circle</v-icon> Add</v-btn>
-                                    </div> -->
-                                    <v-row v-if="false" class="ma-0">
+                                    </div>
+                                    <v-row class="ma-0">
                                         <v-card v-for="(trans, transIndex) in loadingLine.detailDialog.transportations" :key="transIndex" data-aos="zoom-in" class="ml-2 rounded-xl pa-3 overflow-hidden mb-2">
                                             <div class="d-flex align-center">
                                                 <v-btn fab x-small color="grey white--text">{{ transIndex + 1 }}</v-btn>
@@ -583,11 +583,10 @@
                                             ></v-text-field>
                                         </v-card>
                                     </v-row>
-                                    <!-- <v-text-field
+                                    
+                                    <v-text-field
                                         v-if="typeof loadingLine.detailDialog.transportationIndex == 'number'" 
                                         :disabled="loadingLine.detailDialog.transportationIndex === null || numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)"
-                                    -->
-                                    <v-text-field
                                         ref="scanLabelLoadingInput"
                                         data-aos="zoom-in"
                                         prepend-inner-icon="mdi-qrcode-scan"
@@ -599,10 +598,10 @@
                                         class="text-center mt-2"
                                         outlined
                                         rounded
-                                        :disabled="numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)"
                                         :error-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'red' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                                         :success-messages="loadingLine.detailDialog.inputs.scanner.alert.color == 'green' ? loadingLine.detailDialog.inputs.scanner.alert.text : ''"
                                     ></v-text-field>
+                                    <!-- :disabled="numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)" -->
                                 </v-tab-item>
                                 <v-tab-item>
                                     <v-data-table

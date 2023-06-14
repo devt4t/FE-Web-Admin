@@ -81,7 +81,8 @@
     ],
     "electricity_source": [
         "PLN",
-        "Solarcell"
+        "Solarcell",
+        "Genset Desa"
     ],
     "land_tenure_type": [
         "Individual",
