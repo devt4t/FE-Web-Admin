@@ -651,7 +651,7 @@
                                                                 <!-- Inputs -->
                                                                 <v-col
                                                                     v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
-                                                                    v-if="(multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.type_ownership === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan'"
+                                                                    v-if="((multipleInputForm[1].label === 'Jenis Kepemilikan' && multipleInputItem.type_ownership === 'Diluar Milik Petani') || multipleInputForm[1].label !== 'Jenis Kepemilikan') && !multipleInputForm[1].hidden"
                                                                     :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
                                                                     cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" 
                                                                 >
@@ -868,6 +868,108 @@
                                                             </v-textarea>
                                                         </v-col>
                                                     </v-row>
+                                                    <!-- Khususon: Permasalahan Yang Ada -->
+                                                    <div v-if="praInput.title === 'Permasalahan Yang Ada'" class="mt-8">
+                                                        <div class="d-flex align-center my-8">
+                                                            <p class="mb-0"><v-icon class="mr-2">mdi-table-arrow-up</v-icon>Matrik Permasalahan</p>
+                                                            <v-divider class="mx-2"></v-divider>
+                                                        </div>
+                                                        <p>NB: Angka total terbesar = paling bermasalah</p>
+                                                        <v-data-table
+                                                            :multi-sort="praInput.table.multiSort"
+                                                            :headers="praInput.table.headers"
+                                                            :items="inputs[multipleInputHead].model"
+                                                        >
+                                                            <!-- Table Index -->
+                                                            <template v-slot:item.index="{index}">
+                                                                {{ index + 1 }}
+                                                            </template>
+                                                            <!-- Table impact_to_people -->
+                                                            <template v-slot:item.impact_to_people="{item, index}">
+                                                                <v-select
+                                                                    dense
+                                                                    color="success"
+                                                                    clearable
+                                                                    :placeholder="`1 - ${inputs[multipleInputHead].model.length}`"
+                                                                    :items="inputs[multipleInputHead].model.map((val, valIndex) => { return { text: valIndex + 1,value: valIndex + 1, disabled: inputs[multipleInputHead].model.find(val1 => val1.impact_to_people === valIndex + 1) ? true : false} })"
+                                                                    single-line
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    style="width: 150px"
+                                                                    outlined
+                                                                    rounded
+                                                                    class="mx-auto"
+                                                                    v-model="item.impact_to_people"
+                                                                ></v-select>
+                                                            </template>
+                                                            <!-- Table interval_problem -->
+                                                            <template v-slot:item.interval_problem="{item, index}">
+                                                                <v-select
+                                                                    dense
+                                                                    color="success"
+                                                                    clearable
+                                                                    :placeholder="`1 - ${inputs[multipleInputHead].model.length}`"
+                                                                    :items="inputs[multipleInputHead].model.map((val, valIndex) => { return { text: valIndex + 1,value: valIndex + 1, disabled: inputs[multipleInputHead].model.find(val1 => val1.interval_problem === valIndex + 1) ? true : false} })"
+                                                                    single-line
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    style="width: 150px"
+                                                                    outlined
+                                                                    rounded
+                                                                    class="mx-auto"
+                                                                    v-model="item.interval_problem"
+                                                                ></v-select>
+                                                            </template>
+                                                            <!-- Table priority -->
+                                                            <template v-slot:item.priority="{item, index}">
+                                                                <v-select
+                                                                    dense
+                                                                    color="success"
+                                                                    clearable
+                                                                    :placeholder="`1 - ${inputs[multipleInputHead].model.length}`"
+                                                                    :items="inputs[multipleInputHead].model.map((val, valIndex) => { return { text: valIndex + 1,value: valIndex + 1, disabled: inputs[multipleInputHead].model.find(val1 => val1.priority === valIndex + 1) ? true : false} })"
+                                                                    single-line
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    style="width: 150px"
+                                                                    outlined
+                                                                    rounded
+                                                                    class="mx-auto"
+                                                                    v-model="item.priority"
+                                                                ></v-select>
+                                                            </template>
+                                                            <!-- Table potential -->
+                                                            <template v-slot:item.potential="{item, index}">
+                                                                <v-select
+                                                                    dense
+                                                                    color="success"
+                                                                    clearable
+                                                                    :placeholder="`1 - ${inputs[multipleInputHead].model.length}`"
+                                                                    :items="inputs[multipleInputHead].model.map((val, valIndex) => { return { text: valIndex + 1,value: valIndex + 1, disabled: inputs[multipleInputHead].model.find(val1 => val1.potential === valIndex + 1) ? true : false} })"
+                                                                    single-line
+                                                                    hide-details
+                                                                    item-color="success"
+                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                    style="width: 150px"
+                                                                    outlined
+                                                                    rounded
+                                                                    class="mx-auto"
+                                                                    v-model="item.potential"
+                                                                ></v-select>
+                                                            </template>
+                                                            <!-- Table total -->
+                                                            <template v-slot:item.total="{item, index}">
+                                                                {{ setProblemTotal(index) }} {{ item.total }}
+                                                            </template>
+                                                            <!-- Table rank -->
+                                                            <template v-slot:item.rank="{item, index}">
+                                                                {{ setProblemRank(index) }} {{ item.rank }}
+                                                            </template>
+                                                        </v-data-table>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <!-- column type -->
@@ -1799,17 +1901,6 @@ export default {
                     ] 
                 },
                 {
-                    title: 'Permasalahan Yang Ada',
-                    icon: 'mdi-book-alert',       
-                    type: 'multiple-input',
-                    required: true,
-                    optional: false,
-                    description: false,
-                    items: [
-                        "problem_existing"
-                    ] 
-                },
-                {
                     title: 'Sumber Air',
                     icon: 'mdi-water-pump',       
                     type: 'multiple-input',
@@ -1819,6 +1910,30 @@ export default {
                     items: [
                         'water_source',
                     ] 
+                },
+                {
+                    title: 'Permasalahan Yang Ada',
+                    icon: 'mdi-book-alert',       
+                    type: 'multiple-input',
+                    required: true,
+                    optional: false,
+                    description: false,
+                    items: [
+                        "problem_existing"
+                    ],
+                    table: {
+                        caption: 'MATRIK Permasalahan',
+                        headers: [
+                            {text: 'Masalah', value: 'problem_name', align: 'center', sortable: false},
+                            {text: 'Yang Dirasakan Banyak Orang', value: 'impact_to_people', align: 'center', sortable: false},
+                            {text: 'Sering Terjadi', value: 'interval_problem', align: 'center', sortable: false},
+                            {text: 'Prioritas', value: 'priority', align: 'center', sortable: false},
+                            {text: 'Potensi', value: 'potential', align: 'center', sortable: false},
+                            {text: 'Total', value: 'total', align: 'center', sortable: false},
+                            {text: 'Rank', value: 'rank', align: 'center', sortable: false},
+                        ],
+                        multiSort: true
+                    }
                 },
             ],
             socImp: [
@@ -2022,7 +2137,7 @@ export default {
                 label: 'Tanah Sawah',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2036,7 +2151,7 @@ export default {
                 label: 'Tegal / Ladang',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2050,7 +2165,7 @@ export default {
                 label: 'Pemukiman',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2064,7 +2179,7 @@ export default {
                 label: 'Pekarangan',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2078,7 +2193,7 @@ export default {
                 label: 'Tanah Rawa',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2092,7 +2207,7 @@ export default {
                 label: 'Situ / Waduk / Danau',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2106,7 +2221,7 @@ export default {
                 label: 'Tanah Perkebunan Rakyat',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2120,7 +2235,7 @@ export default {
                 label: 'Tanah Perkebunan Negara',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2134,7 +2249,7 @@ export default {
                 label: 'Tanah Perkebunan Swasta',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2148,7 +2263,7 @@ export default {
                 label: 'Hutan Lindung',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2162,7 +2277,7 @@ export default {
                 label: 'Hutan Rakyat',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -2176,7 +2291,7 @@ export default {
                 label: 'Fasilitas Umum',
                 lgView: 6,
                 loading: false,
-                model: 0,
+                model: '',
                 placeholder: `0`,
                 readonly: false,
                 required: true,
@@ -3517,25 +3632,26 @@ export default {
                         lgView: 6
                     },
                     date: {
-                        inputType: 'datepicker',
-                        dateType: 'range',
-                        type: 'Date',
-                        label: 'Tanggal',
+                        inputType: 'text-field',
+                        type: 'text',
+                        placeholder: '3 Bulan terakhir / 5 tahun lalu / yang lainnya',
+                        label: 'Periode Masalah',
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 4
+                        lgView: 6
                     },
                     problem_source: {
                         inputType: 'text-field',
                         type: 'text',
-                        label: 'Sumber',
+                        label: 'Narasumber',
                         required: true,
                         readonly: false,
                         suffix: '',
-                        lgView: 8
+                        lgView: 6
                     },
                     impact_to_people: {
+                        hidden: true,
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Yang Dirasakan Banyak Orang',
@@ -3545,6 +3661,7 @@ export default {
                         lgView: 3
                     },
                     interval_problem: {
+                        hidden: true,
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Sering Terjadi',
@@ -3554,6 +3671,7 @@ export default {
                         lgView: 3
                     },
                     priority: {
+                        hidden: true,
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Prioritas',
@@ -3563,6 +3681,7 @@ export default {
                         lgView: 3
                     },
                     potential: {
+                        hidden: true,
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Potensi',
@@ -3584,12 +3703,14 @@ export default {
                 default: [{
                     problem_name: null,
                     problem_categories: null,
-                    date: [moment().format('YYYY-MM-DD'),moment().format('YYYY-MM-DD')],
+                    date: '',
                     problem_source: null,
                     impact_to_people: 0,
                     interval_problem: 0,
                     priority: 0,
                     potential: 0,
+                    total: 0,
+                    rank: 0,
                     problem_solution: null,
                 }],
                 description: {
@@ -3872,7 +3993,7 @@ export default {
         localConfig: {
             windowWidth: window.innerWidth,
             breakLayoutFrom: 1140,
-            maxSubDataTotal: 5,
+            maxSubDataTotal: 10,
             requiredInputIcon: 'mdi-star'
         },
         stepper: {
@@ -4180,6 +4301,7 @@ export default {
                 // get scooping list
                 const res2 = await this.callApiGet(`GetScoopingAll`)
                 const data2 = res2.filter(val => val.is_verify === 1 && !data1.includes(val.data_no))
+                console.log(data2)
                 this.inputs.scooping_form_no.items = data2
             } catch (err) {this.errorResponse(err)}
         },
@@ -4397,6 +4519,7 @@ export default {
                 this.inputs.farmer_income.sampling_form.source.items = listTrees
                 this.inputs.farmer_income.static_form.source.items = listTrees
 
+                this.stepper.model = 2
                 await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
@@ -4656,6 +4779,22 @@ export default {
                     fauna_habitat: ``,
                 }]
             } catch (err) {this.errorResponse(err)}
+        },
+        setProblemRank(index) {
+            let problems = this.inputs.problem_existing.model.map((val, valIndex) => {
+                return {...val, problem_code: `PR-${valIndex}`}
+            })
+            const indexProblem = problems[index].problem_code
+            problems.sort((a, b) => {
+                return  b.total - a.total
+            }).map((val, valIndex) => {
+                if (val.problem_code === indexProblem) this.inputs.problem_existing.model[index].rank = valIndex + 1 
+            })
+        },
+        setProblemTotal(index) {
+            let problems = this.inputs.problem_existing.model
+            let total = problems[index].impact_to_people + problems[index].interval_problem + problems[index].priority + problems[index].potential 
+            this.inputs.problem_existing.model[index].total = total
         },
         async zwitchKeyName() {
             const rename = {

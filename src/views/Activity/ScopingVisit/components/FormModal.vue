@@ -44,7 +44,7 @@
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">{{ ig.icon }}</v-icon>{{ ig.title }}</p>
                             <v-divider class="mx-2"></v-divider>
-                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering'" rounded color="blue white--text" small ><v-icon class="mr-1">mdi-email-arrow-right</v-icon>Email to GIS</v-btn>
+                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering'" rounded color="blue white--text" small disabled><v-icon class="mr-1">mdi-email-arrow-right</v-icon>Email to GIS</v-btn>
                         </div>
                     </v-col>
                     <!-- Inputs -->
@@ -170,10 +170,10 @@
                         >
                             <v-file-input
                                 color="success"
-                                dense
-                                hide-details
                                 outlined
                                 rounded
+                                :multiple="inputs[itemKey].multiple"
+                                counter
                                 show-size
                                 :prepend-icon="inputs[itemKey].prependIcon"
                                 :accept="inputs[itemKey].accept"
@@ -185,20 +185,29 @@
                                     {{ inputs[itemKey].label }} 
                                     <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                 </template>
+                                <template v-slot:selection="{ index, text, file }">
+                                    <v-card 
+                                        class="rounded-lg mt-2 elevation-0 mr-1 mb-1"
+                                        style="position: relative;"
+                                    >
+                                        <v-chip
+                                            color="deep-purple accent-4"
+                                            class="rounded-pill"
+                                            dark
+                                            label
+                                            small
+                                            style="position: absolute;bottom: 0;left: 0;right: 0;z-index: 2"
+                                        >
+                                            {{ text }}
+                                        </v-chip>
+                                        <v-img
+                                            v-bind:src="setUrlFileImage(file)"
+                                            class="my-2 mb-4 rounded-lg cursor-pointer"
+                                            style="max-width: 200px;max-height: 110px;"
+                                        ></v-img>
+                                    </v-card>
+                                </template>
                             </v-file-input>
-                            <v-card 
-                                class="rounded-xl mt-2"
-                                v-if="inputs[itemKey].accept.includes('jpg') && inputs[itemKey].preview"
-                            >
-                                <v-img
-                                    height="300"
-                                    v-bind:src="inputs[itemKey].preview"
-                                    class="my-2 mb-4 rounded-xl cursor-pointer"
-                                    id="photo1"
-                                    @click="showLightbox(inputs[itemKey].preview)"
-                                    :key="imageKeyComponent"
-                                ></v-img>
-                            </v-card>
                         </div>
                     </v-col>
                 </v-row>
@@ -681,36 +690,39 @@ export default {
             },
             // photos
             photo_road_access: {
-                label: 'Akses Jalan',
+                label: 'Akses Jalan (maks 5 foto)',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
                 preview: null,
                 inputType: 'file-input',
-                lgView: 4,
+                multiple: true,
+                lgView: 12,
                 prependIcon: 'mdi-camera',
                 loading: false,
                 required: false,
                 type: 'File'
             },
             photo_meeting: {
-                label: 'Pertemuan dengan Tokoh Desa',
+                label: 'Pertemuan dengan Tokoh Desa (maks 3 foto)',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
                 preview: null,
                 inputType: 'file-input',
-                lgView: 4,
+                multiple: true,
+                lgView: 12,
                 prependIcon: 'mdi-camera',
                 loading: false,
                 required: false,
                 type: 'File'
             },
             photo_dry_land: {
-                label: 'Lahan Kering',
+                label: 'Lahan Kering (maks 5 foto)',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
                 model: null,
                 preview: null,
                 inputType: 'file-input',
-                lgView: 4,
+                multiple: true,
+                lgView: 12,
                 prependIcon: 'mdi-camera',
                 loading: false,
                 required: false,
@@ -722,7 +734,8 @@ export default {
                 model: null,
                 preview: null,
                 inputType: 'file-input',
-                lgView: 4,
+                multiple: false,
+                lgView: 6,
                 prependIcon: 'mdi-camera',
                 loading: false,
                 required: false,
@@ -761,7 +774,7 @@ export default {
                 items_key: ["total_dusun", "potential_dusun", "potential_description", "total_male", "total_female", "total_kk"],
             }, 
             {
-                title: 'Upload Photo File',
+                title: 'Upload Foto Dokumentasi Kegiatan',
                 icon: 'mdi-image-multiple',
                 items_key: ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"],
             }, 
@@ -859,17 +872,44 @@ export default {
         },
         'inputs.photo_road_access.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'photo_road_access')
+                if (val.length > 5) {
+                    const confirm = await Swal.fire({
+                        title: 'Melebihi Batas!',
+                        text: `Maksimal 5 foto!`,
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.inputs.photo_road_access.model = val.slice(0, 5)
+                }
             }
         },
         'inputs.photo_meeting.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'photo_meeting')
+                if (val.length > 5) {
+                    const confirm = await Swal.fire({
+                        title: 'Melebihi Batas!',
+                        text: `Maksimal 3 foto!`,
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.inputs.photo_meeting.model = val.slice(0, 3)
+                }
             }
         },
         'inputs.photo_dry_land.model': {
             async handler(val) {
-                await this.photoFileChanged(val, 'photo_dry_land')
+                if (val.length > 5) {
+                    const confirm = await Swal.fire({
+                        title: 'Melebihi Batas!',
+                        text: `Maksimal 5 foto!`,
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.inputs.photo_dry_land.model = val.slice(0, 5)
+                }
             }
         },
         'inputs.village_profile.model': {
@@ -1080,26 +1120,25 @@ export default {
             // console.log(this.localConfig.windowWidth)
         },
         photoFileChanged (event, inputKey) {
-            if (event) {
-                let fileSize = event.size / 1000000
-                // console.log(fileSize)
-                if (fileSize < 10) {
-                    this.inputs[inputKey].model = event
-                    this.inputs[inputKey].preview = URL.createObjectURL(event)
-                } else {
-                    Swal.fire({
-                        title: 'Too Big!',
-                        text: `Please change your photo file, it's too big. Max 10mb.`,
-                        icon: 'error',
-                        confirmButtonColor: '#f44336',
-                    })
-                    this.inputs[inputKey].model = null
-                    this.inputs[inputKey].preview = null
-                }
-            } else {
-                this.inputs[inputKey].model = null
-                this.inputs[inputKey].preview = null
-            }
+            // if (event) {
+            //     let fileSize = event.size / 1000000
+            //     if (fileSize < 10) {
+            //         this.inputs[inputKey].model = event
+            //         this.inputs[inputKey].preview = URL.createObjectURL(event)
+            //     } else {
+            //         Swal.fire({
+            //             title: 'Too Big!',
+            //             text: `Please change your photo file, it's too big. Max 10mb.`,
+            //             icon: 'error',
+            //             confirmButtonColor: '#f44336',
+            //         })
+            //         this.inputs[inputKey].model = null
+            //         this.inputs[inputKey].preview = null
+            //     }
+            // } else {
+            //     this.inputs[inputKey].model = null
+            //     this.inputs[inputKey].preview = null
+            // }
         },
         resetData() {
             try {
@@ -1220,6 +1259,9 @@ export default {
                 multipleInput: inputsMultipleInput,
                 file: inputsFile
             }
+        },
+        setUrlFileImage(file) {
+            return URL.createObjectURL(file)
         },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs

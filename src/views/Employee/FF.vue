@@ -269,7 +269,7 @@
             rounded
             class="mb-2"
             @click="showAddModal()"
-            color="green"
+            color="blue"
           >
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>

@@ -101,22 +101,22 @@
         "Budidaya",
         "Meracik pupuk alternative",
         "Inovasi sistem irigasi",
-        "Others"
+        "Yang Lainnya"
     ],
     "potential_categories": [
-        "Sustaianable / Keberlangsungan",
-        "Profitable / Keuntungan",
-        "Others"
+        "Keberlangsungan",
+        "Keuntungan",
+        "Yang Lainnya"
     ],
     "organic_categories": [
-        "Full Organic",
-        "Half Organic"
+        "Full Organik",
+        "Setengah Organik"
     ],
     "organic_types": [
         "Hidroponik",
         "Aeroponik",
         "Aquaponik",
-        "Others"
+        "Yang Lainnya"
     ],
     "innovative_rating": [
         "0 - 25kg : sedang",
@@ -124,15 +124,15 @@
         ">50kg : sangat bagus"
     ],
     "disaster_categories": [
-        "Water related",
-        "Wind related",
-        "Land related",
-        "Fire related"
+        "Air",
+        "Angin",
+        "Tanah",
+        "Api"
     ],
     "fertilizer_categories": [
         "Natural",
-        "Chemical",
-        "Both"
+        "Kimia",
+        "Keduanya"
     ],
     "fertilizer_types": [
         "Urea",
@@ -143,14 +143,14 @@
         "Kandang"
     ],
     "fertilizer_sources": [
-        "Self Production",
-        "Government",
+        "Produksi Sendiri",
+        "Pemerintah",
         "Procurement",
-        "Others"
+        "Yang Lainnya"
     ],
     "income_employment": [
-        "Labour",
-        "Trade",
+        "Tenaga Kerja",
+        "Berdagang",
         "Peternakan"
     ],
     "marketingTradeMethod": [
@@ -163,18 +163,18 @@
         "Etc"
     ],
     "wsConsumptions": [
-        "Domestic",
-        "Irigation"
+        "Domestik",
+        "Irigasi"
     ],
     "wsCategories": [
         "Sungai",
         "Sumur",
         "Mata Air",
-        "Others"
+        "Yang Lainnya"
     ],
     "wsTypes": [
         "Natural",
-        "Artificial"
+        "Buatan"
     ],
     "wsSeasonal": [
         "Q 1",
@@ -184,15 +184,15 @@
     ],
     "problemCategories": [
         "Birokrasi",
-        "Animal related",
+        "Hewan",
         "Force Majeur",
-        "Water related",
-        "Others"
+        "Berhubungan dengan Air",
+        "Yang Lainnya"
     ],
     "problemTypes": [
         "Longsor",
         "Kekeringan",
-        "Others"
+        "Yang Lainnya"
     ],
     "problemRank": [
         "Ringan",
@@ -200,7 +200,7 @@
         "Berat"
     ],
     "problemStakeholder": [
-        "Government",
+        "Pemerintahan",
         "NGO",
         "Private Organization"
     ],
@@ -216,8 +216,8 @@
     ],
     "pesticide_categories": [
         "Natural",
-        "Chemical",
-        "Both"
+        "Kimia",
+        "Keduanya"
     ],
     "pesticide_types": [
         "Akarisida",
@@ -235,9 +235,9 @@
         "Gramoxon"
     ],
     "pesticide_sources": [
-        "Government",
+        "Pemerintahan",
         "Procurement",
-        "Others"
+        "Yang Lainnya"
     ],
     "planting_categories": [
         "Trees",
@@ -252,43 +252,43 @@
     "floraTypes": [
         "Berbji",
         "Tumbuhan Paku",
-        "Others"
+        "Yang Lainnya"
     ],
     "floraNames": [
         "Anggrek",
         "Caringin",
         "Kiara",
-        "Others"
+        "Yang Lainnya"
     ],
     "floraStatus": [
-        "Pest",
-        "Endangered"
+        "Punah",
+        "Hampir Punah"
     ],
     "faunaCategories": [
         "Asiatis",
         "Peralihan",
         "Australis",
-        "Others"
+        "Yang Lainnya"
     ],
     "faunaTypes": [
         "Mamalia",
         "Unggas",
         "Reptile",
-        "Others"
+        "Yang Lainnya"
     ],
     "faunaNames": [
         "Puesing",
         "Landak",
         "Burung Jalak",
-        "Others"
+        "Yang Lainnya"
     ],
     "faunaFoodSource": [
         "Nabati",
         "Non-nabati"
     ],
     "faunaStatus": [
-        "Pest",
-        "Endangered"
+        "Punah",
+        "Hampir Punah"
     ],
     "incomeCategories": [
         "Keluarga Petani",
@@ -298,7 +298,7 @@
         "MPTS",
         "Wood",
         "Estate",
-        "Others"
+        "Yang Lainnya"
     ],
     "incomeCropsTypes": [
         "Food",
@@ -312,6 +312,6 @@
         "UMKM",
         "KUD",
         "Broker",
-        "Others"
+        "Yang Lainnya"
     ]
 }

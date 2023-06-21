@@ -3634,7 +3634,7 @@ export default {
         } else {
           let map = await new mapboxgl.Map({
               container: 'mapboxDistributionLocationContainer', // container ID
-              style: 'mapbox://styles/mapbox/streets-v12', // style URL
+              style: 'mapbox://styles/mapbox/satellite-streets-v11', // style URL
               center: mapOptions.center,
               zoom: mapOptions.zoom,
               projection: 'globe'

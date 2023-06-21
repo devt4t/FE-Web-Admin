@@ -58,13 +58,13 @@
                     ></v-text-field>
                     <v-divider class="mx-2 d-none d-lg-block"></v-divider>
                     <div class="mx-auto">
-                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0" rounded class="mr-2" @click="() => exportExcel()">
+                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0" rounded class="mr-2" @click="() => exportExcel()" disabled>
                             <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
                             Export
                         </v-btn>
                         <v-btn color="info" rounded class="pl-2" @click="() => {modals.form.show = true;modals.form.key += 1}">
                             <v-icon class="mr-1">mdi-plus-circle</v-icon>
-                            Add
+                            Tambah
                         </v-btn>
                     </div>
                 </v-row>

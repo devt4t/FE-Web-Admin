@@ -2,12 +2,29 @@
     <!-- Modal Add Edit -->
     <v-dialog v-model="showModal" max-width="1000px" content-class="rounded-xl" scrollable>
     <v-card>
-        <v-card-title class="mb-1 headermodalstyle">
-            <span class=""><v-icon color="white" class="mr-1">mdi-text-account</v-icon> Field Facilitator Form</span>
+        <v-card-title class="ma-1 blue darken-2 rounded-xl">
+            <v-icon color="white" class="mr-2">mdi-account-box</v-icon>
+            <span class="white--text"> Field Facilitator Form</span>
             <v-divider color="white" class="mx-2"></v-divider>
             <v-icon color="white" @click="() => showModal = false">mdi-close-circle</v-icon>
         </v-card-title>
         <v-card-text>
+                <!-- Loading -->
+                <v-overlay absolute :value="loading.show">
+                    <div class="d-flex flex-column justify-center align-center">
+                        <v-progress-circular
+                            :size="80"
+                            :width="10"
+                            indeterminate
+                            color="white"
+                        >
+                        </v-progress-circular>
+                        <p class="mt-2 mb-0">{{ loading.text }}</p>
+                    </div>
+                </v-overlay>
+            <div class="pb-2 d-flex align-center justify-end mt-4">
+                <p class="mb-0 red--text">Tanda "<v-icon color="red" class="">{{ localConfig.requiredInputIcon }}</v-icon>" menandakan WAJIB DIISI.</p>
+            </div>
             <!-- MU TA DESA -->
             <div class="pb-2 d-flex align-center mt-4">
                 <p class="mb-0"><v-icon class="mr-2">mdi-file-marker</v-icon>Area Kerja FF</p>
@@ -27,14 +44,20 @@
                         :rules="[(v) => !!v || 'Field is required']"
                         item-text="name"
                         item-value="mu_no"
-                        :items="inputs.mu.items"
-                        :label="inputs.mu.label"
-                        :loading="inputs.mu.loading"
+                        :items="inputs.mu_no.items"
+                        :label="inputs.mu_no.label"
+                        :loading="inputs.mu_no.loading"
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                        :no-data-text="inputs.mu.loading ? 'Loading...' : 'Tidak ada data.'"
-                        v-model="inputs.mu.model"
-                        @change="($val) => getOptions('ta', $val)"
-                    ></v-autocomplete>
+                        :no-data-text="inputs.mu_no.loading ? 'Loading...' : 'Tidak ada data.'"
+                        v-model="inputs.mu_no.model"
+                        @change="($val) => getOptions('target_area', $val)"
+                    >
+                        <template v-slot:label>
+                            <v-icon v-if="inputs.mu_no.labelIcon" class="mr-1">{{ inputs.mu_no.labelIcon }}</v-icon>
+                            {{ inputs.mu_no.label }} 
+                            <sup><v-icon v-if="inputs.mu_no.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                        </template>
+                    </v-autocomplete>
                 </v-col>
                 <!-- Target Area -->
                 <v-col cols="12" lg="4">
@@ -49,15 +72,21 @@
                         :rules="[(v) => !!v || 'Field is required']"
                         item-text="name"
                         item-value="area_code"
-                        :items="inputs.ta.items"
-                        :label="inputs.ta.label"
-                        :loading="inputs.ta.loading"
+                        :items="inputs.target_area.items"
+                        :label="inputs.target_area.label"
+                        :loading="inputs.target_area.loading"
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                        :no-data-text="inputs.ta.loading ? 'Loading...' : 'Tidak ada data.'"
-                        v-model="inputs.ta.model"
-                        :disabled="!inputs.mu.model"
-                        @change="($val) => getOptions('wa', $val)"
-                    ></v-autocomplete>
+                        :no-data-text="inputs.target_area.loading ? 'Loading...' : 'Tidak ada data.'"
+                        v-model="inputs.target_area.model"
+                        :disabled="!inputs.mu_no.model"
+                        @change="($val) => getOptions('working_area', $val)"
+                    >
+                        <template v-slot:label>
+                            <v-icon v-if="inputs.target_area.labelIcon" class="mr-1">{{ inputs.target_area.labelIcon }}</v-icon>
+                            {{ inputs.target_area.label }} 
+                            <sup><v-icon v-if="inputs.target_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                        </template>
+                    </v-autocomplete>
                 </v-col>
                 <!-- Working Area / Desa -->
                 <v-col cols="12" lg="4">
@@ -72,14 +101,20 @@
                         :rules="[(v) => !!v || 'Field is required']"
                         item-text="name"
                         item-value="kode_desa"
-                        :items="inputs.wa.items"
-                        :label="inputs.wa.label"
-                        :loading="inputs.wa.loading"
+                        :items="inputs.working_area.items"
+                        :label="inputs.working_area.label"
+                        :loading="inputs.working_area.loading"
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                        :no-data-text="inputs.wa.loading ? 'Loading...' : 'Tidak ada data.'"
-                        v-model="inputs.wa.model"
-                        :disabled="!inputs.ta.model"
-                    ></v-autocomplete>
+                        :no-data-text="inputs.working_area.loading ? 'Loading...' : 'Tidak ada data.'"
+                        v-model="inputs.working_area.model"
+                        :disabled="!inputs.target_area.model"
+                    >
+                        <template v-slot:label>
+                            <v-icon v-if="inputs.working_area.labelIcon" class="mr-1">{{ inputs.working_area.labelIcon }}</v-icon>
+                            {{ inputs.working_area.label }} 
+                            <sup><v-icon v-if="inputs.working_area.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                        </template>
+                    </v-autocomplete>
                 </v-col>
             </v-row>
             <!-- PIC status (aktif/non) -->
@@ -88,7 +123,7 @@
                 <v-divider class="mx-2"></v-divider>
             </div>
             <v-row class="">
-                <!-- FC -->
+                <!-- fc_no -->
                 <v-col cols="12" lg="8">
                     <v-autocomplete
                         color="success"
@@ -101,14 +136,19 @@
                         :rules="[(v) => !!v || 'Field is required']"
                         item-text="name"
                         item-value="nik"
-                        :items="inputs.fc.items"
-                        :label="inputs.fc.label"
-                        :loading="inputs.fc.loading"
+                        :items="inputs.fc_no.items"
+                        :label="inputs.fc_no.label"
+                        :loading="inputs.fc_no.loading"
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                        :no-data-text="inputs.fc.loading ? 'Loading...' : 'Tidak ada data.'"
-                        v-model="inputs.fc.model"
-                        @change="($val) => getOptions('ta', $val)"
-                    ></v-autocomplete>
+                        :no-data-text="inputs.fc_no.loading ? 'Loading...' : 'Tidak ada data.'"
+                        v-model="inputs.fc_no.model"
+                    >
+                        <template v-slot:label>
+                            <v-icon v-if="inputs.fc_no.labelIcon" class="mr-1">{{ inputs.fc_no.labelIcon }}</v-icon>
+                            {{ inputs.fc_no.label }} 
+                            <sup><v-icon v-if="inputs.fc_no.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                        </template>
+                    </v-autocomplete>
                 </v-col>
                 <!-- Status -->
                 <v-col cols="12" lg="4">
@@ -120,9 +160,6 @@
                     ></v-switch>
                 </v-col>
             </v-row>
-            <!-- Foto nama gender religi -->
-            <!-- Foto phone birth date -->
-            <!-- Foto No Ktp Status kawin -->
             <div class="pb-2 d-flex align-center mt-4">
                 <p class="mb-0"><v-icon class="mr-2">mdi-card-account-details</v-icon>Identitas FF</p>
                 <v-divider class="mx-2"></v-divider>
@@ -146,17 +183,62 @@
                                 rounded
                                 :rules="[(v) => !!v || 'Field is required']"
                                 v-model="inputs.name.model"
-                            ></v-text-field>
+                            >
+                                <template v-slot:label>
+                                    <v-icon v-if="inputs.name.labelIcon" class="mr-1">{{ inputs.name.labelIcon }}</v-icon>
+                                    {{ inputs.name.label }} 
+                                    <sup><v-icon v-if="inputs.name.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                </template>
+                            </v-text-field>
+                        </v-col>
+                        <!-- Gender -->
+                        <v-col cols="12" lg="6">
+                            <v-autocomplete
+                                color="success"
+                                item-color="success"
+                                placeholder="Pilih Satu"
+                                hide-details
+                                outlined
+                                rounded
+                                dense
+                                :rules="[(v) => !!v || 'Field is required']"
+                                :items="inputs.gender.items"
+                                :label="inputs.gender.label"
+                                :loading="inputs.gender.loading"
+                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                :no-data-text="inputs.gender.loading ? 'Loading...' : 'Tidak ada data.'"
+                                v-model="inputs.gender.model"
+                            ></v-autocomplete>
+                        </v-col>
+                        <!-- religion -->
+                        <v-col cols="12" lg="6">
+                            <v-autocomplete
+                                color="success"
+                                item-color="success"
+                                placeholder="Pilih Satu"
+                                hide-details
+                                outlined
+                                rounded
+                                dense
+                                :rules="[(v) => !!v || 'Field is required']"
+                                :items="inputs.religion.items"
+                                :label="inputs.religion.label"
+                                :loading="inputs.religion.loading"
+                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                :no-data-text="inputs.religion.loading ? 'Loading...' : 'Tidak ada data.'"
+                                v-model="inputs.religion.model"
+                            ></v-autocomplete>
                         </v-col>
                         <!-- Phone -->
-                        <v-col cols="12" lg="7">
+                        <v-col cols="12" lg="6">
                             <v-text-field
                                 color="success"
                                 dense
                                 hide-details
                                 :prefix="inputs.phone.prefix"
                                 :label="inputs.phone.label"
-                                :placeholder="inputs.name.placeholder"
+                                :placeholder="inputs.phone.placeholder"
+                                type="number"
                                 :disabled="false"
                                 outlined
                                 rounded
@@ -164,8 +246,8 @@
                                 v-model="inputs.phone.model"
                             ></v-text-field>
                         </v-col>
-                        <!-- Distribution Date Filter Field -->
-                        <v-col cols="12" lg="5">
+                        <!-- Birth Date -->
+                        <v-col cols="12" lg="6">
                             <v-menu 
                                 rounded="xl"
                                 transition="slide-x-transition"
@@ -173,7 +255,7 @@
                                 min-width="100"
                                 offset-y
                                 :close-on-content-click="true"
-                                v-model="inputs.birthDate.show"
+                                v-model="inputs.birthday.show"
                             >
                                 <template v-slot:activator="{ on: menu, attrs }">
                                     <v-tooltip top>
@@ -184,58 +266,53 @@
                                                 class="mb-2 mb-lg-0"
                                                 hide-details
                                                 outlined
-                                                label="Distribution Date"
+                                                label="Tanggal Lahir"
                                                 rounded
                                                 v-bind="attrs"
                                                 v-on="{...menu, ...tooltip}"
                                                 readonly
-                                                v-model="inputs.birthDate.modelShow"
-                                                style="max-width: 250px"
+                                                v-model="inputs.birthday.modelShow"
                                             ></v-text-field>
                                         </template>
                                         <span>Klik untuk memunculkan tanggal</span>
                                     </v-tooltip>
                                 </template>
                                 <div class="rounded-xl pb-2 white">
-                                    <v-overlay :value="inputs.birthDate.loading">
-                                        <div class="d-flex flex-column align-center justify-center">
-                                            <v-progress-circular
-                                                indeterminate
-                                                color="white"
-                                                size="64"
-                                            ></v-progress-circular>
-                                            <p class="mt-2 mb-0">Updating available dates...</p>
-                                        </div>
-                                    </v-overlay>
                                     <div class="d-flex flex-column align-center rounded-xl">
                                         <v-date-picker 
                                             color="green lighten-1 rounded-xl" 
-                                            v-model="inputs.birthDate.model"
-                                            min="2022-11-24"
+                                            v-model="inputs.birthday.model"
                                         ></v-date-picker>
                                     </div>
                                 </div>
                             </v-menu>
                         </v-col>
-                        <!-- NO KTP -->
-                        <v-col cols="12" lg="7">
+                        <!-- NO ktp_no -->
+                        <v-col cols="12" lg="6">
                             <v-text-field
                                 color="success"
                                 type="number"
                                 dense
                                 hide-details
                                 max="9999999999999999"
-                                :label="inputs.ktp.label"
-                                :placeholder="inputs.ktp.placeholder"
+                                :label="inputs.ktp_no.label"
+                                :placeholder="inputs.ktp_no.placeholder"
                                 :disabled="false"
                                 outlined
                                 rounded
+                                :suffix="`${inputs.ktp_no.model.length} / 16`"
                                 :rules="[(v) => !!v || 'Field is required']"
-                                v-model="inputs.ktp.model"
-                            ></v-text-field>
+                                v-model="inputs.ktp_no.model"
+                            >
+                                <template v-slot:label>
+                                    <v-icon v-if="inputs.ktp_no.labelIcon" class="mr-1">{{ inputs.ktp_no.labelIcon }}</v-icon>
+                                    {{ inputs.ktp_no.label }} 
+                                    <sup><v-icon v-if="inputs.ktp_no.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                </template>
+                            </v-text-field>
                         </v-col>
                         <!-- status kawin -->
-                        <v-col cols="12" lg="5">
+                        <v-col cols="12" lg="6">
                             <v-autocomplete
                                 color="success"
                                 item-color="success"
@@ -245,14 +322,12 @@
                                 rounded
                                 dense
                                 :rules="[(v) => !!v || 'Field is required']"
-                                item-text="name"
-                                item-value="nik"
-                                :items="inputs.marital.items"
-                                :label="inputs.marital.label"
-                                :loading="inputs.marital.loading"
+                                :items="inputs.marrital.items"
+                                :label="inputs.marrital.label"
+                                :loading="inputs.marrital.loading"
                                 :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                :no-data-text="inputs.marital.loading ? 'Loading...' : 'Tidak ada data.'"
-                                v-model="inputs.marital.model"
+                                :no-data-text="inputs.marrital.loading ? 'Loading...' : 'Tidak ada data.'"
+                                v-model="inputs.marrital.model"
                             ></v-autocomplete>
                         </v-col>
                     </v-row>
@@ -283,7 +358,7 @@
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                         :no-data-text="inputs.province.loading ? 'Loading...' : 'Tidak ada data.'"
                         v-model="inputs.province.model"
-                        @change="($val) => getOptions('region', $val)"
+                        @change="($val) => getOptions('city', $val)"
                     ></v-autocomplete>
                 </v-col>
                 <!-- Kota / Kabupaten -->
@@ -306,7 +381,7 @@
                         :no-data-text="inputs.city.loading ? 'Loading...' : 'Tidak ada data.'"
                         v-model="inputs.city.model"
                         :disabled="!inputs.province.model"
-                        @change="($val) => getOptions('district', $val)"
+                        @change="($val) => getOptions('kecamatan', $val)"
                     ></v-autocomplete>
                 </v-col>
                 <!-- Kecamatan -->
@@ -322,12 +397,12 @@
                         :rules="[(v) => !!v || 'Field is required']"
                         item-text="name"
                         item-value="kode_kecamatan"
-                        :items="inputs.district.items"
-                        :label="inputs.district.label"
-                        :loading="inputs.district.loading"
+                        :items="inputs.kecamatan.items"
+                        :label="inputs.kecamatan.label"
+                        :loading="inputs.kecamatan.loading"
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                        :no-data-text="inputs.district.loading ? 'Loading...' : 'Tidak ada data.'"
-                        v-model="inputs.district.model"
+                        :no-data-text="inputs.kecamatan.loading ? 'Loading...' : 'Tidak ada data.'"
+                        v-model="inputs.kecamatan.model"
                         :disabled="!inputs.city.model"
                         @change="($val) => getOptions('village', $val)"
                     ></v-autocomplete>
@@ -351,7 +426,7 @@
                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                         :no-data-text="inputs.village.loading ? 'Loading...' : 'Tidak ada data.'"
                         v-model="inputs.village.model"
-                        :disabled="!inputs.district.model"
+                        :disabled="!inputs.kecamatan.model"
                     ></v-autocomplete>
                 </v-col>
                 <!-- Address detail -->
@@ -377,22 +452,57 @@
                         max="99999"
                         dense
                         hide-details
-                        :label="inputs.postalCode.label"
-                        :placeholder="inputs.postalCode.placeholder"
+                        :label="inputs.post_code.label"
+                        :placeholder="inputs.post_code.placeholder"
                         :disabled="false"
                         outlined
                         rounded
-                        v-model="inputs.postalCode.model"
+                        v-model="inputs.post_code.model"
                     ></v-text-field>
                 </v-col>
             </v-row>
-            <!-- Address Detail -->
-            <!-- Bank Name Bank Account -->
-            <!-- Auto add user account? -->
-            <!-- ff name role -->
-            <!-- user name email -->
-            <!-- password ? default 123456 -->
+            <!-- Bank Detail -->
+            <div class="pb-2 d-flex align-center mt-4">
+                <p class="mb-0"><v-icon class="mr-2">mdi-bank</v-icon>Bank</p>
+                <v-divider class="mx-2"></v-divider>
+            </div>
+            <v-row class="">
+                <!-- bank Name -->
+                <v-col cols="12" lg="4">
+                    <v-text-field
+                        color="success"
+                        dense
+                        hide-details
+                        :label="inputs.bank_name.label"
+                        :placeholder="inputs.bank_name.placeholder"
+                        :disabled="false"
+                        outlined
+                        rounded
+                        v-model="inputs.bank_name.model"
+                    ></v-text-field>
+                </v-col>
+                <!-- Bank Account -->
+                <v-col cols="12" lg="4">
+                    <v-text-field
+                        color="success"
+                        dense
+                        hide-details
+                        :label="inputs.bank_account.label"
+                        :placeholder="inputs.bank_account.placeholder"
+                        :disabled="false"
+                        outlined
+                        rounded
+                        v-model="inputs.bank_account.model"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
         </v-card-text>
+        <v-card-actions class="justify-end">
+            <v-btn :disabled="disabledSave" rounded color="blue white--text" class="px-4" @click="save()">
+                <v-icon class="mr-1">mdi-content-save</v-icon>
+                Save
+            </v-btn>
+        </v-card-actions>
     </v-card>
     </v-dialog>
 </template>
@@ -400,6 +510,9 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import Swal from 'sweetalert2'
+
+import formOptions from '@/assets/json/ffOptions.json'
 
 export default {
     props: {
@@ -415,64 +528,83 @@ export default {
     data: () => ({
         inputs: {
             // MU TA DESA
-            mu: {
+            mu_no: {
                 label: 'Management Unit',
                 model: '',
+                required: true,
                 items: [],
                 loading: false,
             },
-            ta: {
+            target_area: {
                 label: 'Target Area',
                 model: '',
                 items: [],
                 loading: false,
+                required: true
             },
-            wa: {
+            working_area: {
                 label: 'Working Area / Desa',
                 model: '',
                 items: [],
-                loading: false
+                loading: false,
+                required: true
             },
-            // FC
-            fc: {
+            // fc_no
+            fc_no: {
                 label: 'Field Coordinator',
                 model: '',
                 items: [],
-                loading: false
+                loading: false,
+                required: true
             },
             is_active: {model: true},
             // Foto nama gender religi
-            photo: {},
+            photo: {model: ''},
             name: {
                 label: 'Nama',
                 model: '',
-                placeholder: ''
+                placeholder: '',
+                required: true
+            },
+            // gender
+            gender: {
+                label: 'Jenis Kelamin',
+                model: '',
+                items: formOptions.gender,
+                loading: false
+            },
+            // religion
+            religion: {
+                label: 'Agama',
+                model: '',
+                items: formOptions.religion,
+                loading: false
             },
             // phone birth date
             phone: {
                 label: 'Nomor HP',
                 model: '',
-                modelShow: '',
                 prefix: '+62',
-                placeholder: ''
+                placeholder: '82223318719'
             },
-            birthDate: {
+            birthday: {
                 loading: false,
                 model: moment().format('Y-MM-DD'),
                 modelShow: moment().format('DD MMMM Y'),
                 show: false,
             },
-            // KTP
-            ktp: {
-                label: 'No KTP',
+            // ktp_no
+            ktp_no: {
+                label: 'NIK / No KTP',
                 model: '',
-                placeholder: 'isi dengan 16-digit angka'
+                placeholder: 'isi dengan 16-digit angka',
+                required: true
             },
-            // marital
-            marital: {
+            // marrital
+            marrital: {
                 label: 'Status Perkawinan',
                 model: '',
-                items: [],
+                items: formOptions.marital_status,
                 loading: false
             },
             // domisili
@@ -488,7 +620,7 @@ export default {
                 items: [],
                 loading: false,
             },
-            district: {
+            kecamatan: {
                 label: 'Kecamatan',
                 model: '',
                 items: [],
@@ -507,12 +639,33 @@ export default {
                 placeholder: ''
             },
             // postal Code
-            postalCode: {
+            post_code: {
                 label: 'Kode POS',
                 model: '',
                 placeholder: ''
             },
-        }
+            bank_name: {
+                label: 'Nama Bank',
+                model: '',
+                placeholder: ''
+            },
+            bank_account: {
+                label: 'No Rekening / Akun',
+                model: '',
+                placeholder: ''
+            },
+            user_id: {model: ''},
+            join_date: {model: ''},
+        },
+        loading: {
+            show: false,
+            text: 'Loading...'
+        },
+        localConfig: {
+            windowWidth: window.innerWidth,
+            breakLayoutFrom: 1140,
+            requiredInputIcon: 'mdi-star'
+        },
     }),
     computed: {
         showModal: {
@@ -520,8 +673,7 @@ export default {
                 if (this.id) {
                 } else if (this.show) {
                     setTimeout(() => {
-                        this.getOptions('mu')
-                        this.getOptions('fc')
+                        this.setDefaultData()
                     }, 300);
                 }
                 
@@ -530,17 +682,32 @@ export default {
             set: function(newVal) {
                 this.$emit('dialogAct', {name: 'addEditFF', status: newVal});
             }
+        },
+        disabledSave() {
+            const required = ['mu_no', 'target_area', 'working_area', 'fc_no', 'name', 'ktp_no']
+            let empty = 0
+            required.forEach(val => {
+                if (!this.inputs[val].model) empty += 1
+            })
+            if (empty > 0) return true
+            if (this.inputs.ktp_no.model.length != 16) return true
+            return false
         }
     },
     watch: {
         'inputs.phone.model': {
             handler(val) {
-                this.inputs.phone.model = this._utils.formatPhoneNumber(val)
             }
         },
-        'inputs.birthDate.model': {
+        'inputs.birthday.model': {
             handler(val) {
-                this.inputs.birthDate.modelShow = moment(val).format('DD MMMM Y')
+                this.inputs.birthday.modelShow = moment(val).format('DD MMMM Y')
+            }
+        },
+        'inputs.ktp_no.model': {
+            handler(val, oldVal) {
+                if (val.length >= 16) {
+                }
             }
         }
     },
@@ -550,43 +717,176 @@ export default {
                 this.inputs[type].loading = true
                 this.inputs[type].model = ''
                 let url = ''
-                if (type == 'mu') url = this.$store.getters.getApiUrl(`GetManagementUnit`)
-                if (type == 'ta' && id) url = this.$store.getters.getApiUrl(`GetTargetArea?mu_no=${id}`)
-                if (type == 'wa' && id) url = this.$store.getters.getApiUrl(`GetDesa?kode_ta=${id}`)
-                if (type == 'fc') url = this.$store.getters.getApiUrl(`GetEmployeeAll?position_no=19`)
+                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit`)
+                if (type == 'target_area' && id) url = this.$store.getters.getApiUrl(`GetTargetArea?mu_no=${id}`)
+                if (type == 'working_area' && id) url = this.$store.getters.getApiUrl(`GetDesa?kode_ta=${id}`)
+                if (type == 'province') url = this.$store.getters.getApiUrl('GetProvince')
+                if (type == 'city') url = this.$store.getters.getApiUrl('GetKabupaten?province_code=' + id)
+                if (type == 'kecamatan') url = this.$store.getters.getApiUrl('GetKecamatan?kabupaten_no=' + id)
+                if (type == 'village') url = this.$store.getters.getApiUrl('GetDesa?&kode_kecamatan=' + id)
+                if (type == 'fc_no') url = this.$store.getters.getApiUrl(`GetEmployeeAll?position_no=19`)
 
                 if (url) {
                     const res = await axios.get(url, this.$store.state.apiConfig)
                     let data = []
-                    if (type == 'fc') data = await res.data.data.result.data
+                    if (type == 'fc_no') data = await res.data.data.result.data
                     else data = await res.data.data.result
                     this.inputs[type].items = await data.sort((a, b) => a.name.localeCompare(b.name))
                 }
             } catch (err) {this.catchingError(err)} finally {
                 // reset options data
-                if (type == 'mu') {
-                    this.inputs.ta.model = ''
-                    this.inputs.ta.items = []
+                if (type == 'mu_no') {
+                    this.inputs.target_area.model = ''
+                    this.inputs.target_area.items = []
                 }
-                if (type == 'mu' || type == 'ta') {
-                    this.inputs.wa.model = ''
-                    this.inputs.wa.items = []
+                if (type == 'mu_no' || type == 'target_area') {
+                    this.inputs.working_area.model = ''
+                    this.inputs.working_area.items = []
                 }
                 
                 this.inputs[type].loading = false
             }
         },
+        async save() {
+            try {
+                const confirm = await Swal.fire({
+                    title: 'Apakah anda yakin?',
+                    text: "Pastikan data sudah benar!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2e7d32',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Tidak Jadi',
+                    confirmButtonText: 'Ya, Lanjutkan!'
+                })
+                if (confirm.isConfirmed) {
+                    this.loading.show = true
+                    this.loading.text = 'Saving ff data...'
+
+                    await this.setDataBeforeStore()
+                    const data = {}
+                    for (const [key, val] of Object.entries(this.inputs)) {
+                        if (key == 'phone' && val.model != '-') data[key] = '62' + val.model
+                        else data[key] = val.model
+                    }
+                    console.log(data)
+                    // const createFF = await axios.post(this.$store.getters.getApiUrl('AddFieldFacilitator'), data, this.$store.state.apiConfig)
+                    const createFF = true
+                    console.log(createFF)
+                    if (createFF && !this.id) {
+                        const confirm2 = await Swal.fire({
+                            title: 'Akun GEKO FF',
+                            html: `Buat akun GEKO untuk FF yang baru saja dibuat? <br>
+                            <p>Nama:<br><b>${this.inputs.name.model}</b></p>
+                            <p>Email:<br><b>${this.setAccountEmailFF(this.inputs.name.model)}</b></p>
+                            <p>Password:<br><b>123456</b></p>
+                            Harap diingat data akun diatas sebelum melanjutkan!
+                            `,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#2e7d32',
+                            cancelButtonColor: '#d33',
+                            cancelButtonText: 'Tidak',
+                            confirmButtonText: 'Ya, Buat!'
+                        })
+                    }
+                }
+            } catch (err) {this.catchingError(err)} finally {
+                this.loading.show = false
+            }
+        },
+        setAccountEmailFF(name) {
+            const nameSplit = name.split(/\s/)
+            let newName = nameSplit[0]
+            if (nameSplit.length > 0) newName += nameSplit.reduce((response,word)=> response+=word.slice(0,1),'').substring(1)
+            const mu_name = this.inputs.mu_no.items.find(val => val.mu_no === this.inputs.mu_no.model).name || '-'
+            const desa = this.inputs.working_area.items.find(val => val.kode_desa === this.inputs.working_area.model).name || '-'
+            const email = `${newName}_${desa}_${mu_name}@t4t.org`
+            return email.replace(/\s/g, '')
+        },
+        async setDataBeforeStore() {
+            // gender
+            !this.inputs.gender.model ? this.inputs.gender.model = 'male' : ''
+            // religion
+            !this.inputs.religion.model ? this.inputs.religion.model = 'islam' : ''
+            // phone
+            !this.inputs.phone.model ? this.inputs.phone.model = '-' : ''
+            // birthday
+            !this.inputs.birthday.model ? this.inputs.birthday.model = '1900-01-01' : ''
+            // marrital
+            !this.inputs.marrital.model ? this.inputs.marrital.model = '-' : ''
+            // province
+            !this.inputs.province.model ? this.inputs.province.model = '-' : ''
+            // city
+            !this.inputs.city.model ? this.inputs.city.model = '-' : ''
+            // kecamatan
+            !this.inputs.kecamatan.model ? this.inputs.kecamatan.model = '-' : ''
+            // village
+            !this.inputs.village.model ? this.inputs.village.model = '-' : ''
+            // post_code
+            !this.inputs.post_code.model ? this.inputs.post_code.model = '-' : ''
+            // address
+            !this.inputs.address.model ? this.inputs.address.model = '-' : ''
+            // bank_name
+            !this.inputs.bank_name.model ? this.inputs.bank_name.model = '-' : ''
+            // bank_account
+            !this.inputs.bank_account.model ? this.inputs.bank_account.model = '-' : ''
+            // user id
+            !this.inputs.user_id.model ? this.inputs.user_id.model = this.$store.state.User.employee_no : ''
+            // join date
+            this.inputs.join_date.model = this._utils.dateFormat(Date('now'), 'Y-MM-DD')
+        },
+        async setDefaultData() {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Get option data...'
+                await this.getOptions('mu_no')
+                await this.getOptions('province')
+                await this.getOptions('fc_no')
+                
+                this.loading.text = 'Set Dummy data... :)'
+                await this.setDummyData()
+            } finally {this.loading.show = false}
+        },
+        async setDummyData() {
+            this.inputs.mu_no.model = '016'
+            await this.getOptions('target_area', this.inputs.mu_no.model)
+            this.inputs.target_area.model = '016002'
+            await this.getOptions('working_area', this.inputs.target_area.model)
+            this.inputs.working_area.model = '33.74.12.01'
+            this.inputs.fc_no.model = '1108'
+            this.inputs.name.model = 'Testing Create FF'
+            this.inputs.ktp_no.model = '3322022107010005'
+        },
         // utilities
-        catchingError(error) {
+        async catchingError(error) {
+            console.log(error)
             if (error.response) {
-            if (typeof error.response.status != undefined) {
-                if (error.response.status == 401) {
-                    localStorage.removeItem("token")
-                    this.$router.push("/")
+                if (error.response.status) {
+                    if (error.response.status == 401) {
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) {
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
+                    }
+                    if (error.response.status === 500 || error.response.status === 400) {
+                        let errMessage = error.response.data.message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `${errMessage || error.message}`,
+                            icon: 'error',
+                            confirmButtonColor: '#f44336',
+                        })
+                    }
                 }
             }
-            }
-            console.log(error)
         },
     }
 }
