@@ -145,7 +145,7 @@ export default {
             const wb = XLSX.utils.table_to_book(table);
 
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `${download.title}.xlsx`);
+            XLSX.writeFile(wb, `${this.download.title}.xlsx`);
         },
         async getTableData() {
             try {
