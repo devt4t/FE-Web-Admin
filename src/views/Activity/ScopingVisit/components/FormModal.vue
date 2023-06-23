@@ -38,7 +38,9 @@
                     </v-col>
                 </v-row>
                 <!-- Dynamic Inputs -->
-                <v-row class="ma-0 mx-5" v-for="(ig, igIndex) in inputsGroup" :key="`IG-${igIndex}`">
+                <v-row class="ma-0 mx-5" v-for="(ig, igIndex) in inputsGroup" :key="`IG-${igIndex}`"
+                    v-if="showFormInputs(ig)"
+                >
                     <!-- Title -->
                     <v-col cols="12">
                         <div class="d-flex align-center">
@@ -170,6 +172,8 @@
                         >
                             <v-file-input
                                 color="success"
+                                :dense="inputs[itemKey].dense"
+                                :hide-details="inputs[itemKey].hideDetails"
                                 outlined
                                 rounded
                                 :multiple="inputs[itemKey].multiple"
@@ -189,6 +193,7 @@
                                     <v-card 
                                         class="rounded-lg mt-2 elevation-0 mr-1 mb-1"
                                         style="position: relative;"
+                                        v-if="inputs[itemKey].chip"
                                     >
                                         <v-chip
                                             color="deep-purple accent-4"
@@ -206,13 +211,14 @@
                                             style="max-width: 200px;max-height: 110px;"
                                         ></v-img>
                                     </v-card>
+                                    <span v-else> {{ text }}</span>
                                 </template>
                             </v-file-input>
                         </div>
                     </v-col>
                 </v-row>
                 <!-- Tokoh Desa -->
-                <v-row class="ma-0 mx-5">
+                <v-row class="ma-0 mx-5" v-if="$store.state.User.role_name != 'GIS STAFF'">
                     <v-col cols="12">
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">mdi-card-account-phone</v-icon>Tokoh Desa</p>
@@ -668,6 +674,9 @@ export default {
             },
             village_polygon: {
                 label: 'Polygon Desa *.kml file',
+                dense: true,
+                chip: false,
+                hideDetails: true,
                 accept: '.kml',
                 model: null,
                 inputType: 'file-input',
@@ -679,6 +688,9 @@ export default {
             },
             dry_land_polygon: {
                 label: 'Polygon Lahan Kering / Kritis *.kml file',
+                dense: true,
+                chip: false,
+                hideDetails: true,
                 accept: '.kml',
                 model: null,
                 inputType: 'file-input',
@@ -692,8 +704,10 @@ export default {
             photo_road_access: {
                 label: 'Akses Jalan (maks 5 foto)',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
-                model: null,
+                chip: true,
+                model: [],
                 preview: null,
+                hideDetails: false,
                 inputType: 'file-input',
                 multiple: true,
                 lgView: 12,
@@ -705,9 +719,11 @@ export default {
             photo_meeting: {
                 label: 'Pertemuan dengan Tokoh Desa (maks 3 foto)',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
-                model: null,
+                chip: true,
+                model: [],
                 preview: null,
                 inputType: 'file-input',
+                hideDetails: false,
                 multiple: true,
                 lgView: 12,
                 prependIcon: 'mdi-camera',
@@ -718,9 +734,11 @@ export default {
             photo_dry_land: {
                 label: 'Lahan Kering (maks 5 foto)',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
+                chip: true,
                 model: null,
                 preview: null,
                 inputType: 'file-input',
+                hideDetails: false,
                 multiple: true,
                 lgView: 12,
                 prependIcon: 'mdi-camera',
@@ -731,9 +749,11 @@ export default {
             village_profile: {
                 label: 'Profil Desa',
                 accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
-                model: null,
+                chip: true,
+                model: [],
                 preview: null,
                 inputType: 'file-input',
+                hideDetails: false,
                 multiple: false,
                 lgView: 6,
                 prependIcon: 'mdi-camera',
@@ -760,32 +780,37 @@ export default {
             {
                 title: 'Lokasi & Tanggal Kegiatan Scooping',
                 icon: 'mdi-calendar',
+                gis_role: false,
                 items_key: ["province", "regency", "district", "village", "scooping_date"]
             },
             {
                 title: 'Data General Desa',
                 icon: 'mdi-list-box',
-                // items_key: ["land_area", "accessibility", "land_type", "land_slope", "land_height", "vegetation_density", "water_source", "rainfall", "agroforestry_type", "government_place", "land_coverage", "electricity_source", "dry_land_area"]
+                gis_role: false,
                 items_key: ["land_area", "accessibility", "water_source", "electricity_source", "government_place"]
             },
             {
                 title: 'Data Populasi Dan Wilayah',
                 icon: 'mdi-account-group',
+                gis_role: false,
                 items_key: ["total_dusun", "potential_dusun", "potential_description", "total_male", "total_female", "total_kk"],
             }, 
             {
                 title: 'Upload Foto Dokumentasi Kegiatan',
                 icon: 'mdi-image-multiple',
+                gis_role: false,
                 items_key: ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"],
             }, 
             {
                 title: 'Kelengkapan Data Lahan Kering',
                 icon: 'mdi-land-fields',
+                gis_role: true,
                 items_key: ["dry_land_area", "land_type", "land_slope", "land_height", "land_coverage", "vegetation_density", "agroforestry_type", "rainfall"]
             },
             {
                 title: 'Upload Polygon File (GIS)',
                 icon: 'mdi-map-marker-path',
+                gis_role: true,
                 items_key: ["village_polygon", "dry_land_polygon"],
             }
         ],
@@ -872,7 +897,7 @@ export default {
         },
         'inputs.photo_road_access.model': {
             async handler(val) {
-                if (val.length > 5) {
+                if (val) if (val.length > 5) {
                     const confirm = await Swal.fire({
                         title: 'Melebihi Batas!',
                         text: `Maksimal 5 foto!`,
@@ -886,7 +911,7 @@ export default {
         },
         'inputs.photo_meeting.model': {
             async handler(val) {
-                if (val.length > 5) {
+                if (val) if (val.length > 5) {
                     const confirm = await Swal.fire({
                         title: 'Melebihi Batas!',
                         text: `Maksimal 3 foto!`,
@@ -900,7 +925,7 @@ export default {
         },
         'inputs.photo_dry_land.model': {
             async handler(val) {
-                if (val.length > 5) {
+                if (val) if (val.length > 5) {
                     const confirm = await Swal.fire({
                         title: 'Melebihi Batas!',
                         text: `Maksimal 5 foto!`,
@@ -1201,9 +1226,15 @@ export default {
                     var imageKeyInput = ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"]
                     for (let index = 0; index < imageKeyInput.length; index++) {
                         let imgKey = imageKeyInput[index]
-                        if (this.inputs[imgKey].model) {
-                            data[imgKey] = await this.uploadFiles('photo', `Foto "${imgKey}"`, this.inputs[imgKey].model, 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-${imgKey.replace("photo_", "")}`)
-                        } else if (this.inputs[imgKey].preview && !this.inputs[imgKey].preview.includes('noimage')) data[imgKey] = this.inputs[imgKey].preview.replace(this.$store.state.apiUrlImage, "")
+                        if (this.inputs[imgKey].model) if (this.inputs[imgKey].model.length > 0) {
+                            let imgListName = []
+                            for (let imgIndex = 0; imgIndex < this.inputs[imgKey].model.length; imgIndex++) {
+                                const imgRes = await this.uploadFiles('photo', `Foto "${imgKey}" ${imgIndex + 1}`, this.inputs[imgKey].model[imgIndex], 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-${imgKey.replace("photo_", "")}-${imgIndex + 1}`)
+                                imgListName.push(imgRes)
+                            }
+                            data[imgKey] = imgListName.toString()
+                        }
+                        //  else if (this.inputs[imgKey].preview && !this.inputs[imgKey].preview.includes('noimage')) data[imgKey] = this.inputs[imgKey].preview.replace(this.$store.state.apiUrlImage, "")
                     }
                     // upload village_polygon
                     if (this.inputs.village_polygon.model) {
@@ -1263,6 +1294,11 @@ export default {
         setUrlFileImage(file) {
             return URL.createObjectURL(file)
         },
+        showFormInputs(section) {
+            const user = this.$store.state.User
+            if (user.role_name == 'GIS STAFF' && !section.gis_role) return false
+            return true
+        },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs
             
@@ -1275,10 +1311,12 @@ export default {
             try {
                 this.$store.state.loadingOverlayText = `Saving file "${typeName}"...`
                 const url = `${this.$store.state.apiUrlImage}${prefix}/upload.php`
+                let fileToUpload = file
+                if (type == 'polygon') fileToUpload = file[0]
                 const data = this._utils.generateFormData({
                     dir: dir,
                     nama: name,
-                    fileToUpload: file,
+                    fileToUpload: fileToUpload,
                     type: type
                 })
                 let responseName = null

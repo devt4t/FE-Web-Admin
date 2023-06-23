@@ -102,7 +102,7 @@
                         <v-icon class="mr-1">mdi-information</v-icon> Detail
                     </v-btn>
                     <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" 
-                        :disabled="item.is_verify === 1"
+                        :disabled="item.is_verify === 1 && user.role_name != 'GIS STAFF'"
                         @click="() => {showModal('form', item)}">
                         <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
                     </v-btn>
