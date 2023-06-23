@@ -625,7 +625,7 @@
             style="max-width: 350px;"
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn rounded color="green white--text" :disabled="loadtable" @click="() => showExportModal = true" class="mr-1"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export Excel</v-btn>
+          <v-btn v-if="$store.state.User.email == 'iyas.muzani@trees4trees.org'" rounded color="green white--text" :disabled="loadtable" @click="() => showExportModal = true" class="mr-1"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export Excel</v-btn>
           <v-btn dark rounded @click="showAddModal()" color="blue">
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>

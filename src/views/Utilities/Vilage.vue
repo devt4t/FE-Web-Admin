@@ -617,25 +617,32 @@ export default {
           this.defaultItem.ta_desas.pop()
         }
     },
-    save() {
-      if (
-        this.defaultItem.kode_kecamatan != null &&
-        this.defaultItem.kode_desa.length != 0 &&
-        this.defaultItem.namaDesa.length != 0 &&
-        this.defaultItem.post_code.length != 0
-      ) {
-        if (this.defaultItem.id) {
-          console.log("edit");
-          this.updateData();
+    async save() {
+      try {
+        this.dialog = false
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Loading...'
+        if (
+          this.defaultItem.kode_kecamatan != null &&
+          this.defaultItem.kode_desa.length != 0 &&
+          this.defaultItem.namaDesa.length != 0 &&
+          this.defaultItem.post_code.length != 0
+        ) {
+          if (this.defaultItem.id) {
+            console.log("edit");
+            await this.updateData();
+          } else {
+            console.log("add");
+            await this.addData();
+          }
+          this.close();
         } else {
-          console.log("add");
-          this.addData();
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
         }
-        this.close();
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
+      } finally {
+        this.$store.state.loadingOverlay = false
       }
     },
   },

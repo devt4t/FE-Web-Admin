@@ -293,7 +293,7 @@ export default {
         programYear: '',
     },
   }),
-  created() {
+  mounted() {
     this.authtoken = localStorage.getItem("token");
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
     this.localConfig.programYear = this.$store.state.programYear.model
@@ -550,25 +550,32 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
-    save() {
-      if (
-        this.defaultItem.kabupaten_no != null &&
-        this.defaultItem.mu_no != null &&
-        this.defaultItem.namaTa.length != 0 &&
-        this.defaultItem.luas.length != 0
-      ) {
-        if (this.defaultItem.id) {
-          console.log("edit");
-          this.updateData();
+    async save() {
+      try {
+        this.dialog = false
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Loading...'
+        if (
+          this.defaultItem.kabupaten_no != null &&
+          this.defaultItem.mu_no != null &&
+          this.defaultItem.namaTa.length != 0 &&
+          this.defaultItem.luas.length != 0
+        ) {
+          if (this.defaultItem.id) {
+            console.log("edit");
+            await this.updateData();
+          } else {
+            console.log("add");
+            await this.addData();
+          }
+          this.close();
         } else {
-          console.log("add");
-          this.addData();
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
         }
-        this.close();
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
+      } finally {
+        this.$store.state.loadingOverlay = false
       }
     },
   },
