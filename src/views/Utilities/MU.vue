@@ -229,7 +229,7 @@ export default {
     },
   }),
 
-  created() {
+  mounted() {
     this.authtoken = localStorage.getItem("token");
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
     this.localConfig.programYear = this.$store.state.programYear.model

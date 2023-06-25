@@ -22,7 +22,30 @@
                         <p class="mt-2 mb-0">{{ loading.text }}</p>
                     </div>
                 </v-overlay>
-            <div class="pb-2 d-flex align-center justify-end mt-4">
+            <div class="pb-2 d-flex align-center mt-4">
+                <v-select
+                    v-if="!this.id"
+                    color="success"
+                    item-color="success"
+                    v-model="inputs.program_year.model"
+                    :items="$store.state.programYear.options"
+                    outlined
+                    dense
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    rounded
+                    :label="inputs.program_year.label"
+                    :placeholder="inputs.program_year.placeholder"
+                    class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+                    style="max-width: 250px"
+                >
+                    <template v-slot:label>
+                        <v-icon v-if="inputs.program_year.labelIcon" class="mr-1">{{ inputs.program_year.labelIcon }}</v-icon>
+                        {{ inputs.program_year.label }} 
+                        <sup><v-icon v-if="inputs.program_year.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                    </template>
+                </v-select>
+                <v-divider class="mx-2"></v-divider>
                 <p class="mb-0 red--text">Tanda "<v-icon color="red" class="">{{ localConfig.requiredInputIcon }}</v-icon>" menandakan WAJIB DIISI.</p>
             </div>
             <!-- MU TA DESA -->
@@ -153,8 +176,8 @@
                 <!-- Status -->
                 <v-col cols="12" lg="4">
                     <v-switch
-                        v-model="inputs.is_active.model"
-                        :label="`Status FF : ${inputs.is_active.model ? 'Aktif' : 'Non-Aktif'}`"
+                        v-model="inputs.active.model"
+                        :label="`Status FF : ${inputs.active.model ? 'Aktif' : 'Non-Aktif'}`"
                         color="green"
                         class="mt-2"
                     ></v-switch>
@@ -516,6 +539,10 @@ import formOptions from '@/assets/json/ffOptions.json'
 
 export default {
     props: {
+        programYear: {
+            type: String,
+            default: moment().format('YYYY')
+        },
         show: {
             type: Boolean,
             default: false
@@ -527,6 +554,12 @@ export default {
     },
     data: () => ({
         inputs: {
+            program_year: {
+                label: 'Tahun Program',
+                model: '',
+                placeholder: moment().format('YYYY'),
+                required: true
+            },
             // MU TA DESA
             mu_no: {
                 label: 'Management Unit',
@@ -557,7 +590,7 @@ export default {
                 loading: false,
                 required: true
             },
-            is_active: {model: true},
+            active: {model: true},
             // Foto nama gender religi
             photo: {model: ''},
             name: {
@@ -671,6 +704,7 @@ export default {
         showModal: {
             get: function () {
                 if (this.id) {
+                    this.getEditData(this.id)
                 } else if (this.show) {
                     setTimeout(() => {
                         this.setDefaultData()
@@ -684,9 +718,13 @@ export default {
             }
         },
         disabledSave() {
-            const required = ['mu_no', 'target_area', 'working_area', 'fc_no', 'name', 'ktp_no']
+            const required = ['mu_no', 'target_area', 'working_area', 'fc_no', 'name', 'ktp_no', 'program_year']
             let empty = 0
             required.forEach(val => {
+                if (val == 'program_year') {
+                    if (this.inputs[val].model == 'Semua') empty += 1
+                }
+                
                 if (!this.inputs[val].model) empty += 1
             })
             if (empty > 0) return true
@@ -705,21 +743,49 @@ export default {
             }
         },
         'inputs.ktp_no.model': {
-            handler(val, oldVal) {
-                if (val.length >= 16) {
+            async handler(val, oldVal) {
+                if (val.length > 16) {
+                    const confirm = await Swal.fire({
+                        title: 'Warning!',
+                        text: "Format data ktp adalah 16 digit angka!",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    if (confirm.isConfirmed) this.inputs.ktp_no.model = oldVal
                 }
+            }
+        },
+        'inputs.program_year.model': {
+            handler(val) {
+                this.inputs.mu_no.model = ''
+                this.inputs.target_area.model = ''
+                this.inputs.village.model = ''
+                this.getOptions('mu_no')
             }
         }
     },
     methods: {
+        async getEditData(ff_id) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Get ff data...'
+                const res = await axios.get(this.$store.getters.getApiUrl(`GetFieldFacilitatorDetail?id=${ff_id}`), this.$store.state.apiConfig)
+                console.log(res.data.data.result)
+            } catch (err) {
+                this.catchingError(err)
+            } finally {
+                this.loading.show = false
+            }
+        },
         async getOptions(type, id = null) {
             try {
                 this.inputs[type].loading = true
                 this.inputs[type].model = ''
                 let url = ''
-                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit`)
-                if (type == 'target_area' && id) url = this.$store.getters.getApiUrl(`GetTargetArea?mu_no=${id}`)
-                if (type == 'working_area' && id) url = this.$store.getters.getApiUrl(`GetDesa?kode_ta=${id}`)
+                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit?program_year=${this.inputs.program_year.model}`)
+                if (type == 'target_area' && id) url = this.$store.getters.getApiUrl(`GetTargetArea?program_year=${this.inputs.program_year.model}&mu_no=${id}`)
+                if (type == 'working_area' && id) url = this.$store.getters.getApiUrl(`GetDesa?program_year=${this.inputs.program_year.model}&kode_ta=${id}`)
                 if (type == 'province') url = this.$store.getters.getApiUrl('GetProvince')
                 if (type == 'city') url = this.$store.getters.getApiUrl('GetKabupaten?province_code=' + id)
                 if (type == 'kecamatan') url = this.$store.getters.getApiUrl('GetKecamatan?kabupaten_no=' + id)
@@ -770,26 +836,47 @@ export default {
                         else data[key] = val.model
                     }
                     console.log(data)
-                    // const createFF = await axios.post(this.$store.getters.getApiUrl('AddFieldFacilitator'), data, this.$store.state.apiConfig)
-                    const createFF = true
-                    console.log(createFF)
+                    const createFF = await axios.post(this.$store.getters.getApiUrl('AddFieldFacilitator'), data, this.$store.state.apiConfig)
+                    await this.$emit('refreshTable')
                     if (createFF && !this.id) {
-                        const confirm2 = await Swal.fire({
-                            title: 'Akun GEKO FF',
-                            html: `Buat akun GEKO untuk FF yang baru saja dibuat? <br>
-                            <p>Nama:<br><b>${this.inputs.name.model}</b></p>
-                            <p>Email:<br><b>${this.setAccountEmailFF(this.inputs.name.model)}</b></p>
-                            <p>Password:<br><b>123456</b></p>
-                            Harap diingat data akun diatas sebelum melanjutkan!
-                            `,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#2e7d32',
-                            cancelButtonColor: '#d33',
-                            cancelButtonText: 'Tidak',
-                            confirmButtonText: 'Ya, Buat!'
-                        })
+                        const new_ff_no = createFF.data.data.result.ff_no
+                        if (new_ff_no) {
+                            const userData = {
+                                employee_no: new_ff_no,
+                                name: this.inputs.name.model,
+                                email: this.setAccountEmailFF(this.inputs.name.model),
+                                password: '123456',
+                                role: "ff"
+                            }
+                            console.log(userData)
+                            const confirm2 = await Swal.fire({
+                                title: 'Akun GEKO FF',
+                                html: `Buat akun GEKO untuk FF yang baru saja dibuat? <br>
+                                <p>Nama:<br><b>${userData.name}</b></p>
+                                <p>Email:<br><b>${userData.email}</b></p>
+                                <p>Password:<br><b>${userData.password}</b></p>
+                                Harap diingat data akun diatas sebelum melanjutkan!
+                                `,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#2e7d32',
+                                cancelButtonColor: '#d33',
+                                cancelButtonText: 'Tidak',
+                                confirmButtonText: 'Ya, Buat!'
+                            })
+                            if (confirm2.isConfirmed) {
+                                const res2 = await axios.post(this.$store.getters.getApiUrl(`Regist`), userData, this.$store.state.apiConfig)
+                            }
+                        } else console.log(`Created ff_no data not found!`)
                     }
+                    await Swal.fire({
+                        title: 'Sukses!',
+                        text: "Selamat! Data FF sudah berhasil tersimpan!",
+                        icon: 'success',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Oye'
+                    })
+                    await this.resetData()
                 }
             } catch (err) {this.catchingError(err)} finally {
                 this.loading.show = false
@@ -840,15 +927,16 @@ export default {
             try {
                 this.loading.show = true
                 this.loading.text = 'Get option data...'
+                this.inputs.program_year.model = this.programYear
                 await this.getOptions('mu_no')
                 await this.getOptions('province')
                 await this.getOptions('fc_no')
                 
-                this.loading.text = 'Set Dummy data... :)'
-                await this.setDummyData()
+                // await this.setDummyData()
             } finally {this.loading.show = false}
         },
         async setDummyData() {
+            this.loading.text = 'Set Dummy data... :)'
             this.inputs.mu_no.model = '016'
             await this.getOptions('target_area', this.inputs.mu_no.model)
             this.inputs.target_area.model = '016002'
@@ -877,7 +965,7 @@ export default {
                         }
                     }
                     if (error.response.status === 500 || error.response.status === 400) {
-                        let errMessage = error.response.data.message
+                        let errMessage = error.response.data.message || error.response.data
                         Swal.fire({
                             title: 'Error!',
                             text: `${errMessage || error.message}`,
@@ -888,6 +976,13 @@ export default {
                 }
             }
         },
+        async resetData() {
+            for (const[key, val] of Object.entries(this.inputs)) {
+                if (key == 'active') val.model = true
+                else if (key == 'birthday') val.model = moment().format('Y-MM-DD')
+                else if (key != 'program_year') val.model = ''
+            }
+        }
     }
 }
 </script>

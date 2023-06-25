@@ -10,7 +10,7 @@
     ></v-breadcrumbs>
     <!-- Dialogs -->
       <!-- Modal Add Edit -->
-      <AddFFModal :show="dialogs.addEditFF.show" :id="dialogs.addEditFF.id" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @refreshTable="initialize"/>
+      <AddFFModal :show="dialogs.addEditFF.show" :id="dialogs.addEditFF.id" :programYear="localConfig.programYear" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @refreshTable="initialize"/>
       <!-- dialog detail -->
       <v-dialog v-model="dialogdetail" max-width="700px" content-class="rounded-xl" scrollable>
         <v-card>
@@ -252,6 +252,22 @@
     >
       <template v-slot:top>
         <v-toolbar flat rounded="xl">
+          <!-- Program Year -->
+          <v-select
+              color="success"
+              item-color="success"
+              v-model="localConfig.programYear"
+              :items="['Semua',...$store.state.programYear.options]"
+              :disabled="loadtable"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Program Year"
+              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
           <v-text-field
           color="green"
             outlined
@@ -314,13 +330,13 @@
             </v-btn>
             <v-btn
               v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'"
-              dark
+              :disabled="true"
               class="mb-1"
               block
               small
               rounded
               @click="editItem(item)"
-              color="warning"
+              color="warning white--text"
             >
               <v-icon class="mr-1" small color="white">
                 mdi-pencil
@@ -342,7 +358,7 @@
               </v-icon>
               Delete
             </v-btn>
-            <v-btn
+            <!-- <v-btn
               v-if="item.active == 1"
               rounded
               @click="nonactivateFF(item)"
@@ -355,8 +371,8 @@
               mdi-account-off
             </v-icon>
               Nonactivate
-            </v-btn>
-            <v-btn
+            </v-btn> -->
+            <!-- <v-btn
               v-if="item.active == 0"
               rounded
               @click="activateFF(item)"
@@ -369,8 +385,8 @@
               mdi-account-check
             </v-icon>
               Activate
-            </v-btn>
-            <v-btn
+            </v-btn> -->
+            <!-- <v-btn
               rounded
               @click="() => {dialogs.changeFF.id = item.id;dialogs.changeFF.show = true;}"
               color="red white--text"
@@ -383,7 +399,7 @@
               mdi-account-convert
             </v-icon>
               Change FC
-            </v-btn>
+            </v-btn> -->
           </v-card>
         </v-menu>
       </template>
@@ -538,9 +554,19 @@ export default {
     RoleAccesFilterShow: true,
     RoleAccesCRUDShow: true,
     RoleAccesCRUDDelete: true,
+    localConfig: {
+        programYear: '',
+    },
   }),
-  created() {
+  mounted() {
     this.firstAccessPage();
+  },
+  watch: {
+    'localConfig.programYear': {
+      handler(val) {
+        this.initialize()
+      }
+    }
   },
   methods: {
     dialogsAction(dialog) {
@@ -554,6 +580,7 @@ export default {
       this.fc_no_selected = this.User.fc.fc;
       this.typegetdata = this.User.fc.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+      this.localConfig.programYear = this.$store.state.programYear.model
       this.checkRoleAccess();
       this.initialize();
       this.getMU();
@@ -584,7 +611,8 @@ export default {
         const response = await axios.get(
           this.BaseUrlGet +
             "GetFieldFacilitatorAllWeb?fc_no=" +
-            this.fc_no_selected,
+            this.fc_no_selected +
+            `&program_year=${this.localConfig.programYear}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -1047,12 +1075,8 @@ export default {
       this.dialogs.addEditFF.show = true
     },
     async editItem(item) {
-      console.log(item);
-      this.dialog = true;
-      await this.getDetail(item, "edit");
-      await this.getTA("form");
-      await this.getVillage("form");
-      this.formTitle = "Edit Item";
+      this.dialogs.addEditFF.id = item.id.toString()
+      this.dialogs.addEditFF.show = true
     },
 
     deleteItem(item) {
