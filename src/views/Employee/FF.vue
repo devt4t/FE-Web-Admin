@@ -10,7 +10,7 @@
     ></v-breadcrumbs>
     <!-- Dialogs -->
       <!-- Modal Add Edit -->
-      <AddFFModal :show="dialogs.addEditFF.show" :id="dialogs.addEditFF.id" :programYear="localConfig.programYear" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @refreshTable="initialize"/>
+      <AddFFModal :show="dialogs.addEditFF.show" :id="dialogs.addEditFF.id" :programYear="localConfig.programYear" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @swal="$v => swalActions($v)" @refreshTable="initialize"/>
       <!-- dialog detail -->
       <v-dialog v-model="dialogdetail" max-width="700px" content-class="rounded-xl" scrollable>
         <v-card>
@@ -330,7 +330,6 @@
             </v-btn>
             <v-btn
               v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'"
-              :disabled="true"
               class="mb-1"
               block
               small
@@ -344,7 +343,7 @@
               Edit
             </v-btn>
             <v-btn
-              v-if="(RoleAccesCRUDDelete == true || User.role_group == 'IT' ) && item.active != 1"
+              v-if="User.role_group == 'IT' && item.active != 1 && false"
               dark
               rounded
               @click="deleteItem(item)"
@@ -417,6 +416,8 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2'
+
 import ChangeFFModal from "./components/FF/ChangeFFModal.vue"
 import AddFFModal from "./components/FF/AddFFModal.vue"
 
@@ -1137,6 +1138,26 @@ export default {
       this.textsnackbar = text
       this.colorsnackbar = color
       this.snackbar = true
+    },
+    swalActions(val) {
+        this.initialize()
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            showCloseButton: true,
+            timer: 10000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: val.type,
+            title: val.message
+        })
     }
   },
 };
