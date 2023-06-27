@@ -1,6 +1,8 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -13,902 +15,998 @@
       </v-alert>
     </div>
 
+    <!--  MODAL -->
+      <!-- Modal Filter Area -->
+      <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex justify-center"
+            >Filter Pencarian Area</v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectMU"
+                    :items="itemsMU"
+                    item-value="mu_no"
+                    item-text="name"
+                    v-on:change="selectedMU"
+                    label="Management Unit"
+                    clearable
+                    rounded
+                    outlined
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectTA"
+                    :items="itemsTA"
+                    item-value="area_code"
+                    item-text="name"
+                    v-on:change="selectedTA"
+                    label="Target Area"
+                    clearable
+                    rounded
+                    outlined
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectVillage"
+                    :items="itemsVillage"
+                    item-value="kode_desa"
+                    item-text="name"
+                    v-on:change="selectedVillage"
+                    label="Desa"
+                    clearable
+                    rounded
+                    outlined
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+              <v-icon small class="mr-1">mdi-close</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn dark color="warning" rounded class="px-5" @click="searchbyarea">
+              <v-icon small class="mr-1">mdi-filter</v-icon>
+              Cari
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Filter Emp -->
+      <v-dialog v-model="dialogFilterEmp" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex justify-center"
+            >Filter Pencarian By Emp</v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectUM"
+                    :items="itemsum"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedUM"
+                    label="Pilih Unit Manager"
+                    clearable
+                    rounded
+                    outlined
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectFC"
+                    :items="itemsfc"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedFC"
+                    label="Pilih Field Coordinator"
+                    clearable
+                    rounded
+                    outlined
+                    hide-details
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="dialogFilterEmp = false"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="searchbyemp"
+              >Cari</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Add Edit -->
+      <v-dialog v-model="dialog" max-width="800px" content-class="rounded-xl">
+        <v-card>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title class="mb-1 headermodalstyle">
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container
+                v-if="load == true"
+                fluid
+                fill-height
+                style="background-color: rgba(255, 255, 255, 0.5)"
+              >
+                <v-layout justify-center align-center>
+                  <v-progress-circular
+                    :size="80"
+                    :width="10"
+                    indeterminate
+                    color="primary"
+                  >
+                  </v-progress-circular>
+                </v-layout>
+              </v-container>
+              <v-container v-if="load == false">
+                <v-row>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-select
+                      v-model="defaultItem.ff_no"
+                      :items="itemsff"
+                      item-text="name"
+                      item-value="ff_no"
+                      label="Pilih Field Facilitator"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-text-field
+                      v-model="defaultItem.ktp_no"
+                      label="No KTP"
+                      outlined
+                      :rules="rules"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-text-field
+                      v-model="defaultItem.name"
+                      label="Nama"
+                      outlined
+                      :rules="rules"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-text-field
+                      v-model="defaultItem.nickname"
+                      label="Nama Panggilan"
+                      outlined
+                      :rules="rules"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-menu v-model="menu2" transition="scale-transition">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="datepicker"
+                          slot="activator"
+                          label="Tanggal Lahir"
+                          outlined
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                          :rules="rules"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker
+                        v-model="datepicker"
+                        @input="menu2 = false"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.religion"
+                      :items="itemsagama"
+                      item-text="text"
+                      item-value="value"
+                      label="Agama"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.gender"
+                      :items="itemsgender"
+                      item-text="text"
+                      item-value="value"
+                      label="Jenis Kelamin"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="8" md="8">
+                    <v-textarea
+                      v-model="defaultItem.address"
+                      label="Alamat"
+                      outlined
+                      rows="3"
+                      :rules="rules"
+                    ></v-textarea>
+                  </v-col>
+                  <v-col cols="12" sm="2" md="2">
+                    <v-text-field
+                      v-model="defaultItem.rt"
+                      label="Rt"
+                      outlined
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="2" md="2">
+                    <v-text-field
+                      v-model="defaultItem.rw"
+                      label="Rw"
+                      outlined
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.mu_no"
+                      :items="itemsMU"
+                      item-text="name"
+                      item-value="mu_no"
+                      label="Management Unit"
+                      outlined
+                      clearable
+                      :rules="rules"
+                      v-on:change="selectedMUForm"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.kode_ta"
+                      :items="itemsTAForm"
+                      item-text="name"
+                      item-value="area_code"
+                      label="Target Area"
+                      outlined
+                      clearable
+                      :rules="rules"
+                      v-on:change="selectedTAForm"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.kode_desa"
+                      :items="itemsVillageForm"
+                      item-text="name"
+                      item-value="kode_desa"
+                      label="Desa"
+                      outlined
+                      clearable
+                      :rules="rules"
+                      v-on:change="selectedVillageForm"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-text-field
+                      v-model="defaultItem.phone"
+                      label="No Hp"
+                      outlined
+                      :rules="rules"
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.marrital_status"
+                      :items="itemsmarrital"
+                      item-text="text"
+                      item-value="value"
+                      label="Marrital Status"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-select
+                      v-model="defaultItem.number_family_member"
+                      :items="itemsperson"
+                      item-text="text"
+                      item-value="value"
+                      label="Jumlah Anggota Keluarga"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.ethnic"
+                      :items="itemsethnic"
+                      item-text="name"
+                      item-value="code"
+                      label="Suku"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.origin"
+                      :items="itemsorigin"
+                      item-text="text"
+                      item-value="value"
+                      label="Asal"
+                      outlined
+                      clearable
+                      :rules="rules"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.education"
+                      :items="itemseducation"
+                      item-text="text"
+                      item-value="value"
+                      label="Pendidikan"
+                      outlined
+                      clearable
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.non_formal_education"
+                      :items="itemsnoneducation"
+                      item-text="text"
+                      item-value="value"
+                      label="Pendidikan Non Formal"
+                      outlined
+                      clearable
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.main_job"
+                      :items="itemsjob"
+                      item-text="name"
+                      item-value="code"
+                      label="Pekerjaan Utama"
+                      outlined
+                      clearable
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-text-field
+                      v-model="defaultItem.main_income"
+                      label="Penghasilan Utama"
+                      outlined
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.side_job"
+                      :items="itemsjob"
+                      item-text="name"
+                      item-value="code"
+                      label="Pekerjaan Sampingan"
+                      outlined
+                      clearable
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-text-field
+                      v-model="defaultItem.side_income"
+                      label="Penghasilan Tambahan"
+                      outlined
+                      type="number"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      v-model="defaultItem.group_no"
+                      :items="itemsgroupfarmer"
+                      item-text="name"
+                      item-value="group_no"
+                      label="Kelompok Petani"
+                      outlined
+                      clearable
+                    ></v-select>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      placeholder="Pilih Foto Petani"
+                      prepend-icon="mdi-camera"
+                      label="Pilih Foto Petani"
+                      v-on:change="pilihfotopetani"
+                    ></v-file-input>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      placeholder="Pilih Foto KTP"
+                      prepend-icon="mdi-camera"
+                      label="Pilih Foto KTP"
+                      v-on:change="pilihfotoktp"
+                    ></v-file-input>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      placeholder="Pilih Foto Tandatangan"
+                      prepend-icon="mdi-camera"
+                      label="Pilih Foto Tandatangan"
+                      v-on:change="pilihfototandatangan"
+                    ></v-file-input>
+                  </v-col>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="6" md="4">
+                        <v-card elevation="2" height="250">
+                          <v-img
+                            height="250"
+                            v-bind:src="defaultItem.farmer_profile"
+                            class="my-2 mb-4"
+                            id="idfotopetani"
+                          ></v-img
+                        ></v-card>
+                      </v-col>
+                      <v-col cols="6" md="4">
+                        <v-card elevation="2" height="250">
+                          <v-img
+                            height="250"
+                            v-bind:src="defaultItem.ktp_document"
+                            class="my-2 mb-4"
+                          ></v-img>
+                        </v-card>
+                      </v-col>
+                      <v-col cols="6" md="4">
+                        <v-card elevation="2" height="150">
+                          <v-img
+                            height="150"
+                            v-bind:src="defaultItem.signature"
+                            class="my-2 mb-4"
+                          ></v-img>
+                        </v-card>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Detail -->
+      <v-dialog v-model="dialogDetail" max-width="800px" content-class="rounded-xl" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="headline">Detail Petani</span>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-container v-if="load == false">
+              <v-row>
+                <v-col cols="12" sm="8" md="8">
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>NIK</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.ktp_no }}
+                        </h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Kode Petani</h5>
+                        <h3 class="ml-2">{{ defaultItem.farmer_no }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Nama</h5>
+                        <h3 class="ml-2">{{ defaultItem.nama }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Nama Panggilan</h5>
+                        <h3 class="ml-2">{{ defaultItem.nickname }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Tanggal Lahir</h5>
+                        <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Jenis Kelamin</h5>
+                        <h3 class="ml-2">{{ defaultItem.gender }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Agama</h5>
+                        <h3 class="ml-2">{{ defaultItem.religion }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Management Unit</h5>
+                        <h3 class="ml-2">{{ defaultItem.namaMu }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Target Area</h5>
+                        <h3 class="ml-2">{{ defaultItem.namaTa }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="12">
+                      <div>
+                        <h5>Alamat</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.address }}
+                        </h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>RT/RW</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.rt }}/{{ defaultItem.rw }}
+                        </h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Desa</h5>
+                        <h3 class="ml-2">{{ defaultItem.namaDesa }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Kode Pos</h5>
+                        <h3 class="ml-2">{{ defaultItem.post_code }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Provinsi</h5>
+                        <h3 class="ml-2">{{ defaultItem.namaProvinsi }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Kabupaten/Kota</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.namaKabupaten }}
+                        </h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Kecamatan</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.namaKecamatan }}
+                        </h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>No Telp</h5>
+                        <h3 class="ml-2">{{ defaultItem.phone }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Suku</h5>
+                        <h3 class="ml-2">{{ defaultItem.ethnic }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Asal-usul</h5>
+                        <h3 class="ml-2">{{ defaultItem.origin }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Status Perkawinan</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.marrital_status }}
+                        </h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Jumlah Keluarga</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.number_family_member }}
+                        </h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Pendidikan Terakhir</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.education }}
+                        </h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Pendidikan Non-Formal</h5>
+                        <h3 class="ml-2">
+                          {{ defaultItem.non_formal_education }}
+                        </h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Pekerjaan Utama</h5>
+                        <h3 class="ml-2">{{ defaultItem.main_job }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Penghasilan Utama</h5>
+                        <h3 class="ml-2">{{ defaultItem.main_income }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Pekerjaan Sampingan</h5>
+                        <h3 class="ml-2">{{ defaultItem.side_job }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="6">
+                      <div>
+                        <h5>Penghasilan Tambahan</h5>
+                        <h3 class="ml-2">{{ defaultItem.side_income }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Tanggal Bergabung</h5>
+                        <h3 class="ml-2">{{ defaultItem.join_date }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Kelompok Tani</h5>
+                        <h3 class="ml-2">{{ defaultItem.group_no }}</h3>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" sm="12" md="4">
+                      <div>
+                        <h5>Mou No</h5>
+                        <h3 class="ml-2">{{ defaultItem.mou_no }}</h3>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-col>
+                <v-col cols="12" sm="4" md="4">
+                  <div>Foto Petani</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.farmer_profile"
+                    class="my-1 mb-4"
+                  ></v-img>
+                  <div>Foto Ktp</div>
+                  <v-img
+                    height="250"
+                    v-bind:src="defaultItem.ktp_document"
+                    class="my-1 mb-4"
+                  ></v-img>
+                  <div>Foto Signature</div>
+                  <v-img
+                    height="150"
+                    v-bind:src="defaultItem.signature"
+                    class="my-1 mb-4"
+                  ></v-img>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions v-if="defaultItem.waitingapproval == true">
+            <v-spacer></v-spacer>
+            <v-btn
+              v-if="RoleAccesCRUDShow == true"
+              color="green"
+              text
+              @click="verifSubmit()"
+              outlined
+              elevation="1"
+            >
+              Verifikasi
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Verification -->
+      <v-dialog v-model="dialogVerification" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >Are you sure you want to Verification?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeVerification"
+              >Cancel</v-btn
+            >
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="VerificationItemConfirm"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeDelete"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    <!-- END: MODAL -->
+
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      :items-per-page="20"
+      :footer-props="{
+        itemsPerPageOptions: [10, 20, 30, 40, 50, -1]
+      }"
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
 
+      <!-- Toolbar Table -->
       <template v-slot:top>
-        <v-toolbar flat>
-          <v-btn
-            dark
-            class="mx-1 mt-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
+        <v-row class="mx-2 mx-lg-3 my-0 mt-2 align-center justify-center">
+          <!-- dropdown filter button -->
+          <v-menu
+            rounded="xl"
+            bottom
+            right
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
           >
-            <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            class="mx-1 mt-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter
-            Employee
-          </v-btn>
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                dark
+                color="warning"
+                v-bind="attrs"
+                v-on="on"
+                rounded
+              >
+                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+              </v-btn>
+            </template>
+
+            <v-list class="d-flex flex-column align-center">
+              <v-list-item>
+                <v-btn
+                  rounded
+                  dark
+                  class="px-9"
+                  @click="showFilterArea()"
+                  color="green"
+                >
+                  <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
+                  by Area
+                </v-btn>
+              </v-list-item>
+              <v-list-item>
+                <v-btn
+                  :disabled="RoleAccesFilterShow == false"
+                  rounded
+                  class="mx-3 mt-1"
+                  @click="showFilterEmployee()"
+                  color="green white--text"
+                >
+                  <v-icon class="mx-2" small>mdi-account-group</v-icon> 
+                  by Employee
+                </v-btn>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <!-- Program Year -->
+          <v-select
+            color="success"
+            item-color="success"
+            v-model="programYear"
+            :items="$store.state.programYear.options"
+            outlined
+            dense
+            hide-details
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Program Year"
+            class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
-          <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select>
-          <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
-          <v-divider class="mx-2 d-none d-md-block" inset vertical></v-divider>
-          <v-spacer class="d-none d-md-block"></v-spacer>
+          <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
+          <!-- Search Input -->
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
             hide-details
+            dense
+            outlined
+            rounded
+            class="mr-0 mr-lg-2 my-2 my-lg-0"
           ></v-text-field>
-          <v-divider class="mx-2" inset vertical></v-divider>
-          <v-btn
-            v-if="RoleAccesCRUDShow == true"
+          <!-- Add Button -->
+          <!-- <v-btn
+            v-if="User.role_group == 'IT'"
             dark
+            rounded
             class="mb-2"
             @click="showAddModal()"
             color="green"
           >
             <v-icon small>mdi-plus</v-icon> Add
+          </v-btn> -->
+          
+          <!-- Export Button -->
+          <v-btn
+            rounded
+            :disabled="loadtable"
+            class="mb-2"
+            @click="exportData()"
+            color="blue white--text"
+          >
+            <v-icon small>mdi-microsoft-excel</v-icon> Export
           </v-btn>
-
-          <!-- Modal Filter Area -->
-          <v-dialog v-model="dialogFilterArea" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian Area</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectMU"
-                        :items="itemsMU"
-                        item-value="mu_no"
-                        item-text="name"
-                        v-on:change="selectedMU"
-                        label="Management Unit"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectTA"
-                        :items="itemsTA"
-                        item-value="area_code"
-                        item-text="name"
-                        v-on:change="selectedTA"
-                        label="Targer Area"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectVillage"
-                        :items="itemsVillage"
-                        item-value="kode_desa"
-                        item-text="name"
-                        v-on:change="selectedVillage"
-                        label="Desa"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyarea"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Filter Emp -->
-          <v-dialog v-model="dialogFilterEmp" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian By Emp</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectUM"
-                        :items="itemsum"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedUM"
-                        label="Pilih Unit Manager"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectFC"
-                        :items="itemsfc"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedFC"
-                        label="Pilih Field Coordinator"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyemp"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-container v-if="load == false">
-                    <v-row>
-                      <v-col cols="12" sm="12" md="12">
-                        <v-select
-                          v-model="defaultItem.ff_no"
-                          :items="itemsff"
-                          item-text="name"
-                          item-value="ff_no"
-                          label="Pilih Field Facilitator"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                          v-model="defaultItem.ktp_no"
-                          label="No KTP"
-                          outlined
-                          :rules="rules"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                          v-model="defaultItem.name"
-                          label="Nama"
-                          outlined
-                          :rules="rules"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-menu v-model="menu2" transition="scale-transition">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="datepicker"
-                              slot="activator"
-                              label="Tanggal Lahir"
-                              outlined
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              :rules="rules"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="datepicker"
-                            @input="menu2 = false"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.religion"
-                          :items="itemsagama"
-                          item-text="text"
-                          item-value="value"
-                          label="Agama"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.gender"
-                          :items="itemsgender"
-                          item-text="text"
-                          item-value="value"
-                          label="Jenis Kelamin"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="8" md="8">
-                        <v-textarea
-                          v-model="defaultItem.address"
-                          label="Alamat"
-                          outlined
-                          rows="3"
-                          :rules="rules"
-                        ></v-textarea>
-                      </v-col>
-                      <v-col cols="12" sm="2" md="2">
-                        <v-text-field
-                          v-model="defaultItem.rt"
-                          label="Rt"
-                          outlined
-                          type="number"
-                          :rules="rules"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="2" md="2">
-                        <v-text-field
-                          v-model="defaultItem.rw"
-                          label="Rw"
-                          outlined
-                          type="number"
-                          :rules="rules"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.mu_no"
-                          :items="itemsMU"
-                          item-text="name"
-                          item-value="mu_no"
-                          label="Management Unit"
-                          outlined
-                          clearable
-                          :rules="rules"
-                          v-on:change="selectedMUForm"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.kode_ta"
-                          :items="itemsTAForm"
-                          item-text="name"
-                          item-value="area_code"
-                          label="Target Area"
-                          outlined
-                          clearable
-                          :rules="rules"
-                          v-on:change="selectedTAForm"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.kode_desa"
-                          :items="itemsVillageForm"
-                          item-text="name"
-                          item-value="kode_desa"
-                          label="Desa"
-                          outlined
-                          clearable
-                          :rules="rules"
-                          v-on:change="selectedVillageForm"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-text-field
-                          v-model="defaultItem.phone"
-                          label="No Hp"
-                          outlined
-                          :rules="rules"
-                          type="number"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.marrital_status"
-                          :items="itemsmarrital"
-                          item-text="text"
-                          item-value="value"
-                          label="Marrital Status"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-select
-                          v-model="defaultItem.number_family_member"
-                          :items="itemsperson"
-                          item-text="text"
-                          item-value="value"
-                          label="Jumlah Anggota Keluarga"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.ethnic"
-                          :items="itemsethnic"
-                          item-text="name"
-                          item-value="code"
-                          label="Suku"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.origin"
-                          :items="itemsorigin"
-                          item-text="text"
-                          item-value="value"
-                          label="Asal"
-                          outlined
-                          clearable
-                          :rules="rules"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.education"
-                          :items="itemseducation"
-                          item-text="text"
-                          item-value="value"
-                          label="Pendidikan"
-                          outlined
-                          clearable
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.non_formal_education"
-                          :items="itemsnoneducation"
-                          item-text="text"
-                          item-value="value"
-                          label="Pendidikan Non Formal"
-                          outlined
-                          clearable
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.main_job"
-                          :items="itemsjob"
-                          item-text="name"
-                          item-value="code"
-                          label="Pekerjaan Utama"
-                          outlined
-                          clearable
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                          v-model="defaultItem.main_income"
-                          label="Penghasilan Utama"
-                          outlined
-                          type="number"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.side_job"
-                          :items="itemsjob"
-                          item-text="name"
-                          item-value="code"
-                          label="Pekerjaan Sampingan"
-                          outlined
-                          clearable
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                          v-model="defaultItem.side_income"
-                          label="Penghasilan Tambahan"
-                          outlined
-                          type="number"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.group_no"
-                          :items="itemsgroupfarmer"
-                          item-text="name"
-                          item-value="group_no"
-                          label="Kelompok Petani"
-                          outlined
-                          clearable
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-file-input
-                          accept="image/png, image/jpeg, image/bmp"
-                          placeholder="Pilih Foto Petani"
-                          prepend-icon="mdi-camera"
-                          label="Pilih Foto Petani"
-                          v-on:change="pilihfotopetani"
-                        ></v-file-input>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-file-input
-                          accept="image/png, image/jpeg, image/bmp"
-                          placeholder="Pilih Foto KTP"
-                          prepend-icon="mdi-camera"
-                          label="Pilih Foto KTP"
-                          v-on:change="pilihfotoktp"
-                        ></v-file-input>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-file-input
-                          accept="image/png, image/jpeg, image/bmp"
-                          placeholder="Pilih Foto Tandatangan"
-                          prepend-icon="mdi-camera"
-                          label="Pilih Foto Tandatangan"
-                          v-on:change="pilihfototandatangan"
-                        ></v-file-input>
-                      </v-col>
-                      <v-container>
-                        <v-row>
-                          <v-col cols="6" md="4">
-                            <v-card elevation="2" height="250">
-                              <v-img
-                                height="250"
-                                v-bind:src="defaultItem.farmer_profile"
-                                class="my-2 mb-4"
-                                id="idfotopetani"
-                              ></v-img
-                            ></v-card>
-                          </v-col>
-                          <v-col cols="6" md="4">
-                            <v-card elevation="2" height="250">
-                              <v-img
-                                height="250"
-                                v-bind:src="defaultItem.ktp_document"
-                                class="my-2 mb-4"
-                              ></v-img>
-                            </v-card>
-                          </v-col>
-                          <v-col cols="6" md="4">
-                            <v-card elevation="2" height="150">
-                              <v-img
-                                height="150"
-                                v-bind:src="defaultItem.signature"
-                                class="my-2 mb-4"
-                              ></v-img>
-                            </v-card>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-                </v-card-actions>
-              </v-form>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Detail -->
-          <v-dialog v-model="dialogDetail" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Petani</span>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-row>
-                    <v-col cols="12" sm="4" md="4">
-                      <div>Foto Petani</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.farmer_profile"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <div>Foto Ktp</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.ktp_document"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <div>Foto Signature</div>
-                      <v-img
-                        height="150"
-                        v-bind:src="defaultItem.signature"
-                        class="my-1 mb-4"
-                      ></v-img>
-                    </v-col>
-                    <v-col cols="12" sm="8" md="8">
-                      <v-row>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>NIK</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.ktp_no }}
-                            </h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Kode Petani</h5>
-                            <h3 class="ml-2">{{ defaultItem.farmer_no }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="12">
-                          <div>
-                            <h5>Nama</h5>
-                            <h3 class="ml-2">{{ defaultItem.nama }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Tanggal Lahir</h5>
-                            <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Jenis Kelamin</h5>
-                            <h3 class="ml-2">{{ defaultItem.gender }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Agama</h5>
-                            <h3 class="ml-2">{{ defaultItem.religion }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Management Unit</h5>
-                            <h3 class="ml-2">{{ defaultItem.namaMu }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Target Area</h5>
-                            <h3 class="ml-2">{{ defaultItem.namaTa }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="12">
-                          <div>
-                            <h5>Alamat</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.address }}
-                            </h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>RT/RW</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.rt }}/{{ defaultItem.rw }}
-                            </h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Desa</h5>
-                            <h3 class="ml-2">{{ defaultItem.namaDesa }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Kode Pos</h5>
-                            <h3 class="ml-2">{{ defaultItem.post_code }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Provinsi</h5>
-                            <h3 class="ml-2">{{ defaultItem.namaProvinsi }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Kabupaten/Kota</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.namaKabupaten }}
-                            </h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Kecamatan</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.namaKecamatan }}
-                            </h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>No Telp</h5>
-                            <h3 class="ml-2">{{ defaultItem.phone }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Suku</h5>
-                            <h3 class="ml-2">{{ defaultItem.ethnic }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Asal-usul</h5>
-                            <h3 class="ml-2">{{ defaultItem.origin }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Status Perkawinan</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.marrital_status }}
-                            </h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Jumlah Keluarga</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.number_family_member }}
-                            </h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Pendidikan Terakhir</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.education }}
-                            </h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Pendidikan Non-Formal</h5>
-                            <h3 class="ml-2">
-                              {{ defaultItem.non_formal_education }}
-                            </h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Pekerjaan Utama</h5>
-                            <h3 class="ml-2">{{ defaultItem.main_job }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Penghasilan Utama</h5>
-                            <h3 class="ml-2">{{ defaultItem.main_income }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Pekerjaan Sampingan</h5>
-                            <h3 class="ml-2">{{ defaultItem.side_job }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="6">
-                          <div>
-                            <h5>Penghasilan Tambahan</h5>
-                            <h3 class="ml-2">{{ defaultItem.side_income }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Tanggal Bergabung</h5>
-                            <h3 class="ml-2">{{ defaultItem.join_date }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Kelompok Tani</h5>
-                            <h3 class="ml-2">{{ defaultItem.group_no }}</h3>
-                          </div>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="4">
-                          <div>
-                            <h5>Mou No</h5>
-                            <h3 class="ml-2">{{ defaultItem.mou_no }}</h3>
-                          </div>
-                        </v-col>
-                      </v-row>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions v-if="defaultItem.waitingapproval == true">
-                <v-spacer></v-spacer>
-                <v-btn
-                  v-if="RoleAccesCRUDShow == true"
-                  color="green"
-                  text
-                  @click="verifSubmit()"
-                  outlined
-                  elevation="1"
-                >
-                  Verifikasi
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Verification -->
-          <v-dialog v-model="dialogVerification" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to Verification?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeVerification"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="VerificationItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
+        </v-row>
       </template>
-
-      <!-- Action table -->
+      <!-- /.Modals END -->
+      
+      <!-- Index -->
+      <template v-slot:item.index="{index}">
+        {{ index + 1 }}
+      </template>
+      <!-- Program Year Column -->
+      <template v-slot:item.mou_no="{item}">
+        {{ getProgramYear(item.mou_no) }}
+      </template>
+      <!-- Join Date Column -->
+      <template v-slot:item.join_date="{item}">
+        {{ item.join_date.slice(0, 4) }}
+      </template>
+      <!-- Status Column -->
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="getColorStatus(item.status)" dark>
+          {{ item.status }}
+        </v-chip>
+      </template>
+      <!-- Action table Column -->
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-3" @click="showDetail(item)" small color="info">
           mdi-information-outline
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           class="mr-3"
           @click="showEditModal(item)"
           small
@@ -917,7 +1015,7 @@
           mdi-pencil
         </v-icon>
         <v-icon
-          v-if="RoleAccesCRUDShow == true"
+          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           @click="showDeleteModal(item)"
           small
           color="red"
@@ -938,14 +1036,22 @@
 </template>
 
 <script>
-// import ModalFarmer from "./ModalFarmer";
-import axios from "axios";
-// import BaseUrl from "../../services/BaseUrl.js";
+import axios from "axios"
+import moment from 'moment'
 
 export default {
   name: "Farmer",
   authtoken: "",
   data: () => ({
+    export_filter: {
+      program_year: '',
+      typegetdata: '',
+      mu: '',
+      ta: '',
+      village: '',
+      ff: ''
+    },
+    programYear: moment().format('Y'),
     alerttoken: false,
     datepicker: new Date().toISOString().substr(0, 10),
     rules: [
@@ -978,18 +1084,16 @@ export default {
     search: "",
     type: "",
     headers: [
-      {
-        text: "Kode",
-        align: "start",
-        value: "kode",
-        width: "10%",
-      },
+      { text: "No", value: "index", width: "5%" },
+      { text: "Kode", align: "start", value: "kode", width: "10%" },
       { text: "Nama", value: "nama", width: "20%" },
-      { text: "NIK", value: "nik", width: "15%" },
-      { text: "Desa", value: "desa", width: "15%" },
-      { text: "Field Facilitator", value: "user", width: "15%" },
-      { text: "Status", value: "status", width: "13%" },
-      { text: "Actions", value: "actions", sortable: false, width: "15%" },
+      { text: "NIK", value: "nik", width: "10%" },
+      { text: "Desa", value: "desa", width: "10%" },
+      { text: "Field Facilitator", value: "user", width: "20%" },
+      { text: "Tahun Program", value: "mou_no", width: "10%" },
+      { text: "Tahun Bergabung", value: "join_date", width: "10%" },
+      { text: "Status", value: "status", width: "10%" },
+      { text: "Actions", value: "actions", sortable: false, width: "5%", align: 'right' },
     ],
     dataobject: [],
     editedItem: {
@@ -1003,6 +1107,7 @@ export default {
       imagesSignature: "",
       nama: "",
       name: "",
+      nickname: "",
       ktp_no: "",
       farmer_no: "",
       birthday: "",
@@ -1142,22 +1247,42 @@ export default {
     timeoutsnackbar: 2000,
     colorsnackbar: null,
   }),
-  computed: {
-    // formTitle() {
-    //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    // },
+  watch: {
+    'programYear': {
+      handler(newVal) {
+        this.initialize()
+        this.export_filter.program_year = newVal
+        this.export_filter.typegetdata = this.typegetdata
+        this.export_filter.ff = this.valueFFcode
+        this.export_filter.mu = ''
+        this.export_filter.ta = ''
+        this.export_filter.village = ''
+      }
+    }
   },
 
-  created() {
+  mounted() {
+    this.programYear = this.$store.state.programYear.model
     this.firstAccessPage();
   },
 
   methods: {
+    exportData() {
+      let params = new URLSearchParams({
+        program_year: this.export_filter.program_year,
+        typegetdata: this.export_filter.typegetdata,
+        ff: this.export_filter.ff.toString(),
+        mu: this.export_filter.mu,
+        ta: this.export_filter.ta,
+        village: this.export_filter.village
+      })
+      window.open(`${this.BaseUrlGet.slice(0, 38)}ExportFarmerAllAdmin?${params}`)
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
+      this.valueFFcode = this.User.ff.ff;      
+      this.typegetdata = this.User.ff.value_data == '-' ? 'all' : this.User.ff.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       // this.fc_no_global = this.User.fc.fc;
@@ -1204,7 +1329,9 @@ export default {
             "&typegetdata=" +
             this.typegetdata +
             "&ff=" +
-            this.valueFFcode,
+            this.valueFFcode +
+            "&program_year=" +
+            this.programYear,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -1429,14 +1556,14 @@ export default {
       this.defaultItem.idTabelPetani = item.idTblPetani;
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetFarmerDetail?id=" + item.idTblPetani,
+          this.BaseUrlGet + "GetFarmerDetailWeb?id=" + item.idTblPetani,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
 
@@ -1809,6 +1936,7 @@ export default {
       const datapost = {
         ktp_no: this.defaultItem.ktp_no,
         name: this.defaultItem.name,
+        nickname: this.defaultItem.nickname,
         birthday: this.datepicker,
         religion: this.defaultItem.religion,
         rt: this.defaultItem.rt,
@@ -1877,6 +2005,7 @@ export default {
         farmer_no: this.defaultItem.farmer_no,
         ktp_no: this.defaultItem.ktp_no,
         name: this.defaultItem.name,
+        nickname: this.defaultItem.nickname,
         birthday: this.datepicker,
         religion: this.defaultItem.religion,
         rt: this.defaultItem.rt,
@@ -1890,6 +2019,7 @@ export default {
         gender: this.defaultItem.gender,
         number_family_member: this.defaultItem.number_family_member,
         mu_no: this.defaultItem.mu_no,
+        mou_no: this.defaultItem.mou_no,
         target_area: this.defaultItem.kode_ta,
         active: 1,
         user_id: this.defaultItem.ff_no,
@@ -1935,7 +2065,7 @@ export default {
     },
 
     selectedMU(a) {
-      console.log(a);
+      // console.log(a);
       this.valueMU = a;
       if (a != null) {
         this.getTA("table");
@@ -1953,7 +2083,7 @@ export default {
       // this.initialize();
     },
     selectedTA(a) {
-      console.log(a);
+      // console.log(a);
       this.valueTA = a;
       if (a != null) {
         this.getVillage("table");
@@ -1967,7 +2097,7 @@ export default {
       // this.initialize();
     },
     selectedVillage(a) {
-      console.log(a);
+      // console.log(a);
       this.valueVillage = a;
       if (a == null) {
         this.valueVillage = "";
@@ -1975,7 +2105,7 @@ export default {
       // this.initialize();
     },
     selectedUM(a) {
-      console.log(a);
+      // console.log(a);
       this.valueUM = a;
       if (a != null) {
         this.getEmpFCbyManager(a);
@@ -1992,7 +2122,7 @@ export default {
       // this.initialize();
     },
     selectedFC(a) {
-      console.log(a);
+      // console.log(a);
       this.valueFC = a;
       this.GetFFbyUMandFC("FC", a);
       this.typegetdata = "several";
@@ -2064,7 +2194,7 @@ export default {
     },
     resetFilter() {
       this.valueMU = "";
-      this.valueFC = "";
+      this.valueTA = "";
       this.valueVillage = "";
       this.selectMU = "";
       this.selectTA = "";
@@ -2080,11 +2210,21 @@ export default {
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
+      this.export_filter.mu = this.valueMU
+      this.export_filter.ta = this.valueTA
+      this.export_filter.village = this.valueVillage
+      this.export_filter.typegetdata = this.typegetdata
+      this.export_filter.ff = this.valueFFcode
       await this.initialize();
       await this.resetFilter();
       this.dialogFilterArea = false;
     },
     async searchbyemp() {
+      this.export_filter.mu = ''
+      this.export_filter.ta = ''
+      this.export_filter.village = ''
+      this.export_filter.typegetdata = 'several'
+      this.export_filter.ff = this.valueFFcode
       await this.initialize();
       await this.resetFilter();
       this.dialogFilterEmp = false;
@@ -2100,6 +2240,7 @@ export default {
       this.defaultItem.imagesSignature = "";
       this.defaultItem.nama = "";
       this.defaultItem.name = "";
+      this.defaultItem.nickname = "";
       this.defaultItem.ktp_no = "";
       this.defaultItem.farmer_no = "";
       this.defaultItem.birthday = "";
@@ -2183,6 +2324,7 @@ export default {
       if (
         this.defaultItem.ktp_no.length != 0 &&
         this.defaultItem.name.length != 0 &&
+        this.defaultItem.nickname.length != 0 &&
         // this.defaultItem.birthday.length != 0 &&
         this.defaultItem.religion != null &&
         this.defaultItem.rt.length != 0 &&
@@ -2389,6 +2531,13 @@ export default {
           };
         };
       });
+    },
+    getProgramYear(text) {
+        if (text.slice(13, 14) === '_') {
+            return text.slice(9, 13)
+        } else {
+            return text.slice(4, 8)
+        }
     },
   },
 };

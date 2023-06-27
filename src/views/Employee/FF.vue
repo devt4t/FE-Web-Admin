@@ -1,484 +1,406 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
+      :dark="$store.state.theme == 'dark'"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
       large
     ></v-breadcrumbs>
+    <!-- Dialogs -->
+      <!-- Modal Add Edit -->
+      <AddFFModal :show="dialogs.addEditFF.show" :id="dialogs.addEditFF.id" :programYear="localConfig.programYear" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @swal="$v => swalActions($v)" @refreshTable="initialize"/>
+      <!-- dialog detail -->
+      <v-dialog v-model="dialogdetail" max-width="700px" content-class="rounded-xl" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="">Detail FF</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-container v-if="load == false">
+              <v-row>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>FF Number</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.ff_no }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>No KTP</h5>
+                    <h3 class="ml-2">{{ defaultItem.ktp_no }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <div>
+                    <h5>Nama FF</h5>
+                    <h3 class="ml-2">{{ defaultItem.name }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <div>
+                    <h5>Alamat FF</h5>
+                    <h3 class="ml-2">{{ defaultItem.address }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Desa</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.village }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="8">
+                  <div>
+                    <h5>Kode Pos</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.post_code }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Kecamatan</h5>
+                    <h3 class="ml-2">{{ defaultItem.kecamatan }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Kabupaten/Kota</h5>
+                    <h3 class="ml-2">{{ defaultItem.city }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Provinsi</h5>
+                    <h3 class="ml-2">{{ defaultItem.province }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Working Area</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.namaWorkingArea }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Target Area</h5>
+                    <h3 class="ml-2">{{ defaultItem.namaTA }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Management Unit</h5>
+                    <h3 class="ml-2">{{ defaultItem.namaMU }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>No Hp</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.phone }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Jenis Kelamin</h5>
+                    <h3 class="ml-2">{{ defaultItem.gender }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Agama</h5>
+                    <h3 class="ml-2">{{ defaultItem.religion }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>Tanggal Lahir</h5>
+                    <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <div>
+                    <h5>Status Perkawinan</h5>
+                    <h3 class="ml-2">{{ defaultItem.marrital }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Akun Bank</h5>
+                    <h3 class="ml-2">
+                      {{ defaultItem.bank_account }}
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Bank Branch</h5>
+                    <h3 class="ml-2">{{ defaultItem.bank_branch }}</h3>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="4">
+                  <div>
+                    <h5>Bank Name</h5>
+                    <h3 class="ml-2">{{ defaultItem.bank_name }}</h3>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+              <v-divider class="mx-2"></v-divider>
+              <v-btn v-if="defaultItem.active == 1" rounded color="red white--text" class="px-5" @click="nonactivateFF(defaultItem)">
+                <v-icon class="mr-1">mdi-account-off</v-icon>
+                Nonactivate
+              </v-btn>
+              <v-btn
+                v-else
+                dark
+                rounded
+                @click="activateFF(defaultItem)"
+                color="green white--text"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-account-check
+              </v-icon>
+                Activate
+              </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- dialog delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeDelete"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- Confirmation -->
+      <v-dialog v-model="dialogs.nonactivateConfirmation.show" max-width="500px" persistent content-class="rounded-lg" scrollable>
+        <v-card class="rounded-xl" v-if="dialogs.nonactivateConfirmation.model">
+          <v-card-title class="mb-1 headermodalstyle">
+            <v-icon class="mr-2 white--text">mdi-help-circle</v-icon>
+            <span>Confirmation</span>
+            <v-divider dark class="mx-2"></v-divider>
+            <v-icon color="red" @click="dialogs.nonactivateConfirmation.show = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <h2 class="text-center pt-4">Do u want to {{ dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate' }} this FF?</h2>
+            <v-row class="mt-10 align-center mb-0">
+              <v-divider class="mx-2"></v-divider>
+              <v-btn rounded color="red white--text mr-1" @click="dialogs.nonactivateConfirmation.show = false">
+                  <v-icon class="mr-1">mdi-close-circle</v-icon>
+                  Close
+              </v-btn>
+              <v-btn rounded color="green white--text ml-1" @click="confirmNonactivate">
+                  <v-icon class="mr-1">mdi-check-circle</v-icon>
+                  {{ dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate' }}
+              </v-btn>
+              <v-divider class="mx-2"></v-divider>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <!-- Change FF Modal -->
+      <ChangeFFModal :show="dialogs.changeFF.show" :id="dialogs.changeFF.id" @dialogAct="dialogsAction($event)" @showSnackbar="showSnackbar($event.text, $event.color)" @refreshTable="initialize" />
 
     <v-data-table
+      data-aos="fade-up" data-aos-delay="200"
+      multi-sort
       :headers="headers"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1 mb-4"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat rounded="xl">
+          <!-- Program Year -->
+          <v-select
+              color="success"
+              item-color="success"
+              v-model="localConfig.programYear"
+              :items="['Semua',...$store.state.programYear.options]"
+              :disabled="loadtable"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Program Year"
+              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
           <v-text-field
+          color="green"
+            outlined
+            rounded
+            dense
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
             hide-details
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
+          <v-divider class="mx-4" inset></v-divider>
           <v-btn
             v-if="RoleAccesCRUDShow == true"
             dark
+            rounded
             class="mb-2"
             @click="showAddModal()"
-            color="green"
+            color="blue"
           >
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-container v-if="load == false">
-                    <v-row>
-                      <v-row>
-                        <v-col cols="12" sm="12" md="12">
-                          <v-select
-                            v-model="defaultItem.fc_no"
-                            :items="itemsfc"
-                            item-text="name"
-                            item-value="nik"
-                            label="Pilih Field Coordinator"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.ktp_no"
-                            label="No KTP"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.name"
-                            label="Nama"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.mu_no"
-                            :items="itemsMU"
-                            item-text="name"
-                            item-value="mu_no"
-                            label="Management Unit"
-                            outlined
-                            clearable
-                            :rules="rules"
-                            v-on:change="selectedMUForm"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.target_area"
-                            :items="itemsTAForm"
-                            item-text="name"
-                            item-value="area_code"
-                            label="Target Area"
-                            outlined
-                            clearable
-                            :rules="rules"
-                            v-on:change="selectedTAForm"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.working_area"
-                            :items="itemsVillageForm"
-                            item-text="name"
-                            item-value="kode_desa"
-                            label="Working Area"
-                            outlined
-                            clearable
-                            :rules="rules"
-                            v-on:change="selectedVillageForm"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-menu v-model="menu2" transition="scale-transition">
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-text-field
-                                v-model="datepicker"
-                                slot="activator"
-                                label="Tanggal Lahir"
-                                outlined
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                                :rules="rules"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
-                              v-model="datepicker"
-                              @input="menu2 = false"
-                            ></v-date-picker>
-                          </v-menu>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.religion"
-                            :items="itemsagama"
-                            item-text="text"
-                            item-value="value"
-                            label="Agama"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-select
-                            v-model="defaultItem.gender"
-                            :items="itemsgender"
-                            item-text="text"
-                            item-value="value"
-                            label="Jenis Kelamin"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.phone"
-                            label="No HP"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-select
-                            v-model="defaultItem.marrital"
-                            :items="itemsmarrital"
-                            item-text="text"
-                            item-value="value"
-                            label="Marrital Status"
-                            outlined
-                            clearable
-                            :rules="rules"
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="12" md="12">
-                          <v-textarea
-                            v-model="defaultItem.address"
-                            label="Alamat"
-                            outlined
-                            rows="3"
-                            :rules="rules"
-                          ></v-textarea>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.village"
-                            label="Desa"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                          <v-text-field
-                            v-model="defaultItem.post_code"
-                            label="Kode Pos"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.kecamatan"
-                            label="Kecamatan"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.city"
-                            label="Kab/Kota"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.province"
-                            label="Provinsi"
-                            outlined
-                            :rules="rules"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.bank_account"
-                            label="Akun Bank"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.bank_name"
-                            label="Bank Name"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="4" md="4">
-                          <v-text-field
-                            v-model="defaultItem.bank_branch"
-                            label="Bank Branch"
-                            outlined
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-                </v-card-actions>
-              </v-form>
-            </v-card>
-          </v-dialog>
-          <!-- dialog detail -->
-          <v-dialog v-model="dialogdetail" max-width="700px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail FF</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-row>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>FF Number</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.ff_no }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>No KTP</h5>
-                        <h3 class="ml-2">{{ defaultItem.ktp_no }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <div>
-                        <h5>Nama FF</h5>
-                        <h3 class="ml-2">{{ defaultItem.name }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <div>
-                        <h5>Alamat FF</h5>
-                        <h3 class="ml-2">{{ defaultItem.address }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Desa</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.village }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="8">
-                      <div>
-                        <h5>Kode Pos</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.post_code }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Kecamatan</h5>
-                        <h3 class="ml-2">{{ defaultItem.kecamatan }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Kabupaten/Kota</h5>
-                        <h3 class="ml-2">{{ defaultItem.city }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Provinsi</h5>
-                        <h3 class="ml-2">{{ defaultItem.province }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Working Area</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.namaWorkingArea }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Target Area</h5>
-                        <h3 class="ml-2">{{ defaultItem.namaTA }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Management Unit</h5>
-                        <h3 class="ml-2">{{ defaultItem.namaMU }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>No Hp</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.phone }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Jenis Kelamin</h5>
-                        <h3 class="ml-2">{{ defaultItem.gender }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Agama</h5>
-                        <h3 class="ml-2">{{ defaultItem.religion }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>Tanggal Lahir</h5>
-                        <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="6">
-                      <div>
-                        <h5>Status Perkawinan</h5>
-                        <h3 class="ml-2">{{ defaultItem.marrital }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Akun Bank</h5>
-                        <h3 class="ml-2">
-                          {{ defaultItem.bank_account }}
-                        </h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Bank Branch</h5>
-                        <h3 class="ml-2">{{ defaultItem.bank_branch }}</h3>
-                      </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="4">
-                      <div>
-                        <h5>Bank Name</h5>
-                        <h3 class="ml-2">{{ defaultItem.bank_name }}</h3>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-          <!-- dialog delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
       </template>
+      <!-- Status Column -->
+      <template v-slot:item.active="{item}">
+        <v-chip :color="`${item.active ? 'green' : 'red'} white--text`">
+          {{ item.active ? 'Active' : 'Nonactive' }}
+        </v-chip>
+      </template>
+      <!-- Actions Column -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-3" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          class="mr-2"
-          @click="editItem(item)"
-          color="warning"
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="true"
         >
-          mdi-pencil
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDDelete == true"
-          @click="deleteItem(item)"
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-card class="rounded-xl pa-2">
+            <v-btn
+              dark
+              rounded
+              @click="showDetail(item)"
+              color="info"
+              class="mb-1"
+              block
+              small
+            >
+              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                  mdi-information-outline
+              </v-icon>
+              Detail
+            </v-btn>
+            <v-btn
+              v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'"
+              class="mb-1"
+              block
+              small
+              rounded
+              @click="editItem(item)"
+              color="warning white--text"
+            >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+              Edit
+            </v-btn>
+            <v-btn
+              v-if="User.role_group == 'IT' && item.active != 1 && false"
+              dark
+              rounded
+              @click="deleteItem(item)"
+              color="red"
+              class="mb-1"
+              block
+              small
+            >
+              <v-icon class="mr-1" small color="white">
+                mdi-delete
+              </v-icon>
+              Delete
+            </v-btn>
+            <!-- <v-btn
+              v-if="item.active == 1"
+              rounded
+              @click="nonactivateFF(item)"
+              color="red white--text"
+              class="mb-1"
+              block
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-account-off
+            </v-icon>
+              Nonactivate
+            </v-btn> -->
+            <!-- <v-btn
+              v-if="item.active == 0"
+              rounded
+              @click="activateFF(item)"
+              color="green white--text"
+              class="mb-1"
+              block
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-account-check
+            </v-icon>
+              Activate
+            </v-btn> -->
+            <!-- <v-btn
+              rounded
+              @click="() => {dialogs.changeFF.id = item.id;dialogs.changeFF.show = true;}"
+              color="red white--text"
+              class="mb-0"
+              block
+              :disabled="User.role_group != 'IT'"
+              small
+            >
+            <v-icon class="mr-1" small color="white">
+              mdi-account-convert
+            </v-icon>
+              Change FC
+            </v-btn> -->
+          </v-card>
+        </v-menu>
       </template>
     </v-data-table>
 
@@ -494,10 +416,29 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2'
+
+import ChangeFFModal from "./components/FF/ChangeFFModal.vue"
+import AddFFModal from "./components/FF/AddFFModal.vue"
 
 export default {
   name: "FieldFacilitator",
+  components: { ChangeFFModal, AddFFModal },
   data: () => ({
+    dialogs: {
+      addEditFF: {
+        show: false,
+        id: ''
+      },
+      changeFF: {
+        show: false,
+        id: ''
+      },
+      nonactivateConfirmation: {
+        show: false,
+        model: null,
+      }
+    },
     menu2: "",
     valid: true,
     datepicker: new Date().toISOString().substr(0, 10),
@@ -530,11 +471,13 @@ export default {
     headers: [
       // { text: "ID", value: "id" },
       { text: "FF No", value: "ff_no" },
-      { text: "Nama FF", value: "namaFF" },
-      { text: "Nama FC", value: "namaFC" },
-      { text: "Desa", value: "village" },
-      { text: "Kecamatan", value: "kecamatan" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "FF Name", value: "namaFF" },
+      { text: "FC Name", value: "namaFC" },
+      { text: "MU", value: "mu_name" },
+      { text: "TA", value: "ta_name" },
+      { text: "Village", value: "village_name" },
+      { text: "Status", value: "active", align: 'center' },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     dataobject: [],
     defaultItem: {
@@ -567,6 +510,7 @@ export default {
       user_id: "",
       village: "",
       working_area: "",
+      active: ''
     },
     itemsgender: [
       { text: "Laki-Laki", value: "male" },
@@ -600,7 +544,7 @@ export default {
 
     snackbar: false,
     textsnackbar: "Test",
-    timeoutsnackbar: 2000,
+    timeoutsnackbar: 5000,
     colorsnackbar: null,
     user_id: "",
 
@@ -611,11 +555,25 @@ export default {
     RoleAccesFilterShow: true,
     RoleAccesCRUDShow: true,
     RoleAccesCRUDDelete: true,
+    localConfig: {
+        programYear: '',
+    },
   }),
-  created() {
+  mounted() {
     this.firstAccessPage();
   },
+  watch: {
+    'localConfig.programYear': {
+      handler(val) {
+        this.initialize()
+      }
+    }
+  },
   methods: {
+    dialogsAction(dialog) {
+      this.dialogs[dialog.name].show = dialog.status
+      if (dialog.name == 'changeFF' && dialog.status == false) this.dialogs[dialog.name].id = ''
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
@@ -623,6 +581,7 @@ export default {
       this.fc_no_selected = this.User.fc.fc;
       this.typegetdata = this.User.fc.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+      this.localConfig.programYear = this.$store.state.programYear.model
       this.checkRoleAccess();
       this.initialize();
       this.getMU();
@@ -653,7 +612,8 @@ export default {
         const response = await axios.get(
           this.BaseUrlGet +
             "GetFieldFacilitatorAllWeb?fc_no=" +
-            this.fc_no_selected,
+            this.fc_no_selected +
+            `&program_year=${this.localConfig.programYear}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -763,7 +723,7 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemsfc = response.data.data.result.data;
           // this.dataobject = response.data.data.result;
@@ -900,7 +860,7 @@ export default {
         bank_name: this.defaultItem.bank_name,
         user_id: this.user_id,
       };
-      console.log(datapost);
+      // console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
@@ -1112,80 +1072,12 @@ export default {
       this.getDetail(item, "detail");
     },
     showAddModal() {
-      this.load = false;
-      this.defaultItem.id = "";
-      this.defaultItem.name = "";
-      this.defaultItem.ktp_no = "";
-      this.defaultItem.fc_no = "";
-      this.defaultItem.birthday = "";
-      this.defaultItem.gender = "";
-      this.defaultItem.religion = "";
-      this.defaultItem.post_code = "";
-      this.defaultItem.village = "";
-      this.defaultItem.kecamatan = "";
-      this.defaultItem.city = "";
-      this.defaultItem.province = "";
-      this.defaultItem.address = "";
-      this.defaultItem.mu_no = "";
-      this.defaultItem.target_area = "";
-      this.defaultItem.working_area = "";
-      this.defaultItem.bank_account = "";
-      this.defaultItem.bank_branch = "";
-      this.defaultItem.bank_name = "";
-      this.defaultItem.marrital = "";
-      this.defaultItem.phone = "";
-
-      this.formTitle = "Add Item";
-      this.dialog = true;
+      this.dialogs.addEditFF.id = ''
+      this.dialogs.addEditFF.show = true
     },
     async editItem(item) {
-      console.log(item);
-      this.dialog = true;
-      await this.getDetail(item, "edit");
-      await this.getTA("form");
-      await this.getVillage("form");
-      this.formTitle = "Edit Item";
-    },
-
-    save() {
-      this.$refs.form.validate();
-
-      if (
-        this.defaultItem.ktp_no.length != 0 &&
-        this.defaultItem.name.length != 0 &&
-        // this.datepicker.length != 0 &&
-        // this.defaultItem.birthday.length != 0 &&
-        this.defaultItem.religion != null &&
-        this.defaultItem.address.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.village.length != 0 &&
-        this.defaultItem.marrital != null &&
-        this.defaultItem.phone.length != 0 &&
-        this.defaultItem.gender != null &&
-        this.defaultItem.mu_no != null &&
-        this.defaultItem.fc_no != null &&
-        this.defaultItem.target_area != null &&
-        this.defaultItem.working_area != null
-      ) {
-        if (this.defaultItem.id) {
-          console.log("testupdate");
-          console.log(this.datepicker);
-          this.updateData();
-        } else {
-          if (this.defaultItem.ktp_no) {
-            console.log("testadd");
-            console.log(this.datepicker);
-            this.addData();
-          }
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar =
-          "Gagal Simpan, Kolom required tidak boleh ada yang kosong";
-      }
+      this.dialogs.addEditFF.id = item.id.toString()
+      this.dialogs.addEditFF.show = true
     },
 
     deleteItem(item) {
@@ -1202,6 +1094,71 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
+    nonactivateFF(data) {
+      this.dialogs.nonactivateConfirmation.show = true
+      this.dialogs.nonactivateConfirmation.model = [data.ff_no, 0]
+    },
+    activateFF(data) {
+      this.dialogs.nonactivateConfirmation.show = true
+      this.dialogs.nonactivateConfirmation.model = [data.ff_no, 1]
+    },
+    async confirmNonactivate () {
+      this.dialogs.nonactivateConfirmation.show = false
+      this.dialogdetail = false
+      this.$store.state.loadingOverlayText = 'Nonactivate Field Facilitator...'
+      this.$store.state.loadingOverlay = true
+      
+      await axios.post(`${this.BaseUrlGet}NonactivateFieldFacilitator`, 
+        {
+          ff_no: this.dialogs.nonactivateConfirmation.model[0], 
+          active: this.dialogs.nonactivateConfirmation.model[1]
+        }, 
+        { headers: {
+          Authorization: `Bearer ${this.authtoken}`
+        }
+      }).then(() => {
+        this.colorsnackbar = 'green'
+        this.textsnackbar = `${this.dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate'} FF success!`
+        this.initialize()
+      }).catch((err) => {
+        this.colorsnackbar = 'red'
+        this.textsnackbar = `${this.dialogs.nonactivateConfirmation.model[1] ? 'Activate' : 'Nonactivate'} FF failed!`
+        if (err.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }).finally(() => {
+          this.snackbar = true
+          this.timeoutsnackbar = 5000
+          this.$store.state.loadingOverlay = false
+          this.$store.state.loadingOverlayText = null
+      })
+    },
+    showSnackbar(text,color) {
+      this.textsnackbar = text
+      this.colorsnackbar = color
+      this.snackbar = true
+    },
+    swalActions(val) {
+        this.initialize()
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            showCloseButton: true,
+            timer: 10000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: val.type,
+            title: val.message
+        })
+    }
   },
 };
 </script>

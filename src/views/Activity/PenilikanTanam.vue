@@ -1,6 +1,8 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -13,1460 +15,2275 @@
       </v-alert>
     </div>
 
+    <!-- MODAL -->
+    
+      <!-- Modal Filter Area -->
+      <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center"
+            >Filter Pencarian Area</v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectMU"
+                    :items="itemsMU"
+                    item-value="mu_no"
+                    item-text="name"
+                    v-on:change="selectedMU"
+                    label="Management Unit"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectTA"
+                    :items="itemsTA"
+                    item-value="area_code"
+                    item-text="name"
+                    v-on:change="selectedTA"
+                    label="Target Area"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectVillage"
+                    :items="itemsVillage"
+                    item-value="kode_desa"
+                    item-text="name"
+                    v-on:change="selectedVillage"
+                    label="Desa"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+              <v-icon small class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="green white--text" rounded class="px-5" @click="searchbyarea">
+              <v-icon small class="mr-1">mdi-magnify</v-icon>
+              Cari
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Filter Emp -->
+      <v-dialog v-model="dialogFilterEmp" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center"
+            >Filter Pencarian By Emp</v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectUM"
+                    :items="itemsum"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedUM"
+                    label="Pilih Unit Manager"
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    color="green"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    hide-details
+                    v-model="selectFC"
+                    :items="itemsfc"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedFC"
+                    label="Pilih Field Coordinator"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterEmp = false">
+              <v-icon small class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="green white--text" rounded class="px-5" @click="searchbyemp">
+              <v-icon small class="mr-1">mdi-magnify</v-icon>
+              Cari
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Add Edit -->
+      <v-dialog v-model="dialog" max-width="800px">
+        <v-card>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title class="mb-1 headermodalstyle">
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text class="pa-0 fontall">
+              <v-container
+                v-if="load == true"
+                fluid
+                fill-height
+                style="background-color: rgba(255, 255, 255, 0.5)"
+              >
+                <v-layout justify-center align-center>
+                  <v-progress-circular
+                    :size="80"
+                    :width="10"
+                    indeterminate
+                    color="primary"
+                  >
+                  </v-progress-circular>
+                </v-layout>
+              </v-container>
+              <v-stepper v-if="load == false" v-model="e1">
+                <v-stepper-header>
+                  <v-stepper-step editable :complete="e1 > 1" step="1">
+                    Main Data
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step editable :complete="e1 > 2" step="2">
+                    List Pohon
+                  </v-stepper-step>
+                  <v-divider></v-divider>
+                  <v-stepper-step editable step="3"> Foto </v-stepper-step>
+                </v-stepper-header>
+
+                <v-stepper-items>
+                  <v-stepper-content class="pa-3" step="1">
+                    <v-container class="mb-2">
+                      <v-row>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                            v-model="defaultItem.user_id"
+                            :items="itemsff"
+                            item-text="name"
+                            item-value="ff_no"
+                            label="Pilih Field Facilitator"
+                            outlined
+                            clearable
+                            type="string"
+                            v-on:change="selectPetani"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field
+                            v-model="defaultItem.lahan_no"
+                            label="No Lahan"
+                            outlined
+                            type="string"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-select
+                            v-model="defaultItem.planting_year"
+                            :items="itemsTahun"
+                            item-text="text"
+                            item-value="value"
+                            label="Pilih Tahun Program"
+                            outlined
+                            clearable
+                            type="string"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                          <v-text-field
+                            v-model="defaultItem.total_holes"
+                            label="Total Lubang"
+                            outlined
+                            type="number"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+
+                    <v-row class="ma-2">
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        class="mr-1"
+                        color="red"
+                        elevation="1"
+                        @click="close"
+                        outlined
+                      >
+                        <v-icon left> mdi-close-circle-outline </v-icon>
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        elevation="1"
+                        outlined
+                        color="primary"
+                        @click="e1 = 2"
+                      >
+                        <v-icon left>
+                          mdi-chevron-right-circle-outline
+                        </v-icon>
+                        Next
+                      </v-btn>
+                    </v-row>
+                  </v-stepper-content>
+
+                  <v-stepper-content class="pa-3" step="2">
+                    <v-container class="mb-2">
+                      <v-row class="mb-3">
+                        <h4>Pilih Pohon</h4>
+                        <v-divider class="mx-2 mt-3"></v-divider>
+                      </v-row>
+                      <v-row>
+                        <v-col class="px-1 py-0" cols="12" sm="12" md="12">
+                          <v-combobox
+                            :items="itemstrees"
+                            item-value="tree_code"
+                            item-text="tree_name"
+                            label="Pilih Pohon"
+                            v-on:change="changeBarangSelected"
+                            outlined
+                            clearable
+                          ></v-combobox>
+                        </v-col>
+                      </v-row>
+                      <v-row class="mb-3">
+                        <h4>List Pohon</h4>
+                        <v-divider class="mx-2 mt-3"></v-divider>
+                      </v-row>
+                      <v-row>
+                        <v-col cols="12" sm="12" md="12">
+                          <v-data-table
+                            :headers="headerListProduct"
+                            :items="defaultItem.list_detail"
+                            class="elevation-3"
+                            append-icon="mdi-magnify"
+                            :items-per-page="5"
+                            :loading="loadtabledetail"
+                            loading-text="Loading... Please wait"
+                          >
+                            <template v-slot:item.actions="{ item }">
+                              <v-icon
+                                class="mr-2"
+                                @click="deletelistitemproduct(item)"
+                                color="red"
+                              >
+                                mdi-delete
+                              </v-icon>
+                              <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
+                            </template>
+                          </v-data-table>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+
+                    <v-row class="ma-2">
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        class="mr-1"
+                        color="red"
+                        elevation="1"
+                        @click="close"
+                        outlined
+                      >
+                        <v-icon left> mdi-close-circle-outline </v-icon>
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        elevation="1"
+                        outlined
+                        color="primary"
+                        @click="e1 = 3"
+                      >
+                        <v-icon left>
+                          mdi-chevron-right-circle-outline
+                        </v-icon>
+                        Next
+                      </v-btn>
+                    </v-row>
+                  </v-stepper-content>
+
+                  <v-stepper-content class="pa-3" step="3">
+                    <v-container class="mb-2">
+                      <v-row>
+                        <v-col cols="12" sm="4" md="4" class="pa-1">
+                          <v-file-input
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Pilih Foto"
+                            prepend-icon="mdi-camera"
+                            show-size
+                            label="Gambar Signature"
+                            outlined
+                            v-model="gambarinput1"
+                            v-on:change="pilihgambar1"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col cols="12" sm="4" md="4" class="pa-1">
+                          <v-file-input
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Pilih Foto"
+                            prepend-icon="mdi-camera"
+                            show-size
+                            label="Pilih Gambar1"
+                            outlined
+                            v-model="gambarinput2"
+                            v-on:change="pilihgambar2"
+                          ></v-file-input>
+                        </v-col>
+                        <v-col cols="12" sm="4" md="4" class="pa-1">
+                          <v-file-input
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Pilih Foto"
+                            prepend-icon="mdi-camera"
+                            show-size
+                            label="Pilih Gambar2"
+                            outlined
+                            v-model="gambarinput3"
+                            v-on:change="pilihgambar3"
+                          ></v-file-input>
+                        </v-col>
+                        <v-container>
+                          <v-row>
+                            <v-col cols="4" md="4">
+                              <!-- <div>Foto SPPT/ Dokument</div> -->
+                              <v-card
+                                class="d-flex align-center"
+                                elevation="2"
+                                height="250"
+                                width="250"
+                              >
+                                <v-img
+                                  v-bind:src="defaultItem.gambarshow1"
+                                  class="my-2 mb-4"
+                                  contain
+                                  max-height="225"
+                                ></v-img>
+                              </v-card>
+                            </v-col>
+                            <v-col cols="4" md="4">
+                              <!-- <div>Foto SPPT/ Dokument</div> -->
+                              <v-card
+                                class="d-flex align-center"
+                                elevation="2"
+                                height="250"
+                                width="250"
+                              >
+                                <v-img
+                                  v-bind:src="defaultItem.gambarshow2"
+                                  class="my-2 mb-4"
+                                  max-height="225"
+                                  contain
+                                ></v-img>
+                              </v-card>
+                            </v-col>
+                            <v-col cols="4" md="4">
+                              <!-- <div>Foto SPPT/ Dokument</div> -->
+                              <v-card
+                                class="d-flex align-center"
+                                elevation="2"
+                                height="250"
+                                width="250"
+                              >
+                                <v-img
+                                  v-bind:src="defaultItem.gambarshow3"
+                                  class="my-2 mb-4"
+                                  max-height="225"
+                                  contain
+                                ></v-img>
+                              </v-card>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                      </v-row>
+                    </v-container>
+                    <v-row class="ma-2">
+                      <v-spacer> </v-spacer>
+                      <v-btn
+                        class="mr-1"
+                        color="red"
+                        elevation="1"
+                        @click="close"
+                        outlined
+                      >
+                        <v-icon left> mdi-close-circle-outline </v-icon>
+                        Cancel
+                      </v-btn>
+                      <v-btn
+                        color="success"
+                        elevation="1"
+                        outlined
+                        @click="save"
+                      >
+                        <v-progress-circular
+                          v-if="loadsave == true"
+                          :size="25"
+                          :width="5"
+                          indeterminate
+                          color="green"
+                        >
+                        </v-progress-circular>
+                        <v-icon v-if="loadsave == false" left>
+                          mdi-checkbox-marked-circle-outline
+                        </v-icon>
+                        <h4 v-if="loadsave == false">Save</h4>
+                      </v-btn>
+                    </v-row>
+                  </v-stepper-content>
+                </v-stepper-items>
+              </v-stepper>
+            </v-card-text>
+
+            <!-- <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" outlined @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" outlined @click="save">
+                Save
+              </v-btn>
+            </v-card-actions> -->
+          </v-form>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogAddonly" max-width="800px">
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="headline">{{ formTitle }}</span>
+          </v-card-title>
+
+          <v-card-text class="pa-0 fontall">
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="primary"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-stepper v-if="load == false" v-model="e1">
+              <v-stepper-header>
+                <v-stepper-step editable :complete="e1 > 1" step="1">
+                  Main Data
+                </v-stepper-step>
+                <v-divider></v-divider>
+                <v-divider></v-divider>
+                <v-stepper-step editable step="2"> Foto </v-stepper-step>
+              </v-stepper-header>
+
+              <v-stepper-items>
+                <v-stepper-content class="pa-3" step="1">
+                  <v-container class="mb-2">
+                    <v-row>
+                      <v-col cols="12" sm="12" md="12">
+                        <v-select
+                          v-model="defaultItem.user_id"
+                          :items="itemsff"
+                          item-text="name"
+                          item-value="ff_no"
+                          label="Pilih Field Facilitator"
+                          outlined
+                          clearable
+                          type="string"
+                          v-on:change="selectPetani"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                          v-model="defaultItem.farmer_no"
+                          :items="itemspetani"
+                          item-text="nama"
+                          item-value="kode"
+                          label="Pilih Petani"
+                          outlined
+                          clearable
+                          type="string"
+                          v-on:change="selectLahan"
+                        ></v-select>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                          v-model="defaultItem.lahan_no"
+                          :items="itemslahan"
+                          item-text="lahan_no"
+                          item-value="lahan_no"
+                          label="Pilih No Lahan"
+                          outlined
+                          clearable
+                          type="string"
+                          v-on:change="selectedLahanNo"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model="defaultItem.lahan_condition"
+                          label="Kondisi Lahan"
+                          outlined
+                          required
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-text-field>
+                        <!-- <v-select
+                          v-model="defaultItem.lahan_condition"
+                          :items="itemslahancondition"
+                          item-text="text"
+                          item-value="value"
+                          label="Pilih Lahan Condition"
+                          outlined
+                          clearable
+                          type="string"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select> -->
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <div
+                          style="
+                            border-style: solid;
+                            padding: 3px;
+                            border-color: red;
+                          "
+                        >
+                          <h4>Jarak Lahan : {{ jarak_lahan }}</h4>
+                          <h4>Akses Jangkauan : {{ akses_jangkauan }}</h4>
+                        </div>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-select
+                          v-model="defaultItem.planting_year"
+                          :items="itemsTahun"
+                          item-text="text"
+                          item-value="value"
+                          label="Planting Year"
+                          outlined
+                          clearable
+                          type="string"
+                          :rules="[(v) => !!v || 'Field is required']"
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-menu
+                          v-model="menu1"
+                          transition="scale-transition"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              v-model="datepicker1"
+                              slot="activator"
+                              label="Planting Date"
+                              outlined
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                              :rules="[(v) => !!v || 'Field is required']"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="datepicker1"
+                            @input="menu1 = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+                    <!-- <v-row class="mb-3">
+                      <h4>Pilih Pohon</h4>
+                      <v-divider class="mx-2 mt-3"></v-divider>
+                    </v-row>
+                    <v-row>
+                      <v-col class="px-1 py-0" cols="12" sm="12" md="12">
+                        <v-combobox
+                          :items="itemstrees"
+                          item-value="tree_code"
+                          item-text="tree_name"
+                          label="Pilih Pohon"
+                          v-on:change="changeBarangSelected"
+                          outlined
+                          clearable
+                        ></v-combobox>
+                      </v-col>
+                    </v-row> -->
+                    <v-row class="mb-3">
+                      <h4>Detail Penilikan</h4>
+                      <v-divider class="mx-2 mt-3"></v-divider>
+                      <v-btn @click="adddetailpohon">Add</v-btn>
+                    </v-row>
+                    <v-row>
+                      <v-col cols="12" sm="12" md="12">
+                        <v-data-table
+                          :headers="headerslistpohon"
+                          :items="itemlistpohon"
+                          sort-by="calories"
+                          class="elevation-1"
+                        >
+                          <template v-slot:item.actions="{ item }">
+                            <v-icon small @click="deleteItemPohon(item)">
+                              mdi-delete
+                            </v-icon>
+                          </template>
+                        </v-data-table>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+
+                  <v-row class="ma-2">
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      class="mr-1"
+                      color="red"
+                      elevation="1"
+                      @click="close"
+                      outlined
+                    >
+                      <v-icon left> mdi-close-circle-outline </v-icon>
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      elevation="1"
+                      outlined
+                      color="primary"
+                      @click="e1 = 2"
+                    >
+                      <v-icon left>
+                        mdi-chevron-right-circle-outline
+                      </v-icon>
+                      Next
+                    </v-btn>
+                  </v-row>
+                </v-stepper-content>
+
+                <v-stepper-content class="pa-3" step="2">
+                  <v-container class="mb-2">
+                    <v-row>
+                      <v-col cols="12" sm="4" md="4" class="pa-1">
+                        <v-file-input
+                          accept="image/png, image/jpeg, image/bmp"
+                          placeholder="Pilih Foto"
+                          prepend-icon="mdi-camera"
+                          show-size
+                          label="Gambar Signature"
+                          outlined
+                          v-model="gambarinput1"
+                          v-on:change="pilihgambar1"
+                        ></v-file-input>
+                      </v-col>
+                      <v-col cols="12" sm="4" md="4" class="pa-1">
+                        <v-file-input
+                          accept="image/png, image/jpeg, image/bmp"
+                          placeholder="Pilih Foto"
+                          prepend-icon="mdi-camera"
+                          show-size
+                          label="Pilih Gambar1"
+                          outlined
+                          v-model="gambarinput2"
+                          v-on:change="pilihgambar2"
+                        ></v-file-input>
+                      </v-col>
+                      <v-col cols="12" sm="4" md="4" class="pa-1">
+                        <v-file-input
+                          accept="image/png, image/jpeg, image/bmp"
+                          placeholder="Pilih Foto"
+                          prepend-icon="mdi-camera"
+                          show-size
+                          label="Pilih Gambar2"
+                          outlined
+                          v-model="gambarinput3"
+                          v-on:change="pilihgambar3"
+                        ></v-file-input>
+                      </v-col>
+                      <v-container>
+                        <v-row>
+                          <v-col cols="4" md="4">
+                            <!-- <div>Foto SPPT/ Dokument</div> -->
+                            <v-card
+                              class="d-flex align-center"
+                              elevation="2"
+                              height="250"
+                              width="250"
+                            >
+                              <v-img
+                                v-bind:src="defaultItem.gambarshow1"
+                                class="my-2 mb-4"
+                                contain
+                                max-height="225"
+                              ></v-img>
+                            </v-card>
+                          </v-col>
+                          <v-col cols="4" md="4">
+                            <!-- <div>Foto SPPT/ Dokument</div> -->
+                            <v-card
+                              class="d-flex align-center"
+                              elevation="2"
+                              height="250"
+                              width="250"
+                            >
+                              <v-img
+                                v-bind:src="defaultItem.gambarshow2"
+                                class="my-2 mb-4"
+                                max-height="225"
+                                contain
+                              ></v-img>
+                            </v-card>
+                          </v-col>
+                          <v-col cols="4" md="4">
+                            <!-- <div>Foto SPPT/ Dokument</div> -->
+                            <v-card
+                              class="d-flex align-center"
+                              elevation="2"
+                              height="250"
+                              width="250"
+                            >
+                              <v-img
+                                v-bind:src="defaultItem.gambarshow3"
+                                class="my-2 mb-4"
+                                max-height="225"
+                                contain
+                              ></v-img>
+                            </v-card>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                    </v-row>
+                  </v-container>
+                  <v-row class="ma-2">
+                    <v-spacer> </v-spacer>
+                    <v-btn
+                      class="mr-1"
+                      color="red"
+                      elevation="1"
+                      @click="close"
+                      outlined
+                    >
+                      <v-icon left> mdi-close-circle-outline </v-icon>
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="success"
+                      elevation="1"
+                      outlined
+                      @click="save"
+                    >
+                      <v-progress-circular
+                        v-if="loadsave == true"
+                        :size="25"
+                        :width="5"
+                        indeterminate
+                        color="green"
+                      >
+                      </v-progress-circular>
+                      <v-icon v-if="loadsave == false" left>
+                        mdi-checkbox-marked-circle-outline
+                      </v-icon>
+                      <h4 v-if="loadsave == false">SaveAdd</h4>
+                    </v-btn>
+                  </v-row>
+                </v-stepper-content>
+              </v-stepper-items>
+            </v-stepper>
+          </v-card-text>
+
+          <!-- <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" outlined @click="close">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" outlined @click="save">
+                Save
+              </v-btn>
+            </v-card-actions> -->
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Add Realisasi Tanam Lahan Umum -->
+      <v-dialog v-model="dialogFormLahanUmum.model" max-width="1000px" content-class="rounded-xl mx-1" scrollable persistent>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="">Form Realisasi Tanam Lahan Umum</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container
+              v-if="dialogFormLahanUmum.loading"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-row v-else class="my-0">
+              <!-- MoU No -->
+              <v-col cols="12" sm="12">
+                <v-autocomplete
+                  color="success"
+                  item-color="success"
+                  item-text="mou_no"
+                  item-value="mou_no"
+                  v-model="dialogFormLahanUmum.inputs.mou_no.model"
+                  :items="dialogFormLahanUmum.inputs.mou_no.options"
+                  @change="getSeedDetailFromDistributionAdjustment"
+                  :disabled="dialogFormLahanUmum.inputs.mou_no.disabled"
+                  clearable
+                  outlined
+                  hide-details
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  rounded
+                  label="MoU No"
+                  class=""
+                >
+                  <template v-slot:item="data">
+                    <v-list-item-content>
+                      <v-list-item-title v-html="data.item.mou_no"></v-list-item-title>
+                      <v-list-item-subtitle>{{ data.item.pic_lahan }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </template>
+                </v-autocomplete>
+              </v-col>
+              <v-col cols="12" class="d-flex align-center">
+                  <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Adjusting Trees</h3><v-divider class="mx-2"></v-divider>
+              </v-col>
+              <v-col cols="12" md="12">
+                  <v-data-table
+                      :headers="dialogFormLahanUmum.inputs.adjustment.headers"
+                      :items="dialogFormLahanUmum.inputs.adjustment.items"
+                      :loading="dialogFormLahanUmum.inputs.adjustment.loading"
+                      :items-per-page="-1"
+                      hide-default-footer
+                      class="rounded-xl elevation-5 overflow-hidden mt-2"
+                  >
+                      <template v-slot:progress>
+                        <v-layout justify-center align-center>
+                          <v-progress-circular
+                            :size="50"
+                            :width="5"
+                            indeterminate
+                            color="green"
+                            class="my-3"
+                          >
+                          </v-progress-circular>
+                        </v-layout>
+                      </template>
+                      <template v-slot:item.no="{index}">
+                          {{ index + 1 }}
+                      </template>
+                      <template v-slot:item.total_tree_received="{item}">
+                          <v-chip color="info white--text">
+                            <v-icon>mdi-sprout</v-icon>
+                            <strong class="ml-1">{{ numberFormat(item.total_tree_received) }}</strong>
+                          </v-chip>
+                      </template>
+                      <template v-slot:item.planted="{index}">
+                          <v-row class="ma-0 align-center justify-end justify-lg-center flex-nowrap">
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Life"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_planted_life"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
+                              ></v-text-field>
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Dead"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_planted_dead"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
+                              ></v-text-field>
+                          </v-row>
+                      </template>
+                      <template v-slot:item.unplanted="{index}">
+                          <v-row class="ma-0 align-center justify-end justify-lg-center flex-nowrap">
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Life"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_unplanted_life"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
+                              ></v-text-field>
+                              <v-text-field 
+                                  color="green"
+                                  class="mr-1 my-1"
+                                  dense
+                                  hide-details
+                                  outlined
+                                  rounded
+                                  style="max-width: 120px;"
+                                  type="number"
+                                  min="0"
+                                  label="Dead"
+                                  v-model="dialogFormLahanUmum.inputs.adjustment.items[index].total_tree_unplanted_dead"
+                                  @change="updateSeedlingAdjustment"
+                                  @keyup="updateSeedlingAdjustment"
+                                  @click="updateSeedlingAdjustment"
+                              ></v-text-field>
+                          </v-row>
+                      </template>
+                      <template v-slot:item.lost="{item}">
+                          <v-chip color="red white--text">
+                            <v-icon>mdi-pi-hole</v-icon>
+                            <strong class="ml-1">{{ numberFormat(item.lost) }}</strong>
+                          </v-chip>
+                      </template>
+                  </v-data-table>
+              </v-col>
+              <v-col cols="12" class="d-flex align-center">
+                  <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-forest</v-icon></v-btn> <h3>Land Data</h3><v-divider class="mx-2"></v-divider>
+              </v-col>
+              <!-- Lahan Condition -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                <v-text-field 
+                    color="green"
+                    hide-details
+                    outlined
+                    rounded
+                    label="Land Condition"
+                    v-model="dialogFormLahanUmum.inputs.land_condition"
+                ></v-text-field>
+              </v-col>
+              <!-- Standard Trees Amount -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                <v-text-field 
+                    color="green"
+                    hide-details
+                    outlined
+                    rounded
+                    type="number"
+                    min="0"
+                    label="Standard Trees Amount"
+                    v-model="dialogFormLahanUmum.inputs.qty_std"
+                ></v-text-field>
+              </v-col>
+              <!-- Planting Date -->
+              <v-col cols="12" md="6" lg="4" class="text-center">
+                  <v-menu v-model="dialogFormLahanUmum.inputs.planting_date.datepicker.show" offset-x transition="slide-x-transition" rounded="xl">
+                      <template v-slot:activator="{ on, attrs }">
+                          <p class="mb-0"><strong>{{ dialogFormLahanUmum.inputs.planting_date.label }}</strong></p>
+                          <v-btn 
+                              rounded class=""
+                              color="green white--text"
+                              v-bind="attrs"
+                              v-on="on"
+                          >
+                              {{ dateFormat(dialogFormLahanUmum.inputs.planting_date.model, 'ddd, DD MMMM Y') }}
+                          </v-btn>
+                      </template>
+                      <div>
+                          <v-date-picker
+                              v-model="dialogFormLahanUmum.inputs.planting_date.model"
+                              min="2022-11-24"
+                              max="2023-03-31"
+                              @input="dialogFormLahanUmum.inputs.planting_date.datepicker.show = false"
+                              color="green"
+                              class="rounded-xl"
+                              :key="dialogFormLahanUmum.inputs.planting_date.datepicker.key"
+                          ></v-date-picker>
+                      </div>
+                  </v-menu>
+              </v-col>
+              <v-col cols="12" class="d-flex align-center">
+                  <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Photos</h3><v-divider class="mx-2"></v-divider>
+              </v-col>
+              <!-- Photo 1 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Photo 1"
+                  prepend-icon="mdi-camera"
+                  label="Living Plant (*max 6mb)"
+                  v-on:change="photo1FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo1.preview && dialogFormLahanUmum.inputs.photo1.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo1.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo1"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo1.preview)"
+                      ></v-img
+                  ></v-card>
+              </v-col>
+              <!-- Photo 2 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Photo 2"
+                  prepend-icon="mdi-camera"
+                  label="Dead Plant (*max 6mb)"
+                  v-on:change="photo2FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo2.preview && dialogFormLahanUmum.inputs.photo2.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo2.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo2"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo2.preview)"
+                      ></v-img
+                  ></v-card>
+              </v-col>
+              <!-- Photo 3 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Photo 3"
+                  prepend-icon="mdi-camera"
+                  label="Seeds haven't planted (*max 6mb)"
+                  v-on:change="photo3FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo3.preview && dialogFormLahanUmum.inputs.photo3.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo3.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo3"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo3.preview)"
+                      ></v-img
+                  ></v-card>
+              </v-col>
+            </v-row>
+          </v-card-text>
+
+          <v-card-actions v-if="dialogFormLahanUmum.loading == false">
+            <v-btn color="red white--text" rounded @click="dialogFormLahanUmum.model = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-divider class="mx-2"></v-divider>
+            <v-btn color="blue white--text" rounded 
+              :disabled="
+                dialogFormLahanUmum.inputs.qty_std < 1 ||
+                (dialogFormLahanUmum.inputs.mou_no.disabled == false && !dialogFormLahanUmum.inputs.photo1.model) ||
+                !dialogFormLahanUmum.inputs.mou_no.model ||
+                dialogFormLahanUmum.inputs.adjustment.items.length == 0 ||
+                !dialogFormLahanUmum.inputs.planting_date.model
+              "
+              @click="dialogFormLahanUmum.confirm = true"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogFormLahanUmum.confirm" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center">
+            Are you sure you want to SAVE? <small class="red--text">This can't be undone!</small>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="pr-3" color="red white--text" rounded @click="dialogFormLahanUmum.confirm = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="green white--text"
+              class="pr-3"
+              rounded
+              @click="saveLahanUmumMonitoring"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK, SAVE
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogPohon" max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Daftar Pohon</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-combobox
+                    v-model="tree_temp"
+                    :items="itemstrees"
+                    item-text="tree_name"
+                    item-value="tree_code"
+                    label="Pilih Pohon"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-combobox>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="editedItemPohon.qty"
+                    label="Jumlah"
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-menu v-model="menu4" transition="scale-transition">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="datepicker4"
+                        slot="activator"
+                        label="Planting Date"
+                        v-bind="attrs"
+                        v-on="on"
+                        outlined
+                        :rules="[(v) => !!v || 'Field is required']"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="datepicker4"
+                      @input="menu4 = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-select
+                    v-model="editedItemPohon.status"
+                    :items="itemsstatustrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Status"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="4">
+                  <v-select
+                    v-model="editedItemPohon.condition"
+                    :items="itemscoditiontrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Kondisi"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closePohonTambah">
+              Cancel
+            </v-btn>
+            <v-btn color="blue darken-1" text @click="savePohon">
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDeletePohon" max-width="500px">
+        <v-card>
+          <v-card-title class="text-h5"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="closeDeletePohon"
+              >Cancel</v-btn
+            >
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="deleteItemConfirmPohon"
+              >OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Add Product -->
+      <v-dialog v-model="dialogAddProduct" max-width="500px">
+        <v-card>
+          <v-card-text class="pa-1 fontall">
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-combobox
+                    v-model="trees_add_temp"
+                    :items="itemstrees"
+                    item-text="tree_name"
+                    item-value="tree_code"
+                    label="Pilih Pohon"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-combobox>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="pb-1" cols="12" sm="6" md="6">
+                  <v-text-field
+                    v-model="jumlah_temp"
+                    label="Jumlah"
+                    outlined
+                    type="number"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col class="pb-1" cols="12" sm="6" md="6">
+                  <v-menu v-model="menu2" transition="scale-transition">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="datepicker2"
+                        slot="activator"
+                        label="Planting Date"
+                        outlined
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        :rules="[(v) => !!v || 'Field is required']"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="datepicker2"
+                      @input="menu2 = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="6" md="6">
+                  <v-select
+                    v-model="status_temp"
+                    :items="itemsstatustrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Status"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-select
+                    v-model="condition_temp"
+                    :items="itemscoditiontrees"
+                    item-text="text"
+                    item-value="value"
+                    label="Pilih Kondisi"
+                    outlined
+                    clearable
+                    type="string"
+                    :rules="[(v) => !!v || 'Field is required']"
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="red"
+              elevation="1"
+              outlined
+              @click="canceladdproduk"
+            >
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="success"
+              elevation="1"
+              outlined
+              @click="addProduct"
+            >
+              <v-icon left> mdi-plus-circle-outline </v-icon>
+              Add
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogShowEdit" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            >What you want to edit?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="blue" text @click="showEditModal"
+              >Edit Sosialisasi</v-btn
+            >
+            <v-btn
+              outlined
+              color="green"
+              text
+              @click="showEditJumlahPohonModal"
+              >Jumlah Pohon</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDetailPohon" max-width="500px">
+        <v-card>
+          <v-card-title class="headline"
+            ><span class="headline">Detail Pohon Lahan</span></v-card-title
+          >
+          <v-card-text>
+            <v-row class="mt-3">
+              <v-col cols="12" sm="12" md="12">
+                <div>
+                  <h3 class="ml-1">
+                    <v-data-table
+                      :headers="headersdetaileditjumlah"
+                      :items="DetailTreesLahanTemp"
+                      class="elevation-1"
+                    >
+                      <!-- <template v-slot:item.tree_category="{ item }">
+                        {{ gettype(item.tree_category) }}
+                      </template> -->
+                      <template v-slot:item.actions="{ item }">
+                        <v-icon
+                          v-if="RoleAccesCRUDShow == true"
+                          class="mr-3"
+                          @click="editDetailPohon(item)"
+                          small
+                          color="warning"
+                        >
+                          mdi-pencil
+                        </v-icon>
+                        <v-icon
+                          v-if="RoleAccesCRUDShow == true"
+                          @click="deleteDetailPohon(item)"
+                          small
+                          color="red"
+                        >
+                          mdi-delete
+                        </v-icon>
+                      </template>
+                    </v-data-table>
+                  </h3>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="red" text @click="closeDetailPohon"
+              >Cancel</v-btn
+            >
+            <v-btn outlined color="blue" text @click="saveEditPohon"
+              >Save</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
+        <v-card>
+          <v-card-text>
+            <v-row class="mt-7">
+              <v-col cols="12" sm="12" md="12">
+                <v-text-field
+                  v-model="editedItemPohon.amount"
+                  label="Jumlah Pohon"
+                  outlined
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn outlined color="red" text @click="closeDetailEditPohon"
+              >Cancel</v-btn
+            >
+            <v-btn outlined color="blue" text @click="saveEditPohonTemp"
+              >Save</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Detail -->
+      <v-dialog v-model="dialogDetail" max-width="1000px" content-class="rounded-xl" scrollable>
+        <v-card>
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="">Detail Realisasi Tanam</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="green"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <v-container v-if="load == false">
+              <v-row>
+                <v-col cols="12">
+                  <v-simple-table>
+                    <template v-slot:default>
+                      <tbody>
+                        <tr>
+                          <th
+                            class="text-left"
+                            style="width: 200px; font-size: 14px"
+                          >
+                            Tahun Program
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.planting_year || defaultItem.program_year || '?' }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th
+                            class="text-left"
+                            style="width: 200px; font-size: 14px"
+                          >
+                            Monitoring No
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.monitoring_no }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Nama {{ generalSettings.landProgram.model == 'Petani' ? 'FF' : 'PIC T4T' }}
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.nama_ff || defaultItem.nama_pic_t4t || '?' }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Nama {{ generalSettings.landProgram.model == 'Petani' ? 'Petani' : 'PIC Lahan' }}
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.nama_petani || defaultItem.nama_pic_lahan || '?'  }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            No Lahan
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong v-if="defaultItem.lahan_no">{{ defaultItem.lahan_no.replace('[', '').replace(']', '') }}</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Kondisi Lahan
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong style="text-transform: capitalize">
+                              {{ defaultItem.lahan_condition.replace('_', ' ') }}
+                            </strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="text-left" style="font-size: 14px">
+                            Pohon Sesuai Standar
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.qty_std || 0 }}</strong>
+                          </td>
+                        </tr>
+                        <tr v-if="generalSettings.landProgram.model == 'Petani'">
+                          <th class="text-left" style="font-size: 14px">
+                            Tanggal Penanaman
+                          </th>
+                          <td class="text-left" style="font-size: 14px">
+                            <strong>{{ defaultItem.planting_date ? $store.getters.dateFormat(defaultItem.planting_date, 'DD MMMM Y') : '-' }}</strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                  <div>
+                    <h4 class="mt-3 mb-2"><v-icon>mdi-sprout</v-icon> Jenis dan Jumlah Bibit</h4>
+                    <h3 class="ml-1">
+                      <v-simple-table dense class="rounded-xl overflow-hidden" style="border: 1px solid #e2e2e2;border-collapse: collapse;">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th colspan="2" class="text-center">Ditanam</th>
+                            <th colspan="2" class="text-center">Belum Ditanam</th>
+                            <th></th>
+                          </tr>
+                          <tr>
+                            <th class="text-center">No</th>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th class="text-center">Hidup</th>
+                            <th class="text-center">Mati</th>
+                            <th class="text-center">Hidup</th>
+                            <th class="text-center">Mati</th>
+                            <th class="text-center">Hilang</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(seed, seedIndex) in defaultItem.list_detail" :key="seedIndex">
+                            <td class="text-center">{{ seedIndex + 1 }}</td>
+                            <td>{{ seed.tree_category }}</td>
+                            <td>{{ seed.tree_name }}</td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="disabledEditSeedInDetailModal"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.hidup"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="disabledEditSeedInDetailModal"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.mati"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="disabledEditSeedInDetailModal"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="disabledEditSeedInDetailModal"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati"></v-text-field>
+                            </td>
+                            <td class="text-center">
+                              <v-text-field 
+                                color="green"
+                                type="number"
+                                min="0"
+                                outlined
+                                hide-details
+                                dense
+                                rounded
+                                :readonly="disabledEditSeedInDetailModal"
+                                v-model="defaultItem.list_detail[seedIndex].seedling.hilang"></v-text-field>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-simple-table>
+                    </h3>
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <div class="text-center mb-2"><v-icon>mdi-image-multiple</v-icon> Photos</div>
+                  <v-row>
+                    <v-col cols="12" lg="4">
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.gambarshow1"
+                        @click="showLightbox(defaultItem.gambarshow1)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.gambarshow2"
+                        @click="showLightbox(defaultItem.gambarshow2)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-col>
+                    <v-col cols="12" lg="4">
+                      <v-img
+                        height="250"
+                        v-bind:src="defaultItem.gambarshow3"
+                        @click="showLightbox(defaultItem.gambarshow3)"
+                        class="my-1 mb-4 rounded-xl cursor-pointer"
+                      ></v-img>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions v-if="load == false">
+            <v-spacer></v-spacer>
+            <v-btn
+              v-if="RoleAccesCRUDShow == true && defaultItem.is_validate == 0 && User.role_name != 'UNIT MANAGER'"
+              rounded
+              color="green white--text"
+              class="pr-3"
+              @click="verifSubmit()"
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification FC
+            </v-btn>
+            <v-btn
+              v-else-if="RoleAccesCRUDShow == true && defaultItem.is_validate == 1 && User.role_name != 'FIELD COORDINATOR'"
+              rounded
+              @click="dialogVerificationUM = true"
+              color="green white--text"
+              class="pr-3"
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification UM
+            </v-btn>
+            <v-btn
+              v-if="defaultItem.is_verified == 0"
+              :disabled="User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER'"
+              rounded
+              color="green white--text"
+              class="pr-3"
+              @click="() => {verifSubmit()}"
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification PIC
+            </v-btn>
+            <v-btn
+              v-if="defaultItem.is_verified == 1"
+              :disabled="User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER' && User.role_group != 'IT'"
+              rounded
+              color="green white--text"
+              class="pr-3"
+              @click="() => {verifSubmit()}"
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification RM / PM
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Verification -->
+      <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center">
+            Are you sure you want to VERIFICATION? <small class="red--text">This can't be undone!</small>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="pr-3" color="red white--text" text rounded @click="closeVerification">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="green white--text"
+              class="pr-3"
+              rounded
+              @click="VerificationItemConfirm"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK, Verify
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogVerificationUM" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center">
+            Are you sure you want to VERIFICATION? <small class="red--text">This can't be undone!</small>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="pr-3" color="red white--text" rounded @click="dialogVerificationUM = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="green white--text"
+              class="pr-3"
+              rounded
+              @click="VerificationUMItemConfirm"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK, Verify
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Unverif -->
+      <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="justify-center text-center"
+            >Are you sure you want to <br> UNVERIFICATION <br> this data monitoring 1?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn class="pr-3" color="red white--text" rounded @click="dialogUnverif = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-btn
+              color="warning white--text"
+              class="pr-3"
+              rounded
+              @click="unverifItemConfirm"
+            >
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon>
+              Yes, Unverif
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-text>
+            <p class="text-center grey--text text--darken-3 pt-4" style="font-size: 20px;">
+              Are u sure?! <br>You wanna DELETE this <br><b>{{ defaultItem.monitoring_no }}</b>?
+            </p>
+            <v-simple-table>
+              <tbody>
+                <tr>
+                  <td>MU</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.mu_name }}</b></td>
+                </tr>
+                <tr v-if="generalSettings.landProgram.model == 'Petani'">
+                  <td>FF</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.nama_ff }}</b></td>
+                </tr>
+                <tr v-else>
+                  <td>PIC T4T</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.pic_t4t_name || '-' }}</b></td>
+                </tr>
+                <tr v-if="generalSettings.landProgram.model == 'Petani'">
+                  <td>Farmer</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.nama_petani }}</b></td>
+                </tr>
+                <tr v-else>
+                  <td>PIC Lahan</td>
+                  <td>:</td>
+                  <td><b>{{ defaultItem.pic_lahan_name || '-' }}</b></td>
+                </tr>
+              </tbody>
+            </v-simple-table>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn class="pr-3" color="blue white--text" text rounded @click="() => dialogDelete = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-divider class="mx-2"></v-divider>
+            <v-btn
+              color="red white--text"
+              class="pr-3"
+              rounded
+              @click="() => {deleteItemConfirm()}"
+            >
+              <v-icon class="mr-1 pl-2">mdi-delete</v-icon>
+              Yes, Delete
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Export Filter -->
+      <v-dialog v-model="dialogs.exportFilter.model" content-class="rounded-xl" max-width="500">
+        <v-card>
+          <v-card-title>
+            Export Filter
+            <v-divider class="mx-2"></v-divider>
+            <v-icon color="red" @click="() => dialogs.exportFilter.model = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <v-row class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Regional Manager"
+                  :loading="dialogs.exportFilter.filters.rm.loading"
+                  :item-value="dialogs.exportFilter.filters.rm.itemVal"
+                  :item-text="dialogs.exportFilter.filters.rm.itemText"
+                  :items="dialogs.exportFilter.filters.rm.options"
+                  v-model="dialogs.exportFilter.filters.rm.model"
+                  :disabled="disabledExportFilterRM"
+                  @change="($event) => getFiltersOptions('um', $event)"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Unit Manager"
+                  :loading="dialogs.exportFilter.filters.um.loading"
+                  :item-value="dialogs.exportFilter.filters.um.itemVal"
+                  :item-text="dialogs.exportFilter.filters.um.itemText"
+                  :items="dialogs.exportFilter.filters.um.options"
+                  v-model="dialogs.exportFilter.filters.um.model"
+                  :disabled="disabledExportFilterUM"
+                  @change="($event) => {getFiltersOptions('fc', $event);}"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Coordinator"
+                  :loading="dialogs.exportFilter.filters.fc.loading"
+                  :item-value="dialogs.exportFilter.filters.fc.itemVal"
+                  :item-text="dialogs.exportFilter.filters.fc.itemText"
+                  :items="dialogs.exportFilter.filters.fc.options"
+                  v-model="dialogs.exportFilter.filters.fc.model"
+                  :disabled="disabledExportFilterFC"
+                  @change="($event) => setFiltersFF('FC', $event)"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+            <v-alert dark color="green" dense class="rounded-xl mt-3 mb-0" icon="mdi-information" >{{ whatTodoTextExport }}</v-alert>
+          </v-card-text>
+          <v-card-actions>
+            <v-divider class="mx-2"></v-divider>
+            <v-hover v-slot="{hover}">
+              <v-btn rounded :color="`green ${hover ? 'white--text' : ''}`" :outlined="!hover" @click="() => exportData()" :disabled="dialogs.exportFilter.filters.ff.model.length < 1 || dialogs.exportFilter.filters.ff.loading"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
+            </v-hover>
+            <v-divider class="mx-2"></v-divider>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    <!-- END: MODAL -->
+
     <v-data-table
-      :headers="headers"
+      data-aos="fade-up"
+      data-aos-delay="200"
+      :headers="generalSettings.landProgram.model == 'Petani' ? headers : headers2"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
+      :options.sync="pagination.options"
+      :server-items-length="pagination.total"
+      :page="pagination.current_page"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      multi-sort
+      :footer-props="{
+        itemsPerPageOptions: [10, 20, 30, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
     >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-
       <template v-slot:top>
-        <v-toolbar flat>
-          <v-btn
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
-            Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
-            Employee
-          </v-btn>
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 200px"
-          ></v-select>
+        <v-row class="ma-0 mt-2 mr-2 align-center">
+          <v-menu offset-y content-class="rounded-xl" v-if="generalSettings.landProgram.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER')">
+            <template v-slot:activator="{attrs, on}">
+              <v-btn  v-bind="attrs" v-on="on" rounded color="warning white--text" class="d-none d-md-block ml-2">
+                <v-icon class="mr-1">mdi-filter</v-icon>
+                Filter
+              </v-btn>
+            </template>
+            <v-card class="d-flex flex-column align-stretch justify-center pa-2 py-3">
+              <v-btn
+                dark
+                rounded
+                class="mx-1 d-none d-md-block mb-2"
+                @click="showFilterArea()"
+                color="green"
+              >
+                <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
+                Area
+              </v-btn>
+              <v-btn
+                v-if="RoleAccesFilterShow == true"
+                dark
+                rounded
+                class="mx-1 d-none d-md-block"
+                @click="showFilterEmployee()"
+                color="green"
+              >
+                <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
+                Employee
+              </v-btn>
+            </v-card>
+          </v-menu>
+          <!-- Program Year -->
           <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
+              color="success"
+              item-color="success"
+              v-model="generalSettings.programYear"
+              :items="['2021','2022','2023']"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Program Year"
+              class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+              style="max-width: 200px"
           ></v-select>
+          <!-- Land Program -->
           <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
-          <v-divider class="mx-4 d-none d-md-block" inset vertical></v-divider>
-          <v-spacer class="d-none d-md-block"></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
+              color="success"
+              item-color="success"
+              v-model="generalSettings.landProgram.model"
+              :items="generalSettings.landProgram.items"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              :label="generalSettings.landProgram.label"
+              class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
+          <v-divider class="mx-2 d-none d-md-block"></v-divider>
+          <!-- Select Search Field -->
+          <v-select
+            color="success"
+            item-color="success"
+            v-model="pagination.search.field"
+            :items="pagination.search.options.column"
+            item-value="value"
+            item-text="text"
             hide-details
+            outlined
+            dense
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Kolom"
+            class="centered-select"
+            style="width: 50%;max-width: 130px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+          ></v-select>
+          <!-- Search Input -->
+          <v-text-field
+            v-if="pagination.search.field != 'is_validate'"
+            color="success"
+            item-color="success"
+            v-model="pagination.search.value"
+            append-icon="mdi-magnify"
+            outlined
+            dense
+            rounded
+            label="Search"
+            hide-details
+            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;max-width: 200px;"
+            :loading="pagination.search.options.column_loading"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-select
+            v-else
+            color="success"
+            item-color="success"
+            v-model="pagination.search.value"
+            :items="pagination.search.options[generalSettings.landProgram.model == 'Petani' ? 'validation' : 'validation2']"
+            item-value="value"
+            item-text="text"
+            hide-details
+            outlined
+            dense
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Status"
+            class="centered-select"
+            style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+          ></v-select>
           <v-btn
-            v-if="RoleAccesIT == true"
+            v-if="generalSettings.landProgram.model == 'Petani'"
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
+            @click="() => {openExportFilter()}"
+            :disabled="loadtable"
+            color="info white--text"
+          >
+            <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
+          </v-btn>
+          <v-btn
+            v-else
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
+            @click="() => {exportLahanUmum()}"
+            :disabled="loadtable"
+            color="info white--text"
+          >
+            <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
+          </v-btn>
+          <v-btn
+            v-if="generalSettings.landProgram.model == 'Umum' && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER'"
             dark
-            class="mb-2 mr-1"
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="showAddModal()"
             color="green"
           >
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn>
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-          </v-btn> -->
-          <!-- <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export
-          </v-btn> -->
-          <!-- Modal Filter Area -->
-          <v-dialog v-model="dialogFilterArea" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian Area</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectMU"
-                        :items="itemsMU"
-                        item-value="mu_no"
-                        item-text="name"
-                        v-on:change="selectedMU"
-                        label="Management Unit"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectTA"
-                        :items="itemsTA"
-                        item-value="area_code"
-                        item-text="name"
-                        v-on:change="selectedTA"
-                        label="Targer Area"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectVillage"
-                        :items="itemsVillage"
-                        item-value="kode_desa"
-                        item-text="name"
-                        v-on:change="selectedVillage"
-                        label="Desa"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyarea"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Filter Emp -->
-          <v-dialog v-model="dialogFilterEmp" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian By Emp</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectUM"
-                        :items="itemsum"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedUM"
-                        label="Pilih Unit Manager"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectFC"
-                        :items="itemsfc"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedFC"
-                        label="Pilih Field Coordinator"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyemp"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text class="pa-0 fontall">
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-stepper v-if="load == false" v-model="e1">
-                    <v-stepper-header>
-                      <v-stepper-step editable :complete="e1 > 1" step="1">
-                        Main Data
-                      </v-stepper-step>
-                      <v-divider></v-divider>
-                      <v-stepper-step editable :complete="e1 > 2" step="2">
-                        List Pohon
-                      </v-stepper-step>
-                      <v-divider></v-divider>
-                      <v-stepper-step editable step="3"> Foto </v-stepper-step>
-                    </v-stepper-header>
-
-                    <v-stepper-items>
-                      <v-stepper-content class="pa-3" step="1">
-                        <v-container class="mb-2">
-                          <v-row>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-select
-                                v-model="defaultItem.user_id"
-                                :items="itemsff"
-                                item-text="name"
-                                item-value="ff_no"
-                                label="Pilih Field Facilitator"
-                                outlined
-                                clearable
-                                type="string"
-                                v-on:change="selectPetani"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-text-field
-                                v-model="defaultItem.lahan_no"
-                                label="No Lahan"
-                                outlined
-                                type="string"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-select
-                                v-model="defaultItem.planting_year"
-                                :items="itemsTahun"
-                                item-text="text"
-                                item-value="value"
-                                label="Pilih Tahun Program"
-                                outlined
-                                clearable
-                                type="string"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-select>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="6">
-                              <v-text-field
-                                v-model="defaultItem.total_holes"
-                                label="Total Lubang"
-                                outlined
-                                type="number"
-                                :rules="[(v) => !!v || 'Field is required']"
-                              ></v-text-field>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-
-                        <v-row class="ma-2">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            elevation="1"
-                            outlined
-                            color="primary"
-                            @click="e1 = 2"
-                          >
-                            <v-icon left>
-                              mdi-chevron-right-circle-outline
-                            </v-icon>
-                            Next
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-
-                      <v-stepper-content class="pa-3" step="2">
-                        <v-container class="mb-2">
-                          <v-row class="mb-3">
-                            <h4>Pilih Pohon</h4>
-                            <v-divider class="mx-2 mt-3"></v-divider>
-                          </v-row>
-                          <v-row>
-                            <v-col class="px-1 py-0" cols="12" sm="12" md="12">
-                              <v-combobox
-                                :items="itemstrees"
-                                item-value="tree_code"
-                                item-text="tree_name"
-                                label="Pilih Pohon"
-                                v-on:change="changeBarangSelected"
-                                outlined
-                                clearable
-                              ></v-combobox>
-                            </v-col>
-                          </v-row>
-                          <v-row class="mb-3">
-                            <h4>List Pohon</h4>
-                            <v-divider class="mx-2 mt-3"></v-divider>
-                          </v-row>
-                          <v-row>
-                            <v-col cols="12" sm="12" md="12">
-                              <v-data-table
-                                :headers="headerListProduct"
-                                :items="defaultItem.list_detail"
-                                class="elevation-3"
-                                append-icon="mdi-magnify"
-                                :items-per-page="5"
-                                :loading="loadtabledetail"
-                                loading-text="Loading... Please wait"
-                              >
-                                <template v-slot:item.actions="{ item }">
-                                  <v-icon
-                                    class="mr-2"
-                                    @click="deletelistitemproduct(item)"
-                                    color="red"
-                                  >
-                                    mdi-delete
-                                  </v-icon>
-                                  <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
-                                </template>
-                              </v-data-table>
-                            </v-col>
-                          </v-row>
-                        </v-container>
-
-                        <v-row class="ma-2">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            elevation="1"
-                            outlined
-                            color="primary"
-                            @click="e1 = 3"
-                          >
-                            <v-icon left>
-                              mdi-chevron-right-circle-outline
-                            </v-icon>
-                            Next
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-
-                      <v-stepper-content class="pa-3" step="3">
-                        <v-container class="mb-2">
-                          <v-row>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Gambar Signature"
-                                outlined
-                                v-model="gambarinput1"
-                                v-on:change="pilihgambar1"
-                              ></v-file-input>
-                            </v-col>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Pilih Gambar1"
-                                outlined
-                                v-model="gambarinput2"
-                                v-on:change="pilihgambar2"
-                              ></v-file-input>
-                            </v-col>
-                            <v-col cols="12" sm="4" md="4" class="pa-1">
-                              <v-file-input
-                                accept="image/png, image/jpeg, image/bmp"
-                                placeholder="Pilih Foto"
-                                prepend-icon="mdi-camera"
-                                show-size
-                                label="Pilih Gambar2"
-                                outlined
-                                v-model="gambarinput3"
-                                v-on:change="pilihgambar3"
-                              ></v-file-input>
-                            </v-col>
-                            <v-container>
-                              <v-row>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow1"
-                                      class="my-2 mb-4"
-                                      contain
-                                      max-height="225"
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow2"
-                                      class="my-2 mb-4"
-                                      max-height="225"
-                                      contain
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                                <v-col cols="4" md="4">
-                                  <!-- <div>Foto SPPT/ Dokument</div> -->
-                                  <v-card
-                                    class="d-flex align-center"
-                                    elevation="2"
-                                    height="250"
-                                    width="250"
-                                  >
-                                    <v-img
-                                      v-bind:src="defaultItem.gambarshow3"
-                                      class="my-2 mb-4"
-                                      max-height="225"
-                                      contain
-                                    ></v-img>
-                                  </v-card>
-                                </v-col>
-                              </v-row>
-                            </v-container>
-                          </v-row>
-                        </v-container>
-                        <v-row class="ma-2">
-                          <v-spacer> </v-spacer>
-                          <v-btn
-                            class="mr-1"
-                            color="red"
-                            elevation="1"
-                            @click="close"
-                            outlined
-                          >
-                            <v-icon left> mdi-close-circle-outline </v-icon>
-                            Cancel
-                          </v-btn>
-                          <v-btn
-                            color="success"
-                            elevation="1"
-                            outlined
-                            @click="save"
-                          >
-                            <v-progress-circular
-                              v-if="loadsave == true"
-                              :size="25"
-                              :width="5"
-                              indeterminate
-                              color="green"
-                            >
-                            </v-progress-circular>
-                            <v-icon v-if="loadsave == false" left>
-                              mdi-checkbox-marked-circle-outline
-                            </v-icon>
-                            <h4 v-if="loadsave == false">Save</h4>
-                          </v-btn>
-                        </v-row>
-                      </v-stepper-content>
-                    </v-stepper-items>
-                  </v-stepper>
-                </v-card-text>
-
-                <!-- <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" outlined @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" outlined @click="save">
-                    Save
-                  </v-btn>
-                </v-card-actions> -->
-              </v-form>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogAddonly" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">{{ formTitle }}</span>
-              </v-card-title>
-
-              <v-card-text class="pa-0 fontall">
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-stepper v-if="load == false" v-model="e1">
-                  <v-stepper-header>
-                    <v-stepper-step editable :complete="e1 > 1" step="1">
-                      Main Data
-                    </v-stepper-step>
-                    <v-divider></v-divider>
-                    <v-divider></v-divider>
-                    <v-stepper-step editable step="2"> Foto </v-stepper-step>
-                  </v-stepper-header>
-
-                  <v-stepper-items>
-                    <v-stepper-content class="pa-3" step="1">
-                      <v-container class="mb-2">
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-select
-                              v-model="defaultItem.user_id"
-                              :items="itemsff"
-                              item-text="name"
-                              item-value="ff_no"
-                              label="Pilih Field Facilitator"
-                              outlined
-                              clearable
-                              type="string"
-                              v-on:change="selectPetani"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              v-model="defaultItem.farmer_no"
-                              :items="itemspetani"
-                              item-text="nama"
-                              item-value="kode"
-                              label="Pilih Petani"
-                              outlined
-                              clearable
-                              type="string"
-                              v-on:change="selectLahan"
-                            ></v-select>
-                          </v-col>
-
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              v-model="defaultItem.lahan_no"
-                              :items="itemslahan"
-                              item-text="lahan_no"
-                              item-value="lahan_no"
-                              label="Pilih No Lahan"
-                              outlined
-                              clearable
-                              type="string"
-                              v-on:change="selectedLahanNo"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-text-field
-                              v-model="defaultItem.lahan_condition"
-                              label="Kondisi Lahan"
-                              outlined
-                              required
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-text-field>
-                            <!-- <v-select
-                              v-model="defaultItem.lahan_condition"
-                              :items="itemslahancondition"
-                              item-text="text"
-                              item-value="value"
-                              label="Pilih Lahan Condition"
-                              outlined
-                              clearable
-                              type="string"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select> -->
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <div
-                              style="
-                                border-style: solid;
-                                padding: 3px;
-                                border-color: red;
-                              "
-                            >
-                              <h4>Jarak Lahan : {{ jarak_lahan }}</h4>
-                              <h4>Akses Jangkauan : {{ akses_jangkauan }}</h4>
-                            </div>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-select
-                              v-model="defaultItem.planting_year"
-                              :items="itemsTahun"
-                              item-text="text"
-                              item-value="value"
-                              label="Planting Year"
-                              outlined
-                              clearable
-                              type="string"
-                              :rules="[(v) => !!v || 'Field is required']"
-                            ></v-select>
-                          </v-col>
-                          <v-col cols="12" sm="6" md="6">
-                            <v-menu
-                              v-model="menu1"
-                              transition="scale-transition"
-                            >
-                              <template v-slot:activator="{ on, attrs }">
-                                <v-text-field
-                                  v-model="datepicker1"
-                                  slot="activator"
-                                  label="Planting Date"
-                                  outlined
-                                  readonly
-                                  v-bind="attrs"
-                                  v-on="on"
-                                  :rules="[(v) => !!v || 'Field is required']"
-                                ></v-text-field>
-                              </template>
-                              <v-date-picker
-                                v-model="datepicker1"
-                                @input="menu1 = false"
-                              ></v-date-picker>
-                            </v-menu>
-                          </v-col>
-                        </v-row>
-                        <!-- <v-row class="mb-3">
-                          <h4>Pilih Pohon</h4>
-                          <v-divider class="mx-2 mt-3"></v-divider>
-                        </v-row>
-                        <v-row>
-                          <v-col class="px-1 py-0" cols="12" sm="12" md="12">
-                            <v-combobox
-                              :items="itemstrees"
-                              item-value="tree_code"
-                              item-text="tree_name"
-                              label="Pilih Pohon"
-                              v-on:change="changeBarangSelected"
-                              outlined
-                              clearable
-                            ></v-combobox>
-                          </v-col>
-                        </v-row> -->
-                        <v-row class="mb-3">
-                          <h4>Detail Penilikan</h4>
-                          <v-divider class="mx-2 mt-3"></v-divider>
-                          <v-btn @click="adddetailpohon">Add</v-btn>
-                        </v-row>
-                        <v-row>
-                          <v-col cols="12" sm="12" md="12">
-                            <v-data-table
-                              :headers="headerslistpohon"
-                              :items="itemlistpohon"
-                              sort-by="calories"
-                              class="elevation-1"
-                            >
-                              <template v-slot:item.actions="{ item }">
-                                <v-icon small @click="deleteItemPohon(item)">
-                                  mdi-delete
-                                </v-icon>
-                              </template>
-                            </v-data-table>
-                          </v-col>
-                        </v-row>
-                      </v-container>
-
-                      <v-row class="ma-2">
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          class="mr-1"
-                          color="red"
-                          elevation="1"
-                          @click="close"
-                          outlined
-                        >
-                          <v-icon left> mdi-close-circle-outline </v-icon>
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          elevation="1"
-                          outlined
-                          color="primary"
-                          @click="e1 = 2"
-                        >
-                          <v-icon left>
-                            mdi-chevron-right-circle-outline
-                          </v-icon>
-                          Next
-                        </v-btn>
-                      </v-row>
-                    </v-stepper-content>
-
-                    <v-stepper-content class="pa-3" step="2">
-                      <v-container class="mb-2">
-                        <v-row>
-                          <v-col cols="12" sm="4" md="4" class="pa-1">
-                            <v-file-input
-                              accept="image/png, image/jpeg, image/bmp"
-                              placeholder="Pilih Foto"
-                              prepend-icon="mdi-camera"
-                              show-size
-                              label="Gambar Signature"
-                              outlined
-                              v-model="gambarinput1"
-                              v-on:change="pilihgambar1"
-                            ></v-file-input>
-                          </v-col>
-                          <v-col cols="12" sm="4" md="4" class="pa-1">
-                            <v-file-input
-                              accept="image/png, image/jpeg, image/bmp"
-                              placeholder="Pilih Foto"
-                              prepend-icon="mdi-camera"
-                              show-size
-                              label="Pilih Gambar1"
-                              outlined
-                              v-model="gambarinput2"
-                              v-on:change="pilihgambar2"
-                            ></v-file-input>
-                          </v-col>
-                          <v-col cols="12" sm="4" md="4" class="pa-1">
-                            <v-file-input
-                              accept="image/png, image/jpeg, image/bmp"
-                              placeholder="Pilih Foto"
-                              prepend-icon="mdi-camera"
-                              show-size
-                              label="Pilih Gambar2"
-                              outlined
-                              v-model="gambarinput3"
-                              v-on:change="pilihgambar3"
-                            ></v-file-input>
-                          </v-col>
-                          <v-container>
-                            <v-row>
-                              <v-col cols="4" md="4">
-                                <!-- <div>Foto SPPT/ Dokument</div> -->
-                                <v-card
-                                  class="d-flex align-center"
-                                  elevation="2"
-                                  height="250"
-                                  width="250"
-                                >
-                                  <v-img
-                                    v-bind:src="defaultItem.gambarshow1"
-                                    class="my-2 mb-4"
-                                    contain
-                                    max-height="225"
-                                  ></v-img>
-                                </v-card>
-                              </v-col>
-                              <v-col cols="4" md="4">
-                                <!-- <div>Foto SPPT/ Dokument</div> -->
-                                <v-card
-                                  class="d-flex align-center"
-                                  elevation="2"
-                                  height="250"
-                                  width="250"
-                                >
-                                  <v-img
-                                    v-bind:src="defaultItem.gambarshow2"
-                                    class="my-2 mb-4"
-                                    max-height="225"
-                                    contain
-                                  ></v-img>
-                                </v-card>
-                              </v-col>
-                              <v-col cols="4" md="4">
-                                <!-- <div>Foto SPPT/ Dokument</div> -->
-                                <v-card
-                                  class="d-flex align-center"
-                                  elevation="2"
-                                  height="250"
-                                  width="250"
-                                >
-                                  <v-img
-                                    v-bind:src="defaultItem.gambarshow3"
-                                    class="my-2 mb-4"
-                                    max-height="225"
-                                    contain
-                                  ></v-img>
-                                </v-card>
-                              </v-col>
-                            </v-row>
-                          </v-container>
-                        </v-row>
-                      </v-container>
-                      <v-row class="ma-2">
-                        <v-spacer> </v-spacer>
-                        <v-btn
-                          class="mr-1"
-                          color="red"
-                          elevation="1"
-                          @click="close"
-                          outlined
-                        >
-                          <v-icon left> mdi-close-circle-outline </v-icon>
-                          Cancel
-                        </v-btn>
-                        <v-btn
-                          color="success"
-                          elevation="1"
-                          outlined
-                          @click="save"
-                        >
-                          <v-progress-circular
-                            v-if="loadsave == true"
-                            :size="25"
-                            :width="5"
-                            indeterminate
-                            color="green"
-                          >
-                          </v-progress-circular>
-                          <v-icon v-if="loadsave == false" left>
-                            mdi-checkbox-marked-circle-outline
-                          </v-icon>
-                          <h4 v-if="loadsave == false">SaveAdd</h4>
-                        </v-btn>
-                      </v-row>
-                    </v-stepper-content>
-                  </v-stepper-items>
-                </v-stepper>
-              </v-card-text>
-
-              <!-- <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" outlined @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" outlined @click="save">
-                    Save
-                  </v-btn>
-                </v-card-actions> -->
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogPohon" max-width="500px">
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">Daftar Pohon</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-combobox
-                        v-model="tree_temp"
-                        :items="itemstrees"
-                        item-text="tree_name"
-                        item-value="tree_code"
-                        label="Pilih Pohon"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-combobox>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        v-model="editedItemPohon.qty"
-                        label="Jumlah"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-menu v-model="menu4" transition="scale-transition">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="datepicker4"
-                            slot="activator"
-                            label="Planting Date"
-                            v-bind="attrs"
-                            v-on="on"
-                            outlined
-                            :rules="[(v) => !!v || 'Field is required']"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="datepicker4"
-                          @input="menu4 = false"
-                        ></v-date-picker>
-                      </v-menu>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedItemPohon.status"
-                        :items="itemsstatustrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Status"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select
-                        v-model="editedItemPohon.condition"
-                        :items="itemscoditiontrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Kondisi"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closePohonTambah">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="savePohon">
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDeletePohon" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDeletePohon"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="deleteItemConfirmPohon"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Add Product -->
-          <v-dialog v-model="dialogAddProduct" max-width="500px">
-            <v-card>
-              <v-card-text class="pa-1 fontall">
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-combobox
-                        v-model="trees_add_temp"
-                        :items="itemstrees"
-                        item-text="tree_name"
-                        item-value="tree_code"
-                        label="Pilih Pohon"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-combobox>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col class="pb-1" cols="12" sm="6" md="6">
-                      <v-text-field
-                        v-model="jumlah_temp"
-                        label="Jumlah"
-                        outlined
-                        type="number"
-                        required
-                      ></v-text-field>
-                    </v-col>
-                    <v-col class="pb-1" cols="12" sm="6" md="6">
-                      <v-menu v-model="menu2" transition="scale-transition">
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-text-field
-                            v-model="datepicker2"
-                            slot="activator"
-                            label="Planting Date"
-                            outlined
-                            readonly
-                            v-bind="attrs"
-                            v-on="on"
-                            :rules="[(v) => !!v || 'Field is required']"
-                          ></v-text-field>
-                        </template>
-                        <v-date-picker
-                          v-model="datepicker2"
-                          @input="menu2 = false"
-                        ></v-date-picker>
-                      </v-menu>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-select
-                        v-model="status_temp"
-                        :items="itemsstatustrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Status"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-select
-                        v-model="condition_temp"
-                        :items="itemscoditiontrees"
-                        item-text="text"
-                        item-value="value"
-                        label="Pilih Kondisi"
-                        outlined
-                        clearable
-                        type="string"
-                        :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="red"
-                  elevation="1"
-                  outlined
-                  @click="canceladdproduk"
-                >
-                  <v-icon left> mdi-close-circle-outline </v-icon>
-                  Cancel
-                </v-btn>
-                <v-btn
-                  color="success"
-                  elevation="1"
-                  outlined
-                  @click="addProduct"
-                >
-                  <v-icon left> mdi-plus-circle-outline </v-icon>
-                  Add
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogShowEdit" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to edit?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showEditModal"
-                  >Edit Sosialisasi</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showEditJumlahPohonModal"
-                  >Jumlah Pohon</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohon" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                ><span class="headline">Detail Pohon Lahan</span></v-card-title
-              >
-              <v-card-text>
-                <v-row class="mt-3">
-                  <v-col cols="12" sm="12" md="12">
-                    <div>
-                      <h3 class="ml-1">
-                        <v-data-table
-                          :headers="headersdetaileditjumlah"
-                          :items="DetailTreesLahanTemp"
-                          class="elevation-1"
-                        >
-                          <!-- <template v-slot:item.tree_category="{ item }">
-                            {{ gettype(item.tree_category) }}
-                          </template> -->
-                          <template v-slot:item.actions="{ item }">
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              class="mr-3"
-                              @click="editDetailPohon(item)"
-                              small
-                              color="warning"
-                            >
-                              mdi-pencil
-                            </v-icon>
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              @click="deleteDetailPohon(item)"
-                              small
-                              color="red"
-                            >
-                              mdi-delete
-                            </v-icon>
-                          </template>
-                        </v-data-table>
-                      </h3>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohon"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
-            <v-card>
-              <v-card-text>
-                <v-row class="mt-7">
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field
-                      v-model="editedItemPohon.amount"
-                      label="Jumlah Pohon"
-                      outlined
-                      type="number"
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailEditPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Detail -->
-          <v-dialog v-model="dialogDetail" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Sosialisasi Tanam</span>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
-                    >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-row>
-                    <v-col cols="12" sm="4" md="4">
-                      <div>Foto Foto</div>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow1"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow2"
-                        class="my-1 mb-4"
-                      ></v-img>
-                      <v-img
-                        height="250"
-                        v-bind:src="defaultItem.gambarshow3"
-                        class="my-1 mb-4"
-                      ></v-img>
-                    </v-col>
-                    <v-col cols="12" sm="8" md="8">
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                      <v-simple-table>
-                        <template v-slot:default>
-                          <tbody>
-                            <tr>
-                              <th
-                                class="text-left"
-                                style="width: 200px; font-size: 14px"
-                              >
-                                Tahun Program
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.planting_year }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Nama Petani
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_petani }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Nama FF
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.nama_ff }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                No Lahan
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.lahan_no }}
-                              </th>
-                            </tr>
-                            <tr>
-                              <th class="text-left" style="font-size: 14px">
-                                Kondisi Lahan
-                              </th>
-                              <th class="text-left" style="font-size: 14px">
-                                {{ defaultItem.lahan_condition }}
-                              </th>
-                            </tr>
-                          </tbody>
-                        </template>
-                      </v-simple-table>
-
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                      <div>
-                        <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
-                        <h3 class="ml-1">
-                          <v-data-table
-                            :headers="headersdetail"
-                            :items="defaultItem.list_detail"
-                            class="elevation-1"
-                          >
-                            <!-- <template v-slot:item.tree_category="{ item }">
-                                  {{ gettype(item.tree_category) }}
-                                </template> -->
-                          </v-data-table>
-                        </h3>
-                      </div>
-                      <v-divider
-                        style="background-color: black !important"
-                      ></v-divider>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions v-if="defaultItem.waitingapproval == true">
-                <v-spacer></v-spacer>
-                <v-btn
-                  v-if="RoleAccesCRUDShow == true"
-                  color="green"
-                  text
-                  @click="verifSubmit()"
-                  outlined
-                  elevation="1"
-                >
-                  Verifikasi
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogCetakPilihan" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to print?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showPrintLabel()"
-                  >Print Label</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showPrintTandaTerima()"
-                  >Tanda Terima</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Verification -->
-          <v-dialog v-model="dialogVerification" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to Verification?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeVerification"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="VerificationItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
+        </v-row>
       </template>
 
-      <!-- Action table -->
+      <!-- index column -->
+      <template v-slot:item.index="{item, index}">
+        <span v-if="loadtable == false">
+          {{ index + 1 + ((pagination.current_page - 1) * pagination.per_page) }}
+        </span>
+      </template>
+
+      <!-- No Lahan Column -->
+      <template v-slot:item.lahan_no="{item}">
+        <v-chip v-if="lahanNoFormat(item.lahan_no).length < 2" class="green white--text ma-1">
+          {{ lahanNoFormat(item.lahan_no)[0] }}
+        </v-chip>
+        <v-menu v-else open-on-hover offset-x :close-on-content-click="false" content-class="rounded-xl" >
+          <template v-slot:activator="{attrs, on}">
+            <v-btn rounded small v-bind="attrs" v-on="on" :color="`green darken-${(lahanNoFormat(item.lahan_no).length - 1) < 5 ? (lahanNoFormat(item.lahan_no).length - 1) : 4} white--text`">
+              {{ lahanNoFormat(item.lahan_no).length }} Lahan
+            </v-btn>
+          </template>
+          <v-card class="pa-2 pb-1 d-flex flex-column">
+            <v-chip 
+              v-for="(lahan, lahanIndex) in lahanNoFormat(item.lahan_no)" 
+              :key="lahanIndex"
+              color="green white--text"
+              class="mb-1"
+              style="cursor: auto"
+            >
+              {{ lahan }}
+            </v-chip>
+          </v-card>
+        </v-menu>
+      </template>
+
+      <!-- Lahan Condition Column -->
+      <template v-slot:item.lahan_condition="{ item }">
+        <span style="text-transform: capitalize">
+          {{ item.lahan_condition ? item.lahan_condition.replace('_', ' ') : '-' }}
+        </span>
+      </template>
+
+      <!-- KAYU Column -->
+      <template v-slot:item.kayu_hidup="{ item }">
+        <v-row class="ma-0">
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HIDUP</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.kayu_hidup }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 px-4 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">MATI</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.kayu_mati }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HILANG</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.kayu_hilang }}</strong>
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- MPTS Column -->
+      <template v-slot:item.mpts_hidup="{ item }">
+        <v-row class="ma-0">
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HIDUP</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.mpts_hidup }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 px-4 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">MATI</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.mpts_mati }}</strong>
+          </v-col>
+          <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
+              <small class="">HILANG</small>
+              <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
+              <strong>{{ item.mpts_hilang }}</strong>
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- Status Column -->
+      <template v-slot:item.is_validate="{ item }">
+        <v-chip :color="item.is_validate > 0 ? `${ item.is_validate == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
+          <v-icon class="mr-1">mdi-{{ item.is_validate > 0 ? `${ item.is_validate == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
+          {{ item.is_validate > 0 ? `Verified ${item.is_validate == 1 ? (generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC') : (generalSettings.landProgram.model == 'Petani' ? 'UM' : 'RM / PM')}` : 'Unverified' }}
+        </v-chip>
+      </template>
+      
+      <!-- Action Column -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          class="mr-2"
-          @click="showEditModal(item)"
-          small
-          color="warning"
-        >
-          mdi-pencil
-        </v-icon>
-        <!-- <v-icon
-          v-if="RoleAccesPrintLabelShow == true"
-          class="mr-2"
-          @click="showPrintModal(item)"
-          small
-          color="green"
-        >
-          mdi-printer
-        </v-icon> -->
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          @click="showDeleteModal(item)"
-          small
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+        <v-menu content-class="rounded-xl">
+          <template v-slot:activator="{attrs, on}">
+            <v-btn v-bind="attrs" v-on="on" small fab icon>
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+            <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="showDetail(item)">
+              <v-icon class="mr-1">mdi-information</v-icon> Detail
+            </v-btn>
+            <v-btn v-if="generalSettings.landProgram.model == 'Umum'" :disabled="item.is_validate > 0 || (item.is_validate == 0 && (User.role_name == 'REGIONAL MANAGER' || User.role_name == 'PROGRAM MANAGER'))" color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" @click="() => {showEditUmumModal(item.monitoring_no)}">
+              <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
+            </v-btn>
+            <v-btn rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center" v-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Petani') && (User.role_group == 'IT' || ((item.is_validate <= 2 && User.role_name == 'UNIT MANAGER') || (item.is_validate == 2 && User.role_name == 'REGIONAL MANAGER')))" @click="showUnverifModal(item)">
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
+            </v-btn>
+            <v-btn v-else-if="(item.is_validate > 0 && generalSettings.landProgram.model == 'Umum')" 
+              :disabled="(item.is_validate == 1 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT') || (item.is_validate == 2 && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER' && User.role_group != 'IT')"
+              rounded small color="red white--text" class="mt-1 pl-1 d-flex justify-start align-center"  @click="() => showUnverifModal(item)">
+              <v-icon class="mr-1 pl-2">mdi-undo</v-icon> Unverif
+            </v-btn>
+            <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
+              <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
+            </v-btn>
+          </v-card>
+        </v-menu>
       </template>
     </v-data-table>
 
@@ -1474,8 +2291,16 @@
       v-model="snackbar"
       :color="colorsnackbar"
       :timeout="timeoutsnackbar"
+      rounded="xl"
+      class="d-flex"
     >
-      {{ textsnackbar }}
+      <div class="d-flex justify-between">
+          <p class="mb-0">
+              {{ textsnackbar }}
+          </p>
+          <v-spacer></v-spacer>
+          <v-icon small class="pl-1" @click="snackbar = false">mdi-close-circle</v-icon>
+      </div>
     </v-snackbar>
   </div>
 </template>
@@ -1483,12 +2308,146 @@
 <script>
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
+import moment from 'moment'
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
   name: "PenilikanTanam",
   authtoken: "",
   data: () => ({
+    generalSettings: {
+        programYear: '2022',
+        landProgram: {
+          items: ['Petani', 'Umum'],
+          label: 'Land Program',
+          model: 'Petani',
+        },
+    },
+    pagination: {
+      current_page: 1,
+      length_page: 0,
+      options: {
+        itemsPerPage: 20
+      },
+      page_options: [],
+      per_page: 20,
+      search: {
+        field: '',
+        options: {
+          column: [],
+          column_loading: false,
+          validation: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified FC',
+            value: 1
+          }, {
+            text: 'Verified UM',
+            value: 2
+          }],
+          validation2: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified PIC',
+            value: 1
+          }, {
+            text: 'Verified RM / PM',
+            value: 2
+          }]
+        },
+        value: ''
+      },
+      total: 0,
+    },
+    dialogFormLahanUmum: {
+      confirm: false,
+      model: false,
+      inputs: {
+        mou_no: {
+          model: null,
+          options: [],
+          disabled: false,
+        },
+        lahan_no: [],
+        land_condition: '',
+        adjustment: {
+          headers: [
+            {text: 'No', value: 'no', align: 'center', sortable: false},
+            {text: 'Category', value: 'tree_category', align: 'center'},
+            {text: 'Name', value: 'tree_name'},
+            {text: 'Received', value: 'total_tree_received'},
+            {text: 'Planted', value: 'planted', align: 'center', sortable: false},
+            {text: 'Unplanted', value: 'unplanted', align: 'center', sortable: false},
+            {text: 'Lost', value: 'lost', align: 'center', sortable: true},
+          ],
+          items: [],
+          loading: false,
+          totalAdjustment: 0
+        },
+        photo1: {
+          model: null,
+          preview: null
+        },
+        photo2: {
+          model: null,
+          preview: null
+        },
+        photo3: {
+          model: null,
+          preview: null
+        },
+        planting_date: {
+          datepicker: {
+            show: false,
+            key: 84846
+          },
+          label: 'Planting Date',
+          model: ''
+        },
+        qty_std: 0
+      },
+      loading: false
+    },
+    dialogs: {
+      exportFilter: {
+        model: false,
+        filters: {
+          rm: {
+            itemVal: 'nik',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          um: {
+            itemVal: 'nik',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          fc: {
+            itemVal: 'nik',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          ff: {
+            loading: false,
+            model: []
+          }
+        }
+      }
+    },
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
@@ -1501,7 +2460,7 @@ export default {
         href: "breadcrumbs_dashboard",
       },
       {
-        text: "Penilikan Tanam",
+        text: "Realisasi Tanam",
         disabled: true,
         href: "breadcrumbs_link_1",
       },
@@ -1517,7 +2476,7 @@ export default {
     menu4: "",
     dialogAddonly: false,
     dialog: false,
-    dialogDelete: false,
+    dialogUnverif: false,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -1540,18 +2499,26 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Nama Petani", value: "nama_petani", width: "18%" },
-      {
-        text: "No Lahan",
-        align: "start",
-        value: "lahan_no",
-        width: "10%",
-      },
-      { text: "Tahun Tanam", value: "planting_year", width: "15%" },
-      { text: "Kondisi Lahan", value: "lahan_condition", width: "15%" },
-      { text: "Field Facilitator", value: "nama_ff", width: "15%" },
-      { text: "Status", value: "status", width: "13%" },
-      { text: "Actions", value: "actions", sortable: false, width: "20%" },
+      { text: "No", value: "index", align: 'center', width: '2%', sortable: false },
+      { text: "MU", value: "mu_name", search: true },
+      { text: "FF", value: "nama_ff", search: true },
+      { text: "Farmer", value: "nama_petani", search: true },
+      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
+      { text: "Standard Trees", value: "qty_std", align: 'center', sortable: false },
+      { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
+      { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
+      { text: "Status", value: "is_validate", align: 'center', search: true },
+      { text: "Actions", value: "actions", align: 'right', sortable: false },
+    ],
+    headers2: [
+      { text: "MU", value: "mu_name", search: true },
+      { text: "MoU No", value: "mou_no", search: true },
+      { text: "PIC T4T", value: "pic_t4t_name", search: true },
+      { text: "PIC Lahan", value: "pic_lahan_name", search: true },
+      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
+      { text: "Condition", value: "lahan_condition" },
+      { text: "Status", value: "is_validate", align: 'center', search: true },
+      { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
 
     headersdetail: [
@@ -1594,6 +2561,7 @@ export default {
       qty_kayu: "",
       qty_mpts: "",
       qty_crops: "",
+      qty_std: '',
       validate_by: "",
       validate_name: "",
       is_validate: "",
@@ -1678,6 +2646,7 @@ export default {
     selectVillageForm: "",
     BaseUrlGet: "",
     dialogVerification: false,
+    dialogVerificationUM: false,
     fc_no_global: "",
     typegetdata: "",
 
@@ -1796,26 +2765,149 @@ export default {
     tree_temp: "",
 
     ph_form_no_temp: "",
+    dialogDelete: false,
   }),
   computed: {
-    // formTitle() {
-    //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    // },
+    disabledEditSeedInDetailModal() {
+      let User = this.User
+      let defaultItem = this.defaultItem
+      if (User.role_group != 'IT') {
+        if (this.generalSettings.landProgram.model == 'Petani') {
+          if ((User.role_name == 'FIELD FACILITATOR' && defaultItem.is_validate > 0) || (User.role_name == 'UNIT MANAGER' && defaultItem.is_validate != 1) || defaultItem.is_validate == 2) return true
+          else return false
+        } else {
+          if (((User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER') && defaultItem.is_verified == 1) ||((User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER') && defaultItem.is_verified == 0) || defaultItem.is_verified == 2) return true
+          else return false
+        }
+      } else return false
+    },
+    disabledExportFilterRM() {
+      const user = this.User
+      let status = false
+      const disabledPositions = [
+        'REGIONAL MANAGER',
+        'UNIT MANAGER',
+        'NURSERY',
+        'NURSERY MANAGER'
+      ]
+      if (disabledPositions.includes(user.role_name)) status = true
+      return status
+    },
+    disabledExportFilterUM() {
+      const filters = this.dialogs.exportFilter.filters
+      const user = this.User
+      let status = false
+      if (!filters.rm.model) status = true
+      if (user.role_name == 'UNIT MANAGER') status = true
+      return status
+    },
+    disabledExportFilterFC() {
+      const filters = this.dialogs.exportFilter.filters
+      let status = false
+      if (!filters.um.model) status = true
+      return status
+    },
+    whatTodoTextExport() {
+      const filters = this.dialogs.exportFilter.filters
+      let text = 'Select Regional Manager.'
+      if (filters.rm.model) text = 'Select Unit Manager.'
+      if (filters.um.model) text = 'Select Field Coordinator.'
+      if (filters.fc.model) text = filters.ff.model.length + ' Field Facilitator'
+      if (filters.ff.loading) text = 'Getting FF datas...'
+      return text
+    }
+  },
+  async mounted() {
+
+    await this.firstAccessPage();
+
+    const taskForceEmails = this.$store.state.taskForceTeam.emails || []
+    
+    // if (this.User.role_group != 'IT' && taskForceEmails.includes(this.User.email) == false) {
+    // if (this.User.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
+  },
+  destroyed() {
+    this.$store.state.maintenanceOverlay = false
+
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
 
-  created() {
-    this.firstAccessPage();
+  watch: {
+    'dialogFormLahanUmum.inputs.qty_std': {
+      async handler(val) {
+        if (val) {
+          let sumTreesLife = 0
+          await this.dialogFormLahanUmum.inputs.adjustment.items.map(tree => {
+            sumTreesLife += parseInt(tree.total_tree_planted_life)
+          })
+          if (val > sumTreesLife) {
+            alert(`Ur total trees PLANTED and LIFE is just ${sumTreesLife}!`)
+            this.dialogFormLahanUmum.inputs.qty_std = sumTreesLife
+          } else if (val < 0) this.dialogFormLahanUmum.inputs.qty_std = 0
+        } else this.dialogFormLahanUmum.inputs.qty_std = 0
+      }
+    },
+    'generalSettings.programYear': {
+      handler(newVal) {
+        this.initialize()
+      }
+    },
+    'generalSettings.landProgram.model': {
+      handler() {
+        this.dataobject = []
+        this.pagination.search.field = ''
+        this.pagination.search.value = ''
+        this.initialize()
+      }
+    },
+    'pagination.options': {
+        handler(newValue) {
+          let {page, itemsPerPage, sortBy} = newValue
+          this.pagination.current_page = page
+          this.pagination.per_page = itemsPerPage
+          this.initialize()
+        },
+        deep: true
+    },
+    'pagination.search.value': {
+        handler() {
+          this.initialize()
+        },
+        deep: true
+    },
   },
 
   methods: {
+    deleteDisabled(is_validate) {
+      const program = this.generalSettings.landProgram.model
+      const role_group = this.User.role_group 
+      const role_name = this.User.role_name
+      let status = false
+      if (role_group == 'IT') status = false 
+      else if (program == 'Petani') {
+        if (is_validate == 1 && role_name == 'FIELD FACILITATOR') status = true
+        if (is_validate == 2 && role_name == 'UNIT MANAGER') status = true
+      } else if (program == 'Umum') {
+        if (is_validate == 1 && role_group != 'IT' && role_name != 'REGIONAL MANAGER' && role_name != 'PROGRAM MANAGER') status = true
+      }
+      
+      if (program == 'Umum') { 
+        status = true
+      }
+      return status
+    },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
+      this.typegetdata = this.User.ff.value_data == '-' ? 'all' : this.User.ff.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
+      this.generalSettings.programYear = this.$store.state.programYear.model
       // this.fc_no_global = this.User.fc.fc;
       this.checkRoleAccess();
       this.initialize();
@@ -1878,41 +2970,109 @@ export default {
       if (status == "Belum Verifikasi") return "red";
       else return "green";
     },
+    async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
+      if (mou_no) {
+        try {
+          this.dialogFormLahanUmum.inputs.adjustment.loading = true
+          const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
+          const res = await axios.get(url, this.$store.state.apiConfig)
+          const datas = res.data.data.result
+          // console.log(datas)
+          let listLahan = []
+          let listTrees = []
+          await datas.distributionAdjustment.forEach((adj, adjIndex) => {
+              let checkExistLahanNo = listLahan.includes(adj.lahan_no)
+              if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
+
+              const pushData = {
+                tree_code: adj.tree_code,
+                tree_category: adj.tree_category,
+                tree_name: adj.tree_name,
+                total_tree_received: parseInt(adj.total_tree_received),
+                total_tree_planted_life: 0,
+                total_tree_planted_dead: 0,
+                total_tree_unplanted_life: 0,
+                total_tree_unplanted_dead: 0,
+                lost: parseInt(adj.total_tree_received),
+              }
+              const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
+              if (indexTreee > -1) {
+                listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
+                listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
+              } else listTrees.push(pushData)
+          })
+          // console.log(listLahan)
+          // console.log(listTrees)
+          this.dialogFormLahanUmum.inputs.lahan_no = await listLahan
+          this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees
+          if (existingData) {
+            console.log(existingData)
+            await existingData.map(exData => {
+              let adjIndexEx =  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(adjItems => adjItems.tree_code == exData.tree_code)
+              if (exData.status == 'sudah_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_life += parseInt(exData.amount)
+              else if (exData.status == 'sudah_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_dead += parseInt(exData.amount)
+              else if (exData.status == 'belum_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_life += parseInt(exData.amount)
+              else if (exData.status == 'belum_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_dead += parseInt(exData.amount)
+            })
+            await this.updateSeedlingAdjustment()
+          }
+        } catch (err) {
+            this.dialogFormLahanUmum.inputs.adjustment.items = []
+            if (err.response.status == 401) {
+              localStorage.removeItem("token")
+              this.$router.push("/")
+            }
+        } finally {
+          this.dialogFormLahanUmum.inputs.adjustment.loading = false
+        }
+      } else this.dialogFormLahanUmum.inputs.adjustment.items = []
+    },
+    async getLahanUmumDataOptions() {
+      try {
+        const url = this.BaseUrlGet + 'GetUmumDistributionAdjustment?'
+        const params ={
+            program_year: this.generalSettings.programYear,
+        }
+        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+            params.created_by = this.User.email
+        }
+        const res = await axios.get(`${url}${new URLSearchParams(params)}`, this.$store.state.apiConfig)
+        this.dialogFormLahanUmum.inputs.mou_no.options = res.data
+      } catch (err) {
+          this.dialogFormLahanUmum.inputs.mou_no.options = []
+          if (err.response != undefined) {
+            if (err.response.status == 401) {
+              localStorage.removeItem("token")
+              this.$router.push("/")
+            }
+          } else console.log(err)
+      } finally {
+
+      }
+    },
     async initialize() {
       this.loadtable = true;
       // console.log(this.User.ff.ff);
       try {
-        const response = await axios.get(
-          this.BaseUrlGet +
-            "GetMonitoringAdmin?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
+        this.loadtable = true;
+        this.$store.state.loadingOverlayText = 'Getting monitoring datas...'
+        this.$store.state.loadingOverlay = true
+
+        // get search column
+        await this.getSearchColumn()
+        
+        await this.getTableData().then(data => {
+          this.dataobject = data.items
+          this.pagination.total = data.total
+          this.pagination.current_page = data.current_page
+          this.pagination.length_page = data.last_page
+          const pageOptions = []
+          for (let index = 1; index <= data.last_page; index++) {
+            pageOptions.push(index)          
           }
-        );
-        // console.log(response.data.data.result.data);
-        if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
-          this.valueMUExcel = this.valueMU;
-          this.valueTAExcel = this.valueTA;
-          this.valueVillageExcel = this.valueVillage;
-          this.typegetdataExcel = this.typegetdata;
-          this.valueFFcodeExcel = this.valueFFcode;
-          this.loadtable = false;
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
-        }
+          this.pagination.page_options = pageOptions
+          // console.log(this.pagination)
+        })
       } catch (error) {
         console.error(error);
         if (error.response.status == 401) {
@@ -1923,6 +3083,178 @@ export default {
           this.dataobject = [];
           this.loadtable = false;
         }
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+        this.loadtable = false
+      }
+    },
+    getTableData() {
+      return new Promise((resolve, reject) => {
+        let url = this.BaseUrlGet
+        let params = {
+          program_year: this.generalSettings.programYear,
+          // pagination
+          page: this.pagination.current_page,
+          per_page: this.pagination.per_page,
+          sortBy: this.pagination.options.sortBy || '',
+          sortDesc: this.pagination.options.sortDesc || '',
+
+          search_column: this.pagination.search.field || '',
+          search_value: this.pagination.search.value || '',
+          
+          mu: this.valueMU,
+          ta: this.valueTA,
+          village: this.valueVillage,
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode
+        }
+        if (this.generalSettings.landProgram.model == 'Petani') {
+          url += "GetMonitoringAdmin?" + new URLSearchParams(params)
+        } else if (this.generalSettings.landProgram.model == 'Umum') {
+          delete params.ff
+          delete params.ta
+          if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+            params.created_by = this.User.email
+          }
+          url += 'GetMonitoringLahanUmumAdmin?' + new URLSearchParams(params)
+        }
+        // get data response
+        axios.get(url, this.$store.state.apiConfig).then(res => {
+          if (typeof res.data.data.result !== 'undefined') {
+            let items = res.data.data.result.data
+            const total = res.data.data.result.total
+            const current_page = res.data.data.result.current_page
+            const last_page = res.data.data.result.last_page
+            resolve({
+              items,
+              total,
+              current_page,
+              last_page
+            })
+          } else {
+            reject('Error')
+          }
+        }).catch(err => {
+          if (err.response.status == 401) {
+            localStorage.removeItem("token")
+            this.$router.push("/")
+            this.loadtable = false
+          }
+          reject(err)
+        })
+      })
+    },
+    async getSearchColumn() {
+      let headerItems = []
+      let searchOptions = []
+      if (this.generalSettings.landProgram.model == 'Petani') headerItems = this.headers
+      else if (this.generalSettings.landProgram.model == 'Umum') headerItems = this.headers2
+      await headerItems.forEach(val => {
+        if (val.search == true) searchOptions.push(val)
+      })
+      this.pagination.search.options.column = searchOptions
+      if (!this.pagination.search.field) this.pagination.search.field = 'mu_name'
+    },
+
+    async saveLahanUmumMonitoring() {
+      try {
+        this.dialogFormLahanUmum.confirm = false
+        this.dialogFormLahanUmum.model = false
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Saving monitoring lahan umum...'
+        let url = `${this.BaseUrlGet}CreateMonitoringLahanUmum`
+        if (this.dialogFormLahanUmum.inputs.mou_no.disabled == true) url = `${this.BaseUrlGet}UpdateMonitoringLahanUmum`
+        let dataForPost = {
+          program_year: this.generalSettings.programYear,
+          mou_no: this.dialogFormLahanUmum.inputs.mou_no.model,
+          planting_date: this.dialogFormLahanUmum.inputs.planting_date.model,
+          qty_std: this.dialogFormLahanUmum.inputs.qty_std,
+          lahan_condition: this.dialogFormLahanUmum.inputs.land_condition,
+          created_by: this.User.email,
+          list_trees: [],
+          lahan_no: this.dialogFormLahanUmum.inputs.lahan_no.toString()
+        }
+        // set list trees
+        await this.dialogFormLahanUmum.inputs.adjustment.items.forEach(val => {
+          if (parseInt(val.total_tree_planted_life) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_planted_life),
+            status: 'sudah_ditanam',
+            condition: 'hidup'
+          })
+          if (parseInt(val.total_tree_planted_dead) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_planted_dead),
+            status: 'sudah_ditanam',
+            condition: 'mati'
+          })
+          if (parseInt(val.total_tree_unplanted_life) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_unplanted_life),
+            status: 'belum_ditanam',
+            condition: 'hidup'
+          })
+          if (parseInt(val.total_tree_unplanted_dead) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.total_tree_unplanted_dead),
+            status: 'belum_ditanam',
+            condition: 'mati'
+          })
+          if (parseInt(val.lost) > 0) dataForPost.list_trees.push({
+            tree_code: val.tree_code,
+            qty: parseInt(val.lost),
+            status: 'hilang',
+            condition: 'hilang'
+          })
+        })
+        // upload photo 1
+        if (this.dialogFormLahanUmum.inputs.photo1.model) {
+          const photo1 = await this.uploadPhotos('photo1', this.dialogFormLahanUmum.inputs.photo1.model)
+          dataForPost.photo1 = photo1
+        } else if (this.dialogFormLahanUmum.inputs.photo1.preview) {
+          dataForPost.photo1 = this.dialogFormLahanUmum.inputs.photo1.preview.replace(this.BaseUrl, '')
+        }
+        // upload photo 2
+        if (this.dialogFormLahanUmum.inputs.photo2.model) {
+          const photo2 = await this.uploadPhotos('photo2', this.dialogFormLahanUmum.inputs.photo2.model)
+          dataForPost.photo2 = photo2
+        } else if (this.dialogFormLahanUmum.inputs.photo2.preview) {
+          dataForPost.photo2 = this.dialogFormLahanUmum.inputs.photo2.preview.replace(this.BaseUrl, '')
+        }
+        // upload photo 3
+        if (this.dialogFormLahanUmum.inputs.photo3.model) {
+          const photo3 = await this.uploadPhotos('photo3', this.dialogFormLahanUmum.inputs.photo3.model)
+          dataForPost.photo3 = photo3
+        } else if (this.dialogFormLahanUmum.inputs.photo3.preview) {
+          dataForPost.photo3 = this.dialogFormLahanUmum.inputs.photo3.preview.replace(this.BaseUrl, '')
+        }
+        // console.log(dataForPost)
+        const store = await axios.post(url, dataForPost, this.$store.state.apiConfig)
+        if (store) {
+          this.textsnackbar = "Success store monitoring lahan umum data!"
+          this.colorsnackbar = 'green'
+          this.initialize()
+        } else {
+          this.textsnackbar = "Failed store monitoring lahan umum data!"
+          this.colorsnackbar = 'red'
+        }
+      } catch (err) {
+        if (err.response.status == 401) {
+          this.textsnackbar = "Unaunthicated!"
+          this.colorsnackbar = 'red'
+          localStorage.removeItem("token")
+          this.$router.push("/")
+        } else {
+          this.textsnackbar = err.response.message
+          this.colorsnackbar = 'red'
+        }
+        console.error(err)
+      } finally {
+        this.timeoutsnackbar = 5000
+        this.snackbar = true
+        this.$store.state.loadingOverlayText = null
+        this.$store.state.loadingOverlay = false
       }
     },
 
@@ -2077,9 +3409,13 @@ export default {
     async getDetail(item) {
       this.load = true;
       try {
+        let urlPrefix = "GetMonitoringDetail?monitoring_no="
+        if (this.generalSettings.landProgram.model == 'Umum') {
+          urlPrefix = "GetMonitoringDetailLahanUmumAdmin?monitoring_no="
+        }
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetMonitoringDetail?monitoring_no=" +
+            urlPrefix +
             item.monitoring_no,
           {
             headers: {
@@ -2087,10 +3423,10 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result.data);
-          this.defaultItem.list_detail = response.data.data.result.list_detail;
+          this.defaultItem.list_detail = await this.setGroupingDetailSeedling(response.data.data.result.list_detail);
           this.itemlistpohon = response.data.data.result.list_detail;
           this.max_value_pohon_temp =
             response.data.data.result.count_list_pohon;
@@ -2104,7 +3440,7 @@ export default {
             this.defaultItem.gambarshow1 =
               this.BaseUrl + response.data.data.result.data.gambar1;
           }
-          console.log(this.defaultItem.gambarshow1);
+          // console.log(this.defaultItem.gambarshow1);
           if (response.data.data.result.data.gambar2 == "-") {
             this.defaultItem.gambarshow2 = "/images/noimage.png";
           } else {
@@ -2147,17 +3483,76 @@ export default {
         }
       }
     },
-    async verif() {
-      console.log(this.defaultItem.id);
-      const datapost = {
-        monitoring_no: this.defaultItem.monitoring_no,
-        validate_by: this.employee_no,
-      };
-      console.log(datapost);
-      // this.dialogDetail = false;
+    async VerificationItemConfirm() {
       try {
+        let listTrees = []
+        await this.defaultItem.list_detail.forEach(tree => {
+          if (parseInt(tree.seedling.ditanam.hidup) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.ditanam.hidup),
+              status: 'sudah_ditanam',
+              condition: 'hidup',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.ditanam.mati) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.ditanam.mati),
+              status: 'sudah_ditanam',
+              condition: 'mati',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.blm_ditanam.hidup) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.blm_ditanam.hidup),
+              status: 'belum_ditanam',
+              condition: 'hidup',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.blm_ditanam.mati) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.blm_ditanam.mati),
+              status: 'belum_ditanam',
+              condition: 'mati',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+          if (parseInt(tree.seedling.hilang) > 0) {
+            listTrees.push({
+              monitoring_no: this.defaultItem.monitoring_no,
+              tree_code: tree.tree_code,
+              qty: parseInt(tree.seedling.hilang),
+              status: 'hilang',
+              condition: 'hilang',
+              planting_date: this.defaultItem.planting_date,
+            })
+          }
+        })
+        // console.log(listTrees)
+        let datapost = {
+          monitoring_no: this.defaultItem.monitoring_no,
+          validate_by: this.User.email,
+          list_trees: listTrees
+        };
+        if (this.generalSettings.landProgram.model == 'Umum') datapost.is_verified = this.defaultItem.is_verified + 1
+        // this.dialogDetail = false;
+        this.dialogDetail = false
+        this.dialogVerification = false
+        this.$store.state.loadingOverlayText = `Verifying monitoring by ${this.generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC T4T'}...`
+        this.$store.state.loadingOverlay = true
+
         const response = await axios.post(
-          this.BaseUrlGet + "ValidateMonitoring",
+          this.BaseUrlGet + `ValidateMonitoring${this.generalSettings.landProgram.model == 'Umum' ? 'LahanUmum' : ''}`,
           datapost,
           {
             headers: {
@@ -2165,59 +3560,61 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.data.result == "success") {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           this.initialize();
+          this.snackbar = true
+          this.textsnackbar = 'Success!'
+          this.timeoutsnackbar = 5000
+          this.colorsnackbar = 'green'
         } else {
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           this.alerttoken = true;
         }
       } catch (error) {
-        console.error(error.response);
+        this.textsnackbar = error.message
+        this.timeoutsnackbar = 5000
+        this.colorsnackbar = 'red'
         if (error.response.status == 401) {
           this.alerttoken = true;
-          this.dialogDetail = false;
-          this.dialogVerification = false;
           localStorage.removeItem("token");
           this.$router.push("/");
         }
+      } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
       }
     },
-    async verifDelete() {
-      const datapost = {
-        monitoring_no: this.defaultItem.monitoring_no,
-      };
-      console.log(datapost);
-      // this.dialogDetail = false;
+
+    async deleteItemConfirm() {
       try {
-        const response = await axios.post(
-          this.BaseUrlGet + "SoftDeleteMonitoring",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        console.log(response.data.data.result);
-        if (response.data.data.result == "success") {
-          this.dialogDelete = false;
-          this.initialize();
-        } else {
-          this.dialogDelete = false;
-          this.alerttoken = true;
+        this.dialogDelete = false
+        this.$store.state.loadingOverlayText = `Deleting ${this.defaultItem.monitoring_no}...`
+        this.$store.state.loadingOverlay = true
+        let urlName = this.$store.getters.getApiUrl('DeleteMonitoring')
+        if (this.generalSettings.landProgram == 'Umum') urlName = this.$store.getters.getApiUrl('DeleteMonitoringLahanUmum')
+        const data = {
+          monitoring_no: this.defaultItem.monitoring_no
+        }
+        const res = await axios.post(urlName, data, this.$store.state.apiConfig)
+        if (res) {
+          this.textsnackbar = 'Delete Success!'
+          this.colorsnackbar = 'green'
+          this.initialize()
         }
       } catch (error) {
-        console.error(error.response);
+        this.textsnackbar = error.message
+        this.colorsnackbar = 'red'
         if (error.response.status == 401) {
           this.alerttoken = true;
-          this.dialogDelete = false;
           localStorage.removeItem("token");
           this.$router.push("/");
         }
+      } finally {
+        this.timeoutsnackbar = 5000
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
       }
     },
 
@@ -2880,38 +4277,36 @@ export default {
 
     async showFilterArea() {
       // console.log(localStorage.getItem("token"));
-      await this.resetFilter();
       this.dialogFilterArea = true;
     },
     async showFilterEmployee() {
-      await this.resetFilter();
       this.dialogFilterEmp = true;
     },
     resetFilter() {
-      this.valueMU = "";
-      this.valueFC = "";
-      this.valueVillage = "";
-      this.selectMU = "";
-      this.selectTA = "";
-      this.selectVillage = "";
-
-      this.valueUM = "";
-      this.valueFC = "";
-      this.selectUM = "";
-      this.selectFC = "";
+      if (this.dialogFilterArea == true) {
+        this.valueUM = "";
+        this.valueFC = "";
+        this.selectUM = "";
+        this.selectFC = "";
+      } else if (this.dialogFilterEmp == true) {
+        this.valueMU = "";
+        this.valueFC = "";
+        this.valueVillage = "";
+        this.selectMU = "";
+        this.selectTA = "";
+        this.selectVillage = "";
+      }
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
     },
     async searchbyarea() {
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
-      await this.initialize();
       await this.resetFilter();
+      await this.initialize();
       this.dialogFilterArea = false;
     },
     async searchbyemp() {
-      await this.initialize();
       await this.resetFilter();
+      await this.initialize();
       this.dialogFilterEmp = false;
     },
 
@@ -2940,18 +4335,64 @@ export default {
 
       this.load = false;
     },
-    showAddModal() {
-      this.load = false;
-      // console.log(localStorage.getItem("token"));
-
-      if (this.$refs.form) {
-        this.$refs.form.reset();
+    async showAddModal() {
+      try {
+        this.$store.state.loadingOverlayText = 'Get lahan umum datas...'
+        this.$store.state.loadingOverlay = true
+  
+        // reset data
+        this.dialogFormLahanUmum.inputs.mou_no.model = null
+        this.dialogFormLahanUmum.inputs.mou_no.disabled = false
+        this.dialogFormLahanUmum.inputs.mou_no.options = []
+        this.dialogFormLahanUmum.inputs.adjustment.items = []
+        this.dialogFormLahanUmum.inputs.land_condition = ''
+        this.dialogFormLahanUmum.inputs.qty_std = 0
+        this.dialogFormLahanUmum.inputs.planting_date.model = moment().format('Y-MM-DD')
+        this.dialogFormLahanUmum.inputs.photo1.model = null
+        this.dialogFormLahanUmum.inputs.photo1.preview = null
+        this.dialogFormLahanUmum.inputs.photo2.model = null
+        this.dialogFormLahanUmum.inputs.photo2.preview = null
+        this.dialogFormLahanUmum.inputs.photo3.model = null
+        this.dialogFormLahanUmum.inputs.photo3.preview = null
+  
+        await this.getLahanUmumDataOptions()
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+  
+        this.dialogFormLahanUmum.model = true
       }
+    },
+    async showEditUmumModal(monitoring_no) {
+      try {
+        this.$store.state.loadingOverlayText = 'Getting monitoring data...'
+        this.$store.state.loadingOverlay = true
 
-      this.formTitle = "Add data";
-      this.dialogAddonly = true;
-
-      this.resetvalue();
+        const response = await axios.get(this.$store.getters.getApiUrl(`GetMonitoringDetailLahanUmumAdmin?monitoring_no=${monitoring_no}`), this.$store.state.apiConfig)
+        const res = await response.data.data.result
+        // reset data
+        this.dialogFormLahanUmum.inputs.mou_no.model = res.data.mou_no || ''
+        this.dialogFormLahanUmum.inputs.mou_no.disabled = true
+        this.dialogFormLahanUmum.inputs.mou_no.options = [{mou_no: res.data.mou_no}]
+        await this.getSeedDetailFromDistributionAdjustment(res.data.mou_no, res.list_detail)
+        this.dialogFormLahanUmum.inputs.land_condition = res.data.lahan_condition || '-'
+        this.dialogFormLahanUmum.inputs.qty_std = res.data.qty_std || 0
+        this.dialogFormLahanUmum.inputs.planting_date.model = this.$store.getters.dateFormat(res.data.planting_date, 'Y-MM-DD')
+        this.dialogFormLahanUmum.inputs.photo1.model = null
+        this.dialogFormLahanUmum.inputs.photo1.preview = res.data.photo1 != '-' ? ( this.BaseUrl + res.data.photo1) : ''
+        this.dialogFormLahanUmum.inputs.photo2.model = null
+        this.dialogFormLahanUmum.inputs.photo2.preview = res.data.photo2 != '-' ? ( this.BaseUrl + res.data.photo2) : ''
+        this.dialogFormLahanUmum.inputs.photo3.model = null
+        this.dialogFormLahanUmum.inputs.photo3.preview = res.data.photo3 != '-' ? ( this.BaseUrl + res.data.photo3) : ''
+  
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+  
+        this.dialogFormLahanUmum.model = true
+      }
     },
     async showEditModal(item) {
       console.log("test");
@@ -2993,48 +4434,6 @@ export default {
       // await this.getDetail(item);
       console.log(this.itemTemp);
       this.dialogShowEdit = true;
-    },
-    showPrintModal(item) {
-      if (item.is_validate == 1) {
-        this.type = "Detail";
-        // this.dialogDetail = true;
-        //   this.getDetail(item);
-        this.ph_form_no_temp = item.ph_form_no;
-
-        this.dialogCetakPilihan = true;
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Tidak Bisa Cetak. Status Belum Verifikasi";
-      }
-      //   var str = this.BaseUrlGet;
-      //   window.open(
-      //     str.substring(0, str.length - 4) +
-      //       "CetakLabelLubangTanam?ph_form_no=" +
-      //       item.ph_form_no
-      //   );
-    },
-    showPrintLabel() {
-      this.type = "Detail";
-      // this.dialogDetail = true;
-      //   this.getDetail(item);
-
-      this.dialogCetakPilihan = false;
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakLabelLubangTanamTemp?ph_form_no=" +
-          this.ph_form_no_temp
-      );
-    },
-    showPrintTandaTerima() {
-      this.dialogCetakPilihan = false;
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakBuktiPenyerahanTemp?ph_form_no=" +
-          this.ph_form_no_temp
-      );
     },
 
     saveEditPohon() {
@@ -3092,14 +4491,76 @@ export default {
       });
     },
 
+    showUnverifModal(item) {
+      this.defaultItem.monitoring_no = item.monitoring_no;
+      this.defaultItem.is_validate = item.is_validate;
+      this.dialogUnverif = true;
+    },
+
     showDeleteModal(item) {
-      console.log(item.form_no);
-      this.defaultItem.form_no = item.form_no;
+      this.defaultItem.monitoring_no = item.monitoring_no;
+      this.defaultItem.is_validate = item.is_validate;
+      this.defaultItem.mu_name = item.mu_name;
+      if (this.generalSettings.landProgram.model == 'Petani') {
+        this.defaultItem.nama_petani = item.nama_petani;
+        this.defaultItem.nama_ff = item.nama_ff;
+      } else {
+        this.defaultItem.pic_t4t_name = item.pic_t4t_name;
+        this.defaultItem.pic_lahan_name = item.pic_lahan_name;
+      }
       this.dialogDelete = true;
     },
 
-    deleteItemConfirm() {
-      this.verifDelete();
+    async updateSeedlingAdjustment() {
+      await this.dialogFormLahanUmum.inputs.adjustment.items.forEach(val => {
+        val.lost = parseInt(val.total_tree_received) - ( parseInt(val.total_tree_planted_life) + parseInt(val.total_tree_planted_dead) + parseInt(val.total_tree_unplanted_life) + parseInt(val.total_tree_unplanted_dead) )
+        if (val.lost < 0 || val.lost > val.total_tree_received) {
+          alert('Invalid input!')
+          val.lost = val.total_tree_received
+          val.total_tree_planted_life = 0
+          val.total_tree_planted_dead = 0
+          val.total_tree_unplanted_life = 0
+          val.total_tree_unplanted_dead = 0
+        }
+      })
+    },
+    
+    dateFormat(date, format) {
+      return moment(date).format(format)
+    },
+    async unverifItemConfirm() {
+      // this.dialogDetail = false;
+      try {
+        this.dialogUnverif = false
+        this.$store.state.loadingOverlayText = 'Unverifying data...'
+        this.$store.state.loadingOverlay = true
+        const datapost = {
+          monitoring_no: this.defaultItem.monitoring_no,
+          is_validate: parseInt(this.defaultItem.is_validate) - 1
+        }
+        let url = this.BaseUrlGet
+        if (this.generalSettings.landProgram.model == 'Petani') url += "UnverificationMonitoring"
+        else if (this.generalSettings.landProgram.model == 'Umum') url += "UnverificationMonitoringLahanUmum"
+        await axios.post(url, datapost, this.$store.state.apiConfig)
+        this.textsnackbar = "Data unverified!"
+        this.colorsnackbar = 'green'
+        await this.initialize();
+      } catch (error) {
+        console.error(error.response);
+        this.textsnackbar = "Data failed to unverif!"
+        this.colorsnackbar = 'red'
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          this.dialogUnverif = false;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      } finally {
+        this.timeoutsnackbar = 5000
+        this.snackbar = true
+        this.$store.state.loadingOverlayText = null
+        this.$store.state.loadingOverlay = false
+      }
     },
     close() {
       this.dialog = false;
@@ -3112,7 +4573,7 @@ export default {
       this.dialogPohon = false;
     },
     closeDelete() {
-      this.dialogDelete = false;
+      this.dialogUnverif = false;
     },
     closeDetailEditPohon() {
       this.dialogDetailPohonEdit = false;
@@ -3127,8 +4588,96 @@ export default {
     verifSubmit() {
       this.dialogVerification = true;
     },
-    VerificationItemConfirm() {
-      this.verif();
+    async VerificationUMItemConfirm() {
+      try {
+        this.dialogVerificationUM = false
+        this.dialogDetail = false
+        this.$store.state.loadingOverlayText = 'Verifying monitoring by UM...'
+        this.$store.state.loadingOverlay = true
+
+        const data = this.defaultItem
+        let listTrees = []
+        // ungrouping per condition
+        await data.list_detail.forEach((tree) => {
+          if (tree.seedling.ditanam.hidup > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.ditanam.hidup,
+              status: 'sudah_ditanam',
+              condition: 'hidup',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.ditanam.mati > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.ditanam.mati,
+              status: 'sudah_ditanam',
+              condition: 'mati',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.blm_ditanam.hidup > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.blm_ditanam.hidup,
+              status: 'belum_ditanam',
+              condition: 'hidup',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.blm_ditanam.mati > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.blm_ditanam.mati,
+              status: 'belum_ditanam',
+              condition: 'mati',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+          if (tree.seedling.hilang > 0) {
+            let pushData = {
+              tree_code: tree.tree_code,
+              qty: tree.seedling.hilang,
+              status: 'hilang',
+              condition: 'hilang',
+              planting_date: data.planting_date,
+            }
+            listTrees.push(pushData)
+          }
+        })
+        
+        const url = `${this.BaseUrlGet}MonitoringVerificationUM`
+        const postData = {
+          monitoring_no: data.monitoring_no,
+          list_trees: listTrees,
+          validate_by: this.User.email
+        }
+        const response = await axios.post(url, postData, {
+          headers: {
+            Authorization: `Bearer ${this.authtoken}`
+          }
+        })
+        if (response) {
+          this.textsnackbar = "Verified!"
+          this.timeoutsnackbar = 5000
+          this.colorsnackbar = 'green'
+          await this.initialize()
+        }
+      } catch (error) {
+        this.textsnackbar = error.message
+        this.timeoutsnackbar = 5000
+        this.colorsnackbar = 'red'
+        console.log(error)
+      } finally {
+        this.snackbar = true
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
     },
     closeVerification() {
       this.dialogVerification = false;
@@ -3207,24 +4756,6 @@ export default {
     capitalize(word) {
       return word[0].toUpperCase() + word.substring(1).toLowerCase();
     },
-    genderindo(val) {
-      if (val == "male") {
-        return "Laki-Laki";
-      } else {
-        return "Perempuan";
-      }
-    },
-    convertToRupiah(angka) {
-      var rupiah = "";
-      var angkarev = angka.toString().split("").reverse().join("");
-      for (var i = 0; i < angkarev.length; i++)
-        if (i % 3 == 0) rupiah += angkarev.substr(i, 3) + ".";
-      rupiah = rupiah
-        .split("", rupiah.length - 1)
-        .reverse()
-        .join("");
-      return "Rp. " + (rupiah.length < 1 ? "0" : rupiah) + ",-";
-    },
     waitingapprovefunct(valapprove) {
       if (valapprove == 0) {
         return true;
@@ -3288,131 +4819,6 @@ export default {
       }
     },
 
-    gettanggal(val) {
-      var bulanIndo = [
-        "",
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agust",
-        "Sept",
-        "Okt",
-        "Nov",
-        "Des",
-      ];
-
-      var date = val.split(" ")[0];
-
-      var tanggal = date.split("-")[2];
-      var bulan = date.split("-")[1];
-      var tahun = date.split("-")[0];
-
-      return tanggal + " " + bulanIndo[Math.abs(bulan)] + " " + tahun;
-    },
-
-    downloadSuperAdmin() {
-      this.dialogdownload = true;
-      this.downloadvalueff = false;
-      this.downloadvaluetime = false;
-      this.downloadvaluepetani = false;
-      this.loaddownload = false;
-      // console.log(this.valueMUExcel);
-      // console.log(this.valueTAExcel);
-      // console.log(this.valueVillageExcel);
-      // console.log(this.typegetdataExcel);
-      // console.log(this.valueFFcodeExcel);
-    },
-    pilihtipedownload(val) {
-      console.log(val);
-      if (val == "output_data") {
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      } else if (val == "loading_plan") {
-        this.loaddownload = true;
-        this.getFF();
-        console.log(this.itemsff);
-        this.downloadvalueff = true;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      } else if (val == "packing_plan") {
-        this.loaddownload = true;
-        this.getDistribusiTimeDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = true;
-        this.downloadvaluepetani = false;
-      } else if (val == "shipping_plan") {
-        this.loaddownload = true;
-        this.getDistribusiTimeDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = true;
-        this.downloadvaluepetani = false;
-      } else if (val == "farmer_receipt") {
-        this.loaddownload = true;
-        this.getPetaniDownload();
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = true;
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal tipe tidak tersedia";
-        this.downloadvalueff = false;
-        this.downloadvaluetime = false;
-        this.downloadvaluepetani = false;
-      }
-    },
-    verifytipedownload() {
-      console.log(this.selectFFdownload.ff_no);
-      console.log(this.selectpetanidownload.kodePetani);
-      console.log(this.selectdistribusitimedownload);
-      if (this.valuedownloadselected == "output_data") {
-        this.downloadall();
-      } else if (this.valuedownloadselected == "loading_plan") {
-        if (this.selectFFdownload.ff_no) {
-          this.downloadloadingplan(this.selectFFdownload.ff_no);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih ff terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "packing_plan") {
-        if (this.selectdistribusitimedownload) {
-          this.downloadpackingplan(this.selectdistribusitimedownload);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih waktu distribusi terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "shipping_plan") {
-        // this.downloadshippingplan();
-        if (this.selectdistribusitimedownload) {
-          this.downloadshippingplan(this.selectdistribusitimedownload);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih waktu distribusi terlebih dahulu";
-        }
-      } else if (this.valuedownloadselected == "farmer_receipt") {
-        // this.downloadfarmerreceipt();
-        if (this.selectpetanidownload.kodePetani) {
-          this.downloadfarmerreceipt(this.selectpetanidownload.kodePetani);
-        } else {
-          this.snackbar = true;
-          this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal, pilih petani terlebih dahulu";
-        }
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal tipe tidak tersedia";
-      }
-    },
-
     downloadall() {
       var str = this.BaseUrlGet;
       window.open(
@@ -3440,62 +4846,6 @@ export default {
       this.valueVillageExcel = "";
       this.typegetdataExcel = "";
       this.valueFFcodeExcel = "";
-    },
-    downloadpackingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelPackingPlan?date=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadshippingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelShippingPlan?date=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadloadingplan(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelLoadingPlan?typegetdatadownload=ff&ff=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
-    },
-    downloadfarmerreceipt(val) {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "CetakExcelLoadingPlan?typegetdatadownload=farmer&farmer_no=" +
-          val +
-          "&max_kayu=" +
-          this.max_kayu +
-          "&max_mpts=" +
-          this.max_mpts +
-          "&max_crops=" +
-          this.max_crops
-      );
     },
 
     deleteItemPohon(item) {
@@ -3538,6 +4888,262 @@ export default {
       }
       this.closePohon();
     },
+    showLightbox(imgs, index) {
+        if (imgs) this.$store.state.lightbox.imgs = imgs
+        
+        if (index) this.$store.state.lightbox.index = index
+        else this.$store.state.lightbox.index = 0
+
+        this.$store.state.lightbox.show = true
+    },
+    async setGroupingDetailSeedling(datas) {
+      // console.log(datas)
+      let grouping = []
+      await datas.forEach(data => {
+        let pushData = {
+          tree_code: data.tree_code,
+          tree_category: data.tree_category == 'Pohon_Kayu' ? "KAYU" : (data.tree_category == 'Pohon_Buah' ? "MPTS" : "CROPS"),
+          tree_name: data.tree_name,
+          seedling: {
+            ditanam: {
+              hidup: 0,
+              mati: 0
+            },
+            blm_ditanam: {
+              hidup: 0,
+              mati: 0
+            },
+            hilang: 0
+          }
+        }
+        const checkExistsID = grouping.findIndex(grp => grp.tree_code == data.tree_code)
+        if (checkExistsID > -1) {
+          if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
+            grouping[checkExistsID].seedling.ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
+            grouping[checkExistsID].seedling.ditanam.mati += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
+            grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
+            grouping[checkExistsID].seedling.blm_ditanam.mati += parseInt(data.amount)
+          } else if (data.status == 'hilang' && data.condition == 'hilang') {
+            grouping[checkExistsID].seedling.hilang += parseInt(data.amount)
+          } 
+        } else {
+          if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
+            pushData.seedling.ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
+            pushData.seedling.ditanam.mati += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
+            pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
+          } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
+            pushData.seedling.blm_ditanam.mati += parseInt(data.amount)
+          } else if (data.status == 'hilang' && data.condition == 'hilang') {
+            pushData.seedling.hilang += parseInt(data.amount)
+          } 
+          grouping.push(pushData)
+        }
+      })
+      // console.log(grouping)
+      return grouping
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
+    },
+    photo1FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photo1.model = event
+                this.dialogFormLahanUmum.inputs.photo1.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photo1.model = null
+            this.dialogFormLahanUmum.inputs.photo1.preview = ""
+        }
+    },
+    photo2FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photo2.model = event
+                this.dialogFormLahanUmum.inputs.photo2.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photo2.model = null
+            this.dialogFormLahanUmum.inputs.photo2.preview = ""
+        }
+    },
+    photo3FileChanged (event) {
+        if (event) {
+            let fileSize = event.size / 1000000
+            console.log(fileSize)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photo3.model = event
+                this.dialogFormLahanUmum.inputs.photo3.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photo3.model = null
+            this.dialogFormLahanUmum.inputs.photo3.preview = ""
+        }
+    },
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
+    },
+    async uploadPhotos(type, file) {
+        this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+        const url = `${this.BaseUrl}general-lands/upload.php`
+        const newName = `${this.dialogFormLahanUmum.inputs.mou_no.model.replace(/\s/g, '').replaceAll('/', '_')}_${type}`
+        const data = this.generateFormData({
+            dir: 'first-monitorings',
+            nama: newName,
+            image: file
+        })
+        let responseName = null
+        await axios.post(url,data).then(res => {
+            responseName = res.data.data.new_name
+        }).catch(err => {
+            console.error(err)
+        })
+        return 'general-lands/'+responseName
+    },
+    lahanNoFormat(lahan_no) {
+        return lahan_no.replace('[', '').replace(']', '').split(',')
+    },
+    async openExportFilter() {
+      const dialog = this.dialogs.exportFilter
+      const filters = dialog.filters
+      // reset data
+      filters.rm.model = ''
+      filters.rm.options = []
+      filters.um.model = ''
+      filters.um.options = []
+      filters.fc.model = ''
+      filters.fc.options = []
+      filters.ff.model = []
+
+      const user = this.User
+      if (user.role_name == 'FIELD COORDINATOR') {
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Getting FF datas...'
+        await this.setFiltersFF('FC', user.employee_no)
+        await this.exportData()
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = ''
+      } else dialog.model = true
+      dialog.loading = true
+      await this.getFiltersOptions('rm')
+      if (user.role_name == 'UNIT MANAGER') {
+        const managerCode = await user.EmployeeStructure.manager_code
+        filters.rm.model = managerCode
+        await this.getFiltersOptions('um', managerCode)
+        filters.um.model = user.employee_no
+        await this.getFiltersOptions('fc', user.employee_no)
+      } else if (user.role_name == 'REGIONAL MANAGER') {
+        filters.rm.model = user.employee_no
+        await this.getFiltersOptions('um', user.employee_no)
+      } else if (user.role_name == 'NURSERY') {
+        const managerCode = await user.EmployeeStructure.manager_code
+        filters.um.model = managerCode
+        await this.getFiltersOptions('fc', managerCode)
+      }
+      dialog.loading = false
+    },
+    async exportData() {
+      const dialog = this.dialogs.exportFilter
+      dialog.model = false
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoring?'
+
+      const params = new URLSearchParams({
+        program_year: this.generalSettings.programYear,
+        land_program: this.generalSettings.landProgram.model,
+        ff: this.dialogs.exportFilter.filters.ff.model.toString()
+      })
+      url += params.toString()
+      window.open(url, "blank")
+    },
+    async exportLahanUmum() {
+      const dialog = this.dialogs.exportFilter
+      dialog.model = false
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoringLahanUmum?'
+
+      let params = new URLSearchParams({
+        program_year: this.generalSettings.programYear,
+        land_program: this.generalSettings.landProgram.model
+      })
+      const user = this.User
+      if (user.role_name != 'REGIONAL MANAGER' && user.role_name != 'UNIT MANAGER' && user.role_group != 'IT') params.set('created_by', user.email)
+      url += params.toString()
+      window.open(url, "blank")
+    },
+    async getFiltersOptions(type, data = null) {
+      const filters = this.dialogs.exportFilter.filters[type]
+      try {
+        filters.loading = true
+        let url = ''
+        if (type == 'rm') url = this.$store.getters.getApiUrl('GetEmployeebyPosition?position_code=23')
+        else if (type == 'um' && data) url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=20`)
+        else if (type == 'fc' && data) url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=19`)
+        filters.model = ''
+        this.dialogs.exportFilter.filters.ff.model = []
+        if (url) {
+          const list = await axios.get(url, this.$store.state.apiConfig).then(res => {return res.data.data.result.data})
+          filters.options = list.sort((a, b) => a.name.localeCompare(b.name))
+        }
+        // console.log(data)
+      } catch (err) {
+        this.errorResponse(err)
+      } finally {
+        filters.loading = false
+      }
+    },
+    async setFiltersFF(position, id_code) {
+      const filters = this.dialogs.exportFilter.filters.ff
+      try {
+        filters.loading = true
+        let url = this.$store.getters.getApiUrl(`GetFFbyUMandFC?position=${position}&code=${id_code}`)
+        const ff = await axios.get(url, this.$store.state.apiConfig).then(res => {return res.data.data.result.data})
+        // console.log(ff)
+        filters.model = ff
+      } catch (err) {
+        this.errorResponse(err)
+      } finally {
+        filters.loading = false
+      }
+    },
+    errorResponse(error) {
+      console.log(error)
+      if (error.response) {
+        if (error.response.status) {
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        }
+      }
+    }
   },
 };
 </script>

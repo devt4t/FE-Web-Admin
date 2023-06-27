@@ -1,0 +1,38 @@
+{
+    "gender": [
+        {
+            "text": "Laki - Laki",
+            "value": "male"
+        },
+        {
+            "text": "Perempuan",
+            "value": "female"
+        }
+    ],
+    "religion": [
+        {
+            "text": "Islam",
+            "value": "islam"
+        },
+        {
+            "text": "Kristen",
+            "value": "kristen"
+        },
+        {
+            "text": "Katolik",
+            "value": "katolik"
+        },
+        {
+            "text": "Hindu",
+            "value": "hindu"
+        },
+        {
+            "text": "Budha",
+            "value": "budha"
+        }
+    ],
+    "marital_status": [
+        "Belum Kawin",
+        "Kawin"
+    ]
+}

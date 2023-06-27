@@ -1,0 +1,34 @@
+[
+    {
+        "type": "SS",
+        "name": "ss",
+        "capacity": {
+            "min": 1500,
+            "max": 1700
+        }
+    },
+    {
+        "type": "L300",
+        "name": "l300",
+        "capacity": {
+            "min": 1800,
+            "max": 2000
+        }
+    },
+    {
+        "type": "Engkel / CD (Colt Diesel)",
+        "name": "engkel_cd",
+        "capacity": {
+            "min": 4500,
+            "max": 5000
+        }
+    },
+    {
+        "type": "Truck / CDD (Colt Diesel Double)",
+        "name": "truck_cdd",
+        "capacity": {
+            "min": 7000,
+            "max": 8000
+        }
+    }
+]

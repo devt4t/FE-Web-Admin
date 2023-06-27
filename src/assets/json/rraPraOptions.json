@@ -1,0 +1,317 @@
+{
+    "accessibility": [
+        "Mudah", "Sedang", "Sulit"
+    ],
+    "land_type" : [
+        "Andosol",
+        "Kambisol",
+        "Arenosol",
+        "Alvisol",
+        "Aluvial",
+        "Entisol",
+        "Gleisol",
+        "Grumosol",
+        "Histosol",
+        "Inseptisol",
+        "Litosol",
+        "Mediteran",
+        "Molisol",
+        "Nitosol",
+        "Organosol",
+        "Oxisol",
+        "Podsolik",
+        "Regosol"
+    ],
+    "land_slope" : [
+        "0 - 8'",
+        "8' - 15'",
+        "15' - 25'",
+        "25' - 45'",
+        "> 45'"
+    ],
+    "land_height": [
+        "0 -300",
+        "300 - 550", 
+        "550 - 850",
+        "850 - 1050",
+        "1050 -1350",
+        "1350 - 1550",
+        "1550 - 1900",
+        "> 1900"
+    ],
+    "vegetation_density": [
+        "Tinggi",
+        "Sedang",
+        "Rendah",
+        "Terbuka"
+    ],
+    "water_source": [
+        "Sungai",
+        "Waduk/Danau",
+        "Pam Desa",
+        "Sumur"
+    ],
+    "rainfall": [
+        "0 - 500",
+        "500 - 1000",
+        "1000 - 1500",
+        "1500 - 2000",
+        "2000 - 2500",
+        "2500 - 3000"
+    ],
+    "agroforestry_type": [
+        "Agroforestry High intensive",
+        "Agroforestry Low intensive",
+        "Conservation"
+    ],
+    "government_place": [
+        "Kantor Bupati",
+        "Kantor Camat",
+        "Kantor Lurah",
+        "Kanfor Kepala Desa", 
+        "Kantor Polisi"
+    ],
+    "land_coverage": [
+        "Hutan Rimba",
+        "Perkebunan/Kebun",
+        "Pemukiman",
+        "Sawah Tadah Hujan",
+        "Semak Belukar",
+        "Tegalan/Ladang"
+    ],
+    "electricity_source": [
+        "PLN",
+        "Solarcell",
+        "Genset Desa"
+    ],
+    "land_tenure_type": [
+        "Individual",
+        "Desa",
+        "Negara"
+    ],
+    "land_tenure_func": [
+        "Area Pemanfaatan Lain",
+        "Perhutani/forest area"
+    ],
+    "land_tenure_status": [
+        "Locally Own",
+        "Not Locally Own"
+    ],
+    "farmer_speciality": [
+        "Budidaya",
+        "Meracik pupuk alternative",
+        "Inovasi sistem irigasi",
+        "Yang Lainnya"
+    ],
+    "potential_categories": [
+        "Keberlangsungan",
+        "Keuntungan",
+        "Yang Lainnya"
+    ],
+    "organic_categories": [
+        "Full Organik",
+        "Setengah Organik"
+    ],
+    "organic_types": [
+        "Hidroponik",
+        "Aeroponik",
+        "Aquaponik",
+        "Yang Lainnya"
+    ],
+    "innovative_rating": [
+        "0 - 25kg : sedang",
+        "25 - 50kg : bagus",
+        ">50kg : sangat bagus"
+    ],
+    "disaster_categories": [
+        "Air",
+        "Angin",
+        "Tanah",
+        "Api"
+    ],
+    "fertilizer_categories": [
+        "Natural",
+        "Kimia",
+        "Keduanya"
+    ],
+    "fertilizer_types": [
+        "Urea",
+        "SP-36",
+        "KCL",
+        "Humus",
+        "Kompos",
+        "Kandang"
+    ],
+    "fertilizer_sources": [
+        "Produksi Sendiri",
+        "Pemerintah",
+        "Procurement",
+        "Yang Lainnya"
+    ],
+    "income_employment": [
+        "Tenaga Kerja",
+        "Berdagang",
+        "Peternakan"
+    ],
+    "marketingTradeMethod": [
+        "Direct Selling ( Pasar, warung, pinggir jalan)",
+        "Indirect Selling ( Tengkulak, broker, dll)"
+    ],
+    "marketingContractDetails": [
+        "Per Harvest Time",
+        "Per Season",
+        "Etc"
+    ],
+    "wsConsumptions": [
+        "Domestik",
+        "Irigasi"
+    ],
+    "wsCategories": [
+        "Sungai",
+        "Sumur",
+        "Mata Air",
+        "Yang Lainnya"
+    ],
+    "wsTypes": [
+        "Natural",
+        "Buatan"
+    ],
+    "wsSeasonal": [
+        "Q 1",
+        "Q 2",
+        "Q 3",
+        "Q 4"
+    ],
+    "problemCategories": [
+        "Birokrasi",
+        "Hewan",
+        "Force Majeur",
+        "Berhubungan dengan Air",
+        "Yang Lainnya"
+    ],
+    "problemTypes": [
+        "Longsor",
+        "Kekeringan",
+        "Yang Lainnya"
+    ],
+    "problemRank": [
+        "Ringan",
+        "Sedang",
+        "Berat"
+    ],
+    "problemStakeholder": [
+        "Pemerintahan",
+        "NGO",
+        "Private Organization"
+    ],
+    "problemStatus": [
+        "Solved",
+        "Not Solved",
+        "Rarely",
+        "Repeated"
+    ],
+    "problemOwnership": [
+        "Locally Own",
+        "Not Locally Own"
+    ],
+    "pesticide_categories": [
+        "Natural",
+        "Kimia",
+        "Keduanya"
+    ],
+    "pesticide_types": [
+        "Akarisida",
+        "Algasida",
+        "Alvisida",
+        "Bakterisida",
+        "Fungisida",
+        "Herbisida",
+        "Insektisida",
+        "Moluskisida"
+    ],
+    "pesticide_names": [
+        "Yosan",
+        "Konfidor",
+        "Gramoxon"
+    ],
+    "pesticide_sources": [
+        "Pemerintahan",
+        "Procurement",
+        "Yang Lainnya"
+    ],
+    "planting_categories": [
+        "Trees",
+        "Crops",
+        "MPTS"
+    ],
+    "floraCategories": [
+        "Flora Asli",
+        "Holikultur",
+        "Gulma"
+    ],
+    "floraTypes": [
+        "Berbji",
+        "Tumbuhan Paku",
+        "Yang Lainnya"
+    ],
+    "floraNames": [
+        "Anggrek",
+        "Caringin",
+        "Kiara",
+        "Yang Lainnya"
+    ],
+    "floraStatus": [
+        "Punah",
+        "Hampir Punah"
+    ],
+    "faunaCategories": [
+        "Asiatis",
+        "Peralihan",
+        "Australis",
+        "Yang Lainnya"
+    ],
+    "faunaTypes": [
+        "Mamalia",
+        "Unggas",
+        "Reptile",
+        "Yang Lainnya"
+    ],
+    "faunaNames": [
+        "Puesing",
+        "Landak",
+        "Burung Jalak",
+        "Yang Lainnya"
+    ],
+    "faunaFoodSource": [
+        "Nabati",
+        "Non-nabati"
+    ],
+    "faunaStatus": [
+        "Punah",
+        "Hampir Punah"
+    ],
+    "incomeCategories": [
+        "Keluarga Petani",
+        "Bukan Keluarga Petani"
+    ],
+    "incomeCropsCategories": [
+        "MPTS",
+        "Wood",
+        "Estate",
+        "Yang Lainnya"
+    ],
+    "incomeCropsTypes": [
+        "Food",
+        "Feed",
+        "Fiber",    
+        "Oil",
+        "Ornamental",
+        "Industrial"
+    ],
+    "economicDistribution": [
+        "UMKM",
+        "KUD",
+        "Broker",
+        "Yang Lainnya"
+    ]
+}

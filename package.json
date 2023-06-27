@@ -1,20 +1,32 @@
 {
   "name": "admin_system_app",
-  "version": "0.1.0",
+  "version": "1.0.8",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "aos": "^2.3.4",
     "axios": "^0.21.1",
     "bootstrap": "^5.0.0",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.6.5",
+    "jszip": "^3.10.1",
     "leaflet": "^1.7.1",
+    "lottie-web-vue": "^1.2.1",
+    "moment": "^2.29.4",
+    "moment-range": "^4.0.2",
+    "sweetalert2": "^11.7.5",
+    "togeojson": "^0.16.0",
     "vue": "^2.6.12",
+    "vue-easy-lightbox": "^0.20.0",
     "vue-google-charts": "^0.3.3",
+    "vue-html2pdf": "^1.8.0",
+    "vue-number-animation": "^1.1.2",
+    "vue-qrcode-reader": "^3.1.0",
     "vue-router": "^3.2.0",
+    "vue2-editor": "^2.10.3",
     "vue2-leaflet": "^2.7.1",
     "vuetify": "^2.4.0",
     "vuex": "^3.4.0"

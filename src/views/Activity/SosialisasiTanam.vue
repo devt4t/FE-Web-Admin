@@ -1,10 +1,12 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
       large
+      data-aos="fade-right"
     ></v-breadcrumbs>
 
     <div class="mx-9">
@@ -13,753 +15,1631 @@
       </v-alert>
     </div>
 
-    <v-data-table
-      :headers="headers"
-      :items="dataobject"
-      :search="search"
-      :loading="loadtable"
-      loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
-    >
-      <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
-        </v-chip>
-      </template>
-
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-btn
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterArea()"
-            color="green"
+    <!-- MODAL -->
+      <!-- Modal Filter Area -->
+      <v-dialog v-model="dialogFilterArea" max-width="500px">
+        <v-card rounded="xl">
+          <v-card-title class="">
+            <v-spacer></v-spacer>
+            Filter Pencarian Area
+            <v-spacer></v-spacer>
+          </v-card-title
           >
-            <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
-            Area
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesFilterShow == true"
-            dark
-            class="mx-3 mt-1 d-none d-md-block"
-            @click="showFilterEmployee()"
-            color="green"
-          >
-            <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
-            Employee
-          </v-btn>
-          <!-- <v-select
-            v-model="selectMU"
-            :items="itemsMU"
-            item-value="mu_no"
-            item-text="name"
-            v-on:change="selectedMU"
-            label="Management Unit"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 200px"
-          ></v-select>
-          <v-select
-            v-model="selectTA"
-            :items="itemsTA"
-            item-value="area_code"
-            item-text="name"
-            v-on:change="selectedTA"
-            label="Targer Area"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select>
-          <v-select
-            v-model="selectVillage"
-            :items="itemsVillage"
-            item-value="kode_desa"
-            item-text="name"
-            v-on:change="selectedVillage"
-            label="Desa"
-            clearable
-            class="mx-3 mt-7 d-none d-md-block"
-            style="max-width: 225px"
-          ></v-select> -->
-          <v-divider class="mx-4 d-none d-md-block" inset vertical></v-divider>
-          <v-spacer class="d-none d-md-block"></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-btn
-            v-if="RoleAccesCRUDShow == true"
-            dark
-            class="mb-2 mr-1"
-            @click="showAddModal()"
-            color="green"
-          >
-            <v-icon small>mdi-plus</v-icon> Add
-          </v-btn>
-          <v-btn
-            v-if="RoleAccesDownloadAllShow == true"
-            dark
-            class="mb-2 mr-1 d-none d-md-block"
-            @click="downloadSuperAdmin()"
-            color="blue"
-          >
-            <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
-          </v-btn>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectMU"
+                    :items="itemsMU"
+                    item-value="mu_no"
+                    item-text="name"
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    outlined
+                    rounded
+                    hide-details
+                    v-on:change="selectedMU"
+                    label="Management Unit"
+                    clearable
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectTA"
+                    :items="itemsTA"
+                    item-value="area_code"
+                    item-text="name"
+                    v-on:change="selectedTA"
+                    label="Target Area"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    outlined
+                    rounded
+                    hide-details
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectVillage"
+                    :items="itemsVillage"
+                    item-value="kode_desa"
+                    item-text="name"
+                    v-on:change="selectedVillage"
+                    label="Desa"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    outlined
+                    rounded
+                    hide-details
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+              <v-icon small class="mr-1">mdi-close</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn dark color="warning" rounded class="px-5" @click="searchbyarea">
+              <v-icon small class="mr-1">mdi-filter</v-icon>
+              Cari
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-          <!-- Modal Filter Area -->
-          <v-dialog v-model="dialogFilterArea" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian Area</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectMU"
-                        :items="itemsMU"
-                        item-value="mu_no"
-                        item-text="name"
-                        v-on:change="selectedMU"
-                        label="Management Unit"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectTA"
-                        :items="itemsTA"
-                        item-value="area_code"
-                        item-text="name"
-                        v-on:change="selectedTA"
-                        label="Targer Area"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectVillage"
-                        :items="itemsVillage"
-                        item-value="kode_desa"
-                        item-text="name"
-                        v-on:change="selectedVillage"
-                        label="Desa"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyarea"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+      <!-- Modal Filter Emp -->
+      <v-dialog v-model="dialogFilterEmp" max-width="500px">
+        <v-card rounded="xl">
+          <v-card-title class="d-flex justify-center">
+            Filter Pencarian By Emp
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    v-model="selectUM"
+                    :items="itemsum"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedUM"
+                    label="Pilih Unit Manager"
+                    clearable
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    v-model="selectFC"
+                    :items="itemsfc"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedFC"
+                    label="Pilih Field Coordinator"
+                    clearable
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterEmp = false">
+              <v-icon small class="mr-1">mdi-close</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn dark color="warning" rounded class="px-5" @click="searchbyemp">
+              <v-icon small class="mr-1">mdi-filter</v-icon>
+              Cari
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-          <!-- Modal Filter Emp -->
-          <v-dialog v-model="dialogFilterEmp" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Filter Pencarian By Emp</v-card-title
-              >
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectUM"
-                        :items="itemsum"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedUM"
-                        label="Pilih Unit Manager"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" sm="12" md="12">
-                      <v-select
-                        v-model="selectFC"
-                        :items="itemsfc"
-                        item-value="nik"
-                        item-text="name"
-                        v-on:change="selectedFC"
-                        label="Pilih Field Coordinator"
-                        clearable
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="searchbyemp"
-                  >Cari</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+      <!-- Modal Create Sostam Per~FF -->
+      <v-dialog v-model="dialogAdd.show" max-width="999" content-class="rounded-xl" persistent scrollable>
+        <v-card rounded="xl" elevation="10">
+          <!-- Title -->
+          <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
+            <span class="">Add per~FF</span>
+            <v-spacer></v-spacer>
+            <v-icon color="red" @click="dialogAdd.show = false">mdi-close-circle</v-icon>
+          </v-card-title>
 
-          <!-- Modal Add Edit -->
-          <v-dialog v-model="dialog" max-width="800px">
-            <v-card>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <v-card-title class="mb-1 headermodalstyle">
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container
-                    v-if="load == true"
-                    fluid
-                    fill-height
-                    style="background-color: rgba(255, 255, 255, 0.5)"
-                  >
-                    <v-layout justify-center align-center>
-                      <v-progress-circular
-                        :size="80"
-                        :width="10"
-                        indeterminate
-                        color="primary"
-                      >
-                      </v-progress-circular>
-                    </v-layout>
-                  </v-container>
-                  <v-container v-if="load == false">
-                    <v-row>
-                      <v-col cols="12" sm="12" md="12">
-                        <v-select
-                          v-model="defaultItem.ff_no"
-                          :items="itemsff"
-                          item-text="name"
-                          item-value="ff_no"
-                          label="Pilih Field Facilitator"
-                          outlined
-                          clearable
-                          v-on:change="selectPetani"
-                          :rules="[(v) => !!v || 'Field is required']"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="12" md="12">
-                        <v-select
-                          v-model="defaultItem.farmer_no"
-                          :items="itemspetani"
-                          item-text="nama"
-                          item-value="kode"
-                          label="Pilih Petani"
-                          outlined
-                          clearable
-                          :rules="[(v) => !!v || 'Field is required']"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="12" md="12">
-                        <v-text-field
-                          v-model="defaultItem.no_lahan"
-                          label="No Lahan"
-                          outlined
-                          :rules="[(v) => !!v || 'Field is required']"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-select
-                          v-model="defaultItem.planting_year"
-                          :items="itemsTahun"
-                          item-text="text"
-                          item-value="value"
-                          label="Pilih Tahun Program"
-                          outlined
-                          clearable
-                          :rules="[(v) => !!v || 'Field is required']"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <v-text-field
-                          v-model="defaultItem.distribution_location"
-                          label="Tempat Distribusi Bibit"
-                          outlined
-                          :rules="rules"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-menu v-model="menu1" transition="scale-transition">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="datepicker1"
-                              slot="activator"
-                              label="Waktu Pembuatan Lubang Tanam"
-                              outlined
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              :rules="rules"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="datepicker1"
-                            @input="menu1 = false"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-menu v-model="menu2" transition="scale-transition">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="datepicker2"
-                              slot="activator"
-                              label="Waktu Distribusi Bibit"
-                              outlined
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              :rules="rules"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="datepicker2"
-                            @input="menu2 = false"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                      <v-col cols="12" sm="4" md="4">
-                        <v-menu v-model="menu3" transition="scale-transition">
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              v-model="datepicker3"
-                              slot="activator"
-                              label="Waktu Penanaman"
-                              outlined
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                              :rules="rules"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="datepicker3"
-                            @input="menu3 = false"
-                          ></v-date-picker>
-                        </v-menu>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions v-if="load == false">
-                  <v-spacer></v-spacer>
-                  <v-btn color="red darken-1" outlined @click="close">
-                    Cancel
-                  </v-btn>
-                  <v-btn color="blue darken-1" outlined @click="save">
-                    Save
-                  </v-btn>
-                </v-card-actions>
-              </v-form>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogShowEdit" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >What you want to edit?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="blue" text @click="showEditModal"
-                  >Edit Sosialisasi</v-btn
-                >
-                <v-btn
-                  outlined
-                  color="green"
-                  text
-                  @click="showEditJumlahPohonModal"
-                  >Jumlah Pohon</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <v-dialog v-model="dialogDetailPohon" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                ><span class="headline">Detail Pohon Lahan</span></v-card-title
-              >
-              <v-card-text>
-                <v-row class="mt-3">
-                  <v-col cols="12" sm="12" md="12">
-                    <div>
-                      <h3 class="ml-1">
-                        <v-data-table
-                          :headers="headersdetaileditjumlah"
-                          :items="DetailTreesLahanTemp"
-                          class="elevation-1"
+          <v-card-text class="px-0 px-lg-5">
+            <!-- Loading -->
+            <v-overlay absolute :value="dialogAdd.loading">
+                <div class="d-flex flex-column justify-center align-center">
+                    <LottieAnimation
+                        ref="anim"
+                        :animationData="lottie.data.loading"
+                        :loop="true"
+                        style="height: 64px;"
+                    />
+                    <p class="mt-2 mb-0">Loading...
+                        <v-progress-circular
+                            :size="17"
+                            :width="3"
+                            indeterminate
+                            color="white"
                         >
-                          <!-- <template v-slot:item.tree_category="{ item }">
-                            {{ gettype(item.tree_category) }}
-                          </template> -->
-                          <template v-slot:item.actions="{ item }">
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              class="mr-3"
-                              @click="editDetailPohon(item)"
-                              small
-                              color="warning"
+                        </v-progress-circular>
+                    </p>
+                </div>
+            </v-overlay>
+            <!-- Content -->
+            <v-container>
+              <v-row>
+                <v-col cols="12" class="d-flex justify-end">
+                  <v-btn small color="info" rounded @click="getFFOptions">
+                    <v-icon small class="mr-1">mdi-refresh</v-icon>
+                    Refresh FF
+                  </v-btn>
+                </v-col>
+                <!-- Select FF -->
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    dense
+                    outlined
+                    rounded
+                    color="success"
+                    item-color="success"
+                    :menu-props="{rounded: 'xl'}"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    label="Pilih Field Facilitator"
+                    :items="options.ff.items"
+                    item-text="name"
+                    item-value="ff_no"
+                    v-model="options.ff.model"
+                    :loading="options.ff.loading"
+                    :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'"
+                    @change="getLahansFF()"
+                  >
+                    <template v-slot:item="data">
+                      <v-list-item-content>
+                        <v-list-item-title v-html="data.item.name"></v-list-item-title>
+                        <v-list-item-subtitle>{{ data.item.ff_no }}</v-list-item-subtitle>
+                      </v-list-item-content>
+                    </template>
+                  </v-autocomplete>
+                </v-col>
+                <!-- Tanggal Distribusi -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Distribusi</p>
+                    <v-menu 
+                      rounded="xl"
+                      transition="slide-x-transition"
+                      bottom
+                      right
+                      offset-x
+                      :close-on-content-click="false"
+                      v-model="datepicker2Show"
+                    >
+                      <template v-slot:activator="{ on: menu, attrs }">
+                        <v-tooltip top>
+                          <template v-slot:activator="{ on: tooltip }">
+                            <v-btn
+                              rounded
+                              large
+                              :disabled="!options.ff.model"
+                              color="green lighten-1"
+                              v-bind="attrs"
+                              v-on="{...menu, ...tooltip}"
                             >
-                              mdi-pencil
-                            </v-icon>
-                            <v-icon
-                              v-if="RoleAccesCRUDShow == true"
-                              @click="deleteDetailPohon(item)"
-                              small
-                              color="red"
-                            >
-                              mdi-delete
-                            </v-icon>
+                              <v-icon left> mdi-calendar </v-icon>
+                              {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
+                            </v-btn>
                           </template>
-                        </v-data-table>
-                      </h3>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohon"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+                          <span>Klik untuk memunculkan datepicker</span>
+                        </v-tooltip>
+                      </template>
+                      <v-card class="rounded-xl pb-2">
+                        <v-overlay :value="datepicker2Loading">
+                          <div class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="white"
+                                size="64"
+                            ></v-progress-circular>
+                            <p class="mt-2 mb-0">Updating available dates...</p>
+                          </div>
+                        </v-overlay>
+                        <div class="d-flex flex-column align-center">
+                          <v-date-picker 
+                            color="green lighten-1 rounded-xl" 
+                            v-model="dataToStore.distribution_time"
+                            min="2023-11-24"
+                            max="2024-01-31"
+                            :allowed-dates="showingAvailableDates"
+                            :key="datepicker2Key"
+                          ></v-date-picker>
+                          <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                            <v-icon small class="mr-1">mdi-check-circle</v-icon>
+                            Set
+                          </v-btn>
+                        </div>
+                      </v-card>
+                    </v-menu>
+                </v-col>
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Penilikan Lubang</p>
+                  <v-btn
+                    rounded
+                    large
+                    color="green lighten-1"
+                    disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+                <!-- Tanggal Realisasi Tanam -->
+                <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                  <p class="mb-1">Tanggal Realisasi Tanam</p>
+                  <v-btn
+                    rounded
+                    large
+                    disabled
+                    color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+                <!-- Lokasi Distribusi -->
+                <v-col>
+                  <div class="d-flex align-center my-0">
+                      <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-map-marker</v-icon>Pilih Lokasi Distribusi</p>
+                      <v-divider class="mx-2" color=""></v-divider>
+                  </div>
+                </v-col>
+                <v-col cols="12">
+                  <!-- map -->
+                  <div style="position: relative">
+                    <div id="mapboxDistributionLocationContainer" ref="mapbox" :key="`maps-distribution-location-${dialogAdd.show}`" style="height: 400px;width: 100%" class="rounded-xl overflow-hidden"></div>
+                    <!-- <pre id="coordinates" class="coordinates-sostam"></pre> -->
+                  </div>
 
-          <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
-            <v-card>
-              <v-card-text>
-                <v-row class="mt-7">
+                  <v-text-field
+                    color="green"
+                    dense
+                    outlined
+                    rounded
+                    :value="`${maps.location.lng}, ${maps.location.lat}`"
+                    label="Koordinat Distribusi (Long, Lat)"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                    :readonly="false"
+                    class="mt-3"
+                  ></v-text-field>
+                  <v-text-field
+                    color="green"
+                    dense
+                    outlined
+                    rounded
+                    placeholder="Balai Desa / Rumah Bp ... / dll"
+                    v-model="dataToStore.distribution_location"
+                    label="Detail Alamat Distribusi"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                    class="mt-3"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-autocomplete
+                      dense
+                      color="success"
+                      hide-details
+                      item-color="success"
+                      item-text="material_name"
+                      item-value="material_no"
+                      :items="training_material_items"
+                      label="Materi Pelatihan"
+                      :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                      outlined
+                      rounded
+                      readonly
+                      v-model="dataToStore.training_material"
+                  ></v-autocomplete>
+                </v-col>
+                <!-- Table -->
+                <v-col cols="12" sm="12" md="12">
+                  <v-row class="align-center mb-4">
+                    <v-col cols="12" class="">
+                      <div class="d-flex align-center my-0">
+                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>List Petani</p>
+                        <v-divider class="mx-2" color=""></v-divider>
+                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani</p>
+                      </div>
+                    </v-col>
+                    <v-col cols="12" class="d-flex justify-end">
+                      <v-btn :disabled="!options.ff.model" color="info" rounded @click="getLahansFF" small>
+                        <v-icon class="mr-1" small>mdi-refresh</v-icon>
+                        Refresh
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-data-table
+                    showSelect
+                    checkbox-color="green"
+                    color="success"
+                    class="rounded-xl elevation-5 mb-2"
+                    :headers="table.lahans.header"
+                    :items="table.lahans.items"
+                    :loading="table.lahans.loading"
+                    @input="($val) => selectedKehadiranPetani($val)"
+                    loading-text="Loading... Please wait"
+                    hide-default-footer
+                    :items-per-page="-1"
+                  >
+                    <template v-slot:top>
+                      <!-- Trees Dialog -->
+                      <v-dialog v-model="table.lahans.dialogs.trees.show" max-width="700px" content-class="rounded-xl">
+                        <v-card>
+                          <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
+                            <span class="">Set Trees Amount</span>
+                            <v-spacer></v-spacer>
+                            <v-icon color="red" @click="table.lahans.dialogs.trees.show = false">mdi-close-circle</v-icon>
+                          </v-card-title>
+                          <v-card-content v-if="table.lahans.dialogs.trees.datas">
+                            <v-container class="py-2">
+                              <h4>Lahan</h4>
+                              <v-simple-table>
+                                <tbody>
+                                  <tr>
+                                    <td>Luas Lahan</td>
+                                    <td>:</td>
+                                    <td><strong>{{ numberFormat(table.lahans.dialogs.trees.datas.land_area) }}m<sup>2</sup></strong></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Opsi Pola Tanam</td>
+                                    <td>:</td>
+                                    <td><strong>{{ table.lahans.dialogs.trees.datas.opsi_pola_tanam }}</strong></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Region</td>
+                                    <td>:</td>
+                                    <td><strong>{{ table.lahans.dialogs.trees.datas.province == 'JB' ? 'Jawa Barat' : 'Jawa Tengah' }}</strong></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Max Bibit</td>
+                                    <td>:</td>
+                                    <td><strong>{{ numberFormat(getSeedCalculation(table.lahans.dialogs.trees.datas, 'total_max_trees')) }}</strong> Bibit</td>
+                                  </tr>
+                                </tbody>
+                              </v-simple-table>
+                              <!-- Trees -->
+                              <h4>Seeds List</h4>
+                              <v-simple-table class="rounded-xl elevation-2 overflow-hidden">
+                                <thead>
+                                  <tr>
+                                    <th>No</th>
+                                    <th>Category</th>
+                                    <th>Tree Name</th>
+                                    <th>Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr v-for="(tree, treeIndex) in table.lahans.dialogs.trees.datas.trees" :key="treeIndex">
+                                    <td>{{ treeIndex + 1 }}</td>
+                                    <td>{{ tree.category }}</td>
+                                    <td>{{ tree.tree_name }}</td>
+                                    <td>{{ tree.amount }}</td>
+                                  </tr>
+                                </tbody>
+                              </v-simple-table>
+                            </v-container>
+                          </v-card-content>
+                          <v-card-actions>
+                            <v-btn color="red px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
+                              <v-icon class="mr-1">mdi-close-circle</v-icon>
+                              Cancel
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn color="green px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
+                              <v-icon class="mr-1">mdi-check-circle</v-icon>
+                              Set
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </template>
+                    <template v-slot:item.index="{index}">
+                      {{ index + 1 }}
+                    </template>
+                    <template v-slot:item.total_lahan="{item}">
+                      <v-icon class="mr-1">mdi-land-fields</v-icon>{{ numberFormat(item.total_lahan) }}
+                    </template>
+                    <template v-slot:item.total_kayu="{item}">
+                      <v-icon class="mr-1">mdi-sprout</v-icon>{{ numberFormat(item.total_kayu) }}
+                    </template>
+                    <template v-slot:item.total_mpts="{item}">
+                      <v-icon class="mr-1">mdi-sprout</v-icon>{{ numberFormat(item.total_mpts) }}
+                    </template>
+                    <template v-slot:header.data-table-select="{index}">
+                      Kehadiran
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+
+          <v-card-actions v-if="dialogAdd.loading == false" class="elevation-15 rounded-xl">
+            <v-btn color="red px-5" rounded dark @click="dialogAdd.show = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn 
+              color="green white--text" 
+              rounded 
+              @click="createSostamByFF()"
+              :disabled="!dataToStore.distribution_time || !dataToStore.distribution_location || table.lahans.items.length == 0"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Create Sostam
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Edit -->
+      <v-dialog v-model="dialog" max-width="800px" content-class="rounded-xl">
+        <v-card rounded="xl">
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title class="mb-1 headermodalstyle rounded-xl">
+              <span class="">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container
+                v-if="load == true"
+                fluid
+                fill-height
+                style="background-color: rgba(255, 255, 255, 0.5)"
+              >
+                <v-layout justify-center align-center>
+                  <v-progress-circular
+                    :size="80"
+                    :width="10"
+                    indeterminate
+                    color="primary"
+                  >
+                  </v-progress-circular>
+                </v-layout>
+              </v-container>
+              <v-container v-if="load == false">
+                <v-row>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-select
+                      disabled
+                      rounded
+                      v-model="defaultItem.ff_no"
+                      :items="itemsff"
+                      item-text="name"
+                      item-value="ff_no"
+                      label="Pilih Field Facilitator"
+                      outlined
+                      clearable
+                      v-on:change="selectPetani"
+                      :rules="[(v) => !!v || 'Field is required']"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-select
+                      disabled
+                      rounded
+                      v-model="defaultItem.farmer_no"
+                      :items="itemspetani"
+                      item-text="nama"
+                      item-value="kode"
+                      label="Pilih Petani"
+                      outlined
+                      clearable
+                      :rules="[(v) => !!v || 'Field is required']"
+                    ></v-select>
+                  </v-col>
                   <v-col cols="12" sm="12" md="12">
                     <v-text-field
-                      v-model="editedItemPohon.amount"
-                      label="Jumlah Pohon"
+                      disabled
+                      rounded
+                      v-model="defaultItem.no_lahan"
+                      label="No Lahan"
                       outlined
-                      type="number"
+                      :rules="[(v) => !!v || 'Field is required']"
                     ></v-text-field>
                   </v-col>
-                </v-row>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn outlined color="red" text @click="closeDetailEditPohon"
-                  >Cancel</v-btn
-                >
-                <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-                  >Save</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Detail -->
-          <v-dialog v-model="dialogDetail" max-width="800px">
-            <v-card>
-              <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Detail Sosialisasi Tanam</span>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-card-text>
-                <v-container
-                  v-if="load == true"
-                  fluid
-                  fill-height
-                  style="background-color: rgba(255, 255, 255, 0.5)"
-                >
-                  <v-layout justify-center align-center>
-                    <v-progress-circular
-                      :size="80"
-                      :width="10"
-                      indeterminate
-                      color="primary"
+                  <v-col cols="12" sm="6" md="6">
+                    <v-select
+                      disabled
+                      rounded
+                      v-model="defaultItem.planting_year"
+                      :items="itemsTahun"
+                      item-text="text"
+                      item-value="value"
+                      label="Pilih Tahun Program"
+                      outlined
+                      clearable
+                      :rules="[(v) => !!v || 'Field is required']"
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <v-text-field
+                      rounded
+                      v-model="defaultItem.distribution_location"
+                      label="Tempat Distribusi Bibit"
+                      outlined
+                      :rules="rules"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" lg="4" class="d-flex flex-column align-center">
+                    <p class="mb-0"><strong>Penilikan Lubang</strong></p>
+                    <v-btn 
+                      rounded disabled class="black--text"
                     >
-                    </v-progress-circular>
-                  </v-layout>
-                </v-container>
-                <v-container v-if="load == false">
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
-                  <v-simple-table>
-                    <template v-slot:default>
-                      <tbody>
-                        <tr>
-                          <th
-                            class="text-left"
-                            style="width: 200px; font-size: 14px"
+                      {{ dateFormat(datepicker1, 'ddd, DD MMMM Y') }}
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="12" lg="4">
+                    <v-menu v-model="menu2" offset-x transition="slide-x-transition" rounded="xl">
+                      <template v-slot:activator="{ on, attrs }">
+                        <div class="d-flex flex-column align-center">
+                          <p class="mb-0 mx-auto"><strong>Distribusi Bibit</strong></p>
+                          <v-btn 
+                            dark
+                            rounded class=""
+                            color="green"
+                            v-bind="attrs"
+                            v-on="on"
                           >
-                            Tahun Program
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.planting_year }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Nama Petani
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.nama_petani }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            No Ktp
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.ktp_no }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Alamat
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.alamat }}
-                          </th>
-                        </tr>
-                      </tbody>
-                    </template>
-                  </v-simple-table>
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
-                  <v-simple-table>
-                    <template v-slot:default>
-                      <tbody>
-                        <tr>
-                          <th
-                            class="text-left"
-                            style="width: 200px; font-size: 14px"
-                          >
-                            Opsi Pola Tanam
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.opsi_pola_tanam }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Status Kepimilikan Lahan
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.type_sppt }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            No Dokumen Lahan
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.document_no }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Luas Lahan dan Tanam
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.luas_lahan }}m<sup>2</sup> dan
-                            {{ defaultItem.luas_tanam }}m<sup>2</sup>
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Pembuatan Lubang Tanam
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ gettanggal(defaultItem.pembuatan_lubang_tanam) }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Waktu Distribusi Bibit
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ gettanggal(defaultItem.distribution_time) }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Lokasi Distribusi Bibit
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ defaultItem.distribution_location }}
-                          </th>
-                        </tr>
-                        <tr>
-                          <th class="text-left" style="font-size: 14px">
-                            Waktu Penanaman Petani
-                          </th>
-                          <th class="text-left" style="font-size: 14px">
-                            {{ gettanggal(defaultItem.planting_time) }}
-                          </th>
-                        </tr>
-                      </tbody>
-                    </template>
-                  </v-simple-table>
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
-                  <div>
-                    <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
-                    <h3 class="ml-1">
-                      <v-data-table
-                        :headers="headersdetail"
-                        :items="defaultItem.planting_details"
-                        class="elevation-1"
+                            {{ dateFormat(datepicker2, 'ddd, DD MMMM Y') }}
+                          </v-btn>
+                        </div>
+                      </template>
+                      <v-overlay :value="datepicker2Loading">
+                        <div class="d-flex flex-column align-center justify-center">
+                          <v-progress-circular
+                              indeterminate
+                              color="white"
+                              size="64"
+                          ></v-progress-circular>
+                          <p class="mt-2 mb-0">Updating available dates...</p>
+                        </div>
+                      </v-overlay>
+                      <v-date-picker
+                        v-model="datepicker2"
+                        min="2022-11-24"
+                        max="2023-01-31"
+                        :allowed-dates="showingAvailableDates"
+                        @input="menu2 = false"
+                        color="green"
+                        class="rounded-xl"
+                        :key="datepicker2Key2"
+                      ></v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" lg="4" class="d-flex flex-column align-center">
+                    <p class="mb-0"><strong>Realisasi Tanam</strong></p>
+                    <v-btn 
+                      rounded disabled class="black--text"
+                    >
+                      {{ dateFormat(datepicker3, 'ddd, DD MMMM Y') }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" dark rounded class="px-5" @click="close">
+                <v-icon class="mr-1">mdi-close-circle</v-icon>
+                Cancel
+              </v-btn>
+              <v-btn color="green" dark rounded class="px-5" @click="save">
+                <v-icon class="mr-1">mdi-check-circle</v-icon>
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card>
+      </v-dialog>
+
+      <!-- What do you want to edit? -->
+      <v-dialog v-model="dialogShowEdit" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class=" justify-center"
+            >What you want to edit?</v-card-title
+          >
+          <v-card-actions class="pb-3">
+            <v-spacer></v-spacer>
+            <v-btn rounded color="blue white--text" @click="showEditModal" class="px-5"
+              :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+              >
+              <v-icon class="mr-1">mdi-file-document-edit</v-icon>
+              Edit Sosialisasi</v-btn
+            >
+            <v-btn
+              color="green white--text"
+              rounded
+              :disabled="User.role_group != 'IT' && User.role_name != 'UNIT MANAGER'"
+              @click="showEditJumlahPohonModal"
+              class="px-5"
+              >
+              <v-icon class="mr-1">mdi-forest</v-icon>
+              Jumlah Pohon</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- List Edit Jumlah Pohon -->
+      <v-dialog v-model="dialogDetailPohon" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class=" justify-center align-center py-5"
+            ><span class="">
+              <v-icon class="mr-1">mdi-forest</v-icon>
+              List Pohon Lahan</span></v-card-title
+          >
+          <v-card-text>
+            <v-row class="">
+              <v-col cols="12">
+                <v-simple-table>
+                  <tbody>
+                    <tr>
+                      <td>Luas Lahan</td>
+                      <td>:</td>
+                      <td><strong>{{ numberFormat(DetailTreesLahanTempData.land_area || 0) }}</strong>m<sup>2</sup></td>
+                    </tr>
+                    <tr>
+                      <td>Tutupan Lahan</td>
+                      <td>:</td>
+                      <td><strong>{{ DetailTreesLahanTempData.tutupan_lahan || 0 }}</strong>%</td>
+                    </tr>
+                    <tr v-if="DetailTreesLahanTempData.planting_details && DetailTreesLahanTempData.land_area < 10000">
+                      <td>Max Bibit Kayu {{ getStatusTotalBibitInDetail(DetailTreesLahanTempData.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>:</td>
+                      <td><strong>{{ DetailTreesLahanTempData.max_seed_amount || getSeedCalculation(DetailTreesLahanTempData, 'total_max_trees') }}</strong> Bibit</td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <div class="d-flex flex-column align-center">
+                  <v-btn color="red white--text mb-2" small v-if="DetailTreesLahanTempData.land_area < 10000 && (DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS')))" rounded @click="resetJumlahBibit()">
+                    <v-icon small class="mr-1">mdi-refresh</v-icon>
+                    Reset Jumlah Bibit
+                  </v-btn>
+                  <v-data-table
+                    :headers="headersdetaileditjumlah"
+                    :items="DetailTreesLahanTemp"
+                    class="elevation-5 rounded-xl"
+                  >
+                    <!-- <template v-slot:item.tree_category="{ item }">
+                      {{ gettype(item.tree_category) }}
+                    </template> -->
+                    <template v-slot:item.actions="{ item }">
+                      <v-icon
+                        v-if="true"
+                        @click="editDetailPohon(item)"
+                        color="warning"
+                        :disabled="disabledEditPohon(DetailTreesLahanTemp, item.tree_category, DetailTreesLahanTempData)"
                       >
-                        <!-- <template v-slot:item.tree_category="{ item }">
-                                  {{ gettype(item.tree_category) }}
-                                </template> -->
-                      </v-data-table>
-                    </h3>
-                  </div>
-                  <v-divider
-                    style="background-color: black !important"
-                  ></v-divider>
-                </v-container>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions v-if="defaultItem.waitingapproval == true">
-                <v-spacer></v-spacer>
-                <v-btn
-                  v-if="RoleAccesCRUDShow == true"
-                  color="green"
-                  text
-                  @click="verifSubmit()"
+                        mdi-pencil-circle
+                      </v-icon>
+                      <!-- <v-icon
+                        v-if="RoleAccesCRUDShow == true"
+                        @click="deleteDetailPohon(item)"
+                        small
+                        color="red"
+                      >
+                        mdi-delete
+                      </v-icon> -->
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded @click="closeDetailPohon" class="px-5 mb-2"
+              >
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel</v-btn
+            >
+            <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
+              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 
+                || 
+                getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS') > Math.round(40/60 * getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU')) 
+                ||
+                (DetailTreesLahanTempData.land_area < 10000 && 
+                DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS')))
+              "
+              >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Save</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Edit Jumlah Pohon -->
+      <v-dialog v-model="dialogDetailPohonEdit" max-width="450px" content-class="rounded-xl">
+        <v-card>
+          <v-card-text>
+            <v-row class="pt-7">
+              <v-col cols="12">
+                <v-simple-table>
+                  <tbody>
+                    <tr v-if="DetailTreesLahanTempData.planting_details && DetailTreesLahanTempData.land_area < 10000">
+                      <td>Total Available</td>
+                      <td>:</td>
+                      <td><strong> {{ getAvailableBibit(DetailTreesLahanTemp, (DetailTreesLahanTempData.max_seed_amount || getSeedCalculation(DetailTreesLahanTempData, 'total_max_trees')), editedItemPohon) }}</strong> Bibit</td>
+                    </tr>
+                    <tr>
+                      <td>Nama Pohon</td>
+                      <td>:</td>
+                      <td><strong>{{ editedItemPohon.tree_name }}</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Kategori</td>
+                      <td>:</td>
+                      <td><strong>{{ editedItemPohon.tree_category }}</strong></td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-text-field
+                  v-model="editedItemPohon.amount"
+                  label="Jumlah Pohon"
+                  hide-details
+                  rounded
                   outlined
-                  elevation="1"
-                >
-                  Verifikasi
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
-          <!-- Modal Verification -->
-          <v-dialog v-model="dialogVerification" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to Verification?</v-card-title
+                  type="number"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn rounded small color="red" dark @click="closeDetailEditPohon" class="px-3"
               >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeVerification"
-                  >Cancel</v-btn
-                >
-                <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="VerificationItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+              <v-icon small class="mr-1">mdi-close</v-icon>
+              Cancel</v-btn
+            >
+            <v-btn rounded small color="green" :disabled="(DetailTreesLahanTempData.land_area < 10000 && getDisabledSaveItemPohon(DetailTreesLahanTemp, DetailTreesLahanTempData, editedItemPohon)) || editedItemPohon.amount < 0" @click="saveEditPohonTemp" class="px-3 white--text"
+            >
+              <v-icon small class="mr-1">mdi-check</v-icon>
+              Set</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-          <!-- Modal Delete -->
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
+      <!-- Modal Detail -->
+      <v-dialog v-model="dialogDetail" max-width="800px" scrollable persistent content-class="rounded-xl">
+        <v-card rounded="xl">
+          <v-card-title class="mb-1 headermodalstyle">
+            <span class="">Detail Sosialisasi Tanam</span>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <!-- Loader -->
+            <v-container
+              v-if="load == true"
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+            >
+              <v-layout justify-center align-center>
+                <v-progress-circular
+                  :size="80"
+                  :width="10"
+                  indeterminate
+                  color="success"
+                >
+                </v-progress-circular>
+              </v-layout>
+            </v-container>
+            <!-- Content -->
+            <v-container v-if="load == false">
+              <v-divider
+                style="background-color: black !important"
+              ></v-divider>
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    <tr>
+                      <th
+                        class="text-left"
+                        style="width: 200px; font-size: 14px"
+                      >
+                        Form No
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.form_no }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th
+                        class="text-left"
+                        style="width: 200px; font-size: 14px"
+                      >
+                        Tahun Program
+                      </th>
+                      <th class="text-left" style="font-size: 14px">
+                        {{ defaultItem.planting_year }}
+                      </th>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Nama Petani
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.nama_petani }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        No Ktp
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.ktp_no }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Alamat
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.alamat }}</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+              <v-divider
+                style="background-color: black !important"
+              ></v-divider>
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    <tr>
+                      <th
+                        class="text-left"
+                        style="width: 200px; font-size: 14px"
+                      >
+                        Opsi Pola Tanam
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.opsi_pola_tanam }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Status Kepimilikan Lahan
+                      </th>
+                      <th class="text-left" style="font-size: 14px">
+                        {{ defaultItem.type_sppt }}
+                      </th>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        No Dokumen Lahan
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.document_no }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Luas Lahan dan Tutupan Lahan
+                      </th>
+                      <th class="text-left" style="font-size: 14px">
+                        {{ defaultItem.land_area }}m<sup>2</sup> dan
+                        {{ defaultItem.tutupan_lahan }}%
+                      </th>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Pembuatan Lubang Tanam
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ gettanggal(defaultItem.pembuatan_lubang_tanam) }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Waktu Distribusi Bibit
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ gettanggal(defaultItem.distribution_time) }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Lokasi Distribusi Bibit
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.distribution_location }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
+                        Waktu Penanaman Petani
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ gettanggal(defaultItem.planting_time) }}</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+              <v-divider
+                style="background-color: black !important"
+              ></v-divider>
+              <div>
+                <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
+                <v-simple-table v-if="defaultItem.max_seed_amount && defaultItem.planting_details">
+                  <tbody>
+                    <tr>
+                      <td>Max Kayu 
+                        {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>:</td>
+                      <td><strong>{{ defaultItem.max_seed_amount }}</strong> Bibit</td>
+                    </tr>
+                    <tr>
+                      <td>Total Kayu {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>:</td>
+                      <td>
+                        <v-btn
+                          rounded
+                          dark
+                          :color="getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount)"
+                          class="pr-2"
+                        >
+                          {{ 
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +  
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'MPTS')
+                          }} Bibit
+                          <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
+                        </v-btn>
+                      </td>
+                    </tr>
+                    <tr v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'CROPS') > 0">
+                      <td>Total Crops</td>
+                      <td>:</td>
+                      <td>
+                        <strong>
+                          {{ 
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'CROPS')
+                          }}
+                        </strong> Bibit
+                      </td>
+                    </tr>
+                  </tbody>
+                </v-simple-table>
+                <h3 class="ml-1">
+                  <v-data-table
+                    :headers="headersdetail"
+                    :items="defaultItem.planting_details"
+                    class="elevation-1"
+                  >
+                    <!-- <template v-slot:item.tree_category="{ item }">
+                              {{ gettype(item.tree_category) }}
+                            </template> -->
+                  </v-data-table>
+                </h3>
+              </div>
+              <v-divider
+                style="background-color: black !important"
+              ></v-divider>
+              <v-row class="mt-2">
+                <v-col cols="12" md="6" lg="4">
+                  <p>Tanda Tangan Petani</p>
+                  <v-img
+                    aspect-ratio="1"
+                    lazy-src=""
+                    class="rounded-lg cursor-pointer elevation-5"
+                    transition="fade-transition"
+                    :src="(`${$store.state.apiUrlImage}${defaultItem.signature}`)"
+                    @click="() => {preview.signature.url = (`${$store.state.apiUrlImage}${defaultItem.signature}`); preview.signature.modal = true}"
+                  >
+                    <template v-slot:placeholder>
+                      <v-skeleton-loader
+                        class="mx-auto rounded-lg"
+                        type="image"
+                      ></v-skeleton-loader>
+                    </template>
+                  </v-img>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-btn
+              dark
+              color="red"
+              class="px-5"
+              rounded
+              @click="() => {dialogDetail = false;disabledVerification = false}"
+              outlined
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Close
+            </v-btn>
+            <v-spacer></v-spacer>
+            <p class="red--text small mb-0" v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < 1">
+              Kayu masih 0!
+            </p>
+            <v-btn
+              v-if="RoleAccesCRUDShow == true && defaultItem.waitingapproval == true"
+              color="success"
+              rounded
+              @click="verifSubmit()"
+              :disabled="
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0 
+                || 
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0 
+                ||
+                (defaultItem.land_area < 10000 
+                &&
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'red')"
+              elevation="1"
+              class="px-5 white--text"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Verifikasi
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Verification -->
+      <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class=" justify-center"
+            >Are you sure you want to <strong> Verification</strong>?
+            <small class="red--text">this can't be undo</small>
+            </v-card-title
+          >
+          <v-card-actions class="pb-3">
+            <v-spacer></v-spacer>
+            <v-btn color="red white--text" class="px-4" rounded @click="closeVerification"
               >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Cancel</v-btn
+            >
+            <v-btn
+              color="success"
+              class="px-4"
+              rounded
+              @click="VerificationItemConfirm"
+              >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              OK</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Delete -->
+      <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex justify-center"
+            >Are you sure you want to delete this item?</v-card-title
+          >
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn color="orange white--text" rounded small @click="closeDelete" class="px-4">
+              <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="red white--text" rounded small @click="deleteItemConfirm" class="px-4">
+              <v-icon class="mr-1" small>mdi-delete</v-icon>
+              OK
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Modal Unverif -->
+      <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex justify-center"
+            >Are you sure you want to UNVERIF this item?</v-card-title
+          >
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn color="orange white--text" rounded small @click="dialogUnverif = false" class="px-4">
+              <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn color="red white--text" rounded small @click="unverifItemConfirm" class="px-4">
+              <v-icon class="mr-1" small>mdi-undo</v-icon>
+              OK
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <!-- Preview Signature Modal -->
+      <v-dialog v-model="preview.signature.modal" max-width="500px" content-class="rounded-xl" scrollable>
+        <v-card class="rounded-xl">
+          <v-card-title>
+            Preview Signature Photo
+          </v-card-title>
+          <v-card-text class="pa-1 fontall">
+            <v-container>
+              <v-img
+                class="w-100 rounded-lg"
+                :lazy-src="`${preview.signature.url}`"
+                :src="`${preview.signature.url}`"
+              >
+                <template v-slot:placeholder>
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    type="image"
+                  ></v-skeleton-loader>
+                </template>
+              </v-img>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="red"
+              elevation="1"
+              outlined
+              class="rounded-lg"
+              @click="preview.signature.modal = false"
+            >
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    <!-- END: MODAL -->
+
+    <!-- Main Table -->
+    <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
+      class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+      :headers="headers"
+      :items="dataobject"
+      :loading="loadtable"
+      :options.sync="table.options"
+      :server-items-length="table.datas.total"
+      loading-text="Loading... Please wait"
+      :page="table.pagination.current_page"
+      :footer-props="{
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
+    >
+
+      <template v-slot:top>
+          <v-row class="pt-3 px-2">
+            <v-col cols="12" lg="6" class="d-flex align-center">
+              <!-- dropdown filter button -->
+              <v-menu
+                rounded="xl"
+                bottom
+                right
+                offset-y
+                transition="slide-y-transition"
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    dark
+                    class=""
+                    color="warning"
+                    v-bind="attrs"
+                    v-on="on"
+                    rounded
+                  >
+                    <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+                  </v-btn>
+                </template>
+    
+                <v-list class="d-flex flex-column align-center">
+                  <v-list-item>
+                    <v-btn
+                      rounded
+                      dark
+                      class="px-9"
+                      @click="showFilterArea()"
+                      color="green"
+                    >
+                      <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
+                      by Area
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      v-if="RoleAccesFilterShow == true"
+                      rounded
+                      dark
+                      class="mx-3 mt-1"
+                      @click="showFilterEmployee()"
+                      color="green"
+                    >
+                      <v-icon class="mx-2" small>mdi-account-group</v-icon> 
+                      by Employee
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+              <!-- Program Year -->
+              <v-select
+                color="success"
+                item-color="success"
+                v-model="program_year"
+                :items="$store.state.programYear.options"
+                outlined
+                dense
+                hide-details
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Program Year"
+                class="mx-auto mx-lg-3"
+                style="max-width: 200px"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
+              <v-btn
+                dark
+                rounded
+                @click="showAddModal()"
+                color="green"
+              >
+                <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add FF Sostam
+              </v-btn>
+              <!-- dropdown export button -->
+              <v-menu
+                rounded="xl"
+                bottom
+                left
+                offset-y
+                transition="slide-y-transition"
+                :close-on-content-click="false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon v-bind="attrs" v-on="on" color="dark">
+                    mdi-dots-vertical
+                  </v-icon>
+                </template>
+      
+                <v-list class="d-flex flex-column align-center">
+                  <v-list-item v-if="false">
+                    <v-btn
+                      v-if="RoleAccesCRUDShow == true"
+                      dark
+                      class=""
+                      @click="showAddModal()"
+                      color="green"
+                    >
+                      <v-icon small>mdi-plus</v-icon> Add
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      :disabled="!valueMU && typegetdata == 'all'"
+                      rounded
+                      @click="downloadSuperAdmin()"
+                      color="blue white--text"
+                    >
+                      <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-col>
+            <v-fab-transition>
+              <v-btn
+                class="d-lg-none mb-16"
+                color="green"
+                dark
+                fixed
+                bottom
+                right
+                fab
+                @click="showAddModal()"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </v-fab-transition>
+          </v-row>
+          <v-row class="pb-4 px-2">
+            <v-col cols="12" lg="6">
+              <!-- Page Table -->
+              <v-select
+                v-model="table.pagination.current_page"
+                :items="table.pagination.page_options"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Page"
+                class="centered-select"
+                style="width: 50%;max-width: 100px;"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" lg="6" class="d-flex">
+              <!-- Select Search Field -->
+              <v-select
+                color="success"
+                item-color="success"
+                v-model="table.search.field"
+                :items="table.search.options.column"
+                item-value="value"
+                item-text="text"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Kolom Search"
+                class="centered-select"
+                style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+              ></v-select>
+              <!-- Search Input -->
+              <v-text-field
+                color="success"
+                item-color="success"
+                v-if="table.search.field != 'opsi_pola_tanam' && table.search.field != 'validation'"
+                v-model="table.search.value"
+                append-icon="mdi-magnify"
+                outlined
+                dense
+                rounded
+                label="Search"
+                hide-details
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                :loading="table.search.options.column_loading"
+              ></v-text-field>
+              <v-select
+                v-else-if="table.search.field == 'opsi_pola_tanam'"
+                color="success"
+                item-color="success"
+                v-model="table.search.value"
+                :items="table.search.options.pola_tanam"
+                placeholder="All"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                clearable
+                label="Pilih Opsi Pola Tanam"
+                class="centered-select"
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                :loading="table.search.options.pola_tanam_loading"
+              ></v-select>
+              <v-select
+                v-else
+                color="success"
+                item-color="success"
+                v-model="table.search.value"
+                :items="table.search.options.validation"
+                item-value="value"
+                item-text="text"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Status"
+                class="centered-select"
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+              ></v-select>
+            </v-col>
+          </v-row>
       </template>
 
+      <!-- index column -->
+      <template v-slot:item.index="{item, index}">
+        <span v-if="loadtable == false">
+          {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
+        </span>
+        <v-progress-circular
+          v-else
+          indeterminate
+          color="green"
+          size="20"
+        ></v-progress-circular>
+      </template>
+
+      <!-- Luas Lahan kolom -->
+      <template v-slot:item.land_area="{ item }">
+        {{ numberFormat(item.land_area) }} m<sup>2</sup>
+      </template>
+
+      <!-- Total Bibit kolom -->
+      <template v-slot:item.trees_total="{ item }">
+        {{ numberFormat(item.trees_total) }}
+      </template>
+
+      <!-- Color Status -->
+      <template v-slot:item.validation="{ item }">
+        <v-chip :color="getColorStatus(item.validation)" dark>
+          {{ item.validation == 1 ? 'Verified FC' : (item.validation == 0 ? 'Unverified' : '-') }}
+        </v-chip>
+      </template>
       <!-- Action table -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          class="mr-2"
-          @click="showEditDetailModal(item)"
-          small
-          color="warning"
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
         >
-          mdi-pencil
-        </v-icon>
-        <!-- <v-icon
-          v-if="RoleAccesPrintLabelShow == true"
-          class="mr-2"
-          @click="showPrintModal(item)"
-          small
-          color="green"
-        >
-          mdi-printer
-        </v-icon> -->
-        <v-icon
-          v-if="RoleAccesCRUDShow == true"
-          @click="showDeleteModal(item)"
-          small
-          color="red"
-        >
-          mdi-delete
-        </v-icon>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-list class="d-flex flex-column align-stretch">
+            <v-list-item>
+              <v-btn
+                dark
+                class="w-100"
+                rounded
+                @click="showDetail(item)"
+                color="info"
+                block
+              >
+              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                  mdi-information-outline
+              </v-icon>
+                Detail
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+              <v-btn
+                vi
+                dark
+                class="px-7"
+                rounded
+                @click="showEditDetailModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+                Edit
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation == 1) && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')">
+              <v-btn
+                rounded
+                @click="showUnverifModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-undo
+              </v-icon>
+                Unverif
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+              <v-btn
+                dark
+                rounded
+                @click="showDeleteModal(item)"
+                color="red"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-delete
+              </v-icon>
+                Delete
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        
       </template>
     </v-data-table>
 
+    <!-- Snackbar -->
     <v-snackbar
       v-model="snackbar"
       :color="colorsnackbar"
       :timeout="timeoutsnackbar"
+      rounded="xl"
     >
-      {{ textsnackbar }}
+      <div class="d-flex justify-between">
+        <p class="mb-0">
+          {{ textsnackbar }}
+        </p>
+        <v-icon small class="pl-1" @click="snackbar = false">mdi-close-circle</v-icon>
+      </div>
     </v-snackbar>
   </div>
 </template>
 
 <script>
 // import ModalFarmer from "./ModalFarmer";
+import Swal from 'sweetalert2'
 import axios from "axios";
+import moment from "moment";
+import LottieAnimation from 'lottie-web-vue'
+
+import treeAnimation from '@/assets/lottie/tree.json'
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
   name: "SosialisasiTanam",
-  authtoken: "",
+  components: {
+    LottieAnimation
+  },
   data: () => ({
+    authtoken: "",
+    dialogAdd: {
+      show: false,
+      loading: false,
+
+    },
+    dialogUnverif: false,
+    program_year: '2022',
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
+    datepicker2Show: false,
+    datepicker2Loading: false,
+    datepicker2NotAvailable: [],
+    datepicker2Key: 101,
+    datepicker2Key2: 1011,
     datepicker3: new Date().toISOString().substr(0, 10),
     rules: [
       (value) => !!value || "Required.",
@@ -796,18 +1676,17 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "No Form", value: "form_no", width: "15%" },
-      {
-        text: "No Lahan",
-        align: "start",
-        value: "no_lahan",
-        width: "10%",
-      },
-      { text: "Nama Petani", value: "nama_petani", width: "17%" },
-      { text: "Tahun Tanam", value: "planting_year", width: "15%" },
-      { text: "Field Facilitator", value: "nama_ff", width: "15%" },
-      { text: "Status", value: "status", width: "13%" },
-      { text: "Actions", value: "actions", sortable: false, width: "18%" },
+      { text: "No", value: "index", sortable: false, align: 'center'},
+      { text: "No Form", value: "form_no"},
+      { text: "Field Facilitator", value: "nama_ff"},
+      { text: "Nama Petani", value: "nama_petani"},
+      { text: "No Lahan", align: "center", value: "no_lahan"},
+      { text: "Luas Lahan", align: "center", value: "land_area"},
+      { text: "Pola Tanam", align: "center", value: "opsi_pola_tanam"},
+      { text: "Total Bibit", align: "center", value: "trees_total", sortable: false},
+      { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
+      { text: "Status", align: "center", value: "validation"},
+      { text: "Actions", align: "right", value: "actions", sortable: false},
     ],
 
     headersdetail: [
@@ -816,12 +1695,13 @@ export default {
       { text: "Jumlah", value: "amount", width: "15%" },
     ],
     headersdetaileditjumlah: [
-      { text: "Nama Pohon", value: "tree_name", width: "20%" },
-      { text: "Kategori", value: "tree_category", width: "20%" },
-      { text: "Jumlah", value: "amount", width: "15%" },
-      { text: "Actions", value: "actions", sortable: false, width: "15%" },
+      { text: "Nama Pohon", value: "tree_name"},
+      { text: "Kategori", value: "tree_category"},
+      { text: "Jumlah", value: "amount", align: 'center' },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     DetailTreesLahanTemp: [],
+    DetailTreesLahanTempData: {},
     dataobject: [],
     editedItem: {
       name: "",
@@ -840,6 +1720,7 @@ export default {
       form_no: "",
       ktp_no: "",
       luas_lahan: "",
+      land_area: "",
       luas_tanam: "",
       nama_petani: "",
       no_lahan: "",
@@ -852,9 +1733,12 @@ export default {
       validate_name: "",
       validation: "",
       waitingapproval: false,
+      max_seed_amount: '',
+      tutupan_lahan: '',
 
       planting_details: [],
     },
+    disabledVerification: false,
     itemsTahun: [
       { text: "2019", value: "2019" },
       { text: "2020", value: "2020" },
@@ -937,35 +1821,268 @@ export default {
       tree_code: "",
       tree_name: "",
     },
+    table: {
+      search: {
+        options: {
+          column: [],
+          column_loading: false,
+          pola_tanam: [],
+          pola_tanam_loading: false,
+          validation: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified FC',
+            value: 1
+          }]
+        },
+        field: 'form_no',
+        value: ''
+      },
+      datas: {
+        total: 0,
+      },
+      pagination: {
+        current_page: 1,
+        per_page: 10,
+        length_page: 0,
+        page_options: []
+      },
+      options: {},
+      farmer_attendance: [],
+      lahans: {
+        expanded: [],
+        header: [
+          { text: "No", value: "index"},
+          { text: "Petani", value: "farmer_name"},
+          { text: "Total Lahan", value: "total_lahan"},
+          { text: "Total Kayu", value: "total_kayu", align: 'center'},
+          { text: "Total MPTS", value: "total_mpts", align: 'center'},
+          { text: "Kehadiran", value: "data-table-select", align: 'right', sortable: false},
+        ],
+        items: [],
+        loading: false,
+        dialogs: {
+          trees: {
+            show: false,
+            datas: null,
+            maxSeeds: {}
+          }
+        }
+      }
+    },
+    preview: {
+      signature: {
+        modal: false,
+        url: '',
+      },
+    },
+    options: {
+      ff: {
+        items: [],
+        loading: false,
+        model: ''
+      }
+    },
+    dataToStore: {
+      selectedFF: {},
+      hasSostam: false,
+      training_material: 'TR010',
+      distribution_time: '',
+      distribution_location: '',
+      planting_time: '',
+      penlub_time: '',
+      lahans: []
+    },
+    training_material_items: [],
+    maps:{
+      accessToken: '',
+      attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
+      center: [113.921300, -0.789300],
+      geojson: {},
+      hoveredStateId: 0,
+      key: 111,
+      layerId: 0,
+      layerStyle: {
+          outline: {
+              color: '#000000'
+          },
+          fill: {
+              color: '#f06800'
+          },
+      },
+      legends: {
+          model: ''
+      },
+      listMarker: [],
+      loading: {
+        show: false,
+        text: 'Loading...'
+      },
+      location: {lng: '', lat: ''},
+      mapStyle: '',
+      model: null,
+      popup: {
+          model: false,
+          content: {
+          title: '',
+          description: ''
+          }
+      },
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      zoom: 3,
+    },
+    lottie: {
+        data: {
+            loading: treeAnimation,
+        }
+    },
   }),
-  computed: {
-    // formTitle() {
-    //   return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    // },
+  watch: {
+    'table.options': {
+        handler(newValue) {
+          let {page, itemsPerPage, sortBy} = newValue
+          this.table.pagination.current_page = page
+          this.table.pagination.per_page = itemsPerPage
+          this.initialize()
+        },
+        deep: true
+    },
+    'table.search.value': {
+        handler() {
+          setTimeout(() => {
+            this.initialize()
+          }, 1000);
+        },
+        deep: true
+    },
+    'table.search.field': {
+      handler(newValue) {
+        if (newValue == 'opsi_pola_tanam') {
+          this.getOpsiPolaTanamOptions()
+        }
+      }
+    },
+    program_year(newYear) {
+      this.initialize()
+    },
+    'dataToStore.distribution_time': {
+      handler(newValue) {
+        this.dataToStore.penlub_time = moment(newValue).subtract(14, 'days')
+        this.dataToStore.planting_time = moment(newValue).add(7, 'days')
+      }
+    },
+    'datepicker2': {
+      handler(newValue) {
+        this.datepicker1 = moment(newValue).subtract(14, 'days')
+        this.datepicker3 = moment(newValue).add(7, 'days')
+      }
+    },
+    'datepicker2Show': {
+      async handler(newValue) {
+        if (newValue == true) {
+          await this.setUnavailableDistributionDates()
+        }
+      }
+    },
+    'menu2': {
+      async handler(newValue) {
+        if (newValue == true) {
+          // await this.setUnavailableDistributionDates()
+        }
+      }
+    }
   },
 
-  created() {
+  mounted() {
     this.firstAccessPage();
+    // if (this.User.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
+  },
+  destroyed() {
+    // this.$store.state.maintenanceOverlay = false
+    
+    // reset loading overlay
+    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlayText = null
   },
 
   methods: {
-    firstAccessPage() {
+    async errorResponse(error) {
+        console.log(error)
+        if (error.response) {
+            if (error.response.status) {
+                if (error.response.status == 401) {
+                    const confirm = await Swal.fire({
+                        title: 'Session Ended!',
+                        text: "Please login again.",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    if (confirm) {
+                        localStorage.removeItem("token");
+                        this.$router.push("/");
+                    }
+                }
+                if (error.response.status === 500 || error.response.status === 400) {
+                    let errMessage = error.response.data.message
+                    if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                    Swal.fire({
+                        title: 'Error!',
+                        text: `${errMessage || error.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    })
+                }
+            }
+        }
+    },
+    async firstAccessPage() {
+      this.program_year = this.$store.state.programYear.model
+      this.maps.accessToken = this.$store.state.maps.accessToken
+      this.maps.mapStyle = this.$store.state.maps.mapStyle
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
+      this.typegetdata = this.User.ff.value_data == '-' ? 'all' : this.User.ff.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+      this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
+
+      // get search options column
+      this.table.search.options.column_loading = true
+      let searchColumns = ['form_no', 'nama_ff', 'nama_petani', 'no_lahan', 'land_area', 'opsi_pola_tanam', 'validation']
+      // set search column options
+      await this.headers.forEach(val => {
+        if (searchColumns.includes(val.value)) {
+          this.table.search.options.column.push(val)
+        }
+      })
+      this.table.search.options.column_loading = false
+
       // this.fc_no_global = this.User.fc.fc;
-      this.checkRoleAccess();
-      this.initialize();
-      this.getMU();
-      this.getEthnic();
-      this.getJob();
-      this.getFF();
-      this.getUMAll();
-      this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
+      await this.checkRoleAccess();
+      await this.getMU();
+      await this.getEthnic();
+      await this.getJob();
+      await this.getFF();
+      await this.getUMAll();
+      this.training_material_items = await this.callApiGet('GetTrainingMaterials')
+    },
+    async callApiGet(url) {
+        try {
+            const response = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+            if (response) {
+                const data = response.data.data.result
+                return data
+            } else return null
+        } catch (error) { this.errorResponse(error)}
     },
     checkRoleAccess() {
       if (this.User.role_group == "IT") {
@@ -1007,55 +2124,126 @@ export default {
         }
       }
     },
-    getColorStatus(status) {
-      if (status == "Belum Verifikasi") return "red";
-      else return "green";
-    },
     async initialize() {
       this.loadtable = true;
-      // console.log(this.User.ff.ff);
-      try {
-        const response = await axios.get(
+      this.$store.state.loadingOverlayText = 'Getting sostam datas...'
+      this.$store.state.loadingOverlay = true
+      await this.getTableData().then(data => {
+        this.dataobject = data.items
+        this.table.datas.total = data.total
+        this.table.pagination.current_page = data.current_page
+        this.table.pagination.length_page = data.last_page
+        const pageOptions = []
+        for (let index = 1; index <= data.last_page; index++) {
+          pageOptions.push(index)          
+        }
+        this.table.pagination.page_options = pageOptions
+      }).finally(() => {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+        this.loadtable = false
+      })
+    },
+    getTableData() {
+      return new Promise((resolve, reject) => {
+        const params = new URLSearchParams({
+          program_year: this.program_year,
+          page: this.table.pagination.current_page,
+          per_page: this.table.pagination.per_page,
+          sortBy: this.table.options.sortBy || '',
+          sortDesc: this.table.options.sortDesc || '',
+          search_column: this.table.search.field || '',
+          search_value: this.table.search.value || '',
+          mu: this.valueMU,
+          ta: this.valueTA,
+          village: this.valueVillage,
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode,
+        })
+        axios.get(
           this.BaseUrlGet +
-            "GetSosisalisasiTanamAdmin?mu=" +
-            this.valueMU +
-            "&ta=" +
-            this.valueTA +
-            "&village=" +
-            this.valueVillage +
-            "&typegetdata=" +
-            this.typegetdata +
-            "&ff=" +
-            this.valueFFcode,
+            "GetSosisalisasiTanamAdmin?" + params,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
             },
           }
-        );
-        // console.log(response.data.data.result.data);
-        if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
-          this.valueMUExcel = this.valueMU;
-          this.valueTAExcel = this.valueTA;
-          this.valueVillageExcel = this.valueVillage;
-          this.typegetdataExcel = this.typegetdata;
-          this.valueFFcodeExcel = this.valueFFcode;
-          this.loadtable = false;
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
+        ).then(res => {
+          if (typeof res.data.data.result !== 'undefined') {
+            let items = res.data.data.result.data
+            const total = res.data.data.result.total
+            const current_page = res.data.data.result.current_page
+            const last_page = res.data.data.result.last_page
+            resolve({
+              items,
+              total,
+              current_page,
+              last_page
+            })
+          } else {
+            reject('Error')
+          }
+        }).catch(err => {
+          this.sessionEnd(err)
+          reject(err)
+        })
+      })
+    },
+
+    async createSostamByFF() {
+      try {
+
+        this.dialogAdd.show = false
+        this.$store.state.loadingOverlay = true
+
+        let dataToStore = {
+          ff_no: this.options.ff.model,
+          lahans: this.table.lahans.items,
+          program_year: 2022,
+          distribution_time: this.dataToStore.distribution_time,
+          distribution_longitude: this.maps.location.lng,
+          distribution_latitude: this.maps.location.lat,
+          distribution_location: this.dataToStore.distribution_location,
+          distribution_location: this.dataToStore.distribution_location,
+          training_material: this.dataToStore.training_material,
+          planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
+          penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
         }
-      } catch (error) {
-        console.error(error);
-        if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
-          this.loadtable = false;
+
+        // await this.setUnavailableDistributionDates()
+        const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
+        if (isUnavailableDate == true) {
+          this.dataToStore.distribution_time = ''
+          this.colorsnackbar = 'red'
+          this.textsnackbar = `Tanggal distribusi sudah penuh!`
+          this.timeoutsnackbar = 10000
+          this.snackbar = true
         } else {
-          this.dataobject = [];
-          this.loadtable = false;
+          // const res = await axios.post(
+          //   this.BaseUrlGet + "createSostamByFF",
+          //   dataToStore,
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ` + this.authtoken
+          //     },
+          //   }
+          // )
+          console.log(dataToStore)
+          // reset form create value
+          this.options.ff.model = ''
+          this.table.lahans.items = []
+          this.dataToStore.distribution_location = ''
+          
+          this.initialize()
+          this.colorsnackbar = 'green'
+          this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
+          this.timeoutsnackbar = 10000
+          this.snackbar = true
         }
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.$store.state.loadingOverlay = false
       }
     },
 
@@ -1069,7 +2257,6 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemsMU = response.data.data.result;
           // this.dataobject = response.data.data.result;
@@ -1100,7 +2287,6 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsTA = response.data.data.result;
@@ -1242,6 +2428,19 @@ export default {
         console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
+          this.defaultItem.land_area = response.data.data.result.luas_lahan
+          if (this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') {
+            let maxSeedTrue = parseInt(this.getSeedCalculation(this.defaultItem, 'total_max_trees'))
+            let totalBibitMPTSKAYU = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
+            let separator = maxSeedTrue - totalBibitMPTSKAYU
+            console.log('separator = ' + separator)
+            if (separator < 0 && this.defaultItem.land_area < 10000) {
+              this.disabledVerification = true
+            }
+
+            // set max_seed_amount
+            this.defaultItem.max_seed_amount = maxSeedTrue
+          }
           this.defaultItem.waitingapproval = this.waitingapprovefunct(
             response.data.data.result.validation
           );
@@ -1276,6 +2475,7 @@ export default {
       const datapost = {
         form_no: this.defaultItem.form_no,
         validate_by: this.employee_no,
+        max_seed_amount: this.defaultItem.max_seed_amount
       };
       console.log(datapost);
       // this.dialogDetail = false;
@@ -1433,7 +2633,6 @@ export default {
           this.$router.push("/");
         }
       }
-      console.log(this.valueFFcode);
     },
 
     async addData() {
@@ -1483,7 +2682,7 @@ export default {
         ff_no: this.defaultItem.ff_no,
         farmer_no: this.defaultItem.farmer_no,
         no_lahan: this.defaultItem.no_lahan,
-        planting_year: this.defaultItem.planting_year,
+        program_year: this.defaultItem.planting_year,
         pembuatan_lubang_tanam: this.datepicker1,
         distribution_time: this.datepicker2,
         planting_time: this.datepicker3,
@@ -1491,9 +2690,11 @@ export default {
       };
       console.log(datapost);
       this.dialogDetail = false;
+      this.dialog = false;
       try {
+        this.$store.state.loadingOverlay = true
         const response = await axios.post(
-          this.BaseUrlGet + "UpdateSosisalisasiTanam",
+          this.BaseUrlGet + "UpdateSosialisasiTanamPeriod",
           datapost,
           {
             headers: {
@@ -1503,6 +2704,7 @@ export default {
         );
         console.log(response.data.data.result);
         if (response.data.data.result == "success") {
+          this.$store.state.loadingOverlay = false
           this.dialog = false;
           this.snackbar = true;
           this.colorsnackbar = "green";
@@ -1510,11 +2712,13 @@ export default {
           this.initialize();
         } else {
           this.dialog = true;
+          this.$store.state.loadingOverlay = false
         }
       } catch (error) {
         console.error(error.response);
         if (error.response.status == 401) {
           this.dialog = true;
+          this.$store.state.loadingOverlay = false
         }
       }
     },
@@ -1653,10 +2857,11 @@ export default {
         this.typegetdata = this.User.ff.value_data;
       }
     },
-    showDetail(item) {
+    async showDetail(item) {
       this.type = "Detail";
       this.dialogDetail = true;
-      this.getDetail(item);
+      this.disabledVerification = false
+      await this.getDetail(item);
     },
 
     selectedMUForm(a) {
@@ -1726,9 +2931,9 @@ export default {
       this.dialogFilterEmp = true;
     },
     resetFilter() {
-      this.valueMU = "";
-      this.valueFC = "";
-      this.valueVillage = "";
+      // this.valueMU = "";
+      // this.valueTA = "";
+      // this.valueVillage = "";
       this.selectMU = "";
       this.selectTA = "";
       this.selectVillage = "";
@@ -1737,8 +2942,8 @@ export default {
       this.valueFC = "";
       this.selectUM = "";
       this.selectFC = "";
-      this.valueFFcode = this.User.ff.ff;
-      this.typegetdata = this.User.ff.value_data;
+      // this.valueFFcode = this.User.ff.ff;
+      // this.typegetdata = this.User.ff.value_data;
     },
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;
@@ -1751,30 +2956,6 @@ export default {
       await this.initialize();
       await this.resetFilter();
       this.dialogFilterEmp = false;
-    },
-
-    showAddModal() {
-      this.load = false;
-      // console.log(localStorage.getItem("token"));
-      this.defaultItem.id = "";
-      this.defaultItem.form_no = "";
-      this.defaultItem.nama = "";
-      this.defaultItem.name = "";
-      this.defaultItem.ktp_no = "";
-      this.defaultItem.farmer_no = "";
-      this.defaultItem.side_income = "";
-      this.defaultItem.ff_no = "";
-
-      this.defaultItem.no_lahan = "";
-      this.defaultItem.planting_year = "";
-      this.defaultItem.distribution_location = "";
-
-      this.datepicker1 = "";
-      this.datepicker2 = "";
-      this.datepicker3 = "";
-
-      this.formTitle = "Add data";
-      this.dialog = true;
     },
     async showEditModal() {
       this.type = "Edit";
@@ -1794,10 +2975,8 @@ export default {
       await this.getDetail(this.itemTemp);
 
       this.DetailTreesLahanTemp = this.defaultItem.planting_details;
-      // await this.getTA("form");
-      // await this.getVillage("form");
-      // this.getPetani();
-      console.log(this.DetailTreesLahanTemp.length);
+      this.DetailTreesLahanTempData = this.defaultItem
+      
       if (this.DetailTreesLahanTemp.length == 0) {
         this.snackbar = true;
         this.colorsnackbar = "red";
@@ -1841,7 +3020,9 @@ export default {
         form_no: this.defaultItem.form_no,
         list_pohon: this.DetailTreesLahanTemp,
         detail_year: datenow,
+        max_seed_amount: this.defaultItem.max_seed_amount,
       };
+
 
       console.log(datapost);
       this.updateDataPohon(datapost);
@@ -1863,6 +3044,8 @@ export default {
     editDetailPohon(item) {
       console.log(item);
       this.editedItemPohon.amount = item.amount;
+      this.editedItemPohon.tree_name = item.tree_name;
+      this.editedItemPohon.tree_category = item.tree_category;
       this.idPohonTemp = item.id;
       this.editedIndexPohon = this.DetailTreesLahanTemp.indexOf(item);
       this.editedItemPohon = Object.assign({}, item);
@@ -1888,6 +3071,43 @@ export default {
       console.log(item.form_no);
       this.defaultItem.form_no = item.form_no;
       this.dialogDelete = true;
+    },
+
+    showUnverifModal(item) {
+      // console.log(item.form_no);
+      this.defaultItem.form_no = item.form_no;
+      this.dialogUnverif = true;
+    },
+    async unverifItemConfirm() {
+      const datapost = {
+        form_no: this.defaultItem.form_no,
+      };
+      // this.dialogDetail = false;
+      try {
+        this.dialogUnverif = false
+        this.$store.state.loadingOverlayText = 'Unverification data...'
+        this.$store.state.loadingOverlay = true
+        await axios.post(
+          this.BaseUrlGet + "UnverificationSosisalisasiTanam",
+          datapost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        await this.initialize();
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      } finally {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+      }
     },
 
     deleteItemConfirm() {
@@ -2000,24 +3220,21 @@ export default {
     },
 
     downloadSuperAdmin() {
-      console.log(this.valueMUExcel);
-      console.log(this.valueTAExcel);
-      console.log(this.valueVillageExcel);
-      console.log(this.typegetdataExcel);
-      console.log(this.valueFFcodeExcel);
       var str = this.BaseUrlGet;
       window.open(
         str.substring(0, str.length - 4) +
           "ExportSostamAllSuperAdmin?mu=" +
-          this.valueMUExcel +
+          this.valueMU +
           "&ta=" +
-          this.valueTAExcel +
+          this.valueTA +
           "&village=" +
-          this.valueVillageExcel +
+          this.valueVillage +
           "&typegetdata=" +
-          this.typegetdataExcel +
+          this.typegetdata +
           "&ff=" +
-          this.valueFFcodeExcel
+          this.valueFFcode +
+          "&program_year=" +
+          this.program_year
       );
 
       // this.valueMUExcel = "";
@@ -2025,6 +3242,560 @@ export default {
       // this.valueVillageExcel = "";
       // this.typegetdataExcel = "";
       // this.valueFFcodeExcel = "";
+    },
+    getColorStatus(status) {
+      if (status == 0) return "red";
+      else return "green";
+    },
+    async getOpsiPolaTanamOptions() {
+      try {
+        this.table.search.options.pola_tanam_loading = true
+        if (this.table.search.options.pola_tanam.length == 0) {
+          const res = await axios.get(
+            this.BaseUrlGet + "GetOpsiPolaTanamOptions",
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          )
+
+          this.table.search.options.pola_tanam = res.data.data.result
+        }
+      } finally {
+        this.table.search.options.pola_tanam_loading = false
+      }
+    },
+    async selectedKehadiranPetani(items) {
+      this.table.farmer_attendance = items.map(val => {
+        return {
+          farmer_no: val.farmer_no,
+          program_year: this.program_year
+        }
+      })
+      console.log(this.table.farmer_attendance)
+    },
+    async showAddModal() {
+      try {
+        this.dialogAdd.loading = true
+        this.dialogAdd.show = true
+        await this.getFFOptions()
+        await this.initializeMaps()
+      } finally {
+        this.dialogAdd.loading = false
+      }
+    },
+    async getLahansFF() {
+      try {
+        this.table.lahans.loading = true
+
+        const params = new URLSearchParams({
+          ff_no: this.options.ff.model,
+          program_year: this.program_year
+        })
+        const res = await axios.get(
+          this.BaseUrlGet + `getFFLahanSostam?${params}`,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        this.dataToStore.selectedFF = res.data.data.result.ff
+        this.table.lahans.items = res.data.data.result.lahans
+        this.dataToStore.hasSostam = res.data.data.result.sostam > 0 ? true : false
+      } catch (err) {
+        console.log(err.response)
+      } finally {
+        this.table.lahans.loading = false
+      }
+    },
+    async getFFOptions() {
+      try {
+        this.options.ff.loading = true
+
+        const params = new URLSearchParams({
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode.join(),
+          program_year: this.program_year
+        })
+        
+        const res = await axios.get(
+          this.BaseUrlGet + `getFFOptionsSostam?${params}`,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        this.options.ff.items = res.data.data.result
+      } catch (err) {
+        console.log(err.response)
+      } finally {
+        this.options.ff.loading = false
+      }
+    },
+    // Utilities
+    calendarGetNurseryColor(n, total, date) {
+        let maxFF = this.calendarGetMaxFF(n, date)
+        
+        if (total === maxFF) {
+            return 'green'
+        } else if (total > maxFF) {
+            return 'red'
+        } else {
+            return 'yellow'
+        }
+    },
+    calendarGetMaxFF(n, date) {
+        if (n == 'Arjasari') {
+            if (date >= '2022-12-21' && date <= '2022-12-31') {
+                return 8
+            } else if (date >= '2023-01-01' && date <= '2023-01-31') {
+                return 5
+            } else return 4
+        } else if (n == 'Ciminyak') {
+            if (date >= '2022-12-21' && date <= '2022-12-31') {
+                return 8
+            } else return 4
+        } else if (n == 'Kebumen' || n == 'Pati') {
+            return 2
+        } else return 4
+    },
+    dateFormat(date, format) {
+        return moment(date).format(format)
+    },
+    disabledEditPohon(trees = [], category = '', sostam) {
+      let maxBibit = sostam.max_seed_amount || this.getSeedCalculation(sostam, 'total_max_trees')
+      let minKayu = 1
+      
+      let total = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      
+      trees.forEach(treeData => {
+        total[treeData.tree_category] += parseInt(treeData.amount)
+      })
+
+      let totalBibitNow = total.KAYU + total.MPTS + total.CROPS
+
+      console.log('disable edit pohon : ' + total.KAYU )
+
+      if (category != '') {
+        if (category == 'MPTS') {
+          if (total.KAYU < minKayu) {
+            return true
+          } else return false
+        } else return false
+      } else return false
+
+    },
+    generateFormData(data) {
+        let formData= new FormData()
+
+        const objectArray= Object.entries(data)
+
+        objectArray.forEach(([key, value]) => {
+
+            if (Array.isArray(value)){
+            value.map(item => {
+                formData.append(key+'[]' , item)
+            })
+            }else {
+            formData.append(key, value)
+            }
+        })
+        return formData
+    },
+    getAvailableBibit(trees = [], maxSeed = 0, item = null) {
+      let total = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+
+      trees.forEach(val => {
+        if (item.tree_name != val.tree_name) {
+          total[val.tree_category] += parseInt(val.amount)
+        }
+      })
+
+      if (item.tree_category == 'CROPS') {
+        return Math.round(total.KAYU * 20 / 100) - item.amount
+      } else if (item.tree_category == 'KAYU') {
+        return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
+      } else if(item.tree_category == 'MPTS') {
+        if (total.KAYU < Math.round(parseInt(maxSeed) * 60 / 100)) {
+          return Math.round(40/60 * total.KAYU) - item.amount - total.MPTS
+        } else {
+          return parseInt(maxSeed) - item.amount - total.KAYU - total.MPTS
+        }
+      }
+    },
+    getDisabledSaveItemPohon(listEditPohon, dataSostamEditPohon, editPohon) {
+      let getAvailableBibit = this.getAvailableBibit(listEditPohon, (dataSostamEditPohon.max_seed_amount || this.getSeedCalculation(dataSostamEditPohon, 'total_max_trees')), editPohon)
+      let totalNow = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      listEditPohon.forEach(treeNow => {
+        totalNow[treeNow.tree_category] += parseInt(treeNow.amount)
+      })
+
+      let disabled = 0
+      if (getAvailableBibit < 0) {
+        disabled += 1
+      }
+
+      if (disabled > 0) {
+        return true
+      } else return false
+    },
+    getNurseryAlocation(mu_no) {
+        const ciminyak   = ['023', '026', '027', '021' ]
+        const arjasari   = ['022', '024', '025', '020', '029']
+        const kebumen    = ['019']
+        const pati       = ['015']
+        
+        let nursery = 'All'
+
+        if (ciminyak.includes(mu_no)) {
+            nursery = 'Ciminyak'
+        } else if (arjasari.includes(mu_no)) {
+            nursery = 'Arjasari'
+        } else if (kebumen.includes(mu_no)) {
+            nursery = 'Kebumen'
+        } else if (pati.includes(mu_no)) {
+            nursery = 'Pati'
+        }
+        
+        return nursery;
+    },
+    getSeedCalculation(lahan, typeReturn, indexLahan = null) {
+      const calculationAgroforestry = {
+        satu_jalur: {
+          300: [18, 12, 4],
+          400: [24, 16, 5],
+          500: [31, 20, 6],
+          600: [37, 24, 7],
+          700: [43, 29, 9],
+          800: [49, 33, 10],
+          900: [55, 37, 11],
+          1000: [61, 41, 12],
+          1100: [67, 45, 13],
+          1200: [73, 49, 15],
+          1300: [80, 53, 16],
+          1400: [86, 57, 17],
+          1500: [92, 61, 18],
+          1600: [98, 65, 20],
+          1700: [104, 69, 21],
+          1800: [110, 73, 22],
+          1900: [116, 78, 23],
+          2000: [122, 82, 24],
+        },
+        tepi: {
+          300: [6, 4, 1],
+          400: [8, 5, 2],
+          500: [10, 6, 2],
+          600: [12, 8, 2],
+          700: [13, 9, 3],
+          800: [15, 10, 3],
+          900: [17, 12, 3],
+          1000: [19, 13, 4],
+          1100: [21, 14, 4],
+          1200: [23, 15, 5],
+          1300: [25, 17, 5],
+          1400: [27, 18, 5],
+          1500: [29, 19, 6],
+          1600: [31, 20, 6],
+          1700: [33, 22, 7],
+          1800: [35, 23, 7],
+          1900: [36, 24, 7],
+          2000: [38, 26, 8],
+        },
+        acak: {
+          300: [4, 3, 1],
+          400: [6, 4, 1],
+          500: [7, 5, 1],
+          600: [9, 6, 2],
+          700: [10, 7, 2],
+          800: [12, 8, 2],
+          900: [13, 9, 3],
+          1000: [14, 10, 3],
+          1100: [16, 11, 3],
+          1200: [17, 12, 3],
+          1300: [19, 12, 4],
+          1400: [20, 13, 4],
+          1500: [22, 14, 4],
+          1600: [23, 15, 5],
+          1700: [24, 16, 5],
+          1800: [26, 17, 5],
+          1900: [27, 18, 5],
+          2000: [29, 19, 6],
+        },
+      }
+      let trees_max = {
+        kayu: 0,
+        mpts: 0,
+        crops: 0
+      }
+
+      let maxBibit = {
+        kayu: 0,
+        mpts: 0,
+        crops: 0
+      }
+
+      let totalBibitMax = 0
+
+      if (lahan.land_area < 10000) {
+        const luasLahan = Math.floor((lahan.land_area > 2000 ? 2000 : lahan.land_area) / 100) * 100
+  
+        if (lahan.opsi_pola_tanam == 'Pola Konservasi Pohon Kayu' ) {
+          maxBibit.kayu = luasLahan * .25
+        } else if (lahan.opsi_pola_tanam == 'Pola Konservasi Pohon Kayu + MPTS' ) {
+          maxBibit.kayu = (luasLahan * .25) * .6
+          maxBibit.mpts = (luasLahan * .25) * .4
+        } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Satu Jalur' ) {
+          if (luasLahan >= 300) {
+            maxBibit = {
+              kayu: calculationAgroforestry.satu_jalur[luasLahan][0],
+              mpts: calculationAgroforestry.satu_jalur[luasLahan][1],
+            }
+          }
+        } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Tepi' ) {
+          if (luasLahan >= 300) {
+            maxBibit = {
+              kayu: calculationAgroforestry.tepi[luasLahan][0],
+              mpts: calculationAgroforestry.tepi[luasLahan][1],
+            }
+          }
+        } else if (lahan.opsi_pola_tanam == 'Pola Agroforestry Acak' ) {
+          if (luasLahan >= 300) {
+            maxBibit = {
+              kayu: calculationAgroforestry.acak[luasLahan][0],
+              mpts: calculationAgroforestry.acak[luasLahan][1],
+            }
+          }
+        }
+        totalBibitMax = Math.round((maxBibit.kayu + maxBibit.mpts) * (100 - lahan.tutupan_lahan) / 100)
+      }
+      
+      if (typeReturn == 'total_max_trees') {
+        return totalBibitMax
+      } else if (typeReturn == 'setDataToStore') {
+        this.table.lahans.items[indexLahan].max_seed_amount = totalBibitMax
+        return totalBibitMax
+      } 
+    },
+    getStatusTotalBibitInDetail(seeds, typeReturn, secParams = null) {
+      let exists = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      let total = {
+        KAYU: 0,
+        MPTS: 0,
+        CROPS: 0
+      }
+      seeds.forEach((seed) => {
+        total[seed.tree_category] += parseInt(seed.amount)
+        exists[seed.tree_category] += 1
+      })
+      if (typeReturn == 'KAYU' || typeReturn == 'MPTS' || typeReturn == 'CROPS') {
+        return total[typeReturn]
+      } else if (typeReturn == 'ALL') {
+        return total.KAYU + total.MPTS + total.CROPS
+      } else if (typeReturn == 'COLOR') {
+        if (total.KAYU > 0 && (total.KAYU >= (Math.round(60 / 100 * (total.KAYU + total.MPTS)))) && (total.MPTS <= (Math.round(40/100 * (total.KAYU + total.MPTS))))) {
+          return 'green'
+        } else {
+          return 'red'
+        }
+      } else if(typeReturn == 'EXISTS' ) {
+        return exists[secParams]
+      }
+    },
+    async initializeMaps() {
+      try {
+        const mapOptions = this.maps
+        mapboxgl.accessToken = mapOptions.accessToken
+        if (!mapboxgl.supported()) {
+            Swal.fire({
+                title: 'Warning!',
+                text: `Your browser does not support Mapbox GL.`,
+                icon: 'error',
+                confirmButtonColor: '#f44336',
+            }) 
+        } else {
+          let map = await new mapboxgl.Map({
+              container: 'mapboxDistributionLocationContainer', // container ID
+              style: 'mapbox://styles/mapbox/satellite-streets-v11', // style URL
+              center: mapOptions.center,
+              zoom: mapOptions.zoom,
+              projection: 'globe'
+              // projection: 'equirectangular'
+          });
+          // set geolocate for get current user location
+          const geolocate = new mapboxgl.GeolocateControl({
+            positionOptions: {
+              enableHighAccuracy: true
+            },
+            // When active the map will receive updates to the device's location as it changes.
+            trackUserLocation: true,
+            // Draw an arrow next to the location dot to indicate which direction the device is heading.
+            showUserHeading: false
+          })
+          // Map on Load
+          await map.on("load", async function() {
+            // add fog
+            await map.setFog({
+                color: 'rgb(186, 210, 235)', // Lower atmosphere
+                'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+                'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                'space-color': 'rgb(11, 11, 25)', // Background color
+                'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+            });
+            // Add Geocoder
+            map.addControl(
+              new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl
+              })
+            );
+            // add fullscreen function
+            await map.addControl(new mapboxgl.FullscreenControl());
+            // Add zoom and rotation controls to the map.
+            await map.addControl(new mapboxgl.NavigationControl());
+            // Add geolocate control to the map.
+            await map.addControl(geolocate);
+          })
+          mapOptions.location = {lng: mapOptions.center[0], lat: mapOptions.center[1]}
+          // set marker
+          const marker = new mapboxgl.Marker({
+            draggable: true
+          })
+          .setLngLat(mapOptions.center)
+          .addTo(map);
+          // Map on click
+          map.on('click', (e) => {
+            marker.setLngLat(e.lngLat)
+            showMarkerLngLat()
+          })
+          // show coordinates marker
+          // const coordinates = document.getElementById('coordinates');
+          function showMarkerLngLat() {
+            const lngLat = marker.getLngLat();
+            mapOptions.location = lngLat
+            // coordinates.style.display = 'block';
+            // coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
+          }
+          marker.on('drag', showMarkerLngLat);
+          // geolocate event
+          geolocate.on('geolocate', () => {
+            marker.setLngLat(map.getCenter())
+            showMarkerLngLat()
+          });
+        }
+      } catch (err) {console.log(err)} finally {
+      }
+    },
+    numberFormat(num) {
+        return new Intl.NumberFormat('id-ID').format(num)
+    },
+    resetJumlahBibit() {
+      this.DetailTreesLahanTemp.forEach((seed, seedIndex) => {
+        this.DetailTreesLahanTemp[seedIndex].amount = 0
+      })
+    },
+    showingAvailableDates(val) {
+      return this.datepicker2NotAvailable.includes(val) == false
+    },
+    async setUnavailableDistributionDates() {
+      this.datepicker2Loading = true
+      // get FF MU no
+      let ff_mu_no = ''
+      await this.options.ff.items.forEach((ffVal) => {
+        if (ffVal.ff_no == this.options.ff.model) {
+          ff_mu_no = ffVal.mu_no
+        } 
+      })
+
+      // set mu ff in edit sostam
+      if (ff_mu_no == '') {
+        if (this.defaultItem.mu_no) ff_mu_no = this.defaultItem.mu_no
+      }
+
+      // get ff nursery
+      let ff_nursery = this.getNurseryAlocation(ff_mu_no) 
+
+      let ffDatesFull = []
+      let ffDatesAvailable = []
+
+      const distributionDateRange = [
+        {
+          month: '11',
+          year: '2023',
+          program_year: this.$store.state.programYear.model,
+          nursery: ff_nursery
+        },
+        {
+          month: '12',
+          year: '2023',
+          program_year: this.$store.state.programYear.model,
+          nursery: ff_nursery
+        },
+        {
+          month: '01',
+          year: '2024',
+          program_year: this.$store.state.programYear.model,
+          nursery: ff_nursery
+        },
+      ]
+
+      await Promise.all(distributionDateRange.map(async (dDate, dIndex) => {
+        let params = new URLSearchParams(dDate)
+        await axios.get(
+          localStorage.getItem("BaseUrlGet") + 'DistributionCalendar?' + params,
+          {
+            headers: {
+              Authorization: `Bearer ` + localStorage.getItem("token")
+            },
+          }
+        ).then(res => {
+          const resData = res.data.data.result.datas || []
+          resData.forEach((avData, avIndex) => {
+            if (avData.nursery == ff_nursery) {
+              avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total, avData.date)
+              if (avData.color == 'yellow') {
+                ffDatesAvailable.push(this.dateFormat(avData.date, 'Y-MM-DD'))
+              } else {
+                ffDatesFull.push(this.dateFormat(avData.date, 'Y-MM-DD'))
+              }
+            }
+          })
+        }).catch(err => {
+          console.log(err)
+        }).finally(() => {
+          if (dIndex == 2) {
+          }
+        })
+      }))
+      this.datepicker2NotAvailable = ffDatesFull
+      this.datepicker2Loading = false
+      this.datepicker2Key += 1
+      this.datepicker2Key2 += 1
+    },
+    sessionEnd(error) {
+        if (error.response.status == 401) {
+          this.alerttoken = true
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
     },
   },
 };

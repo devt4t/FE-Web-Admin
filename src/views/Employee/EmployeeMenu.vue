@@ -1,6 +1,8 @@
 <template>
   <div>
     <v-breadcrumbs
+      data-aos="fade-right"
+      :dark="$store.state.theme == 'dark'"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -8,28 +10,32 @@
     ></v-breadcrumbs>
 
     <v-data-table
+      data-aos="fade-up" data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
-      class="rounded elevation-6 mx-3 pa-1"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      @update:page="($p) => page = $p"
+      @update:items-per-page="($p) => itemsPerPage = $p"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            placeholder="Search..."
             hide-details
+            dense
+            rounded
+            outlined
+            color="green"
+            style="max-width: 350px;"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <!-- <v-btn dark class="mb-2" @click="showAddModal()" color="green">
-            <v-icon small>mdi-plus</v-icon> Add Item
-          </v-btn> -->
-          <v-dialog v-model="dialog" max-width="600px">
+          <v-divider class="ml-2"></v-divider>
+          <v-dialog v-model="dialog" max-width="600px" content-class="rounded-xl" scrollable>
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
                 <span class="headline">Edit Item</span>
@@ -39,7 +45,7 @@
                   <v-row>
                     <v-col cols="12" sm="4" md="4">
                       <div>
-                        <h5>NIK</h5>
+                        <h5>ID Karyawan</h5>
                         <h2 class="ml-2">{{ defaultItem.IdEmp }}</h2>
                       </div>
                     </v-col>
@@ -50,9 +56,16 @@
                       </div>
                     </v-col>
                   </v-row>
-                  <v-row>
+                  <v-row class="mt-5">
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
+                        rounded
+                        color="green"
+                        item-color="success"
+                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                        outlined
+                        hide-details
+                        dense
                         v-model="defaultItem.IdManager"
                         :items="itemsEmp"
                         item-value="nik"
@@ -60,19 +73,24 @@
                         label="Pilih Manager"
                         clearable
                         v-on:change="selectedManager($event)"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
-                  </v-row>
-                  <v-row>
                     <v-col cols="12" sm="12" md="12">
-                      <v-select
+                      <v-autocomplete
+                        rounded
+                        color="green"
+                        item-color="success"
+                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                        outlined
+                        hide-details
+                        dense
                         v-model="menudropdown"
                         :items="itemsMenu"
                         item-value="id"
                         item-text="name"
                         label="Pilih Tambah Menu Access"
                         v-on:change="selectedMenuAccess($event)"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -80,13 +98,12 @@
                       <v-data-table
                         :headers="headersmenu"
                         :items="defaultItem.MenuTable"
-                        class="elevation-1"
+                        class="elevation-1 rounded-xl"
                         append-icon="mdi-magnify"
                         :items-per-page="5"
                       >
                         <template v-slot:item.actions="{ item }">
                           <v-icon
-                            class="mr-2"
                             @click="deletelistmenu(item)"
                             color="red"
                           >
@@ -101,14 +118,46 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
+                <v-btn color="red" text rounded @click="close">
+                  <v-icon class="mr-1">mdi-close-circle</v-icon>
                   Cancel
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                <v-btn color="green white--text" rounded @click="save"><v-icon class="mr-1">mdi-content-save</v-icon> Save </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-toolbar>
+      </template>
+      <template v-slot:item.no="{ index }">
+        {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
+      <template v-slot:item.Menu="{ item }">
+        <v-chip v-if="item.Menu.split(', ').length == itemsMenu.length" color="green white--text" class="pl-2" rounded><v-icon class="mr-1">mdi-shield-crown</v-icon> All Access</v-chip>
+        <v-chip v-else-if="!item.Menu" color="red white--text" class="pl-1" rounded><v-icon class="mr-1">mdi-close-circle</v-icon> No Access</v-chip>
+        <div v-else-if="item.Menu.split(', ').length <= 3">
+          <v-chip v-for="(menuName, menuIndex) in item.Menu.split(', ')" color="green white--text" class="pl-1 mr-1" :key="menuName + menuIndex"><v-icon class="mr-1">mdi-numeric-{{ menuIndex + 1 }}-circle</v-icon> {{ menuName }}</v-chip>
+        </div>
+        <div v-else>
+          <v-menu content-class="rounded-xl" max-height="400" offset-y>
+            <template v-slot:activator="{on, attrs}">
+              <v-chip v-bind="attrs" v-on="on" color="green white--text"><v-icon class="mr-1">mdi-format-list-numbered</v-icon> {{ item.Menu.split(', ').length }} Access <v-icon>mdi-chevron-down</v-icon></v-chip>
+            </template>
+            <v-card scrollable>
+              <v-card-text>
+                <v-simple-table>
+                  <tr
+                    v-for="(item, index) in item.Menu.split(', ').sort()"
+                    :key="index"
+                  >
+                    <td class="text-center">{{ index + 1 }}.</td>
+                    <td>{{ item }}</td>
+                  </tr>
+                </v-simple-table>
+              </v-card-text>
+            </v-card>
+          </v-menu>          
+        </div>
+        <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
@@ -134,6 +183,8 @@ import axios from "axios";
 export default {
   name: "Employee",
   data: () => ({
+    page: 1,
+    itemsPerPage: 10,
     itemsbr: [
       {
         text: "Employee",
@@ -153,15 +204,16 @@ export default {
     authtoken: "",
     BaseUrlGet: "",
     headers: [
+      { text: "No", value: "no", width: '70' },
       { text: "Nama Emp", value: "NamaEmp", width: "20%" },
       { text: "Nama Manager", value: "NamaManager", width: "20%" },
       { text: "Menu Access", value: "Menu" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     headersmenu: [
       { text: "Menu Code", value: "MenuCode" },
       { text: "Nama Menu", value: "MenuName" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     defaultItem: {
       IdEmp: "",
@@ -239,7 +291,7 @@ export default {
         });
         console.log(response.data.data.result.data);
         if (response.data.length != 0) {
-          this.itemsEmp = response.data.data.result.data;
+          this.itemsEmp = response.data.data.result.data.sort((a, b) => a.name.localeCompare(b.name));
         } else {
           console.log("Kosong");
           this.itemsEmp = [];
@@ -264,7 +316,7 @@ export default {
         });
         console.log(response.data.data.result);
         if (response.data.length != 0) {
-          this.itemsMenu = response.data.data.result;
+          this.itemsMenu = response.data.data.result.sort((a, b) => a.name.localeCompare(b.name));
         } else {
           console.log("Kosong");
           this.itemsEmp = [];
@@ -327,6 +379,8 @@ export default {
           this.colorsnackbar = "red";
           this.textsnackbar = "Gagal mengubah data";
         }
+      } finally {
+        this.menudropdown = ""
       }
     },
 

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Dashboard from '../views/Dashboard.vue'
+import Dashboard from '../views/Dashboard/index.vue'
 import Login from '../views/Login.vue'
 import GantiPassword from '../views/GantiPassword.vue'
 import Employee from '../views/Employee/Employee.vue'
@@ -12,13 +12,22 @@ import EmployeePosition from '../views/Employee/EmployeePosition.vue'
 import MainPage from '../views/MainPage.vue'
 import Farmer from '../views/Farmer/Farmer.vue'
 import Lahan from '../views/Lahan/Lahan.vue'
+import LahanUmum from '../views/Lahan/LahanUmum.vue'
+import TruckDriver from '../views/TruckDriver/TruckDriver.vue'
 import Trees from '../views/Trees/Trees.vue'
-import FormMinat from '../views/FormMinat/FormMinat.vue'
+import SosialisasiProgram from '../views/Activity/SosialisasiProgram/index.vue'
 import Activity from '../views/Activity/Activity.vue'
 import SosialisasiTanam from '../views/Activity/SosialisasiTanam.vue'
 import LubangTanam from '../views/Activity/LubangTanam.vue'
 import PenilikanTanam from '../views/Activity/PenilikanTanam.vue'
+import MaterialOrganik from '../views/Activity/MaterialOrganik.vue'
 import Monitoring2 from '../views/Activity/Monitoring2.vue'
+import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
+import Progression from '../views/Activity/Progression.vue'
+import Distribusi from '../views/Activity/Distribusi.vue'
+import SeedlingChangeRequest from '../views/Activity/components/distribusi/SeedlingChangeRequest/index.vue'
+import RraPra from '../views/Activity/RraPra/index.vue'
+import ScoopingVisit from '../views/Activity/ScopingVisit/index.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
 import Kabupaten from '../views/Utilities/Kab.vue'
@@ -43,11 +52,17 @@ const routes = [
     path: '/',
     name: 'Login',
     component: Login
-  },{
-    path: '/Uploads',
-    name: 'Login',
-    component: Login
   },
+  {
+    path: '/RraPra',
+    name: 'RraPra',
+    component: RraPra
+  },
+  // {
+  //   path: '/Uploads',
+  //   name: 'Login',
+  //   component: Login
+  // },
   {
     path: '/GantiPassword',
     name: 'GantiPassword',
@@ -99,14 +114,24 @@ const routes = [
     component: Lahan
   },
   {
+    path: '/LahanUmum',
+    name: 'LahanUmum',
+    component: LahanUmum
+  },
+  {
+    path: '/TruckDriver',
+    name: 'TruckDriver',
+    component: TruckDriver
+  },
+  {
     path: '/Trees',
     name: 'Trees',
     component: Trees
   },
   {
-    path: '/FormMinat',
-    name: 'FormMinat',
-    component: FormMinat
+    path: '/SosialisasiProgram',
+    name: 'SosialisasiProgram',
+    component: SosialisasiProgram
   },
   {
     path: '/Activity',
@@ -114,9 +139,24 @@ const routes = [
     component: Activity
   },
   {
+    path: '/ScoopingVisit',
+    name: 'ScoopingVisit',
+    component: ScoopingVisit
+  },
+  {
     path: '/SosialisasiTanam',
     name: 'SosialisasiTanam',
     component: SosialisasiTanam
+  },
+  {
+    path: '/PelatihanPetani',
+    name: 'PelatihanPetani',
+    component: PelatihanPetani
+  },
+  {
+    path: '/Progression',
+    name: 'Progression',
+    component: Progression
   },
   {
     path: '/LubangTanam',
@@ -124,9 +164,24 @@ const routes = [
     component: LubangTanam
   },
   {
+    path: '/MaterialOrganik',
+    name: 'MaterialOrganik',
+    component: MaterialOrganik
+  },
+  {
     path: '/PenilikanTanam',
     name: 'PenilikanTanam',
     component: PenilikanTanam
+  },
+  {
+    path: '/SeedlingChangeRequest',
+    name: 'SeedlingChangeRequest',
+    component: SeedlingChangeRequest
+  },
+  {
+    path: '/Distribusi',
+    name: 'Distribusi',
+    component: Distribusi
   },
   {
     path: '/Monitoring2',
@@ -183,7 +238,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  routes
+  // mode: 'history',
+  routes,
 })
 
 export default router

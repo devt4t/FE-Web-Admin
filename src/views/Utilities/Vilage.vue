@@ -1,6 +1,8 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
+      data-aos="fade-right"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
@@ -8,35 +10,54 @@
     ></v-breadcrumbs>
 
     <v-data-table
+      data-aos="fade-up"
+      data-aos-delay="200"
+      multi-sort
       :headers="headers"
       :items="dataobject"
       :search="search"
-      class="rounded elevation-6 mx-3 pa-1"
+      :loading="tableLoading"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      @update:page="($p) => page = $p"
+      @update:items-per-page="($p) => itemsPerPage = $p"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            placeholder="Search..."
             hide-details
+            dense
+            rounded
+            outlined
+            color="green"
+            style="max-width: 350px;"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn dark class="mb-2" @click="showAddModal()" color="green">
+          <v-divider class="mx-2"></v-divider>
+          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
-          <v-dialog v-model="dialog" max-width="500px">
+          <v-dialog v-model="dialog" max-width="777" content-class="rounded-xl">
             <v-card>
               <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
+                <v-spacer></v-spacer>
+                <span class="">{{ formTitle }}</span>
+                <v-spacer></v-spacer>
               </v-card-title>
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-select
+                    <v-col cols="12" lg="6">
+                      <v-autocomplete
+                        dense
+                        hide-details
+                        outlined
+                        rounded
+                        color="green"
+                        item-color="green"
+                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                         v-model="defaultItem.kode_kecamatan"
                         :items="itemsKab"
                         item-value="kode_kecamatan"
@@ -44,10 +65,25 @@
                         label="Pilih Kecamatan"
                         clearable
                         :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
+                      >
+                        <template v-slot:item="data">
+                          <v-list-item-content>
+                            <v-list-item-title v-html="data.item.namaKecamatan"></v-list-item-title>
+                            <v-list-item-subtitle>Kode: {{ data.item.kode_kecamatan }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>{{ data.item.namaKabupaten }}</v-list-item-subtitle>
+                          </v-list-item-content>
+                        </template>
+                      </v-autocomplete>
                     </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-select
+                    <!-- <v-col cols="12">
+                      <v-autocomplete
+                        dense
+                        hide-details
+                        outlined
+                        rounded
+                        color="green"
+                        item-color="green"
+                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                         v-model="defaultItem.area_code"
                         :items="itemsTa"
                         item-value="area_code"
@@ -55,42 +91,165 @@
                         label="Pilih Target Area"
                         clearable
                         :rules="[(v) => !!v || 'Field is required']"
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
+                      ></v-autocomplete>
+                    </v-col> -->
+                    <v-col cols="12" lg="6">
                       <v-text-field
+                        dense
+                        hide-details
+                        outlined
+                        rounded
+                        color="green"
                         v-model="defaultItem.kode_desa"
-                        label="Kode_Desa"
+                        label="Kode Desa"
                         :rules="[(v) => !!v || 'Field is required']"
                       ></v-text-field>
                     </v-col>
-                    <v-col cols="12" sm="6" md="8">
+                    <v-col cols="12" lg="6">
                       <v-text-field
-                        v-model="defaultItem.namaDesa"
+                        dense
+                        hide-details
+                        outlined
+                        rounded
+                        color="green"
                         label="Nama Desa"
+                        v-model="defaultItem.namaDesa"
                         :rules="[(v) => !!v || 'Field is required']"
                       ></v-text-field>
                     </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
+                    <v-col cols="12" lg="6">
                       <v-text-field
+                        dense
+                        hide-details
+                        outlined
+                        rounded
+                        color="green"
+                        type="number"
                         v-model="defaultItem.post_code"
                         label="Kode Pos"
                         :rules="[(v) => !!v || 'Field is required']"
                       ></v-text-field>
                     </v-col>
                   </v-row>
+                  <div class="d-flex align-center my-4">
+                    <p class="mb-0"><v-icon class="mr-2">mdi-map-marker-distance</v-icon>Pemetaan Target Area</p>
+                    <v-divider class="mx-2"></v-divider>
+                  </div>
+                  <v-row v-for="(assignTa, assignTaIndex) in defaultItem.ta_desas" :key="`row-ta-assign-${assignTaIndex}`">
+                    <v-col cols="auto" class="d-flex align-start">
+                      <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ assignTaIndex + 1 }}</v-icon></v-btn>
+                    </v-col>
+                    <v-col>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-combobox
+                              dense
+                              multiple
+                              color="success"
+                              hide-details
+                              small-chips
+                              hide-selected
+                              item-color="success"
+                              :items="$store.state.programYear.options"
+                              v-model="assignTa.program_year"
+                              label="Tahun Program"
+                              :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                              outlined
+                              rounded
+                          >
+                              <template v-slot:no-data>
+                                  <v-list-item>
+                                  <v-list-item-content>
+                                      <v-list-item-title>
+                                      No results matching. Press <kbd>enter</kbd> to create a new one
+                                      </v-list-item-title>
+                                  </v-list-item-content>
+                                  </v-list-item>
+                              </template>
+                              <template v-slot:selection="{ attrs, item, parent, selected }">
+                                  <v-chip
+                                      v-bind="attrs"
+                                      :input-value="selected"
+                                      label
+                                      small
+                                      class="rounded-pill"
+                                  >
+                                      <span class="pr-2">
+                                          {{ item }}
+                                      </span>
+                                      <v-icon
+                                          small
+                                          @click="parent.selectItem(item)"
+                                      >
+                                          mdi-close-circle
+                                      </v-icon>
+                                  </v-chip>
+                              </template>
+                          </v-combobox>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-autocomplete
+                            dense
+                            hide-details
+                            outlined
+                            rounded
+                            color="green"
+                            item-color="green"
+                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                            :items="itemsTa.map(ita => {
+                              if (ita.program_year && assignTa.program_year) if (assignTa.program_year.every(pro => ita.program_year.split(',').includes(pro))) return ita
+                              return null
+                            }).filter(n => n)"
+                            label="Pilih Target Area"
+                            item-value="area_code"
+                            item-text="namaTa"
+                            v-model="assignTa.area_code"
+                            clearable
+                            :disabled="assignTa.program_year.length == 0"
+                            :rules="[(v) => !!v || 'Field is required']"
+                          >
+                            <template v-slot:item="data">
+                              <v-list-item-content>
+                                <v-list-item-title v-html="data.item.namaTa"></v-list-item-title>
+                                <v-list-item-subtitle>Kode: {{ data.item.area_code }}</v-list-item-subtitle>
+                                <v-list-item-subtitle>MU: {{ data.item.namaMu }}</v-list-item-subtitle>
+                              </v-list-item-content>
+                            </template>
+                          </v-autocomplete>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                  <v-row class="justify-center">
+                      <v-btn
+                          data-aos="fade-right" data-aos-offset="-10000" 
+                          :key="`village_set_ta_plus_btn`" 
+                          fab small color="green white--text" class="mx-1" 
+                          @click="() => modifyTotalSubData('+')"
+                      >
+                          <v-icon>mdi-plus</v-icon>
+                      </v-btn>
+                      <v-btn v-if="defaultItem.ta_desas.length > 1" 
+                          data-aos="fade-left" data-aos-offset="-10000" 
+                          :key="`village_set_ta_minus_btn`" 
+                          fab small color="red" outlined class="mx-1"
+                          @click="() => modifyTotalSubData('-')"
+                      >
+                          <v-icon>mdi-minus</v-icon>
+                      </v-btn>
+                  </v-row>
                 </v-container>
               </v-card-text>
               <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
+                <v-btn color="red darken-1" text rounded @click="close">
+                  <v-icon class="mr-1">mdi-close-circle</v-icon>
                   Cancel
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn color="green white--text" rounded @click="save" class="" :disabled="saveDisabled"> 
+                  <v-icon class="mr-1">mdi-content-save</v-icon>
+                  Save 
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -113,11 +272,14 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.no="{ index }">
+        {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
           mdi-pencil
         </v-icon>
-        <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon>
+        <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
       </template>
     </v-data-table>
 
@@ -137,6 +299,8 @@ import axios from "axios";
 export default {
   name: "Vilage",
   data: () => ({
+    page: 1,
+    itemsPerPage: 10,
     itemsbr: [
       {
         text: "Utilities",
@@ -156,8 +320,9 @@ export default {
     search: "",
     authtoken: "",
     BaseUrlGet: "",
+    tableLoading: false,
     headers: [
-      { text: "ID", value: "id" },
+      { text: "No", value: "no", width: '70' },
       { text: "Desa", value: "namaDesa" },
       { text: "Kode_Desa", value: "kode_desa" },
       { text: "Kecamatan", value: "namaKecamatan" },
@@ -177,6 +342,11 @@ export default {
       area_code: "",
       namaTa: "",
       post_code: "",
+      ta_desas: []
+    },
+    ta_desas_default: {
+      program_year: [],
+      area_code: ''
     },
     snackbar: false,
     textsnackbar: "Test",
@@ -189,10 +359,26 @@ export default {
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
     this.initialize();
   },
+  computed: {
+    saveDisabled() {
+      if (!this.defaultItem.kode_kecamatan) return true
+      if (!this.defaultItem.kode_desa) return true
+      if (!this.defaultItem.namaDesa) return true
+      if (!this.defaultItem.post_code) return true
 
+      let emptyTA = 0
+      this.defaultItem.ta_desas.forEach(val => {
+        if (val.program_year.length > 0) if (!val.area_code) emptyTA += 1
+      })
+      if (emptyTA > 0) return true
+      
+      return false
+    }
+  },
   methods: {
     async initialize() {
       try {
+        this.tableLoading = true
         const response = await axios.get(this.BaseUrlGet + "GetDesaAdmin", {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
@@ -200,7 +386,17 @@ export default {
         });
         // console.log(response.data.data.result);
         if (response.data.length != 0) {
-          this.dataobject = response.data.data.result;
+          this.dataobject = response.data.data.result.map(val => {
+            return {
+              ...val,
+              ta_desas: val.ta_desas.map(val2 => {
+                return {
+                  ...val2,
+                  program_year: val2.program_year.split(',')
+                }
+              })
+            }
+          });
         } else {
           console.log("Kosong");
         }
@@ -209,6 +405,8 @@ export default {
         if (error.response.status == 401) {
           this.alerttoken = true;
         }
+      } finally {
+        this.tableLoading = false
       }
     },
     async verifDelete() {
@@ -251,6 +449,10 @@ export default {
         kode_desa: this.defaultItem.kode_desa,
         post_code: this.defaultItem.post_code,
         name: this.defaultItem.namaDesa,
+        ta_desas: this.defaultItem.ta_desas.map(val => {
+          if (val.program_year && val.area_code) return {...val, program_year: val.program_year.sort((a,b) => {return a - b}).toString()}
+          return null
+        }).filter(n => n)
       };
       console.log(datapost);
       // this.dialogDetail = false;
@@ -289,6 +491,10 @@ export default {
         kode_desa: this.defaultItem.kode_desa,
         post_code: this.defaultItem.post_code,
         name: this.defaultItem.namaDesa,
+        ta_desas: this.defaultItem.ta_desas.map(val => {
+          if (val.program_year && val.area_code) return {...val, program_year: val.program_year.sort((a,b) => {return a - b}).toString()}
+          return null
+        }).filter(n => n)
       };
       console.log(datapost);
       // this.dialogDetail = false;
@@ -313,7 +519,7 @@ export default {
           this.dialog = false;
         }
       } catch (error) {
-        console.error(error.response);
+        console.log(error);
         if (error.response.status == 401) {
           this.dialog = false;
         }
@@ -377,6 +583,7 @@ export default {
       this.defaultItem.kode_desa = "";
       this.defaultItem.namaDesa = "";
       this.defaultItem.post_code = "";
+      this.defaultItem.ta_desas = [JSON.parse(JSON.stringify(this.ta_desas_default))]
       this.dialog = true;
     },
     editItem(item) {
@@ -403,26 +610,39 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
-    save() {
-      if (
-        this.defaultItem.area_code != null &&
-        this.defaultItem.kode_kecamatan != null &&
-        this.defaultItem.kode_desa.length != 0 &&
-        this.defaultItem.namaDesa.length != 0 &&
-        this.defaultItem.post_code.length != 0
-      ) {
-        if (this.defaultItem.id) {
-          console.log("edit");
-          this.updateData();
-        } else {
-          console.log("add");
-          this.addData();
+    modifyTotalSubData(type) {
+        if (type == '+') {
+          this.defaultItem.ta_desas.push(JSON.parse(JSON.stringify(this.ta_desas_default)))
+        } else if (type == '-') {
+          this.defaultItem.ta_desas.pop()
         }
-        this.close();
-      } else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
+    },
+    async save() {
+      try {
+        this.dialog = false
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = 'Loading...'
+        if (
+          this.defaultItem.kode_kecamatan != null &&
+          this.defaultItem.kode_desa.length != 0 &&
+          this.defaultItem.namaDesa.length != 0 &&
+          this.defaultItem.post_code.length != 0
+        ) {
+          if (this.defaultItem.id) {
+            console.log("edit");
+            await this.updateData();
+          } else {
+            console.log("add");
+            await this.addData();
+          }
+          this.close();
+        } else {
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
+        }
+      } finally {
+        this.$store.state.loadingOverlay = false
       }
     },
   },

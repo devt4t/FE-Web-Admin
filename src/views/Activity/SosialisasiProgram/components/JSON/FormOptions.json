@@ -1,0 +1,333 @@
+{
+    "land_type" : [
+        "Andosol",
+        "Kambisol",
+        "Arenosol",
+        "Alvisol",
+        "Aluvial",
+        "Entisol",
+        "Gleisol",
+        "Grumosol",
+        "Histosol",
+        "Inseptisol",
+        "Litosol",
+        "Mediteran",
+        "Molisol",
+        "Nitosol",
+        "Organosol",
+        "Oxisol",
+        "Podsolik",
+        "Regosol"
+    ],
+    "land_slope" : [
+        "0 - 8' (datar)",
+        "8' - 15' (landai)",
+        "15' - 25' (agak curam)",
+        "25' - 45' (curam)",
+        " > 45' (sangat curam)"
+    ],
+    "land_height": [
+        "0 -300",
+        "300 - 550", 
+        "550 - 850",
+        "850 - 1050",
+        "1050 -1350",
+        "1350 - 1550",
+        "1550 - 1900",
+        "> 1900"
+    ],
+    "vegetation_density": [
+        "Tinggi",
+        "Rendah",
+        "Sedang",
+        "Terbuka"
+    ],
+    "water_source": [
+        "Sungai",
+        "Waduk/Danau"
+    ],
+    "rainfall": [
+        "0 - 500",
+        "500 - 1000",
+        "1000 - 1500",
+        "1500 - 2000",
+        "2000 - 2500",
+        "2500 - 3000"
+    ],
+    "agroforestry_type": [
+        "High intensive",
+        "Low intensive",
+        "Conservation"
+    ],
+    "government_place": [
+        "Kantor Bupati",
+        "Kantor Camat",
+        "Kantor Lurah",
+        "Kanfor Kepala Desa", 
+        "Kantor Polisi"
+    ],
+    "land_coverage": [
+        "Hutan Rimba",
+        "Perkebunan/Kebun",
+        "Pemukiman",
+        "Sawah Tadah Hujan",
+        "Semak Belukar",
+        "Tegalan/Ladang"
+    ],
+    "electricity_source": [
+        "PLN",
+        "Solarcell"
+    ],
+    "penguasaanLahan": [
+        "Individual",
+        "Desa",
+        "Negara"
+    ],
+    "fungsiLahan": [
+        "Area Pemanfaatan Lain",
+        "Perhutani/forest area"
+    ],
+    "statusDusun": [
+        "Locally Own",
+        "Not Locally Own"
+    ],
+    "farmerSpeciality": [
+        "Budidaya",
+        "Meracik pupuk alternative",
+        "Inovasi sistem irigasi",
+        "Others"
+    ],
+    "potentialCategories": [
+        "Sustaianable / Keberlangsungan",
+        "Profitable / Keuntungan",
+        "Others"
+    ],
+    "organicCategories": [
+        "Full Organic",
+        "Half Organic"
+    ],
+    "organicTypes": [
+        "Hidroponik",
+        "Aeroponik",
+        "Aquaponik",
+        "Others"
+    ],
+    "innovativeRating": [
+        "0 - 25kg : sedang",
+        "25 - 50kg : bagus",
+        ">50kg : sangat bagus"
+    ],
+    "disasterCategories": [
+        "Water related",
+        "Wind related",
+        "Land related",
+        "Fire related"
+    ],
+    "fertilizerCategories": [
+        "Natural",
+        "Chemical",
+        "Both"
+    ],
+    "fertilizerTypes": [
+        "Urea",
+        "SP-36",
+        "KCL",
+        "Humus",
+        "Kompos",
+        "Kandang"
+    ],
+    "fertilizerSources": [
+        "Self Production",
+        "Government",
+        "Procurement",
+        "Others"
+    ],
+    "incomeEmployment": [
+        "Labour",
+        "Trade",
+        "Peternakan"
+    ],
+    "floraCategories": [
+        "Flora Asli",
+        "Holikultur",
+        "Gulma"
+    ],
+    "floraTypes": [
+        "Berbji",
+        "Tumbuhan Paku",
+        "Others"
+    ],
+    "floraNames": [
+        "Anggrek",
+        "Caringin",
+        "Kiara",
+        "Others"
+    ],
+    "floraWaterSource": [
+        "Sungai",
+        "Sumur",
+        "Mata Air",
+        "Others"
+    ],
+    "floraStatus": [
+        "Pest",
+        "Endangered"
+    ],
+    "faunaCategories": [
+        "Asiatis",
+        "Peralihan",
+        "Australis",
+        "Others"
+    ],
+    "faunaTypes": [
+        "Mamalia",
+        "Unggas",
+        "Reptile",
+        "Others"
+    ],
+    "faunaNames": [
+        "Puesing",
+        "Landak",
+        "Burung Jalak",
+        "Others"
+    ],
+    "faunaFoodSource": [
+        "Nabati",
+        "Non-nabati"
+    ],
+    "faunaStatus": [
+        "Pest",
+        "Endangered"
+    ],
+    "incomeCategories": [
+        "Farmer",
+        "Enterpreneur",
+        "Employees",
+        "Others"
+    ],
+    "incomeCropsCategories": [
+        "MPTS",
+        "Wood",
+        "Estate",
+        "Others"
+    ],
+    "incomeCropsTypes": [
+        "Food",
+        "Feed",
+        "Fiber",    
+        "Oil",
+        "Ornamental",
+        "Industrial"
+    ],
+    "incomeCropsNames": [
+        "Coffee",
+        "Kapulaga",
+        "Etc"
+    ],
+    "economicTradeMethod": [
+        "Direct Selling ( Pasar, warung, pinggir jalan)",
+        "Indirect Selling ( Tengkulak, broker, dll)"
+    ],
+    "economicDistribution": [
+        "UMKM",
+        "KUD",
+        "Broker",
+        "Others"
+    ],
+    "marketingTradeMethod": [
+        "Direct Selling ( Pasar, warung, pinggir jalan)",
+        "Indirect Selling ( Tengkulak, broker, dll)"
+    ],
+    "marketingContractDetails": [
+        "Per Harvest Time",
+        "Per Season",
+        "Etc"
+    ],
+    "wsConsumptions": [
+        "Domestic",
+        "Irigation"
+    ],
+    "wsCategories": [
+        "Sungai",
+        "Sumur",
+        "Mata Air",
+        "Others"
+    ],
+    "wsTypes": [
+        "Natural",
+        "Artificial"
+    ],
+    "wsNames": [
+        "Sungai Citarum",
+        "Danau Citarum",
+        "Others"
+    ],
+    "wsSeasonal": [
+        "Q 1",
+        "Q 2",
+        "Q 3",
+        "Q 4"
+    ],
+    "luCategories": [
+        "Birokrasi",
+        "Animal related",
+        "Force Majeur",
+        "Water related",
+        "Others"
+    ],
+    "luTypes": [
+        "Longsor",
+        "Kekeringan",
+        "Others"
+    ],
+    "luProblemRank": [
+        "Ringan",
+        "Sedang",
+        "Berat"
+    ],
+    "luStakeHolder": [
+        "Government",
+        "NGO",
+        "Private Organization"
+    ],
+    "luStatus": [
+        "Solved",
+        "Not Solved",
+        "Rarely",
+        "Repeated"
+    ],
+    "luOwnership": [
+        "Locally Own",
+        "Not Locally Own"
+    ],
+    "pesticideCategories": [
+        "Natural",
+        "Chemical",
+        "Both"
+    ],
+    "pesticideTypes": [
+        "Akarisida",
+        "Algasida",
+        "Alvisida",
+        "Bakterisida",
+        "Fungisida",
+        "Herbisida",
+        "Insektisida",
+        "Moluskisida"
+    ],
+    "pesticideNames": [
+        "Yosan",
+        "Konfidor",
+        "Gramoxon"
+    ],
+    "pesticideSource": [
+        "Government",
+        "Procurement",
+        "Others"
+    ],
+    "plantingCategories": [
+        "Trees",
+        "Crops",
+        "MPTS"
+    ]
+}

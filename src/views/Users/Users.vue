@@ -1,33 +1,45 @@
 <template>
   <div>
     <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
       class="breadcrumbsmain"
       :items="itemsbr"
       divider=">"
       large
+      data-aos="fade-right"
     ></v-breadcrumbs>
 
     <v-data-table
       :headers="headers"
       :items="dataobject"
       :search="search"
-      class="rounded elevation-6 mx-3 pa-1"
+      :loading="table.loading"
+      class="rounded-xl elevation-6 mx-3 pa-1"
+      data-aos="fade-up"
+      data-aos-delay="200"
+      @update:page="($p) => page = $p"
+      @update:items-per-page="($p) => itemsPerPage = $p"
     >
       <template v-slot:top>
-        <v-toolbar flat>
+        <v-toolbar flat class="rounded-xl">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
             label="Search"
-            single-line
+            placeholder="Search..."
             hide-details
+            dense
+            rounded
+            outlined
+            color="green"
+            style="max-width: 350px;"
           ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn dark class="mb-2" @click="showAddModal()" color="green">
+          <v-divider class="mx-2"></v-divider>
+          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
             <v-icon small>mdi-plus</v-icon> Add Item
           </v-btn>
 
+          <!-- Create Form Modal -->
           <v-dialog v-model="dialog" max-width="700px">
             <v-card>
               <v-form ref="form" v-model="valid" lazy-validation>
@@ -65,24 +77,24 @@
                       ></v-select>
                     </v-col>
                     <v-col v-if="typeselectedFF == true" cols="12" sm="8" md="8">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.employee_no"
                         :items="itemsFF"
                         item-value="ff_no"
                         item-text="namaFF"
                         label="Pilih FF"
                         clearable
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                     <v-col v-if="typeselectedFF == false" cols="12" sm="8" md="8">
-                      <v-select
+                      <v-autocomplete
                         v-model="defaultItem.employee_no"
                         :items="itemsEmp"
                         item-value="nik"
                         item-text="name"
                         label="Pilih Employee"
                         clearable
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -133,6 +145,9 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template v-slot:item.no="{ index }">
+        {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
           mdi-pencil
@@ -158,6 +173,8 @@ import axios from "axios";
 export default {
   name: "Users",
   data: () => ({
+    page: 1,
+    itemsPerPage: 10,
     itemsbr: [
       {
         text: "Users",
@@ -187,6 +204,7 @@ export default {
     BaseUrlGet: "",
     dataobject: [],
     headers: [
+      { text: "No", value: "no" },
       {
         text: "Kode Pegawai",
         align: "start",
@@ -220,6 +238,7 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    table: {loading: false}
   }),
   created() {
     this.authtoken = localStorage.getItem("token");
@@ -234,6 +253,7 @@ export default {
   methods: {
     async initialize() {
       try {
+        this.table.loading = true
         const response = await axios.get(this.BaseUrlGet + "GetUser", {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
@@ -255,6 +275,8 @@ export default {
         } else {
           this.dataobject = [];
         }
+      } finally {
+        this.table.loading = false
       }
     },
     async GetEmp() {
