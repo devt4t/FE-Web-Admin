@@ -48,6 +48,10 @@ export default {
         lat: {
           type: String,
           default: null
+        },
+        lahanNo: {
+            type: String,
+            default: null
         }
     },
     data: () => ({
@@ -93,7 +97,8 @@ export default {
     async mounted() {
         this.maps.accessToken = this.$store.state.maps.accessToken
         this.maps.mapStyle = this.$store.state.maps.mapStyle
-        await this.initializeMap()
+        if (this.lahanNo) if (this.lahanNo.length > 0) await this.initializeMapMultipleMarker(this.lahanNo)
+        else await this.initializeMap()
     },
     methods: {
         errorResponse(error) {
@@ -167,6 +172,122 @@ export default {
                     })
                 }
             } catch (err) {this.errorResponse(err)} finally {
+                this.maps.loading.show = false
+            }
+        },
+        async initializeMapMultipleMarker(lahanNo) {
+            try {
+                let mapOptions = this.maps
+                let store = this.$store
+                let utils = this._utils
+                mapboxgl.accessToken = mapOptions.accessToken
+                if (!mapboxgl.supported()) {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: `Your browser does not support Mapbox GL.`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    }) 
+                } else {
+                    mapOptions.loading.show = true
+                    let layerId = mapOptions.layerId
+                    const layerStyle = mapOptions.layerStyle
+                    const lahans = lahanNo.split(',')
+                    let markers = []
+                    let pointsMarker = []
+
+                    layerStyle.fill.color = this._utils.getRandomColor()
+                    mapOptions.loading.text = 'Initialize map...'
+                    let map = await new mapboxgl.Map({
+                        container: `LahanDetailMapboxContainer${this.section}`, // container ID
+                        style: mapOptions.mapStyle, // style URL
+                        center: mapOptions.center,
+                        zoom: mapOptions.zoom,
+                        projection: 'globe'
+                    });
+                    await map.on("load", async function() {
+                        // add fog
+                        await map.setFog({
+                            color: 'rgb(186, 210, 235)', // Lower atmosphere
+                            'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+                            'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                            'space-color': 'rgb(11, 11, 25)', // Background color
+                            'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+                        });
+                        // disable double click zoom
+                        await map.doubleClickZoom.disable()
+                        // add fullscreen function
+                        await map.addControl(new mapboxgl.FullscreenControl());
+                        // Add zoom and rotation controls to the map.
+                        await map.addControl(new mapboxgl.NavigationControl());
+                        for (let lIndex = 0; lIndex < lahans.length; lIndex++) {
+                            const resLahan = await axios.get(store.getters.getApiUrl(`GetLahanDetail?id=1&lahan_no=${lahans[lIndex]}`), store.state.apiConfig)
+                            const dataLahan = resLahan.data.data.result
+                            if (dataLahan) {
+                                const markerCoordinates = [parseFloat(dataLahan.longitude), parseFloat(dataLahan.latitude)]
+                                const popupContent = `
+                                    <table>
+                                        <tr>
+                                            <td>Kabupaten</td>
+                                            <td>:</td>
+                                            <td>${ dataLahan.namaKabupaten || '-' }</td>    
+                                        </tr>
+                                        <tr>
+                                            <td>Kecamatan</td>
+                                            <td>:</td>
+                                            <td>${ dataLahan.namaKecamatan || '-' }</td>    
+                                        </tr>
+                                        <tr>
+                                            <td>Desa</td>
+                                            <td>:</td>
+                                            <td>${ dataLahan.namaDesa || '-' }</td>    
+                                        </tr>
+                                        <tr>
+                                            <td>Petani</td>
+                                            <td>:</td>
+                                            <td>${ dataLahan.namaPetani || '-' }</td>    
+                                        </tr>
+                                        <tr>
+                                            <td>Luas Lahan</td>
+                                            <td>:</td>
+                                            <td>${ utils.numberFormat(dataLahan.land_area) } m<sup>2</sup></td>    
+                                        </tr>
+                                        <tr>
+                                            <td>Tipe Lahan</td>
+                                            <td>:</td>
+                                            <td>${ dataLahan.lahan_type || '-' }</td>    
+                                        </tr>
+                                    </table>`
+                                markers[lIndex] = new mapboxgl.Marker()
+                                .setLngLat(markerCoordinates)
+                                .setPopup(new mapboxgl.Popup().setHTML(popupContent))
+                                .addTo(map);
+
+                                markers[lIndex].getElement().addEventListener('dblclick', () => {
+                                    map.flyTo({
+                                        center: markerCoordinates,
+                                        zoom: 15,
+                                        duration: 3 * 1000
+                                    });
+                                });
+                                pointsMarker.push(markerCoordinates)
+                            }
+                        }
+                        console.log(pointsMarker)
+                        var features = turf.points(pointsMarker);
+                        var turfCenter = turf.center(features);
+                        const centeredPoints = turfCenter.geometry.coordinates 
+                        await map.flyTo({
+                            center: centeredPoints,
+                            zoom: 14,
+                            duration: 3 * 1000
+                        });
+                        mapOptions.loading.show = false
+                    })
+                }
+
+            } catch (err) {
+                this.errorResponse(err)
                 this.maps.loading.show = false
             }
         }

@@ -1534,7 +1534,7 @@
               </v-layout>
             </v-container>
             <v-container v-if="load == false">
-              <DetailLahanMap v-if="dialogDetail" :key="`MapMarkerLocation${dialogDetail}`" :long="defaultItem.longitude || null" :lat="defaultItem.latitude || null" :section="`RealisasiTanam`" />
+              <DetailLahanMap v-if="dialogDetail" :key="`MapMarkerLocation${dialogDetail}`" :lahanNo="defaultItem.lahan_no || ''" :section="`RealisasiTanam`" />
               <v-row>
                 <v-col cols="12">
                   <v-simple-table>
