@@ -25,6 +25,10 @@ const utils = {
     capitalizeFirstLetter (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
+    capitalizeLetter (string) {
+        if (string) return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+        return ''
+    },
     // date format
     dateFormat (date, format) {
         return moment(date).format(format)

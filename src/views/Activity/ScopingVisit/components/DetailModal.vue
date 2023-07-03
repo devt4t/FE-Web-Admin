@@ -42,6 +42,7 @@
                 </v-overlay>
                 <!-- export table -->
                 <div id="containerForExport-ScoopingVisit" style="display: none">
+                    <p style="text-align: right">Export Time: {{ Date() }}</p>
                     <h2 style="text-align: center;">Scooping Visit Report</h2>
                     <p style="text-align: center;">Form No: #{{ this.id }}</p>
                     <h4>1. Tanggal & Lokasi </h4>
@@ -56,15 +57,15 @@
                         </tr>
                         <tr>
                             <td>Kab / Kota</td>
-                            <td colspan="5">: {{ this.raw_data.city_name }}</td>
+                            <td colspan="5">: {{ _utils.capitalizeLetter(this.raw_data.city_name) }}</td>
                         </tr>
                         <tr>
                             <td>Kecamatan</td>
-                            <td colspan="5">: {{ this.raw_data.district_name }}</td>
+                            <td colspan="5">: {{ _utils.capitalizeLetter(this.raw_data.district_name) }}</td>
                         </tr>
                         <tr>
                             <td>Desa</td>
-                            <td colspan="5">: {{ this.raw_data.village_name }}</td>
+                            <td colspan="5">: {{ _utils.capitalizeLetter(this.raw_data.village_name) }}</td>
                         </tr>
                     </table>
                     <h4>2. Data Desa </h4>
@@ -334,10 +335,20 @@
                     </v-row>
                 </div>
             </v-card-text>
-            <v-card-actions class="justify-center" v-if="verificationAccess">
-                <v-btn v-if="status_data == 'ready_to_submit'" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
-                <v-btn v-if="status_data == 'submit_review'" rounded color="red white--text" class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
-                <v-btn v-if="status_data == 'submit_review'" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
+            <v-card-actions class="justify-center">
+                <v-btn v-if="verificationAccess && status_data == 'ready_to_submit'" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
+                <v-btn v-if="verificationAccess && status_data == 'submit_review'" rounded color="red white--text" class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="verificationAccess && status_data == 'submit_review'" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
+                <v-btn v-if="$store.state.User.role_name != 'GIS STAFF' && status_data == 'document_saving'" 
+                    :disabled="emailToGis > 1"
+                    rounded 
+                    color="blue white--text" 
+                    small 
+                    @click="() => sendEmailToGIS(raw_data.data_no)"
+                >
+                    <v-icon class="mr-1">mdi-email-{{ emailToGis > 1 ? 'check' : 'arrow-right' }}</v-icon>
+                    Email to GIS
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -725,6 +736,7 @@ export default {
         imageKeyComponent: 71625327,
         verified_data: 0,
         status_data: '',
+        emailToGis: 0,
         map: {
             key: 11101203,
             data: {
@@ -854,12 +866,16 @@ export default {
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
                 this.raw_data = JSON.parse(JSON.stringify(data))
+                this.raw_data.city_name = this.raw_data.city_name.toLowerCase()
+                this.raw_data.district_name = this.raw_data.district_name.toLowerCase()
+                this.raw_data.village_name = this.raw_data.village_name.toLowerCase()
                 if (this.raw_data.photo_road_access) this.raw_data.photo_road_access = this.raw_data.photo_road_access.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.photo_dry_land) this.raw_data.photo_dry_land = this.raw_data.photo_dry_land.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.photo_meeting) this.raw_data.photo_meeting = this.raw_data.photo_meeting.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.village_profile) this.raw_data.village_profile = this.$store.state.apiUrlImage + this.raw_data.village_profile
                 this.verified_data = data.is_verify
                 this.status_data = data.status
+                this.emailToGis = data.email_to_gis
                 for (const [key, value] of Object.entries(data)) {
                     this.datas.forEach(localData => {
                         if (localData.type == 'table') {
@@ -907,6 +923,17 @@ export default {
             }
 
             return ''
+        },
+        async sendEmailToGIS(data_no) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Mengirim email...'
+                await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${data_no}`)
+            } finally {
+                this.emailToGis += 1
+                this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
+                this.loading.show = false
+            }
         },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs

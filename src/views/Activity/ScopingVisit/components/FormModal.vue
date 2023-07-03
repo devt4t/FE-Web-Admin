@@ -46,7 +46,13 @@
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">{{ ig.icon }}</v-icon>{{ ig.title }}</p>
                             <v-divider class="mx-2"></v-divider>
-                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering'" rounded color="blue white--text" small disabled><v-icon class="mr-1">mdi-email-arrow-right</v-icon>Email to GIS</v-btn>
+                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering' && editId && $store.state.User.role_name != 'GIS STAFF'" 
+                                :disabled="emailToGis > 1"
+                                rounded 
+                                color="blue white--text" 
+                                small 
+                                @click="() => sendEmailToGIS(editId)"
+                                ><v-icon class="mr-1">mdi-email-{{ emailToGis > 1 ? 'check' : 'arrow-right' }}</v-icon>Email to GIS</v-btn>
                         </div>
                     </v-col>
                     <!-- Inputs -->
@@ -869,6 +875,7 @@ export default {
             }
         ],
         formStatus: '',
+        emailToGis: 0,
         loading: {
             show: false,
             text: 'Loading...'
@@ -1116,6 +1123,7 @@ export default {
                 const data = res.data.data.result
                 this.raw_data = data
                 this.formStatus = data.status
+                this.emailToGis = data.email_to_gis
                 for (const [key, value] of Object.entries(data)) {
                     if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key) || this.separateInputsPerType().select.includes(key)) this.inputs[key].model = value
                     if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value ? value.split(",") : value
@@ -1276,13 +1284,14 @@ export default {
                     else value.model = null
                 }
                 this.formStatus = ''
+                this.emailToGis = 0
             } catch (err) {this.errorResponse(err)}
         },
         async save() {
             try {
                 const confirm = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    title: 'Apakah kamu yakin?',
+                    text: "Harap dipastikan lagi data yang sudah diisi!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#2e7d32',
@@ -1293,7 +1302,7 @@ export default {
                 if (confirm.isConfirmed) {
                     this.showModal = false
                     this.$store.state.loadingOverlay = true
-                    this.$store.state.loadingOverlayText = 'Saving scoping data...'
+                    this.$store.state.loadingOverlayText = 'Menyimpan data "scooping"...'
                     const scoopingDateRange = JSON.parse(JSON.stringify(this.inputs.scooping_date.model)).sort()
                     let data = {
                         village: this.inputs.village.model,
@@ -1356,7 +1365,28 @@ export default {
                     }
                     else url = 'AddScooping'
                     const res = await axios.post(this.$store.getters.getApiUrl(url), data, this.$store.state.apiConfig)
-                    if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data berhasil disimpan!'})
+                    if (res) {
+                        this.$emit('swal', {type: 'success', message: 'Yey! Data berhasil disimpan!'})
+                        if (!this.gisInputCheck) {
+                            let confirmSendEmail = await Swal.fire({
+                                title: 'Bantuan penginputan data GIS',
+                                text: "Apakah anda ingin mengirim email ke GIS STAFF untuk meminta bantuan pengisian?",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#2e7d32',
+                                cancelButtonColor: '#d33',
+                                cancelButtonText: 'Tidak Usah',
+                                confirmButtonText: 'Ya, Kirim!'
+                            })
+                            if (confirmSendEmail.isConfirmed) {
+                                setTimeout(() => {
+                                    this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
+                                }, 
+                                    await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${res.data.data.result}`)
+                                );
+                            }
+                        }
+                    }
                     else Swal.fire({
                         title: 'Error!',
                         text: `Data gagal disimpan.`,
@@ -1396,6 +1426,17 @@ export default {
                 file: inputsFile
             }
         },
+        async sendEmailToGIS(data_no) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Mengirim email...'
+                await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${data_no}`)
+            } finally {
+                this.emailToGis += 1
+                this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
+                this.loading.show = false
+            }
+        },
         setUrlFileImage(file) {
             return URL.createObjectURL(file)
         },
@@ -1413,7 +1454,7 @@ export default {
                     await this.getData(id)
                 } else {
                     this.editId = null
-                    // await this.getDummiesData()
+                    await this.getDummiesData()
                 }
             } finally {
                 this.loading.show = false
