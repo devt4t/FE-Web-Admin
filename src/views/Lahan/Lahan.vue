@@ -352,7 +352,7 @@
                       :rules="[(v) => !!v || 'Field is required']"
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6" md="6">
+                  <v-col cols="12" sm="12" md="6">
                     <v-select
                       v-model="defaultItem.lahan_type"
                       :items="itemsLahanType"
@@ -361,9 +361,12 @@
                       label="Tipe Lahan"
                       outlined
                       clearable
+                      color="green"
+                      item-color="green"
+                      :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6" md="6">
+                  <v-col cols="12" sm="12" md="6">
                     <v-select
                       v-model="defaultItem.polygon"
                       :items="itemsLahanPolygon"
@@ -372,7 +375,17 @@
                       label="Polygon"
                       outlined
                       clearable
-                    ></v-select>
+                      color="green"
+                      item-color="green"
+                      :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                    >
+                      <template v-slot:item="data">
+                        <v-list-item-content>
+                          <v-list-item-title v-html="data.item.text"></v-list-item-title>
+                          <v-img v-if="data.item.img" :src="data.item.img" style="max-width: 200px"></v-img>
+                        </v-list-item-content>
+                      </template>
+                    </v-select>
                     <!-- <v-text-field
                       v-model="defaultItem.polygon"
                       label="Polygon"
@@ -859,6 +872,7 @@
               </v-layout>
             </v-container>
             <v-container v-if="load == false">
+              <DetailLahanMap :long="defaultItem.longitude" :lat="defaultItem.latitude" :section="`Lahan`" />
               <v-row>
                 <v-col cols="12" sm="8" md="8">
                   <v-row>
@@ -1996,8 +2010,12 @@
 
 <script>
 import axios from "axios";
+import DetailLahanMap from '@/views/Lahan/components/DetailLahanMap'
 
 export default {
+  components: {
+    DetailLahanMap
+  },
   name: "Lahan",
   data: () => ({
     unverifDialog: {
@@ -2220,12 +2238,12 @@ export default {
       { text: "Terbuka", value: "Terbuka" },
     ],
     itemsLahanPolygon: [
-      { text: "-", value: "-" },
-      { text: "Membulat", value: "Membulat" },
-      { text: "Memanjang", value: "Memanjang" },
-      { text: "Persegi", value: "Persegi" },
-      { text: "Leter L", value: "Leter L" },
-      { text: "Tidak Beraturan", value: "Tidak Beraturan" },
+      { text: "-", value: "-", img: null },
+      { text: "Membulat", value: "Membulat", img: '/lahanPolygon/membulat.png' },
+      { text: "Memanjang", value: "Memanjang", img: '/lahanPolygon/memanjang.png' },
+      { text: "Persegi", value: "Persegi", img: '/lahanPolygon/persegi.png' },
+      { text: "Leter L", value: "Leter L", img: '/lahanPolygon/letterL.png' },
+      { text: "Tidak Beraturan", value: "Tidak Beraturan", img: '/lahanPolygon/tidakBeraturan.png' },
     ],
     itemsOpsiPolaTanam: [
       { text: "-", value: "-" },

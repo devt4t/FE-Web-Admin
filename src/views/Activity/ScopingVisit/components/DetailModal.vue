@@ -7,7 +7,16 @@
     >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2">
-                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document</v-icon></v-btn> Scoping Visit #{{ this.id }}</span>
+                <span class="white--text">
+                    <v-btn class="white dark--text mr-1" fab x-small>
+                        <v-icon color="grey darken-3">mdi-file-document</v-icon>
+                    </v-btn> 
+                    Scoping Visit #{{ this.id }}
+                    <v-chip small :color="getStatusColumn('bg_color', status_data)" class="white--text ml-2">
+                        <v-icon class="mr-1">{{ getStatusColumn('icon', status_data) }}</v-icon>
+                        {{ getStatusColumn('text', status_data) }}
+                    </v-chip>
+                </span>
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text class="pa-0" style="min-height: 300px;">
@@ -33,19 +42,10 @@
                 </v-overlay>
                 <!-- export table -->
                 <div id="containerForExport-ScoopingVisit" style="display: none">
+                    <h2 style="text-align: center;">Scooping Visit Report</h2>
+                    <p style="text-align: center;">Form No: #{{ this.id }}</p>
+                    <h4>1. Tanggal & Lokasi </h4>
                     <table id="tableForExport-ScoopingVisit" style="width: 100%;">
-                        <tr>
-                            <th colspan="6" style="text-align: center;font-size: larger;">Scooping Visit</th>
-                        </tr>
-                        <tr>
-                            <th colspan="6" style="text-align: center;">Form No: #{{ this.id }}</th>
-                        </tr>
-                        <tr>
-                            <td colspan="6"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">1. Tanggal & Lokasi </td>
-                        </tr>
                         <tr>
                             <td>Tanggal</td>
                             <td colspan="5">: {{ this._utils.dateFormat(this.raw_data.start_scooping_date, 'DD MMMM YYYY') }} {{ this.raw_data.start_scooping_date != this.raw_data.end_scooping_date ? ' - ' + this._utils.dateFormat(this.raw_data.end_scooping_date, 'DD MMMM YYYY') : '' }}</td>
@@ -66,9 +66,9 @@
                             <td>Desa</td>
                             <td colspan="5">: {{ this.raw_data.village_name }}</td>
                         </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">2. Data Desa</td>
-                        </tr>
+                    </table>
+                    <h4>2. Data Desa </h4>
+                    <table>
                         <tr>
                             <td>Luas Desa</td>
                             <td colspan="5">: {{ this.raw_data.land_area }} Ha</td>
@@ -89,9 +89,9 @@
                             <td>Tempat Pemerintahan</td>
                             <td colspan="5">: {{ this.raw_data.goverment_place }}</td>
                         </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">3. Data Populasi</td>
-                        </tr>
+                    </table>
+                    <h4>3. Data Populasi </h4>
+                    <table>
                         <tr>
                             <td>Total Keluarga</td>
                             <td colspan="5">: {{ this.raw_data.total_kk }} KK</td>
@@ -116,9 +116,9 @@
                             <td>Deskripsi Potensi Dusun</td>
                             <td colspan="5">: <div v-html="this.raw_data.potential_description"></div></td>
                         </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">4. Kelengkapan Data Lahan Kering</td>
-                        </tr>
+                    </table>
+                    <h4>4. Kelengkapan Data Lahan Kering</h4>
+                    <table>
                         <tr>
                             <td>Luas Lahan Kering</td>
                             <td colspan="5">: {{ this.raw_data.dry_land_area }} Ha</td>
@@ -147,10 +147,8 @@
                             <td>Curah Hujan (mm)</td>
                             <td colspan="5">: {{ this.raw_data.rainfall }}</td>
                         </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">5. Tokoh Desa</td>
-                        </tr>
                     </table>
+                    <h4>5. Tokoh Desa</h4>
                     <table style="width: 100%;border-collapse: collapse;" border="1">
                         <tr>
                             <th>No</th>
@@ -167,38 +165,36 @@
                             <td>{{ tokoh.whatsapp }}</td>
                         </tr>
                     </table>
+                    <h4>6. Gallery - Akses Jalan</h4>
+                    <table>
+                        <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_road_access" :key="imageExp">
+                            <td>
+                                <img :src="imageExp" style="max-width: 100px;max-height: 50px;" />
+                            </td>
+                        </tr>
+                    </table>
+                    <h4>7. Gallery - Pertemuan</h4>
+                    <table>
+                        <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_meeting" :key="imageExp">
+                            <td>
+                                <img :src="imageExp" style="max-width: 100px;max-height: 50px;" />
+                            </td>
+                        </tr>
+                    </table>
+                    <h4>8. Gallery - Lahan Kering</h4>
+                    <table>
+                        <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_dry_land" :key="imageExp">
+                            <td>
+                                <img :src="imageExp" style="max-width: 100px;max-height: 50px;" />
+                            </td>
+                        </tr>
+                    </table>
+                    <h4>9. Gallery - Profil Desa</h4>
                     <table>
                         <tr>
-                            <td colspan="6" style="font-weight: bold;">6. Gallery - Akses Jalan</td>
-                            <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_road_access" :key="imageExp">
-                                <td>
-                                    <img :src="imageExp" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">7. Gallery - Pertemuan</td>
-                            <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_meeting" :key="imageExp">
-                                <td>
-                                    <img :src="imageExp" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">8. Gallery - Lahan Kering</td>
-                            <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_dry_land" :key="imageExp">
-                                <td>
-                                    <img :src="imageExp" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">9. Gallery - Profil Desa</td>
-                            <tr>
-                                <td>
-                                    <img :src="this.raw_data.village_profile" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
+                            <td>
+                                <img :src="this.raw_data.village_profile" style="max-width: 100px;max-height: 50px;" />
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -339,9 +335,9 @@
                 </div>
             </v-card-text>
             <v-card-actions class="justify-center" v-if="verificationAccess">
-                <v-btn v-if="verified_data == 0" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
-                <v-btn v-if="verified_data == 1" rounded color="red white--text" class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
-                <v-btn v-if="verified_data == 1" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
+                <v-btn v-if="status_data == 'ready_to_submit'" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
+                <v-btn v-if="status_data == 'submit_review'" rounded color="red white--text" class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="status_data == 'submit_review'" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -728,6 +724,7 @@ export default {
         raw_data: {},
         imageKeyComponent: 71625327,
         verified_data: 0,
+        status_data: '',
         map: {
             key: 11101203,
             data: {
@@ -862,6 +859,7 @@ export default {
                 if (this.raw_data.photo_meeting) this.raw_data.photo_meeting = this.raw_data.photo_meeting.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.village_profile) this.raw_data.village_profile = this.$store.state.apiUrlImage + this.raw_data.village_profile
                 this.verified_data = data.is_verify
+                this.status_data = data.status
                 for (const [key, value] of Object.entries(data)) {
                     this.datas.forEach(localData => {
                         if (localData.type == 'table') {
@@ -890,6 +888,25 @@ export default {
             } finally {
                 this.loading.show = false
             }
+        },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'yellow darken-1'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
         },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs

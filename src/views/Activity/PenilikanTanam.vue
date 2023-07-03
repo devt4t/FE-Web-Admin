@@ -1534,6 +1534,7 @@
               </v-layout>
             </v-container>
             <v-container v-if="load == false">
+              <DetailLahanMap v-if="dialogDetail" :key="`MapMarkerLocation${dialogDetail}`" :long="defaultItem.longitude || null" :lat="defaultItem.latitude || null" :section="`RealisasiTanam`" />
               <v-row>
                 <v-col cols="12">
                   <v-simple-table>
@@ -2311,7 +2312,12 @@ import axios from "axios";
 import moment from 'moment'
 // import BaseUrl from "../../services/BaseUrl.js";
 
+import DetailLahanMap from '@/views/Lahan/components/DetailLahanMap'
+
 export default {
+  components: {
+      DetailLahanMap
+  },
   name: "PenilikanTanam",
   authtoken: "",
   data: () => ({
@@ -3453,6 +3459,7 @@ export default {
             this.defaultItem.gambarshow3 =
               this.BaseUrl + response.data.data.result.data.gambar3;
           }
+          console.log(this.defaultItem)
 
           this.load = false;
 

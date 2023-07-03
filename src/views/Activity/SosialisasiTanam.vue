@@ -1999,12 +1999,12 @@ export default {
 
   mounted() {
     this.firstAccessPage();
-    // if (this.User.role_group != 'IT') {
-    //   this.$store.state.maintenanceOverlay = true
-    // }
+    if (this.User.role_group != 'IT' || this.User.email != 'iyas.muzani@trees4trees.org') {
+      this.$store.state.maintenanceOverlay = true
+    }
   },
   destroyed() {
-    // this.$store.state.maintenanceOverlay = false
+    this.$store.state.maintenanceOverlay = false
     
     // reset loading overlay
     this.$store.state.loadingOverlay = false

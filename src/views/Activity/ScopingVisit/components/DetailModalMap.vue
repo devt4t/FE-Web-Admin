@@ -45,7 +45,7 @@
                     </v-menu>
                 </div>
                 <!-- map -->
-                <div id="mapboxContainer" ref="mapbox" :key="maps.key" style="height: 300px;width: 100%" class="rounded-xl overflow-hidden"></div>
+                <div id="DetailModalMapBoxContainer" ref="mapbox" :key="maps.key" style="height: 300px;width: 100%" class="rounded-xl overflow-hidden"></div>
                 <div v-if="fileNotFound" style="position: absolute;top: 0;left: 0;bottom: 0;right: 0;" class="d-flex flex-column justify-center align-center grey lighten-3">
                     <v-icon size="60">mdi-file-document-remove</v-icon>
                     File data polygon tidak ditemukan
@@ -229,7 +229,7 @@ export default {
                             } else {
                                 mapOptions.loading.text = 'Initialize map...'
                                 let map = await new mapboxgl.Map({
-                                    container: 'mapboxContainer', // container ID
+                                    container: 'DetailModalMapBoxContainer', // container ID
                                     style: mapOptions.mapStyle, // style URL
                                     center: mapOptions.center,
                                     zoom: mapOptions.zoom,

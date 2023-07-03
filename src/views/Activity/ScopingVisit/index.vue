@@ -73,6 +73,10 @@
             <template v-slot:item.no="{index}">
                 {{ index + 1 }}
             </template>
+            <!-- Luas Desa -->
+            <template v-slot:item.land_area="{item}">
+                {{ _utils.numberFormat(item.land_area) }} Ha
+            </template>
             <!-- Tanggal Column -->
             <template v-slot:item.start_scooping_date="{item}">
                 {{ _utils.dateFormat(item.start_scooping_date, 'DD MMMM Y') }}
@@ -83,9 +87,9 @@
             </template>
             <!-- Status Column -->
             <template v-slot:item.is_verify="{item}">
-                <v-chip :color="item.is_verify == 1 ? 'green' : 'red'" class="white--text pl-1">
-                <v-icon class="mr-1">mdi-{{ item.is_verify  == 1 ? 'check' : 'close' }}-circle</v-icon>
-                {{ item.is_verify == 1 ? 'Verified' : 'Unverified' }}
+                <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
+                <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
+                {{ getStatusColumn('text', item.status) }}
                 </v-chip>
             </template>
       
@@ -102,7 +106,7 @@
                         <v-icon class="mr-1">mdi-information</v-icon> Detail
                     </v-btn>
                     <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" 
-                        :disabled="item.is_verify === 1 && user.role_name != 'GIS STAFF'"
+                        :disabled="(item.is_verify === 1 || item.status == 'submit_review') && user.role_name != 'GIS STAFF'"
                         @click="() => {showModal('form', item)}">
                         <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
                     </v-btn>
@@ -198,6 +202,25 @@ export default {
 
             await this.getTableData()
         },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'yellow darken-1'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
+        },
         async getTableData() {
             try {
                 this.table.loading.show = true
@@ -226,6 +249,7 @@ export default {
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
+                showCloseButton: true,
                 timer: 10000,
                 timerProgressBar: true,
                 didOpen: (toast) => {
