@@ -59,7 +59,7 @@ export default {
           'Wilayah Target',
           'Contoh Lahan'
         ],
-        label: 'Data Map (Tahun Program 2022)',
+        label: 'Data Map',
         model: 'Wilayah Target',
       },
       maps:{
@@ -158,6 +158,7 @@ export default {
                   const sourceId = this._utils.generateRandomString(5) + Date.now()
                   
                   let layerId = mapOptions.layerId
+                  let hoveredStateId = this.maps.hoveredStateId;
                   layerStyle.fill.color = this._utils.getRandomColor()
                   mapOptions.loading.text = 'Getting polygon data...'
                   var runLayer = await omnivore.kml(`${this.$store.state.apiUrlImage}maps/testing/Unit_Management.kml`).on("ready", async function() {
@@ -243,6 +244,57 @@ export default {
                                   zoom: 9,
                                   duration: 7 * 1000
                               });
+                              const popup =  new mapboxgl.Popup({
+                                closeButton: false,
+                                closeOnClick: false
+                              });
+                              // mousemove event
+                              map.on('mousemove', `${sourceId}-fills`, (e) => {
+                                  const coor = e.lngLat
+                                  if (e.features.length > 0) {
+                                      if (hoveredStateId !== null) {
+                                      map.setFeatureState(
+                                          { source: sourceId, id: hoveredStateId },
+                                          { hover: false }
+                                      );
+                                      }
+                                      hoveredStateId = e.features[0].id;
+                                      map.setFeatureState(
+                                      { source: sourceId, id: hoveredStateId },
+                                      { hover: true }
+                                      );
+                                      if (hoveredStateId) {
+                                      map.getCanvas().style.cursor = 'pointer';
+                                      // popup
+                                      map.getCanvas().style.cursor = 'pointer';
+                                      // Copy coordinates array.
+                                      const coordinates = [coor.lng, coor.lat]
+                                      const description = e.features[0].properties.name;
+                                      // Ensure that if the map is zoomed out such that multiple
+                                      // copies of the feature are visible, the popup appears
+                                      // over the copy being pointed to.
+                                      while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                                          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                                      }
+                                      // Populate the popup and set its coordinates
+                                      // based on the feature found.
+                                      popup.setLngLat(coordinates).setHTML(description).addTo(map);
+                                      }
+                                  }
+                              });
+                              // mouseleave event
+                              map.on('mouseleave', `${sourceId}-fills`, () => {
+                              if (hoveredStateId !== null) {
+                                  map.setFeatureState(
+                                  { source: sourceId, id: hoveredStateId },
+                                  { hover: false }
+                                  );
+                              }
+                              hoveredStateId = null;
+                              map.getCanvas().style.cursor = '';
+                              
+                              popup.remove();
+                            });
                           })
                       }
                   })

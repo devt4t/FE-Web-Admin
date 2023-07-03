@@ -180,28 +180,15 @@
 
     <!-- Maps -->
     <DMap :options="options" data-aos="fade-up" data-aos-delay="1000" />
-
-    <!-- Try Cam360 -->
-    <v-card class="rounded-xl mt-3" data-aos="fade-up" >
-      <v-card-title>
-          <v-icon class="mr-1">mdi-panorama-variant</v-icon>
-          <v-badge content="Develop" color="warning">360<sup>o</sup> View</v-badge>
-          <v-divider class="mx-2"></v-divider>
-          <small>
-          </small>
-      </v-card-title>
-      <v-card-text>
-        <div style="width: 100%;height: 400px;resize: vertical;overflow: hidden;min-height: 300px;max-height: 80vh;">
-          <iframe class="ku-embed rounded-xl" style="width: 100%;height: 100%;" frameborder="0" allow="xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen scrolling="no" src="https://kuula.co/share/NwzZH?logo=1&info=1&fs=1&vr=0&zoom=1&sd=1&initload=0&thumbs=1"></iframe>
-        </div>
-      </v-card-text>
-    </v-card>
+    <!-- 360 View -->
+    <tepview></tepview>
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
 import DMap from './components/maps'
+import tepview from '@/views/Dashboard/components/360view'
 import LottieAnimation from 'lottie-web-vue'
 import plantingAnimation from '@/assets/lottie/planting.json'
 import plant1 from '@/assets/lottie/plant-1.json'
@@ -214,6 +201,7 @@ export default {
   name: "Dashboard",
   components: {
     DMap,
+    tepview,
     LottieAnimation
   },
   data: () => ({
