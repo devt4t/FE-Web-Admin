@@ -186,6 +186,8 @@ export default {
                               // projection: 'equirectangular'
                           });
                           // console.log('map')
+                                // disable map zoom when using scroll
+                            await map.scrollZoom.disable();
                           // disable map rotation using right click + drag
                           await map.dragRotate.disable();
                           // disable map rotation using touch rotation gesture
@@ -345,6 +347,8 @@ export default {
                       projection: 'globe'
                       // projection: 'equirectangular'
                   });
+                    // disable map zoom when using scroll
+                  await map.scrollZoom.disable();
                   // console.log('map')
                   await map.doubleClickZoom.disable()
                   // disable map rotation using right click + drag
