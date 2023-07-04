@@ -46,7 +46,13 @@
                         <div class="d-flex align-center">
                             <p class="mb-0"><v-icon class="mr-2">{{ ig.icon }}</v-icon>{{ ig.title }}</p>
                             <v-divider class="mx-2"></v-divider>
-                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering'" rounded color="blue white--text" small disabled><v-icon class="mr-1">mdi-email-arrow-right</v-icon>Email to GIS</v-btn>
+                            <v-btn v-if="ig.title === 'Kelengkapan Data Lahan Kering' && editId && $store.state.User.role_name != 'GIS STAFF'" 
+                                :disabled="emailToGis > 1"
+                                rounded 
+                                color="blue white--text" 
+                                small 
+                                @click="() => sendEmailToGIS(editId)"
+                                ><v-icon class="mr-1">mdi-email-{{ emailToGis > 1 ? 'check' : 'arrow-right' }}</v-icon>Email to GIS</v-btn>
                         </div>
                     </v-col>
                     <!-- Inputs -->
@@ -181,6 +187,7 @@
                                 show-size
                                 :prepend-icon="inputs[itemKey].prependIcon"
                                 :accept="inputs[itemKey].accept"
+                                :placeholder="id ? 'Upload ulang untuk merubah file' : 'Upload file disini'"
                                 :disabled="false"
                                 :label="inputs[itemKey].label"
                                 v-model="inputs[itemKey].model"
@@ -214,6 +221,49 @@
                                     <span v-else> {{ text }}</span>
                                 </template>
                             </v-file-input>
+                            <div v-if="id && (itemKey.includes('photo') || itemKey == 'village_profile') && false">
+                                <v-card 
+                                    v-if="inputs[itemKey].chip"
+                                    v-for="(imgMltple, imgMltpleIndex) in inputs[itemKey].preview" :key="`image-${itemKey}-${imgMltpleIndex}`"
+                                    class="rounded-lg mt-2 elevation-0 mr-1 mb-1 d-inline-block"
+                                    style="position: relative;"
+                                >
+                                    <v-chip
+                                        color="deep-purple accent-4"
+                                        class="rounded-pill"
+                                        dark
+                                        label
+                                        small
+                                        style="position: absolute;bottom: 0;left: 0;right: 0;z-index: 2"
+                                    >
+                                        {{ itemKey }} {{ imgMltpleIndex }}
+                                    </v-chip>
+                                    <v-img
+                                        v-bind:src="imgMltple"
+                                        @click="showLightbox(inputs[itemKey].preview, imgMltpleIndex)"
+                                        class="my-2 mb-4 rounded-lg cursor-pointer"
+                                        style="max-width: 200px;max-height: 110px;"
+                                    ></v-img>
+                                </v-card>
+                                <!-- <v-carousel 
+                                    cycle
+                                    height="300" 
+                                    show-arrows-on-hover
+                                    hide-delimiter-background
+                                    class="rounded-xl cursor-pointer"
+                                    style="max-width: 500px;"
+                                    :key="`image-carousel-${itemKey}-${showModal}`"
+                                >
+                                    <v-carousel-item v-for="(imgMltple, imgMltpleIndex) in inputs[itemKey].preview" :key="`image-${itemKey}-${imgMltpleIndex}`">
+                                        <v-img
+                                            height="300"
+                                            v-bind:src="imgMltple"
+                                            @click="showLightbox(inputs[itemKey].preview, imgMltpleIndex)"
+                                            class="my-1 mb-4 rounded-xl cursor-pointer"
+                                        ></v-img>
+                                    </v-carousel-item>
+                                </v-carousel> -->
+                            </div>
                         </div>
                     </v-col>
                 </v-row>
@@ -343,18 +393,25 @@
                 </v-btn>
                 <v-divider class="mx-2"></v-divider>
                 <v-btn
+                    v-if="showSaveButton"
                     data-aos="zoom-in"
                     data-aos-duration="300"
                     data-aos-offset="-200" 
                     color="primary white--text"
-                    class=""
+                    class="px-3 pr-4"
                     rounded
                     :key="`saveButton${disabledSave}`"
                     :disabled="disabledSave"
                     @click="() => save()"
                 >
+                <span v-if="this.editId && (formStatus == 'document_saving' || formStatus == 'ready_to_submit') && gisInputCheck && photosInputCheck">
+                    <v-icon class="mr-1">mdi-send-check</v-icon>
+                    Kirim Untuk Ditinjau
+                </span>
+                <span v-else>
                     <v-icon class="mr-1">mdi-content-save</v-icon>
-                    Save
+                    Simpan
+                </span>
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -485,6 +542,7 @@ export default {
             },
             total_male: {
                 label: 'Jumlah Laki - Laki',
+                model: '',
                 inputType: 'text-field',
                 type: 'Number',
                 append: 'orang',
@@ -494,6 +552,7 @@ export default {
             },
             total_female: {
                 label: 'Jumlah Perempuan',
+                model: '',
                 inputType: 'text-field',
                 type: 'Number',
                 append: 'orang',
@@ -503,6 +562,7 @@ export default {
             },
             total_kk: {
                 label: 'Jumlah Keluarga (KK)',
+                model: '',
                 inputType: 'text-field',
                 type: 'Number',
                 append: 'KK',
@@ -513,7 +573,7 @@ export default {
             land_type: {
                 items: formOptions.land_type.sort(),
                 label: 'Jenis Tanah',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -525,7 +585,7 @@ export default {
             land_slope: {
                 items: formOptions.land_slope,
                 label: 'Kelerengan Tanah',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -537,7 +597,7 @@ export default {
             land_height: {
                 items: formOptions.land_height,
                 label: 'Ketinggian Tanah',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -549,19 +609,19 @@ export default {
             vegetation_density: {
                 items: formOptions.vegetation_density,
                 label: 'Kerapatan Vegetasi',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: false,
+                required: true,
                 type: 'Multiple'
             },
             water_source: {
                 items: formOptions.water_source.sort(),
                 label: 'Sumber Air',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -574,7 +634,7 @@ export default {
             rainfall: {
                 items: formOptions.rainfall,
                 label: 'Curah Hujan',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -586,7 +646,7 @@ export default {
             agroforestry_type: {
                 items: formOptions.agroforestry_type.sort(),
                 label: 'Pola Tanam Lahan Kering',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -598,7 +658,7 @@ export default {
             government_place: {
                 items: formOptions.government_place.sort(),
                 label: 'Tempat Pemerintahan',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -611,19 +671,19 @@ export default {
             land_coverage: {
                 items: formOptions.land_coverage.sort(),
                 label: 'Cakupan Lahan',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 lgView: 6,
                 loading: false,
-                required: false,
+                required: true,
                 type: 'Multiple'
             },
             electricity_source: {
                 items: formOptions.electricity_source.sort(),
                 label: 'Sumber Listrik',
-                model: '',
+                model: [],
                 itemText: 'value',
                 itemValue: 'value',
                 inputType: 'autocomplete',
@@ -787,7 +847,7 @@ export default {
                 title: 'Data General Desa',
                 icon: 'mdi-list-box',
                 gis_role: false,
-                items_key: ["land_area", "accessibility", "water_source", "electricity_source", "government_place"]
+                items_key: ["land_area", "accessibility", "water_source", "electricity_source", "government_place", "land_coverage", "vegetation_density", "agroforestry_type"]
             },
             {
                 title: 'Data Populasi Dan Wilayah',
@@ -805,7 +865,7 @@ export default {
                 title: 'Kelengkapan Data Lahan Kering',
                 icon: 'mdi-land-fields',
                 gis_role: true,
-                items_key: ["dry_land_area", "land_type", "land_slope", "land_height", "land_coverage", "vegetation_density", "agroforestry_type", "rainfall"]
+                items_key: ["dry_land_area", "land_type", "land_slope", "land_height", "rainfall"]
             },
             {
                 title: 'Upload Polygon File (GIS)',
@@ -814,6 +874,8 @@ export default {
                 items_key: ["village_polygon", "dry_land_polygon"],
             }
         ],
+        formStatus: '',
+        emailToGis: 0,
         loading: {
             show: false,
             text: 'Loading...'
@@ -828,45 +890,29 @@ export default {
             breakLayoutFrom: 1140,
             requiredInputIcon: 'mdi-star'
         },
-        showedModal: false,
+        raw_data: {}
     }),
     watch: {
         'inputs.scooping_date.model': {
             async handler(newVal) {
-                // console.log(newVal[0])
                 let range = JSON.parse(JSON.stringify(newVal))
                 range.sort()
-                // console.log(range)
                 this.inputs.scooping_date.modelShow = this._utils.dateFormat(range[0], 'DD MMMM Y') + ' ~ ' + this._utils.dateFormat(range[1], 'DD MMMM Y')
             }
         },
-        showedModal(val, oldVal) {
-            if (oldVal != val && val == true) {
-                // console.log(val)
-                this.resetData()
-                this.inputs.program_year.model = this.programYear
-                if (this.id) {
-                    this.editId = JSON.parse(JSON.stringify(this.id))
-                    this.getData(this.id)
-                } else {
-                    this.editId = null
-                    // this.getDummiesData()
-                }
-            }
-        },
         'inputs.province.model': {
-            handler(val) {
-                if (val) this.getOptionsData({type: 'regency'})
+            async handler(val) {
+                if (val) await this.getOptionsData({type: 'regency'})
             }
         },
         'inputs.regency.model': {
-            handler(val) {
-                if (val) this.getOptionsData({type: 'district'})
+            async handler(val) {
+                if (val) await this.getOptionsData({type: 'district'})
             }
         },
         'inputs.district.model': {
-            handler(val) {
-                if (val) this.getOptionsData({type: 'village'})
+            async handler(val) {
+                if (val) await this.getOptionsData({type: 'village'})
             }
         },
         'inputs.village.model': {
@@ -941,53 +987,112 @@ export default {
             async handler(val) {
                 await this.photoFileChanged(val, 'village_profile')
             }
+        },
+        'loading.show': {
+            handler(val) {
+            }
         }
     },
     computed: {
-        showModal: {
-            get: function () {
-                this.showedModal = this.show
-                return this.show
-            },
-            set: function(newVal) {
-                if (newVal) {
-                    this.inputs.program_year.model = this.programYear
-                } else this.$emit('action', {type: 'close', name: 'form'})
-            }
-        },
         disabledSave() {
-            let requiredEmpty = 0
+            let requiredEmpty = []
             for (const [key, value] of Object.entries(this.inputs)) {
                 if ((key == 'village_figures')) {
-                    if (value.required) if (value.model.length > 0) {
+                    if (value.required) {if (value.model.length > 0) {
                         value.model.forEach(vm => {
-                            if (!vm.name || !vm.position || !vm.phone) requiredEmpty += 1
+                            if (!vm.name || !vm.position || !vm.phone) requiredEmpty.push('village_figures:name,position,phone')
                         })
-                    } else requiredEmpty += 1
+                    } else requiredEmpty.push(key)}
                 } else if (value.type == 'MultipleInput') {
                     if (value.required) if (value.model.length > 0) {
                         value.model.forEach(vm => {
                             Object.entries(value.form).map(form => {
                                 if (form[1].required === true) {
-                                    if (!(vm[form[0]] !== null && vm[form[0]] !== 0)) requiredEmpty += 1
+                                    if (!(vm[form[0]] !== null && vm[form[0]] !== 0)) requiredEmpty.push(key)
                                 }
                             })
                         })
-                    } else requiredEmpty += 1
+                    } else requiredEmpty.push(key)
                 } else if (value.required) if (!value.model) {
-                    requiredEmpty += 1
-                    // console.log(key)
+                    requiredEmpty.push(key)
                 }
             }
-            return requiredEmpty > 0 ? true : false
-        }
+            return requiredEmpty.length > 0 ? true : false
+        },
+        gisInputCheck() {
+            let gisInputs = [] 
+            let gisInputEmpty = 0
+            this.inputsGroup.filter(n => n.gis_role === true).map(val => {gisInputs.push(...val.items_key)})
+            gisInputs.map(val => {                
+                if (!this.inputs[val].model) {
+                    if (this.editId) {
+                        if (!this.raw_data[val] || this.raw_data[val] == '-') gisInputEmpty += 1
+                    } else gisInputEmpty += 1
+                }
+            })
+
+            if (gisInputEmpty === 0) return true
+            return false
+        },
+        photosInputCheck() {
+            let photos_key = [
+                'photo_road_access',
+                'photo_meeting',
+                'photo_dry_land',
+                'village_profile'
+            ] 
+            let empty = []
+            photos_key.map(key => {
+                if (!this.inputs[key].model) {
+                    if (this.editId) {
+                        if (!this.raw_data[key] || this.raw_data[key] == '-') empty.push(key) 
+                    } else empty.push(key)
+                }
+            })
+            console.log(empty)
+            if (empty.length === 0) return true
+            return false
+        },
+        showModal: {
+            get: function () {
+                if (this.show) {
+                    this.showedModal(this.id)
+                }
+                return this.show
+            },
+            set: function(newVal) {
+                if (!newVal) this.$emit('action', {type: 'close', name: 'form'})
+            }
+        },
+        showSaveButton() {
+            const inputs = Object.entries(this.inputs)
+            let empty = 0
+            const arrayInput = [
+                'land_type',
+                'land_slope',
+                'land_height',
+                'vegetation_density',
+                'water_source',
+                'rainfall',
+                'agroforestry_type',
+                'government_place',
+                'land_coverage',
+                'electricity_source',
+                'village_figures'
+            ]
+            for (const [key, val] of inputs) {
+                if (!val.model) empty += 1
+                else if (arrayInput.includes(key)) if (val.model.length < 1) empty += 1
+            }
+            if (empty == 0) return false
+
+            return true
+        },
     },
     async mounted() {
         this.$nextTick(() => {
             window.addEventListener('resize', this.onResize)
         })
-        // console.log(formOptions)
-        await this.getOptionsData({type: 'province'})
     },
     methods: {
         async errorResponse(error) {
@@ -1014,19 +1119,24 @@ export default {
             try {
                 this.loading.show = true
                 this.loading.text = 'Getting scooping data...'
-                this.imageKeyComponent += 1
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
+                this.raw_data = data
+                this.formStatus = data.status
+                this.emailToGis = data.email_to_gis
                 for (const [key, value] of Object.entries(data)) {
                     if (this.separateInputsPerType().string.includes(key) || this.separateInputsPerType().number.includes(key) || this.separateInputsPerType().date.includes(key) || this.separateInputsPerType().select.includes(key)) this.inputs[key].model = value
                     if (this.separateInputsPerType().multiple.includes(key)) this.inputs[key].model = value ? value.split(",") : value
                 }
                 this.inputs.scooping_date.model = [data.start_scooping_date, data.end_scooping_date]
                 this.inputs.province.model = data.province
+                this.loading.show = true
                 await this.getOptionsData({type: 'regency', id: data.province})
                 this.inputs.regency.model = data.city
+                this.loading.show = true
                 await this.getOptionsData({type: 'district', id: data.city})
                 this.inputs.district.model = data.district
+                this.loading.show = true
                 await this.getOptionsData({type: 'village', id: data.district})
                 this.inputs.village.model = data.village
                 // village figures
@@ -1034,10 +1144,9 @@ export default {
                 // photos
                 const imageKeyInput = ["photo_road_access", "photo_meeting", "photo_dry_land", "village_profile"]
                 imageKeyInput.forEach(inputKey => {
-                    if (data[inputKey]) this.inputs[inputKey].preview = this.$store.state.apiUrlImage + data[inputKey]
-                    else this.inputs[inputKey].preview = "/images/noimage.png"
+                    this.inputs[inputKey].preview = []
+                    if (data[inputKey]) if (data[inputKey].length > 0) this.inputs[inputKey].preview = data[inputKey].split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 })
-                // console.log(data)
             } catch (err) {
                 this.errorResponse(err)
                 this.$emit('action', {type: 'close', name: 'form'})
@@ -1047,6 +1156,9 @@ export default {
         },
         async getDummiesData() {
             try {
+                this.loading.show = true
+                this.loading.text = 'Set dummy data... :)'
+
                 const province = 'JT'
                 const regency = '33'
                 const district = '33.74.15'
@@ -1089,6 +1201,7 @@ export default {
             } catch (err) {
                 this.errorResponse(err)
             } finally {
+                this.loading.show = false
             }
         },
         async getOptionsData(inputs) {
@@ -1102,7 +1215,7 @@ export default {
                 else if (inputs.type == 'district') url = 'GetKecamatan?kabupaten_no=' + this.inputs.regency.model
                 else if (inputs.type == 'village') url = 'GetDesa?&kode_kecamatan=' + this.inputs.district.model
 
-                this.$store.state.loadingOverlayText = `Getting ${inputs.type} datas...`
+                this.loading.text = `Getting ${inputs.type} datas...`
 
                 // reset data 
                 if (inputs.type == 'regency') {
@@ -1134,7 +1247,6 @@ export default {
             try {
                 if (type == '+') {
                     let inputs = JSON.parse(JSON.stringify(this.inputs[name].default[0]))
-                    // console.log(inputs)
                     this.inputs[name].model.push(inputs)
                 } else if (type == '-') this.inputs[name].model.pop()
             } catch (err) {this.errorResponse(err)} finally {
@@ -1142,7 +1254,6 @@ export default {
         },
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
-            // console.log(this.localConfig.windowWidth)
         },
         photoFileChanged (event, inputKey) {
             // if (event) {
@@ -1165,21 +1276,22 @@ export default {
             //     this.inputs[inputKey].preview = null
             // }
         },
-        resetData() {
+        async resetData() {
             try {
                 for (const [key, value] of Object.entries(this.inputs)) {
                     if (this.separateInputsPerType().date.includes(key)) value.model = [moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
-                    else if (this.separateInputsPerType().multipleInput.includes(key)) value.model = JSON.parse(JSON.stringify(value.default))
+                    else if (this.separateInputsPerType().multipleInput.includes(key)) value.model = await JSON.parse(JSON.stringify(value.default))
                     else value.model = null
                 }
-                // console.log(this.separateInputsPerType().multipleInput)
+                this.formStatus = ''
+                this.emailToGis = 0
             } catch (err) {this.errorResponse(err)}
         },
         async save() {
             try {
                 const confirm = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    title: 'Apakah kamu yakin?',
+                    text: "Harap dipastikan lagi data yang sudah diisi!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#2e7d32',
@@ -1190,7 +1302,7 @@ export default {
                 if (confirm.isConfirmed) {
                     this.showModal = false
                     this.$store.state.loadingOverlay = true
-                    this.$store.state.loadingOverlayText = 'Saving scoping data...'
+                    this.$store.state.loadingOverlayText = 'Menyimpan data "scooping"...'
                     const scoopingDateRange = JSON.parse(JSON.stringify(this.inputs.scooping_date.model)).sort()
                     let data = {
                         village: this.inputs.village.model,
@@ -1220,6 +1332,7 @@ export default {
                         agroforestry_type: this.inputs.agroforestry_type.model ? this.inputs.agroforestry_type.model.toString() : '',
                         village_figures: this.inputs.village_figures.model,
                         user_id: this.$store.state.User.email,
+                        status: 'document_saving'
                     }
                     
                     // upload photos
@@ -1245,16 +1358,38 @@ export default {
                         data.dry_land_polygon = await this.uploadFiles('polygon', 'Polygon Lahan Kering Desa', this.inputs.dry_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-dry_land`)
                     }
                     this.$store.state.loadingOverlayText = 'Saving scoping data...'
-                    // console.log(data.village_figures)
                     let url = ''
-                    if (this.editId) url = `UpdateScooping?data_no=${this.editId}`
+                    if (this.editId) {
+                        url = `UpdateScooping?data_no=${this.editId}`
+                        if (this.gisInputCheck && this.photosInputCheck) data.status = 'ready_to_submit'
+                    }
                     else url = 'AddScooping'
-                    // console.log(data)
                     const res = await axios.post(this.$store.getters.getApiUrl(url), data, this.$store.state.apiConfig)
-                    if (res) this.$emit('swal', {type: 'success', message: 'Yey! Data scooping saved!'})
+                    if (res) {
+                        this.$emit('swal', {type: 'success', message: 'Yey! Data berhasil disimpan!'})
+                        if (!this.gisInputCheck) {
+                            let confirmSendEmail = await Swal.fire({
+                                title: 'Bantuan penginputan data GIS',
+                                text: "Apakah anda ingin mengirim email ke GIS STAFF untuk meminta bantuan pengisian?",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#2e7d32',
+                                cancelButtonColor: '#d33',
+                                cancelButtonText: 'Tidak Usah',
+                                confirmButtonText: 'Ya, Kirim!'
+                            })
+                            if (confirmSendEmail.isConfirmed) {
+                                setTimeout(() => {
+                                    this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
+                                }, 
+                                    await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${res.data.data.result}`)
+                                );
+                            }
+                        }
+                    }
                     else Swal.fire({
                         title: 'Error!',
-                        text: `Data failed to save.`,
+                        text: `Data gagal disimpan.`,
                         icon: 'error',
                         confirmButtonColor: '#f44336',
                     })
@@ -1291,11 +1426,43 @@ export default {
                 file: inputsFile
             }
         },
+        async sendEmailToGIS(data_no) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Mengirim email...'
+                await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${data_no}`)
+            } finally {
+                this.emailToGis += 1
+                this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
+                this.loading.show = false
+            }
+        },
         setUrlFileImage(file) {
             return URL.createObjectURL(file)
         },
+        async showedModal(id) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Menyiapkan form...'
+                await this.resetData()
+                this.inputs.program_year.model = this.programYear
+                this.loading.show = true
+                await this.getOptionsData({type: 'province'})
+                if (id) {
+                    this.loading.show = true
+                    this.editId = await JSON.parse(JSON.stringify(id))
+                    await this.getData(id)
+                } else {
+                    this.editId = null
+                    await this.getDummiesData()
+                }
+            } finally {
+                this.loading.show = false
+            }
+        },
         showFormInputs(section) {
             const user = this.$store.state.User
+            // if (user.role_name != 'GIS STAFF' && user.role_group != 'IT' && section.gis_role) return false
             if (user.role_name == 'GIS STAFF' && !section.gis_role) return false
             return true
         },

@@ -780,6 +780,10 @@
                       </div>
                     </v-col>
                   </v-row>
+                  <div>
+                    <h5>Jenis Pohon</h5>
+                    <h3 class="ml-2">{{ defaultItem.FarmerDetail || '-' }}</h3>
+                  </div>
                 </v-col>
                 <v-col cols="12" sm="4" md="4">
                   <div>Foto Petani</div>
@@ -1566,6 +1570,8 @@ export default {
         // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
+
+          this.defaultItem.FarmerDetail = response.data.data.result.FarmerDetail.map(val => {return val.tree_name}).toString()
 
           this.defaultItem.ff_no = response.data.data.result.user_id;
 
