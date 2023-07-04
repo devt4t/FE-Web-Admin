@@ -1454,7 +1454,7 @@ export default {
                     await this.getData(id)
                 } else {
                     this.editId = null
-                    await this.getDummiesData()
+                    // await this.getDummiesData()
                 }
             } finally {
                 this.loading.show = false
