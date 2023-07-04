@@ -52,11 +52,6 @@ const routes = [
     name: 'RraPra',
     component: lazyLoad('Activity/RraPra/index')
   },
-  // {
-  //   path: '/Uploads',
-  //   name: 'Login',
-  //   component: Login
-  // },
   {
     path: '/GantiPassword',
     name: 'GantiPassword',
@@ -85,92 +80,87 @@ const routes = [
   {
     path: '/EmployeeManager',
     name: 'EmployeeManager',
-    component: EmployeeManager
+    component: lazyLoad('Employee/EmployeeManager')
   },
   {
     path: '/EmployeeMenu',
     name: 'EmployeeMenu',
-    component: EmployeeMenu
+    component: lazyLoad('Employee/EmployeeMenu')
   },
   {
     path: '/EmployeePosition',
     name: 'EmployeePosition',
-    component: EmployeePosition
+    component: lazyLoad('Employee/EmployeePosition')
   },
   {
     path: '/Farmer',
     name: 'Farmer',
-    component: Farmer
+    component: lazyLoad('Farmer/Farmer')
   },
   {
     path: '/Lahan',
     name: 'Lahan',
-    component: Lahan
+    component: lazyLoad('Lahan/Lahan')
   },
   {
     path: '/LahanUmum',
     name: 'LahanUmum',
-    component: LahanUmum
+    component: lazyLoad('Lahan/LahanUmum')
   },
   {
     path: '/TruckDriver',
     name: 'TruckDriver',
-    component: TruckDriver
+    component: lazyLoad('TruckDriver/TruckDriver')
   },
   {
     path: '/Trees',
     name: 'Trees',
-    component: Trees
+    component: lazyLoad('Trees/Trees')
   },
   {
     path: '/SosialisasiProgram',
     name: 'SosialisasiProgram',
-    component: SosialisasiProgram
-  },
-  {
-    path: '/Activity',
-    name: 'Activity',
-    component: Activity
+    component: lazyLoad('Activity/SosialisasiProgram/index')
   },
   {
     path: '/ScoopingVisit',
     name: 'ScoopingVisit',
-    component: ScoopingVisit
+    component: lazyLoad('Activity/ScopingVisit/index')
   },
   {
     path: '/SosialisasiTanam',
     name: 'SosialisasiTanam',
-    component: SosialisasiTanam
+    component: lazyLoad('Activity/SosialisasiTanam')
   },
   {
     path: '/PelatihanPetani',
     name: 'PelatihanPetani',
-    component: PelatihanPetani
+    component: lazyLoad('Activity/PelatihanPetani')
   },
   {
     path: '/Progression',
     name: 'Progression',
-    component: Progression
+    component: lazyLoad('Activity/Progression')
   },
   {
     path: '/LubangTanam',
     name: 'LubangTanam',
-    component: LubangTanam
+    component: lazyLoad('Activity/LubangTanam')
   },
   {
     path: '/MaterialOrganik',
     name: 'MaterialOrganik',
-    component: MaterialOrganik
+    component: lazyLoad('Activity/MaterialOrganik')
   },
   {
     path: '/PenilikanTanam',
     name: 'PenilikanTanam',
-    component: PenilikanTanam
+    component: lazyLoad('Activity/PenilikanTanam')
   },
   {
     path: '/SeedlingChangeRequest',
     name: 'SeedlingChangeRequest',
-    component: SeedlingChangeRequest
+    component: lazyLoad('Activity/components/distribusi/SeedlingChangeRequest/index')
   },
   {
     path: '/Distribusi',
@@ -180,7 +170,7 @@ const routes = [
   {
     path: '/Monitoring2',
     name: 'Monitoring2',
-    component: Monitoring2
+    component: lazyLoad('Activity/Monitoring2')
   },
 
   

@@ -957,7 +957,7 @@ export default {
         },
         'inputs.photo_meeting.model': {
             async handler(val) {
-                if (val) if (val.length > 5) {
+                if (val) if (val.length > 3) {
                     const confirm = await Swal.fire({
                         title: 'Melebihi Batas!',
                         text: `Maksimal 3 foto!`,
@@ -1342,7 +1342,7 @@ export default {
                         if (this.inputs[imgKey].model) if (this.inputs[imgKey].model.length > 0) {
                             let imgListName = []
                             for (let imgIndex = 0; imgIndex < this.inputs[imgKey].model.length; imgIndex++) {
-                                const imgRes = await this.uploadFiles('photo', `Foto "${imgKey}" ${imgIndex + 1}`, this.inputs[imgKey].model[imgIndex], 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-${imgKey.replace("photo_", "")}-${imgIndex + 1}`)
+                                const imgRes = await this.uploadFiles('photo', `Foto ${imgKey} ${imgIndex + 1}`, this.inputs[imgKey].model[imgIndex], 'scooping_visits', 'photos', `${data.village.replace(/\./g, '_')}-${imgKey.replace("photo_", "")}-${imgIndex + 1}`)
                                 imgListName.push(imgRes)
                             }
                             data[imgKey] = imgListName.toString()
@@ -1352,11 +1352,11 @@ export default {
                     // upload village_polygon
                     if (this.inputs.village_polygon.model) {
                         data.village_polygon = await this.uploadFiles('polygon', 'Polygon Desa', this.inputs.village_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}`)
-                    }
+                    } else data.village_polygon = this.raw_data.village_polygon
                     // upload dry_land polygon
                     if (this.inputs.dry_land_polygon.model) {
                         data.dry_land_polygon = await this.uploadFiles('polygon', 'Polygon Lahan Kering Desa', this.inputs.dry_land_polygon.model, 'scooping_visits', 'village_polygon', `${data.village.replace(/\./g, '_')}-dry_land`)
-                    }
+                    } else data.dry_land_polygon = this.raw_data.dry_land_polygon
                     this.$store.state.loadingOverlayText = 'Saving scoping data...'
                     let url = ''
                     if (this.editId) {
@@ -1369,7 +1369,7 @@ export default {
                         this.$emit('swal', {type: 'success', message: 'Yey! Data berhasil disimpan!'})
                         if (!this.gisInputCheck) {
                             let confirmSendEmail = await Swal.fire({
-                                title: 'Bantuan penginputan data GIS',
+                                title: 'Bantuan GIS',
                                 text: "Apakah anda ingin mengirim email ke GIS STAFF untuk meminta bantuan pengisian?",
                                 icon: 'warning',
                                 showCancelButton: true,
@@ -1379,11 +1379,13 @@ export default {
                                 confirmButtonText: 'Ya, Kirim!'
                             })
                             if (confirmSendEmail.isConfirmed) {
+                                this.$store.state.loadingOverlay = true
+                                this.$store.state.loadingOverlayText = 'Mengirim email ke GIS STAFF...'
+                                axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${res.data.data.result}`)
                                 setTimeout(() => {
                                     this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
-                                }, 
-                                    await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${res.data.data.result}`)
-                                );
+                                    this.$store.state.loadingOverlay = false
+                                }, 1000);
                             }
                         }
                     }
@@ -1454,7 +1456,7 @@ export default {
                     await this.getData(id)
                 } else {
                     this.editId = null
-                    await this.getDummiesData()
+                    // await this.getDummiesData()
                 }
             } finally {
                 this.loading.show = false
@@ -1476,7 +1478,7 @@ export default {
         },
         async uploadFiles(type, typeName, file, prefix, dir, name) {
             try {
-                this.$store.state.loadingOverlayText = `Saving file "${typeName}"...`
+                this.$store.state.loadingOverlayText = `Mengunggah "${typeName}"...`
                 const url = `${this.$store.state.apiUrlImage}${prefix}/upload.php`
                 let fileToUpload = file
                 if (type == 'polygon') fileToUpload = file[0]

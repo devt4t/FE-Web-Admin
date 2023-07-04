@@ -1790,10 +1790,10 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                dark
                 class=""
-                color="warning"
+                color="warning white--text"
                 v-bind="attrs"
+                :disabled="loadtable"
                 v-on="on"
                 rounded
               >
@@ -1827,6 +1827,12 @@
                   Employee
                 </v-btn>
               </v-list-item>
+              <v-list-item>
+                <v-switch 
+                  label="Data Tester"
+                  v-model="showTesterData"
+                ></v-switch>
+              </v-list-item>
             </v-list>
           </v-menu>
           <!-- Program Year -->
@@ -1835,6 +1841,7 @@
             item-color="success"
             v-model="programYear"
             :items="$store.state.programYear.options"
+            :disabled="loadtable"
             outlined
             dense
             hide-details
@@ -2018,6 +2025,8 @@ export default {
   },
   name: "Lahan",
   data: () => ({
+    showTesterData: false,
+    raw_data: [],
     unverifDialog: {
       show: false,
       show2: false,
@@ -2407,6 +2416,10 @@ export default {
       handler(newValue) {
         this.initialize()
       }
+    },
+    async showTesterData(val) {
+      if (val === false) this.dataobject = this.raw_data.filter(f1 => f1.lahanNo.match(/^10_00.*$/))
+      else this.dataobject = this.raw_data
     }
   },
 
@@ -2549,8 +2562,13 @@ export default {
           }
         );
         // console.log(response.data.data.result.data);
-        if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
+        const resData = response.data.data.result.data
+        if (resData.length != 0) {
+          this.dataobject = resData;
+          this.raw_data = resData
+          if (this.showTesterData === false) {
+            this.dataobject = resData.filter(f1 => f1.lahanNo.match(/^10_00.*$/))
+          }
           this.valueMUExcel = this.valueMU;
           this.valueTAExcel = this.valueTA;
           this.valueVillageExcel = this.valueVillage;

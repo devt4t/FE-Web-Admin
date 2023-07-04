@@ -42,7 +42,6 @@
                 </v-overlay>
                 <!-- export table -->
                 <div id="containerForExport-ScoopingVisit" style="display: none">
-                    <p style="text-align: right">Export Time: {{ Date() }}</p>
                     <h2 style="text-align: center;">Scooping Visit Report</h2>
                     <p style="text-align: center;">Form No: #{{ this.id }}</p>
                     <h4>1. Tanggal & Lokasi </h4>
@@ -198,6 +197,7 @@
                             </td>
                         </tr>
                     </table>
+                    <p style="text-align: center">Export Time: {{ Date() }}</p>
                 </div>
                 <!-- Polygon Data -->
                 <v-row class="ma-0 mx-2">
@@ -783,8 +783,8 @@ export default {
         confirmVerification(type) {
             const url = type == 'verify' ? 'VerificationScooping' : 'UnverificationScooping'
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                title: 'Apakah anda yakin?',
+                text: "Setelah ini anda tidak akan bisa membatalkannya!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#2e7d32',
@@ -798,8 +798,8 @@ export default {
                     axios.post(this.$store.getters.getApiUrl(url), {data_no: this.id, verified_by: this.$store.state.User.email}, this.$store.state.apiConfig)
                     .then(res => {
                         Swal.fire({
-                            title: 'Verified!',
-                            text: `Scooping data #${this.id} has been verified.`,
+                            title: 'Berhasil!',
+                            text: `Scooping data #${this.id} telah di${type == 'verify' ? '' : ' Un-'}verifikasi.`,
                             icon: 'success',
                             confirmButtonColor: '#2e7d32',
                         })
