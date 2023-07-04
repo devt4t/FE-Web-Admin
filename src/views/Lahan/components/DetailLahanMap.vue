@@ -171,9 +171,11 @@ export default {
                             zoom: 9,
                             duration: 7 * 1000
                         });
+                        mapOptions.loading.show = false
                     })
                 }
-            } catch (err) {this.errorResponse(err)} finally {
+            } catch (err) {
+                this.errorResponse(err)
                 this.maps.loading.show = false
             }
         },
