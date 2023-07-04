@@ -1,15 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Dashboard from '../views/Dashboard/index.vue'
-import Login from '../views/Login.vue'
-import GantiPassword from '../views/GantiPassword.vue'
-import Employee from '../views/Employee/Employee.vue'
 import FieldFacilitator from '../views/Employee/FF.vue'
 import EmployeeManager from '../views/Employee/EmployeeManager.vue'
 import EmployeeMenu from '../views/Employee/EmployeeMenu.vue'
 import EmployeePosition from '../views/Employee/EmployeePosition.vue'
-import MainPage from '../views/MainPage.vue'
 import Farmer from '../views/Farmer/Farmer.vue'
 import Lahan from '../views/Lahan/Lahan.vue'
 import LahanUmum from '../views/Lahan/LahanUmum.vue'
@@ -24,9 +18,7 @@ import MaterialOrganik from '../views/Activity/MaterialOrganik.vue'
 import Monitoring2 from '../views/Activity/Monitoring2.vue'
 import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
 import Progression from '../views/Activity/Progression.vue'
-import Distribusi from '../views/Activity/Distribusi.vue'
 import SeedlingChangeRequest from '../views/Activity/components/distribusi/SeedlingChangeRequest/index.vue'
-import RraPra from '../views/Activity/RraPra/index.vue'
 import ScoopingVisit from '../views/Activity/ScopingVisit/index.vue'
 
 import Provinsi from '../views/Utilities/Provinsi.vue'
@@ -41,22 +33,24 @@ import Suku from '../views/Utilities/Suku.vue'
 import Users from '../views/Users/Users.vue'
 
 Vue.use(VueRouter)
-
+function lazyLoad(view){
+  return() => import(`@/views/${view}.vue`)
+}
 const routes = [
   {
     path: '/Home',
     name: 'Home',
-    component: Home
+    component: lazyLoad('Home')
   },
   {
     path: '/',
     name: 'Login',
-    component: Login
+    component: lazyLoad('Login')
   },
   {
     path: '/RraPra',
     name: 'RraPra',
-    component: RraPra
+    component: lazyLoad('Activity/RraPra/index')
   },
   // {
   //   path: '/Uploads',
@@ -66,27 +60,27 @@ const routes = [
   {
     path: '/GantiPassword',
     name: 'GantiPassword',
-    component: GantiPassword
+    component: lazyLoad('GantiPassword')
   },
   {
     path: '/Dashboard',
     name: 'Dashboard',
-    component: Dashboard
+    component: lazyLoad('Dashboard/index')
   },
   {
     path: '/MainPage',
     name: 'MainPage',
-    component: MainPage
+    component: lazyLoad('MainPage')
   },
   {
     path: '/Employee',
     name: 'Employee',
-    component: Employee
+    component: lazyLoad('Employee/Employee')
   },
   {
     path: '/FieldFacilitator',
     name: 'FieldFacilitator',
-    component: FieldFacilitator
+    component: lazyLoad('Employee/FF')
   },
   {
     path: '/EmployeeManager',
@@ -181,7 +175,7 @@ const routes = [
   {
     path: '/Distribusi',
     name: 'Distribusi',
-    component: Distribusi
+    component: lazyLoad('Activity/Distribusi')
   },
   {
     path: '/Monitoring2',
