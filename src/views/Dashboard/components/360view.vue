@@ -33,7 +33,7 @@ export default {
     data: () => ({
         select_source: {
             items: [],
-            label: 'Data Map',
+            label: 'Data View',
             model: 'Nwzyt',
         },
     }),
