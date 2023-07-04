@@ -3262,7 +3262,7 @@ export default {
     async getMU() {
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetManagementUnit",
+          this.BaseUrlGet + `GetManagementUnit?program_year=${this.generalSettings.programYear}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -3270,7 +3270,7 @@ export default {
           }
         );
         if (response.data.length != 0) {
-          this.itemsMU = response.data.data.result;
+          this.itemsMU = response.data.data.result.sort((a,b) => a.name.localeCompare(b.name));
           // this.dataobject = response.data.data.result;
         }
       } catch (error) {
@@ -3290,7 +3290,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
+          this.BaseUrlGet + `GetTargetArea?program_year=${this.generalSettings.programYear}&mu_no=${valparam}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -3322,7 +3322,8 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam,
+          // this.BaseUrlGet + `GetDesa?program_year=${this.generalSettings.programYear}&kode_ta=${valparam}` ,
+          this.BaseUrlGet + `GetDesa?kode_ta=${valparam}` ,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -4283,14 +4284,14 @@ export default {
       this.typegetdata = this.User.ff.value_data;
     },
     async searchbyarea() {
+      this.dialogFilterArea = false;
       await this.resetFilter();
       await this.initialize();
-      this.dialogFilterArea = false;
     },
     async searchbyemp() {
+      this.dialogFilterEmp = false;
       await this.resetFilter();
       await this.initialize();
-      this.dialogFilterEmp = false;
     },
 
     resetvalue() {
