@@ -465,12 +465,13 @@ export default {
         if (res) {
           const data = res.data.data.result;
           this.datas.push(data);
+          this.datas.map((item) => {
+            item.form_date = moment(item.form_date).format("DD MMMM YYYY");
+          });
           this.dataListFarmer = data.ListFarmer;
-          this.dataListFarmer.map(
-            // previewPhoto
-            (item) =>
-              (item.previewPhoto = this.$store.state.apiUrlImage + item.photo)
-          );
+          this.dataListFarmer.map((item) => {
+            item.previewPhoto = this.$store.state.apiUrlImage + item.photo;
+          });
         }
       } catch (err) {
         this.errorResponse(err);
