@@ -95,10 +95,12 @@ export default {
         },
     }),
     async mounted() {
+        this.maps.loading.show = true
         this.maps.accessToken = this.$store.state.maps.accessToken
         this.maps.mapStyle = this.$store.state.maps.mapStyle
-        if (this.lahanNo) if (this.lahanNo.length > 0) await this.initializeMapMultipleMarker(this.lahanNo)
-        else await this.initializeMap()
+        if (this.lahanNo) {
+            if (this.lahanNo.length > 0) await this.initializeMapMultipleMarker(this.lahanNo)
+        } else await this.initializeMap()
     },
     methods: {
         errorResponse(error) {

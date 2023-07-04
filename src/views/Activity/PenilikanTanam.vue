@@ -2983,7 +2983,6 @@ export default {
           const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
           const res = await axios.get(url, this.$store.state.apiConfig)
           const datas = res.data.data.result
-          // console.log(datas)
           let listLahan = []
           let listTrees = []
           await datas.distributionAdjustment.forEach((adj, adjIndex) => {
@@ -3007,12 +3006,9 @@ export default {
                 listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
               } else listTrees.push(pushData)
           })
-          // console.log(listLahan)
-          // console.log(listTrees)
           this.dialogFormLahanUmum.inputs.lahan_no = await listLahan
           this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees
           if (existingData) {
-            console.log(existingData)
             await existingData.map(exData => {
               let adjIndexEx =  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(adjItems => adjItems.tree_code == exData.tree_code)
               if (exData.status == 'sudah_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_life += parseInt(exData.amount)
@@ -3235,7 +3231,6 @@ export default {
         } else if (this.dialogFormLahanUmum.inputs.photo3.preview) {
           dataForPost.photo3 = this.dialogFormLahanUmum.inputs.photo3.preview.replace(this.BaseUrl, '')
         }
-        // console.log(dataForPost)
         const store = await axios.post(url, dataForPost, this.$store.state.apiConfig)
         if (store) {
           this.textsnackbar = "Success store monitoring lahan umum data!"
@@ -3274,12 +3269,9 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemsMU = response.data.data.result;
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
         }
       } catch (error) {
         console.error(error.response);
@@ -3305,7 +3297,6 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsTA = response.data.data.result;
@@ -3313,8 +3304,6 @@ export default {
             this.itemsTAForm = response.data.data.result;
           }
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
         }
       } catch (error) {
         console.error(error.response);
@@ -3340,7 +3329,6 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsVillage = response.data.data.result;
@@ -3348,8 +3336,6 @@ export default {
             this.itemsVillageForm = response.data.data.result;
           }
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
         }
       } catch (error) {
         console.error(error.response);
@@ -3366,12 +3352,9 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemstrees = response.data.data.result.data;
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
         }
       } catch (error) {
         console.error(error.response);
@@ -3394,15 +3377,11 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.itemsff = response.data.data.result.data;
-          this.loaddownload = false;
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-          this.loaddownload = false;
         }
+        this.loaddownload = false;
       } catch (error) {
         console.error(error.response);
         if (error.response.status == 401) {
@@ -3429,8 +3408,7 @@ export default {
             },
           }
         );
-        // console.log(response.data.data.result);
-        if (response.data.length != 0) {
+        if (response) {
           this.defaultItem = Object.assign({}, response.data.data.result.data);
           this.defaultItem.list_detail = await this.setGroupingDetailSeedling(response.data.data.result.list_detail);
           this.itemlistpohon = response.data.data.result.list_detail;
@@ -3446,7 +3424,6 @@ export default {
             this.defaultItem.gambarshow1 =
               this.BaseUrl + response.data.data.result.data.gambar1;
           }
-          // console.log(this.defaultItem.gambarshow1);
           if (response.data.data.result.data.gambar2 == "-") {
             this.defaultItem.gambarshow2 = "/images/noimage.png";
           } else {
@@ -3459,7 +3436,6 @@ export default {
             this.defaultItem.gambarshow3 =
               this.BaseUrl + response.data.data.result.data.gambar3;
           }
-          console.log(this.defaultItem)
 
           this.load = false;
 

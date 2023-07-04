@@ -3374,7 +3374,6 @@ export default {
     },
 
     showDetail(item) {
-      console.log(item);
       this.type = "Detail";
       this.dialogDetail = true;
       this.getDetail(item);
