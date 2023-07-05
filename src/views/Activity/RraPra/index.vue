@@ -58,7 +58,7 @@
                     ></v-text-field>
                     <v-divider class="mx-2 d-none d-lg-block"></v-divider>
                     <div class="mx-auto">
-                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0" rounded class="mr-2" @click="() => exportExcel()">
+                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0 || true" rounded class="mr-2" @click="() => exportExcel()">
                             <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
                             Export
                         </v-btn>

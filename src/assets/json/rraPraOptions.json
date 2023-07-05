@@ -60,9 +60,18 @@
         "2500 - 3000"
     ],
     "agroforestry_type": [
-        "Agroforestry High intensive",
-        "Agroforestry Low intensive",
-        "Conservation"
+        {
+            "text": "Agroforestry Intensitas Tinggi",
+            "value": "agroforestry_high_intensive"
+        },
+        {
+            "text": "Agroforestry Intensitas Rendah",
+            "value": "agroforestry_low_intensive"
+        },
+        {
+            "text": "Konservasi",
+            "value": "conservation"
+        }
     ],
     "government_place": [
         "Kantor Bupati",
@@ -154,8 +163,32 @@
         "Peternakan"
     ],
     "marketingTradeMethod": [
-        "Direct Selling ( Pasar, warung, pinggir jalan)",
-        "Indirect Selling ( Tengkulak, broker, dll)"
+        {
+            "text": "Langsung ( Pasar, warung, pinggir jalan)",
+            "value": "langsung"
+        },
+        {
+            "text": "Tidak Langsung ( Tengkulak, broker, dll)",
+            "value": "tidak_langsung"
+        }
+    ],
+    "marketingPeriod": [
+        {
+            "text": "Mingguan",
+            "value": "mingguan"
+        },
+        {
+            "text": "Bulanan",
+            "value": "bulanan"
+        },
+        {
+            "text": "Musiman",
+            "value": "musiman"
+        },
+        {
+            "text": "Tahunan",
+            "value": "tahunan"
+        }
     ],
     "marketingContractDetails": [
         "Per Harvest Time",
