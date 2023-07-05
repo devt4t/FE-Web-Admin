@@ -66,7 +66,7 @@
                           Management Unit
                         </span>
                         <h4>
-                          {{ datas.length > 0 ? datas[0].mu_no || "-" : "-" }}
+                          {{ datas.length > 0 ? datas[0].namaMU || "-" : "-" }}
                         </h4>
                       </v-card>
                     </v-col>
@@ -79,9 +79,7 @@
                           Target Area
                         </span>
                         <h4>
-                          {{
-                            datas.length > 0 ? datas[0].target_area || "-" : "-"
-                          }}
+                          {{ datas.length > 0 ? datas[0].namaTA || "-" : "-" }}
                         </h4>
                       </v-card>
                     </v-col>
@@ -300,6 +298,9 @@ export default {
               { text: "No", value: "index", width: 70, sortable: false },
               { text: "Nama Petani", value: "name" },
               { text: "Photo Minat ", value: "previewPhoto" },
+              { text: "Nama Training ", value: "namaTraining" },
+              { text: "Pola ", value: "pattern" },
+              { text: "Kayu Dan MPTS", value: "tree_mpts_name" },
               { text: "Status", value: "status_program" },
             ],
           },
@@ -471,6 +472,7 @@ export default {
           this.dataListFarmer = data.ListFarmer;
           this.dataListFarmer.map((item) => {
             item.previewPhoto = this.$store.state.apiUrlImage + item.photo;
+            item.tree_mpts_name = `${item.tree1.tree_name}, ${item.tree2.tree_name}, ${item.tree3.tree_name}`;
           });
         }
       } catch (err) {
