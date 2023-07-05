@@ -761,11 +761,15 @@ export default {
       get: function() {
         if (this.show) {
           this.inputs.program_year.model = this.programYear;
+          // if (this.status === "edit") {
+          //   this.getDetailData(this.form_no);
+          // } else {
+          //   this.getDefaultData();
+          // }
           if (this.status === "edit") {
             this.getDetailData(this.form_no);
-          } else {
-            this.getDefaultData();
           }
+          // this.getDefaultData();
         }
         return this.show;
       },
@@ -830,6 +834,7 @@ export default {
     this.$nextTick(() => {
       window.addEventListener("resize", this.onResize);
     });
+    this.getDefaultData();
   },
   methods: {
     async callApiGet(url) {
@@ -880,6 +885,7 @@ export default {
     },
     async getDefaultData() {
       try {
+        console.log("getDefaultData");
         this.loading.show = true;
         this.loading.text = 'Preparing "sosialisasi program" form...';
         this.inputs.form_date.model = moment().format("YYYY-MM-DD");
