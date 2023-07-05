@@ -1331,7 +1331,7 @@
             </v-col>
             <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
               <v-btn
-                :disabled="$store.state.User.email != 'iyas.muzani@trees4trees.org'"
+                :disabled="!['iyas.muzani@trees4trees.org','bayu.pratama@trees4trees.org'].includes($store.state.User.email)"
                 dark
                 rounded
                 @click="showAddModal()"
