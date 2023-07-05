@@ -302,6 +302,7 @@
                                                                     <div v-if="exp.label" class="d-flex align-center my-4">
                                                                         <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">{{ exp.labelIcon }}</v-icon>{{ exp.label }}</p>
                                                                         <v-divider class="mx-2" color=""></v-divider>
+                                                                        <div v-if="exp.dataStatus">Status Data: {{ item[exp.dataStatus] }}</div>
                                                                     </div>
                                                                     <v-row class="my-2">
                                                                         <v-col v-for="(itemExp, itemExpIndex) in exp.items" :key="`column-${data.label}-item-${expIndex}-${itemExpIndex}`"
@@ -330,7 +331,7 @@
                                                                                             <v-tooltip top content-class="rounded-xl">
                                                                                                 Click here for chat
                                                                                                 <template v-slot:activator="{on, attrs}">
-                                                                                                    <a :href="`https://wa.me/${_utils.whatsappPhone(item[itemExp.dataKey])}`" target="_blank" v-bind="attrs" v-on="on" style="text-decoration: none;" class="grey--text text--darken-3">
+                                                                                                    <a :href="`https://wa.me/${_utils.whatsappPhone(item[itemExp.dataKey] || '')}`" target="_blank" v-bind="attrs" v-on="on" style="text-decoration: none;" class="grey--text text--darken-3">
                                                                                                         <v-btn fab x-small color="green white--text" class="elevation-0 mr-1"><v-icon>mdi-whatsapp</v-icon></v-btn>
                                                                                                     </a> 
                                                                                                 </template>
@@ -341,6 +342,9 @@
                                                                                             {{ item[itemExp.dataKey] }}
                                                                                         </span>
                                                                                         <span v-if="itemExp.suffix" class="ml-0" v-html="itemExp.suffix"></span>
+                                                                                        <span v-if="itemExp.dataStatus" class="ml-0">
+                                                                                            ({{ item[itemExp.dataStatus] }})
+                                                                                        </span>
                                                                                     </h4>
                                                                                 </v-card-text>
                                                                             </v-card>
@@ -727,15 +731,25 @@ export default {
                                 labelIcon: 'mdi-list-box',
                                 items: [
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'land_area',
+                                        dataStatus: 'data_land_area_source',
                                         dataType: 'number',
                                         label: 'Luas Dusun',
                                         labelIcon: null,
                                         suffix: `m<sup>2</sup>`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
+                                        dataKey: 'dry_land_area',
+                                        dataStatus: 'data_dry_land_area_source',
+                                        dataType: 'number',
+                                        label: 'Luas Lahan Kritis',
+                                        labelIcon: null,
+                                        suffix: `m<sup>2</sup>`,
+                                    },
+                                    {
+                                        cols: [12,6,6,6],
                                         dataKey: 'accessibility',
                                         dataType: 'text',
                                         label: 'Aksesibilitas',
@@ -743,12 +757,12 @@ export default {
                                         suffix: null,
                                     },
                                     {
-                                        cols: [12,6,6,4],
-                                        dataKey: 'dry_land_area',
-                                        dataType: 'number',
-                                        label: 'Luas Lahan Kritis',
+                                        cols: [12,6,6,6],
+                                        dataKey: 'dusun_access_photo',
+                                        dataType: 'photo',
+                                        label: 'Foto Akses Dusun',
                                         labelIcon: null,
-                                        suffix: `m<sup>2</sup>`,
+                                        suffix: null,
                                     },
                                 ]
                             },
@@ -795,7 +809,7 @@ export default {
                                 labelIcon: 'mdi-human-male-female-child',
                                 items: [
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'total_rw',
                                         dataType: 'number',
                                         label: 'Total RW',
@@ -803,7 +817,7 @@ export default {
                                         suffix: `RW`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'total_rt',
                                         dataType: 'number',
                                         label: 'Total RT',
@@ -811,7 +825,7 @@ export default {
                                         suffix: `RW`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'total_male',
                                         dataType: 'number',
                                         label: 'Total Laki - Laki',
@@ -819,7 +833,7 @@ export default {
                                         suffix: `orang`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'total_female',
                                         dataType: 'number',
                                         label: 'Total Perempuan',
@@ -827,7 +841,7 @@ export default {
                                         suffix: `orang`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,12,12,12],
                                         dataKey: 'total_kk',
                                         dataType: 'number',
                                         label: 'Total Keluarga (KK)',
@@ -835,7 +849,7 @@ export default {
                                         suffix: `KK`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'total_farmer_family',
                                         dataType: 'number',
                                         label: 'Total Keluarga Petani (KK)',
@@ -843,7 +857,15 @@ export default {
                                         suffix: `KK`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
+                                        dataKey: 'total_non_farmer_family',
+                                        dataType: 'number',
+                                        label: 'Total Keluarga Non-Petani (KK)',
+                                        labelIcon: null,
+                                        suffix: `KK`,
+                                    },
+                                    {
+                                        cols: [12,12,12,12],
                                         dataKey: 'average_family_member',
                                         dataType: 'number',
                                         label: 'Rata - Rata Anggota Keluarga',
@@ -851,10 +873,18 @@ export default {
                                         suffix: `orang`,
                                     },
                                     {
-                                        cols: [12,6,6,4],
+                                        cols: [12,6,6,6],
                                         dataKey: 'average_farmer_family_member',
                                         dataType: 'number',
                                         label: 'Rata - Rata Anggota Keluarga Petani',
+                                        labelIcon: null,
+                                        suffix: `orang`,
+                                    },
+                                    {
+                                        cols: [12,6,6,6],
+                                        dataKey: 'average_non_farmer_family_member',
+                                        dataType: 'number',
+                                        label: 'Rata - Rata Anggota Keluarga Non-Petani',
                                         labelIcon: null,
                                         suffix: `orang`,
                                     },
@@ -893,6 +923,7 @@ export default {
                             {
                                 label: 'Produktifitas',
                                 labelIcon: 'mdi-book-education',
+                                dataStatus: 'data_productive_source',
                                 items: [
                                     {
                                         cols: [12,6,6,6],
@@ -915,6 +946,7 @@ export default {
                             {
                                 label: 'Mata Pencaharian Masyarakat',
                                 labelIcon: 'mdi-book-education',
+                                dataStatus: 'data_job_source',
                                 items: [
                                     {
                                         cols: [12,6,6,4],
@@ -1013,6 +1045,27 @@ export default {
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama Dusun', value: 'dusun_name'},
                             {text: 'Pola Pemanfaatan Lahan', value: 'type_utilization'},
+                        ]
+                    }
+                },
+                // Sumber Air
+                {
+                    label: 'Sumber Air',
+                    labelIcon: 'mdi-water-pump',
+                    dataType: 'table',
+                    dataKey: 'Watersource',
+                    description: true,
+                    descriptionKey: `watersource_description`,
+                    table: {
+                        caption: null,
+                        hideDefaultFooter: true,
+                        itemsPerPage: -1,
+                        headers: [
+                            {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama', value: 'watersource_name'},
+                            {text: 'Tipe', value: 'watersource_type'},
+                            {text: 'Kondisi', value: 'watersource_condition'},
+                            {text: 'Pemanfaatan', value: 'watersource_utilization'},
                         ]
                     }
                 },
@@ -1216,7 +1269,7 @@ export default {
                             {text: 'Nama Komoditas', value: 'commodity_name'},
                             {text: 'Kapasitas', value: 'capacity'},
                             {text: 'Periode', value: 'period'},
-                            {text: 'Pendapatan', value: 'source_income'},
+                            {text: 'Pendapatan (Perbulan)', value: 'source_income'},
                         ]
                     }
                 },
@@ -1272,7 +1325,7 @@ export default {
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama Pupuk', value: 'fertilizer_name'},
                             {text: 'Kategori', value: 'fertilizer_categories'},
-                            {text: 'Tipe', value: 'fertilizer_type'},
+                            {text: 'Jenis', value: 'fertilizer_type'},
                             {text: 'Sumber', value: 'fertilizer_source'},
                             {text: 'Deskripsi', value: 'fertilizer_description'},
                         ]
@@ -1294,7 +1347,7 @@ export default {
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama Pestisida', value: 'pesticide_name'},
                             {text: 'Kategori', value: 'pesticide_categories'},
-                            {text: 'Tipe', value: 'pesticide_type'},
+                            {text: 'Jenis', value: 'pesticide_type'},
                             {text: 'Sumber', value: 'pesticide_source'},
                             {text: 'Deskripsi', value: 'pesticide_description'},
                         ]
@@ -1319,27 +1372,6 @@ export default {
                             {text: 'Kategori', value: 'disaster_categories'},
                             {text: 'Korban Jiwa', value: 'fatalities'},
                             {text: 'Detail', value: 'detail'},
-                        ]
-                    }
-                },
-                // Sumber Air
-                {
-                    label: 'Sumber Air',
-                    labelIcon: 'mdi-water-pump',
-                    dataType: 'table',
-                    dataKey: 'Watersource',
-                    description: true,
-                    descriptionKey: `watersource_description`,
-                    table: {
-                        caption: null,
-                        hideDefaultFooter: true,
-                        itemsPerPage: -1,
-                        headers: [
-                            {text: 'No', value: 'index', width: 70, sortable: false},
-                            {text: 'Nama', value: 'watersource_name'},
-                            {text: 'Tipe', value: 'watersource_type'},
-                            {text: 'Kondisi', value: 'watersource_condition'},
-                            {text: 'Pemanfaatan', value: 'watersource_utilization'},
                         ]
                     }
                 },
@@ -1415,12 +1447,18 @@ export default {
                     labelIcon: 'mdi-flower',
                     dataType: 'table',
                     dataSource: 'PRA',
-                    dataKey: '',
+                    dataKey: 'Flora',
                     table: {
                         hideDefaultFooter: true,
                         itemsPerPage: -1,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama', value: 'flora_name', sortable: false},
+                            {text: 'Populasi', value: 'flora_population', sortable: false},
+                            {text: 'Status', value: 'flora_status', sortable: false},
+                            {text: 'Kategori', value: 'flora_categories', sortable: false},
+                            {text: 'Sumber Air', value: 'flora_foodsource', sortable: false},
+                            {text: 'Lokasi Habitat', value: 'flora_habitat', sortable: false},
                         ]
                     }
                 },
@@ -1429,12 +1467,18 @@ export default {
                     labelIcon: 'mdi-bird',
                     dataType: 'table',
                     dataSource: 'PRA',
-                    dataKey: '',
+                    dataKey: 'Fauna',
                     table: {
                         hideDefaultFooter: true,
                         itemsPerPage: -1,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama', value: 'fauna_name', sortable: false},
+                            {text: 'Populasi', value: 'fauna_population', sortable: false},
+                            {text: 'Status', value: 'fauna_status', sortable: false},
+                            {text: 'Kategori', value: 'fauna_categories', sortable: false},
+                            {text: 'Sumber Makan', value: 'fauna_foodsource', sortable: false},
+                            {text: 'Lokasi Habitat', value: 'fauna_habitat', sortable: false},
                         ]
                     }
                 },

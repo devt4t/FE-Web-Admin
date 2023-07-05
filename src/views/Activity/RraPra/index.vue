@@ -10,7 +10,7 @@
             large
         ></v-breadcrumbs>
         <!-- Modals -->
-        <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
+        <FormModal :show="modals.form.show" :id="modals.form.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
         <DetailModal :show="modals.detail.show" :id="modals.detail.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.detail.key"/>
         <!-- Main Table -->
         <v-data-table
@@ -216,6 +216,7 @@ export default {
         modalActions(val) {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
+                this.modals[val.name].data = null
             }
         },
         async showModal(name, data) {
