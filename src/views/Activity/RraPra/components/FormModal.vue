@@ -181,54 +181,71 @@
                                                 <!-- Inputs -->
                                                 <v-col v-for="(itemKey, iKIndex) in rraInput.items" :key="`Inputs-${itemKey}-${iKIndex}`" 
                                                     cols="12" sm="12" :md="inputs[itemKey].lgView == 12 ? 12 : 6" :lg="inputs[itemKey].lgView" >
-                                                    <!-- text-field -->
-                                                    <v-text-field
-                                                        v-if="inputs[itemKey].inputType == 'text-field'"
-                                                        dense
-                                                        color="success"
-                                                        hide-details
-                                                        :label="inputs[itemKey].label"
-                                                        outlined
-                                                        rounded
-                                                        :placeholder="inputs[itemKey].placeholder"
-                                                        :readonly="inputs[itemKey].readonly"
-                                                        :suffix="inputs[itemKey].suffix"
-                                                        :type="inputs[itemKey].type"
-                                                        v-model="inputs[itemKey].model"
-                                                    >
-                                                        <template v-slot:label>
-                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
-                                                            {{ inputs[itemKey].label }} 
-                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                        </template>
-                                                        <template v-slot:append>
-                                                            <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
-                                                        </template>
-                                                    </v-text-field>
-                                                    <!-- textarea -->
-                                                    <v-textarea
-                                                        v-else-if="inputs[itemKey].inputType == 'textarea'"
-                                                        dense
-                                                        color="success"
-                                                        hide-details
-                                                        :label="inputs[itemKey].label"
-                                                        outlined
-                                                        rounded
-                                                        :placeholder="inputs[itemKey].placeholder"
-                                                        :readonly="inputs[itemKey].readonly"
-                                                        :suffix="inputs[itemKey].suffix"
-                                                        :type="inputs[itemKey].type"
-                                                        v-model="inputs[itemKey].model"
-                                                    >
-                                                        <template v-slot:label>
-                                                            <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
-                                                            {{ inputs[itemKey].label }} 
-                                                            <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                        </template>
-                                                        <template v-slot:append>
-                                                            <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
-                                                        </template>
-                                                    </v-textarea>
+                                                    <!-- Switcher -->
+                                                    <div v-if="inputs[itemKey].switcher && !inputs[itemKey].switcherModel" class="d-flex align-center pt-2">
+                                                        <p class="mb-0">Ada {{ inputs[itemKey].label }}?</p>
+                                                        <v-divider class="mx-2"></v-divider>
+                                                        <v-switch
+                                                            hide-details
+                                                            class="my-0"
+                                                            color="green"
+                                                            inset
+                                                            :label="inputs[itemKey].switcherModel ? 'Ada' : 'Tidak Ada'"
+                                                            v-model="inputs[itemKey].switcherModel"
+                                                        ></v-switch>
+                                                    </div>
+                                                    <div v-if="(inputs[itemKey].switcher && inputs[itemKey].switcherModel) || !inputs[itemKey].switcher">
+                                                        <div data-aos="zoom-in" data-aos-offset="-10000000000">
+                                                            <!-- text-field -->
+                                                            <v-text-field
+                                                                v-if="inputs[itemKey].inputType == 'text-field'"
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                :label="inputs[itemKey].label"
+                                                                outlined
+                                                                rounded
+                                                                :placeholder="inputs[itemKey].placeholder"
+                                                                :readonly="inputs[itemKey].readonly"
+                                                                :suffix="inputs[itemKey].suffix"
+                                                                :type="inputs[itemKey].type"
+                                                                v-model="inputs[itemKey].model"
+                                                            >
+                                                                <template v-slot:label>
+                                                                    <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                                    {{ inputs[itemKey].label }} 
+                                                                    <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                </template>
+                                                                <template v-slot:append>
+                                                                    <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
+                                                                </template>
+                                                            </v-text-field>
+                                                            <!-- textarea -->
+                                                            <v-textarea
+                                                                v-else-if="inputs[itemKey].inputType == 'textarea'"
+                                                                dense
+                                                                color="success"
+                                                                hide-details
+                                                                :label="inputs[itemKey].label"
+                                                                outlined
+                                                                rounded
+                                                                :placeholder="inputs[itemKey].placeholder"
+                                                                :readonly="inputs[itemKey].readonly"
+                                                                :suffix="inputs[itemKey].suffix"
+                                                                :type="inputs[itemKey].type"
+                                                                v-model="inputs[itemKey].model"
+                                                            >
+                                                                <template v-slot:label>
+                                                                    <v-icon v-if="inputs[itemKey].labelIcon" class="mr-1">{{ inputs[itemKey].labelIcon }}</v-icon>
+                                                                    {{ inputs[itemKey].label }} 
+                                                                    <sup><v-icon v-if="inputs[itemKey].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                </template>
+                                                                <template v-slot:append>
+                                                                    <div class="mt-1 ml-1" v-html="inputs[itemKey].append"></div>
+                                                                </template>
+                                                            </v-textarea>
+                                                        </div>
+                                                    </div>
                                                 </v-col>
                                             </v-row>
                                             <!-- multiple-input type -->
@@ -249,128 +266,165 @@
                                                                     v-for="(multipleInputForm, multipleInputFormIndex) in Object.entries(inputs[multipleInputHead].form)"
                                                                     :key="`MultipleInputForm-${multipleInputForm[0]}-${multipleInputFormIndex}`"
                                                                     cols="11" sm="11" :md="multipleInputForm[1].lgView == 12 ? 11 : 6" :lg="multipleInputForm[1].lgView" >
-                                                                        <!-- combobox -->
-                                                                        <v-combobox
-                                                                            v-if="multipleInputForm[1].inputType == 'combobox'"
-                                                                            dense
-                                                                            :multiple="multipleInputForm[1].multiple"
-                                                                            color="success"
-                                                                            hide-details
-                                                                            :small-chips="multipleInputForm[1].chip"
-                                                                            :hide-selected="multipleInputForm[1].hideSelected"
-                                                                            item-color="success"
-                                                                            :items="multipleInputForm[1].items"
-                                                                            :label="multipleInputForm[1].label"
-                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                            outlined
-                                                                            rounded
-                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                        >
-                                                                            <template v-slot:no-data>
-                                                                                <v-list-item>
-                                                                                <v-list-item-content>
-                                                                                    <v-list-item-title>
-                                                                                    No results matching. Press <kbd>enter</kbd> to create a new one
-                                                                                    </v-list-item-title>
-                                                                                </v-list-item-content>
-                                                                                </v-list-item>
-                                                                            </template>
-                                                                            <template v-slot:label>
-                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                                {{ multipleInputForm[1].label }} 
-                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                            </template>
-                                                                            <template v-slot:selection="{ attrs, item, parent, selected }">
-                                                                                <v-chip
-                                                                                    v-bind="attrs"
-                                                                                    :input-value="selected"
-                                                                                    label
-                                                                                    small
-                                                                                    class="rounded-pill"
-                                                                                    v-if="multipleInputForm[1].chip"
-                                                                                >
-                                                                                    <span class="pr-2">
-                                                                                        {{ item }}
-                                                                                    </span>
-                                                                                    <v-icon
-                                                                                        small
-                                                                                        @click="parent.selectItem(item)"
+                                                                        <!-- Switcher -->
+                                                                        <div v-if="multipleInputForm[1].switcher && !multipleInputItem[`${multipleInputForm[0]}Switcher`]" class="d-flex align-center pt-2">
+                                                                            <p class="mb-0">Ada {{ multipleInputForm[1].label }}?</p>
+                                                                            <v-divider class="mx-2"></v-divider>
+                                                                            <v-switch
+                                                                                hide-details
+                                                                                class="mt-0 mb-0"
+                                                                                color="green"
+                                                                                inset
+                                                                                :label="multipleInputItem[`${multipleInputForm[0]}Switcher`] ? 'Ada' : 'Tidak Ada'"
+                                                                                v-model="multipleInputItem[`${multipleInputForm[0]}Switcher`]"
+                                                                            ></v-switch>
+                                                                        </div>
+                                                                        <div v-if="(multipleInputForm[1].switcher && multipleInputItem[`${multipleInputForm[0]}Switcher`]) || !multipleInputForm[1].switcher">
+                                                                            <div v-if="!isNotTengkulak(multipleInputHead, multipleInputItem, multipleInputForm) && multipleInputForm[0] == 'customer' && multipleInputItem.method" class="d-flex align-center pt-2">
+                                                                                <p class="mb-0">Ada Data {{ multipleInputItem.method == 'langsung' ? 'Pembeli' : 'Tengkulak' }}?</p>
+                                                                                <v-divider class="mx-2"></v-divider>
+                                                                                <v-switch
+                                                                                    hide-details
+                                                                                    class="mt-0 mb-0"
+                                                                                    color="green"
+                                                                                    inset
+                                                                                    :label="multipleInputItem.has_customer ? 'Ada' : 'Tidak Ada'"
+                                                                                    v-model="multipleInputItem.has_customer"
+                                                                                ></v-switch>
+                                                                            </div>
+                                                                            <div v-if="isNotTengkulak(multipleInputHead, multipleInputItem, multipleInputForm)">
+                                                                                <div data-aos="fade-right" data-aos-offset="-1000000000000">
+                                                                                    <!-- combobox -->
+                                                                                    <v-combobox
+                                                                                        v-if="multipleInputForm[1].inputType == 'combobox'"
+                                                                                        dense
+                                                                                        :multiple="multipleInputForm[1].multiple"
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        :small-chips="multipleInputForm[1].chip"
+                                                                                        :hide-selected="multipleInputForm[1].hideSelected"
+                                                                                        item-color="success"
+                                                                                        :items="multipleInputForm[1].items"
+                                                                                        :label="multipleInputForm[1].label"
+                                                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        v-model="multipleInputItem[multipleInputForm[0]]"
                                                                                     >
-                                                                                        mdi-close-circle
-                                                                                    </v-icon>
-                                                                                </v-chip>
-                                                                                <span v-else>
-                                                                                    {{ item }}
-                                                                                </span>
-                                                                            </template>
-                                                                        </v-combobox>
-                                                                        <!-- autocomplete -->
-                                                                        <v-autocomplete
-                                                                            v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
-                                                                            dense
-                                                                            :multiple="multipleInputForm[1].multiple"
-                                                                            color="success"
-                                                                            hide-details
-                                                                            item-color="success"
-                                                                            :item-text="multipleInputForm[1].itemText"
-                                                                            :item-value="multipleInputForm[1].itemValue"
-                                                                            :items="multipleInputForm[1].items"
-                                                                            :label="multipleInputForm[1].label"
-                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                            outlined
-                                                                            rounded
-                                                                            :readonly="multipleInputForm[1].readonly"
-                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                        >
-                                                                            <template v-slot:label>
-                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                                {{ multipleInputForm[1].label }} 
-                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                            </template>
-                                                                        </v-autocomplete>
-                                                                        <!-- text-field -->
-                                                                        <v-text-field
-                                                                            v-else-if="multipleInputForm[1].inputType == 'text-field'"
-                                                                            dense
-                                                                            color="success"
-                                                                            hide-details
-                                                                            :label="multipleInputForm[1].label"
-                                                                            outlined
-                                                                            rounded
-                                                                            :placeholder="multipleInputForm[1].placeholder"
-                                                                            :readonly="multipleInputForm[1].readonly"
-                                                                            :suffix="multipleInputForm[1].suffix"
-                                                                            :type="multipleInputForm[1].type"
-                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                        >
-                                                                            <template v-slot:label>
-                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                                {{ multipleInputForm[1].label }} 
-                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                            </template>
-                                                                            <template v-slot:append>
-                                                                                <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
-                                                                            </template>
-                                                                        </v-text-field>
-                                                                        <!-- textarea -->
-                                                                        <v-textarea
-                                                                            v-else-if="multipleInputForm[1].inputType == 'textarea'"
-                                                                            dense
-                                                                            color="success"
-                                                                            hide-details
-                                                                            :label="multipleInputForm[1].label"
-                                                                            outlined
-                                                                            rounded
-                                                                            :placeholder="multipleInputForm[1].placeholder"
-                                                                            :readonly="multipleInputForm[1].readonly"
-                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
-                                                                        >
-                                                                            <template v-slot:label>
-                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
-                                                                                {{ multipleInputForm[1].label }} 
-                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                            </template>
-                                                                        </v-textarea>
+                                                                                        <template v-slot:no-data>
+                                                                                            <v-list-item>
+                                                                                            <v-list-item-content>
+                                                                                                <v-list-item-title>
+                                                                                                Tidak menemukan data. Ketik lalu <kbd>enter</kbd> untuk membuat data baru.
+                                                                                                </v-list-item-title>
+                                                                                            </v-list-item-content>
+                                                                                            </v-list-item>
+                                                                                        </template>
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                            {{ multipleInputForm[1].label }} 
+                                                                                            <sup><v-icon 
+                                                                                                v-if="(multipleInputHead != 'existing_plants' && multipleInputForm[1].required) || multipleInputItemIndex < 1" 
+                                                                                                small 
+                                                                                                style="vertical-align: middle;"
+                                                                                            >
+                                                                                                {{ localConfig.requiredInputIcon }}
+                                                                                            </v-icon></sup>
+                                                                                        </template>
+                                                                                        <template v-slot:selection="{ attrs, item, parent, selected }">
+                                                                                            <v-chip
+                                                                                                v-bind="attrs"
+                                                                                                :input-value="selected"
+                                                                                                label
+                                                                                                small
+                                                                                                class="rounded-pill"
+                                                                                                v-if="multipleInputForm[1].chip"
+                                                                                            >
+                                                                                                <span class="pr-2">
+                                                                                                    {{ item }}
+                                                                                                </span>
+                                                                                                <v-icon
+                                                                                                    small
+                                                                                                    @click="parent.selectItem(item)"
+                                                                                                >
+                                                                                                    mdi-close-circle
+                                                                                                </v-icon>
+                                                                                            </v-chip>
+                                                                                            <span v-else>
+                                                                                                {{ item }}
+                                                                                            </span>
+                                                                                        </template>
+                                                                                    </v-combobox>
+                                                                                    <!-- autocomplete -->
+                                                                                    <v-autocomplete
+                                                                                        v-else-if="multipleInputForm[1].inputType == 'autocomplete'"
+                                                                                        dense
+                                                                                        :multiple="multipleInputForm[1].multiple"
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        item-color="success"
+                                                                                        :item-text="multipleInputForm[1].itemText"
+                                                                                        :item-value="multipleInputForm[1].itemValue"
+                                                                                        :items="multipleInputForm[1].items"
+                                                                                        :label="multipleInputForm[1].label"
+                                                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        :readonly="multipleInputForm[1].readonly"
+                                                                                        v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                    >
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                            {{ multipleInputForm[1].label }} 
+                                                                                            <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                    </v-autocomplete>
+                                                                                    <!-- text-field -->
+                                                                                    <v-text-field
+                                                                                        v-else-if="multipleInputForm[1].inputType == 'text-field'"
+                                                                                        dense
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        :label="multipleInputForm[1].label"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        :placeholder="multipleInputForm[1].placeholder"
+                                                                                        :readonly="multipleInputForm[1].readonly"
+                                                                                        :suffix="multipleInputForm[1].suffix"
+                                                                                        :type="multipleInputForm[1].type"
+                                                                                        v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                    >
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                            {{ multipleInputForm[1].label }} 
+                                                                                            <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                        <template v-slot:append>
+                                                                                            <div class="mt-1 ml-1" v-html="multipleInputForm[1].append"></div>
+                                                                                        </template>
+                                                                                    </v-text-field>
+                                                                                    <!-- textarea -->
+                                                                                    <v-textarea
+                                                                                        v-else-if="multipleInputForm[1].inputType == 'textarea'"
+                                                                                        dense
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        :label="multipleInputForm[1].label"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        :placeholder="multipleInputForm[1].placeholder"
+                                                                                        :readonly="multipleInputForm[1].readonly"
+                                                                                        v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                                    >
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                            {{ multipleInputForm[1].label }} 
+                                                                                            <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                    </v-textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                 </v-col>
                                                             </v-row>
                                                         </v-col>
@@ -419,6 +473,7 @@
                                                                     v-model="inputs.village_border[point].border_type.model"
                                                                 ></v-select>
                                                             </v-col>
+                                                            <!-- kabupaten -->
                                                             <v-col cols="12" :lg="inputs.village_border[point].kabupaten.lgView">
                                                                 <v-autocomplete
                                                                     dense
@@ -436,8 +491,13 @@
                                                                     rounded
                                                                     v-model="inputs.village_border[point].kabupaten.model"
                                                                 >
+                                                                    <template v-slot:label>
+                                                                        {{ inputs.village_border[point].kabupaten.label }} 
+                                                                        <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
                                                                 </v-autocomplete>
                                                             </v-col>
+                                                            <!-- kecamatan -->
                                                             <v-col cols="12" :lg="inputs.village_border[point].kecamatan.lgView" v-if="inputs.village_border[point].border_type.model == 'Kecamatan' || inputs.village_border[point].border_type.model == 'Desa'">
                                                                 <v-autocomplete
                                                                     dense
@@ -455,8 +515,13 @@
                                                                     rounded
                                                                     v-model="inputs.village_border[point].kecamatan.model"
                                                                 >
+                                                                    <template v-slot:label>
+                                                                        {{ inputs.village_border[point].kecamatan.label }} 
+                                                                        <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
                                                                 </v-autocomplete>
                                                             </v-col>
+                                                            <!-- desa -->
                                                             <v-col cols="12" :lg="inputs.village_border[point].desa.lgView" v-if="inputs.village_border[point].border_type.model == 'Desa'">
                                                                 <v-autocomplete
                                                                     dense
@@ -474,6 +539,10 @@
                                                                     rounded
                                                                     v-model="inputs.village_border[point].desa.model"
                                                                 >
+                                                                    <template v-slot:label>
+                                                                        {{ inputs.village_border[point].desa.label }} 
+                                                                        <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                    </template>
                                                                 </v-autocomplete>
                                                             </v-col>
                                                         </v-row>
@@ -522,64 +591,275 @@
                                                     <v-expansion-panel-content>
                                                         <v-row>
                                                             <!-- Inputs -->
-                                                            <v-col v-if="(hmInputs[1].potentialRequirement === true && hm.potential) || hmInputs[1].potentialRequirement === false" v-for="(hmInputs, hmInputIndex) in Object.entries(inputs.hamlets.form)" :key="`Inputs-${hmInputs[0]}-${hmIndex}-${hmInputIndex}`" cols="12" sm="12" md="6" :lg="hmInputs[1].lgView" >
-                                                                <div v-if="hmInputs[1].type === 'divider'" class="d-flex align-center">
-                                                                    <p class="mb-0"><v-icon class="mr-2">{{ hmInputs[1].labelIcon }}</v-icon>{{ hmInputs[1].label }}</p>
+                                                            <v-col v-if="(hmInputs[1].potentialRequirement === true && hm.potential) || hmInputs[1].potentialRequirement === false" 
+                                                                v-for="(hmInputs, hmInputIndex) in Object.entries(inputs.hamlets.form)" 
+                                                                :key="`Inputs-${hmInputs[0]}-${hmIndex}-${hmInputIndex}`" 
+                                                                cols="12" sm="12" md="6" :lg="hmInputs[1].lgView" 
+                                                            >
+                                                                <div v-if="hmInputs[1].switcher && !hm[`${hmInputs[0]}_switcher`]" class="d-flex align-center pt-2">
+                                                                    <p class="mb-0">Ada {{ hmInputs[1].label }}?</p>
                                                                     <v-divider class="mx-2"></v-divider>
-                                                                    <div v-if="hmInputs[1].label === 'General Data'">
-                                                                        <v-switch    
-                                                                            color="green"
-                                                                            v-model="hm.potential"
-                                                                            inset
-                                                                            :label="`Dusun ini ${hm.potential ? 'berpotensi' : 'tidak berpotensi'}.`"
-                                                                        ></v-switch>
+                                                                    <v-switch
+                                                                        hide-details
+                                                                        class="mt-0 mb-0"
+                                                                        color="green"
+                                                                        inset
+                                                                        :label="hm[`${hmInputs[0]}_switcher`] ? 'Ada' : 'Tidak Ada'"
+                                                                        v-model="hm[`${hmInputs[0]}_switcher`]"
+                                                                    ></v-switch>
+                                                                </div>
+                                                                <div v-else-if="!hmInputs[1].switcher || (hmInputs[1].switcher && hm[`${hmInputs[0]}_switcher`])">
+                                                                    <div data-aos="zoom-in" data-aos-offset="-1000000000000">
+                                                                        <div v-if="!['total_farmer_family','total_non_farmer_family','average_family_member','average_farmer_family_member','average_non_farmer_family_member'].includes(hmInputs[0])">
+                                                                            <div v-if="hmInputs[1].type === 'divider'" class="d-flex align-center">
+                                                                                <p class="mb-0"><v-icon class="mr-2">{{ hmInputs[1].labelIcon }}</v-icon>{{ hmInputs[1].label }}</p>
+                                                                                <v-divider class="mx-2"></v-divider>
+                                                                                <div v-if="hmInputs[1].label === 'General Data'">
+                                                                                    <v-switch    
+                                                                                        hide-details
+                                                                                        class="my-0"
+                                                                                        color="green"
+                                                                                        v-model="hm.potential"
+                                                                                        inset
+                                                                                        :label="`Dusun ini ${hm.potential ? 'berpotensi' : 'tidak berpotensi'}.`"
+                                                                                    ></v-switch>
+                                                                                </div>
+                                                                                <div v-if="['Produktifitas','Mata Pencaharian Masyarakat','Luas Dusun','Luas Lahan Kering / Kritis'].includes(hmInputs[1].label)">
+                                                                                    <v-select
+                                                                                        dense
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        item-color="success"
+                                                                                        :items="[{text: 'Perkiraan', value: 'perkiraan'},{text: 'Asli', value: 'asli'}]"
+                                                                                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        v-model="hm[getModelSourceData(hmInputs[1].label)]"
+                                                                                    >
+                                                                                        <template v-slot:label>
+                                                                                            Tipe Sumber Data
+                                                                                            <sup><v-icon small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                    </v-select>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!-- text-field -->
+                                                                            <v-text-field
+                                                                                v-else-if="hmInputs[1].type === 'number' || hmInputs[1].type === 'text'"
+                                                                                dense
+                                                                                color="success"
+                                                                                hide-details
+                                                                                :label="hmInputs[1].label"
+                                                                                :prepend-icon="hmInputs[1].prependIcon"
+                                                                                outlined
+                                                                                rounded
+                                                                                :suffix="hmInputs[1].suffix"
+                                                                                :type="hmInputs[1].type"
+                                                                                v-model="hm[hmInputs[0]]"
+                                                                            >
+                                                                                <template v-slot:label>
+                                                                                    <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                                    {{ hmInputs[1].label }} 
+                                                                                    <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                </template>
+                                                                                <template v-slot:append>
+                                                                                    <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                                </template>
+                                                                            </v-text-field>
+                                                                            <!-- autocomplete -->
+                                                                            <v-autocomplete
+                                                                                v-else-if="hmInputs[1].inputType == 'autocomplete'"
+                                                                                dense
+                                                                                :multiple="hmInputs[1].type == 'Multiple'"
+                                                                                color="success"
+                                                                                hide-details
+                                                                                item-color="success"
+                                                                                :item-text="hmInputs[1].itemText"
+                                                                                :item-value="hmInputs[1].itemValue"
+                                                                                :items="hmInputs[1].items"
+                                                                                :label="hmInputs[1].label"
+                                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                outlined
+                                                                                rounded
+                                                                                v-model="hm[hmInputs[0]]"
+                                                                            >
+                                                                                <template v-slot:label>
+                                                                                    {{ hmInputs[1].label }} 
+                                                                                    <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                </template>
+                                                                            </v-autocomplete>
+                                                                            <!-- select -->
+                                                                            <v-select
+                                                                                v-else-if="hmInputs[1].inputType == 'select'"
+                                                                                dense
+                                                                                color="success"
+                                                                                hide-details
+                                                                                item-color="success"
+                                                                                :item-text="hmInputs[1].itemText"
+                                                                                :item-value="hmInputs[1].itemValue"
+                                                                                :items="hmInputs[1].items"
+                                                                                :label="hmInputs[1].label"
+                                                                                :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                                outlined
+                                                                                rounded
+                                                                                v-model="hm[hmInputs[0]]"
+                                                                            >
+                                                                                <template v-slot:label>
+                                                                                    {{ hmInputs[1].label }} 
+                                                                                    <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                </template>
+                                                                            </v-select>
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <div v-if="hmInputs[0] == 'total_farmer_family'">
+                                                                                <div v-if="!hm.has_detail_kk" class="d-flex align-center pt-2">
+                                                                                    <p class="mb-0">Ada Data Detail KK?</p>
+                                                                                    <v-divider class="mx-2"></v-divider>
+                                                                                    <v-switch
+                                                                                        hide-details
+                                                                                        class="my-0"
+                                                                                        color="green"
+                                                                                        inset
+                                                                                        :label="hm.has_detail_kk ? 'Ada' : 'Tidak Ada'"
+                                                                                        v-model="hm.has_detail_kk"
+                                                                                    ></v-switch>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div data-aos="zoom-in" data-aos-offset="-100000000000">
+                                                                                        <!-- text-field -->
+                                                                                        <v-text-field
+                                                                                            dense
+                                                                                            color="success"
+                                                                                            hide-details
+                                                                                            :label="hmInputs[1].label"
+                                                                                            :prepend-icon="hmInputs[1].prependIcon"
+                                                                                            outlined
+                                                                                            rounded
+                                                                                            :suffix="hmInputs[1].suffix"
+                                                                                            :type="hmInputs[1].type"
+                                                                                            v-model="hm[hmInputs[0]]"
+                                                                                        >
+                                                                                            <template v-slot:label>
+                                                                                                <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                                                {{ hmInputs[1].label }} 
+                                                                                                <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                            </template>
+                                                                                            <template v-slot:append>
+                                                                                                <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                                            </template>
+                                                                                        </v-text-field>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-if="(hmInputs[0] == 'total_non_farmer_family' && hm.has_detail_kk) || (hmInputs[0] == 'average_non_farmer_family_member' && hm.has_detail_avg_member)">
+                                                                                <div data-aos="zoom-in" data-aos-offset="-100000000000">
+                                                                                    <!-- text-field -->
+                                                                                    <v-text-field
+                                                                                        dense
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        :label="hmInputs[1].label"
+                                                                                        :prepend-icon="hmInputs[1].prependIcon"
+                                                                                        outlined
+                                                                                        rounded
+                                                                                        :suffix="hmInputs[1].suffix"
+                                                                                        :type="hmInputs[1].type"
+                                                                                        v-model="hm[hmInputs[0]]"
+                                                                                    >
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                                            {{ hmInputs[1].label }} 
+                                                                                            <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                        <template v-slot:append>
+                                                                                            <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                                        </template>
+                                                                                    </v-text-field>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-if="hmInputs[0] == 'average_family_member' && hm.has_detail_kk">
+                                                                                <div v-if="!hm.has_avg_member" class="d-flex align-center pt-2">
+                                                                                    <p class="mb-0">Ada data rata - rata jumlah anggota keluarga?</p>
+                                                                                    <v-divider class="mx-2"></v-divider>
+                                                                                    <v-switch
+                                                                                        hide-details
+                                                                                        class="my-0"
+                                                                                        color="green"
+                                                                                        inset
+                                                                                        :label="hm.has_avg_member ? 'Ada' : 'Tidak Ada'"
+                                                                                        v-model="hm.has_avg_member"
+                                                                                    ></v-switch>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div data-aos="zoom-in" data-aos-offset="-100000000000">
+                                                                                        <!-- text-field -->
+                                                                                        <v-text-field
+                                                                                            dense
+                                                                                            color="success"
+                                                                                            hide-details
+                                                                                            :label="hmInputs[1].label"
+                                                                                            :prepend-icon="hmInputs[1].prependIcon"
+                                                                                            outlined
+                                                                                            rounded
+                                                                                            :suffix="hmInputs[1].suffix"
+                                                                                            :type="hmInputs[1].type"
+                                                                                            v-model="hm[hmInputs[0]]"
+                                                                                        >
+                                                                                            <template v-slot:label>
+                                                                                                <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                                                {{ hmInputs[1].label }} 
+                                                                                                <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                            </template>
+                                                                                            <template v-slot:append>
+                                                                                                <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                                            </template>
+                                                                                        </v-text-field>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div v-if="hmInputs[0] == 'average_farmer_family_member' && hm.has_avg_member">
+                                                                                <div v-if="!hm.has_detail_avg_member" class="d-flex align-center pt-2">
+                                                                                    <p class="mb-0">Ada data detail rata - rata jumlah anggota keluarga?</p>
+                                                                                    <v-divider class="mx-2"></v-divider>
+                                                                                    <v-switch
+                                                                                        hide-details
+                                                                                        class="my-0"
+                                                                                        color="green"
+                                                                                        inset
+                                                                                        :label="hm.has_detail_avg_member ? 'Ada' : 'Tidak Ada'"
+                                                                                        v-model="hm.has_detail_avg_member"
+                                                                                    ></v-switch>
+                                                                                </div>
+                                                                                <div v-else>
+                                                                                    <div data-aos="zoom-in" data-aos-offset="-100000000000">
+                                                                                        <!-- text-field -->
+                                                                                        <v-text-field
+                                                                                            dense
+                                                                                            color="success"
+                                                                                            hide-details
+                                                                                            :label="hmInputs[1].label"
+                                                                                            :prepend-icon="hmInputs[1].prependIcon"
+                                                                                            outlined
+                                                                                            rounded
+                                                                                            :suffix="hmInputs[1].suffix"
+                                                                                            :type="hmInputs[1].type"
+                                                                                            v-model="hm[hmInputs[0]]"
+                                                                                        >
+                                                                                            <template v-slot:label>
+                                                                                                <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                                                {{ hmInputs[1].label }} 
+                                                                                                <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                            </template>
+                                                                                            <template v-slot:append>
+                                                                                                <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                                            </template>
+                                                                                        </v-text-field>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <!-- text-field -->
-                                                                <v-text-field
-                                                                    v-else-if="hmInputs[1].type === 'number' || hmInputs[1].type === 'text'"
-                                                                    dense
-                                                                    color="success"
-                                                                    hide-details
-                                                                    :label="hmInputs[1].label"
-                                                                    :prepend-icon="hmInputs[1].prependIcon"
-                                                                    outlined
-                                                                    rounded
-                                                                    :suffix="hmInputs[1].suffix"
-                                                                    :type="hmInputs[1].type"
-                                                                    v-model="hm[hmInputs[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
-                                                                        {{ hmInputs[1].label }} 
-                                                                        <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                    <template v-slot:append>
-                                                                        <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
-                                                                    </template>
-                                                                </v-text-field>
-                                                                <!-- autocomplete -->
-                                                                <v-autocomplete
-                                                                    v-else-if="hmInputs[1].inputType == 'autocomplete'"
-                                                                    dense
-                                                                    :multiple="hmInputs[1].type == 'Multiple'"
-                                                                    color="success"
-                                                                    hide-details
-                                                                    item-color="success"
-                                                                    :item-text="hmInputs[1].itemText"
-                                                                    :item-value="hmInputs[1].itemValue"
-                                                                    :items="hmInputs[1].items"
-                                                                    :label="hmInputs[1].label"
-                                                                    :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                                                                    outlined
-                                                                    rounded
-                                                                    v-model="hm[hmInputs[0]]"
-                                                                >
-                                                                    <template v-slot:label>
-                                                                        {{ hmInputs[1].label }} 
-                                                                        <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
-                                                                    </template>
-                                                                </v-autocomplete>
                                                             </v-col>
                                                         </v-row>
                                                     </v-expansion-panel-content>
@@ -735,6 +1015,30 @@
                                                                                 <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                                                             </template>
                                                                         </v-autocomplete>
+                                                                        <!-- select -->
+                                                                        <v-select
+                                                                            v-else-if="multipleInputForm[1].inputType == 'select'"
+                                                                            dense
+                                                                            :multiple="multipleInputForm[1].multiple"
+                                                                            color="success"
+                                                                            hide-details
+                                                                            item-color="success"
+                                                                            :item-text="multipleInputForm[1].itemText"
+                                                                            :item-value="multipleInputForm[1].itemValue"
+                                                                            :items="multipleInputForm[1].items"
+                                                                            :label="multipleInputForm[1].label"
+                                                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                                                            outlined
+                                                                            rounded
+                                                                            :readonly="multipleInputForm[1].readonly"
+                                                                            v-model="multipleInputItem[multipleInputForm[0]]"
+                                                                        >
+                                                                            <template v-slot:label>
+                                                                                <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
+                                                                                {{ multipleInputForm[1].label }} 
+                                                                                <sup><v-icon v-if="multipleInputForm[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                            </template>
+                                                                        </v-select>
                                                                         <!-- text-field -->
                                                                         <v-text-field
                                                                             v-else-if="multipleInputForm[1].inputType == 'text-field'"
@@ -874,11 +1178,12 @@
                                                             <p class="mb-0"><v-icon class="mr-2">mdi-table-arrow-up</v-icon>Matrik Permasalahan</p>
                                                             <v-divider class="mx-2"></v-divider>
                                                         </div>
-                                                        <p>NB: Angka total terbesar = paling bermasalah</p>
+                                                        <p>NB: Angka terkecil adalah yang paling bermasalah</p>
                                                         <v-data-table
                                                             :multi-sort="praInput.table.multiSort"
                                                             :headers="praInput.table.headers"
-                                                            :items="inputs[multipleInputHead].model"
+                                                            :items="inputs[multipleInputHead].model.filter(n => n.problem_name)"
+                                                            no-data-text="Belum ada data masalah! Silahkan cari masalah :)"
                                                         >
                                                             <!-- Table Index -->
                                                             <template v-slot:item.index="{index}">
@@ -1083,8 +1388,8 @@
                                                 <div v-if="praInput.type === 'custom-farmer_income'">
                                                     <v-row>
                                                         <v-col cols="12" md="6" :lg="inputs.farmer_income.collection_type.lgView">
-                                                            <!-- autocomplete -->
-                                                            <v-autocomplete
+                                                            <!-- select -->
+                                                            <v-select
                                                                 dense
                                                                 color="success"
                                                                 hide-details
@@ -1102,7 +1407,7 @@
                                                                     {{ inputs.farmer_income.collection_type.label }} 
                                                                     <sup><v-icon v-if="inputs.farmer_income.collection_type.required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                                                 </template>
-                                                            </v-autocomplete>
+                                                            </v-select>
                                                         </v-col>
                                                     </v-row>
                                                     <div>
@@ -1490,6 +1795,7 @@
                                                                             :item-value="multipleInputForm[1].itemValue"
                                                                             :items="multipleInputForm[1].items"
                                                                             :label="multipleInputForm[1].label"
+                                                                            :placeholder="multipleInputForm[1].placeholder"
                                                                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                                                             outlined
                                                                             rounded
@@ -1785,7 +2091,7 @@ export default {
                     title: 'Kelembagaan Masyarakat',
                     icon: 'mdi-account-cowboy-hat',        
                     type: 'multiple-input',
-                    required: true,
+                    required: false,
                     optional: false,
                     items: [
                         'community_institutions',
@@ -2138,10 +2444,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             field: {
@@ -2152,10 +2460,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             resident: {
@@ -2166,10 +2476,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             yard: {
@@ -2180,10 +2492,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             marshland: {
@@ -2194,10 +2508,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             lake: {
@@ -2208,10 +2524,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             people_plantation_land: {
@@ -2222,10 +2540,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             state_plantation_land: {
@@ -2236,10 +2556,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             private_plantation_land: {
@@ -2250,10 +2572,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             protected_forest: {
@@ -2264,10 +2588,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             people_forest: {
@@ -2278,10 +2604,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             public_facilities: {
@@ -2292,10 +2620,12 @@ export default {
                 lgView: 6,
                 loading: false,
                 model: '',
-                placeholder: `0`,
+                placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: 'Ha',
+                switcher: true,
+                switcherModel: false,
                 type: 'number'
             },
             types_of_land_by_people: {
@@ -2308,7 +2638,7 @@ export default {
                 model: '',
                 placeholder: ``,
                 readonly: false,
-                required: true,
+                required: false,
                 suffix: '',
                 type: 'text'
             },
@@ -2320,7 +2650,7 @@ export default {
                         inputType: 'autocomplete',
                         chip: false,
                         items: [],
-                        itemText: 'value',
+                        itemText: 'text',
                         itemValue: 'value',
                         hideSelected: false,
                         label: 'Pola',
@@ -2420,7 +2750,7 @@ export default {
                         inputType: 'textarea',
                         type: 'text',
                         label: 'Deskripsi',
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 12
                     },
@@ -2440,7 +2770,7 @@ export default {
                     name: {
                         inputType: 'text-field',
                         type: 'text',
-                        label: 'Nama',
+                        label: 'Nama Petani',
                         required: true,
                         readonly: false,
                         lgView: 7
@@ -2459,7 +2789,8 @@ export default {
                     source: {
                         inputType: 'text-field',
                         type: 'text',
-                        label: 'Sumber',
+                        label: 'Sumber Pertanian Organik',
+                        placeholder: 'Penananman jagung',
                         required: true,
                         readonly: false,
                         lgView: 12
@@ -2468,7 +2799,7 @@ export default {
                         inputType: 'textarea',
                         type: 'text',
                         label: 'Deskripsi',
-                        required: true,
+                        required: false,
                         readonly: false,
                         lgView: 12
                     },
@@ -2498,29 +2829,35 @@ export default {
                         inputType: 'text-field',
                         type: 'number',
                         label: 'Kapasitas Komoditas',
-                        required: true,
+                        required: false,
                         readonly: false,
                         suffix: 'kg',
+                        switcher: true,
                         lgView: 6
                     },
                     method: {
-                        inputType: 'combobox',
+                        inputType: 'autocomplete',
                         chip: true,
-                        items: ['Direct', 'Indirect'],
+                        items: formOptions.marketingTradeMethod,
                         hideSelected: true,
                         label: 'Metode',
                         multiple: false,
                         chip: false,
                         required: true,
-                        lgView: 4
+                        lgView: 6
                     },
                     period: {
-                        inputType: 'text-field',
+                        inputType: 'autocomplete',
+                        chip: true,
+                        items: formOptions.marketingPeriod,
+                        hideSelected: true,
                         type: 'text',
                         label: 'Periode Pemasaran Komoditas',
+                        multiple: false,
+                        chip: false,
                         required: true,
                         readonly: false,
-                        lgView: 8
+                        lgView: 6
                     },
                     description: {
                         inputType: 'textarea',
@@ -2533,7 +2870,7 @@ export default {
                     customer: {
                         inputType: 'text-field',
                         type: 'text',
-                        label: 'Nama Pembeli',
+                        label: 'Nama Pembeli / Tengkulak',
                         required: false,
                         readonly: false,
                         lgView: 4
@@ -2558,10 +2895,12 @@ export default {
                 model: [],
                 default: [{
                     commodity_name: null,
-                    capacity: 0,
+                    capacity: null,
+                    capacitySwitcer: false,
                     method: null,
                     period: null,
                     description: null,
+                        has_customer: false,
                     customer: null,
                     phone: null,
                     email: null,
@@ -2584,6 +2923,7 @@ export default {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Spesialisasi Petani',
+                        placeholder: 'Pembuat pupuk organik',
                         required: true,
                         readonly: false,
                         suffix: '',
@@ -2593,6 +2933,7 @@ export default {
                         inputType: 'text-field',
                         type: 'text',
                         label: 'Potensial',
+                        placeholder: 'Memanfaatkan tanaman kering menjadi pupuk',
                         required: true,
                         readonly: false,
                         suffix: '',
@@ -2602,7 +2943,7 @@ export default {
                         inputType: 'textarea',
                         type: 'text',
                         label: 'Deskripsi',
-                        required: false,
+                        required: true,
                         readonly: false,
                         lgView: 12
                     },
@@ -2636,22 +2977,10 @@ export default {
                         label: 'Nama Dusun',
                         type: 'text',
                         suffix: '',
-                        lgView: 6,
+                        lgView: 12,
                         labelIcon: 'mdi-tag',
                         required: true,
                         potentialRequirement: false,
-                    },
-                    land_area: {
-                        label: 'Luas Dusun',
-                        model: '',
-                        inputType: 'text-field',
-                        lgView: 6,
-                        suffix: '',
-                        append: 'm<sup>2</sup>',
-                        loading: false,
-                        required: true,
-                        type: 'number',
-                        potentialRequirement: true,
                     },
                     accessibility: {
                         items: formOptions.accessibility,
@@ -2659,18 +2988,44 @@ export default {
                         model: '',
                         itemText: 'value',
                         itemValue: 'value',
-                        inputType: 'autocomplete',
+                        inputType: 'select',
                         lgView: 6,
                         loading: false,
                         required: true,
                         type: 'Select',
                         potentialRequirement: true,
                     },
+                    divider7: {
+                        label: 'Luas Dusun',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-counter',
+                        potentialRequirement: true,
+                    },
+                    land_area: {
+                        label: 'Luas Dusun',
+                        model: '',
+                        inputType: 'text-field',
+                        lgView: 12,
+                        suffix: '',
+                        append: 'm<sup>2</sup>',
+                        loading: false,
+                        required: true,
+                        type: 'number',
+                        potentialRequirement: true,
+                    },
+                    divider8: {
+                        label: 'Luas Lahan Kering / Kritis',
+                        type: 'divider',
+                        lgView: 12,
+                        labelIcon: 'mdi-counter',
+                        potentialRequirement: true,
+                    },
                     dry_land_area: {
                         label: 'Luas Lahan Kering / Kritis',
                         model: '',
                         inputType: 'text-field',
-                        lgView: 6,
+                        lgView: 12,
                         append: 'm<sup>2</sup>',
                         loading: false,
                         required: true,
@@ -2753,7 +3108,7 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-human-male',
-                        required: true,
+                        required: false,
                         potentialRequirement: true,
                     },
                     total_female: {
@@ -2762,14 +3117,14 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-human-female',
-                        required: true,
+                        required: false,
                         potentialRequirement: true,
                     },
                     total_kk: {
                         label: 'Jumlah Keluarga (KK)',
                         type: 'number',
                         suffix: 'KK',
-                        lgView: 6,
+                        lgView: 12,
                         labelIcon: 'mdi-sigma',
                         required: true,
                         potentialRequirement: false,
@@ -2780,16 +3135,25 @@ export default {
                         suffix: 'KK',
                         lgView: 6,
                         labelIcon: 'mdi-sigma',
-                        required: true,
+                        required: false,
+                        potentialRequirement: true,
+                    },
+                    total_non_farmer_family: {
+                        label: 'Jumlah Keluarga Non-Petani (KK)',
+                        type: 'number',
+                        suffix: 'KK',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: false,
                         potentialRequirement: true,
                     },
                     average_family_member: {
                         label: 'Rata - Rata Anggota Keluarga',
                         type: 'number',
                         suffix: 'orang',
-                        lgView: 6,
+                        lgView: 12,
                         labelIcon: 'mdi-sigma',
-                        required: true,
+                        required: false,
                         potentialRequirement: true,
                     },
                     average_farmer_family_member: {
@@ -2798,7 +3162,16 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-sigma',
-                        required: true,
+                        required: false,
+                        potentialRequirement: true,
+                    },
+                    average_non_farmer_family_member: {
+                        label: 'Rata - Rata Anggota Keluarga Non-Petani',
+                        type: 'number',
+                        suffix: 'orang',
+                        lgView: 6,
+                        labelIcon: 'mdi-sigma',
+                        required: false,
                         potentialRequirement: true,
                     },
                     divider2: {
@@ -2832,7 +3205,7 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-account-school',
-                        required: true,
+                        required: false,
                         potentialRequirement: true,
                     },
                     divider3: {
@@ -2857,7 +3230,7 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-cash-off',
-                        required: true,
+                        required: false,
                         potentialRequirement: true,
                     },
                     divider4: {
@@ -2873,7 +3246,8 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-beekeeper',
-                        required: true,
+                        required: false,
+                        switcher: true,
                         potentialRequirement: true,
                     },
                     job_farm_workers: {
@@ -2882,7 +3256,8 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-beekeeper',
-                        required: true,
+                        required: false,
+                        switcher: true,
                         potentialRequirement: true,
                     },
                     job_private_employee: {
@@ -2891,7 +3266,8 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-account-supervisor',
-                        required: true,
+                        required: false,
+                        switcher: true,
                         potentialRequirement: true,
                     },
                     job_state_employee: {
@@ -2900,7 +3276,8 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-account-tie',
-                        required: true,
+                        required: false,
+                        switcher: true,
                         potentialRequirement: true,
                     },
                     job_enterpreneur: {
@@ -2909,7 +3286,8 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-account-cash',
-                        required: true,
+                        required: false,
+                        switcher: true,
                         potentialRequirement: true,
                     },
                     job_others: {
@@ -2918,7 +3296,8 @@ export default {
                         suffix: 'orang',
                         lgView: 6,
                         labelIcon: 'mdi-account-question',
-                        required: true,
+                        required: false,
+                        switcher: true,
                         potentialRequirement: true,
                     },
                 },
@@ -2926,32 +3305,47 @@ export default {
                 default: [{
                     dusun_name: null,
                     potential: false,
-                    land_area: 0,
+                        data_land_area_source: null,
+                    land_area: null,
                     accessibility: null,
-                    dry_land_area: 0,
+                        data_dry_land_area_source: null,
+                    dry_land_area: null,
                     pic_dusun: null,
                     position: null,
                     phone: null,
                     whatsapp: null,
-                    total_rw: 0,
-                    total_rt: 0,
-                    total_male: 0,
-                    total_female: 0,
-                    total_kk: 0,
-                    total_farmer_family: 0,
-                    average_family_member: 0,
-                    average_farmer_family_member: 0,
-                    education_elementary_junior_hs: 0,
-                    education_senior_hs: 0,
-                    education_college: 0,
-                    age_productive: 0,
-                    age_non_productive: 0,
-                    job_farmer: 0,
-                    job_farm_workers: 0,
-                    job_private_employee: 0,
-                    job_state_employee: 0,
-                    job_enterpreneur: 0,
-                    job_others: 0,
+                    total_rw: null,
+                    total_rt: null,
+                    total_male: null,
+                    total_female: null,
+                    total_kk: null,
+                        has_detail_kk: false,
+                    total_farmer_family: null,
+                        total_non_farmer_family: null,
+                        has_avg_member: false,
+                    average_family_member: null,
+                        has_detail_avg_member: false,
+                    average_farmer_family_member: null,
+                        average_non_farmer_family_member: null,
+                    education_elementary_junior_hs: null,
+                    education_senior_hs: null,
+                    education_college: null,
+                        data_productive_source: null,
+                    age_productive: null,
+                    age_non_productive: null,
+                        data_job_source: null,
+                    job_farmer: null,
+                        job_farmer_switcher: false,
+                    job_farm_workers: null,
+                        job_farm_workers_switcher: false,
+                    job_private_employee: null,
+                        job_private_employee_switcher: false,
+                    job_state_employee: null,
+                        job_state_employee_switcher: false,
+                    job_enterpreneur: null,
+                        job_enterpreneur_switcher: false,
+                    job_others: null,
+                        job_others_switcher: false,
                 }],
             },
             // PRA
@@ -2960,7 +3354,7 @@ export default {
                 inputType: 'multiple-input',
                 form: {
                     type_ownership: {
-                        inputType: 'autocomplete',
+                        inputType: 'select',
                         chip: false,
                         items: [
                             'Milik Petani',
@@ -2976,7 +3370,7 @@ export default {
                         lgView: 4
                     },
                     land_ownership: {
-                        inputType: 'autocomplete',
+                        inputType: 'select',
                         chip: false,
                         items: [
                             'Orang Luar Desa (Perorangan)',
@@ -2990,7 +3384,7 @@ export default {
                         multiple: false,
                         required: true,
                         readonly: false,
-                        lgView: 4
+                        lgView: 5
                     },
                     percentage: {
                         inputType: 'text-field',
@@ -4022,19 +4416,27 @@ export default {
                         data_no: val
                     })
                     const scoopingData = await this.callApiGet(`GetDetailScooping`, `?${params}` )
-                    this.inputs.land_area.model = scoopingData.land_area
-                    // set village
-                    this.inputs.village.model = scoopingData.village
-                    // set list kabupaten & reset data
-                    this.loading.text = 'Get list kabupaten...'
-                    const list_kabupaten = await this.callApiGet(`GetKabupaten`, `?province_code=${scoopingData.province}`)
-                    const points = ['north', 'east', 'south', 'west']
-                    points.map(point => {
-                        this.inputs.village_border[point].kabupaten.items = list_kabupaten
-                        this.inputs.village_border[point].kecamatan.items = []
-                        this.inputs.village_border[point].kecamatan.model = null
-                        this.inputs.village_border[point].desa.items = []
-                        this.inputs.village_border[point].desa.model = null
+                    if (scoopingData) {
+                        this.inputs.land_area.model = scoopingData.land_area
+                        // set village
+                        this.inputs.village.model = scoopingData.village
+                        // set list kabupaten & reset data
+                        this.loading.text = 'Get list kabupaten...'
+                        const list_kabupaten = await this.callApiGet(`GetKabupaten`, `?province_code=${scoopingData.province}`)
+                        const points = ['north', 'east', 'south', 'west']
+                        points.map(point => {
+                            this.inputs.village_border[point].kabupaten.items = list_kabupaten
+                            this.inputs.village_border[point].kecamatan.items = []
+                            this.inputs.village_border[point].kecamatan.model = null
+                            this.inputs.village_border[point].desa.items = []
+                            this.inputs.village_border[point].desa.model = null
+                        })
+                    } else await Swal.fire({
+                        title: 'Eror!',
+                        text: "Data Scooping tidak ditemukan!",
+                        icon: 'error',
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Aw!'
                     })
                 } catch (err) {this.errorResponse(err)} finally {
                     this.loading.show = false
@@ -4177,6 +4579,20 @@ export default {
                 }
             }
         },
+        'stepper.model': {
+            async handler(val, oldVal) {
+                if (oldVal ==  1 && val > 1) {
+                    await Swal.fire({
+                        title: 'Hey!',
+                        text: "Masih terdapat data wajib yang belum diisi, silahkan diisi terlebih dahulu!",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    this.stepper.model = 1
+                }
+            }
+        }
     },
     computed: {
         showModal: {
@@ -4244,6 +4660,15 @@ export default {
                 }
             }
         },
+        getModelSourceData(label) {
+            const data = {
+                "Luas Dusun": "data_land_area_source",
+                "Luas Lahan Kering / Kritis": "data_dry_land_area_source",
+                "Produktifitas": "data_productive_source",
+                "Mata Pencaharian Masyarakat": "data_job_source"
+            }
+            return data[label]
+        },
         async getOptionsDataReturn(name, urlSuffix) {
             try {
                 this.loading.text = `Get ${name}...`
@@ -4304,6 +4729,12 @@ export default {
                 console.log(data2)
                 this.inputs.scooping_form_no.items = data2
             } catch (err) {this.errorResponse(err)}
+        },
+        isNotTengkulak(inputName, inputModel, inputForm) {
+            if (inputName == 'production_marketing') {
+                if (['customer','phone','email'].includes(inputForm[0]) && !inputModel.has_customer) return false
+            }
+            return true
         },
         modifyTotalSubData(type, name) {
             if (type == '+') {
@@ -4503,11 +4934,7 @@ export default {
                 await this.getScoopingListItems()
                 // get pola tanam options
                 // const polaTanam = await this.getOptionsDataReturn('List Opsi Tanam', 'GetOpsiPolaTanamOptions')
-                const polaTanam = [
-                    'Agroforestry Intensitas Tinggi',
-                    'Agroforestry Intensitas Rendah',
-                    'Konservasi',
-                ]
+                const polaTanam = formOptions.agroforestry_type
                 this.inputs.land_use_patterns.form.pattern.items = polaTanam
                 this.inputs.distribution_of_critical_land_locations.form.type_utilization.items = polaTanam
                 // get list nama pohon
@@ -4520,7 +4947,7 @@ export default {
                 this.inputs.farmer_income.static_form.source.items = listTrees
 
                 this.stepper.model = 2
-                await this.setDummyData()
+                // await this.setDummyData()
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
             }
@@ -4536,7 +4963,7 @@ export default {
                 }
                 let inputs = this.inputs
                 // set scooping form
-                inputs.scooping_form_no.model = 'SCP-0015'
+                inputs.scooping_form_no.model = 'SCP-0001'
                 inputs.land_area.model = 0 // get from scooping data
                 inputs.paddy_land.model = 100
                 inputs.field.model = 100
