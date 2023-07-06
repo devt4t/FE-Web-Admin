@@ -458,6 +458,7 @@ export default {
                         itemsPerPage: -1,
                         headers: [
                             {text: 'Arah', value: 'point'},
+                            {text: 'Tipe', value: 'border_type'},
                             {text: 'Kabupaten', value: 'kabupaten_no'},
                             {text: 'Kecamatan', value: 'kode_kecamatan'},
                             {text: 'Desa', value: 'kode_desa'},
