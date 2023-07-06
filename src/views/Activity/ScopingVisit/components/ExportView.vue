@@ -53,7 +53,7 @@
       <tr>
         <td style="margin: auto;padding: 10px;"><h4>2. Data Desa</h4></td>
         <td>
-          <table>
+          <table style="width: 100%;border-collapse: collapse;" border="1">
             <tr>
               <td>Luas Desa</td>
               <td colspan="5">: {{ this.raw_data.land_area }} Ha</td>
@@ -80,7 +80,7 @@
       <tr>
         <td style="margin: auto;padding: 10px;"><h4>3. Data Populasi</h4></td>
         <td>
-          <table>
+          <table style="width: 100%;border-collapse: collapse;" border="1">
             <tr>
               <td>Total Keluarga</td>
               <td colspan="5">: {{ this.raw_data.total_kk }} KK</td>
@@ -116,7 +116,7 @@
           <h4>4. Kelengkapan Data Lahan Kering</h4>
         </td>
         <td>
-          <table>
+          <table style="width: 100%;border-collapse: collapse;" border="1">
             <tr>
               <td>Luas Lahan Kering</td>
               <td colspan="5">: {{ this.raw_data.dry_land_area }} Ha</td>
