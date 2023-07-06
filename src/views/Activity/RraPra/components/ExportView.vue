@@ -1,26 +1,26 @@
 <template>
   <div v-if="raw_data">
-    <!-- RRA -->
-    <div v-if="stepper == 1 && raw_data.RRA">
-      <h2 style="text-align: center;">RRA</h2>
+    <!-- Header -->
+    <div v-if="raw_data.Scooping && raw_data.RRA">
+      <h2 style="text-align: center;">{{ stepper == 1 ? 'RRA' : (stepper == 2 ? 'PRA' : 'Flora Fauna Endemik') }}</h2>
       <p style="text-align: center;">Form No: #{{ this.id }}</p>
       <h4>1. Tanggal & Lokasi</h4>
-      <table id="tableForExport-RRA" style="width: 100%;">
+      <table style="width: 100%;">
         <tr>
           <td>Tanggal</td>
           <td colspan="5">
             :
             {{
               this._utils.dateFormat(
-                this.raw_data.start_scooping_date,
+                this.raw_data.RRA.rra_pra_date_start,
                 "DD MMMM YYYY"
               )
             }}
             {{
-              this.raw_data.start_scooping_date != this.raw_data.end_scooping_date
+              this.raw_data.RRA.rra_pra_date_start != this.raw_data.RRA.rra_pra_date_end
                 ? " - " +
                   this._utils.dateFormat(
-                    this.raw_data.end_scooping_date,
+                    this.raw_data.RRA.rra_pra_date_end,
                     "DD MMMM YYYY"
                   )
                 : ""
@@ -29,28 +29,30 @@
         </tr>
         <tr>
           <td>Provinsi</td>
-          <td colspan="5">: {{ this.raw_data.province_name }}</td>
+          <td colspan="5">: {{ this.raw_data.Scooping.province_name }}</td>
         </tr>
         <tr>
           <td>Kab / Kota</td>
           <td colspan="5">
-            : {{ _utils.capitalizeLetter(this.raw_data.city_name) }}
+            : {{ _utils.capitalizeLetter(this.raw_data.Scooping.city_name) }}
           </td>
         </tr>
         <tr>
           <td>Kecamatan</td>
           <td colspan="5">
-            : {{ _utils.capitalizeLetter(this.raw_data.district_name) }}
+            : {{ _utils.capitalizeLetter(this.raw_data.Scooping.district_name) }}
           </td>
         </tr>
         <tr>
           <td>Desa</td>
           <td colspan="5">
-            : {{ _utils.capitalizeLetter(this.raw_data.village_name) }}
+            : {{ _utils.capitalizeLetter(this.raw_data.Scooping.village_name) }}
           </td>
         </tr>
       </table>
-  
+    </div>
+    <!-- RRA -->
+    <div v-if="stepper == 1 && raw_data.RRA">
       <div class="tokoh-desa" style="margin-top: 50px;">
         <h4>2. Batas Wilayah</h4>
         <table style="width: 100%;border-collapse: collapse;" border="1">
@@ -228,7 +230,7 @@
           </tr>
         </table>
       </div>
-      <div class="tokoh-desa" style="margin-top: 50px;">
+      <div class="dusun" style="margin-top: 50px;">
         <h4>9. List Dusun</h4>
         <div
           v-for="(val, val_index) in raw_data.RRA.Dusun"
@@ -372,10 +374,266 @@
           </div>
         </div>
       </div>
-  
-      <div class="footer" style="margin-top: 100px;">
-        <p style="text-align: center">Export Time: {{ Date() }}</p>
+    </div>
+    <!-- PRA -->
+    <div v-if="stepper == 2 && raw_data.PRA">
+      <!-- 2. Kepemilikan Lahan -->
+      <div style="margin-top: 50px;">
+        <h4>2. Kepemilikan Lahan</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Kategori</th>
+            <th>Presentase</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.LandOwnership"
+            :key="val_index + 'LandOwnership'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.type_ownership }} {{ val.land_ownership ? `, ${val.land_ownership}` : '' }}</td>
+            <td style="text-align: left;">{{ val.percentage }}%</td>
+          </tr>
+        </table>
+        <p>Deskripsi Kepemilikan Lahan: {{ raw_data.PRA.land_ownership_description }}</p>
       </div>
+      <!-- 3. Penyebaran Lokasi Lahan Kering & Kritis -->
+      <div style="margin-top: 50px;">
+        <h4>3. Penyebaran Lokasi Lahan Kering & Kritis</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama Dusun</th>
+            <th>Pola Pemanfaatan Lahan</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.DryLandSpread"
+            :key="val_index + 'DryLandSpread'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.dusun_name }}</td>
+            <td style="text-align: left;">{{ val.type_utilization }}</td>
+          </tr>
+        </table>
+        <p>Deskripsi Penyebaran Lokasi Lahan Kering & Kritis: {{ raw_data.PRA.distribution_of_critical_land_locations_description }}</p>
+      </div>
+      <!-- 4. Sumber Air -->
+      <div style="margin-top: 50px;">
+        <h4>4. Sumber Air</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama Sumber Air</th>
+            <th>Jenis</th>
+            <th>Kondisi</th>
+            <th>Pemanfaatan</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.Watersource"
+            :key="val_index + 'Watersource'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.watersource_name }}</td>
+            <td style="text-align: left;">{{ val.watersource_condition }}</td>
+            <td style="text-align: left;">{{ val.consumption }}</td>
+            <td style="text-align: left;">{{ val.watersource_utilization }}</td>
+          </tr>
+        </table>
+        <p>Deskripsi Sumber Air: {{ raw_data.PRA.pra_watersource_description }}</p>
+      </div>
+      <!-- 6. Hasil Ekonomi Pemanfaatan Lahan -->
+      <div style="margin-top: 50px;">
+        <h4>6. Hasil Ekonomi Pemanfaatan Lahan</h4>
+        <p>Sumber: {{ raw_data.PRA.land_utilization_source }}</p>
+        <p>Jenis Tanaman: {{ raw_data.PRA.land_utilization_plant_type }}</p>
+        <p>Deskripsi Hasil Ekonomi Pemanfaatan Lahan: {{ raw_data.PRA.land_utilization_description }}</p>
+      </div>
+      <!-- 7. Pupuk Dalam Pemanfaatan Lahan -->
+      <div style="margin-top: 50px;">
+        <h4>7. Pupuk Dalam Pemanfaatan Lahan</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama Pupuk</th>
+            <th>Kategori</th>
+            <th>Jenis</th>
+            <th>Sumber</th>
+            <th>Deskripsi</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.Fertilizer"
+            :key="val_index + 'Fertilizer'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_name }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_categories }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_type }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_source }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_description }}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- 8. Pestisida Dalam Pemanfaatan Lahan -->
+      <div style="margin-top: 50px;">
+        <h4>8. Pestisida Dalam Pemanfaatan Lahan</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama Pestisida</th>
+            <th>Kategori</th>
+            <th>Jenis</th>
+            <th>Sumber</th>
+            <th>Deskripsi</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.Pesticide"
+            :key="val_index + 'Pesticide'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.pesticide_name }}</td>
+            <td style="text-align: left;">{{ val.pesticide_categories }}</td>
+            <td style="text-align: left;">{{ val.pesticide_type }}</td>
+            <td style="text-align: left;">{{ val.pesticide_source }}</td>
+            <td style="text-align: left;">{{ val.pesticide_description }}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- 9. Bencana -->
+      <div style="margin-top: 50px;">
+        <h4>9. Bencana</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Penyebutan Bencana</th>
+            <th>Kategori</th>
+            <th>Periode</th>
+            <th>Korban Jiwa</th>
+            <th>Penjelasan</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.DisasterHistory"
+            :key="val_index + 'DisasterHistory'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.disaster_name }}</td>
+            <td style="text-align: left;">{{ val.disaster_categories }}</td>
+            <td style="text-align: left;">{{ val.year }}</td>
+            <td style="text-align: left;">{{ val.fatalities }} orang</td>
+            <td style="text-align: left;">{{ val.detail }}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- 10. Permasalahan Yang Ada -->
+      <div style="margin-top: 50px;">
+        <h4>10. Permasalahan Yang Ada</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama Masalah</th>
+            <th>Kategori</th>
+            <th>Periode Masalah</th>
+            <th>Sumber</th>
+            <th>Saran Solusi</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.ExistingProblem"
+            :key="val_index + 'ExistingProblem'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.problem_name }}</td>
+            <td style="text-align: left;">{{ val.problem_categories }}</td>
+            <td style="text-align: left;">{{ val.date }}</td>
+            <td style="text-align: left;">{{ val.problem_source }}</td>
+            <td style="text-align: left;">{{ val.problem_solution }}</td>
+          </tr>
+        </table>
+        <h5>Matrik Permasalahan</h5>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama Masalah</th>
+            <th>Dirasakan Banyak Orang</th>
+            <th>Sering Terjadi</th>
+            <th>Potensi</th>
+            <th>Prioritas</th>
+            <th>Total</th>
+            <th>Rank</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in existingProblemSort()"
+            :key="val_index + 'ExistingProblem'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.problem_name }}</td>
+            <td style="text-align: left;">{{ val.impact_to_people }}</td>
+            <td style="text-align: left;">{{ val.interval_problem }}</td>
+            <td style="text-align: left;">{{ val.potential }}</td>
+            <td style="text-align: left;">{{ val.priority }}</td>
+            <td style="text-align: left;">{{ val.total_value }}</td>
+            <td style="text-align: left;">{{ val.ranking }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div v-if="stepper == 3 && raw_data.PRA">
+      <!-- 2. Flora Endemik -->
+      <div style="margin-top: 50px;">
+        <h4>2. Flora Endemik</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Populasi</th>
+            <th>Status</th>
+            <th>Kategori</th>
+            <th>Sumber Air</th>
+            <th>Lokasi Habitat</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.Flora"
+            :key="val_index + 'Flora'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.flora_name }}</td>
+            <td style="text-align: left;">{{ val.flora_population }}</td>
+            <td style="text-align: left;">{{ val.flora_status }}</td>
+            <td style="text-align: left;">{{ val.flora_categories }}</td>
+            <td style="text-align: left;">{{ val.flora_foodsource }}</td>
+            <td style="text-align: left;">{{ val.flora_habitat }}</td>
+          </tr>
+        </table>
+      </div>
+      <!-- 3. Fauna Endemik -->
+      <div style="margin-top: 50px;">
+        <h4>3. Fauna Endemik</h4>
+        <table style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Populasi</th>
+            <th>Status</th>
+            <th>Kategori</th>
+            <th>Sumber Makanan</th>
+            <th>Lokasi Habitat</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.Fauna"
+            :key="val_index + 'Fauna'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.fauna_name }}</td>
+            <td style="text-align: left;">{{ val.fauna_population }}</td>
+            <td style="text-align: left;">{{ val.fauna_status }}</td>
+            <td style="text-align: left;">{{ val.fauna_categories }}</td>
+            <td style="text-align: left;">{{ val.fauna_foodsource }}</td>
+            <td style="text-align: left;">{{ val.fauna_habitat }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div class="footer" style="margin-top: 100px;">
+      <p style="text-align: center">Export Time: {{ Date() }}</p>
     </div>
   </div>
 </template>
@@ -400,6 +658,12 @@ export default {
   mounted() {
   },
 
-  methods: {},
+  methods: {
+    existingProblemSort() {
+      let EP = this.raw_data.PRA.ExistingProblem 
+      if (EP.length > 1) EP = EP.sort((a,b) => {return a.ranking - b.ranking})
+      return EP
+    }
+  },
 };
 </script>

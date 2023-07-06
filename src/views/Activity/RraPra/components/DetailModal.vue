@@ -38,7 +38,7 @@
                     </div>
                 </v-overlay>
                 <!-- export table -->
-                <div id="containerForExport-RRAPRA" style="display: block">
+                <div id="containerForExport-RRAPRA" style="display: none">
                     <ExportView :id="id" :raw_data="raw_data || {}" :stepper="this.stepper.model"></ExportView>
                 </div>
                 <div v-if="datas">
@@ -1057,9 +1057,9 @@ export default {
                         ]
                     }
                 },
-                // Penyebaran Lokasi Lahan Kering / Kritis
+                // Penyebaran Lokasi Lahan Kering & Kritis
                 {
-                    label: 'Penyebaran Lokasi Lahan Kering / Kritis',
+                    label: 'Penyebaran Lokasi Lahan Kering & Kritis',
                     labelIcon: 'mdi-land-fields',
                     dataType: 'table',
                     dataKey: 'DryLandSpread',
@@ -1090,7 +1090,7 @@ export default {
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama', value: 'watersource_name'},
-                            {text: 'Tipe', value: 'watersource_type'},
+                            {text: 'Jenis', value: 'watersource_type'},
                             {text: 'Kondisi', value: 'watersource_condition'},
                             {text: 'Pemanfaatan', value: 'watersource_utilization'},
                         ]
@@ -1395,7 +1395,7 @@ export default {
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama', value: 'disaster_name'},
-                            {text: 'Tahun', value: 'year'},
+                            {text: 'Periode', value: 'year'},
                             {text: 'Kategori', value: 'disaster_categories'},
                             {text: 'Korban Jiwa', value: 'fatalities'},
                             {text: 'Detail', value: 'detail'},
@@ -1435,9 +1435,9 @@ export default {
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama', value: 'problem_name'},
                             {text: 'Kategori', value: 'problem_categories'},
-                            {text: 'Tanggal', value: 'date_start'},
+                            {text: 'Periode', value: 'date_start'},
                             {text: 'Sumber', value: 'problem_source'},
-                            { text: 'Solusi', value: 'data-table-expand' },
+                            { text: 'Saran Solusi', value: 'data-table-expand' },
                         ]
                     }
                 },
@@ -1684,7 +1684,7 @@ export default {
                 this.raw_data = res.data.data.result
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
-                // this.stepper.model = 2
+                this.stepper.model = 3
                 this.verified_data = this.datas.RRA.status
                 console.log(this.verified_data)
             } catch (err) {
