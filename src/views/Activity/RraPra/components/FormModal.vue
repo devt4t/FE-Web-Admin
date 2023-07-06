@@ -5444,7 +5444,7 @@ export default {
                             }
                         }
                     }
-                    // if (this.checkCompletedData) data.status = 'ready_to_submit'
+                    if (this.checkCompletedData) data.status = 'ready_to_submit'
                     const res = await axios.post(url, data, this.$store.state.apiConfig)
                     if (res) {
                         this.showModal = false
