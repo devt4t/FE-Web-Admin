@@ -204,7 +204,7 @@ export default {
         },
         getStatusColumn(type, status) {
             if (type == 'bg_color') {
-                if (status == 'document_saving') return 'yellow darken-1'
+                if (status == 'document_saving') return 'blue darken-1'
                 if (status == 'ready_to_submit') return 'orange'
                 if (status == 'submit_review') return 'green darken-1'
             }
