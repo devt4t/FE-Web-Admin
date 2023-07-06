@@ -7,7 +7,13 @@
     >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2">
-                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document</v-icon></v-btn> RRA PRA Form #{{ this.id }}</span>
+                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document</v-icon></v-btn> 
+                    RRA PRA Form #{{ this.id }}
+                    <v-chip small :color="getStatusColumn('bg_color', verified_data)" class="white--text ml-2">
+                        <v-icon class="mr-1">{{ getStatusColumn('icon', verified_data) }}</v-icon>
+                        {{ getStatusColumn('text', verified_data) }}
+                    </v-chip>
+                </span>
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text class="pa-0" style="min-height: 300px;">
@@ -31,6 +37,10 @@
                         </p>
                     </div>
                 </v-overlay>
+                <!-- export table -->
+                <div id="containerForExport-RRA" style="display: none">
+                    <ExportView :id="id" :raw_data="raw_data.RRA || {}"></ExportView>
+                </div>
                 <div v-if="datas">
                     <!-- Global data -->
                     <v-row class="ma-0 mx-2 mx-lg-4">
@@ -400,8 +410,9 @@
                 </div>
             </v-card-text>
             <v-card-actions class="justify-center" v-if="verificationAccess">
-                <v-btn v-if="verified_data == 0" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
-                <v-btn v-if="verified_data == 1" rounded color="red" outlined class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="verified_data == 'ready_to_submit'" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
+                <v-btn v-if="verified_data == 'submit_review'" rounded color="red" outlined class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="verified_data == 'submit_review'" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -415,10 +426,12 @@ import Swal from 'sweetalert2'
 
 import formOptions from '@/assets/json/rraPraOptions.json'
 import treeAnimation from '@/assets/lottie/tree.json'
+import ExportView from '@/views/Activity/RraPra/components/ExportView'
 
 export default {
     components: {
         LottieAnimation,
+        ExportView
     },
     props: {
         show: {
@@ -1484,7 +1497,7 @@ export default {
                 },
             ]
         },
-        verified_data: 0,
+        verified_data: 'document_saving',
         loading: {
             show: false,
             text: 'Loading...'
@@ -1500,6 +1513,7 @@ export default {
                 loading: treeAnimation,
             }
         },
+        raw_data: {},
         stepper: {
             model: 1,
             steps: ['RRA', 'PRA', 'Flora & Fauna'],
@@ -1608,16 +1622,56 @@ export default {
                 }
             }
         },
+        exportReport() {
+            let type = ''
+            let file_name = 'Report '
+            if (this.stepper.model == 1) {
+                type = 'RRA'
+            } if (this.stepper.model == 2) {
+                type = 'PRA'
+            } if (this.stepper.model == 3) {
+                type = 'Flora Fauna Endemik'
+            }
+            if (type) {
+                file_name += type
+                const container = document.getElementById(`containerForExport-${type}`);
+                var vm = this, word = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head>
+                        <meta charset='utf-8'>
+                        <title>Export HTML to Word Document with JavaScript</title>
+                    </head>
+                    <body>
+                        ${container.innerHTML}
+                    </body>
+                </html>`;
+                console.log(container.innerHTML)
+                var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(word);
+                var fileDownload = document.createElement("a");
+                document.body.appendChild(fileDownload);
+                fileDownload.href = source;
+                fileDownload.download = `${file_name}.doc`;
+                fileDownload.click();
+                document.body.removeChild(fileDownload);
+    
+                // const wb = XLSX.utils.table_to_book(table);
+    
+                // /* Export to file (start a download) */
+                // console.log(this.raw_data)
+                // XLSX.writeFile(wb, `ExportScoopingVisit.xlsx`);
+            }
+        },
         async getData(id) {
             try {
                 this.loading.show = true
                 this.loading.text = `Getting Form "${id}" data...`
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailRraPra?form_no=${id}`), this.$store.state.apiConfig)
                 this.datas = res.data.data.result
+                this.raw_data = res.data.data.result
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
-                this.stepper.model = 2
-                this.verified_data = this.datas.RRA.is_verify
+                // this.stepper.model = 2
+                this.verified_data = this.datas.RRA.status
                 console.log(this.verified_data)
             } catch (err) {
                 this.errorResponse(err)
@@ -1633,6 +1687,25 @@ export default {
             const duration = moment.duration(endDate.diff(startDate));
             const days = duration.asDays();
             return days
+        },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'yellow darken-1'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
         },
         indonesianify(eng) {
             if (eng === 'north') return 'Utara'

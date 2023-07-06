@@ -77,6 +77,7 @@
                                 color="green"
                                 outlined
                                 dense
+                                readonly
                                 v-model="inputs.scooping_form_no.model"
                             ></v-text-field>
                         </v-col>
@@ -337,7 +338,7 @@
                                                                                                 <v-icon v-if="multipleInputForm[1].labelIcon" class="mr-1">{{ multipleInputForm[1].labelIcon }}</v-icon>
                                                                                                 {{ multipleInputForm[1].label }} 
                                                                                                 <sup><v-icon 
-                                                                                                    v-if="(multipleInputHead != 'existing_plants' && multipleInputForm[1].required) || multipleInputItemIndex < 1" 
+                                                                                                    v-if="multipleInputForm[1].required" 
                                                                                                     small 
                                                                                                     style="vertical-align: middle;"
                                                                                                 >
@@ -609,20 +610,22 @@
                                                                     :key="`Inputs-${hmInputs[0]}-${hmIndex}-${hmInputIndex}`" 
                                                                     cols="12" sm="12" md="6" :lg="hmInputs[1].lgView" 
                                                                 >
-                                                                    <div v-if="hmInputs[1].switcher && !hm[`${hmInputs[0]}_switcher`]" class="d-flex align-center pt-2">
-                                                                        <p class="mb-0">Ada {{ hmInputs[1].label }}?</p>
-                                                                        <v-divider class="mx-2"></v-divider>
-                                                                        <v-switch
-                                                                            hide-details
-                                                                            class="mt-0 mb-0"
-                                                                            color="green"
-                                                                            inset
-                                                                            :label="hm[`${hmInputs[0]}_switcher`] ? 'Ada' : 'Tidak Ada'"
-                                                                            v-model="hm[`${hmInputs[0]}_switcher`]"
-                                                                        ></v-switch>
+                                                                    <div v-if="hmInputs[1].switcher && !hm[`${hmInputs[0]}_switcher`]">
+                                                                        <div data-aos="zoom-in" data-aos-offset="-1000000000000" :key="`Swither${hmInputs}${hmIndex}`" class="d-flex align-center pt-2">
+                                                                            <p class="mb-0">Ada {{ hmInputs[1].label }}?</p>
+                                                                            <v-divider class="mx-2"></v-divider>
+                                                                            <v-switch
+                                                                                hide-details
+                                                                                class="mt-0 mb-0"
+                                                                                color="green"
+                                                                                inset
+                                                                                :label="hm[`${hmInputs[0]}_switcher`] ? 'Ada' : 'Tidak Ada'"
+                                                                                v-model="hm[`${hmInputs[0]}_switcher`]"
+                                                                            ></v-switch>
+                                                                        </div>
                                                                     </div>
                                                                     <div v-else-if="!hmInputs[1].switcher || (hmInputs[1].switcher && hm[`${hmInputs[0]}_switcher`])">
-                                                                        <div data-aos="zoom-in" data-aos-offset="-1000000000000">
+                                                                        <div data-aos="zoom-in" data-aos-offset="-1000000000000" style="position: relative">
                                                                             <div v-if="!['total_farmer_family','total_non_farmer_family','average_family_member','average_farmer_family_member','average_non_farmer_family_member'].includes(hmInputs[0])">
                                                                                 <div v-if="hmInputs[1].type === 'divider'" class="d-flex align-center">
                                                                                     <p class="mb-0"><v-icon class="mr-2">{{ hmInputs[1].labelIcon }}</v-icon>{{ hmInputs[1].label }}</p>
@@ -678,6 +681,17 @@
                                                                                     <template v-slot:append>
                                                                                         <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
                                                                                     </template>
+                                                                                    <template v-slot:append-outer>
+                                                                                        <div v-if="hmInputs[1].switcher">
+                                                                                            <v-switch    
+                                                                                                hide-details
+                                                                                                class="mt-0"
+                                                                                                color="green"
+                                                                                                v-model="hm[`${hmInputs[0]}_switcher`]"
+                                                                                                inset
+                                                                                            ></v-switch>
+                                                                                        </div>
+                                                                                    </template>
                                                                                 </v-text-field>
                                                                                 <!-- autocomplete -->
                                                                                 <v-autocomplete
@@ -722,6 +736,55 @@
                                                                                         <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
                                                                                     </template>
                                                                                 </v-select>
+                                                                                <!-- photo -->
+                                                                                <div v-else-if="hmInputs[1].type === 'file'">
+                                                                                    <v-file-input
+                                                                                        dense
+                                                                                        color="success"
+                                                                                        hide-details
+                                                                                        :label="hmInputs[1].label"
+                                                                                        :prepend-icon="hmInputs[1].prependIcon"
+                                                                                        outlined
+                                                                                        counter
+                                                                                        rounded
+                                                                                        :accept="hmInputs[1].accept"
+                                                                                        :suffix="hmInputs[1].suffix"
+                                                                                        v-model="hm[hmInputs[0]]"
+                                                                                    >
+                                                                                        <template v-slot:selection="{ index, text, file }">
+                                                                                            <v-card 
+                                                                                                class="rounded-lg mt-2 elevation-0 mr-1 mb-1"
+                                                                                                style="position: relative;"
+                                                                                                v-if="hmInputs[1].chip"
+                                                                                            >
+                                                                                                <v-chip
+                                                                                                    color="deep-purple accent-4"
+                                                                                                    class="rounded-pill"
+                                                                                                    dark
+                                                                                                    label
+                                                                                                    small
+                                                                                                    style="position: absolute;bottom: 0;left: 0;right: 0;z-index: 2"
+                                                                                                >
+                                                                                                    {{ text }}
+                                                                                                </v-chip>
+                                                                                                <v-img
+                                                                                                    v-bind:src="setUrlFileImage(file)"
+                                                                                                    class="my-2 mb-4 rounded-lg cursor-pointer"
+                                                                                                    style="max-width: 200px;max-height: 110px;"
+                                                                                                ></v-img>
+                                                                                            </v-card>
+                                                                                            <span v-else> {{ text }}</span>
+                                                                                        </template>
+                                                                                        <template v-slot:label>
+                                                                                            <v-icon v-if="hmInputs[1].labelIcon" class="mr-1">{{ hmInputs[1].labelIcon }}</v-icon>
+                                                                                            {{ hmInputs[1].label }} 
+                                                                                            <sup><v-icon v-if="hmInputs[1].required" small style="vertical-align: middle;">{{ localConfig.requiredInputIcon }}</v-icon></sup>
+                                                                                        </template>
+                                                                                        <template v-slot:append>
+                                                                                            <div class="mt-1 ml-1" v-html="hmInputs[1].append"></div>
+                                                                                        </template>
+                                                                                    </v-file-input>
+                                                                                </div>
                                                                             </div>
                                                                             <div v-else>
                                                                                 <div v-if="hmInputs[0] == 'total_farmer_family'">
@@ -1329,24 +1392,24 @@
                                                                     ></v-select>
                                                                 </template>
                                                                 <!-- Table total -->
-                                                                <template v-slot:header.total>
+                                                                <template v-slot:header.total_value>
                                                                     <div>
                                                                         Jumlah
-                                                                        <v-icon small class="ml-1" @click="() => showMatrikTitleInfo('total', 'Jumlah')">mdi-information</v-icon>
+                                                                        <v-icon small class="ml-1" @click="() => showMatrikTitleInfo('total_value', 'Jumlah')">mdi-information</v-icon>
                                                                     </div>
                                                                 </template>
-                                                                <template v-slot:item.total="{item, index}">
-                                                                    {{ setProblemTotal(index) }} {{ item.total }}
+                                                                <template v-slot:item.total_value="{item, index}">
+                                                                    {{ setProblemTotal(index) }} {{ item.total_value }}
                                                                 </template>
                                                                 <!-- Table rank -->
-                                                                <template v-slot:header.rank>
+                                                                <template v-slot:header.ranking>
                                                                     <div>
                                                                         Ranking
-                                                                        <v-icon small class="ml-1" @click="() => showMatrikTitleInfo('rank', 'Ranking')">mdi-information</v-icon>
+                                                                        <v-icon small class="ml-1" @click="() => showMatrikTitleInfo('ranking', 'Ranking')">mdi-information</v-icon>
                                                                     </div>
                                                                 </template>
-                                                                <template v-slot:item.rank="{item, index}">
-                                                                    {{ setProblemRank(index) }} <v-icon :color="item.rank == 1 ? 'green' : (item.rank > 1 ? 'orange': 'red')">mdi-numeric-{{ item.rank }}-circle</v-icon>
+                                                                <template v-slot:item.ranking="{item, index}">
+                                                                    {{ setProblemRank(index) }} <v-icon :color="item.ranking == 1 ? 'green' : (item.ranking > 1 ? 'orange': 'red')">mdi-numeric-{{ item.ranking }}-circle</v-icon>
                                                                 </template>
                                                             </v-data-table>
                                                         </div>
@@ -2096,6 +2159,7 @@
                         {{ stepper.steps[stepper.model] || 'Next' }}
                         <v-icon>mdi-chevron-right</v-icon>
                     </v-btn>
+                    <v-divider class="mx-2"></v-divider>
                     <v-btn
                         data-aos="zoom-in"
                         data-aos-duration="300"
@@ -2106,11 +2170,26 @@
                         :key="`saveButton`"
                         :disabled="disabledSave"
                         @click="() => save()"
-                        v-else
                     >
                         <v-icon class="mr-1">mdi-content-save</v-icon>
                         Save
                     </v-btn>
+                    <div 
+                        data-aos="zoom-in"
+                        data-aos-duration="300"
+                        data-aos-offset="-200" 
+                    >
+                        <v-btn
+                            :color="`${checkCompletedData ? 'green' : 'red'} white--text`"
+                            class="ml-2"
+                            rounded
+                            :key="`submitButton`"
+                            @click="() => formSubmit()"
+                        >
+                            <v-icon class="mr-1">mdi-content-save-check</v-icon>
+                            Submit
+                        </v-btn>
+                    </div>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -2143,6 +2222,11 @@ export default {
         PickCoordinateFloraFauna
     },
     data: () => ({
+        empty_data: {
+            rra: [],
+            pra: [],
+            si: []
+        },
         groupingInputs: {
             rra: [
                 {
@@ -2344,8 +2428,8 @@ export default {
                             {text: 'Sering Terjadi', value: 'interval_problem', align: 'center', sortable: false},
                             {text: 'Prioritas', value: 'priority', align: 'center', sortable: false},
                             {text: 'Potensi', value: 'potential', align: 'center', sortable: false},
-                            {text: 'Total', value: 'total', align: 'center', sortable: false},
-                            {text: 'Rank', value: 'rank', align: 'center', sortable: false},
+                            {text: 'Total', value: 'total_value', align: 'center', sortable: false},
+                            {text: 'Rank', value: 'ranking', align: 'center', sortable: false},
                         ],
                         multiSort: true
                     }
@@ -2804,7 +2888,7 @@ export default {
                         label: 'Kategori',
                         multiple: false,
                         required: true,
-                        readonly: true,
+                        readonly: false,
                         lgView: 4
                     },
                     plant: {
@@ -2821,16 +2905,10 @@ export default {
                 },
                 model: [],
                 default: [{
-                    plant_type: 'KAYU',
-                    plant: []
-                },{
-                    plant_type: 'MPTS',
-                    plant: []
-                },{
-                    plant_type: 'CROPS',
+                    plant_type: '',
                     plant: []
                 }],
-                totalCanChange: false
+                totalCanChange: true
             },
             // kelembagaan masyarakat
             community_institutions: {
@@ -3109,11 +3187,14 @@ export default {
                         model: '',
                         itemText: 'text',
                         itemValue: 'value',
+                        chip: true,
                         inputType: 'file',
                         lgView: 6,
+                        prependIcon: 'mdi-camera',
                         loading: false,
-                        required: true,
-                        type: 'Photo',
+                        accept: '.jpg,.JPG,.jpeg,.JPEG,.png,.PNG',
+                        required: false,
+                        type: 'file',
                         potentialRequirement: true,
                     },
                     divider7: {
@@ -3369,6 +3450,7 @@ export default {
                         labelIcon: 'mdi-beekeeper',
                         required: false,
                         switcher: true,
+                        switcherModelKey: 'job_farmer_switcher',
                         potentialRequirement: true,
                     },
                     job_farm_workers: {
@@ -3379,6 +3461,7 @@ export default {
                         labelIcon: 'mdi-beekeeper',
                         required: false,
                         switcher: true,
+                        switcherModelKey: 'job_farm_workers_switcher',
                         potentialRequirement: true,
                     },
                     job_private_employee: {
@@ -3389,6 +3472,7 @@ export default {
                         labelIcon: 'mdi-account-supervisor',
                         required: false,
                         switcher: true,
+                        switcherModelKey: 'job_private_employee_switcher',
                         potentialRequirement: true,
                     },
                     job_state_employee: {
@@ -3399,6 +3483,7 @@ export default {
                         labelIcon: 'mdi-account-tie',
                         required: false,
                         switcher: true,
+                        switcherModelKey: 'job_state_employee_switcher',
                         potentialRequirement: true,
                     },
                     job_enterpreneur: {
@@ -3409,6 +3494,7 @@ export default {
                         labelIcon: 'mdi-account-cash',
                         required: false,
                         switcher: true,
+                        switcherModelKey: 'job_enterpreneur_switcher',
                         potentialRequirement: true,
                     },
                     job_others: {
@@ -3419,6 +3505,7 @@ export default {
                         labelIcon: 'mdi-account-question',
                         required: false,
                         switcher: true,
+                        switcherModelKey: 'job_others_switcher',
                         potentialRequirement: true,
                     },
                 },
@@ -4079,7 +4166,7 @@ export default {
                     },
                     year: {
                         inputType: 'text-field',
-                        type: 'number',
+                        type: 'text',
                         label: 'Periode Terjadinya Bencana',
                         required: true,
                         readonly: false,
@@ -4231,8 +4318,8 @@ export default {
                     interval_problem: 0,
                     priority: 0,
                     potential: 0,
-                    total: 0,
-                    rank: 0,
+                    total_value: 0,
+                    ranking: 0,
                     problem_solution: null,
                 }],
                 description: {
@@ -4513,6 +4600,7 @@ export default {
                 data: null
             }
         },
+        raw_data: {},
         stepper: {
             model: 1,
             steps: ['RRA', 'PRA', 'Flora & Fauna'],
@@ -4549,10 +4637,12 @@ export default {
                         const points = ['north', 'east', 'south', 'west']
                         points.map(point => {
                             this.inputs.village_border[point].kabupaten.items = list_kabupaten
-                            this.inputs.village_border[point].kecamatan.items = []
-                            this.inputs.village_border[point].kecamatan.model = null
-                            this.inputs.village_border[point].desa.items = []
-                            this.inputs.village_border[point].desa.model = null
+                            if (!this.id) {
+                                this.inputs.village_border[point].kecamatan.items = []
+                                this.inputs.village_border[point].kecamatan.model = null
+                                this.inputs.village_border[point].desa.items = []
+                                this.inputs.village_border[point].desa.model = null
+                            }
                         })
                     } else await Swal.fire({
                         title: 'Eror!',
@@ -4571,13 +4661,16 @@ export default {
                 let north = this.inputs.village_border.north
                 try {
                     north.kecamatan.loading = true
+                    const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                    north.kecamatan.items = list_kecamatan
                     if (north.border_type.model != 'Kabupaten') {
-                        north.kecamatan.loading = true
-                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
-                        north.kecamatan.items = list_kecamatan
                         north.kecamatan.model = null
                         north.desa.items = []
                         north.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'north').kode_kecamatan
+                            if (editData != val) north.kecamatan.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     north.kecamatan.loading = false
@@ -4589,11 +4682,14 @@ export default {
                 let north = this.inputs.village_border.north
                 try {
                     north.desa.loading = true
+                    const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                    north.desa.items = list_desa
                     if (north.border_type.model == 'Desa') {
-                        north.desa.loading = true
-                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
-                        north.desa.items = list_desa
                         north.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'north').kode_desa
+                            if (editData != val) north.desa.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     north.desa.loading = false
@@ -4605,13 +4701,16 @@ export default {
                 let east = this.inputs.village_border.east
                 try {
                     east.kecamatan.loading = true
+                    const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                    east.kecamatan.items = list_kecamatan
                     if (east.border_type.model != 'Kabupaten') {
-                        east.kecamatan.loading = true
-                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
-                        east.kecamatan.items = list_kecamatan
                         east.kecamatan.model = null
                         east.desa.items = []
                         east.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'east').kode_kecamatan
+                            if (editData != val) east.kecamatan.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     east.kecamatan.loading = false
@@ -4623,11 +4722,14 @@ export default {
                 let east = this.inputs.village_border.east
                 try {
                     east.desa.loading = true
+                    const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                    east.desa.items = list_desa
                     if (east.border_type.model == 'Desa') {
-                        east.desa.loading = true
-                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
-                        east.desa.items = list_desa
                         east.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'east').kode_desa
+                            if (editData != val) east.desa.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     east.desa.loading = false
@@ -4639,13 +4741,16 @@ export default {
                 let south = this.inputs.village_border.south
                 try {
                     south.kecamatan.loading = true
+                    const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                    south.kecamatan.items = list_kecamatan
                     if (south.border_type.model != 'Kabupaten') {
-                        south.kecamatan.loading = true
-                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
-                        south.kecamatan.items = list_kecamatan
                         south.kecamatan.model = null
                         south.desa.items = []
                         south.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'south').kode_kecamatan
+                            if (editData != val) south.kecamatan.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     south.kecamatan.loading = false
@@ -4657,11 +4762,14 @@ export default {
                 let south = this.inputs.village_border.south
                 try {
                     south.desa.loading = true
+                    const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                    south.desa.items = list_desa
                     if (south.border_type.model == 'Desa') {
-                        south.desa.loading = true
-                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
-                        south.desa.items = list_desa
                         south.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'south').kode_desa
+                            if (editData != val) south.desa.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     south.desa.loading = false
@@ -4673,13 +4781,16 @@ export default {
                 let west = this.inputs.village_border.west
                 try {
                     west.kecamatan.loading = true
+                    const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
+                    west.kecamatan.items = list_kecamatan
                     if (west.border_type.model != 'Kabupaten') {
-                        west.kecamatan.loading = true
-                        const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${val}`)
-                        west.kecamatan.items = list_kecamatan
                         west.kecamatan.model = null
                         west.desa.items = []
                         west.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'west').kode_kecamatan
+                            if (editData != val) west.kecamatan.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     west.kecamatan.loading = false
@@ -4691,11 +4802,14 @@ export default {
                 let west = this.inputs.village_border.west
                 try {
                     west.desa.loading = true
+                    const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
+                    west.desa.items = list_desa
                     if (west.border_type.model == 'Desa') {
-                        west.desa.loading = true
-                        const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${val}`)
-                        west.desa.items = list_desa
                         west.desa.model = null
+                        if (this.id && this.raw_data) {
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'west').kode_desa
+                            if (editData != val) west.desa.model = editData 
+                        }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
                     west.desa.loading = false
@@ -4733,6 +4847,109 @@ export default {
         },
         disabledSave() {
             return false
+        },
+        checkCompletedData() {
+            if (this.checkCompletedDataRRA && this.checkCompletedDataPRA && this.checkCompletedDataSocImp) return true
+            return false
+        },
+        checkCompletedDataRRA() {
+            let inputs = this.inputs
+            const emptyData = []
+            // village border
+            const sections = this.groupingInputs.rra
+            sections.map(section => {
+                section.items.map(secItem => {
+                    if (section.type == 'village-border') {
+                        const borderType = inputs.village_border[secItem].border_type.model
+                        if (!inputs.village_border[secItem].kabupaten.model) emptyData.push(`RRA:${section.title}:${secItem}.kabupaten`)
+                        if (['Kecamatan','Desa'].includes(borderType)) if (!inputs.village_border[secItem].kecamatan.model) emptyData.push(`RRA:${section.title}:${secItem}.kecamatan`)
+                        if (['Desa'].includes(borderType)) if (!inputs.village_border[secItem].desa.model) emptyData.push(`RRA:${section.title}:${secItem}.desa`)
+                    } else if (section.type == 'multiple-input') {
+                        let requiredInput = []
+                        for (const [formKey, formInput] of Object.entries(this.inputs[secItem].form)) {
+                            if (formInput.required) requiredInput.push(formKey)   
+                        }
+                        if (section.required && this.inputs[secItem].model.length == 0) emptyData.push(`RRA:${section.title}:${secItem}`)
+                        if ((!section.required && section.optional) || section.required) {
+                            this.inputs[secItem].model.map((val, valIndex) => {
+                                requiredInput.map(rI => {
+                                    if (typeof val[rI] == 'object' && val[rI]) if (val[rI].length == 0) emptyData.push(`RRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
+                                    if (!val[rI]) emptyData.push(`RRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
+                                })
+                            })
+                        }
+                    }
+                })
+            })
+            this.inputs.hamlets.model.map((dusun, dusunIndex) => {
+                for (const [key, val] of Object.entries(dusun)) {
+                    let inpDusunEmpty = 0
+                    if (key != 'dusun_access_photo_raw') {
+                        if (key == 'dusun_access_photo') { 
+                            if (!val) if (!dusun.dusun_access_photo_raw) inpDusunEmpty += 1
+                        } else if (!val) {
+                            if (dusun.potential || (!dusun.potential && ['dusun_name','total_kk'].includes(key))) {
+                                if (this.inputs.hamlets.form[key]) {
+                                    if (this.inputs.hamlets.form[key].required) inpDusunEmpty += 1
+                                }
+                                let source = ['data_land_area_source','data_dry_land_area_source','data_productive_source','data_job_source'].includes(key)
+                                if (source) inpDusunEmpty += 1
+                                if (dusun[`${key}_switcher`]) if (!val) inpDusunEmpty += 1
+                            }
+                        }
+
+                        if (inpDusunEmpty > 0) emptyData.push(`RRA:List Dusun:hamlets.model.[${dusunIndex + 1}].${key}`)
+                    }
+                }
+            }) 
+            this.inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model.filter(n => n.dusun_name).map(val => {return val.dusun_name})
+            this.empty_data.rra = emptyData
+            if (emptyData.length > 0) return false
+            return true
+        },
+        checkCompletedDataPRA() {
+            let inputs = this.inputs
+            const emptyData = []
+            // village border
+            const sections = this.groupingInputs.pra
+            sections.map(section => {
+                section.items.map(secItem => {
+                    let valEmpty = false
+                    if (section.type == 'multiple-input') {
+                        let requiredInput = []
+                        for (const [formKey, formInput] of Object.entries(this.inputs[secItem].form)) {
+                            if (formInput.required) requiredInput.push(formKey)   
+                        }
+                        if (section.required && this.inputs[secItem].model.length == 0) emptyData.push(`PRA:${section.title}:${secItem}`)
+                        if ((!section.required && section.optional) || section.required) {
+                            this.inputs[secItem].model.map((val, valIndex) => {
+                                requiredInput.map(rI => {
+                                    if (typeof val[rI] == 'object' && val[rI]) if (val[rI].length == 0) valEmpty += 1
+                                    if (!val[rI]) valEmpty += 1
+                                    if (secItem == 'land_ownership' && val.type_ownership == 'petani' && rI == 'land_ownership') valEmpty = 0
+                                    if (valEmpty > 0) emptyData.push(`PRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
+                                })
+                            })
+                        }
+                    }
+                    if (section.type == 'column') {
+                        if (this.inputs[secItem].required) {
+                            const itemModel = this.inputs[secItem].model
+                            if (!itemModel) valEmpty += 1
+                            if (typeof itemModel == 'object') if (itemModel.length == 0) valEmpty += 1
+                        }
+
+                        if (valEmpty > 0) emptyData.push(`PRA:${section.title}:${secItem}`)
+                    }
+                    
+                })
+            })
+            this.empty_data.pra = emptyData
+            if (emptyData.length > 0) return false
+            return true
+        },
+        checkCompletedDataSocImp() {
+            return true
         }
     },
     mounted() {
@@ -4779,6 +4996,25 @@ export default {
                 }
             }
         },
+        async formSubmit() {
+            try {
+                this.loading.show = true
+                if (!this.checkCompletedData) {
+                    const emptyData = [...this.empty_data.rra, ...this.empty_data.pra, ...this.empty_data.si].map(val => {return `${val}<br>`})
+                    // console.log(emptyData)
+                    const confirm = await Swal.fire({
+                        title: 'Lengkapi Data!',
+                        html: `${emptyData}`,
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Woke!'
+                    })
+                    
+                }
+            } catch (err) {this.errorResponse(err)} {
+                this.loading.show = false
+            }
+        },
         async getDetailData(form_no) {
             try {
                 this.loading.show = true
@@ -4786,9 +5022,9 @@ export default {
                 let inputs = this.inputs
                 
                 const data = await this.callApiGet(`GetDetailRraPra?form_no=${form_no}`)
+                this.raw_data = data
                 const RRA = data.RRA
                 const PRA = data.PRA
-                const database_adj_name = await this.zwitchKeyName()
                 // Data SV
                 inputs.scooping_form_no.model = RRA.form_no
                 inputs.rra_pra_date_range.model = [RRA.rra_pra_date_start, RRA.rra_pra_date_end]
@@ -4802,13 +5038,9 @@ export default {
                             val.border_type.model = Border.border_type
                             val.kabupaten.model = Border.kabupaten_no
                             if (Border.border_type == 'Kecamatan' || Border.border_type == 'Desa') {
-                                const list_kecamatan = await this.callApiGet(`GetKecamatan?kabupaten_no=${Border.kabupaten_no}`)
-                                val.kecamatan.items = list_kecamatan
                                 val.kecamatan.model = Border.kode_kecamatan
                             }
                             if (Border.border_type == 'Desa') {
-                                const list_desa = await this.callApiGet(`GetDesa?kode_kecamatan=${Border.kode_kecamatan}`)
-                                val.desa.items = list_desa
                                 val.desa.model = Border.kode_desa
                             }
                         }
@@ -4817,9 +5049,9 @@ export default {
                     const LandscapeDesa = ['paddy_land','field','resident','yard','marshland','lake','people_plantation_land','state_plantation_land','private_plantation_land','protected_forest','people_forest','public_facilities']
                     for (const [key, val] of Object.entries(inputs)) {
                         if (LandscapeDesa.includes(key)) {
-                            if (RRA[database_adj_name[key] || key]) {
+                            if (RRA[this.zwitchKeyName(key)]) {
                                 val.switcherModel = true
-                                val.model = RRA[database_adj_name[key] || key]
+                                val.model = RRA[this.zwitchKeyName(key)]
                             }
                         }
                     }
@@ -4870,7 +5102,13 @@ export default {
                     }
                     // Dusuns
                     const Dusun = RRA.Dusun
-                    inputs.hamlets.model = Dusun
+                    inputs.hamlets.model = Dusun.map(val => {
+                        return {
+                            ...val,
+                            dusun_access_photo_raw: val.dusun_access_photo,
+                            dusun_access_photo: null
+                        }
+                    })
                 // END: RRA 
                 this.stepper.model = 2
                 // PRA
@@ -4933,6 +5171,7 @@ export default {
                         inputs.fauna_data.model = FaunaEnd
                     }
                 // END: Flora Fauna
+                this.stepper.model = 3
                 // console.log(data)
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
@@ -5053,8 +5292,8 @@ export default {
         async save() {
             try {
                 const confirm = await Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    title: 'Apa anda yakin?',
+                    text: "Pastikan data sudah benar!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#2e7d32',
@@ -5066,120 +5305,146 @@ export default {
                     this.loading.show = true
                     this.loading.text = 'Saving data...'
                     const url = this.$store.getters.getApiUrl(this.id ? 'UpdateRraPra' : 'AddRraPra')
-                    let inputs = Object.entries(this.inputs)
-                    let data = {}
-                    const database_adj_name = await this.zwitchKeyName()
-                    for (const [key, value] of inputs) {
-                        if (value.model !== undefined) {
-                            if (database_adj_name[key]) {
-                                data[database_adj_name[key]] = await value.model
-                                if (value.description) data[`${database_adj_name[key]}_description`] = value.description.model
-                            }
-                            else if (key === 'rra_pra_date_range') {
-                                data.rra_pra_date_start = await value.model[0]
-                                if (value.model[1]) data.rra_pra_date_end = await value.model[1]
-                            } else {
-                                data[key] = await value.model
-                                if (value.description) data[`${key}_description`] = value.description.model
-                            }
-                        } else if (key === 'village_border') {
-                            const points = ['north', 'east', 'south', 'west']
-                            data.village_border = await []
-                            points.map(async function (point) {
-                                await data.village_border.push({
-                                    point: point,
-                                    border_type: value[point].border_type.model,
-                                    kabupaten_no: value[point].kabupaten.model,
-                                    kode_kecamatan: value[point].kecamatan.model,
-                                    kode_desa: value[point].desa.model,
-                                })
-                            })
-                        } else if (key === 'farmer_income') {
-                            data.collection_type = value.collection_type.model
-                            if (value.collection_type.model === 'Bukan Sampling') {
-                                data.farmer_income = []
-                                data.man_source = value.static_form.source.male_model
-                                data.man_commodity_name = value.static_form.comodity_name.male_model
-                                data.man_method = value.static_form.method.male_model.toString()
-                                data.man_marketing = value.static_form.indirect_method.male_model.toString()
-                                data.man_period = value.static_form.avg_period.male_model
-                                data.man_average_capacity = value.static_form.avg_capacity.male_model
-                                data.man_min_income = value.static_form.min_amount.male_model
-                                data.man_max_income = value.static_form.max_amount.male_model
-                                data.woman_source = value.static_form.source.female_model
-                                data.woman_commodity_name = value.static_form.comodity_name.female_model
-                                data.woman_method = value.static_form.method.female_model.toString()
-                                data.woman_marketing = value.static_form.indirect_method.female_model.toString()
-                                data.woman_period = value.static_form.avg_period.female_model
-                                data.woman_average_capacity = value.static_form.avg_capacity.female_model
-                                data.woman_min_income = value.static_form.min_amount.female_model
-                                data.woman_max_income = value.static_form.max_amount.female_model
-                            } else {
-                                let male_source = []
-                                let male_total_capacity = 0
-                                let male_min_income = 0
-                                let male_max_income = 0
-                                const male_data = value.male_data.map((fimdm, fimdmIndex) => {
-                                    const source_income = parseInt(fimdm.source_income || 0)
-                                    if (fimdm.source) fimdm.source.map(fimdms => {
-                                        if (!male_source.includes(fimdms)) male_source.push(fimdms)
-                                    })
-                                    male_total_capacity += parseInt(fimdm.capacity || 0)
-                                    if (fimdmIndex === 0) male_min_income = source_income
-                                    else if (male_min_income > source_income) male_min_income = source_income
-                                    if (male_max_income < source_income) male_max_income = source_income
-                                    
-                                    return {
-                                        ...fimdm,
-                                        gender: 'male',
-                                        source: fimdm.source ? fimdm.source.toString() : '',
-                                        capacity: parseInt(fimdm.capacity || 0),
-                                        source_income: source_income,
-                                    }
-                                })
-                                let female_source = []
-                                let female_total_capacity = 0
-                                let female_min_income = 0
-                                let female_max_income = 0
-                                const female_data = value.female_data.map((fimdf, fimdfIndex) => {
-                                    const source_income = parseInt(fimdf.source_income || 0)
-                                    if (fimdf.source) fimdf.source.map(fimdfs => {
-                                        if (!female_source.includes(fimdfs)) female_source.push(fimdfs)
-                                    })
-                                    female_total_capacity += parseInt(fimdf.capacity || 0)
-                                    if (fimdfIndex === 0) female_min_income = source_income
-                                    else if (female_min_income > source_income) female_min_income = source_income
-                                    if (female_max_income < source_income) female_max_income = source_income
-                                    return {
-                                        ...fimdf,
-                                        gender: 'female',
-                                        source: fimdf.source ? fimdf.source.toString() : '',
-                                        capacity: fimdf.capacity || 0,
-                                        source_income: source_income,
-                                    }
-                                })
-                                data.farmer_income = [...male_data, ...female_data]
-                                data.man_source = male_source.toString()
-                                data.man_commodity_name = null
-                                data.man_method = null
-                                data.man_marketing = null
-                                data.man_period = null
-                                data.man_average_capacity = Math.round(male_total_capacity / male_data.length)
-                                data.man_min_income = male_min_income
-                                data.man_max_income = male_max_income
-                                data.woman_source = female_source.toString()
-                                data.woman_commodity_name = null
-                                data.woman_method = null
-                                data.woman_marketing = null
-                                data.woman_period = null
-                                data.woman_average_capacity = Math.round(female_total_capacity / female_data.length)
-                                data.woman_min_income = female_min_income
-                                data.woman_max_income = female_max_income
-                            }
-                        } 
+                    const formInputs = JSON.parse(JSON.stringify(this.inputs))
+                    let data = {
+                        status: 'document_saving',
+                        form_no: formInputs.scooping_form_no.model,
+                        village: formInputs.village.model
                     }
-                    data.status = 'document_saving'
-                    // console.log(data)
+                    data.rra_pra_date_start = formInputs.rra_pra_date_range.model[0]
+                    if (formInputs.rra_pra_date_range.model[1]) data.rra_pra_date_end = formInputs.rra_pra_date_range.model[1]
+                    for (const [valIndex, val] of Object.entries(this.inputs.hamlets.model)) {
+                        if (val.dusun_access_photo) {
+                            formInputs.hamlets.model[valIndex].dusun_access_photo = await this.uploadFiles('photo', 'Foto akses dusun', val.dusun_access_photo, 'rra_pra', 'hamlet_access_photo', `${`${formInputs.scooping_form_no.model}_${formInputs.village.model}_${val.dusun_name}`.replace(/\./g, '_')}`)
+                        } else formInputs.hamlets.model[valIndex].dusun_access_photo = val.dusun_access_photo_raw
+                    }
+                    data.dusuns = formInputs.hamlets.model
+                    for (const [kyIG, valIG] of Object.entries(this.groupingInputs)) {
+                        for (let IgIndex = 0;IgIndex < valIG.length;IgIndex++) {
+                            let inpSection = valIG[IgIndex]
+                            if (inpSection.type == 'village-border') {
+                                const inputs = formInputs.village_border
+                                data.village_border = await []
+                                await inpSection.items.map(async function (point) {
+                                    await data.village_border.push({
+                                        point: point,
+                                        border_type: inputs[point].border_type.model,
+                                        kabupaten_no: inputs[point].kabupaten.model,
+                                        kode_kecamatan: inputs[point].kecamatan.model,
+                                        kode_desa: inputs[point].desa.model,
+                                    })
+                                })
+                            } else if (inpSection.type == 'column') {
+                                await inpSection.items.map((inputKey) => {
+                                    // const arrayToStringKey = ['land_utilization_plant_type']
+                                    const inputs = formInputs[inputKey]
+                                    let newModel = inputs.model
+                                    // if (arrayToStringKey.includes(inputKey)) newModel = newModel.toString()
+                                    data[this.zwitchKeyName(inputKey)] = newModel
+                                })
+                            } else if (inpSection.type == 'multiple-input') {
+                                await inpSection.items.map((inputKey) => {
+                                    data[this.zwitchKeyName(inputKey)] = []
+                                    if (inpSection.required == true || inpSection.optional == true) {
+                                        const inputs = formInputs[inputKey]
+                                        data[this.zwitchKeyName(inputKey)] = inputs.model.map(inputModel => {
+                                            // const arrayToStringKey = ['plant', 'role']
+                                            const newModel = inputModel
+                                            // arrayToStringKey.map(arrToStrKey => {
+                                            //     if (newModel[arrToStrKey]) newModel[arrToStrKey] = newModel[arrToStrKey].toString()
+                                            // })
+                                            return newModel
+                                        })
+                                        if (inputs.description) if (inputs.description.model) data[`${this.zwitchKeyName(inputKey)}_description`] = inputs.description.model
+                                    }
+                                })
+                            } else if (inpSection.type == 'custom-farmer_income') {
+                                const value = formInputs.farmer_income
+                                data.collection_type = value.collection_type.model
+                                if (value.collection_type.model === 'Bukan Sampling') {
+                                    data.farmer_income = []
+                                    data.man_source = value.static_form.source.male_model
+                                    data.man_commodity_name = value.static_form.comodity_name.male_model
+                                    data.man_method = value.static_form.method.male_model ? value.static_form.method.male_model.toString() : ''
+                                    data.man_marketing = value.static_form.indirect_method.male_model ? value.static_form.indirect_method.male_model.toString() : ''
+                                    data.man_period = value.static_form.avg_period.male_model
+                                    data.man_average_capacity = value.static_form.avg_capacity.male_model
+                                    data.man_min_income = value.static_form.min_amount.male_model
+                                    data.man_max_income = value.static_form.max_amount.male_model
+                                    data.woman_source = value.static_form.source.female_model
+                                    data.woman_commodity_name = value.static_form.comodity_name.female_model
+                                    data.woman_method = value.static_form.method.female_model ? value.static_form.method.female_model.toString() : ''
+                                    data.woman_marketing = value.static_form.indirect_method.female_model ? value.static_form.indirect_method.female_model.toString() : ''
+                                    data.woman_period = value.static_form.avg_period.female_model
+                                    data.woman_average_capacity = value.static_form.avg_capacity.female_model
+                                    data.woman_min_income = value.static_form.min_amount.female_model
+                                    data.woman_max_income = value.static_form.max_amount.female_model
+                                } else {
+                                    let male_source = []
+                                    let male_total_capacity = 0
+                                    let male_min_income = 0
+                                    let male_max_income = 0
+                                    const male_data = value.male_data.map((fimdm, fimdmIndex) => {
+                                        const source_income = parseInt(fimdm.source_income || 0)
+                                        if (fimdm.source) fimdm.source.map(fimdms => {
+                                            if (!male_source.includes(fimdms)) male_source.push(fimdms)
+                                        })
+                                        male_total_capacity += parseInt(fimdm.capacity || 0)
+                                        if (fimdmIndex === 0) male_min_income = source_income
+                                        else if (male_min_income > source_income) male_min_income = source_income
+                                        if (male_max_income < source_income) male_max_income = source_income
+                                        
+                                        return {
+                                            ...fimdm,
+                                            gender: 'male',
+                                            source: fimdm.source ? fimdm.source.toString() : '',
+                                            capacity: parseInt(fimdm.capacity || 0),
+                                            source_income: source_income,
+                                        }
+                                    })
+                                    let female_source = []
+                                    let female_total_capacity = 0
+                                    let female_min_income = 0
+                                    let female_max_income = 0
+                                    const female_data = value.female_data.map((fimdf, fimdfIndex) => {
+                                        const source_income = parseInt(fimdf.source_income || 0)
+                                        if (fimdf.source) fimdf.source.map(fimdfs => {
+                                            if (!female_source.includes(fimdfs)) female_source.push(fimdfs)
+                                        })
+                                        female_total_capacity += parseInt(fimdf.capacity || 0)
+                                        if (fimdfIndex === 0) female_min_income = source_income
+                                        else if (female_min_income > source_income) female_min_income = source_income
+                                        if (female_max_income < source_income) female_max_income = source_income
+                                        return {
+                                            ...fimdf,
+                                            gender: 'female',
+                                            source: fimdf.source ? fimdf.source.toString() : '',
+                                            capacity: fimdf.capacity || 0,
+                                            source_income: source_income,
+                                        }
+                                    })
+                                    data.farmer_income = [...male_data, ...female_data]
+                                    data.man_source = male_source.toString()
+                                    data.man_commodity_name = null
+                                    data.man_method = null
+                                    data.man_marketing = null
+                                    data.man_period = null
+                                    data.man_average_capacity = Math.round(male_total_capacity / male_data.length)
+                                    data.man_min_income = male_min_income
+                                    data.man_max_income = male_max_income
+                                    data.woman_source = female_source.toString()
+                                    data.woman_commodity_name = null
+                                    data.woman_method = null
+                                    data.woman_marketing = null
+                                    data.woman_period = null
+                                    data.woman_average_capacity = Math.round(female_total_capacity / female_data.length)
+                                    data.woman_min_income = female_min_income
+                                    data.woman_max_income = female_max_income
+                                }
+                            }
+                        }
+                    }
+                    // if (this.checkCompletedData) data.status = 'ready_to_submit'
                     const res = await axios.post(url, data, this.$store.state.apiConfig)
                     if (res) {
                         this.showModal = false
@@ -5211,7 +5476,7 @@ export default {
                     }
                 }
                 // set list dusun di penyebaran lokasi lahan kering / kritis
-                this.inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model
+                this.inputs.distribution_of_critical_land_locations.form.dusun_name.items = this.inputs.hamlets.model.filter(n => n.dusun_name).map(n => {return n.dusun_name})
                 // set sampling job list
                 const jobs = [
                     'Karyawan Swasta',
@@ -5554,15 +5819,18 @@ export default {
             })
             const indexProblem = problems[index].problem_code
             problems.sort((a, b) => {
-                return  a.total - b.total 
+                return  a.total_value - b.total_value 
             }).map((val, valIndex) => {
-                if (val.problem_code === indexProblem) this.inputs.problem_existing.model[index].rank = valIndex + 1 
+                if (val.problem_code === indexProblem) this.inputs.problem_existing.model[index].ranking = valIndex + 1 
             })
         },
         setProblemTotal(index) {
             let problems = this.inputs.problem_existing.model.filter(n => n.problem_name)
             let total = problems[index].impact_to_people + problems[index].interval_problem + problems[index].priority + problems[index].potential 
-            this.inputs.problem_existing.model[index].total = total
+            this.inputs.problem_existing.model[index].total_value = total
+        },
+        setUrlFileImage(file) {
+            return URL.createObjectURL(file)
         },
         showMatrikTitleInfo(type, title) {
             let message = ''
@@ -5574,8 +5842,8 @@ export default {
             message += `<br><br> <small><b>*Angka terkecil adalah yang paling bermasalah.</b></small>`
 
             if (type == 'problem_name') message = 'Masalah akan muncul di tabel matrik permasalahan jika nama masalah sudah terisi.'
-            if (type == 'total') message = 'Semakin kecil jumlah maka semakin bermasalah'
-            if (type == 'rank') message = 'Yang paling sedikit jumlahnya adalah Rank yang Pertama'
+            if (type == 'total_value') message = 'Semakin kecil jumlah maka semakin bermasalah'
+            if (type == 'ranking') message = 'Yang paling sedikit jumlahnya adalah Rank yang Pertama'
 
             Swal.fire({
                 title: title || 'Info',
@@ -5589,7 +5857,7 @@ export default {
             this.modals.pick_coordinate.data = data
             this.modals.pick_coordinate.show = true
         },
-        async zwitchKeyName() {
+        zwitchKeyName(key) {
             const rename = {
                 scooping_form_no: 'form_no',
                 paddy_land: 'tanah_sawah',
@@ -5608,8 +5876,29 @@ export default {
                 hamlets: 'dusuns',
                 water_source: 'pra_watersource',
             }
-            return rename
-        }
+            if (rename[key]) return rename[key]
+            else return key
+        },
+        async uploadFiles(type, typeName, file, prefix, dir, name) {
+            try {
+                console.log(file)
+                this.loading.text = `Mengunggah "${typeName}"...`
+                const url = `${this.$store.state.apiUrlImage}${prefix}/upload.php`
+                let fileToUpload = file
+                const data = this._utils.generateFormData({
+                    dir: dir,
+                    nama: name,
+                    fileToUpload: fileToUpload,
+                    type: type
+                })
+                let responseName = null
+                const res = await axios.post(url,data)
+                if (res) {
+                    responseName = res.data.data.new_name
+                    return `${prefix}/${responseName}`
+                }
+            } catch (err) {this.errorResponse(err)}
+        },
     }
 }
 </script>
