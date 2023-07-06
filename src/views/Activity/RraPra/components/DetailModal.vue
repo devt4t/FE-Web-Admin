@@ -38,8 +38,8 @@
                     </div>
                 </v-overlay>
                 <!-- export table -->
-                <div id="containerForExport-RRAPRA" style="display: none">
-                    <ExportView :id="id" :raw_data="raw_data.RRA || {}" :stepper="this.stepper.model"></ExportView>
+                <div id="containerForExport-RRAPRA" style="display: block">
+                    <ExportView :id="id" :raw_data="raw_data || {}" :stepper="this.stepper.model"></ExportView>
                 </div>
                 <div v-if="datas">
                     <!-- Global data -->
@@ -1648,7 +1648,7 @@ export default {
             }
             if (type) {
                 file_name += type
-                const container = document.getElementById(`containerForExport-RRAPRAPRA`);
+                const container = document.getElementById(`containerForExport-RRAPRA`);
                 var vm = this, word = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                     <head>
