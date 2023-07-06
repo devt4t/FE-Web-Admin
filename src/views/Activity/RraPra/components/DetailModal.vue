@@ -348,6 +348,19 @@
                                                                                             </v-tooltip>
                                                                                             {{ item[itemExp.dataKey] }}
                                                                                         </span>
+                                                                                        <div v-else-if="itemExp.dataType === 'photo'">
+                                                                                            <v-card 
+                                                                                                class="rounded-lg mt-2 elevation-0 mr-1 mb-1"
+                                                                                                style="position: relative;"
+                                                                                            >
+                                                                                                <v-img
+                                                                                                    @click="showLightbox(setUrlFileImage(item[itemExp.dataKey]))"
+                                                                                                    v-bind:src="setUrlFileImage(item[itemExp.dataKey])"
+                                                                                                    class="my-2 mb-4 rounded-lg cursor-pointer"
+                                                                                                    style="max-width: 200px;max-height: 110px;"
+                                                                                                ></v-img>
+                                                                                            </v-card>
+                                                                                        </div>
                                                                                         <span v-else>
                                                                                             {{ item[itemExp.dataKey] }}
                                                                                         </span>
@@ -1719,6 +1732,9 @@ export default {
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
+        },
+        setUrlFileImage(file) {
+            return this.$store.state.apiUrlImage + file
         },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs
