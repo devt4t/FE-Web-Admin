@@ -1684,7 +1684,7 @@ export default {
                 this.raw_data = res.data.data.result
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
-                this.stepper.model = 3
+                // this.stepper.model = 3
                 this.verified_data = this.datas.RRA.status
                 console.log(this.verified_data)
             } catch (err) {
