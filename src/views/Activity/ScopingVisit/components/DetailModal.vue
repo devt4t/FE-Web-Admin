@@ -579,6 +579,7 @@ export default {
             //     ]
             // }
         ],
+        formOptions: formOptions,
         raw_data: {},
         imageKeyComponent: 71625327,
         verified_data: 0,
@@ -712,6 +713,11 @@ export default {
                 this.imageKeyComponent += 1
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
+                for (const[key, val] of Object.entries(data)) {
+                    if (key == 'accessibility') if (val) data[key] = this.formOptions.accessibility.find(n => n.value == val).text
+                    if (key == 'water_source') if (val) data[key] = this.formOptions.water_source.find(n => n.value == val).text
+                    if (key == 'agroforestry_type') if (val) data[key] = this.formOptions.agroforestry_type.find(n => n.value == val).text
+                }
                 this.raw_data = JSON.parse(JSON.stringify(data))
                 this.raw_data.city_name = this.raw_data.city_name.toLowerCase()
                 this.raw_data.district_name = this.raw_data.district_name.toLowerCase()

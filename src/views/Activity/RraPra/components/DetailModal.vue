@@ -7,7 +7,13 @@
     >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2">
-                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document</v-icon></v-btn> RRA PRA Form #{{ this.id }}</span>
+                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document</v-icon></v-btn> 
+                    RRA PRA Form #{{ this.id }}
+                    <v-chip small :color="getStatusColumn('bg_color', verified_data)" class="white--text ml-2">
+                        <v-icon class="mr-1">{{ getStatusColumn('icon', verified_data) }}</v-icon>
+                        {{ getStatusColumn('text', verified_data) }}
+                    </v-chip>
+                </span>
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text class="pa-0" style="min-height: 300px;">
@@ -31,6 +37,10 @@
                         </p>
                     </div>
                 </v-overlay>
+                <!-- export table -->
+                <div id="containerForExport-RRAPRA" style="display: none">
+                    <ExportView :id="id" :raw_data="raw_data || {}" :stepper="this.stepper.model"></ExportView>
+                </div>
                 <div v-if="datas">
                     <!-- Global data -->
                     <v-row class="ma-0 mx-2 mx-lg-4">
@@ -338,6 +348,19 @@
                                                                                             </v-tooltip>
                                                                                             {{ item[itemExp.dataKey] }}
                                                                                         </span>
+                                                                                        <div v-else-if="itemExp.dataType === 'photo'">
+                                                                                            <v-card 
+                                                                                                class="rounded-lg mt-2 elevation-0 mr-1 mb-1"
+                                                                                                style="position: relative;"
+                                                                                            >
+                                                                                                <v-img
+                                                                                                    @click="showLightbox(setUrlFileImage(item[itemExp.dataKey]))"
+                                                                                                    v-bind:src="setUrlFileImage(item[itemExp.dataKey])"
+                                                                                                    class="my-2 mb-4 rounded-lg cursor-pointer"
+                                                                                                    style="max-width: 200px;max-height: 110px;"
+                                                                                                ></v-img>
+                                                                                            </v-card>
+                                                                                        </div>
                                                                                         <span v-else>
                                                                                             {{ item[itemExp.dataKey] }}
                                                                                         </span>
@@ -400,8 +423,9 @@
                 </div>
             </v-card-text>
             <v-card-actions class="justify-center" v-if="verificationAccess">
-                <v-btn v-if="verified_data == 0" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
-                <v-btn v-if="verified_data == 1" rounded color="red" outlined class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="verified_data == 'ready_to_submit'" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
+                <v-btn v-if="verified_data == 'submit_review'" rounded color="red" outlined class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="verified_data == 'submit_review'" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -415,10 +439,12 @@ import Swal from 'sweetalert2'
 
 import formOptions from '@/assets/json/rraPraOptions.json'
 import treeAnimation from '@/assets/lottie/tree.json'
+import ExportView from '@/views/Activity/RraPra/components/ExportView'
 
 export default {
     components: {
         LottieAnimation,
+        ExportView
     },
     props: {
         show: {
@@ -432,6 +458,7 @@ export default {
     },
     data: () => ({
         datas: null,
+        formOptions: formOptions,
         groupingData: {
             RRA: [
                 // Batas Wilayah
@@ -445,9 +472,10 @@ export default {
                         itemsPerPage: -1,
                         headers: [
                             {text: 'Arah', value: 'point'},
-                            {text: 'Kabupaten', value: 'kabupaten_no'},
-                            {text: 'Kecamatan', value: 'kode_kecamatan'},
-                            {text: 'Desa', value: 'kode_desa'},
+                            {text: 'Tipe', value: 'border_type'},
+                            {text: 'Kabupaten', value: 'city_name'},
+                            {text: 'Kecamatan', value: 'district_name'},
+                            {text: 'Desa', value: 'village_name'},
                         ]
                     }
                 },
@@ -1030,9 +1058,9 @@ export default {
                         ]
                     }
                 },
-                // Penyebaran Lokasi Lahan Kering / Kritis
+                // Penyebaran Lokasi Lahan Kering & Kritis
                 {
-                    label: 'Penyebaran Lokasi Lahan Kering / Kritis',
+                    label: 'Penyebaran Lokasi Lahan Kering & Kritis',
                     labelIcon: 'mdi-land-fields',
                     dataType: 'table',
                     dataKey: 'DryLandSpread',
@@ -1063,7 +1091,7 @@ export default {
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama', value: 'watersource_name'},
-                            {text: 'Tipe', value: 'watersource_type'},
+                            {text: 'Jenis', value: 'watersource_type'},
                             {text: 'Kondisi', value: 'watersource_condition'},
                             {text: 'Pemanfaatan', value: 'watersource_utilization'},
                         ]
@@ -1265,6 +1293,7 @@ export default {
                         itemsPerPage: -1,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Narasumber', value: 'name'},
                             {text: 'Gender', value: 'gender'},
                             {text: 'Nama Komoditas', value: 'commodity_name'},
                             {text: 'Kapasitas', value: 'capacity'},
@@ -1368,7 +1397,7 @@ export default {
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama', value: 'disaster_name'},
-                            {text: 'Tahun', value: 'year'},
+                            {text: 'Periode', value: 'year'},
                             {text: 'Kategori', value: 'disaster_categories'},
                             {text: 'Korban Jiwa', value: 'fatalities'},
                             {text: 'Detail', value: 'detail'},
@@ -1395,7 +1424,7 @@ export default {
                                         cols: [12,12,12,12],
                                         dataKey: 'problem_solution',
                                         dataType: 'text',
-                                        label: 'Solusi',
+                                        label: 'Saran Solusi',
                                         labelIcon: null,
                                         suffix: ``,
                                     },
@@ -1408,7 +1437,7 @@ export default {
                             {text: 'No', value: 'index', width: 70, sortable: false},
                             {text: 'Nama', value: 'problem_name'},
                             {text: 'Kategori', value: 'problem_categories'},
-                            {text: 'Tanggal', value: 'date_start'},
+                            {text: 'Periode', value: 'date_start'},
                             {text: 'Sumber', value: 'problem_source'},
                             { text: 'Solusi', value: 'data-table-expand' },
                         ]
@@ -1484,7 +1513,7 @@ export default {
                 },
             ]
         },
-        verified_data: 0,
+        verified_data: 'document_saving',
         loading: {
             show: false,
             text: 'Loading...'
@@ -1500,6 +1529,7 @@ export default {
                 loading: treeAnimation,
             }
         },
+        raw_data: {},
         stepper: {
             model: 1,
             steps: ['RRA', 'PRA', 'Flora & Fauna'],
@@ -1608,16 +1638,158 @@ export default {
                 }
             }
         },
+        exportReport() {
+            let type = ''
+            let file_name = 'Report '
+            if (this.stepper.model == 1) {
+                type = 'RRA'
+            } if (this.stepper.model == 2) {
+                type = 'PRA'
+            } if (this.stepper.model == 3) {
+                type = 'Flora Fauna Endemik'
+            }
+            if (type) {
+                file_name += type
+                const container = document.getElementById(`containerForExport-RRAPRA`);
+                var vm = this, word = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head>
+                        <meta charset='utf-8'>
+                        <title>Export HTML to Word Document with JavaScript</title>
+                    </head>
+                    <body>
+                        ${container.innerHTML}
+                    </body>
+                </html>`;
+                console.log(container.innerHTML)
+                var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(word);
+                var fileDownload = document.createElement("a");
+                document.body.appendChild(fileDownload);
+                fileDownload.href = source;
+                fileDownload.download = `${file_name}.doc`;
+                fileDownload.click();
+                document.body.removeChild(fileDownload);
+    
+                // const wb = XLSX.utils.table_to_book(table);
+    
+                // /* Export to file (start a download) */
+                // console.log(this.raw_data)
+                // XLSX.writeFile(wb, `ExportScoopingVisit.xlsx`);
+            }
+        },
         async getData(id) {
             try {
                 this.loading.show = true
                 this.loading.text = `Getting Form "${id}" data...`
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailRraPra?form_no=${id}`), this.$store.state.apiConfig)
-                this.datas = res.data.data.result
+                let data = res.data.data.result
+                data.Scooping.city_name = this._utils.capitalizeLetter(data.Scooping.city_name)
+                data.Scooping.district_name = this._utils.capitalizeLetter(data.Scooping.district_name)
+                data.Scooping.village_name = this._utils.capitalizeLetter(data.Scooping.village_name)
+                data.RRA.VillageBorder = data.RRA.VillageBorder.map(val => {
+                    return {
+                        ...val,
+                        city_name: this._utils.capitalizeLetter(val.city_name),
+                        district_name: this._utils.capitalizeLetter(val.district_name),
+                        village_name: this._utils.capitalizeLetter(val.village_name)
+                    }
+                })
+                data.RRA.LandUse = data.RRA.LandUse.map(val => {
+                    return {
+                        ...val,
+                        pattern: this.getTextFromOptions(val.pattern, 'agroforestry_type')
+                    }
+                })
+                data.RRA.ProductionMarketing = data.RRA.ProductionMarketing.map(val => {
+                    return {
+                        ...val,
+                        method: this.getTextFromOptions(val.method, 'marketing_trade_method_complete'),
+                        period: this.getTextFromOptions(val.period, 'marketing_period'),
+                    }
+                })
+                data.RRA.Dusun = data.RRA.Dusun.map(val => {
+                    return {
+                        ...val,
+                        accessibility: this.getTextFromOptions(val.accessibility, 'accessibility'),
+                        data_land_area_source: this.getTextFromOptions(val.data_land_area_source, 'sumber'),
+                        data_dry_land_area_source: this.getTextFromOptions(val.data_dry_land_area_source, 'sumber'),
+                        data_productive_source: this.getTextFromOptions(val.data_productive_source, 'sumber'),
+                        data_job_source: this.getTextFromOptions(val.data_job_source, 'sumber'),
+                    }
+                })
+                data.PRA.LandOwnership = data.PRA.LandOwnership.map(val => {
+                    return {
+                        ...val,
+                        type_ownership: this.getTextFromOptions(val.type_ownership, 'farmer_type_ownership'),
+                        land_ownership: this.getTextFromOptions(val.land_ownership, 'land_ownership_type')
+                    }
+                })
+                data.PRA.DryLandSpread = data.PRA.DryLandSpread.map(val => {
+                    return {
+                        ...val,
+                        type_utilization: this.getTextFromOptions(val.type_utilization, 'agroforestry_type'),
+                    }
+                })
+                data.PRA.Watersource = data.PRA.Watersource.map(val => {
+                    return {
+                        ...val,
+                        watersource_type: this.getTextFromOptions(val.watersource_type, 'water_source'),
+                    }
+                })
+                data.PRA.FarmerIncome = data.PRA.FarmerIncome.map(val => {
+                    return {
+                        ...val,
+                        period: this.getTextFromOptions(val.period, 'marketing_period'),
+                    }
+                })
+                data.PRA.Fertilizer = data.PRA.Fertilizer.map(val => {
+                    return {
+                        ...val,
+                        fertilizer_categories: this.getTextFromOptions(val.fertilizer_categories, 'fertilizer_categories'),
+                        fertilizer_type: this.getTextFromOptions(val.fertilizer_type, 'fertilizer_types'),
+                        fertilizer_source: this.getTextFromOptions(val.fertilizer_source, 'fertilizer_sources'),
+                    }
+                })
+                data.PRA.Pesticide = data.PRA.Pesticide.map(val => {
+                    return {
+                        ...val,
+                        pesticide_categories: this.getTextFromOptions(val.pesticide_categories, 'pesticide_categories'),
+                        pesticide_type: this.getTextFromOptions(val.pesticide_type, 'pesticide_types'),
+                        pesticide_source: this.getTextFromOptions(val.pesticide_source, 'pesticide_sources'),
+                    }
+                })
+                data.PRA.DisasterHistory = data.PRA.DisasterHistory.map(val => {
+                    return {
+                        ...val,
+                        disaster_categories: this.getTextFromOptions(val.disaster_categories, 'disaster_categories'),
+                    }
+                })
+                data.PRA.ExistingProblem = data.PRA.ExistingProblem.map(val => {
+                    return {
+                        ...val,
+                        problem_categories: this.getTextFromOptions(val.problem_categories, 'problem_categories'),
+                    }
+                })
+                data.PRA.Flora = data.PRA.Flora.map(val => {
+                    return {
+                        ...val,
+                        flora_status: this.getTextFromOptions(val.flora_status, 'flora_fauna_status'),
+                        flora_foodsource: this.getTextFromOptions(val.flora_foodsource, 'water_source'),
+                    }
+                })
+                data.PRA.Fauna = data.PRA.Fauna.map(val => {
+                    return {
+                        ...val,
+                        fauna_status: this.getTextFromOptions(val.fauna_status, 'flora_fauna_status'),
+                        fauna_foodsource: this.getTextFromOptions(val.fauna_foodsource, 'fauna_food_source'),
+                    }
+                })
+                this.datas = data
+                this.raw_data = data
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
-                this.stepper.model = 2
-                this.verified_data = this.datas.RRA.is_verify
+                // this.stepper.model = 3
+                this.verified_data = this.datas.RRA.status
                 console.log(this.verified_data)
             } catch (err) {
                 this.errorResponse(err)
@@ -1634,6 +1806,41 @@ export default {
             const days = duration.asDays();
             return days
         },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'yellow darken-1'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
+        },
+        getTextFromOptions(value, options) {
+            if (value) {
+                if (options == 'sumber') {
+                    if (value == 'truth') return 'Data Asli'
+                    if (value == 'estimation') return 'Perkiraan'
+                }
+                const listOptions = this.formOptions[options]
+                if (listOptions) {
+                    const getOption = listOptions.find(n => n.value === value)
+                    if (getOption) {
+                        return getOption.text
+                    }
+                }
+            }
+            return value
+        },
         indonesianify(eng) {
             if (eng === 'north') return 'Utara'
             if (eng === 'east') return 'Timur'
@@ -1645,6 +1852,9 @@ export default {
         onResize() {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
+        },
+        setUrlFileImage(file) {
+            return this.$store.state.apiUrlImage + file
         },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs

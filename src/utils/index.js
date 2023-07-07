@@ -26,7 +26,7 @@ const utils = {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
     capitalizeLetter (string) {
-        if (string) return string.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+        if (string) return string.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
         return ''
     },
     // date format
@@ -93,6 +93,7 @@ const utils = {
       },
     //   whatsapp
     whatsappPhone(no) {
+        if (!no) return no
         return no.replace(/^0/, "62");
     }
 }

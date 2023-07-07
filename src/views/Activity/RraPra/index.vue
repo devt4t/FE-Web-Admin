@@ -82,10 +82,10 @@
                 </span>
             </template>
             <!-- Status Column -->
-            <template v-slot:item.is_verify="{item}">
-                <v-chip :color="item.is_verify == 1 ? 'green' : 'red'" class="white--text pl-1">
-                <v-icon class="mr-1">mdi-{{ item.is_verify  == 1 ? 'check' : 'close' }}-circle</v-icon>
-                {{ item.is_verify == 1 ? 'Verified' : 'Unverified' }}
+            <template v-slot:item.status="{item}">
+                <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
+                <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
+                {{ getStatusColumn('text', item.status) }}
                 </v-chip>
             </template>
             <!-- Action Column -->
@@ -159,7 +159,7 @@ export default {
                 {text: 'Form No', value: 'form_no'},
                 {text: 'Tanggal', value: 'rra_pra_date_start'},
                 {text: 'PIC Email', value: 'user_id'},
-                {text: 'Status', value: 'is_verify', align: 'center'},
+                {text: 'Status', value: 'status', align: 'center'},
                 {text: 'Actions', value: 'actions', align: 'right'},
             ],
             items: [],
@@ -200,6 +200,25 @@ export default {
             this.user = this.$store.state.User
             this.localConfig.programYear = this.$store.state.programYear.model
             await this.getTableData()
+        },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'blue'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
         },
         async getTableData() {
             try {
