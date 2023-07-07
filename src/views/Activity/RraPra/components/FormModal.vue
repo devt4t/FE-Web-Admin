@@ -2160,20 +2160,23 @@
                         <v-icon>mdi-chevron-right</v-icon>
                     </v-btn>
                     <v-divider class="mx-2"></v-divider>
-                    <v-btn
+                    <div
                         data-aos="zoom-in"
                         data-aos-duration="300"
-                        data-aos-offset="-200" 
-                        color="primary white--text"
-                        class=""
-                        rounded
-                        :key="`saveButton`"
-                        :disabled="disabledSave"
-                        @click="() => save()"
+                        data-aos-offset="-200"
                     >
-                        <v-icon class="mr-1">mdi-content-save</v-icon>
-                        Save
-                    </v-btn>
+                        <v-btn 
+                            color="primary white--text"
+                            class=""
+                            rounded
+                            :key="`saveButton`"
+                            :disabled="disabledSave"
+                            @click="() => save()"
+                        >
+                            <v-icon class="mr-1">mdi-content-save</v-icon>
+                            Save
+                        </v-btn>
+                    </div>
                     <div 
                         data-aos="zoom-in"
                         data-aos-duration="300"
@@ -4876,7 +4879,7 @@ export default {
                             this.inputs[secItem].model.map((val, valIndex) => {
                                 requiredInput.map(rI => {
                                     if (typeof val[rI] == 'object' && val[rI]) if (val[rI].length == 0) emptyData.push(`RRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
-                                    if (!val[rI]) emptyData.push(`RRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
+                                    if (!val[rI] || val[rI] == '-') emptyData.push(`RRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
                                 })
                             })
                         }
@@ -4927,7 +4930,7 @@ export default {
                             this.inputs[secItem].model.map((val, valIndex) => {
                                 requiredInput.map(rI => {
                                     if (typeof val[rI] == 'object' && val[rI]) if (val[rI].length == 0) valEmpty += 1
-                                    if (!val[rI]) valEmpty += 1
+                                    if (!val[rI] || val[rI] == '-') valEmpty += 1
                                     if (secItem == 'land_ownership' && val.type_ownership == 'petani' && rI == 'land_ownership') valEmpty = 0
                                     if (valEmpty > 0) emptyData.push(`PRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
                                 })
@@ -5331,7 +5334,7 @@ export default {
                     for (const [valIndex, val] of Object.entries(this.inputs.hamlets.model)) {
                         if (val.dusun_access_photo) {
                             formInputs.hamlets.model[valIndex].dusun_access_photo = await this.uploadFiles('photo', 'Foto akses dusun', val.dusun_access_photo, 'rra_pra', 'hamlet_access_photo', `${`${formInputs.scooping_form_no.model}_${formInputs.village.model}_${val.dusun_name}`.replace(/\./g, '_')}`)
-                        } else formInputs.hamlets.model[valIndex].dusun_access_photo = val.dusun_access_photo_raw
+                        } else formInputs.hamlets.model[valIndex].dusun_access_photo = val.dusun_access_photo_raw || ''
                     }
                     data.dusuns = formInputs.hamlets.model
                     for (const [kyIG, valIG] of Object.entries(this.groupingInputs)) {
@@ -5364,10 +5367,13 @@ export default {
                                         const inputs = formInputs[inputKey]
                                         data[this.zwitchKeyName(inputKey)] = inputs.model.map(inputModel => {
                                             // const arrayToStringKey = ['plant', 'role']
-                                            const newModel = inputModel
+                                            let newModel = inputModel
                                             // arrayToStringKey.map(arrToStrKey => {
                                             //     if (newModel[arrToStrKey]) newModel[arrToStrKey] = newModel[arrToStrKey].toString()
                                             // })
+                                            for (const[key, val] of Object.entries(inputModel)) {
+                                                if (!val) newModel[key] = '-'
+                                            }
                                             return newModel
                                         })
                                         if (inputs.description) if (inputs.description.model) data[`${this.zwitchKeyName(inputKey)}_description`] = inputs.description.model
@@ -5459,14 +5465,15 @@ export default {
                             }
                         }
                     }
+                    console.log(data)
                     if (submit) {
                         if (this.checkCompletedData) data.status = 'ready_to_submit'
                     }
-                    const res = await axios.post(url, data, this.$store.state.apiConfig)
-                    if (res) {
-                        this.showModal = false
-                        this.$emit('swal', {type: 'success', message: 'Yey! Data RRA-PRA saved!'})
-                    }
+                    // const res = await axios.post(url, data, this.$store.state.apiConfig)
+                    // if (res) {
+                    //     this.showModal = false
+                    //     this.$emit('swal', {type: 'success', message: 'Yey! Data RRA-PRA saved!'})
+                    // }
                 }
             } catch(err) {
                 this.errorResponse(err)
