@@ -1037,6 +1037,12 @@
                   by Employee
                 </v-btn>
               </v-list-item>
+              <v-list-item>
+                <v-switch
+                  label="Data Tester"
+                  v-model="showTesterData"
+                ></v-switch>
+              </v-list-item>
             </v-list>
           </v-menu>
           <!-- Program Year -->
@@ -1158,6 +1164,7 @@ export default {
   name: "Farmer",
   authtoken: "",
   data: () => ({
+    showTesterData: false,
     export_filter: {
       program_year: "",
       typegetdata: "",
@@ -1386,6 +1393,11 @@ export default {
         this.export_filter.village = "";
       },
     },
+    async showTesterData(val) {
+      if (val === false)
+        this.dataobject = this.filterDataDummy(this.raw_data);
+      else this.dataobject = this.raw_data;
+    },
   },
 
   mounted() {
@@ -1469,8 +1481,13 @@ export default {
           }
         );
         // console.log(response.data.data.result.data);
+        const resData = response.data.data.result.data;
         if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
+          this.dataobject = resData;
+          this.raw_data = resData;
+          if (this.showTesterData === false) {
+            this.dataobject = this.filterDataDummy(resData);
+          }
           this.loadtable = false;
         } else {
           this.dataobject = [];
@@ -1488,7 +1505,9 @@ export default {
         }
       }
     },
-
+    filterDataDummy(data) {
+      return data.filter((f) => f.kode.match(/^F.*$/)).filter((f) => f.ff_no.match(/^FF.*$/)).filter((f) => !f.user.includes('FF'))
+    },
     async getMU() {
       try {
         const response = await axios.get(
