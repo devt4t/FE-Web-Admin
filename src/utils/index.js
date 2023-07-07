@@ -93,6 +93,7 @@ const utils = {
       },
     //   whatsapp
     whatsappPhone(no) {
+        if (!no) return no
         return no.replace(/^0/, "62");
     }
 }

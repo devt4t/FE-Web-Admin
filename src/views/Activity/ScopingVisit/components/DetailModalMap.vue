@@ -292,7 +292,7 @@ export default {
                                     // console.log(centerCoordinates)
                                     await map.flyTo({
                                         center: [centerCoordinates[0], centerCoordinates[1]],
-                                        zoom: 9,
+                                        zoom: 11,
                                         duration: 7 * 1000
                                     });
                                     mapOptions.loading.show = await false
