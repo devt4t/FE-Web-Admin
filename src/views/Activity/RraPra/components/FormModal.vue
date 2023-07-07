@@ -2183,6 +2183,7 @@
                             :color="`${checkCompletedData ? 'green' : 'red'} white--text`"
                             class="ml-2"
                             rounded
+                            :disabled="disabledSave"
                             :key="`submitButton`"
                             @click="() => formSubmit()"
                         >
@@ -4846,6 +4847,7 @@ export default {
             }
         },
         disabledSave() {
+            if (!this.inputs.scooping_form_no.model) return true
             return false
         },
         checkCompletedData() {
