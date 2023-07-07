@@ -78,9 +78,12 @@ const utils = {
     },
     // number format
     numberFormat (num)  {
-        return new Intl.NumberFormat('id-ID', {
-            maximumFractionDigits: 0
-        }).format(num)
+        if (typeof num == 'number') {
+            return new Intl.NumberFormat('id-ID', {
+                maximumFractionDigits: 0
+            }).format(num)
+        }
+        return num
     },
     // phone number
     formatPhoneNumber(phoneNumber) {
