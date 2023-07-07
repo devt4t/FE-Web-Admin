@@ -5002,14 +5002,27 @@ export default {
                 if (!this.checkCompletedData) {
                     const emptyData = [...this.empty_data.rra, ...this.empty_data.pra, ...this.empty_data.si].map(val => {return `${val}<br>`})
                     // console.log(emptyData)
-                    const confirm = await Swal.fire({
+                    await Swal.fire({
                         title: 'Lengkapi Data!',
                         html: `${emptyData}`,
                         icon: 'warning',
                         confirmButtonColor: '#2e7d32',
                         confirmButtonText: 'Woke!'
                     })
-                    
+                } else {
+                    const confirm = await Swal.fire({
+                        title: 'Apa anda yakin?',
+                        text: "Pastikan data sudah lengkap benar!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#2e7d32',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Tidak Jadi',
+                        confirmButtonText: 'Ya, Lanjutkan!'
+                    })
+                    if (confirm.isConfirmed) {
+                        this.save(true)
+                    }
                 }
             } catch (err) {this.errorResponse(err)} {
                 this.loading.show = false
@@ -5289,7 +5302,7 @@ export default {
             this.localConfig.windowWidth = window.innerWidth
             // console.log(this.localConfig.windowWidth)
         },
-        async save() {
+        async save(submit = false) {
             try {
                 const confirm = await Swal.fire({
                     title: 'Apa anda yakin?',
@@ -5444,7 +5457,9 @@ export default {
                             }
                         }
                     }
-                    if (this.checkCompletedData) data.status = 'ready_to_submit'
+                    if (submit) {
+                        if (this.checkCompletedData) data.status = 'ready_to_submit'
+                    }
                     const res = await axios.post(url, data, this.$store.state.apiConfig)
                     if (res) {
                         this.showModal = false
