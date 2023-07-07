@@ -1,17 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Provinsi from '../views/Utilities/Provinsi.vue'
-import Kabupaten from '../views/Utilities/Kab.vue'
-import Kecamatan from '../views/Utilities/Kecamatan.vue'
-import Vilage from '../views/Utilities/Vilage.vue'
-import ManagementUnit from '../views/Utilities/MU.vue'
-import TargetArea from '../views/Utilities/TA.vue'
-import Pekerjaan from '../views/Utilities/Pekerjaan.vue'
-import Suku from '../views/Utilities/Suku.vue'
-
-import Users from '../views/Users/Users.vue'
-
 Vue.use(VueRouter)
 function lazyLoad(view){
   return() => import(`@/views/${view}.vue`)
@@ -51,6 +40,11 @@ const routes = [
     path: '/Employee',
     name: 'Employee',
     component: lazyLoad('Employee/Employee')
+  },
+  {
+    path: '/FieldCoordinator',
+    name: 'FieldCoordinator',
+    component: lazyLoad('Employee/FieldCoordinator/index')
   },
   {
     path: '/FieldFacilitator',
@@ -157,47 +151,47 @@ const routes = [
   {
     path: '/Provinsi',
     name: 'Provinsi',
-    component: Provinsi
+    component: lazyLoad('Utilities/Provinsi')
   },
   {
     path: '/Kabupaten',
     name: 'Kabupaten',
-    component: Kabupaten
+    component: lazyLoad('Utilities/Kab')
   },
   {
     path: '/Kecamatan',
     name: 'Kecamatan',
-    component: Kecamatan
+    component: lazyLoad('Utilities/Kecamatan')
   },
   {
     path: '/Vilage',
     name: 'Vilage',
-    component: Vilage
+    component: lazyLoad('Utilities/Vilage')
   },
   {
     path: '/ManagementUnit',
     name: 'ManagementUnit',
-    component: ManagementUnit
+    component: lazyLoad('Utilities/MU')
   },
   {
     path: '/TargetArea',
     name: 'TargetArea',
-    component: TargetArea
+    component: lazyLoad('Utilities/TA')
   },
   {
     path: '/Pekerjaan',
     name: 'Pekerjaan',
-    component: Pekerjaan
+    component: lazyLoad('Utilities/Pekerjaan')
   },
   {
     path: '/Suku',
     name: 'Suku',
-    component: Suku
+    component: lazyLoad('Utilities/Suku')
   },
   {
     path: '/Users',
     name: 'Users',
-    component: Users
+    component: lazyLoad('Users/Users')
   }
 ]
 

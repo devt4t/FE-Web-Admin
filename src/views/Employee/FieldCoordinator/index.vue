@@ -58,13 +58,13 @@
                     ></v-text-field>
                     <v-divider class="mx-2 d-none d-lg-block"></v-divider>
                     <div class="mx-auto">
-                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0 || true" rounded class="mr-2" @click="() => exportExcel()">
+                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0" rounded class="mr-2" @click="() => exportExcel()" disabled>
                             <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
                             Export
                         </v-btn>
                         <v-btn color="info" rounded class="pl-2" @click="() => {modals.form.show = true;modals.form.key += 1}">
                             <v-icon class="mr-1">mdi-plus-circle</v-icon>
-                            Add
+                            Tambah
                         </v-btn>
                     </div>
                 </v-row>
@@ -73,21 +73,26 @@
             <template v-slot:item.no="{index}">
                 {{ index + 1 }}
             </template>
+            <!-- Luas Desa -->
+            <template v-slot:item.land_area="{item}">
+                {{ _utils.numberFormat(item.land_area) }} Ha
+            </template>
             <!-- Tanggal Column -->
-            <template v-slot:item.rra_pra_date_start="{item}">
-                {{ _utils.dateFormat(item.rra_pra_date_start, 'DD MMMM Y') }}
-                <span v-if="item.rra_pra_date_start != item.rra_pra_date_end">
+            <template v-slot:item.start_scooping_date="{item}">
+                {{ _utils.dateFormat(item.start_scooping_date, 'DD MMMM Y') }}
+                <span v-if="item.start_scooping_date != item.end_scooping_date">
                     ~
                     {{ _utils.dateFormat(item.rra_pra_date_end, 'DD MMMM Y') }}
                 </span>
             </template>
             <!-- Status Column -->
-            <template v-slot:item.status="{item}">
+            <template v-slot:item.is_verify="{item}">
                 <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
                 <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
                 {{ getStatusColumn('text', item.status) }}
                 </v-chip>
             </template>
+      
             <!-- Action Column -->
             <template v-slot:item.actions="{ item }">
                 <v-menu content-class="rounded-xl">
@@ -97,14 +102,17 @@
                     </v-btn>
                 </template>
                 <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-                    <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="() => showModal('detail', item)">
+                    <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="showModal('detail', item)">
                         <v-icon class="mr-1">mdi-information</v-icon> Detail
                     </v-btn>
                     <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" 
-                        :disabled="item.is_verify === 1"
+                        :disabled="(item.is_verify === 1 || item.status == 'submit_review') && user.role_name != 'GIS STAFF'"
                         @click="() => {showModal('form', item)}">
                         <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
                     </v-btn>
+                    <!-- <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
+                        <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
+                    </v-btn> -->
                 </v-card>
                 </v-menu>
             </template>
@@ -113,11 +121,10 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Swal from 'sweetalert2'
-
 import FormModal from './components/FormModal.vue'
 import DetailModal from './components/DetailModal.vue'
+import axios from 'axios'
+import Swal from 'sweetalert2'
 
 export default {
     components: {
@@ -127,40 +134,40 @@ export default {
     data: () => ({
         breadcrumbs: [
             {
-                text: "Main Data",
+                text: "Activities",
                 disabled: true,
                 href: "breadcrumbs_dashboard",
             },
             {
-                text: "RRA & PRA",
+                text: 'Field Coordinator',
                 disabled: true,
                 href: "breadcrumbs_link_1",
             },
         ],
-        modals: {
-            detail: {
-                show: false,
-                data: null,
-                key: 8990458,
-            },
-            form: {
-                id: null,
-                show: false,
-                data: null,
-                key: 7892345,
-            }
-        },
         localConfig: {
             programYear: '',
         },
+        modals: {
+            form: {
+                show: false,
+                data: null,
+                key: 29291,
+            },
+            detail: {
+                show: false,
+                data: null,
+                key: 89238292,
+            }
+        },
         table: {
             headers: [
-                {text: 'No', value: 'no'},
-                {text: 'Form No', value: 'form_no'},
-                {text: 'Tanggal', value: 'rra_pra_date_start'},
-                {text: 'PIC Email', value: 'user_id'},
-                {text: 'Status', value: 'status', align: 'center'},
-                {text: 'Actions', value: 'actions', align: 'right'},
+                { text: "No", value: "no", width: '70' },
+                { text: "ID Karyawan", value: "nik" },
+                { text: "Nama", value: "name" },
+                { text: "No KTP", value: "ktp_no" },
+                { text: "Position", value: "emp_position" },
+                { text: "Unit Manager", value: "emp_position" },
+                { text: "Actions", value: "actions", sortable: false },
             ],
             items: [],
             loading: {
@@ -170,27 +177,19 @@ export default {
             search: ''
         },
         user: '',
+        
     }),
     mounted() {
         this.firstAccessPage()
     },
     methods: {
-        async errorResponse(error) {
+        errorResponse(error) {
             console.log(error)
             if (error.response) {
                 if (error.response.status) {
                     if (error.response.status == 401) {
-                        const confirm = await Swal.fire({
-                            title: 'Session Ended!',
-                            text: "Please login again.",
-                            icon: 'warning',
-                            confirmButtonColor: '#2e7d32',
-                            confirmButtonText: 'Okay'
-                        })
-                        if (confirm) {
-                            localStorage.removeItem("token");
-                            this.$router.push("/");
-                        }
+                        localStorage.removeItem("token");
+                        this.$router.push("/");
                     }
                 }
             }
@@ -199,11 +198,12 @@ export default {
             // set general config to local config
             this.user = this.$store.state.User
             this.localConfig.programYear = this.$store.state.programYear.model
+
             await this.getTableData()
         },
         getStatusColumn(type, status) {
             if (type == 'bg_color') {
-                if (status == 'document_saving') return 'blue'
+                if (status == 'document_saving') return 'blue darken-1'
                 if (status == 'ready_to_submit') return 'orange'
                 if (status == 'submit_review') return 'green darken-1'
             }
@@ -223,7 +223,7 @@ export default {
         async getTableData() {
             try {
                 this.table.loading.show = true
-                let url = this.$store.getters.getApiUrl(`GetRraPraAll`)
+                let url = this.$store.getters.getApiUrl(`GetFieldCoordinator`)
                 const res = await axios.get(url, this.$store.state.apiConfig)
                 this.table.items = res.data.data.result
                 // console.log(this.table.items)
@@ -236,10 +236,10 @@ export default {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
                 this.modals[val.name].data = null
-            }
+            } else if (val.type == 'refresh-table') this.getTableData()
         },
         async showModal(name, data) {
-            this.modals[name].data = await data.form_no
+            this.modals[name].data = await data.data_no
             this.modals[name].show = await true
         },
         swalActions(val) {
@@ -247,8 +247,8 @@ export default {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
-                showCloseButton: true,
                 showConfirmButton: false,
+                showCloseButton: true,
                 timer: 10000,
                 timerProgressBar: true,
                 didOpen: (toast) => {

@@ -156,7 +156,6 @@
                         <!-- Stepper Content -->
                         <v-stepper-items>
                             <div v-for="(stepperName, stepperIndex) in stepper.steps">
-                                <!-- RRA -->
                                 <v-stepper-step v-if="localConfig.windowWidth < localConfig.breakLayoutFrom && stepper.steps.length >= 1" color="green" :complete="stepper.model > 1" :step="1" editable class="rounded-xl py-3 ma-1">
                                     <span><v-icon :color="stepper.model > (stepperIndex + 1) ? 'green' : ''" class="mr-1">mdi-{{ stepper.steps_icon[stepperIndex] }}</v-icon>{{ stepper.steps[stepperIndex] }}</span>
                                 </v-stepper-step>
@@ -170,7 +169,7 @@
                                         min-height="250px"
                                     >
                                         <v-card-text>
-                                            <div v-for="(data, dataIndex) in groupingData[stepperName]">
+                                            <div v-for="(data, dataIndex) in groupingData[stepperName]" v-if="!data.hide">
                                                 <div class="d-flex align-center my-8" v-if="data.label">
                                                     <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">{{ data.labelIcon }}</v-icon>{{ data.label }}</p>
                                                     <v-divider class="mx-2" color=""></v-divider>
@@ -1102,6 +1101,7 @@ export default {
                     label: 'Pendapatan dan Pemasaran Komoditas (Ekonomi)',
                     labelIcon: 'mdi-hand-coin',
                     dataType: 'column',
+                    hide: true,
                     items: [
                         // Nama Komoditas
                         {
@@ -1281,12 +1281,13 @@ export default {
                     ]
                 },
                 {
-                    label: '',
+                    label: 'Pendapatan dan Pemasaran Komoditas (Ekonomi)',
                     labelIcon: '',
                     dataType: 'table',
                     dataKey: 'FarmerIncome',
                     description: false,
                     descriptionKey: ``,
+                    hide: true,
                     table: {
                         caption: 'Sampling Data',
                         hideDefaultFooter: true,
@@ -1735,7 +1736,11 @@ export default {
                         ...val,
                         watersource_type: this.getTextFromOptions(val.watersource_type, 'water_source'),
                     }
-                })
+                }) 
+                if (data.PRA.collection_type) {
+                    this.groupingData.PRA[3].hide = data.PRA.collection_type == 'Bukan Sampling' ? false : true
+                    this.groupingData.PRA[4].hide = data.PRA.collection_type == 'Sampling' ? false : true 
+                }
                 data.PRA.FarmerIncome = data.PRA.FarmerIncome.map(val => {
                     return {
                         ...val,
