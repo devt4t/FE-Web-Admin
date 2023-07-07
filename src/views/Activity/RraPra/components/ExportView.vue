@@ -34,19 +34,19 @@
         <tr>
           <td>Kab / Kota</td>
           <td colspan="5">
-            : {{ _utils.capitalizeLetter(this.raw_data.Scooping.city_name) }}
+            : {{ this.raw_data.Scooping.city_name }}
           </td>
         </tr>
         <tr>
           <td>Kecamatan</td>
           <td colspan="5">
-            : {{ _utils.capitalizeLetter(this.raw_data.Scooping.district_name) }}
+            : {{ this.raw_data.Scooping.district_name }}
           </td>
         </tr>
         <tr>
           <td>Desa</td>
           <td colspan="5">
-            : {{ _utils.capitalizeLetter(this.raw_data.Scooping.village_name) }}
+            : {{ this.raw_data.Scooping.village_name }}
           </td>
         </tr>
       </table>
@@ -70,11 +70,11 @@
             :key="village_border.name"
           >
             <td style="text-align: center;">{{ village_border_index + 1 }}</td>
-            <td style="text-align: center;">{{ getVillageBorderPoint(village_border.point) }}</td>
+            <td style="text-align: center;">{{ village_border.point }}</td>
             <td style="text-align: center;">{{ village_border.border_type }}</td>
-            <td style="text-align: center;">{{ _utils.capitalizeLetter(village_border.city_name) }}</td>
-            <td style="text-align: center;">{{ _utils.capitalizeLetter(village_border.district_name) }}</td>
-            <td style="text-align: center;">{{ _utils.capitalizeLetter(village_border.village_name) }}</td>
+            <td style="text-align: center;">{{ village_border.city_name }}</td>
+            <td style="text-align: center;">{{ village_border.district_name }}</td>
+            <td style="text-align: center;">{{ village_border.village_name }}</td>
           </tr>
         </table>
       </div>
@@ -142,7 +142,7 @@
             :key="val_index + 'PolaPemanfaatanLahan'"
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
-            <td style="text-align: left;">{{ formOptions.agroforestry_type.find(n => n.value == val.pattern).text || '-' || '-' }}</td>
+            <td style="text-align: left;">{{ val.pattern || '-' }}</td>
             <td style="text-align: left;">{{ val.plant }}</td>
           </tr>
         </table>
@@ -207,8 +207,8 @@
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.commodity_name }}</td>
             <td style="text-align: left;">{{ val.capacity }} Kg</td>
-            <td style="text-align: left;">{{ formOptions.marketing_trade_method_complete.find(n => n.value == val.method).text || '-' }}</td>
-            <td style="text-align: left;">{{ formOptions.marketing_period.find(n => n.value == val.period).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.method }}</td>
+            <td style="text-align: left;">{{ val.period }}</td>
           </tr>
         </table>
       </div>
@@ -255,7 +255,7 @@
               </tr>
               <tr>
                 <td style="text-align: left;">Aksesibilitas : </td>
-                <td style="text-align: left;">{{ formOptions.accessibility.find(n => n.value == val.accessibility).text || '-' }}</td>
+                <td style="text-align: left;">{{ val.accessibility }}</td>
                 <td style="text-align: left;">Foto Akses Dusun : </td>
                 <td style="text-align: left;">
                   <img
@@ -396,8 +396,8 @@
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">
-            {{ formOptions.farmer_type_ownership.find(n => n.value == val.type_ownership).text || '-' }} 
-            {{ val.land_ownership ? `, ${formOptions.land_ownership_type.find(n => n.value == val.land_ownership).text || '-'}` : '' }}</td>
+            {{ val.type_ownership }} 
+            {{ val.land_ownership ? `, ${val.land_ownership}` : '' }}</td>
             <td style="text-align: left;">{{ val.percentage }}%</td>
           </tr>
         </table>
@@ -418,7 +418,7 @@
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.dusun_name }}</td>
-            <td style="text-align: left;">{{ formOptions.agroforestry_type.find(n => n.value == val.type_utilization).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.type_utilization }}</td>
           </tr>
         </table>
         <p>Deskripsi Penyebaran Lokasi Lahan Kering & Kritis: {{ raw_data.PRA.distribution_of_critical_land_locations_description }}</p>
@@ -472,9 +472,9 @@
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.fertilizer_name }}</td>
-            <td style="text-align: left;">{{ formOptions.fertilizer_categories.find(n => n.value == val.fertilizer_categories).text || '-' }}</td>
-            <td style="text-align: left;">{{ formOptions.fertilizer_types.find(n => n.value == val.fertilizer_type).text || '-' }}</td>
-            <td style="text-align: left;">{{ formOptions.fertilizer_sources.find(n => n.value == val.fertilizer_source).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_categories }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_type }}</td>
+            <td style="text-align: left;">{{ val.fertilizer_source }}</td>
             <td style="text-align: left;">{{ val.fertilizer_description }}</td>
           </tr>
         </table>
@@ -497,9 +497,9 @@
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.pesticide_name }}</td>
-            <td style="text-align: left;">{{ formOptions.pesticide_categories.find(n => n.value == val.pesticide_categories).text || '-' }}</td>
-            <td style="text-align: left;">{{ formOptions.pesticide_types.find(n => n.value == val.pesticide_type).text || '-' }}</td>
-            <td style="text-align: left;">{{ formOptions.pesticide_sources.find(n => n.value == val.pesticide_source).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.pesticide_categories }}</td>
+            <td style="text-align: left;">{{ val.pesticide_type }}</td>
+            <td style="text-align: left;">{{ val.pesticide_source }}</td>
             <td style="text-align: left;">{{ val.pesticide_description }}</td>
           </tr>
         </table>
@@ -522,7 +522,7 @@
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.disaster_name }}</td>
-            <td style="text-align: left;">{{ formOptions.disaster_categories.find(n => n.value == val.disaster_categories).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.disaster_categories }}</td>
             <td style="text-align: left;">{{ val.year }}</td>
             <td style="text-align: left;">{{ val.fatalities }} orang</td>
             <td style="text-align: left;">{{ val.detail }}</td>
@@ -603,9 +603,9 @@
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.flora_name }}</td>
             <td style="text-align: left;">{{ val.flora_population }}</td>
-            <td style="text-align: left;">{{ formOptions.flora_fauna_status.find(n => n.value == val.flora_status).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.flora_status }}</td>
             <td style="text-align: left;">{{ val.flora_categories }}</td>
-            <td style="text-align: left;">{{ formOptions.water_source.find(n => n.value == val.flora_foodsource).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.flora_foodsource }}</td>
             <td style="text-align: left;">{{ val.flora_habitat }}</td>
           </tr>
         </table>
@@ -630,9 +630,9 @@
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.fauna_name }}</td>
             <td style="text-align: left;">{{ val.fauna_population }}</td>
-            <td style="text-align: left;">{{ formOptions.flora_fauna_status.find(n => n.value == val.fauna_status).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.fauna_status }}</td>
             <td style="text-align: left;">{{ val.fauna_categories }}</td>
-            <td style="text-align: left;">{{ formOptions.fauna_food_source.find(n => n.value == val.fauna_foodsource).text || '-' }}</td>
+            <td style="text-align: left;">{{ val.fauna_foodsource }}</td>
             <td style="text-align: left;">{{ val.fauna_habitat }}</td>
           </tr>
         </table>
