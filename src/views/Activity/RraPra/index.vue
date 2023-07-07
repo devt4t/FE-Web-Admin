@@ -247,6 +247,7 @@ export default {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
+                showCloseButton: true,
                 showConfirmButton: false,
                 timer: 10000,
                 timerProgressBar: true,

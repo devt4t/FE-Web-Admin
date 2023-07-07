@@ -5156,7 +5156,7 @@ export default {
                     }
                     // Hasil Ekonomi Pemanfaatan Lahan
                     inputs.land_utilization_source.model = PRA.land_utilization_source
-                    inputs.land_utilization_plant_type.model = PRA.land_utilization_plant_type.split(',')
+                    inputs.land_utilization_plant_type.model = PRA.land_utilization_plant_type && PRA.land_utilization_plant_type != '-' ? PRA.land_utilization_plant_type.split(',') : []
                     inputs.land_utilization_description.model = PRA.land_utilization_description
                     // pupuk dalam pemanfaatan lahan
                     const Fert = PRA.Fertilizer
