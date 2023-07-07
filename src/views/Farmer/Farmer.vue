@@ -864,6 +864,24 @@
                 <div class="d-flex align-center">
                   <p class="mb-0 grey--text text--darken-3">
                     <v-icon color="grey darken-3" class="mr-2"
+                      >mdi-sprout</v-icon
+                    > Jenis Bibit
+                  </p>
+                  <v-divider class="mx-2" color="black"></v-divider>
+                </div>
+              </v-col>
+              <v-col cols="12">
+                <v-data-table
+                  :headers="tables.sproutHeaders"
+                  :items="defaultItem.FarmerDetail"
+                ></v-data-table>
+              </v-col>
+            </v-row>
+            <v-row class="ma-0 mx-2">
+              <v-col cols="12">
+                <div class="d-flex align-center">
+                  <p class="mb-0 grey--text text--darken-3">
+                    <v-icon color="grey darken-3" class="mr-2"
                       >mdi-led-strip</v-icon
                     >File
                   </p>
@@ -1349,6 +1367,12 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    tables: {
+      sproutHeaders: [
+        {text: 'Kode Pohon', value: 'tree_code'},
+        {text: 'Jenis', value: 'tree_name'}
+      ]
+    }
   }),
   watch: {
     programYear: {
@@ -1673,11 +1697,11 @@ export default {
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
 
-          this.defaultItem.FarmerDetail = response.data.data.result.FarmerDetail.map(
-            (val) => {
-              return val.tree_name;
-            }
-          ).toString();
+          // this.defaultItem.FarmerDetail = response.data.data.result.FarmerDetail.map(
+          //   (val) => {
+          //     return val.tree_name;
+          //   }
+          // ).toString();
 
           this.defaultItem.ff_no = response.data.data.result.user_id;
 
