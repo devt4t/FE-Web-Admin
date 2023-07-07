@@ -5053,13 +5053,15 @@ export default {
                     for (const [key, val] of Object.entries(inputs.village_border)) {
                         if (Point.includes(key)) {
                             const Border = VillageBorder.find(n => n.point == key)
-                            val.border_type.model = Border.border_type
-                            val.kabupaten.model = Border.kabupaten_no
-                            if (Border.border_type == 'Kecamatan' || Border.border_type == 'Desa') {
-                                val.kecamatan.model = Border.kode_kecamatan
-                            }
-                            if (Border.border_type == 'Desa') {
-                                val.desa.model = Border.kode_desa
+                            if (Border) {
+                                val.border_type.model = Border.border_type
+                                val.kabupaten.model = Border.kabupaten_no
+                                if (Border.border_type == 'Kecamatan' || Border.border_type == 'Desa') {
+                                    val.kecamatan.model = Border.kode_kecamatan
+                                }
+                                if (Border.border_type == 'Desa') {
+                                    val.desa.model = Border.kode_desa
+                                }
                             }
                         }
                     }
@@ -5145,7 +5147,7 @@ export default {
                     // Pendapatan dan Pemasaran Komoditas (Ekonomi)
                     const PdPK = PRA.FarmerIncome.map(val => {return {
                         ...val,
-                        source: val.source.split(',')
+                        source: val.source && val.source != '-' ? val.source.split(',') : []
                     }})
                     inputs.farmer_income.collection_type.model = PRA.collection_type
                     if (PRA.collection_type == 'Sampling') {
@@ -5189,7 +5191,7 @@ export default {
                         inputs.fauna_data.model = FaunaEnd
                     }
                 // END: Flora Fauna
-                this.stepper.model = 3
+                this.stepper.model = 1
                 // console.log(data)
             } catch (err) {this.errorResponse(err)} finally {
                 this.loading.show = false
@@ -5469,11 +5471,11 @@ export default {
                     if (submit) {
                         if (this.checkCompletedData) data.status = 'ready_to_submit'
                     }
-                    // const res = await axios.post(url, data, this.$store.state.apiConfig)
-                    // if (res) {
-                    //     this.showModal = false
-                    //     this.$emit('swal', {type: 'success', message: 'Yey! Data RRA-PRA saved!'})
-                    // }
+                    const res = await axios.post(url, data, this.$store.state.apiConfig)
+                    if (res) {
+                        this.showModal = false
+                        this.$emit('swal', {type: 'success', message: 'Yey! Data RRA-PRA saved!'})
+                    }
                 }
             } catch(err) {
                 this.errorResponse(err)
