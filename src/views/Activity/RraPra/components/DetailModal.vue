@@ -458,6 +458,7 @@ export default {
     },
     data: () => ({
         datas: null,
+        formOptions: formOptions,
         groupingData: {
             RRA: [
                 // Batas Wilayah
@@ -472,9 +473,9 @@ export default {
                         headers: [
                             {text: 'Arah', value: 'point'},
                             {text: 'Tipe', value: 'border_type'},
-                            {text: 'Kabupaten', value: 'kabupaten_no'},
-                            {text: 'Kecamatan', value: 'kode_kecamatan'},
-                            {text: 'Desa', value: 'kode_desa'},
+                            {text: 'Kabupaten', value: 'city_name'},
+                            {text: 'Kecamatan', value: 'district_name'},
+                            {text: 'Desa', value: 'village_name'},
                         ]
                     }
                 },
@@ -1422,7 +1423,7 @@ export default {
                                         cols: [12,12,12,12],
                                         dataKey: 'problem_solution',
                                         dataType: 'text',
-                                        label: 'Solusi',
+                                        label: 'Saran Solusi',
                                         labelIcon: null,
                                         suffix: ``,
                                     },
@@ -1437,7 +1438,7 @@ export default {
                             {text: 'Kategori', value: 'problem_categories'},
                             {text: 'Periode', value: 'date_start'},
                             {text: 'Sumber', value: 'problem_source'},
-                            { text: 'Saran Solusi', value: 'data-table-expand' },
+                            { text: 'Solusi', value: 'data-table-expand' },
                         ]
                     }
                 },
@@ -1680,8 +1681,110 @@ export default {
                 this.loading.show = true
                 this.loading.text = `Getting Form "${id}" data...`
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailRraPra?form_no=${id}`), this.$store.state.apiConfig)
-                this.datas = res.data.data.result
-                this.raw_data = res.data.data.result
+                let data = res.data.data.result
+                data.Scooping.city_name = this._utils.capitalizeLetter(data.Scooping.city_name)
+                data.Scooping.district_name = this._utils.capitalizeLetter(data.Scooping.district_name)
+                data.Scooping.village_name = this._utils.capitalizeLetter(data.Scooping.village_name)
+                data.RRA.VillageBorder = data.RRA.VillageBorder.map(val => {
+                    return {
+                        ...val,
+                        city_name: this._utils.capitalizeLetter(val.city_name),
+                        district_name: this._utils.capitalizeLetter(val.district_name),
+                        village_name: this._utils.capitalizeLetter(val.village_name)
+                    }
+                })
+                data.RRA.LandUse = data.RRA.LandUse.map(val => {
+                    return {
+                        ...val,
+                        pattern: this.getTextFromOptions(val.pattern, 'agroforestry_type')
+                    }
+                })
+                data.RRA.ProductionMarketing = data.RRA.ProductionMarketing.map(val => {
+                    return {
+                        ...val,
+                        method: this.getTextFromOptions(val.method, 'marketing_trade_method_complete'),
+                        period: this.getTextFromOptions(val.period, 'marketing_period'),
+                    }
+                })
+                data.RRA.Dusun = data.RRA.Dusun.map(val => {
+                    return {
+                        ...val,
+                        accessibility: this.getTextFromOptions(val.accessibility, 'accessibility'),
+                        data_land_area_source: this.getTextFromOptions(val.data_land_area_source, 'sumber'),
+                        data_dry_land_area_source: this.getTextFromOptions(val.data_dry_land_area_source, 'sumber'),
+                        data_productive_source: this.getTextFromOptions(val.data_productive_source, 'sumber'),
+                        data_job_source: this.getTextFromOptions(val.data_job_source, 'sumber'),
+                    }
+                })
+                data.PRA.LandOwnership = data.PRA.LandOwnership.map(val => {
+                    return {
+                        ...val,
+                        type_ownership: this.getTextFromOptions(val.type_ownership, 'farmer_type_ownership'),
+                        land_ownership: this.getTextFromOptions(val.land_ownership, 'land_ownership_type')
+                    }
+                })
+                data.PRA.DryLandSpread = data.PRA.DryLandSpread.map(val => {
+                    return {
+                        ...val,
+                        type_utilization: this.getTextFromOptions(val.type_utilization, 'agroforestry_type'),
+                    }
+                })
+                data.PRA.Watersource = data.PRA.Watersource.map(val => {
+                    return {
+                        ...val,
+                        watersource_type: this.getTextFromOptions(val.watersource_type, 'water_source'),
+                    }
+                })
+                data.PRA.FarmerIncome = data.PRA.FarmerIncome.map(val => {
+                    return {
+                        ...val,
+                        period: this.getTextFromOptions(val.period, 'marketing_period'),
+                    }
+                })
+                data.PRA.Fertilizer = data.PRA.Fertilizer.map(val => {
+                    return {
+                        ...val,
+                        fertilizer_categories: this.getTextFromOptions(val.fertilizer_categories, 'fertilizer_categories'),
+                        fertilizer_type: this.getTextFromOptions(val.fertilizer_type, 'fertilizer_types'),
+                        fertilizer_source: this.getTextFromOptions(val.fertilizer_source, 'fertilizer_sources'),
+                    }
+                })
+                data.PRA.Pesticide = data.PRA.Pesticide.map(val => {
+                    return {
+                        ...val,
+                        pesticide_categories: this.getTextFromOptions(val.pesticide_categories, 'pesticide_categories'),
+                        pesticide_type: this.getTextFromOptions(val.pesticide_type, 'pesticide_types'),
+                        pesticide_source: this.getTextFromOptions(val.pesticide_source, 'pesticide_sources'),
+                    }
+                })
+                data.PRA.DisasterHistory = data.PRA.DisasterHistory.map(val => {
+                    return {
+                        ...val,
+                        disaster_categories: this.getTextFromOptions(val.disaster_categories, 'disaster_categories'),
+                    }
+                })
+                data.PRA.ExistingProblem = data.PRA.ExistingProblem.map(val => {
+                    return {
+                        ...val,
+                        problem_categories: this.getTextFromOptions(val.problem_categories, 'problem_categories'),
+                    }
+                })
+                data.PRA.Flora = data.PRA.Flora.map(val => {
+                    return {
+                        ...val,
+                        flora_status: this.getTextFromOptions(val.flora_status, 'flora_fauna_status'),
+                        flora_foodsource: this.getTextFromOptions(val.flora_foodsource, 'water_source'),
+                    }
+                })
+                data.PRA.Fauna = data.PRA.Fauna.map(val => {
+                    return {
+                        ...val,
+                        fauna_status: this.getTextFromOptions(val.fauna_status, 'flora_fauna_status'),
+                        fauna_foodsource: this.getTextFromOptions(val.fauna_foodsource, 'fauna_food_source'),
+                    }
+                })
+                this.datas = data
+                this.raw_data = data
                 for (const [key, val] of Object.entries(this.datas)) {
                 }
                 // this.stepper.model = 3
@@ -1720,6 +1823,22 @@ export default {
             }
 
             return ''
+        },
+        getTextFromOptions(value, options) {
+            if (value) {
+                if (options == 'sumber') {
+                    if (value == 'truth') return 'Data Asli'
+                    if (value == 'estimation') return 'Perkiraan'
+                }
+                const listOptions = this.formOptions[options]
+                if (listOptions) {
+                    const getOption = listOptions.find(n => n.value === value)
+                    if (getOption) {
+                        return getOption.text
+                    }
+                }
+            }
+            return value
         },
         indonesianify(eng) {
             if (eng === 'north') return 'Utara'
