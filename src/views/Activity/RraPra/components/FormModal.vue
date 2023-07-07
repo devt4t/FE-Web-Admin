@@ -5081,7 +5081,7 @@ export default {
                     inputs.land_use_patterns.model = LU.map(val => {
                         return {
                             ...val,
-                            plant: val.plant.split(',')
+                            plant: val.plant && val.plant != '-' ? val.plant.split(',') : []
                         }
                     })
                     // tanaman yang sudah ada
@@ -5089,7 +5089,7 @@ export default {
                     inputs.existing_plants.model = ExPlant.map(val => {
                         return {
                             ...val,
-                            plant: val.plant.split(',')
+                            plant: val.plant && val.plant != '-' ? val.plant.split(',') : []
                         }
                     })
                     // kelembagaan masyarakat
@@ -5099,7 +5099,7 @@ export default {
                         inputs.community_institutions.model = Lemb.map(val => {
                             return {
                                 ...val,
-                                role: val.role.split(',')
+                                role: val.role && val.role != '-' ? val.role.split(',') : []
                             }
                         })
                     }
