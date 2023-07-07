@@ -438,7 +438,7 @@
               <v-row>
                 <v-col cols="12" sm="12" md="6">
                   <div>
-                    <h5>NIK</h5>
+                    <h5>ID Karyawan</h5>
                     <h3 class="ml-2">
                       {{ defaultItem.nik }}
                     </h3>
@@ -446,7 +446,7 @@
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
                   <div>
-                    <h5>No KTP</h5>
+                    <h5>NIK / No KTP</h5>
                     <h3 class="ml-2">{{ defaultItem.ktp_no }}</h3>
                   </div>
                 </v-col>
