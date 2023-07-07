@@ -1159,7 +1159,6 @@ export default {
                     working_area: val_wa.kode_desa, 
                     program_year: val_wa.program_year.split(',')
                 }})
-                console.log(this.inputs_update)
             } catch (err) {
                 this.catchingError(err)
             } finally {
@@ -1170,10 +1169,12 @@ export default {
             try {
                 this.inputs[type].loading = true
                 this.inputs[type].model = ''
+                let program_year = this.inputs.program_year.model
+                if (this.id) program_year = ''
                 let url = ''
-                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit?program_year=${this.inputs.program_year.model}`)
-                if (type == 'target_area') url = this.$store.getters.getApiUrl(`GetTargetArea${id ? '' : 'Admin'}?program_year=${this.inputs.program_year.model}&mu_no=${id}`)
-                if (type == 'working_area') url = this.$store.getters.getApiUrl(`GetDesa${id ? '' : 'Admin'}?program_year=${this.inputs.program_year.model}&kode_ta=${id}`)
+                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit?program_year=${program_year}`)
+                if (type == 'target_area') url = this.$store.getters.getApiUrl(`GetTargetArea${id ? '' : 'Admin'}?program_year=${program_year}&mu_no=${id}`)
+                if (type == 'working_area') url = this.$store.getters.getApiUrl(`GetDesa${id ? '' : 'Admin'}?program_year=${program_year}&kode_ta=${id}`)
                 if (type == 'province') url = this.$store.getters.getApiUrl('GetProvince')
                 if (type == 'city') url = this.$store.getters.getApiUrl('GetKabupaten?province_code=' + id)
                 if (type == 'kecamatan') url = this.$store.getters.getApiUrl('GetKecamatan?kabupaten_no=' + id)
