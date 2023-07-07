@@ -1293,6 +1293,7 @@ export default {
                         itemsPerPage: -1,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
+                            {text: 'Nama Narasumber', value: 'name'},
                             {text: 'Gender', value: 'gender'},
                             {text: 'Nama Komoditas', value: 'commodity_name'},
                             {text: 'Kapasitas', value: 'capacity'},

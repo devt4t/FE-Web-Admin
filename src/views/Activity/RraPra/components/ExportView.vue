@@ -447,6 +447,70 @@
         </table>
         <p>Deskripsi Sumber Air: {{ raw_data.PRA.pra_watersource_description }}</p>
       </div>
+      <!-- 5. Pendapatan dan Pemasaran Komoditas (Ekonomi) -->
+      <div style="margin-top: 50px;">
+        <h4>5. Pendapatan dan Pemasaran Komoditas (Ekonomi)</h4>
+        <h5>Cara Pengumpulan Data: {{ raw_data.PRA.collection_type }}</h5>
+        <table v-if="raw_data.PRA.collection_type == 'Sampling'" style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th colspan="7">Data Sampling</th>
+          </tr>
+          <tr>
+            <th>No</th>
+            <th>Nama Narasumber</th>
+            <th>Gender</th>
+            <th>Nama Komoditas</th>
+            <th>Kapasitas</th>
+            <th>Periode</th>
+            <th>Pendapatan (Perbulan)</th>
+          </tr>
+          <tr
+            v-for="(val, val_index) in raw_data.PRA.FarmerIncome"
+            :key="val_index + 'FarmerIncome'"
+          >
+            <td style="text-align: center;">{{ val_index + 1 }}</td>
+            <td style="text-align: left;">{{ val.name }}</td>
+            <td style="text-align: left;">{{ val.gender == 'male' ? 'Laki - Laki' : 'Perempuan' }}</td>
+            <td style="text-align: left;">{{ val.commodity_name }}</td>
+            <td style="text-align: left;">{{ _utils.numberFormat(val.capacity) }}</td>
+            <td style="text-align: left;">{{ val.period }}</td>
+            <td style="text-align: left;">Rp, {{ _utils.numberFormat(val.source_income) }}</td>
+          </tr>
+        </table>
+        <table v-if="raw_data.PRA.collection_type == 'Bukan Sampling'" style="width: 100%;border-collapse: collapse;" border="1">
+          <tr>
+            <th colspan="2">Laki - Laki</th>
+          </tr>
+          <tr>
+            <td>Nama Komoditas :</td>
+            <td>{{ raw_data.PRA.man_commodity_name }}</td>
+          </tr>
+          <tr>
+            <td>Metode Pemasaran :</td>
+            <td>{{ raw_data.PRA.man_method }}</td>
+          </tr>
+          <tr>
+            <td>Rata - Rata Periode Pemasaran :</td>
+            <td>{{ raw_data.PRA.man_period }}</td>
+          </tr>
+          <tr>
+            <td>Rata - Rata Kapasitas :</td>
+            <td>{{ _utils.numberFormat(raw_data.PRA.man_average_capacity) }} Kg</td>
+          </tr>
+          <tr>
+            <td>Sumber Komoditas :</td>
+            <td>{{ raw_data.PRA.man_source }}</td>
+          </tr>
+          <tr>
+            <td>Pendapatan Terendah (Perbulan) :</td>
+            <td>Rp, {{ _utils.numberFormat(raw_data.PRA.man_min_income) }}</td>
+          </tr>
+          <tr>
+            <td>Pendapatan Tertinggi (Perbulan) :</td>
+            <td>Rp, {{ _utils.numberFormat(raw_data.PRA.man_max_income) }}</td>
+          </tr>
+        </table>
+      </div>
       <!-- 6. Hasil Ekonomi Pemanfaatan Lahan -->
       <div style="margin-top: 50px;">
         <h4>6. Hasil Ekonomi Pemanfaatan Lahan</h4>
