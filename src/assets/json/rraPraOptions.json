@@ -13,6 +13,34 @@
             "value": "hard"
         }
     ],
+    "agroforestry_type": [
+        {
+            "text": "Agroforestry Intensitas Tinggi",
+            "value": "agroforestry_high_intensive"
+        },
+        {
+            "text": "Agroforestry Intensitas Rendah",
+            "value": "agroforestry_low_intensive"
+        },
+        {
+            "text": "Konservasi",
+            "value": "conservation"
+        }
+    ],
+    "disaster_categories": [
+        {
+            "text": "Geologi ( terjadi di permukaan bumi seperti tsunami, gempa bumi, gunung meletus, dll )",
+            "value": "geologi"
+        },
+        {
+            "text": "Meteorologi / Hidrometeorologi ( berhubungan dengan iklim seperti banjir dan kekeringan )",
+            "value": "meteorologi_hidrometeorologi"
+        },
+        {
+            "text": "Ekstrateretial ( datangnya berbagai benda langit seperti asteroid atau gangguan badai matahari )",
+            "value": "ekstrateretial"
+        }
+    ],
     "economic_distribution": [
         {
             "text": "UMKM",
@@ -358,20 +386,6 @@
         "2000 - 2500",
         "2500 - 3000"
     ],
-    "agroforestry_type": [
-        {
-            "text": "Agroforestry Intensitas Tinggi",
-            "value": "agroforestry_high_intensive"
-        },
-        {
-            "text": "Agroforestry Intensitas Rendah",
-            "value": "agroforestry_low_intensive"
-        },
-        {
-            "text": "Konservasi",
-            "value": "conservation"
-        }
-    ],
     "government_place": [
         "Kantor Bupati",
         "Kantor Camat",
@@ -430,20 +444,6 @@
         "0 - 25kg : sedang",
         "25 - 50kg : bagus",
         ">50kg : sangat bagus"
-    ],
-    "disaster_categories": [
-        {
-            "text": "Geologi ( terjadi di permukaan bumi seperti tsunami, gempa bumi, gunung meletus, dll )",
-            "value": "geologi"
-        },
-        {
-            "text": "Meteorologi / Hidrometeorologi ( berhubungan dengan iklim seperti banjir dan kekeringan )",
-            "value": "meteorologi_hidrometeorologi"
-        },
-        {
-            "text": "Ekstrateretial ( datangnya berbagai benda langit seperti asteroid atau gangguan badai matahari )",
-            "value": "ekstrateretial"
-        }
     ],
     "income_employment": [
         "Tenaga Kerja",
