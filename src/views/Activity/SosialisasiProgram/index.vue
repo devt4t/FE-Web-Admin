@@ -315,6 +315,7 @@ export default {
         toast: true,
         position: "top-end",
         showConfirmButton: false,
+        showCloseButton: true,
         timer: 10000,
         timerProgressBar: true,
         didOpen: (toast) => {
