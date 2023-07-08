@@ -1240,22 +1240,20 @@ export default {
                             console.log(userData)
                             const confirm2 = await Swal.fire({
                                 title: 'Akun GEKO FF',
-                                html: `Buat akun GEKO untuk FF yang baru saja dibuat? <br>
+                                html: `Berikut data akun ff yang akan dibuat: <br>
                                 <p>Nama:<br><b>${userData.name}</b></p>
                                 <p>Email:<br><b>${userData.email}</b></p>
                                 <p>Password:<br><b>${userData.password}</b></p>
                                 Harap diingat data akun diatas sebelum melanjutkan!
                                 `,
                                 icon: 'warning',
-                                showCancelButton: true,
+                                showCancelButton: false,
                                 confirmButtonColor: '#2e7d32',
                                 cancelButtonColor: '#d33',
                                 cancelButtonText: 'Tidak',
-                                confirmButtonText: 'Ya, Buat!'
+                                confirmButtonText: 'Okay'
                             })
-                            if (confirm2.isConfirmed) {
-                                const res2 = await axios.post(this.$store.getters.getApiUrl(`Regist`), userData, this.$store.state.apiConfig)
-                            }
+                            const res2 = await axios.post(this.$store.getters.getApiUrl(`Regist`), userData, this.$store.state.apiConfig)
                         } else console.log(`Created ff_no data not found!`)
                     }
                     await Swal.fire({

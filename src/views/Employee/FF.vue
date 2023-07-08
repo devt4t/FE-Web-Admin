@@ -476,6 +476,7 @@ export default {
       { text: "MU", value: "mu_name" },
       { text: "TA", value: "ta_name" },
       { text: "Village", value: "village_name" },
+      { text: "Email", value: "email" },
       { text: "Status", value: "active", align: 'center' },
       { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
