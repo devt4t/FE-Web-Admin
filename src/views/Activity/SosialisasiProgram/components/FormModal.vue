@@ -412,6 +412,7 @@
                       <div class="h-25 w-25">
                         <v-img
                           v-if="previewPhotoMinat[itemIndex]"
+                          @click="showLightbox(previewPhotoMinat[itemIndex])"
                           class="rounded mt-2 "
                           :width="300"
                           :height="300"
@@ -930,11 +931,11 @@ export default {
         let url = "";
 
         // set url
-        if (inputs.type == "mu_no") url = "GetManagementUnit";
+        if (inputs.type == "mu_no") url = `GetManagementUnit?program_year=${this.programYear}`;
         else if (inputs.type == "target_area")
-          url = "GetTargetArea?mu_no=" + this.inputs.mu_no.model;
+          url = `GetTargetArea?program_year=${this.programYear}&mu_no=${this.inputs.mu_no.model}`;
         else if (inputs.type == "village")
-          url = "GetDesa?&kode_ta=" + this.inputs.target_area.model;
+          url = `GetDesa?program_year=${this.programYear}&&kode_ta=${this.inputs.target_area.model}`;
 
         this.$store.state.loadingOverlayText = `Getting ${inputs.type} datas...`;
 
@@ -1017,6 +1018,7 @@ export default {
         });
         if (confirm) {
           this.loading.show = true;
+          this.loading.text ='Menyimpan data...';
           const data = {};
           let urlEndpoint = "";
           let imgRes = "";
@@ -1031,7 +1033,7 @@ export default {
                       lf.photo_form_minat,
                       "sosialisasi_program",
                       "photos",
-                      Math.round(+new Date() / 1000)
+                      lf.name.replace(/[^\w\s]/g, '').replace(/\s+/g, '').toLowerCase() + Math.round(+new Date() / 1000)
                     );
                   } else {
                     imgRes = lf.photo;
@@ -1154,6 +1156,7 @@ export default {
     async getDetailData(form_no) {
       try {
         this.loading.show = true;
+        this.loading.text = 'Mengambil data...';
         let params = {
           form_no: form_no,
         };
@@ -1262,6 +1265,14 @@ export default {
         }
       });
     },
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs
+      
+      if (index) this.$store.state.lightbox.index = index
+      else this.$store.state.lightbox.index = 0
+
+      this.$store.state.lightbox.show = true
+    }
   },
 };
 </script>

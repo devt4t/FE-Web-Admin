@@ -228,6 +228,7 @@ export default {
       headers: [
         { text: "No", value: "no" },
         { text: "Form No", value: "form_no" },
+        { text: "Tanggal", value: "form_date" },
         { text: "Desa", value: "namaDesa" },
         { text: "Total Peserta", value: "total_farmer" },
         { text: "Status Verifikasi", value: "is_verified", align: "center" },
@@ -314,6 +315,7 @@ export default {
         toast: true,
         position: "top-end",
         showConfirmButton: false,
+        showCloseButton: true,
         timer: 10000,
         timerProgressBar: true,
         didOpen: (toast) => {

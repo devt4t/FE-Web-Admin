@@ -203,6 +203,7 @@
                             </template>
                             <template v-slot:item.previewPhoto="{ item }">
                               <v-img
+                                @click="showLightbox(item.previewPhoto)"
                                 :src="item.previewPhoto"
                                 :lazy-src="item.previewPhoto"
                                 :alt="item.previewPhoto"

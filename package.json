@@ -1,6 +1,7 @@
 {
   "name": "admin_system_app",
-  "version": "1.0.8",
+  "version": "1.1.01",
+  "version_date_time": "updated 08/07/23 at 08:36 AM",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

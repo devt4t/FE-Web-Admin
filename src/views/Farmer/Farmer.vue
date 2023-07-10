@@ -864,6 +864,24 @@
                 <div class="d-flex align-center">
                   <p class="mb-0 grey--text text--darken-3">
                     <v-icon color="grey darken-3" class="mr-2"
+                      >mdi-sprout</v-icon
+                    > Jenis Bibit
+                  </p>
+                  <v-divider class="mx-2" color="black"></v-divider>
+                </div>
+              </v-col>
+              <v-col cols="12">
+                <v-data-table
+                  :headers="tables.sproutHeaders"
+                  :items="defaultItem.FarmerDetail"
+                ></v-data-table>
+              </v-col>
+            </v-row>
+            <v-row class="ma-0 mx-2">
+              <v-col cols="12">
+                <div class="d-flex align-center">
+                  <p class="mb-0 grey--text text--darken-3">
+                    <v-icon color="grey darken-3" class="mr-2"
                       >mdi-led-strip</v-icon
                     >File
                   </p>
@@ -1019,6 +1037,12 @@
                   by Employee
                 </v-btn>
               </v-list-item>
+              <v-list-item>
+                <v-switch
+                  label="Data Tester"
+                  v-model="showTesterData"
+                ></v-switch>
+              </v-list-item>
             </v-list>
           </v-menu>
           <!-- Program Year -->
@@ -1140,6 +1164,7 @@ export default {
   name: "Farmer",
   authtoken: "",
   data: () => ({
+    showTesterData: false,
     export_filter: {
       program_year: "",
       typegetdata: "",
@@ -1349,6 +1374,12 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    tables: {
+      sproutHeaders: [
+        {text: 'Kode Pohon', value: 'tree_code'},
+        {text: 'Jenis', value: 'tree_name'}
+      ]
+    }
   }),
   watch: {
     programYear: {
@@ -1361,6 +1392,11 @@ export default {
         this.export_filter.ta = "";
         this.export_filter.village = "";
       },
+    },
+    async showTesterData(val) {
+      if (val === false)
+        this.dataobject = this.filterDataDummy(this.raw_data);
+      else this.dataobject = this.raw_data;
     },
   },
 
@@ -1445,8 +1481,13 @@ export default {
           }
         );
         // console.log(response.data.data.result.data);
+        const resData = response.data.data.result.data;
         if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.data;
+          this.dataobject = resData;
+          this.raw_data = resData;
+          if (this.showTesterData === false) {
+            this.dataobject = this.filterDataDummy(resData);
+          }
           this.loadtable = false;
         } else {
           this.dataobject = [];
@@ -1464,7 +1505,9 @@ export default {
         }
       }
     },
-
+    filterDataDummy(data) {
+      return data.filter((f) => f.kode.match(/^F.*$/)).filter((f) => f.ff_no.match(/^FF.*$/)).filter((f) => !f.user.includes('FF'))
+    },
     async getMU() {
       try {
         const response = await axios.get(
@@ -1673,11 +1716,11 @@ export default {
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
 
-          this.defaultItem.FarmerDetail = response.data.data.result.FarmerDetail.map(
-            (val) => {
-              return val.tree_name;
-            }
-          ).toString();
+          // this.defaultItem.FarmerDetail = response.data.data.result.FarmerDetail.map(
+          //   (val) => {
+          //     return val.tree_name;
+          //   }
+          // ).toString();
 
           this.defaultItem.ff_no = response.data.data.result.user_id;
 

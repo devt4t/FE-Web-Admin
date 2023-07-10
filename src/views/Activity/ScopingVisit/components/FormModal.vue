@@ -531,7 +531,7 @@ export default {
                 items: formOptions.accessibility,
                 label: 'Aksesibilitas',
                 model: '',
-                itemText: 'value',
+                itemText: 'text',
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 labelIcon: 'mdi-road-variant',
@@ -574,7 +574,7 @@ export default {
                 items: formOptions.land_type.sort(),
                 label: 'Jenis Tanah',
                 model: [],
-                itemText: 'value',
+                itemText: 'text',
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 lgView: 6,
@@ -647,7 +647,7 @@ export default {
                 items: formOptions.agroforestry_type.sort(),
                 label: 'Pola Tanam Lahan Kering',
                 model: [],
-                itemText: 'value',
+                itemText: 'text',
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 lgView: 6,
@@ -1024,7 +1024,7 @@ export default {
             let gisInputEmpty = 0
             this.inputsGroup.filter(n => n.gis_role === true).map(val => {gisInputs.push(...val.items_key)})
             gisInputs.map(val => {                
-                if (!this.inputs[val].model) {
+                if (!this.inputs[val].model && val != 'dry_land_polygon') {
                     if (this.editId) {
                         if (!this.raw_data[val] || this.raw_data[val] == '-') gisInputEmpty += 1
                     } else gisInputEmpty += 1
