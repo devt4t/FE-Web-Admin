@@ -1024,7 +1024,7 @@ export default {
             let gisInputEmpty = 0
             this.inputsGroup.filter(n => n.gis_role === true).map(val => {gisInputs.push(...val.items_key)})
             gisInputs.map(val => {                
-                if (!this.inputs[val].model) {
+                if (!this.inputs[val].model && val != 'dry_land_polygon') {
                     if (this.editId) {
                         if (!this.raw_data[val] || this.raw_data[val] == '-') gisInputEmpty += 1
                     } else gisInputEmpty += 1
