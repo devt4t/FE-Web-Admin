@@ -474,141 +474,177 @@
             </v-layout>
           </v-container>
           <v-container v-if="load == false">
-            <v-row>
-              <v-col cols="12" sm="12" md="6">
-                <div>
-                  <h5>NIK</h5>
-                  <h3 class="ml-2">
+            <v-row class="ma-0 mx-2">
+              <v-col cols="12">
+                <div class="d-flex align-center">
+                  <p class="mb-0 grey--text text--darken-3">
+                    <v-icon color="grey darken-3" class="mr-2"
+                      >mdi-responsive</v-icon
+                    >Informasi Umum
+                  </p>
+                  <v-divider class="mx-2" color="black"></v-divider>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row class="mt-3">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>NIK</strong></h4>
+                  <h5>
                     {{ defaultItem.nik }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="6">
-                <div>
-                  <h5>No KTP</h5>
-                  <h3 class="ml-2">{{ defaultItem.ktp_no }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>No KTP</strong></h4>
+                  <h5>
+                    {{ defaultItem.ktp_no }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="12">
-                <div>
-                  <h5>Nama</h5>
-                  <h3 class="ml-2">{{ defaultItem.name }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Nama </strong></h4>
+                  <h5>
+                    {{ defaultItem.name }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="12">
-                <div>
-                  <h5>Alamat</h5>
-                  <h3 class="ml-2">{{ defaultItem.address }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Alamat </strong></h4>
+                  <h5>
+                    {{ defaultItem.address }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Desa</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Desa</strong></h4>
+                  <h5>
                     {{ defaultItem.kelurahan }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="8">
-                <div>
-                  <h5>Kode Pos</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Kode Pos</strong></h4>
+                  <h5>
                     {{ defaultItem.zipcode }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Kecamatan</h5>
-                  <h3 class="ml-2">{{ defaultItem.kecamatan }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Kecamatan</strong></h4>
+                  <h5>
+                    {{ defaultItem.kecamatan }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Kabupaten/Kota</h5>
-                  <h3 class="ml-2">{{ defaultItem.city }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Kabupaten/Kota</strong></h4>
+                  <h5>
+                    {{ defaultItem.city }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Provinsi</h5>
-                  <h3 class="ml-2">{{ defaultItem.province }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Provinsi</strong></h4>
+                  <h5>
+                    {{ defaultItem.province }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>No Hp</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>No Hp</strong></h4>
+                  <h5>
                     {{ defaultItem.phone }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Jenis Kelamin</h5>
-                  <h3 class="ml-2">{{ defaultItem.gender }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Jenis Kelamin</strong></h4>
+                  <h5>
+                    {{ defaultItem.gender }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Agama</h5>
-                  <h3 class="ml-2">{{ defaultItem.religion }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Agama</strong></h4>
+                  <h5>
+                    {{ defaultItem.religion }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>NPWP</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>NPWP</strong></h4>
+                  <h5>
                     {{ defaultItem.npwp }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>bpjs Kesehatan No</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>BPJS Kesehatan No</strong></h4>
+                  <h5>
                     {{ defaultItem.bpjs_kesehatan_no }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>bpjs Tenagakerja No</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>BPJS Tenagakerja No</strong></h4>
+                  <h5>
                     {{ defaultItem.bpjs_tenagakerja_no }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="6">
-                <div>
-                  <h5>Tanggal Lahir</h5>
-                  <h3 class="ml-2">{{ defaultItem.birthday }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Tanggal Lahir</strong></h4>
+                  <h5>
+                    {{ defaultItem.birthday }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="6">
-                <div>
-                  <h5>Status Perkawinan</h5>
-                  <h3 class="ml-2">{{ defaultItem.marrital }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Status Perkawinan</strong></h4>
+                  <h5>
+                    {{ defaultItem.marrital }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Akun Bank</h5>
-                  <h3 class="ml-2">
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Akun Bank</strong></h4>
+                  <h5>
                     {{ defaultItem.bank_account }}
-                  </h3>
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Bank Branch</h5>
-                  <h3 class="ml-2">{{ defaultItem.bank_branch }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Bank Branch</strong></h4>
+                  <h5>
+                    {{ defaultItem.bank_branch }}
+                  </h5>
                 </div>
               </v-col>
-              <v-col cols="12" sm="12" md="4">
-                <div>
-                  <h5>Bank Name</h5>
-                  <h3 class="ml-2">{{ defaultItem.bank_name }}</h3>
+              <v-col sm="12" md="3" cols="3">
+                <div class="ml-2">
+                  <h4><strong>Bank Name</strong></h4>
+                  <h5>
+                    {{ defaultItem.bank_name }}
+                  </h5>
                 </div>
               </v-col>
             </v-row>
