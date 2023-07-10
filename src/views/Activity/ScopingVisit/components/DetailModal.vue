@@ -714,9 +714,17 @@ export default {
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
                 for (const[key, val] of Object.entries(data)) {
-                    if (key == 'accessibility') if (val) data[key] = this.formOptions.accessibility.find(n => n.value == val).text
-                    if (key == 'water_source') if (val) data[key] = this.formOptions.water_source.find(n => n.value == val).text
-                    if (key == 'agroforestry_type') if (val) data[key] = this.formOptions.agroforestry_type.find(n => n.value == val).text
+                    if (key == 'accessibility') if (val) data[key] =  this.formOptions.accessibility ? this.formOptions.accessibility.find(n => n.value == val).text : ''
+                    if (key == 'water_source') if (val) {
+                        data[key] = val.split(',').map(ws => {
+                            return this.formOptions.water_source.find(n => n.value == ws).text
+                        }).toString()
+                    }
+                    if (key == 'agroforestry_type') if (val) {
+                        data[key] = val.split(',').map(at => {
+                            return this.formOptions.agroforestry_type.find(n => n.value == at).text
+                        }).toString()
+                    }
                 }
                 this.raw_data = JSON.parse(JSON.stringify(data))
                 this.raw_data.city_name = this.raw_data.city_name.toLowerCase()
