@@ -66,7 +66,7 @@
                           Management Unit
                         </span>
                         <h4>
-                          {{ datas.length > 0 ? datas[0].namaMU || "-" : "-" }}
+                          {{ datas.namaMU ? datas.namaMU || "-" : "-" }}
                         </h4>
                       </v-card>
                     </v-col>
@@ -79,7 +79,7 @@
                           Target Area
                         </span>
                         <h4>
-                          {{ datas.length > 0 ? datas[0].namaTA || "-" : "-" }}
+                          {{ datas.namaTA ? datas.namaTA || "-" : "-" }}
                         </h4>
                       </v-card>
                     </v-col>
@@ -93,7 +93,7 @@
                         </span>
                         <h4>
                           {{
-                            datas.length > 0 ? datas[0].namaDesa || "-" : "-"
+                            datas.namaDesa ? datas.namaDesa || "-" : "-"
                           }}
                         </h4>
                       </v-card>
@@ -123,7 +123,7 @@
                           style="font-size: 13px"
                         >
                           {{
-                            datas.length > 0 ? datas[0].form_date || "-" : "-"
+                            datas.form_date ? datas.form_date || "-" : "-"
                           }}
                         </span>
                         <h4></h4>
@@ -226,10 +226,10 @@
       </v-card-text>
       <v-card-actions
         class="justify-center"
-        v-if="verificationAccess && datas.length > 0"
+        v-if="verificationAccess && datas.namaMU > 0"
       >
         <v-btn
-          v-if="datas[0].is_verified == 0"
+          v-if="datas.is_verified == 0"
           rounded
           color="green"
           outlined
@@ -238,7 +238,7 @@
           ><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn
         >
         <v-btn
-          v-if="datas[0].is_verified == 1"
+          v-if="datas.is_verified == 1"
           rounded
           color="red"
           outlined
@@ -279,7 +279,7 @@ export default {
     },
   },
   data: () => ({
-    datas: [],
+    datas: {},
     dataListFarmer: [],
     groupingData: {
       "List Petani": [
@@ -466,14 +466,22 @@ export default {
         );
         if (res) {
           const data = res.data.data.result;
-          this.datas.push(data);
-          this.datas.map((item) => {
-            item.form_date = moment(item.form_date).format("DD MMMM YYYY");
-          });
+          this.datas = data
+          if (data.form_date && data.form_date != "0000-00-00") this.datas.form_date = moment(data.form_date).format("DD MMMM YYYY");
+          else this.datas.form_date = '-'
           this.dataListFarmer = data.ListFarmer;
           this.dataListFarmer.map((item) => {
             item.previewPhoto = this.$store.state.apiUrlImage + item.photo;
-            item.tree_mpts_name = `${item.tree1.tree_name}, ${item.tree2.tree_name}, ${item.tree3.tree_name}`;
+            item.tree_mpts_name = ``;
+            if (item.tree1) {
+              item.tree_mpts_name += item.tree1.tree_name
+            }
+            if (item.tree2) {
+              item.tree_mpts_name += ', ' + item.tree2.tree_name
+            }
+            if (item.tree3) {
+              item.tree_mpts_name += ', ' + item.tree3.tree_name
+            }
           });
         }
       } catch (err) {

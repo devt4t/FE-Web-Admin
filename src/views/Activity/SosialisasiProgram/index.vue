@@ -304,10 +304,10 @@ export default {
       }
     },
     async showModal(name, data) {
-      this.modals[name].dataForm = await data;
-      this.modals[name].show = await true;
       this.modals[name].form_no = await data.form_no;
       this.modals[name].status = "edit";
+      this.modals[name].dataForm = await data;
+      this.modals[name].show = await true;
     },
     swalActions(val) {
       this.getTableData();
