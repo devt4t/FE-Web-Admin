@@ -4915,7 +4915,6 @@ export default {
         checkCompletedDataPRA() {
             let inputs = this.inputs
             const emptyData = []
-            // village border
             const sections = this.groupingInputs.pra
             sections.map(section => {
                 section.items.map(secItem => {
@@ -4950,6 +4949,36 @@ export default {
                     
                 })
             })
+            // farmer_income
+            let farmer_income = this.inputs.farmer_income
+            const collectType = farmer_income.collection_type.model
+            if (!collectType) emptyData.push(`PRA:Pendapatan_dan_Pemasaran_Komoditas:Cara Pengumpulan Data`)
+            else {
+                if (collectType == 'Bukan Sampling') {
+                    for (const [key,val] of Object.entries(farmer_income.static_form)) {
+                        if (val.required && !val.male_model) emptyData.push(`PRA:Pendapatan_dan_Pemasaran_Komoditas:LakiLaki.${val.label}`)
+                        if (val.required && !val.female_model) emptyData.push(`PRA:Pendapatan_dan_Pemasaran_Komoditas:Perempuan.${val.label}`)
+                    }
+                }
+                if (collectType == 'Sampling') {
+                    const requiredInput = []
+                    for (const [key, val] of Object.entries(farmer_income.sampling_form)) {
+                        if (val.required) requiredInput.push(key)
+                    }
+                    farmer_income.male_data.map((val, valIndex) => {
+                        requiredInput.map(key => {
+                            if (!val[key]) {
+                                let empty = 1
+                                if (key == 'job' && val.family_type != 'non_petani') empty = 0
+                                if (key == 'indirect_method' && val.method != 'indirect') empty = 0
+                                if (key == 'source_income' && val.method != 'own_consumption') empty = 0
+                                
+                                if (empty > 0) emptyData.push(`PRA:Pendapatan_dan_Pemasaran_Komoditas:LakiLaki[${valIndex + 1}]${farmer_income.sampling_form[key].label}`)
+                            }
+                        })
+                    })
+                }
+            }
             this.empty_data.pra = emptyData
             if (emptyData.length > 0) return false
             return true
@@ -5006,7 +5035,8 @@ export default {
             try {
                 this.loading.show = true
                 if (!this.checkCompletedData) {
-                    const emptyData = [...this.empty_data.rra, ...this.empty_data.pra, ...this.empty_data.si].map(val => {return `${val}<br>`})
+                    let emptyData = [...this.empty_data.rra, ...this.empty_data.pra, ...this.empty_data.si]
+                    if (emptyData.length > 0) emptyData = emptyData[0]
                     // console.log(emptyData)
                     await Swal.fire({
                         title: 'Lengkapi Data!',
