@@ -64,7 +64,7 @@
                         </v-btn>
                         <v-btn color="info" rounded class="pl-2" @click="() => {modals.form.show = true;modals.form.key += 1}">
                             <v-icon class="mr-1">mdi-plus-circle</v-icon>
-                            Add
+                            Tambah
                         </v-btn>
                     </div>
                 </v-row>
@@ -223,9 +223,26 @@ export default {
         async getTableData() {
             try {
                 this.table.loading.show = true
+                this.table.loading.text = 'Mem-filter data..'
+                const User = this.$store.state.User
+                const created_by = []
+                if (['UNIT MANAGER', 'FIELD COORDINATOR'].includes(User.role_name)) {
+                    created_by.push(User.email)
+                    if (User.role_name == 'UNIT MANAGER') {
+                        const resEmp = await axios.get(this.$store.getters.getApiUrl(`GetEmployeebyManager?position_no=19&manager_code=${User.employee_no}`), this.$store.state.apiConfig)
+                        resEmp.data.data.result.data.map(val => {
+                            created_by.push(val.email)
+                        })
+                    }
+                }
+                let getScooping = this.$store.getters.getApiUrl(`GetScoopingAll?user_id=${created_by.toString()}`)
+                getScooping = await axios.get(getScooping, this.$store.state.apiConfig)
+                const scoopingFormNo = getScooping.data.data.result.map(val => {return val.data_no})
+
+                this.table.loading.text = 'Mengambil data RRA PRA..'
                 let url = this.$store.getters.getApiUrl(`GetRraPraAll`)
                 const res = await axios.get(url, this.$store.state.apiConfig)
-                this.table.items = res.data.data.result
+                this.table.items = res.data.data.result.filter(val => scoopingFormNo.includes(val.form_no))
                 // console.log(this.table.items)
                  
             } catch (err) { this.errorResponse(err) } finally {

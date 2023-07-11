@@ -176,7 +176,7 @@
                                                 </div>
                                                 <!-- {{ datas[stepperName][data.dataKey] }} -->
                                                 <!-- table -->
-                                                <div v-if="data.dataType === 'table'">
+                                                <div v-if="data.dataType === 'table' && datas[data.dataSource || stepperName]">
                                                     <v-data-table
                                                         :caption="data.table.caption"
                                                         multi-sort
@@ -378,7 +378,7 @@
                                                     </v-data-table>
                                                 </div>
                                                 <!-- column -->
-                                                <div v-if="data.dataType === 'column'">
+                                                <div v-if="data.dataType === 'column' && data.items">
                                                     <v-row class="mx-1 my-1">
                                                         <v-col v-for="(item, itemIndex) in data.items" :key="`column-item-${data.label}-${itemIndex}`"
                                                             :cols="item.cols[0]" :sm="item.cols[1]"  :md="item.cols[2]"  :lg="item.cols[3]"
@@ -387,7 +387,7 @@
                                                             <v-card class="rounded-xl">
                                                                 <v-card-text :class="{'text-center': item.centered, 'pa-2': true}">
                                                                     <p class="mb-0 grey darken-3 white--text px-4 rounded-pill" style="font-size: 13px;">{{ item.label }}</p>
-                                                                    <h4 class="mb-0 pa-2">
+                                                                    <h4 class="mb-0 pa-2" v-if="datas[item.dataSource || stepperName]">
                                                                         <span v-if="item.prefix" v-html="item.prefix"></span>
                                                                         <span v-if="item.dataType === 'number'">
                                                                             {{ _utils.numberFormat(datas[item.dataSource || stepperName][item.dataKey] || 0) }}
@@ -399,11 +399,8 @@
                                                         </v-col>
                                                     </v-row>
                                                 </div>
-                                                <!-- customs -->
-                                                <div>
-                                                </div>
                                                 <!-- Deskripsi -->
-                                                <v-card v-if="data.description" class="rounded-xl mx-2 mx-lg-3 mt-2">
+                                                <v-card v-if="data.description && datas[data.dataSource || stepperName]" class="rounded-xl mx-2 mx-lg-3 mt-2">
                                                     <v-card-text>
                                                         <p class="mb-0 grey darken-3 white--text px-4 rounded-pill" style="font-size: 13px;">
                                                             <v-icon color="white">mdi-text-box</v-icon>
@@ -1460,7 +1457,7 @@ export default {
                         itemsPerPage: -1,
                         headers: [
                             {text: 'No', value: 'index', width: 70, sortable: false},
-                            {text: 'Nama Masalah', value: 'problem_name', align: 'center'},
+                            {text: 'Nama Masalah', value: 'problem_name', align: 'left'},
                             {text: 'Dirasakan Banyak Orang', value: 'impact_to_people', align: 'center'},
                             {text: 'Sering Terjadi', value: 'interval_problem', align: 'center'},
                             {text: 'Potensi', value: 'potential', align: 'center'},
@@ -1541,7 +1538,6 @@ export default {
         showModal: {
             get: function () {
                 if (this.show) {
-                    
                     if (this.id) {
                         this.getData(this.id)
                     }
@@ -1684,118 +1680,122 @@ export default {
                 this.loading.text = `Getting Form "${id}" data...`
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailRraPra?form_no=${id}`), this.$store.state.apiConfig)
                 let data = res.data.data.result
-                data.Scooping.city_name = this._utils.capitalizeLetter(data.Scooping.city_name)
-                data.Scooping.district_name = this._utils.capitalizeLetter(data.Scooping.district_name)
-                data.Scooping.village_name = this._utils.capitalizeLetter(data.Scooping.village_name)
-                data.RRA.VillageBorder = data.RRA.VillageBorder.map(val => {
-                    return {
-                        ...val,
-                        city_name: this._utils.capitalizeLetter(val.city_name),
-                        district_name: this._utils.capitalizeLetter(val.district_name),
-                        village_name: this._utils.capitalizeLetter(val.village_name)
-                    }
-                })
-                data.RRA.LandUse = data.RRA.LandUse.map(val => {
-                    return {
-                        ...val,
-                        pattern: this.getTextFromOptions(val.pattern, 'agroforestry_type')
-                    }
-                })
-                data.RRA.ProductionMarketing = data.RRA.ProductionMarketing.map(val => {
-                    return {
-                        ...val,
-                        method: this.getTextFromOptions(val.method, 'marketing_trade_method_complete'),
-                        period: this.getTextFromOptions(val.period, 'marketing_period'),
-                    }
-                })
-                data.RRA.Dusun = data.RRA.Dusun.map(val => {
-                    return {
-                        ...val,
-                        accessibility: this.getTextFromOptions(val.accessibility, 'accessibility'),
-                        data_land_area_source: this.getTextFromOptions(val.data_land_area_source, 'sumber'),
-                        data_dry_land_area_source: this.getTextFromOptions(val.data_dry_land_area_source, 'sumber'),
-                        data_productive_source: this.getTextFromOptions(val.data_productive_source, 'sumber'),
-                        data_job_source: this.getTextFromOptions(val.data_job_source, 'sumber'),
-                    }
-                })
-                data.PRA.LandOwnership = data.PRA.LandOwnership.map(val => {
-                    return {
-                        ...val,
-                        type_ownership: this.getTextFromOptions(val.type_ownership, 'farmer_type_ownership'),
-                        land_ownership: this.getTextFromOptions(val.land_ownership, 'land_ownership_type')
-                    }
-                })
-                data.PRA.DryLandSpread = data.PRA.DryLandSpread.map(val => {
-                    return {
-                        ...val,
-                        type_utilization: this.getTextFromOptions(val.type_utilization, 'agroforestry_type'),
-                    }
-                })
-                data.PRA.Watersource = data.PRA.Watersource.map(val => {
-                    return {
-                        ...val,
-                        watersource_type: this.getTextFromOptions(val.watersource_type, 'water_source'),
-                    }
-                }) 
-                if (data.PRA.collection_type) {
-                    this.groupingData.PRA[3].hide = data.PRA.collection_type == 'Bukan Sampling' ? false : true
-                    this.groupingData.PRA[4].hide = data.PRA.collection_type == 'Sampling' ? false : true 
+                if (data.Scooping) {
+                    data.Scooping.city_name = this._utils.capitalizeLetter(data.Scooping.city_name)
+                    data.Scooping.district_name = this._utils.capitalizeLetter(data.Scooping.district_name)
+                    data.Scooping.village_name = this._utils.capitalizeLetter(data.Scooping.village_name)
                 }
-                data.PRA.FarmerIncome = data.PRA.FarmerIncome.map(val => {
-                    return {
-                        ...val,
-                        period: this.getTextFromOptions(val.period, 'marketing_period'),
+                if (data.RRA) {
+                    data.RRA.VillageBorder = data.RRA.VillageBorder.map(val => {
+                        return {
+                            ...val,
+                            city_name: this._utils.capitalizeLetter(val.city_name),
+                            district_name: this._utils.capitalizeLetter(val.district_name),
+                            village_name: this._utils.capitalizeLetter(val.village_name)
+                        }
+                    })
+                    data.RRA.LandUse = data.RRA.LandUse.map(val => {
+                        return {
+                            ...val,
+                            pattern: this.getTextFromOptions(val.pattern, 'agroforestry_type')
+                        }
+                    })
+                    data.RRA.ProductionMarketing = data.RRA.ProductionMarketing.map(val => {
+                        return {
+                            ...val,
+                            method: this.getTextFromOptions(val.method, 'marketing_trade_method_complete'),
+                            period: this.getTextFromOptions(val.period, 'marketing_period'),
+                        }
+                    })
+                    data.RRA.Dusun = data.RRA.Dusun.map(val => {
+                        return {
+                            ...val,
+                            accessibility: this.getTextFromOptions(val.accessibility, 'accessibility'),
+                            data_land_area_source: this.getTextFromOptions(val.data_land_area_source, 'sumber'),
+                            data_dry_land_area_source: this.getTextFromOptions(val.data_dry_land_area_source, 'sumber'),
+                            data_productive_source: this.getTextFromOptions(val.data_productive_source, 'sumber'),
+                            data_job_source: this.getTextFromOptions(val.data_job_source, 'sumber'),
+                        }
+                    })
+                }
+                if (data.PRA) {
+                    data.PRA.LandOwnership = data.PRA.LandOwnership.map(val => {
+                        return {
+                            ...val,
+                            type_ownership: this.getTextFromOptions(val.type_ownership, 'farmer_type_ownership'),
+                            land_ownership: this.getTextFromOptions(val.land_ownership, 'land_ownership_type')
+                        }
+                    })
+                    data.PRA.DryLandSpread = data.PRA.DryLandSpread.map(val => {
+                        return {
+                            ...val,
+                            type_utilization: this.getTextFromOptions(val.type_utilization, 'agroforestry_type'),
+                        }
+                    })
+                    data.PRA.Watersource = data.PRA.Watersource.map(val => {
+                        return {
+                            ...val,
+                            watersource_type: this.getTextFromOptions(val.watersource_type, 'water_source'),
+                        }
+                    }) 
+                    if (data.PRA.collection_type) {
+                        this.groupingData.PRA[3].hide = data.PRA.collection_type == 'Bukan Sampling' ? false : true
+                        this.groupingData.PRA[4].hide = data.PRA.collection_type == 'Sampling' ? false : true 
                     }
-                })
-                data.PRA.Fertilizer = data.PRA.Fertilizer.map(val => {
-                    return {
-                        ...val,
-                        fertilizer_categories: this.getTextFromOptions(val.fertilizer_categories, 'fertilizer_categories'),
-                        fertilizer_type: this.getTextFromOptions(val.fertilizer_type, 'fertilizer_types'),
-                        fertilizer_source: this.getTextFromOptions(val.fertilizer_source, 'fertilizer_sources'),
-                    }
-                })
-                data.PRA.Pesticide = data.PRA.Pesticide.map(val => {
-                    return {
-                        ...val,
-                        pesticide_categories: this.getTextFromOptions(val.pesticide_categories, 'pesticide_categories'),
-                        pesticide_type: this.getTextFromOptions(val.pesticide_type, 'pesticide_types'),
-                        pesticide_source: this.getTextFromOptions(val.pesticide_source, 'pesticide_sources'),
-                    }
-                })
-                data.PRA.DisasterHistory = data.PRA.DisasterHistory.map(val => {
-                    return {
-                        ...val,
-                        disaster_categories: this.getTextFromOptions(val.disaster_categories, 'disaster_categories'),
-                    }
-                })
-                data.PRA.ExistingProblem = data.PRA.ExistingProblem.map(val => {
-                    return {
-                        ...val,
-                        problem_categories: this.getTextFromOptions(val.problem_categories, 'problem_categories'),
-                    }
-                })
-                data.PRA.Flora = data.PRA.Flora.map(val => {
-                    return {
-                        ...val,
-                        flora_status: this.getTextFromOptions(val.flora_status, 'flora_fauna_status'),
-                        flora_foodsource: this.getTextFromOptions(val.flora_foodsource, 'water_source'),
-                    }
-                })
-                data.PRA.Fauna = data.PRA.Fauna.map(val => {
-                    return {
-                        ...val,
-                        fauna_status: this.getTextFromOptions(val.fauna_status, 'flora_fauna_status'),
-                        fauna_foodsource: this.getTextFromOptions(val.fauna_foodsource, 'fauna_food_source'),
-                    }
-                })
+                    data.PRA.FarmerIncome = data.PRA.FarmerIncome.map(val => {
+                        return {
+                            ...val,
+                            period: this.getTextFromOptions(val.period, 'marketing_period'),
+                        }
+                    })
+                    data.PRA.Fertilizer = data.PRA.Fertilizer.map(val => {
+                        return {
+                            ...val,
+                            fertilizer_categories: this.getTextFromOptions(val.fertilizer_categories, 'fertilizer_categories'),
+                            fertilizer_type: this.getTextFromOptions(val.fertilizer_type, 'fertilizer_types'),
+                            fertilizer_source: this.getTextFromOptions(val.fertilizer_source, 'fertilizer_sources'),
+                        }
+                    })
+                    data.PRA.Pesticide = data.PRA.Pesticide.map(val => {
+                        return {
+                            ...val,
+                            pesticide_categories: this.getTextFromOptions(val.pesticide_categories, 'pesticide_categories'),
+                            pesticide_type: this.getTextFromOptions(val.pesticide_type, 'pesticide_types'),
+                            pesticide_source: this.getTextFromOptions(val.pesticide_source, 'pesticide_sources'),
+                        }
+                    })
+                    data.PRA.DisasterHistory = data.PRA.DisasterHistory.map(val => {
+                        return {
+                            ...val,
+                            disaster_categories: this.getTextFromOptions(val.disaster_categories, 'disaster_categories'),
+                        }
+                    })
+                    data.PRA.ExistingProblem = data.PRA.ExistingProblem.map(val => {
+                        return {
+                            ...val,
+                            problem_categories: this.getTextFromOptions(val.problem_categories, 'problem_categories'),
+                        }
+                    }).sort((a,b) => {return a.ranking - b.ranking})
+                    data.PRA.Flora = data.PRA.Flora.map(val => {
+                        return {
+                            ...val,
+                            flora_status: this.getTextFromOptions(val.flora_status, 'flora_fauna_status'),
+                            flora_foodsource: this.getTextFromOptions(val.flora_foodsource, 'water_source'),
+                        }
+                    })
+                    data.PRA.Fauna = data.PRA.Fauna.map(val => {
+                        return {
+                            ...val,
+                            fauna_status: this.getTextFromOptions(val.fauna_status, 'flora_fauna_status'),
+                            fauna_foodsource: this.getTextFromOptions(val.fauna_foodsource, 'fauna_food_source'),
+                        }
+                    })
+                }
                 this.datas = data
                 this.raw_data = data
-                for (const [key, val] of Object.entries(this.datas)) {
-                }
-                // this.stepper.model = 3
+                this.stepper.model = 1
                 this.verified_data = this.datas.RRA.status
-                console.log(this.verified_data)
+                // console.log(data.PRA.DisasterHistory)
             } catch (err) {
                 this.errorResponse(err)
                 this.$emit('action', {type: 'close', name: 'detail'})

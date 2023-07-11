@@ -5047,6 +5047,7 @@ export default {
                 inputs.scooping_form_no.model = RRA.form_no
                 inputs.rra_pra_date_range.model = [RRA.rra_pra_date_start, RRA.rra_pra_date_end]
                 // RRA 
+                if (RRA) {
                     // village_border
                     const VillageBorder = RRA.VillageBorder
                     const Point = ['north', 'east', 'west', 'south'] 
@@ -5129,9 +5130,11 @@ export default {
                             dusun_access_photo: null
                         }
                     })
+                }
                 // END: RRA 
                 this.stepper.model = 2
                 // PRA
+                if (PRA) {
                     // kepemilikan lahan
                     const LOw = PRA.LandOwnership
                     inputs.land_ownership.model = LOw
@@ -5175,9 +5178,11 @@ export default {
                     if (PerMasalah.length > 0) {
                         inputs.problem_existing.model = PerMasalah
                     }
+                }
                 // END: PRA
                 this.stepper.model = 3
                 // Flora Fauna
+                if (PRA) {
                     // Data Flora Endemik
                     const FloraEnd = PRA.Flora
                     if (FloraEnd.length > 0) {
@@ -5190,6 +5195,7 @@ export default {
                         this.groupingInputs.socImp.find(socImp => socImp.title == 'Data Fauna Endemik').optional = true
                         inputs.fauna_data.model = FaunaEnd
                     }
+                }
                 // END: Flora Fauna
                 this.stepper.model = 1
                 // console.log(data)
@@ -5256,14 +5262,27 @@ export default {
         },
         async getScoopingListItems() {
             try {
-                this.loading.text = 'Get list scooping user...'
+                this.loading.text = 'Mem-filter data..'
                 // get rra pra list
                 const res1 = await this.callApiGet(`GetRraPraAll`)
                 const data1 = res1.map(val => {return val.form_no})
                 // get scooping list
-                const res2 = await this.callApiGet(`GetScoopingAll`)
-                const data2 = res2.filter(val => val.is_verify === 1 && !data1.includes(val.data_no))
-                console.log(data2)
+                const User = this.$store.state.User
+                const created_by = []
+                if (['UNIT MANAGER', 'FIELD COORDINATOR'].includes(User.role_name)) {
+                    created_by.push(User.email)
+                    if (User.role_name == 'UNIT MANAGER') {
+                        const resEmp = await axios.get(this.$store.getters.getApiUrl(`GetEmployeebyManager?position_no=19&manager_code=${User.employee_no}`), this.$store.state.apiConfig)
+                        resEmp.data.data.result.data.map(val => {
+                            created_by.push(val.email)
+                        })
+                    }
+                }
+                this.loading.text = 'Get list scooping user...'
+                let getScooping = this.$store.getters.getApiUrl(`GetScoopingAll?user_id=${created_by.toString()}`)
+                getScooping = await axios.get(getScooping, this.$store.state.apiConfig)
+                const res2 = getScooping.data.data.result
+                const data2 = res2.filter(val => val.status === 'submit_review' && !data1.includes(val.data_no))
                 this.inputs.scooping_form_no.items = data2
             } catch (err) {this.errorResponse(err)}
         },

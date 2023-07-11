@@ -630,8 +630,8 @@
             <th>Rank</th>
           </tr>
           <tr
-            v-for="(val, val_index) in existingProblemSort()"
-            :key="val_index + 'ExistingProblem'"
+            v-for="(val, val_index) in raw_data.PRA.ExistingProblem"
+            :key="val_index + 'MatrikExistingProblem'"
           >
             <td style="text-align: center;">{{ val_index + 1 }}</td>
             <td style="text-align: left;">{{ val.problem_name }}</td>
