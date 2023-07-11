@@ -82,7 +82,7 @@
                 {{ _utils.dateFormat(item.start_scooping_date, 'DD MMMM Y') }}
                 <span v-if="item.start_scooping_date != item.end_scooping_date">
                     ~
-                    {{ _utils.dateFormat(item.rra_pra_date_end, 'DD MMMM Y') }}
+                    {{ _utils.dateFormat(item.end_scooping_date, 'DD MMMM Y') }}
                 </span>
             </template>
             <!-- Status Column -->
