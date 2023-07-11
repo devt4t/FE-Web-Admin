@@ -157,6 +157,7 @@ export default {
             headers: [
                 {text: 'No', value: 'no'},
                 {text: 'Form No', value: 'form_no'},
+                {text: 'Desa', value: 'village_name'},
                 {text: 'Tanggal', value: 'rra_pra_date_start'},
                 {text: 'PIC Email', value: 'user_id'},
                 {text: 'Status', value: 'status', align: 'center'},

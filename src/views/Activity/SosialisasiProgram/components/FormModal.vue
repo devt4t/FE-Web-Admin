@@ -1019,7 +1019,9 @@ export default {
         if (confirm) {
           this.loading.show = true;
           this.loading.text ='Menyimpan data...';
-          const data = {};
+          const data = {
+            user_id: this.$store.state.User.email,
+          };
           let urlEndpoint = "";
           let imgRes = "";
           for (const [key, val] of Object.entries(this.inputs)) {
@@ -1057,7 +1059,6 @@ export default {
           }
           if (this.status == "edit") {
             data.form_no = this.form_no;
-            console.log("data", data);
             urlEndpoint = "UpdateFormMinat";
           } else {
             urlEndpoint = "AddFormMinat";

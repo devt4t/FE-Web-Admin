@@ -231,6 +231,7 @@ export default {
         { text: "Tanggal", value: "form_date" },
         { text: "Desa", value: "namaDesa" },
         { text: "Total Peserta", value: "total_farmer" },
+        { text: "PIC", value: "user_id" },
         { text: "Status Verifikasi", value: "is_verified", align: "center" },
         { text: "Actions", value: "actions", align: "right" },
       ],
