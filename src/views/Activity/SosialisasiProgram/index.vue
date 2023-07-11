@@ -307,7 +307,7 @@ export default {
                 })
             }
         }
-        let url = this.$store.getters.getApiUrl(`GetFormMinatAll?program_year=${this.localConfig.programYear}&user_id=${created_by}`);
+        let url = this.$store.getters.getApiUrl(`GetFormMinatAll?program_year=${this.localConfig.programYear}&user_id=${created_by.toString()}`);
         const res = await axios.get(url, this.$store.state.apiConfig);
         this.table.items = res.data.data.result.data;
         // console.log(this.table.items)
