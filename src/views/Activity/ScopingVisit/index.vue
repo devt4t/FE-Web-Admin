@@ -224,7 +224,18 @@ export default {
         async getTableData() {
             try {
                 this.table.loading.show = true
-                let url = this.$store.getters.getApiUrl(`GetScoopingAll`)
+                const User = this.$store.state.User
+                const created_by = []
+                if (['UNIT MANAGER', 'FIELD COORDINATOR'].includes(User.role_name)) {
+                    created_by.push(User.email)
+                    if (User.role_name == 'UNIT MANAGER') {
+                        const resEmp = await axios.get(this.$store.getters.getApiUrl(`GetEmployeebyManager?position_no=19&manager_code=${User.employee_no}`), this.$store.state.apiConfig)
+                        resEmp.data.data.result.data.map(val => {
+                            created_by.push(val.email)
+                        })
+                    }
+                }
+                let url = this.$store.getters.getApiUrl(`GetScoopingAll?user_id=${created_by.toString()}`)
                 const res = await axios.get(url, this.$store.state.apiConfig)
                 this.table.items = res.data.data.result
                 // console.log(this.table.items)

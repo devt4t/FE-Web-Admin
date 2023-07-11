@@ -622,7 +622,7 @@ export default {
                 items: formOptions.water_source.sort(),
                 label: 'Sumber Air',
                 model: [],
-                itemText: 'value',
+                itemText: 'text',
                 itemValue: 'value',
                 inputType: 'autocomplete',
                 labelIcon: 'mdi-water-pump',
