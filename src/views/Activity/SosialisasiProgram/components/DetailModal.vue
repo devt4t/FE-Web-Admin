@@ -226,7 +226,7 @@
       </v-card-text>
       <v-card-actions
         class="justify-center"
-        v-if="verificationAccess && datas.namaMU > 0"
+        v-if="showVerification"
       >
         <v-btn
           v-if="datas.is_verified == 0"
@@ -344,12 +344,13 @@ export default {
         if (!newVal) this.$emit("action", { type: "close", name: "detail" });
       },
     },
-    verificationAccess() {
+    showVerification() {
       const user = this.$store.state.User;
       const role_group = user.role_group;
       const role_name = user.role_name;
-      if (role_group == "IT") return true;
-      if (role_name == "SOCIAL OFFICER") return true;
+      if (role_group == "IT" || role_name == "UNIT MANAGER") {
+        if (this.dataListFarmer.length > 0) return true;
+      }
       return false;
     },
   },
