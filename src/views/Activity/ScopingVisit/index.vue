@@ -86,7 +86,7 @@
                 </span>
             </template>
             <!-- Status Column -->
-            <template v-slot:item.is_verify="{item}">
+            <template v-slot:item.status="{item}">
                 <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
                 <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
                 {{ getStatusColumn('text', item.status) }}
@@ -106,7 +106,7 @@
                         <v-icon class="mr-1">mdi-information</v-icon> Detail
                     </v-btn>
                     <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" 
-                        :disabled="(item.is_verify === 1 || item.status == 'submit_review') && user.role_name != 'GIS STAFF'"
+                        :disabled="(item.status == 'submit_review') && user.role_name != 'GIS STAFF'"
                         @click="() => {showModal('form', item)}">
                         <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
                     </v-btn>
@@ -167,7 +167,7 @@ export default {
                 {text: 'Luas Desa', value: 'land_area'},
                 {text: 'Tanggal', value: 'start_scooping_date'},
                 {text: 'Created By', value: 'user_id'},
-                {text: 'Status', value: 'is_verify', align: 'center'},
+                {text: 'Status', value: 'status', align: 'center'},
                 {text: 'Actions', value: 'actions', align: 'right'},
             ],
             items: [],
