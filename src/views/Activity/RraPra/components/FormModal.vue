@@ -4977,6 +4977,18 @@ export default {
                             }
                         })
                     })
+                    farmer_income.female_data.map((val, valIndex) => {
+                        requiredInput.map(key => {
+                            if (!val[key]) {
+                                let empty = 1
+                                if (key == 'job' && val.family_type != 'non_petani') empty = 0
+                                if (key == 'indirect_method' && val.method != 'indirect') empty = 0
+                                if (key == 'source_income' && val.method != 'own_consumption') empty = 0
+                                
+                                if (empty > 0) emptyData.push(`PRA:Pendapatan_dan_Pemasaran_Komoditas:Perempuan[${valIndex + 1}]${farmer_income.sampling_form[key].label}`)
+                            }
+                        })
+                    })
                 }
             }
             this.empty_data.pra = emptyData
