@@ -53,7 +53,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12">
-                        <DetailModalMap v-if="showModal == true" :data="map.data" :key="map.key" />
+                        <DetailModalMap v-if="showModal == true && !loading.show" :data="map.data" :key="map.key + 'DetailModalMapSCopingVisit'" />
                     </v-col>
                 </v-row>
                 <!-- data -->
