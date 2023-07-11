@@ -28,7 +28,7 @@
             <template v-slot:top>
                 <v-row class="my-2 mx-2 mx-lg-3 align-center">
                     <!-- Program Year -->
-                    <v-select
+                    <!-- <v-select
                         color="success"
                         item-color="success"
                         v-model="localConfig.programYear"
@@ -42,7 +42,7 @@
                         label="Program Year"
                         class="mx-auto mr-lg-2 mb-2 mb-lg-0"
                         style="max-width: 200px"
-                    ></v-select>
+                    ></v-select> -->
                     <!-- Search Field -->
                     <v-text-field
                         color="green"
@@ -240,7 +240,10 @@ export default {
                 this.table.items = res.data.data.result
                 // console.log(this.table.items)
                  
-            } catch (err) { this.errorResponse(err) } finally {
+            } catch (err) { 
+                this.table.items = []
+                this.errorResponse(err) 
+            } finally {
                 this.table.loading.show = false
             }
         },

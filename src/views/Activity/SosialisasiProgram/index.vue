@@ -243,6 +243,13 @@ export default {
     },
     user: "",
   }),
+  watch: {
+    'localConfig.programYear': {
+      handler() {
+        this.getTableData()
+      }
+    }
+  },
   mounted() {
     this.firstAccessPage();
   },
@@ -288,11 +295,23 @@ export default {
     async getTableData() {
       try {
         this.table.loading.show = true;
-        let url = this.$store.getters.getApiUrl(`GetFormMinatAll`);
+        const User = this.$store.state.User
+        const created_by = []
+        if (['UNIT MANAGER', 'FIELD COORDINATOR'].includes(User.role_name)) {
+            created_by.push(User.email)
+            if (User.role_name == 'UNIT MANAGER') {
+                const resEmp = await axios.get(this.$store.getters.getApiUrl(`GetEmployeebyManager?position_no=19&manager_code=${User.employee_no}`), this.$store.state.apiConfig)
+                resEmp.data.data.result.data.map(val => {
+                    created_by.push(val.email)
+                })
+            }
+        }
+        let url = this.$store.getters.getApiUrl(`GetFormMinatAll?program_year=${this.localConfig.programYear}&user_id=${created_by}`);
         const res = await axios.get(url, this.$store.state.apiConfig);
         this.table.items = res.data.data.result.data;
         // console.log(this.table.items)
       } catch (err) {
+        this.table.items = []
         this.errorResponse(err);
       } finally {
         this.table.loading.show = false;
