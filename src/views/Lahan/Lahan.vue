@@ -2044,7 +2044,7 @@ export default {
       { text: "Luas Lahan", value: "luas_lahan", width: "10%" },
       { text: "Tutupan", value: "tutupan_lahan", width: "7%" },
       { text: "Pola Tanam", value: "pola_tanam", width: "20%" },
-      { text: "Tahun Program", value: "created_at", width: "10%" },
+      { text: "Tahun Bergabung", value: "created_at", width: "10%" },
       { text: "Status", value: "status", width: "12%" },
       {
         text: "Actions",

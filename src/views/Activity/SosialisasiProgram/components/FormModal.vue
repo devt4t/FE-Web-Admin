@@ -1038,7 +1038,7 @@ export default {
                       lf.name.replace(/[^\w\s]/g, '').replace(/\s+/g, '').toLowerCase() + Math.round(+new Date() / 1000)
                     );
                   } else {
-                    imgRes = lf.photo;
+                    imgRes = lf.photo || '';
                   }
                   const mergeTree = [...lf.kayu, ...lf.mpts];
                   return {
