@@ -4890,7 +4890,7 @@ export default {
                 for (const [key, val] of Object.entries(dusun)) {
                     let inpDusunEmpty = 0
                     if (key != 'dusun_access_photo_raw') {
-                        if (key == 'dusun_access_photo') { 
+                        if (key == 'dusun_access_photo' && dusun.potential) { 
                             if (!val) if (!dusun.dusun_access_photo_raw) inpDusunEmpty += 1
                         } else if (!val) {
                             if (dusun.potential || (!dusun.potential && ['dusun_name','total_kk'].includes(key))) {
@@ -4931,6 +4931,7 @@ export default {
                                 requiredInput.map(rI => {
                                     if (typeof val[rI] == 'object' && val[rI]) if (val[rI].length == 0) valEmpty += 1
                                     if (!val[rI] || val[rI] == '-') valEmpty += 1
+                                    if (secItem == 'disaster_history' && !val.has_fatalities && rI == 'fatalities' && !val[rI]) valEmpty = 0
                                     if (secItem == 'land_ownership' && val.type_ownership == 'petani' && rI == 'land_ownership') valEmpty = 0
                                     if (valEmpty > 0) emptyData.push(`PRA:${section.title}:${secItem}[${valIndex + 1}]${rI}`)
                                 })
@@ -5112,7 +5113,7 @@ export default {
                     }
                     // pemasaran hasil produksi
                     const PHP = RRA.ProductionMarketing
-                    if (PotOg.length > 0) {
+                    if (PHP.length > 0) {
                         inputs.production_marketing.model = PHP
                     }
                     // Identifikasi Petani Inovatif
