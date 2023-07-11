@@ -1359,7 +1359,7 @@ export default {
                     } else data.dry_land_polygon = this.raw_data.dry_land_polygon
                     this.$store.state.loadingOverlayText = 'Saving scoping data...'
                     let url = ''
-                    if (this.editId) {
+                    if (this.editId && this.formStatus != 'submit_review') {
                         url = `UpdateScooping?data_no=${this.editId}`
                         if (this.gisInputCheck && this.photosInputCheck) data.status = 'ready_to_submit'
                     }
