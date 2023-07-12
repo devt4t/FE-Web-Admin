@@ -1643,13 +1643,17 @@
       :headers="headers"
       :items="dataobject"
       multi-sort
-      :search="search"
       :loading="loadtable"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
       :items-per-page="30"
+      :options.sync="table.options"
+      :server-items-length="table.datas.total"
+      :page="table.pagination.current_page"
       :footer-props="{
-        itemsPerPageOptions: [10, 20, 30, 40, 50, -1],
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
       }"
     >
       <template v-slot:top>
@@ -1793,12 +1797,137 @@
             </v-card>
           </v-menu>
         </v-row>
+          <v-row class="pb-4 px-2">
+            <v-col cols="12" lg="6">
+              <!-- Page Table -->
+              <v-select
+                v-model="table.pagination.current_page"
+                :items="table.pagination.page_options"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Page"
+                class="centered-select"
+                style="width: 50%;max-width: 100px;"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" lg="6" class="d-flex">
+              <!-- Select Search Field -->
+              <v-select
+                color="success"
+                item-color="success"
+                v-model="table.search.field"
+                :items="table.search.options.column"
+                item-value="value"
+                item-text="text"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Kolom Search"
+                class="centered-select"
+                style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+              ></v-select>
+              <!-- Search Input -->
+              <v-text-field
+                color="success"
+                item-color="success"
+                v-if="table.search.field != 'opsi_pola_tanam' && table.search.field != 'validation'"
+                v-model="table.search.value"
+                append-icon="mdi-magnify"
+                outlined
+                dense
+                rounded
+                label="Search"
+                hide-details
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                :loading="table.search.options.column_loading"
+              ></v-text-field>
+              <v-select
+                v-else-if="table.search.field == 'opsi_pola_tanam'"
+                color="success"
+                item-color="success"
+                v-model="table.search.value"
+                :items="table.search.options.pola_tanam"
+                placeholder="All"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                clearable
+                label="Pilih Opsi Pola Tanam"
+                class="centered-select"
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                :loading="table.search.options.pola_tanam_loading"
+              ></v-select>
+              <v-select
+                v-else
+                color="success"
+                item-color="success"
+                v-model="table.search.value"
+                :items="table.search.options.validation"
+                item-value="value"
+                item-text="text"
+                hide-details
+                outlined
+                dense
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Status"
+                class="centered-select"
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+              ></v-select>
+            </v-col>
+          </v-row>
       </template>
 
+      <template v-slot:header.approve>
+        <div class="d-flex justify-center align-center">
+          Status
+          <v-menu
+            rounded="xl"
+            bottom
+            left
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
+            content-class="rounded-xl">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" fab color="orange white--text" class="ml-1" x-small><v-icon>mdi-filter</v-icon></v-btn>
+            </template>
+            <v-card class="pa-2">
+              <v-card-text class="pa-0">
+                <v-select
+                  color="success"
+                  item-color="success"
+                  :items="['Semua', 'Belum Lengkap', 'Belum Verifikasi', 'Terverifikasi']"
+                  :disabled="loadtable"
+                  v-model="filtered_status"
+                  outlined
+                  dense
+                  hide-details
+                  :menu-props="{
+                    bottom: true,
+                    offsetY: true,
+                    rounded: 'xl',
+                    transition: 'slide-y-transition',
+                  }"
+                  rounded
+                  label="Filter Status"
+                ></v-select>
+              </v-card-text>
+            </v-card>
+          </v-menu>
+        </div>
+      </template>
       <!-- Color Status -->
-      <template v-slot:item.status="{ item }">
-        <v-chip :color="getColorStatus(item.status)" dark>
-          {{ item.status }}
+      <template v-slot:item.approve="{ item }">
+        <v-chip :color="getColorStatus(item.approve, item.complete_data)" dark>
+          <v-icon v-if="item.approve" class="mr-1">mdi-check-circle</v-icon>{{ item.approve ? 'Terverifikasi' : (item.complete_data ? 'Belum Verifikasi' : 'Belum Lengkap') }}
         </v-chip>
       </template>
 
@@ -1830,8 +1959,8 @@
       </template>
 
       <!-- Luas Lahan table -->
-      <template v-slot:item.luas_lahan="{ item }">
-        {{ item.luas_lahan }}m<sup>2</sup>
+      <template v-slot:item.land_area="{ item }">
+        {{ _utils.numberFormat(item.land_area) }}m<sup>2</sup>
       </template>
 
       <!-- Tahun Program -->
@@ -1948,6 +2077,7 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2'
 import DetailLahanMap from "@/views/Lahan/components/DetailLahanMap";
 
 export default {
@@ -1958,6 +2088,7 @@ export default {
   data: () => ({
     showTesterData: false,
     raw_data: [],
+    filtered_status: 'Semua',
     unverifDialog: {
       show: false,
       show2: false,
@@ -2036,29 +2167,28 @@ export default {
     type: "",
     dataobject: [],
     headers: [
-      { text: "No", align: "center", value: "index", width: "5%" },
-      { text: "Kode", align: "start", value: "lahanNo", width: "10%" },
-      { text: "Desa", value: "desa", width: "15%" },
-      { text: "Petani", value: "petani", width: "15%" },
-      { text: "Field Facilitator", value: "user", width: "10%" },
-      { text: "Luas Lahan", value: "luas_lahan", width: "10%" },
-      { text: "Tutupan", value: "tutupan_lahan", width: "7%" },
-      { text: "Pola Tanam", value: "pola_tanam", width: "20%" },
-      { text: "Tahun Bergabung", value: "created_at", width: "10%" },
-      { text: "Status", value: "status", width: "12%" },
-      {
-        text: "Actions",
-        value: "actions",
-        sortable: false,
-        width: "15%",
-        align: "right",
-      },
+      { text: "No", align: "center", value: "index"},
+      { text: "Nama FF", value: "ff_name", searchable: true},
+      // { text: "Kode Petani", value: "kodePetani"},
+      { text: "Nama Petani", value: "farmer_name", searchable: true},
+      { text: "Desa", value: "village_name", searchable: true},
+      { text: "NIK Petani", value: "farmer_nik", searchable: true},
+      { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
+      { text: "Tahun Bergabung", value: "created_at", searchable: true},
+      { text: "Luas Lahan", value: "land_area", searchable: true},
+      { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
+      { text: "Tutupan", value: "tutupan_lahan", searchable: true},
+      { text: "Jenis Bibit", value: "jenis_bibit"},
+      { text: "KAYU", value: "pohon_kayu", searchable: true},
+      { text: "MPTS", value: "pohon_mpts", searchable: true},
+      { text: "Status", value: "approve", sortable: false},
+      { text: "Actions", value: "actions", sortable: false, align: "right"},
     ],
     headersgis: [
       {
         text: "Kode",
         align: "start",
-        value: "lahanNo",
+        value: "lahan_no",
         width: "10%",
       },
       { text: "Coordinate", value: "coordinate", width: "20%" },
@@ -2351,6 +2481,38 @@ export default {
     colorsnackbar: null,
     filephotoarray: [],
     programYear: "",
+    table: {
+      search: {
+        options: {
+          column: [],
+          column_loading: false,
+          pola_tanam: [],
+          pola_tanam_loading: false,
+          validation: [{
+            text: 'All',
+            value: ''
+          },{
+            text: 'Unverified',
+            value: 0
+          }, {
+            text: 'Verified FC',
+            value: 1
+          }]
+        },
+        field: 'form_no',
+        value: ''
+      },
+      datas: {
+        total: 0,
+      },
+      pagination: {
+        current_page: 1,
+        per_page: 10,
+        length_page: 0,
+        page_options: []
+      },
+      options: {},
+    },
   }),
 
   mounted() {
@@ -2366,16 +2528,78 @@ export default {
         this.initialize();
       },
     },
-    async showTesterData(val) {
-      if (val === false)
-        this.dataobject = this.raw_data.filter((f1) =>
-          f1.lahanNo.match(/^10_00.*$/)
-        );
-      else this.dataobject = this.raw_data;
+    'table.options': {
+        handler(newValue) {
+          let {page, itemsPerPage, sortBy} = newValue
+          this.table.pagination.current_page = page
+          this.table.pagination.per_page = itemsPerPage
+          this.initialize()
+        },
+        deep: true
     },
+    'table.search.value': {
+        handler() {
+          setTimeout(() => {
+            this.initialize()
+          }, 1000);
+        },
+        deep: true
+    },
+    'table.search.field': {
+      handler(newValue) {
+        if (newValue == 'opsi_pola_tanam') {
+          this.getOpsiPolaTanamOptions()
+        }
+      }
+    },
+  },
+  computed: {
+    mainTableData() {
+      let data = this.raw_data
+      if (this.showTesterData == false) {
+        data = data.filter((f1) =>
+          f1.lahan_no.match(/^10_00.*$/)
+        );
+      }
+      if (this.filtered_status == 'Belum Lengkap') data = data.filter(n => n.complete_data == 0)
+      if (this.filtered_status == 'Belum Verifikasi') data = data.filter(n => n.complete_data == 1 && n.approve == 0) 
+      if (this.filtered_status == 'Terverifikasi') data = data.filter(n => n.approve == 1) 
+      
+      return data
+    }
   },
 
   methods: {
+    async errorResponse(error) {
+        console.log(error)
+        if (error.response) {
+            if (error.response.status) {
+                if (error.response.status == 401) {
+                    const confirm = await Swal.fire({
+                        title: 'Session Ended!',
+                        text: "Please login again.",
+                        icon: 'warning',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    if (confirm) {
+                        localStorage.removeItem("token");
+                        this.$router.push("/");
+                    }
+                }
+                if (error.response.status === 500 || error.response.status === 400) {
+                    let errMessage = error.response.data.message
+                    if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                    Swal.fire({
+                        title: 'Error!',
+                        text: `${errMessage || error.message}`,
+                        icon: 'error',
+                        confirmButtonColor: '#f44336',
+                    })
+                }
+            }
+        }
+    },
     async saveMassInsertDataLahan() {
       try {
         this.insertDataLahan.show = false;
@@ -2432,7 +2656,7 @@ export default {
         this.$store.state.loadingOverlayText = null;
       }
     },
-    firstAccessPage() {
+    async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
@@ -2441,6 +2665,16 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       // this.fc_no_global = this.User.fc.fc;
+      // get search options column
+      this.table.search.options.column_loading = true
+      let searchColumns = ['form_no', 'nama_ff', 'nama_petani', 'no_lahan', 'land_area', 'opsi_pola_tanam', 'validation']
+      // set search column options
+      await this.headers.forEach(val => {
+        if (val.value && val.searchable) {
+          this.table.search.options.column.push(val.value)
+        }
+      })
+      this.table.search.options.column_loading = false
       this.checkRoleAccess();
       this.initialize();
       this.getMU();
@@ -2490,10 +2724,10 @@ export default {
         this.RoleAccesDownloadAllShow = false;
       }
     },
-    getColorStatus(status) {
-      if (status == "Belum Lengkap") return "red";
-      else if (status == "Belum Verifikasi") return "orange";
-      else return "green";
+    getColorStatus(approve, complete) {
+      if (!complete) return "red" 
+      if (complete && !approve) return "orange" 
+      return "green";
     },
     getColorStatusGIS(status) {
       if (status == "belum") return "orange";
@@ -2501,55 +2735,68 @@ export default {
     },
     async initialize() {
       this.loadtable = true;
-      let params = {
-        mu: this.valueMU,
-        ta: this.valueTA,
-        village: this.valueVillage,
-        typegetdata: this.typegetdata,
-        ff: this.valueFFcode,
-        program_year: this.programYear,
-      };
-      try {
-        const response = await axios.get(
-          this.BaseUrlGet + "GetLahanAllAdmin?" + new URLSearchParams(params),
+      this.$store.state.loadingOverlayText = 'Mengambil data lahan...'
+      this.$store.state.loadingOverlay = true
+      await this.getTableData().then(data => {
+        this.dataobject = data.items
+        this.table.datas.total = data.total
+        this.table.pagination.current_page = data.current_page
+        this.table.pagination.length_page = data.last_page
+        const pageOptions = []
+        for (let index = 1; index <= data.last_page; index++) {
+          pageOptions.push(index)          
+        }
+        this.table.pagination.page_options = pageOptions
+      }).finally(() => {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+        this.loadtable = false
+      })
+    },
+    getTableData() {
+      return new Promise((resolve, reject) => {
+        const params = new URLSearchParams({
+          program_year: this.program_year,
+          page: this.table.pagination.current_page,
+          per_page: this.table.pagination.per_page,
+          sortBy: this.table.options.sortBy || '',
+          sortDesc: this.table.options.sortDesc || '',
+          search_column: this.table.search.field || '',
+          search_value: this.table.search.value || '',
+          mu: this.valueMU,
+          ta: this.valueTA,
+          village: this.valueVillage,
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode,
+        })
+        axios.get(
+          this.BaseUrlGet +
+            "GetLahanAllAdminNew?" + params,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
             },
           }
-        );
-        // console.log(response.data.data.result.data);
-        const resData = response.data.data.result.data;
-        if (resData.length != 0) {
-          this.dataobject = resData;
-          this.raw_data = resData;
-          if (this.showTesterData === false) {
-            this.dataobject = resData.filter((f1) =>
-              f1.lahanNo.match(/^10_00.*$/)
-            );
+        ).then(res => {
+          if (typeof res.data.data.result !== 'undefined') {
+            let items = res.data.data.result.data
+            const total = res.data.data.result.total
+            const current_page = res.data.data.result.current_page
+            const last_page = res.data.data.result.last_page
+            resolve({
+              items,
+              total,
+              current_page,
+              last_page
+            })
+          } else {
+            reject('Error')
           }
-          this.valueMUExcel = this.valueMU;
-          this.valueTAExcel = this.valueTA;
-          this.valueVillageExcel = this.valueVillage;
-          this.typegetdataExcel = this.typegetdata;
-          this.valueFFcodeExcel = this.valueFFcode;
-          this.loadtable = false;
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
-        }
-      } catch (error) {
-        console.error(error);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.loadtable = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        } else {
-          this.dataobject = [];
-          this.loadtable = false;
-        }
-      }
+        }).catch(err => {
+          this.sessionEnd(err)
+          reject(err)
+        })
+      })
     },
 
     async getMU() {
@@ -3541,7 +3788,7 @@ export default {
       this.dialogDelete = true;
     },
     showUnverifModal(item) {
-      this.unverifDialog.lahan_no = item.lahanNo;
+      this.unverifDialog.lahan_no = item.lahan_no;
       this.unverifDialog.show = true;
     },
     async closeUnverification2() {

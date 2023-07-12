@@ -19,6 +19,8 @@
       @swal="($v) => swalActions($v)"
       @refreshTable="initialize"
     />
+    <!-- modal list ff farmers -->
+    <ShowFarmerList :show="dialogs.listFarmer.show" :ff_no="dialogs.listFarmer.ff_no" />
     <!-- dialog detail -->
     <v-dialog
       v-model="dialogdetail"
@@ -530,10 +532,11 @@ import Swal from "sweetalert2";
 
 import ChangeFFModal from "./components/FF/ChangeFFModal.vue";
 import AddFFModal from "./components/FF/AddFFModal.vue";
+import ShowFarmerList from "./components/FF/ShowFarmerList.vue";
 
 export default {
   name: "FieldFacilitator",
-  components: { ChangeFFModal, AddFFModal },
+  components: { ChangeFFModal, AddFFModal, ShowFarmerList },
   data: () => ({
     dialogs: {
       addEditFF: {
@@ -548,6 +551,10 @@ export default {
         show: false,
         model: null,
       },
+      listFarmer: {
+        show: false,
+        ff_no: null
+      }
     },
     menu2: "",
     valid: true,
