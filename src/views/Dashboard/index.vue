@@ -1,5 +1,8 @@
 <template>
   <v-container class="mt-5 pl-3 pl-lg-6" fluid>
+    <!-- Dialogs -->
+    <f-f-detail :show="dialogs.ff_detail.show" :data="dialogs.ff_detail.data" @dialogActions="($val) => dialogActions($val)"></f-f-detail>
+    <!-- End:Dialogs -->
     <!-- Greetings -->
     <div data-aos="fade-down">
       <v-card  rounded="xl" :dark="$store.state.theme == 'dark'">
@@ -171,6 +174,40 @@
                 </v-card>
               </div>
             </v-col>
+            <v-col v-if="$store.state.User.role_name == 'FIELD COORDINATOR'" cols="12" md="4" class="">
+              <div
+                data-aos="zoom-in"
+                :data-aos-delay="1400">
+                <v-card
+                  class="rounded-xl shadow-lg"
+                  @click="dialogActions(true)"
+                >
+                  <v-list-item two-line>
+                    <v-list-item-avatar
+                      data-aos="zoom-in"
+                      data-aos-delay="800"
+                      tile
+                      size="80"
+                      :color="'blue'"
+                      class="rounded-circle"
+                    >
+                      
+                    <v-icon style="font-size: 35px !important" color="white">
+                      mdi-account-details
+                    </v-icon>
+                    </v-list-item-avatar>
+                    <v-list-item-content class="px-3">
+                      <v-list-item-title class="text-h5 mb-1 font-weight-bold">
+                        Field Facilitator
+                      </v-list-item-title>
+                      <v-list-item-subtitle>
+                        Detail
+                      </v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-card>
+              </div>
+            </v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -185,24 +222,33 @@
 
 <script>
 import axios from "axios";
-import DMap from './components/maps'
-import tepview from '@/views/Dashboard/components/360view'
 import LottieAnimation from 'lottie-web-vue'
+
 import plantingAnimation from '@/assets/lottie/planting.json'
 import plant1 from '@/assets/lottie/plant-1.json'
 import plant2 from '@/assets/lottie/plant-2.json'
 import plant3 from '@/assets/lottie/plant-3.json'
 import plant4 from '@/assets/lottie/plant-4.json'
 import moneyTree from '@/assets/lottie/money-tree.json'
+import DMap from './components/maps'
+import tepview from '@/views/Dashboard/components/360view'
+import FFDetail from '@/views/Dashboard/components/dialogs/FFDetail'
 
 export default {
   name: "Dashboard",
   components: {
     DMap,
     tepview,
-    LottieAnimation
+    LottieAnimation,
+    FFDetail
   },
   data: () => ({
+    dialogs: {
+      ff_detail: {
+        show:false,
+        data: null
+      }
+    },
     loading: false,
     lottie: {
       planting: moneyTree,
@@ -327,6 +373,35 @@ export default {
   computed: {
   },
   methods: {
+    async dialogActions(show) {
+      const user = this.User
+      if (user.role_name == 'FIELD COORDINATOR') {
+        this.dialogs.ff_detail.data = {
+          fcNo: user.employee_no,
+          programYear: this.options.programYear
+        }
+        this.dialogs.ff_detail.show = show
+      }
+    },
+    async getOptionsData(params) {
+      let urlEndpoint = ''
+      let items = []
+      
+      if (params.type == 'mu_no') urlEndpoint = `GetManagementUnit?program_year=${params.program_year}`
+
+      if (urlEndpoint) {
+        const url = this.$store.getters.getApiUrl(urlEndpoint)
+        const res = await axios.get(url, this.$store.state.apiConfig)
+
+        items = res.data.data.result
+
+        if (items.length > 0) {
+          if (['mu_no'].includes(params.type)) items = items.sort((a, b) => a.name.localeCompare(b.name))
+        }
+      }
+
+      return items
+    },
     async initialize() {
       try {
         this.loading = true;
@@ -369,29 +444,6 @@ export default {
         this.loading = false
       }
     },
-    downloadManualBook() {
-      const url = `https://trees4trees.sharepoint.com/:b:/g/EdnPK5LSmNVIvauAiE1qy5MBb5zC9UhWdUUFokVeI9FV2g?e=3wlCiA`
-      window.open(url, '_blank')
-    },
-    async getOptionsData(params) {
-      let urlEndpoint = ''
-      let items = []
-      
-      if (params.type == 'mu_no') urlEndpoint = `GetManagementUnit?program_year=${params.program_year}`
-
-      if (urlEndpoint) {
-        const url = this.$store.getters.getApiUrl(urlEndpoint)
-        const res = await axios.get(url, this.$store.state.apiConfig)
-
-        items = res.data.data.result
-
-        if (items.length > 0) {
-          if (['mu_no'].includes(params.type)) items = items.sort((a, b) => a.name.localeCompare(b.name))
-        }
-      }
-
-      return items
-    },
     // Utilities
     catchingError(error) {
         if (error.response) {
@@ -414,6 +466,10 @@ export default {
       setInterval(() => {
         this.time.clock = new Date().toLocaleTimeString('US')
       }, 100)
+    },
+    downloadManualBook() {
+      const url = `https://trees4trees.sharepoint.com/:b:/g/EdnPK5LSmNVIvauAiE1qy5MBb5zC9UhWdUUFokVeI9FV2g?e=3wlCiA`
+      window.open(url, '_blank')
     },
     async setLottieDashboard(source) {
       if (source == 'Penilikan Lubang') this.lottie.planting = await plant1;
