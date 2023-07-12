@@ -1511,7 +1511,7 @@ export default {
     async getMU() {
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetManagementUnit",
+          this.BaseUrlGet + `GetManagementUnit?program_year=${this.programYear}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -1542,7 +1542,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
+          this.BaseUrlGet + `GetTargetArea?program_year=${this.programYear}&mu_no=${valparam}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -1577,7 +1577,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam,
+          this.BaseUrlGet + `GetDesa?program_year=${this.programYear}&kode_ta=${valparam}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,

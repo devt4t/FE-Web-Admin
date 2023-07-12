@@ -1651,7 +1651,7 @@
       :server-items-length="table.datas.total"
       :page="table.pagination.current_page"
       :footer-props="{
-        itemsPerPageOptions: [10, 25, 40, -1],
+        itemsPerPageOptions: [10, 25, 50, 100, 200],
         showCurrentPage: true,
         showFirstLastPage: true,
       }"
@@ -1737,17 +1737,6 @@
             style="max-width: 200px"
           ></v-select>
           <v-divider class="d-none d-md-block mx-2"></v-divider>
-          <v-text-field
-            class="mt-2 mt-lg-0"
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            color="green"
-            hide-details
-            outlined
-            rounded
-            dense
-          ></v-text-field>
           <v-btn
             class="mb-2 mr-1 ml-2 d-none d-md-block"
             @click="download()"
@@ -2171,16 +2160,17 @@ export default {
       { text: "Nama FF", value: "ff_name", searchable: true},
       // { text: "Kode Petani", value: "kodePetani"},
       { text: "Nama Petani", value: "farmer_name", searchable: true},
+      { text: "Kode Petani", value: "farmer_no", searchable: true, sortable: false},
       { text: "Desa", value: "village_name", searchable: true},
-      { text: "NIK Petani", value: "farmer_nik", searchable: true},
+      { text: "NIK Petani", value: "farmer_nik", searchable: true, sortable: false},
       { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
-      { text: "Tahun Bergabung", value: "created_at", searchable: true},
-      { text: "Luas Lahan", value: "land_area", searchable: true},
+      { text: "Tahun Bergabung", value: "created_at", searchable: false},
+      { text: "Luas Lahan", value: "land_area", searchable: false},
       { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
-      { text: "Tutupan", value: "tutupan_lahan", searchable: true},
-      { text: "Jenis Bibit", value: "jenis_bibit"},
-      { text: "KAYU", value: "pohon_kayu", searchable: true},
-      { text: "MPTS", value: "pohon_mpts", searchable: true},
+      { text: "Tutupan", value: "tutupan_lahan", searchable: false},
+      { text: "Jenis Bibit", value: "jenis_bibit", sortable: false},
+      { text: "KAYU", value: "pohon_kayu", searchable: false},
+      { text: "MPTS", value: "pohon_mpts", searchable: false},
       { text: "Status", value: "approve", sortable: false},
       { text: "Actions", value: "actions", sortable: false, align: "right"},
     ],
@@ -2435,7 +2425,7 @@ export default {
     DetailTreesLahanTemp: [],
 
     itemTemp: {
-      idTblLahan: "",
+      id_lahan: "",
     },
     jumlahPohonTemp: 0,
     idPohonTemp: 0,
@@ -2499,7 +2489,7 @@ export default {
             value: 1
           }]
         },
-        field: 'form_no',
+        field: 'lahan_no',
         value: ''
       },
       datas: {
@@ -2552,21 +2542,14 @@ export default {
         }
       }
     },
+    showTesterData() {
+      this.initialize()
+    },
+    filtered_status() {
+      this.initialize()
+    }
   },
   computed: {
-    mainTableData() {
-      let data = this.raw_data
-      if (this.showTesterData == false) {
-        data = data.filter((f1) =>
-          f1.lahan_no.match(/^10_00.*$/)
-        );
-      }
-      if (this.filtered_status == 'Belum Lengkap') data = data.filter(n => n.complete_data == 0)
-      if (this.filtered_status == 'Belum Verifikasi') data = data.filter(n => n.complete_data == 1 && n.approve == 0) 
-      if (this.filtered_status == 'Terverifikasi') data = data.filter(n => n.approve == 1) 
-      
-      return data
-    }
   },
 
   methods: {
@@ -2667,11 +2650,13 @@ export default {
       // this.fc_no_global = this.User.fc.fc;
       // get search options column
       this.table.search.options.column_loading = true
-      let searchColumns = ['form_no', 'nama_ff', 'nama_petani', 'no_lahan', 'land_area', 'opsi_pola_tanam', 'validation']
       // set search column options
       await this.headers.forEach(val => {
         if (val.value && val.searchable) {
-          this.table.search.options.column.push(val.value)
+          this.table.search.options.column.push({
+            text: val.text,
+            value: val.value
+          })
         }
       })
       this.table.search.options.column_loading = false
@@ -2733,30 +2718,31 @@ export default {
       if (status == "belum") return "orange";
       else return "green";
     },
-    async initialize() {
-      this.loadtable = true;
-      this.$store.state.loadingOverlayText = 'Mengambil data lahan...'
-      this.$store.state.loadingOverlay = true
-      await this.getTableData().then(data => {
-        this.dataobject = data.items
-        this.table.datas.total = data.total
-        this.table.pagination.current_page = data.current_page
-        this.table.pagination.length_page = data.last_page
-        const pageOptions = []
-        for (let index = 1; index <= data.last_page; index++) {
-          pageOptions.push(index)          
+    async getOpsiPolaTanamOptions() {
+      try {
+        this.table.search.options.pola_tanam_loading = true
+        if (this.table.search.options.pola_tanam.length == 0) {
+          const res = await axios.get(
+            this.BaseUrlGet + "GetOpsiPolaTanamOptions",
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          )
+
+          this.table.search.options.pola_tanam = res.data.data.result
         }
-        this.table.pagination.page_options = pageOptions
-      }).finally(() => {
-        this.$store.state.loadingOverlay = false
-        this.$store.state.loadingOverlayText = null
-        this.loadtable = false
-      })
+      } finally {
+        this.table.search.options.pola_tanam_loading = false
+      }
     },
     getTableData() {
       return new Promise((resolve, reject) => {
         const params = new URLSearchParams({
-          program_year: this.program_year,
+          program_year: this.programYear,
+          tester_data: this.showTesterData ? 1 : 0,
+          status: this.filtered_status,
           page: this.table.pagination.current_page,
           per_page: this.table.pagination.per_page,
           sortBy: this.table.options.sortBy || '',
@@ -2793,16 +2779,37 @@ export default {
             reject('Error')
           }
         }).catch(err => {
-          this.sessionEnd(err)
+          this.dataobject = []
+          this.errorResponse(err)
           reject(err)
         })
+      })
+    },
+    async initialize() {
+      this.loadtable = true;
+      this.$store.state.loadingOverlayText = 'Mengambil data lahan...'
+      this.$store.state.loadingOverlay = true
+      await this.getTableData().then(data => {
+        this.dataobject = data.items
+        this.table.datas.total = data.total
+        this.table.pagination.current_page = data.current_page
+        this.table.pagination.length_page = data.last_page
+        const pageOptions = []
+        for (let index = 1; index <= data.last_page; index++) {
+          pageOptions.push(index)          
+        }
+        this.table.pagination.page_options = pageOptions
+      }).finally(() => {
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = null
+        this.loadtable = false
       })
     },
 
     async getMU() {
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetManagementUnit",
+          this.BaseUrlGet + `GetManagementUnit?program_year=${this.programYear}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2832,7 +2839,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
+          this.BaseUrlGet + `GetTargetArea?program_year=${this.programYear}&mu_no=${valparam}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2867,7 +2874,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam,
+          this.BaseUrlGet + `GetDesa?program_year=${this.programYear}&kode_ta=${valparam}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2896,10 +2903,10 @@ export default {
     async getDetail(item) {
       // console.log()
       this.load = true;
-      this.defaultItem.id = item.idTblLahan;
+      this.defaultItem.id = item.id_lahan;
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetLahanDetail?id=" + item.idTblLahan,
+          this.BaseUrlGet + "GetLahanDetail?id=" + item.id_lahan,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -3784,7 +3791,7 @@ export default {
       });
     },
     showDeleteModal(item) {
-      this.defaultItem.id = item.idTblLahan;
+      this.defaultItem.id = item.id_lahan;
       this.dialogDelete = true;
     },
     showUnverifModal(item) {
