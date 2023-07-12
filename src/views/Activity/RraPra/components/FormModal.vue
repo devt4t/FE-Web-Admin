@@ -4941,7 +4941,7 @@ export default {
                         if (this.inputs[secItem].required) {
                             const itemModel = this.inputs[secItem].model
                             if (!itemModel) valEmpty += 1
-                            if (typeof itemModel == 'object') if (itemModel.length == 0) valEmpty += 1
+                            // if (typeof itemModel == 'object') if (itemModel.length == 0) valEmpty += 1
                         }
 
                         if (valEmpty > 0) emptyData.push(`PRA:${section.title}:${secItem}`)
