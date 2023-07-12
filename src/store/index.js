@@ -1,7 +1,7 @@
 import moment from 'moment/moment'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { version } from '../../package.json'
+import { version, version_date_time } from '../../package.json'
 import JustLoadingLineModul from './scpecialEmails/JustLoadingLineModul'
 import { Arjasari, Ciminyak, Kebumen, Pati } from './scpecialEmails/nurseryTeam'
 import TaskForceEmail from './scpecialEmails/taskForceTeam'
@@ -26,6 +26,7 @@ export default new Vuex.Store({
     loadingOverlayText: null,
     maintenanceOverlay: false,
     packageVersion: version || '0',
+    packageVersionDateTime: version_date_time || '0',
     theme: 'dark',
     programYear: {
       model: '2023',

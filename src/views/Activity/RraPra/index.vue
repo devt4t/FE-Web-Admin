@@ -10,7 +10,7 @@
             large
         ></v-breadcrumbs>
         <!-- Modals -->
-        <FormModal :show="modals.form.show" :id="modals.form.id" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
+        <FormModal :show="modals.form.show" :id="modals.form.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
         <DetailModal :show="modals.detail.show" :id="modals.detail.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.detail.key"/>
         <!-- Main Table -->
         <v-data-table
@@ -28,7 +28,7 @@
             <template v-slot:top>
                 <v-row class="my-2 mx-2 mx-lg-3 align-center">
                     <!-- Program Year -->
-                    <v-select
+                    <!-- <v-select
                         color="success"
                         item-color="success"
                         v-model="localConfig.programYear"
@@ -42,7 +42,7 @@
                         label="Program Year"
                         class="mx-auto mr-lg-2 mb-2 mb-lg-0"
                         style="max-width: 200px"
-                    ></v-select>
+                    ></v-select> -->
                     <!-- Search Field -->
                     <v-text-field
                         color="green"
@@ -58,13 +58,13 @@
                     ></v-text-field>
                     <v-divider class="mx-2 d-none d-lg-block"></v-divider>
                     <div class="mx-auto">
-                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0" rounded class="mr-2" @click="() => exportExcel()">
+                        <v-btn color="green white--text" :disabled="table.loading.show || table.items.length == 0 || true" rounded class="mr-2" @click="() => exportExcel()">
                             <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
                             Export
                         </v-btn>
                         <v-btn color="info" rounded class="pl-2" @click="() => {modals.form.show = true;modals.form.key += 1}">
                             <v-icon class="mr-1">mdi-plus-circle</v-icon>
-                            Add
+                            Tambah
                         </v-btn>
                     </div>
                 </v-row>
@@ -82,10 +82,10 @@
                 </span>
             </template>
             <!-- Status Column -->
-            <template v-slot:item.is_verify="{item}">
-                <v-chip :color="item.is_verify == 1 ? 'green' : 'red'" class="white--text pl-1">
-                <v-icon class="mr-1">mdi-{{ item.is_verify  == 1 ? 'check' : 'close' }}-circle</v-icon>
-                {{ item.is_verify == 1 ? 'Verified' : 'Unverified' }}
+            <template v-slot:item.status="{item}">
+                <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
+                <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
+                {{ getStatusColumn('text', item.status) }}
                 </v-chip>
             </template>
             <!-- Action Column -->
@@ -157,9 +157,10 @@ export default {
             headers: [
                 {text: 'No', value: 'no'},
                 {text: 'Form No', value: 'form_no'},
+                {text: 'Desa', value: 'village_name'},
                 {text: 'Tanggal', value: 'rra_pra_date_start'},
                 {text: 'PIC Email', value: 'user_id'},
-                {text: 'Status', value: 'is_verify', align: 'center'},
+                {text: 'Status', value: 'status', align: 'center'},
                 {text: 'Actions', value: 'actions', align: 'right'},
             ],
             items: [],
@@ -201,21 +202,61 @@ export default {
             this.localConfig.programYear = this.$store.state.programYear.model
             await this.getTableData()
         },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'blue'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
+        },
         async getTableData() {
             try {
                 this.table.loading.show = true
+                this.table.loading.text = 'Mem-filter data..'
+                const User = this.$store.state.User
+                const created_by = []
+                if (['UNIT MANAGER', 'FIELD COORDINATOR'].includes(User.role_name)) {
+                    created_by.push(User.email)
+                    if (User.role_name == 'UNIT MANAGER') {
+                        const resEmp = await axios.get(this.$store.getters.getApiUrl(`GetEmployeebyManager?position_no=19&manager_code=${User.employee_no}`), this.$store.state.apiConfig)
+                        resEmp.data.data.result.data.map(val => {
+                            created_by.push(val.email)
+                        })
+                    }
+                }
+                let getScooping = this.$store.getters.getApiUrl(`GetScoopingAll?user_id=${created_by.toString()}`)
+                getScooping = await axios.get(getScooping, this.$store.state.apiConfig)
+                const scoopingFormNo = getScooping.data.data.result.map(val => {return val.data_no})
+
+                this.table.loading.text = 'Mengambil data RRA PRA..'
                 let url = this.$store.getters.getApiUrl(`GetRraPraAll`)
                 const res = await axios.get(url, this.$store.state.apiConfig)
-                this.table.items = res.data.data.result
+                this.table.items = res.data.data.result.filter(val => scoopingFormNo.includes(val.form_no))
                 // console.log(this.table.items)
                  
-            } catch (err) { this.errorResponse(err) } finally {
+            } catch (err) { 
+                this.table.items = []
+                this.errorResponse(err) 
+            } finally {
                 this.table.loading.show = false
             }
         },
         modalActions(val) {
             if (val.type == 'close') {
                 this.modals[val.name].show = false
+                this.modals[val.name].data = null
             }
         },
         async showModal(name, data) {
@@ -227,6 +268,7 @@ export default {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
+                showCloseButton: true,
                 showConfirmButton: false,
                 timer: 10000,
                 timerProgressBar: true,

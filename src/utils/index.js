@@ -25,6 +25,10 @@ const utils = {
     capitalizeFirstLetter (string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
     },
+    capitalizeLetter (string) {
+        if (string) return string.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+        return ''
+    },
     // date format
     dateFormat (date, format) {
         return moment(date).format(format)
@@ -74,9 +78,12 @@ const utils = {
     },
     // number format
     numberFormat (num)  {
-        return new Intl.NumberFormat('id-ID', {
-            maximumFractionDigits: 0
-        }).format(num)
+        if (typeof num == 'number') {
+            return new Intl.NumberFormat('id-ID', {
+                maximumFractionDigits: 0
+            }).format(num)
+        }
+        return num
     },
     // phone number
     formatPhoneNumber(phoneNumber) {
@@ -89,6 +96,7 @@ const utils = {
       },
     //   whatsapp
     whatsappPhone(no) {
+        if (!no) return no
         return no.replace(/^0/, "62");
     }
 }

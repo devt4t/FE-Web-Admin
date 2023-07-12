@@ -1331,6 +1331,7 @@
             </v-col>
             <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
               <v-btn
+                :disabled="!['iyas.muzani@trees4trees.org','bayu.pratama@trees4trees.org'].includes($store.state.User.email)"
                 dark
                 rounded
                 @click="showAddModal()"
@@ -1999,12 +2000,12 @@ export default {
 
   mounted() {
     this.firstAccessPage();
-    // if (this.User.role_group != 'IT') {
-    //   this.$store.state.maintenanceOverlay = true
-    // }
+    if (this.User.role_group != 'IT' || this.User.email != 'iyas.muzani@trees4trees.org') {
+      // this.$store.state.maintenanceOverlay = true
+    }
   },
   destroyed() {
-    // this.$store.state.maintenanceOverlay = false
+    this.$store.state.maintenanceOverlay = false
     
     // reset loading overlay
     this.$store.state.loadingOverlay = false

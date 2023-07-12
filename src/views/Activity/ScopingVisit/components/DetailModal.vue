@@ -7,7 +7,16 @@
     >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2">
-                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document</v-icon></v-btn> Scoping Visit #{{ this.id }}</span>
+                <span class="white--text">
+                    <v-btn class="white dark--text mr-1" fab x-small>
+                        <v-icon color="grey darken-3">mdi-file-document</v-icon>
+                    </v-btn> 
+                    Scoping Visit #{{ this.id }}
+                    <v-chip small :color="getStatusColumn('bg_color', status_data)" class="white--text ml-2">
+                        <v-icon class="mr-1">{{ getStatusColumn('icon', status_data) }}</v-icon>
+                        {{ getStatusColumn('text', status_data) }}
+                    </v-chip>
+                </span>
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text class="pa-0" style="min-height: 300px;">
@@ -33,174 +42,7 @@
                 </v-overlay>
                 <!-- export table -->
                 <div id="containerForExport-ScoopingVisit" style="display: none">
-                    <table id="tableForExport-ScoopingVisit" style="width: 100%;">
-                        <tr>
-                            <th colspan="6" style="text-align: center;font-size: larger;">Scooping Visit</th>
-                        </tr>
-                        <tr>
-                            <th colspan="6" style="text-align: center;">Form No: #{{ this.id }}</th>
-                        </tr>
-                        <tr>
-                            <td colspan="6"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">1. Tanggal & Lokasi </td>
-                        </tr>
-                        <tr>
-                            <td>Tanggal</td>
-                            <td colspan="5">: {{ this._utils.dateFormat(this.raw_data.start_scooping_date, 'DD MMMM YYYY') }} {{ this.raw_data.start_scooping_date != this.raw_data.end_scooping_date ? ' - ' + this._utils.dateFormat(this.raw_data.end_scooping_date, 'DD MMMM YYYY') : '' }}</td>
-                        </tr>
-                        <tr>
-                            <td>Provinsi</td>
-                            <td colspan="5">: {{ this.raw_data.province_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kab / Kota</td>
-                            <td colspan="5">: {{ this.raw_data.city_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kecamatan</td>
-                            <td colspan="5">: {{ this.raw_data.district_name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Desa</td>
-                            <td colspan="5">: {{ this.raw_data.village_name }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">2. Data Desa</td>
-                        </tr>
-                        <tr>
-                            <td>Luas Desa</td>
-                            <td colspan="5">: {{ this.raw_data.land_area }} Ha</td>
-                        </tr>
-                        <tr>
-                            <td>Aksesibilitas</td>
-                            <td colspan="5">: {{ this.raw_data.accessibility }}</td>
-                        </tr>
-                        <tr>
-                            <td>Sumber Air</td>
-                            <td colspan="5">: {{ this.raw_data.water_source }}</td>
-                        </tr>
-                        <tr>
-                            <td>Sumber Listrik</td>
-                            <td colspan="5">: {{ this.raw_data.electricity_source }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tempat Pemerintahan</td>
-                            <td colspan="5">: {{ this.raw_data.goverment_place }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">3. Data Populasi</td>
-                        </tr>
-                        <tr>
-                            <td>Total Keluarga</td>
-                            <td colspan="5">: {{ this.raw_data.total_kk }} KK</td>
-                        </tr>
-                        <tr>
-                            <td>Total Laki - Laki</td>
-                            <td colspan="5">: {{ this.raw_data.total_male }} orang</td>
-                        </tr>
-                        <tr>
-                            <td>Total Perempuan</td>
-                            <td colspan="5">: {{ this.raw_data.total_female }} orang</td>
-                        </tr>
-                        <tr>
-                            <td>Total Dusun</td>
-                            <td colspan="5">: {{ this.raw_data.total_dusun }} dusun</td>
-                        </tr>
-                        <tr>
-                            <td>Total Dusun Yang Berpotensi</td>
-                            <td colspan="5">: {{ this.raw_data.potential_dusun }} dusun</td>
-                        </tr>
-                        <tr>
-                            <td>Deskripsi Potensi Dusun</td>
-                            <td colspan="5">: <div v-html="this.raw_data.potential_description"></div></td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">4. Kelengkapan Data Lahan Kering</td>
-                        </tr>
-                        <tr>
-                            <td>Luas Lahan Kering</td>
-                            <td colspan="5">: {{ this.raw_data.dry_land_area }} Ha</td>
-                        </tr>
-                        <tr>
-                            <td>Jenis Tanah</td>
-                            <td colspan="5">: {{ this.raw_data.land_type }}</td>
-                        </tr>
-                        <tr>
-                            <td>Ketinggian Tanah (mdpl)</td>
-                            <td colspan="5">: {{ this.raw_data.land_height }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kelerengan Tanah (<sup>o</sup>)</td>
-                            <td colspan="5">: {{ this.raw_data.land_slope }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kerapatan Vegetasi</td>
-                            <td colspan="5">: {{ this.raw_data.vegetation_density }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pola Tanam Lahan Kering</td>
-                            <td colspan="5">: {{ this.raw_data.agroforestry_type }}</td>
-                        </tr>
-                        <tr>
-                            <td>Curah Hujan (mm)</td>
-                            <td colspan="5">: {{ this.raw_data.rainfall }}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">5. Tokoh Desa</td>
-                        </tr>
-                    </table>
-                    <table style="width: 100%;border-collapse: collapse;" border="1">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Jabatan</th>
-                            <th>No HP</th>
-                            <th>Whatsapp</th>
-                        </tr>
-                        <tr v-for="(tokoh, tokohIndex) in this.raw_data.scooping_figures" :key="tokoh.name">
-                            <td>{{ tokohIndex + 1 }}</td>
-                            <td>{{ tokoh.name }}</td>
-                            <td>{{ tokoh.position }}</td>
-                            <td>{{ tokoh.phone }}</td>
-                            <td>{{ tokoh.whatsapp }}</td>
-                        </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">6. Gallery - Akses Jalan</td>
-                            <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_road_access" :key="imageExp">
-                                <td>
-                                    <img :src="imageExp" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">7. Gallery - Pertemuan</td>
-                            <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_meeting" :key="imageExp">
-                                <td>
-                                    <img :src="imageExp" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">8. Gallery - Lahan Kering</td>
-                            <tr v-for="(imageExp, imageExpIndex) in this.raw_data.photo_dry_land" :key="imageExp">
-                                <td>
-                                    <img :src="imageExp" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="font-weight: bold;">9. Gallery - Profil Desa</td>
-                            <tr>
-                                <td>
-                                    <img :src="this.raw_data.village_profile" style="max-width: 100px;max-height: 50px;"></img>
-                                </td>
-                            </tr>
-                        </tr>
-                    </table>
+                    <ExportView :id="id" :raw_data="raw_data"></ExportView>
                 </div>
                 <!-- Polygon Data -->
                 <v-row class="ma-0 mx-2">
@@ -211,7 +53,7 @@
                         </div>
                     </v-col>
                     <v-col cols="12">
-                        <DetailModalMap v-if="showModal == true" :data="map.data" :key="map.key" />
+                        <DetailModalMap v-if="showModal == true && !loading.show" :data="map.data" :key="map.key + 'DetailModalMapSCopingVisit'" />
                     </v-col>
                 </v-row>
                 <!-- data -->
@@ -338,10 +180,20 @@
                     </v-row>
                 </div>
             </v-card-text>
-            <v-card-actions class="justify-center" v-if="verificationAccess">
-                <v-btn v-if="verified_data == 0" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
-                <v-btn v-if="verified_data == 1" rounded color="red white--text" class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
-                <v-btn v-if="verified_data == 1" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
+            <v-card-actions class="justify-center">
+                <v-btn v-if="verificationAccess && status_data == 'ready_to_submit'" rounded color="green" outlined class="pr-4" @click="() => confirmVerification('verify')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi</v-btn>
+                <v-btn v-if="verificationAccess && status_data == 'submit_review'" rounded color="red white--text" class="pr-4" @click="() => confirmVerification('unverif')"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverifikasi</v-btn>
+                <v-btn v-if="verificationAccess && status_data == 'submit_review'" rounded color="green" outlined class="pr-4" @click="() => exportReport()"><v-icon class="mr-1">mdi-microsoft-word</v-icon> Export</v-btn>
+                <v-btn v-if="$store.state.User.role_name != 'GIS STAFF' && status_data == 'document_saving'" 
+                    :disabled="emailToGis > 1"
+                    rounded 
+                    color="blue white--text" 
+                    small 
+                    @click="() => sendEmailToGIS(raw_data.data_no)"
+                >
+                    <v-icon class="mr-1">mdi-email-{{ emailToGis > 1 ? 'check' : 'arrow-right' }}</v-icon>
+                    Email to GIS
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -356,11 +208,13 @@ import Swal from 'sweetalert2'
 import formOptions from '@/assets/json/rraPraOptions.json'
 import treeAnimation from '@/assets/lottie/tree.json'
 import DetailModalMap from './DetailModalMap.vue'
+import ExportView from '@/views/Activity/ScopingVisit/components/ExportView'
 
 export default {
     components: {
         LottieAnimation,
-        DetailModalMap
+        DetailModalMap,
+        ExportView
     },
     props: {
         show: {
@@ -725,9 +579,12 @@ export default {
             //     ]
             // }
         ],
+        formOptions: formOptions,
         raw_data: {},
         imageKeyComponent: 71625327,
         verified_data: 0,
+        status_data: '',
+        emailToGis: 0,
         map: {
             key: 11101203,
             data: {
@@ -774,8 +631,8 @@ export default {
         confirmVerification(type) {
             const url = type == 'verify' ? 'VerificationScooping' : 'UnverificationScooping'
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                title: 'Apakah anda yakin?',
+                text: "Setelah ini anda tidak akan bisa membatalkannya!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#2e7d32',
@@ -789,8 +646,8 @@ export default {
                     axios.post(this.$store.getters.getApiUrl(url), {data_no: this.id, verified_by: this.$store.state.User.email}, this.$store.state.apiConfig)
                     .then(res => {
                         Swal.fire({
-                            title: 'Verified!',
-                            text: `Scooping data #${this.id} has been verified.`,
+                            title: 'Berhasil!',
+                            text: `Scooping data #${this.id} telah di${type == 'verify' ? '' : ' Un-'}verifikasi.`,
                             icon: 'success',
                             confirmButtonColor: '#2e7d32',
                         })
@@ -856,12 +713,30 @@ export default {
                 this.imageKeyComponent += 1
                 const res = await axios.get(this.$store.getters.getApiUrl(`GetDetailScooping?data_no=${id}`), this.$store.state.apiConfig)
                 const data = res.data.data.result
+                for (const[key, val] of Object.entries(data)) {
+                    if (key == 'accessibility') if (val) data[key] =  this.formOptions.accessibility ? this.formOptions.accessibility.find(n => n.value == val).text : ''
+                    if (key == 'water_source') if (val) {
+                        data[key] = val.split(',').map(ws => {
+                            return this.formOptions.water_source.find(n => n.value == ws).text
+                        }).toString()
+                    }
+                    if (key == 'agroforestry_type') if (val) {
+                        data[key] = val.split(',').map(at => {
+                            return this.formOptions.agroforestry_type.find(n => n.value == at).text
+                        }).toString()
+                    }
+                }
                 this.raw_data = JSON.parse(JSON.stringify(data))
+                this.raw_data.city_name = this.raw_data.city_name.toLowerCase()
+                this.raw_data.district_name = this.raw_data.district_name.toLowerCase()
+                this.raw_data.village_name = this.raw_data.village_name.toLowerCase()
                 if (this.raw_data.photo_road_access) this.raw_data.photo_road_access = this.raw_data.photo_road_access.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.photo_dry_land) this.raw_data.photo_dry_land = this.raw_data.photo_dry_land.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.photo_meeting) this.raw_data.photo_meeting = this.raw_data.photo_meeting.split(',').map(val => {return this.$store.state.apiUrlImage + val})
                 if (this.raw_data.village_profile) this.raw_data.village_profile = this.$store.state.apiUrlImage + this.raw_data.village_profile
                 this.verified_data = data.is_verify
+                this.status_data = data.status
+                this.emailToGis = data.email_to_gis
                 for (const [key, value] of Object.entries(data)) {
                     this.datas.forEach(localData => {
                         if (localData.type == 'table') {
@@ -888,6 +763,36 @@ export default {
                 this.errorResponse(err)
                 this.$emit('action', {type: 'close', name: 'detail'})
             } finally {
+                this.loading.show = false
+            }
+        },
+        getStatusColumn(type, status) {
+            if (type == 'bg_color') {
+                if (status == 'document_saving') return 'yellow darken-1'
+                if (status == 'ready_to_submit') return 'orange'
+                if (status == 'submit_review') return 'green darken-1'
+            }
+            if (type == 'icon') {
+                if (status == 'document_saving') return 'mdi-content-save'
+                if (status == 'ready_to_submit') return 'mdi-content-save-check'
+                if (status == 'submit_review') return 'mdi-check-circle'
+            }
+            if (type == 'text') {
+                if (status == 'document_saving') return 'Disimpan'
+                if (status == 'ready_to_submit') return 'Menunggu Verifikasi'
+                if (status == 'submit_review') return 'Terverifikasi'
+            }
+
+            return ''
+        },
+        async sendEmailToGIS(data_no) {
+            try {
+                this.loading.show = true
+                this.loading.text = 'Mengirim email...'
+                await axios.get(`${this.$store.state.apiUrl.replace('api/', '')}send-mail?data_no=${data_no}`)
+            } finally {
+                this.emailToGis += 1
+                this.$emit('swal', {type: 'success', message: 'Yey! Berhasil mengirim email ke GIS STAFF!'})
                 this.loading.show = false
             }
         },

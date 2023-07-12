@@ -1,6 +1,179 @@
 {
     "accessibility": [
-        "Mudah", "Sedang", "Sulit"
+        {
+            "text": "Mudah",
+            "value": "easy"
+        },
+        {
+            "text": "Sedang",
+            "value": "medium"
+        },
+        {
+            "text": "Sulit",
+            "value": "hard"
+        }
+    ],
+    "agroforestry_type": [
+        {
+            "text": "Agroforestry Intensitas Tinggi",
+            "value": "agroforestry_high_intensive"
+        },
+        {
+            "text": "Agroforestry Intensitas Rendah",
+            "value": "agroforestry_low_intensive"
+        },
+        {
+            "text": "Konservasi",
+            "value": "conservation"
+        }
+    ],
+    "disaster_categories": [
+        {
+            "text": "Geologi ( terjadi di permukaan bumi seperti tsunami, gempa bumi, gunung meletus, dll )",
+            "value": "geologi"
+        },
+        {
+            "text": "Meteorologi / Hidrometeorologi ( berhubungan dengan iklim seperti banjir dan kekeringan )",
+            "value": "meteorologi_hidrometeorologi"
+        },
+        {
+            "text": "Ekstrateretial ( datangnya berbagai benda langit seperti asteroid atau gangguan badai matahari )",
+            "value": "ekstrateretial"
+        }
+    ],
+    "economic_distribution": [
+        {
+            "text": "UMKM",
+            "value": "umkm"
+        },
+        {
+            "text": "KUD",
+            "value": "kud"
+        },
+        {
+            "text": "Broker",
+            "value": "broker"
+        },
+        {
+            "text": "Yang Lainnya",
+            "value": "other"
+        }
+    ],
+    "farmer_family_type": [
+        {
+            "text": "Keluarga Petani",
+            "value": "petani"
+        },
+        {
+            "text": "Keluarga Non-Petani",
+            "value": "non_petani"
+        }
+    ],
+    "farmer_type_ownership": [
+        {
+            "text": "Milik Petani",
+            "value": "petani"
+        },
+        {
+            "text": "Diluar Milik Petani",
+            "value": "non_petani"
+        }
+    ],
+    "fauna_food_source": [
+        {
+            "text": "Nabati",
+            "value": "nabati"
+        },
+        {
+            "text": "Non-Nabati",
+            "value": "non_nabati"
+        }
+    ],
+    "fertilizer_categories": [
+        {
+            "text": "Alami",
+            "value": "natural"
+        },
+        {
+            "text": "Kimia",
+            "value": "chemical"
+        },
+        {
+            "text": "Keduanya",
+            "value": "both"
+        }
+    ],
+    "fertilizer_types": [
+        {
+            "text": "Urea",
+            "value": "urea"
+        },
+        {
+            "text": "SP-36",
+            "value": "sp_36"
+        },
+        {
+            "text": "KCL",
+            "value": "kcl"
+        },
+        {
+            "text": "Humus",
+            "value": "humus"
+        },
+        {
+            "text": "Kompos",
+            "value": "compost"
+        },
+        {
+            "text": "Kandang",
+            "value": "manure"
+        }
+    ],
+    "fertilizer_sources": [
+        {
+            "text": "Produksi Sendiri",
+            "value": "self_production"
+        },
+        {
+            "text": "Subsidi Pemerintah",
+            "value": "government"
+        },
+        {
+            "text": "Pengadaan",
+            "value": "procurement"
+        },
+        {
+            "text": "Yang Lainnya",
+            "value": "other"
+        }
+    ],
+    "flora_fauna_status": [
+        {
+            "text": "Punah",
+            "value": "extinct"
+        },
+        {
+            "text": "Hampir Punah",
+            "value": "almost_extinct"
+        },
+        {
+            "text": "Terancam Bahaya",
+            "value": "endangered"
+        }
+    ],
+    "land_ownership_type": [
+        {
+            "text": "Orang Luar Desa (Perorangan)",
+            "value": "orang_luar_desa"
+        },
+        {
+            "text": "Lahan Desa",
+            "value": "lahan_desa"
+        },
+        {
+            "text": "Negara",
+            "value": "negara"
+        }
     ],
     "land_type" : [
         "Andosol",
@@ -39,6 +212,140 @@
         "1550 - 1900",
         "> 1900"
     ],
+    "marketing_trade_method": [
+        {
+            "text": "Langsung ( Pasar, warung, pinggir jalan)",
+            "value": "direct"
+        },
+        {
+            "text": "Tidak Langsung ( Tengkulak, broker, dll)",
+            "value": "indirect"
+        }
+    ],
+    "marketing_trade_method_complete": [
+        {
+            "text": "Langsung ( Pasar, warung, pinggir jalan)",
+            "value": "direct"
+        },
+        {
+            "text": "Tidak Langsung ( Tengkulak, broker, dll)",
+            "value": "indirect"
+        },
+        {
+            "text": "Konsumsi Sendiri",
+            "value": "own_consumption"
+        }
+    ],
+    "marketing_period": [
+        {
+            "text": "Harian",
+            "value": "daily"
+        },
+        {
+            "text": "Mingguan",
+            "value": "weekly"
+        },
+        {
+            "text": "Bulanan",
+            "value": "monthly"
+        },
+        {
+            "text": "Musiman",
+            "value": "seasonal"
+        },
+        {
+            "text": "Tahunan",
+            "value": "yearly"
+        }
+    ],
+    "pesticide_categories": [
+        {
+            "text": "Alami",
+            "value": "natural"
+        },
+        {
+            "text": "Kimia",
+            "value": "chemical"
+        },
+        {
+            "text": "Keduanya",
+            "value": "both"
+        }
+    ],
+    "pesticide_types": [
+        {
+            "text": "Akarisida",
+            "value": "akarisida"
+        },
+        {
+            "text": "Algasida",
+            "value": "algasida"
+        },
+        {
+            "text": "Alvisida",
+            "value": "alvisida"
+        },
+        {
+            "text": "Bakterisida",
+            "value": "bakterisida"
+        },
+        {
+            "text": "Fungisida",
+            "value": "fungisida"
+        },
+        {
+            "text": "Herbisida",
+            "value": "herbisida"
+        },
+        {
+            "text": "Insektisida",
+            "value": "insektisida"
+        },
+        {
+            "text": "Moluskisida",
+            "value": "moluskisida"
+        }
+    ],
+    "pesticide_sources": [
+        {
+            "text": "Produksi Sendiri",
+            "value": "self_production"
+        },
+        {
+            "text": "Subsidi Pemerintah",
+            "value": "government"
+        },
+        {
+            "text": "Pengadaan",
+            "value": "procurement"
+        },
+        {
+            "text": "Yang Lainnya",
+            "value": "other"
+        }
+    ],
+    "problem_categories": [
+        {
+            "text": "Birokrasi",
+            "value": "bureaucracy"
+        },
+        {
+            "text": "Hewan",
+            "value": "animal_related"
+        },
+        {
+            "text": "Bencana Alam",
+            "value": "force_majeur"
+        },
+        {
+            "text": "Berhubungan Dengan Air",
+            "value": "water_related"
+        },
+        {
+            "text": "Yang Lainnya",
+            "value": "other"
+        }
+    ],
     "vegetation_density": [
         "Tinggi",
         "Sedang",
@@ -46,10 +353,30 @@
         "Terbuka"
     ],
     "water_source": [
-        "Sungai",
-        "Waduk/Danau",
-        "Pam Desa",
-        "Sumur"
+        {
+            "text": "Sungai",
+            "value": "river"
+        },
+        {
+            "text": "Waduk",
+            "value": "reservoir"
+        },
+        {
+            "text": "Danau",
+            "value": "lake"
+        },
+        {
+            "text": "Pam Desa",
+            "value": "pam_village"
+        },
+        {
+            "text": "Mata Air",
+            "value": "water_springs"
+        },
+        {
+            "text": "Sumur",
+            "value": "well"
+        }
     ],
     "rainfall": [
         "0 - 500",
@@ -58,11 +385,6 @@
         "1500 - 2000",
         "2000 - 2500",
         "2500 - 3000"
-    ],
-    "agroforestry_type": [
-        "Agroforestry High intensive",
-        "Agroforestry Low intensive",
-        "Conservation"
     ],
     "government_place": [
         "Kantor Bupati",
@@ -123,39 +445,10 @@
         "25 - 50kg : bagus",
         ">50kg : sangat bagus"
     ],
-    "disaster_categories": [
-        "Air",
-        "Angin",
-        "Tanah",
-        "Api"
-    ],
-    "fertilizer_categories": [
-        "Natural",
-        "Kimia",
-        "Keduanya"
-    ],
-    "fertilizer_types": [
-        "Urea",
-        "SP-36",
-        "KCL",
-        "Humus",
-        "Kompos",
-        "Kandang"
-    ],
-    "fertilizer_sources": [
-        "Produksi Sendiri",
-        "Pemerintah",
-        "Procurement",
-        "Yang Lainnya"
-    ],
     "income_employment": [
         "Tenaga Kerja",
         "Berdagang",
         "Peternakan"
-    ],
-    "marketingTradeMethod": [
-        "Direct Selling ( Pasar, warung, pinggir jalan)",
-        "Indirect Selling ( Tengkulak, broker, dll)"
     ],
     "marketingContractDetails": [
         "Per Harvest Time",
@@ -182,13 +475,6 @@
         "Q 3",
         "Q 4"
     ],
-    "problemCategories": [
-        "Birokrasi",
-        "Hewan",
-        "Force Majeur",
-        "Berhubungan dengan Air",
-        "Yang Lainnya"
-    ],
     "problemTypes": [
         "Longsor",
         "Kekeringan",
@@ -214,31 +500,6 @@
         "Locally Own",
         "Not Locally Own"
     ],
-    "pesticide_categories": [
-        "Natural",
-        "Kimia",
-        "Keduanya"
-    ],
-    "pesticide_types": [
-        "Akarisida",
-        "Algasida",
-        "Alvisida",
-        "Bakterisida",
-        "Fungisida",
-        "Herbisida",
-        "Insektisida",
-        "Moluskisida"
-    ],
-    "pesticide_names": [
-        "Yosan",
-        "Konfidor",
-        "Gramoxon"
-    ],
-    "pesticide_sources": [
-        "Pemerintahan",
-        "Procurement",
-        "Yang Lainnya"
-    ],
     "planting_categories": [
         "Trees",
         "Crops",
@@ -260,10 +521,6 @@
         "Kiara",
         "Yang Lainnya"
     ],
-    "floraStatus": [
-        "Punah",
-        "Hampir Punah"
-    ],
     "faunaCategories": [
         "Asiatis",
         "Peralihan",
@@ -282,14 +539,6 @@
         "Burung Jalak",
         "Yang Lainnya"
     ],
-    "faunaFoodSource": [
-        "Nabati",
-        "Non-nabati"
-    ],
-    "faunaStatus": [
-        "Punah",
-        "Hampir Punah"
-    ],
     "incomeCategories": [
         "Keluarga Petani",
         "Bukan Keluarga Petani"
@@ -307,11 +556,5 @@
         "Oil",
         "Ornamental",
         "Industrial"
-    ],
-    "economicDistribution": [
-        "UMKM",
-        "KUD",
-        "Broker",
-        "Yang Lainnya"
     ]
 }

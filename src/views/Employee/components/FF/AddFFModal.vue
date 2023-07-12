@@ -1159,7 +1159,6 @@ export default {
                     working_area: val_wa.kode_desa, 
                     program_year: val_wa.program_year.split(',')
                 }})
-                console.log(this.inputs_update)
             } catch (err) {
                 this.catchingError(err)
             } finally {
@@ -1170,10 +1169,12 @@ export default {
             try {
                 this.inputs[type].loading = true
                 this.inputs[type].model = ''
+                let program_year = this.inputs.program_year.model
+                if (this.id) program_year = ''
                 let url = ''
-                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit?program_year=${this.inputs.program_year.model}`)
-                if (type == 'target_area') url = this.$store.getters.getApiUrl(`GetTargetArea${id ? '' : 'Admin'}?program_year=${this.inputs.program_year.model}&mu_no=${id}`)
-                if (type == 'working_area') url = this.$store.getters.getApiUrl(`GetDesa${id ? '' : 'Admin'}?program_year=${this.inputs.program_year.model}&kode_ta=${id}`)
+                if (type == 'mu_no') url = this.$store.getters.getApiUrl(`GetManagementUnit?program_year=${program_year}`)
+                if (type == 'target_area') url = this.$store.getters.getApiUrl(`GetTargetArea${id ? '' : 'Admin'}?program_year=${program_year}&mu_no=${id}`)
+                if (type == 'working_area') url = this.$store.getters.getApiUrl(`GetDesa${id ? '' : 'Admin'}?program_year=${program_year}&kode_ta=${id}`)
                 if (type == 'province') url = this.$store.getters.getApiUrl('GetProvince')
                 if (type == 'city') url = this.$store.getters.getApiUrl('GetKabupaten?province_code=' + id)
                 if (type == 'kecamatan') url = this.$store.getters.getApiUrl('GetKecamatan?kabupaten_no=' + id)
@@ -1239,22 +1240,20 @@ export default {
                             console.log(userData)
                             const confirm2 = await Swal.fire({
                                 title: 'Akun GEKO FF',
-                                html: `Buat akun GEKO untuk FF yang baru saja dibuat? <br>
+                                html: `Berikut data akun ff yang akan dibuat: <br>
                                 <p>Nama:<br><b>${userData.name}</b></p>
                                 <p>Email:<br><b>${userData.email}</b></p>
                                 <p>Password:<br><b>${userData.password}</b></p>
                                 Harap diingat data akun diatas sebelum melanjutkan!
                                 `,
                                 icon: 'warning',
-                                showCancelButton: true,
+                                showCancelButton: false,
                                 confirmButtonColor: '#2e7d32',
                                 cancelButtonColor: '#d33',
                                 cancelButtonText: 'Tidak',
-                                confirmButtonText: 'Ya, Buat!'
+                                confirmButtonText: 'Okay'
                             })
-                            if (confirm2.isConfirmed) {
-                                const res2 = await axios.post(this.$store.getters.getApiUrl(`Regist`), userData, this.$store.state.apiConfig)
-                            }
+                            const res2 = await axios.post(this.$store.getters.getApiUrl(`Regist`), userData, this.$store.state.apiConfig)
                         } else console.log(`Created ff_no data not found!`)
                     }
                     await Swal.fire({

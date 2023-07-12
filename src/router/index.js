@@ -1,239 +1,197 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Dashboard from '../views/Dashboard/index.vue'
-import Login from '../views/Login.vue'
-import GantiPassword from '../views/GantiPassword.vue'
-import Employee from '../views/Employee/Employee.vue'
-import FieldFacilitator from '../views/Employee/FF.vue'
-import EmployeeManager from '../views/Employee/EmployeeManager.vue'
-import EmployeeMenu from '../views/Employee/EmployeeMenu.vue'
-import EmployeePosition from '../views/Employee/EmployeePosition.vue'
-import MainPage from '../views/MainPage.vue'
-import Farmer from '../views/Farmer/Farmer.vue'
-import Lahan from '../views/Lahan/Lahan.vue'
-import LahanUmum from '../views/Lahan/LahanUmum.vue'
-import TruckDriver from '../views/TruckDriver/TruckDriver.vue'
-import Trees from '../views/Trees/Trees.vue'
-import SosialisasiProgram from '../views/Activity/SosialisasiProgram/index.vue'
-import Activity from '../views/Activity/Activity.vue'
-import SosialisasiTanam from '../views/Activity/SosialisasiTanam.vue'
-import LubangTanam from '../views/Activity/LubangTanam.vue'
-import PenilikanTanam from '../views/Activity/PenilikanTanam.vue'
-import MaterialOrganik from '../views/Activity/MaterialOrganik.vue'
-import Monitoring2 from '../views/Activity/Monitoring2.vue'
-import PelatihanPetani from '../views/Activity/PelatihanPetani.vue'
-import Progression from '../views/Activity/Progression.vue'
-import Distribusi from '../views/Activity/Distribusi.vue'
-import SeedlingChangeRequest from '../views/Activity/components/distribusi/SeedlingChangeRequest/index.vue'
-import RraPra from '../views/Activity/RraPra/index.vue'
-import ScoopingVisit from '../views/Activity/ScopingVisit/index.vue'
-
-import Provinsi from '../views/Utilities/Provinsi.vue'
-import Kabupaten from '../views/Utilities/Kab.vue'
-import Kecamatan from '../views/Utilities/Kecamatan.vue'
-import Vilage from '../views/Utilities/Vilage.vue'
-import ManagementUnit from '../views/Utilities/MU.vue'
-import TargetArea from '../views/Utilities/TA.vue'
-import Pekerjaan from '../views/Utilities/Pekerjaan.vue'
-import Suku from '../views/Utilities/Suku.vue'
-
-import Users from '../views/Users/Users.vue'
 
 Vue.use(VueRouter)
-
+function lazyLoad(view){
+  return() => import(`@/views/${view}.vue`)
+}
 const routes = [
   {
     path: '/Home',
     name: 'Home',
-    component: Home
+    component: lazyLoad('Home')
   },
   {
     path: '/',
     name: 'Login',
-    component: Login
+    component: lazyLoad('Login')
   },
   {
     path: '/RraPra',
     name: 'RraPra',
-    component: RraPra
+    component: lazyLoad('Activity/RraPra/index')
   },
-  // {
-  //   path: '/Uploads',
-  //   name: 'Login',
-  //   component: Login
-  // },
   {
     path: '/GantiPassword',
     name: 'GantiPassword',
-    component: GantiPassword
+    component: lazyLoad('GantiPassword')
   },
   {
     path: '/Dashboard',
     name: 'Dashboard',
-    component: Dashboard
+    component: lazyLoad('Dashboard/index')
   },
   {
     path: '/MainPage',
     name: 'MainPage',
-    component: MainPage
+    component: lazyLoad('MainPage')
   },
   {
     path: '/Employee',
     name: 'Employee',
-    component: Employee
+    component: lazyLoad('Employee/Employee')
+  },
+  {
+    path: '/FieldCoordinator',
+    name: 'FieldCoordinator',
+    component: lazyLoad('Employee/FieldCoordinator/index')
   },
   {
     path: '/FieldFacilitator',
     name: 'FieldFacilitator',
-    component: FieldFacilitator
+    component: lazyLoad('Employee/FF')
   },
   {
     path: '/EmployeeManager',
     name: 'EmployeeManager',
-    component: EmployeeManager
+    component: lazyLoad('Employee/EmployeeManager')
   },
   {
     path: '/EmployeeMenu',
     name: 'EmployeeMenu',
-    component: EmployeeMenu
+    component: lazyLoad('Employee/EmployeeMenu')
   },
   {
     path: '/EmployeePosition',
     name: 'EmployeePosition',
-    component: EmployeePosition
+    component: lazyLoad('Employee/EmployeePosition')
   },
   {
     path: '/Farmer',
     name: 'Farmer',
-    component: Farmer
+    component: lazyLoad('Farmer/Farmer')
   },
   {
     path: '/Lahan',
     name: 'Lahan',
-    component: Lahan
+    component: lazyLoad('Lahan/Lahan')
   },
   {
     path: '/LahanUmum',
     name: 'LahanUmum',
-    component: LahanUmum
+    component: lazyLoad('Lahan/LahanUmum')
   },
   {
     path: '/TruckDriver',
     name: 'TruckDriver',
-    component: TruckDriver
+    component: lazyLoad('TruckDriver/TruckDriver')
   },
   {
     path: '/Trees',
     name: 'Trees',
-    component: Trees
+    component: lazyLoad('Trees/Trees')
   },
   {
     path: '/SosialisasiProgram',
     name: 'SosialisasiProgram',
-    component: SosialisasiProgram
-  },
-  {
-    path: '/Activity',
-    name: 'Activity',
-    component: Activity
+    component: lazyLoad('Activity/SosialisasiProgram/index')
   },
   {
     path: '/ScoopingVisit',
     name: 'ScoopingVisit',
-    component: ScoopingVisit
+    component: lazyLoad('Activity/ScopingVisit/index')
   },
   {
     path: '/SosialisasiTanam',
     name: 'SosialisasiTanam',
-    component: SosialisasiTanam
+    component: lazyLoad('Activity/SosialisasiTanam')
   },
   {
     path: '/PelatihanPetani',
     name: 'PelatihanPetani',
-    component: PelatihanPetani
+    component: lazyLoad('Activity/PelatihanPetani')
   },
   {
     path: '/Progression',
     name: 'Progression',
-    component: Progression
+    component: lazyLoad('Activity/Progression')
   },
   {
     path: '/LubangTanam',
     name: 'LubangTanam',
-    component: LubangTanam
+    component: lazyLoad('Activity/LubangTanam')
   },
   {
     path: '/MaterialOrganik',
     name: 'MaterialOrganik',
-    component: MaterialOrganik
+    component: lazyLoad('Activity/MaterialOrganik')
   },
   {
     path: '/PenilikanTanam',
     name: 'PenilikanTanam',
-    component: PenilikanTanam
+    component: lazyLoad('Activity/PenilikanTanam')
   },
   {
     path: '/SeedlingChangeRequest',
     name: 'SeedlingChangeRequest',
-    component: SeedlingChangeRequest
+    component: lazyLoad('Activity/components/distribusi/SeedlingChangeRequest/index')
   },
   {
     path: '/Distribusi',
     name: 'Distribusi',
-    component: Distribusi
+    component: lazyLoad('Activity/Distribusi')
   },
   {
     path: '/Monitoring2',
     name: 'Monitoring2',
-    component: Monitoring2
+    component: lazyLoad('Activity/Monitoring2')
   },
 
   
   {
     path: '/Provinsi',
     name: 'Provinsi',
-    component: Provinsi
+    component: lazyLoad('Utilities/Provinsi')
   },
   {
     path: '/Kabupaten',
     name: 'Kabupaten',
-    component: Kabupaten
+    component: lazyLoad('Utilities/Kab')
   },
   {
     path: '/Kecamatan',
     name: 'Kecamatan',
-    component: Kecamatan
+    component: lazyLoad('Utilities/Kecamatan')
   },
   {
     path: '/Vilage',
     name: 'Vilage',
-    component: Vilage
+    component: lazyLoad('Utilities/Vilage')
   },
   {
     path: '/ManagementUnit',
     name: 'ManagementUnit',
-    component: ManagementUnit
+    component: lazyLoad('Utilities/MU')
   },
   {
     path: '/TargetArea',
     name: 'TargetArea',
-    component: TargetArea
+    component: lazyLoad('Utilities/TA')
   },
   {
     path: '/Pekerjaan',
     name: 'Pekerjaan',
-    component: Pekerjaan
+    component: lazyLoad('Utilities/Pekerjaan')
   },
   {
     path: '/Suku',
     name: 'Suku',
-    component: Suku
+    component: lazyLoad('Utilities/Suku')
   },
   {
     path: '/Users',
     name: 'Users',
-    component: Users
+    component: lazyLoad('Users/Users')
   }
 ]
 
