@@ -85,6 +85,10 @@
                     {{ _utils.dateFormat(item.end_scooping_date, 'DD MMMM Y') }}
                 </span>
             </template>
+            <!-- Luas Desa -->
+            <template v-slot:item.potential_dusun="{item}">
+                {{ _utils.numberFormat(item.potential_dusun) }} Dusun
+            </template>
             <!-- Status Column -->
             <template v-slot:item.status="{item}">
                 <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
@@ -166,6 +170,7 @@ export default {
                 {text: 'Desa', value: 'village_name'},
                 {text: 'Luas Desa', value: 'land_area'},
                 {text: 'Tanggal', value: 'start_scooping_date'},
+                {text: 'Potensi', value: 'potential_dusun', align: 'center'},
                 {text: 'Created By', value: 'user_id'},
                 {text: 'Status', value: 'status', align: 'center'},
                 {text: 'Actions', value: 'actions', align: 'right'},
