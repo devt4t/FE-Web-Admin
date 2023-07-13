@@ -2164,7 +2164,7 @@ export default {
       { text: "Desa", value: "village_name", searchable: true},
       { text: "NIK Petani", value: "farmer_nik", searchable: true, sortable: false},
       { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
-      { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: true},
+      { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: false},
       { text: "Tahun Bergabung", value: "created_at", searchable: false},
       { text: "Luas Lahan", value: "land_area", searchable: false},
       { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
