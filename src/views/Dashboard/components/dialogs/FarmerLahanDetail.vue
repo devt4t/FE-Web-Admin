@@ -2,7 +2,7 @@
     <v-dialog
         v-model="showModal"
         scrollable
-        max-width="1400px"
+        max-width="2500px"
         transition="dialog-transition"
         content-class="rounded-xl"
         >
@@ -267,6 +267,7 @@ export default {
                 {text: 'NIK Petani', value: 'farmer_nik'},
                 {text: 'Status Lahan', value: 'lahan_approve', sortable: false},
                 {text: 'Kode Lahan', value: 'lahan_no'},
+                {text: 'Dokumen Lahan', value: 'document_no'},
                 {text: 'Luas Lahan', value: 'land_area'},
                 {text: 'Pola Tanam', value: 'opsi_pola_tanam'},
                 {text: 'Tutupan Lahan', value: 'tutupan_lahan'},
@@ -376,7 +377,17 @@ export default {
                 const params = new URLSearchParams(getparams)
                 const url = `Dashboard/DetailPetaniLahan?${params}`
                 const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                const data = call.data
+                const data = call.data.map(val => {
+                    let document_no = val.document_no
+                    if (document_no) {
+                        const matches = document_no.match(/\d+/g);
+                        document_no = matches ? matches.join('') : document_no;
+                    }
+                    return {
+                        ...val,
+                        document_no: document_no
+                    }
+                })
                 this.table.items = data
                 this.table.items_raw = data
             } catch (err) {this.errorResponse(err)} finally {

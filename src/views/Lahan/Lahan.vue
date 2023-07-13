@@ -2164,6 +2164,7 @@ export default {
       { text: "Desa", value: "village_name", searchable: true},
       { text: "NIK Petani", value: "farmer_nik", searchable: true, sortable: false},
       { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
+      { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: true},
       { text: "Tahun Bergabung", value: "created_at", searchable: false},
       { text: "Luas Lahan", value: "land_area", searchable: false},
       { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
@@ -2768,7 +2769,17 @@ export default {
           }
         ).then(res => {
           if (typeof res.data.data.result !== 'undefined') {
-            let items = res.data.data.result.data
+            let items = res.data.data.result.data.map(val => {
+              let document_no = val.document_no
+              if (document_no) {
+                const matches = document_no.match(/\d+/g);
+                document_no = matches ? matches.join('') : document_no;
+              }
+              return {
+                ...val,
+                document_no: document_no
+              }
+            })
             const total = res.data.data.result.total
             const current_page = res.data.data.result.current_page
             const last_page = res.data.data.result.last_page
