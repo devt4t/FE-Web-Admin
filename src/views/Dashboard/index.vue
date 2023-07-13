@@ -2,6 +2,8 @@
   <v-container class="mt-5 pl-3 pl-lg-6" fluid>
     <!-- Dialogs -->
     <f-f-detail :show="dialogs.ff_detail.show" :data="dialogs.ff_detail.data" @dialogActions="($val) => dialogActions($val)"></f-f-detail>
+    <f-c-detail :show="dialogs.fc_detail.show" :data="dialogs.fc_detail.data" @dialogActions="($val) => dialogActions($val)"></f-c-detail>
+    <u-m-detail :show="dialogs.um_detail.show" :data="dialogs.um_detail.data" @dialogActions="($val) => dialogActions($val)"></u-m-detail>
     <!-- End:Dialogs -->
     <!-- Greetings -->
     <div data-aos="fade-down">
@@ -174,7 +176,7 @@
                 </v-card>
               </div>
             </v-col>
-            <v-col v-if="$store.state.User.role_name == 'FIELD COORDINATOR'" cols="12" md="4" class="">
+            <v-col cols="12" md="4" class="" v-if="getDetailSubordinateTitle">
               <div
                 data-aos="zoom-in"
                 :data-aos-delay="1400">
@@ -198,7 +200,7 @@
                     </v-list-item-avatar>
                     <v-list-item-content class="px-3">
                       <v-list-item-title class="text-h5 mb-1 font-weight-bold">
-                        Field Facilitator
+                        {{ getDetailSubordinateTitle }}
                       </v-list-item-title>
                       <v-list-item-subtitle>
                         Detail
@@ -233,6 +235,8 @@ import moneyTree from '@/assets/lottie/money-tree.json'
 import DMap from './components/maps'
 import tepview from '@/views/Dashboard/components/360view'
 import FFDetail from '@/views/Dashboard/components/dialogs/FFDetail'
+import FCDetail from '@/views/Dashboard/components/dialogs/FCDetail'
+import UMDetail from "./components/dialogs/UMDetail.vue";
 
 export default {
   name: "Dashboard",
@@ -240,14 +244,24 @@ export default {
     DMap,
     tepview,
     LottieAnimation,
-    FFDetail
+    FFDetail,
+    FCDetail,
+    UMDetail
   },
   data: () => ({
     dialogs: {
       ff_detail: {
         show:false,
         data: null
-      }
+      },
+      fc_detail: {
+        show:false,
+        data: null
+      },
+      um_detail: {
+        show:false,
+        data: null
+      },
     },
     loading: false,
     lottie: {
@@ -371,16 +385,39 @@ export default {
     this.$store.state.loadingOverlayText = null
   },
   computed: {
+    getDetailSubordinateTitle() {
+      const user = this.$store.state.User
+      if (user.role_name == 'FIELD COORDINATOR') return 'Field Facilitator' 
+      if (user.role_name == 'UNIT MANAGER') return 'Field Coordinator' 
+      if (['REGIONAL MANAGER', 'PROGRAM MANAGER'].includes(user.role_name) || user.role_group == 'IT') return 'Unit Manager'
+      return '' 
+    }
   },
   methods: {
     async dialogActions(show) {
       const user = this.User
+      let dialogName = ''
+      let params = {
+        programYear: this.options.programYear
+      }
       if (user.role_name == 'FIELD COORDINATOR') {
-        this.dialogs.ff_detail.data = {
-          fcNo: user.employee_no,
-          programYear: this.options.programYear
-        }
-        this.dialogs.ff_detail.show = show
+        dialogName = 'ff_detail'
+        params.fcNo = user.employee_no
+        params.fcName = user.name
+      }
+      if (user.role_name == 'UNIT MANAGER') {
+        dialogName = 'fc_detail'
+        params.umNo = user.employee_no
+        params.umName = user.name
+      }
+      if (['REGIONAL MANAGER', 'PROGRAM MANAGER'].includes(user.role_name) || user.role_group == 'IT') {
+        dialogName = 'um_detail'
+        params.rmNo = user.employee_no
+        params.rmName = user.name
+      }
+      if (dialogName) {
+        this.dialogs[dialogName].data = params
+        this.dialogs[dialogName].show = show
       }
     },
     async getOptionsData(params) {

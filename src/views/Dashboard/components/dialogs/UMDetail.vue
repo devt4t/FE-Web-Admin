@@ -1,24 +1,25 @@
 <template>
     <div>
-        <FarmerLahanDetail :show="dialogs.farmer_lahan_detail.show" :data="dialogs.farmer_lahan_detail.data" @dialogActions="($val) => dialogActions($val)"/>
+        <f-c-detail :show="dialogs.fc_detail.show" :data="dialogs.fc_detail.data" @dialogActions="($val) => dialogActions($val)"></f-c-detail>
         <v-dialog
             v-model="showModal"
             scrollable
-            max-width="1200px"
+            max-width="1000px"
             transition="dialog-transition"
             content-class="rounded-xl"
             >
             <v-card>
                 <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                    <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Detail Field Facilitator
+                    <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Unit Manager
                     <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text>
                     <v-row class="align-center ma-0 my-2">
-                        FC: {{ data ? data.fcName || '-' : '-' }}
+                        <!-- RM: {{ data ? data.rmName || '-' : '-' }} -->
                         <v-divider class="mx-2"></v-divider>
                         <!-- program_year -->
                         <v-select
+                            v-if="false"
                             dense
                             color="success"
                             item-color="success"
@@ -41,8 +42,25 @@
                         :items="table.items"
                         class="elevation-1 rounded-xl"
                         :loading="table.loading.show"
+                        :loading-text="table.loading.text"
                         :search="table.loading.search"
+                        style="position: relative;"
                     >
+                        <template v-slot:top>
+                            <!-- Loading -->
+                            <v-overlay absolute color="white" :value="table.loading.show">
+                                <div class="d-flex flex-column justify-center align-center">
+                                    <v-progress-circular
+                                        :size="80"
+                                        :width="10"
+                                        indeterminate
+                                        color="green"
+                                    >
+                                    </v-progress-circular>
+                                    <p class="mt-2 mb-0 green--text text--darken-2">{{ table.loading.text }}</p>
+                                </div>
+                            </v-overlay>
+                        </template>
                         <template v-slot:item.index="{ index }">
                             <div>
                                 {{ index + 1 }}
@@ -53,7 +71,7 @@
                                 @click="dialogActions(true, item)"
                             >
                                 <v-icon class="mr-1">mdi-information</v-icon>
-                                Detail
+                                Detail FC
                             </v-btn>
                         </template>
                     </v-data-table>
@@ -68,11 +86,12 @@ import axios from 'axios'
 import moment from 'moment'
 import Swal from 'sweetalert2'
 
-import FarmerLahanDetail from '@/views/Dashboard/components/dialogs/FarmerLahanDetail'
+import FCDetail from '@/views/Dashboard/components/dialogs/FCDetail'
+
 export default {
-    name: 'OldGEKOFFDetail',
+    name: 'OldGEKOUMDetail',
     components: {
-        FarmerLahanDetail
+        FCDetail
     },
     props: {
         show: {
@@ -86,10 +105,10 @@ export default {
     },
     data: () => ({
         dialogs: {
-            farmer_lahan_detail: {
+            fc_detail: {
                 show:false,
                 data: null
-            }
+            },
         },
         options: {
             programYear: '',
@@ -97,14 +116,11 @@ export default {
         table: {
             headers: [
                 {text: 'No', value: 'index', width: 75},
-                {text: 'FF No', value: 'ff_no'},
-                {text: 'Nama FF', value: 'name'},
+                {text: 'ID Karyawan (GEKO)', value: 'nik'},
+                {text: 'Nama UM', value: 'name'},
+                {text: 'Email', value: 'email'},
                 {text: 'NIK / No KTP', value: 'ktp_no'},
-                {text: 'MU', value: 'mu_name'},
-                {text: 'TA', value: 'ta_name'},
-                {text: 'Desa', value: 'desa_name'},
-                {text: 'Total Petani', value: 'total_farmer'},
-                {text: 'Total Lahan', value: 'total_lahan'},
+                {text: 'Total FC', value: 'total_fc'},
                 {text: '', value: 'action'},
             ],
             items: [],
@@ -118,7 +134,7 @@ export default {
     computed: {
         showModal: {
             get: function () {
-                if (this.show && this.data.fcNo && this.data.programYear) {
+                if (this.show) {
                     this.options.programYear = this.data.programYear
                 }
                 return this.show
@@ -128,10 +144,12 @@ export default {
             }
         },
         tableItems() {
-            if (this.show && this.data.fcNo && this.options.programYear) {
+            if (this.show && this.options.programYear) {
                 this.getTableData({
                     program_year: this.options.programYear,
-                    fc_no: this.data.fcNo
+                    // manager_code: this.data.rmNo,
+                    // manager_code: '04-0004',
+                    position_no: 20 
                 })
             }
             return true
@@ -175,26 +193,42 @@ export default {
         async dialogActions(show, item = null) {
             const user = this.User
             if (item) {
-                this.dialogs.farmer_lahan_detail.data = {
-                    ...item,
-                    programYear: this.options.programYear,
-                    ffName: item.name
+                this.dialogs.fc_detail.data = {
+                    umNo: item.nik,
+                    umName: item.name,
+                    programYear: this.options.programYear
                 }
             }
-            this.dialogs.farmer_lahan_detail.show = show
+            this.dialogs.fc_detail.show = show
         },
         async getTableData(getparams) {
-            try {
-                this.table.loading.show = true
-                const params = new URLSearchParams(getparams)
-                const url = `Dashboard/DetailFieldFacilitator?${params}`
-                const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                const data = call.data
-                console.log(data)
-                this.table.items = data
-            } catch (err) {this.errorResponse(err)} finally {
-                this.table.loading.show = false
+            this.table.loading.show = true
+            this.table.loading.text = 'Mengambil data...'
+            const params = new URLSearchParams(getparams)
+            const url = `GetEmployeeAll?${params}`
+            const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+            const data = call.data.data.result.data
+            this.table.items = []
+            if (data.length > 0) {
+                data.sort((a, b) => a.name.localeCompare(b.name))
+                this.table.loading.text = `Mengambil data UM 0 / ${data.length}`
+                for (const[key, value] of Object.entries(data)) {
+                    const fcparams = new URLSearchParams({
+                        program_year: this.options.programYear,
+                        manager_code: value.nik,
+                        position: 19 
+                    })
+                    await axios.get(
+                        this.$store.getters.getApiUrl(`GetEmployeebyManager?${fcparams}`),
+                        this.$store.state.apiConfig
+                    ).then((callFC) => {
+                        value.total_fc = callFC.data.data.result.data.length
+                    }).catch(() => {value.total_fc = 0})
+                    if (value.email && value.total_fc > 0) this.table.items.push(value)
+                    this.table.loading.text = `Mengambil data UM ${parseInt(key)+1} / ${data.length}`
+                }
             }
+            this.table.loading.show = false
         }
     },
 };

@@ -2,17 +2,18 @@
     <v-dialog
         v-model="showModal"
         scrollable
-        fullscreen
+        max-width="1400px"
         transition="dialog-transition"
         content-class="rounded-xl"
         >
         <v-card>
-            <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> List Petani & Lahan FF {{ data.name || '-' }}
+            <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text" v-if="data">
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> List Petani & Lahan FF
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
                 <v-row class="align-center ma-0 my-2">
+                    FF: {{ data ? data.ffName || '-' : '-' }}
                     <v-divider class="mx-2"></v-divider>
                     <!-- program_year -->
                     <v-select
@@ -35,8 +36,17 @@
                 <table
                     id="tableForExportLahanPetaniDashboard"
                     border="1"
-                    style="border-collapse: collapse;display: none"
+                    style="border-collapse: collapse;display: none;"
                 >
+                    <tr>
+                        <th :colspan="table.headers.length">Tahun Program: {{ options.programYear }}</th>
+                    </tr>
+                    <tr>
+                        <th :colspan="table.headers.length">Data Petani & Lahan FF {{ data ? data.ffName || '-' : '-' }}</th>
+                    </tr>
+                    <tr>
+                        <td :colspan="table.headers.length">Export Time: {{ Date() }}</td>
+                    </tr>
                     <tr>
                         <th v-for="header in table.headers" :key="`tableForExportLahanPetaniDashboard${header.value}`">
                             {{ header.text }}
@@ -44,20 +54,23 @@
                             <div v-if="header.value == 'tutupan_lahan'">(%)</div>
                         </th>
                     </tr>
-                    <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableData.lahan_no}`">
+                    <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`">
                         <th v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`">
-                            <div v-if="itemTable.value == 'index'">
+                            <span v-if="itemTable.value == 'farmer_nik'">
+                                '
+                            </span>
+                            <span v-if="itemTable.value == 'index'">
                                 {{ tableDataIndex + 1 }}
-                            </div>
-                            <div v-else-if="itemTable.value == 'farmer_status' || itemTable.value == 'lahan_approve'">
-                                {{ tableData[itemTable.value] ? 'Terverifikasi' : 'Belum Verifikasi' }}
-                            </div>
-                            <div v-else-if="itemTable.value == 'jenis_bibit'">
+                            </span>
+                            <span v-else-if="itemTable.value == 'farmer_status' || itemTable.value == 'lahan_approve'">
+                                {{ tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'Terverifikasi' : 'Belum Verifikasi') : 'Belum Ada Data' }}
+                            </span>
+                            <span v-else-if="itemTable.value == 'jenis_bibit'">
                                 {{ tableData[itemTable.value] ? tableData[itemTable.value].toString() : '' }}
-                            </div>
-                            <div v-else>
+                            </span>
+                            <span v-else>
                                 {{ tableData[itemTable.value] }}
-                            </div>
+                            </span>
                         </th>
                     </tr>
                 </table>
@@ -82,7 +95,10 @@
                         </v-chip>
                     </template>
                     <template v-slot:item.lahan_approve="{ item }">
-                        <v-chip :color="`${item.lahan_approve && item.jenis_bibit.length > 0 ? 'green' : 'orange'} white--text`" class="pl-0">
+                        <v-chip v-if="!item.lahan_no" :color="`red white--text`" class="pl-0">
+                            <v-icon class="mx-1">mdi-close-circle</v-icon>Belum Ada Data
+                        </v-chip>
+                        <v-chip v-else :color="`${item.lahan_approve && item.jenis_bibit.length > 0 ? 'green' : 'orange'} white--text`" class="pl-0">
                             <v-icon class="mx-1">mdi-{{ item.lahan_approve && item.jenis_bibit.length > 0 ? 'check' : 'close' }}-circle</v-icon>{{ item.lahan_approve && item.jenis_bibit.length > 0 ? 'Terverifikasi' : 'Belum Verifikasi' }}
                         </v-chip>
                     </template>
@@ -106,8 +122,8 @@
                     </template>
                 </v-data-table>
             </v-card-text>
-            <v-card-actions>
-                <v-btn @click="downloadExcel()">Export</v-btn>
+            <v-card-actions class="justify-center align-center">
+                <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -137,14 +153,15 @@ export default {
         table: {
             headers: [
                 {text: 'No', value: 'index', width: 75},
+                {text: 'Desa', value: 'desa_name'},
                 {text: 'Kode FF', value: 'ff_no'},
                 {text: 'Nama FF', value: 'ff_name'},
+                {text: 'Status Petani', value: 'farmer_status'},
                 {text: 'Kode Petani', value: 'farmer_no'},
                 {text: 'Nama Petani', value: 'farmer_name'},
-                {text: 'Status Petani', value: 'farmer_status'},
                 {text: 'NIK Petani', value: 'farmer_nik'},
-                {text: 'Kode Lahan', value: 'lahan_no'},
                 {text: 'Status Lahan', value: 'lahan_approve'},
+                {text: 'Kode Lahan', value: 'lahan_no'},
                 {text: 'Luas Lahan', value: 'land_area'},
                 {text: 'Pola Tanam', value: 'opsi_pola_tanam'},
                 {text: 'Tutupan Lahan', value: 'tutupan_lahan'},
