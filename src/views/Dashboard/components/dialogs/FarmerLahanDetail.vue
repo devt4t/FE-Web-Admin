@@ -54,7 +54,7 @@
                             <div v-if="header.value == 'tutupan_lahan'">(%)</div>
                         </th>
                     </tr>
-                    <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`">
+                    <tr v-for="(tableData, tableDataIndex) in tableItemsData" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`">
                         <th v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`">
                             <span v-if="itemTable.value == 'farmer_nik'">
                                 '
@@ -62,8 +62,16 @@
                             <span v-if="itemTable.value == 'index'">
                                 {{ tableDataIndex + 1 }}
                             </span>
-                            <span v-else-if="itemTable.value == 'farmer_status' || itemTable.value == 'lahan_approve'">
+                            <span v-else-if="itemTable.value == 'farmer_status'">
                                 {{ tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'Terverifikasi' : 'Belum Verifikasi') : 'Belum Ada Data' }}
+                            </span>
+                            <span v-else-if="itemTable.value == 'lahan_approve'">
+                                <span v-if="tableData.lahan_complete == 0 || (tableData.jenis_bibit && tableData.jenis_bibit.length == 0)">
+                                    Belum Lengkap
+                                </span>
+                                <span v-else>
+                                    {{ tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'Terverifikasi' : 'Belum Verifikasi') : 'Belum Ada Data' }}
+                                </span>
                             </span>
                             <span v-else-if="itemTable.value == 'jenis_bibit'">
                                 {{ tableData[itemTable.value] ? tableData[itemTable.value].toString() : '' }}
@@ -77,13 +85,103 @@
                 <v-data-table
                     v-if="tableItems"
                     :headers="table.headers"
-                    :items="table.items"
+                    :items="tableItemsData"
                     class="elevation-1 rounded-xl"
                     :loading="table.loading.show"
                     :search="table.loading.search"
                     hide-default-footer
                     :items-per-page="-1"
+                    style="position: relative;"
                 >
+                    <template v-slot:top>
+                        <!-- Loading -->
+                        <v-overlay absolute color="white" :value="table.loading.show">
+                            <div class="d-flex flex-column justify-center align-center">
+                                <v-progress-circular
+                                    :size="80"
+                                    :width="10"
+                                    indeterminate
+                                    color="green"
+                                >
+                                </v-progress-circular>
+                                <p class="mt-2 mb-0 green--text text--darken-2">{{ table.loading.text }}</p>
+                            </div>
+                        </v-overlay>
+                    </template>
+                    <template v-slot:header.farmer_status>
+                        Status Petani 
+                        <v-menu
+                            rounded="xl"
+                            bottom
+                            left
+                            offset-y
+                            transition="slide-y-transition"
+                            :close-on-content-click="false"
+                            content-class="rounded-xl">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn :disabled="table.loading.show" v-bind="attrs" v-on="on" fab color="orange white--text" class="ml-1" x-small><v-icon>mdi-filter</v-icon></v-btn>
+                            </template>
+                            <v-card class="pa-2">
+                            <v-card-text class="pa-0">
+                                <v-select
+                                color="success"
+                                item-color="success"
+                                :items="['Semua', 'Belum Verifikasi', 'Terverifikasi']"
+                                :disabled="table.loading.show"
+                                v-model="table.filters.farmer_status"
+                                outlined
+                                dense
+                                hide-details
+                                :menu-props="{
+                                    bottom: true,
+                                    offsetY: true,
+                                    rounded: 'xl',
+                                    transition: 'slide-y-transition',
+                                }"
+                                rounded
+                                label="Filter Status"
+                                ></v-select>
+                            </v-card-text>
+                            </v-card>
+                        </v-menu>
+                    </template>
+                    <template v-slot:header.lahan_approve>
+                        Status Petani 
+                        <v-menu
+                            rounded="xl"
+                            bottom
+                            left
+                            offset-y
+                            transition="slide-y-transition"
+                            :close-on-content-click="false"
+                            content-class="rounded-xl">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn :disabled="table.loading.show" v-bind="attrs" v-on="on" fab color="orange white--text" class="ml-1" x-small><v-icon>mdi-filter</v-icon></v-btn>
+                            </template>
+                            <v-card class="pa-2">
+                            <v-card-text class="pa-0">
+                                <v-select
+                                color="success"
+                                item-color="success"
+                                :items="['Semua', 'Belum Ada Data', 'Belum Lengkap', 'Belum Verifikasi', 'Terverifikasi']"
+                                :disabled="table.loading.show"
+                                v-model="table.filters.lahan_approve"
+                                outlined
+                                dense
+                                hide-details
+                                :menu-props="{
+                                    bottom: true,
+                                    offsetY: true,
+                                    rounded: 'xl',
+                                    transition: 'slide-y-transition',
+                                }"
+                                rounded
+                                label="Filter Status"
+                                ></v-select>
+                            </v-card-text>
+                            </v-card>
+                        </v-menu>
+                    </template>
                     <template v-slot:item.index="{ index }">
                         <div>
                             {{ index + 1 }}
@@ -97,6 +195,9 @@
                     <template v-slot:item.lahan_approve="{ item }">
                         <v-chip v-if="!item.lahan_no" :color="`red white--text`" class="pl-0">
                             <v-icon class="mx-1">mdi-close-circle</v-icon>Belum Ada Data
+                        </v-chip>
+                        <v-chip v-else-if="item.lahan_complete == 0 || item.jenis_bibit.length == 0" :color="`red white--text`" class="pl-0">
+                            <v-icon class="mx-1">mdi-close-circle</v-icon>Belum Lengkap
                         </v-chip>
                         <v-chip v-else :color="`${item.lahan_approve && item.jenis_bibit.length > 0 ? 'green' : 'orange'} white--text`" class="pl-0">
                             <v-icon class="mx-1">mdi-{{ item.lahan_approve && item.jenis_bibit.length > 0 ? 'check' : 'close' }}-circle</v-icon>{{ item.lahan_approve && item.jenis_bibit.length > 0 ? 'Terverifikasi' : 'Belum Verifikasi' }}
@@ -151,16 +252,20 @@ export default {
             programYear: '',
         },
         table: {
+            filters: {
+                farmer_status: 'Semua',
+                lahan_approve: 'Semua',
+            },
             headers: [
                 {text: 'No', value: 'index', width: 75},
                 {text: 'Desa', value: 'desa_name'},
                 {text: 'Kode FF', value: 'ff_no'},
                 {text: 'Nama FF', value: 'ff_name'},
-                {text: 'Status Petani', value: 'farmer_status'},
+                {text: 'Status Petani', value: 'farmer_status', sortable: false},
                 {text: 'Kode Petani', value: 'farmer_no'},
                 {text: 'Nama Petani', value: 'farmer_name'},
                 {text: 'NIK Petani', value: 'farmer_nik'},
-                {text: 'Status Lahan', value: 'lahan_approve'},
+                {text: 'Status Lahan', value: 'lahan_approve', sortable: false},
                 {text: 'Kode Lahan', value: 'lahan_no'},
                 {text: 'Luas Lahan', value: 'land_area'},
                 {text: 'Pola Tanam', value: 'opsi_pola_tanam'},
@@ -170,6 +275,7 @@ export default {
                 {text: 'Total MPTS', value: 'pohon_mpts'},
             ],
             items: [],
+            items_raw: [],
             loading: {
                 show: false,
                 text: 'Loading...'
@@ -197,6 +303,29 @@ export default {
                 })
             }
             return true
+        },
+        tableItemsData() {
+            let raw = this.table.items_raw
+            const filFarStat = this.table.filters.farmer_status
+            if (filFarStat) if (filFarStat != 'Semua') {
+                raw = raw.filter(n => filFarStat == 'Terverifikasi' ? n.farmer_status == 1 : n.farmer_status == 0)
+            }
+            const filLahStat = this.table.filters.lahan_approve
+            if (filLahStat) if (filLahStat != 'Semua') {
+                if (filLahStat == 'Belum Ada Data') {
+                    raw = raw.filter(n => !n.lahan_no)
+                }
+                if (filLahStat == 'Belum Lengkap') {
+                    raw = raw.filter(n => ((n.jenis_bibit && n.jenis_bibit.length == 0) || (n.lahan_approve == 0 && n.lahan_complete == 0)))
+                }
+                if (filLahStat == 'Belum Verifikasi') {
+                    raw = raw.filter(n => n.lahan_approve == 0 && n.lahan_complete == 1)
+                }
+                if (filLahStat == 'Terverifikasi') {
+                    raw = raw.filter(n => n.lahan_approve == 1 && n.lahan_complete == 1 && n.jenis_bibit.length > 0)
+                }
+            }
+            return raw
         }
     },
     mounted() {
@@ -248,8 +377,8 @@ export default {
                 const url = `Dashboard/DetailPetaniLahan?${params}`
                 const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
                 const data = call.data
-                console.log(data)
                 this.table.items = data
+                this.table.items_raw = data
             } catch (err) {this.errorResponse(err)} finally {
                 this.table.loading.show = false
             }
