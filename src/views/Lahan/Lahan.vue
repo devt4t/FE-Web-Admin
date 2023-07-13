@@ -2511,6 +2511,9 @@ export default {
     // localStorage.setItem("token", this.authtoken);
     // this.getMU();
   },
+  destroyed() {
+    this.$store.state.loadingOverlay = false
+  },
 
   watch: {
     programYear: {
