@@ -1179,7 +1179,7 @@ export default {
                 if (type == 'city') url = this.$store.getters.getApiUrl('GetKabupaten?province_code=' + id)
                 if (type == 'kecamatan') url = this.$store.getters.getApiUrl('GetKecamatan?kabupaten_no=' + id)
                 if (type == 'village') url = this.$store.getters.getApiUrl('GetDesa?&kode_kecamatan=' + id)
-                if (type == 'fc_no') url = this.$store.getters.getApiUrl(`GetEmployeeAll?position_no=19`)
+                if (type == 'fc_no') url = this.$store.getters.getApiUrl(`GetEmployeeAll`)
 
                 if (url) {
                     const res = await axios.get(url, this.$store.state.apiConfig)
