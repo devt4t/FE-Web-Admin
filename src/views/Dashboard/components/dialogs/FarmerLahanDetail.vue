@@ -36,29 +36,46 @@
                 <table
                     id="tableForExportLahanPetaniDashboard"
                     border="1"
-                    style="border-collapse: collapse;display: none;"
+                    style="border: 2px solid black;border-collapse: collapse;display: none;"
                 >
                     <tr>
-                        <th :colspan="table.headers.length">Tahun Program: {{ options.programYear }}</th>
+                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">Tahun Program: {{ options.programYear }}</th>
                     </tr>
                     <tr>
-                        <th :colspan="table.headers.length">Data Petani & Lahan FF {{ data ? data.ffName || '-' : '-' }}</th>
+                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
+                            <h2>
+                                Data Petani & Lahan FF {{ data ? data.ffName || '-' : '-' }}
+                            </h2>
+                        </th>
                     </tr>
                     <tr>
-                        <td :colspan="table.headers.length">Export Time: {{ Date() }}</td>
+                        <td :colspan="table.headers.length" style="text-align: center;">
+                            <small>
+                                Export Time: {{ Date() }}
+                            </small>
+                        </td>
                     </tr>
+                    <tr><td :colspan="table.headers.length"></td></tr>
                     <tr>
-                        <th v-for="header in table.headers" :key="`tableForExportLahanPetaniDashboard${header.value}`">
+                        <th v-for="header in table.headers" :key="`tableForExportLahanPetaniDashboard${header.value}`" class="green darken-2 white--text">
                             {{ header.text }}
                             <div v-if="header.value == 'land_area'">(m<sup>2</sup>)</div>
                             <div v-if="header.value == 'tutupan_lahan'">(%)</div>
                         </th>
                     </tr>
-                    <tr v-for="(tableData, tableDataIndex) in tableItemsData" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`">
-                        <th v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`">
-                            <span v-if="itemTable.value == 'farmer_nik'">
+                    <tr v-for="(tableData, tableDataIndex) in tableItemsData" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} lighten-4`">
+                        <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" :class="`${
+                            (itemTable.value == 'farmer_status' ? 
+                            ( tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'green' : 'orange') : 'red') 
+                            : 
+                            (itemTable.value == 'lahan_approve' ? 
+                            (tableData.lahan_complete == 0 || (tableData.jenis_bibit && tableData.jenis_bibit.length == 0) ? 'red' 
+                            : 
+                            (tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'green' : 'orange') : 'red'))
+                            : ''))} lighten-3`">
+                            <!-- <span v-if="itemTable.value == 'farmer_nik'">
                                 '
-                            </span>
+                            </span> -->
                             <span v-if="itemTable.value == 'index'">
                                 {{ tableDataIndex + 1 }}
                             </span>
@@ -79,7 +96,7 @@
                             <span v-else>
                                 {{ tableData[itemTable.value] }}
                             </span>
-                        </th>
+                        </td>
                     </tr>
                 </table>
                 <v-data-table
@@ -225,6 +242,7 @@
             </v-card-text>
             <v-card-actions class="justify-center align-center">
                 <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
+                <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -339,7 +357,22 @@ export default {
             const wb = XLSX.utils.table_to_book(table);
 
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `LahanPetani${this.options.programYear}-${this.data.ff_no}.xlsx`);
+            XLSX.writeFile(wb, `LahanPetani${this.options.programYear}-${this.data.ff_no}_${this.data.ffName}.xlsx`);
+        },
+        downloadPDF() {
+            window.jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [1400, 700]
+            });
+            doc.autoTable({ 
+                html: '#tableForExportLahanPetaniDashboard',
+                useCss: true,
+                tableLineWidth: 0,
+                theme: 'striped'
+             })
+            doc.save(`LahanPetani${this.options.programYear}-${this.data.ff_no}_${this.data.ffName}.pdf`);
         },
         async errorResponse(error) {
             console.log(error)

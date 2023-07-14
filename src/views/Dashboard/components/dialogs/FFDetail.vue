@@ -42,7 +42,23 @@
                         class="elevation-1 rounded-xl"
                         :loading="table.loading.show"
                         :search="table.loading.search"
+                        style="position: relative;"
                     >
+                        <template v-slot:top>
+                            <!-- Loading -->
+                            <v-overlay absolute color="white" :value="table.loading.show">
+                                <div class="d-flex flex-column justify-center align-center">
+                                    <v-progress-circular
+                                        :size="80"
+                                        :width="10"
+                                        indeterminate
+                                        color="green"
+                                    >
+                                    </v-progress-circular>
+                                    <p class="mt-2 mb-0 green--text text--darken-2">{{ table.loading.text }}</p>
+                                </div>
+                            </v-overlay>
+                        </template>
                         <template v-slot:item.index="{ index }">
                             <div>
                                 {{ index + 1 }}
