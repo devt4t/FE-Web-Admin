@@ -161,11 +161,12 @@
       </v-dialog>
 
       <!-- Modal Create Sostam Per~FF -->
+      <PickCoordinate :show="modals.pick_coordinate.show" :data="modals.pick_coordinate.data" @action="$v => modalActions($v)" />
       <v-dialog v-model="dialogAdd.show" max-width="999" content-class="rounded-xl" persistent scrollable>
         <v-card rounded="xl" elevation="10">
           <!-- Title -->
           <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
-            <span class="">Add per~FF</span>
+            <span class="">Tambah Data Sosialisasi Tanam FF</span>
             <v-spacer></v-spacer>
             <v-icon color="red" @click="dialogAdd.show = false">mdi-close-circle</v-icon>
           </v-card-title>
@@ -312,31 +313,39 @@
                   </v-btn>
                 </v-col>
                 <!-- Lokasi Distribusi -->
-                <v-col>
+                <v-col cols="12">
                   <div class="d-flex align-center my-0">
                       <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-map-marker</v-icon>Pilih Lokasi Distribusi</p>
                       <v-divider class="mx-2" color=""></v-divider>
                   </div>
                 </v-col>
-                <v-col cols="12">
-                  <!-- map -->
-                  <div style="position: relative">
-                    <div id="mapboxDistributionLocationContainer" ref="mapbox" :key="`maps-distribution-location-${dialogAdd.show}`" style="height: 400px;width: 100%" class="rounded-xl overflow-hidden"></div>
-                    <!-- <pre id="coordinates" class="coordinates-sostam"></pre> -->
-                  </div>
-
-                  <v-text-field
-                    color="green"
-                    dense
-                    outlined
-                    rounded
-                    :value="`${maps.location.lng}, ${maps.location.lat}`"
-                    label="Koordinat Distribusi (Long, Lat)"
-                    :rules="[(v) => !!v || 'Field is required']"
-                    hide-details
-                    :readonly="false"
-                    class="mt-3"
-                  ></v-text-field>
+                <v-col cols="12" sm="12" md="12" lg="12" class="">
+                    <v-text-field
+                        outlined
+                        rounded
+                        dense
+                        hide-details
+                        color="green"
+                        label="Koordinat Lokasi"
+                        v-model="dataToStore.distribution_coordinates"
+                    >
+                        <template v-slot:append>
+                            <v-btn 
+                                small
+                                rounded
+                                class="mb-2"
+                                color="green white--text"
+                                @click="() => showModalPickCoordinate({
+                                    model: dataToStore.distribution_coordinates
+                                })"
+                            >
+                                {{ dataToStore.distribution_coordinates ? 'Edit' : 'Ambil' }} Koordinat
+                            </v-btn>
+                        </template>
+                    </v-text-field>
+                </v-col>
+                <!-- detail alamat -->
+                <v-col cols="12" sm="12" md="12" lg="12" class="">
                   <v-text-field
                     color="green"
                     dense
@@ -347,9 +356,23 @@
                     label="Detail Alamat Distribusi"
                     :rules="[(v) => !!v || 'Field is required']"
                     hide-details
-                    class="mt-3"
                   ></v-text-field>
                 </v-col>
+                <!-- rekomendasi armada -->
+                <v-col cols="12" sm="12" md="12" lg="12" class="">
+                  <v-text-field
+                    color="green"
+                    dense
+                    outlined
+                    rounded
+                    label="Rekomendasi Armada"
+                    placeholder="Truck / SS / yang lainnya"
+                    v-model="dataToStore.distribution_rec_armada"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <!-- materi pelatihan -->
                 <v-col cols="12">
                   <v-autocomplete
                       dense
@@ -372,7 +395,7 @@
                   <v-row class="align-center mb-4">
                     <v-col cols="12" class="">
                       <div class="d-flex align-center my-0">
-                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>List Petani</p>
+                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>List Petani & Lahan</p>
                         <v-divider class="mx-2" color=""></v-divider>
                         <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani</p>
                       </div>
@@ -385,6 +408,7 @@
                     </v-col>
                   </v-row>
                   <v-data-table
+                    item-key="farmer_no"
                     showSelect
                     checkbox-color="green"
                     color="success"
@@ -425,11 +449,6 @@
                                     <td>Region</td>
                                     <td>:</td>
                                     <td><strong>{{ table.lahans.dialogs.trees.datas.province == 'JB' ? 'Jawa Barat' : 'Jawa Tengah' }}</strong></td>
-                                  </tr>
-                                  <tr>
-                                    <td>Max Bibit</td>
-                                    <td>:</td>
-                                    <td><strong>{{ numberFormat(getSeedCalculation(table.lahans.dialogs.trees.datas, 'total_max_trees')) }}</strong> Bibit</td>
                                   </tr>
                                 </tbody>
                               </v-simple-table>
@@ -476,10 +495,10 @@
                       <v-icon class="mr-1">mdi-land-fields</v-icon>{{ numberFormat(item.total_lahan) }}
                     </template>
                     <template v-slot:item.total_kayu="{item}">
-                      <v-icon class="mr-1">mdi-sprout</v-icon>{{ numberFormat(item.total_kayu) }}
+                      <v-icon class="mr-1" color="green">mdi-sprout</v-icon>{{ numberFormat(item.total_kayu) }}
                     </template>
                     <template v-slot:item.total_mpts="{item}">
-                      <v-icon class="mr-1">mdi-sprout</v-icon>{{ numberFormat(item.total_mpts) }}
+                      <v-icon class="mr-1" color="orange">mdi-sprout</v-icon>{{ numberFormat(item.total_mpts) }}
                     </template>
                     <template v-slot:header.data-table-select="{index}">
                       Kehadiran
@@ -500,7 +519,7 @@
               color="green white--text" 
               rounded 
               @click="createSostamByFF()"
-              :disabled="!dataToStore.distribution_time || !dataToStore.distribution_location || table.lahans.items.length == 0"
+              :disabled="disabledCreateSostamByFF"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Create Sostam
@@ -688,7 +707,7 @@
             <v-btn
               color="green white--text"
               rounded
-              :disabled="User.role_group != 'IT' && User.role_name != 'UNIT MANAGER'"
+              :disabled="true || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"
               @click="showEditJumlahPohonModal"
               class="px-5"
               >
@@ -1617,12 +1636,14 @@ import moment from "moment";
 import LottieAnimation from 'lottie-web-vue'
 
 import treeAnimation from '@/assets/lottie/tree.json'
+import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
   name: "SosialisasiTanam",
   components: {
-    LottieAnimation
+    LottieAnimation,
+    PickCoordinate
   },
   data: () => ({
     authtoken: "",
@@ -1892,6 +1913,8 @@ export default {
       selectedFF: {},
       hasSostam: false,
       training_material: 'TR010',
+      distribution_coordinates: '',
+      distribution_rec_armada: '',
       distribution_time: '',
       distribution_location: '',
       planting_time: '',
@@ -1941,6 +1964,12 @@ export default {
             loading: treeAnimation,
         }
     },
+    modals: {
+        pick_coordinate: {
+            show: false,
+            data: null
+        }
+    },
   }),
   watch: {
     'table.options': {
@@ -1970,6 +1999,12 @@ export default {
     program_year(newYear) {
       this.initialize()
     },
+    'dataToStore.distribution_coordinates': {
+      handler(val, oldVal) {
+        if (val) {
+        }
+      }
+    },
     'dataToStore.distribution_time': {
       handler(newValue) {
         this.dataToStore.penlub_time = moment(newValue).subtract(14, 'days')
@@ -1997,7 +2032,12 @@ export default {
       }
     }
   },
-
+  computed: {
+    disabledCreateSostamByFF() {
+      if (!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || this.table.lahans.items.length == 0 || !this.dataToStore.distribution_coordinates || this.dataToStore.distribution_rec_armada) return true
+      return false
+    }
+  },
   mounted() {
     this.firstAccessPage();
     if (this.User.role_group != 'IT' || this.User.email != 'iyas.muzani@trees4trees.org') {
@@ -2193,53 +2233,79 @@ export default {
 
     async createSostamByFF() {
       try {
-
-        this.dialogAdd.show = false
-        this.$store.state.loadingOverlay = true
-
-        let dataToStore = {
-          ff_no: this.options.ff.model,
-          lahans: this.table.lahans.items,
-          program_year: 2022,
-          distribution_time: this.dataToStore.distribution_time,
-          distribution_longitude: this.maps.location.lng,
-          distribution_latitude: this.maps.location.lat,
-          distribution_location: this.dataToStore.distribution_location,
-          distribution_location: this.dataToStore.distribution_location,
-          training_material: this.dataToStore.training_material,
-          planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
-          penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
-        }
-
-        // await this.setUnavailableDistributionDates()
-        const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
-        if (isUnavailableDate == true) {
-          this.dataToStore.distribution_time = ''
-          this.colorsnackbar = 'red'
-          this.textsnackbar = `Tanggal distribusi sudah penuh!`
-          this.timeoutsnackbar = 10000
-          this.snackbar = true
+      const coordinatesPattern = /^[-+]?\d+(\.\d+)?,\s*[-+]?\d+(\.\d+)?$/;
+      const isValidCoordinates = coordinatesPattern.test(this.dataToStore.distribution_coordinates);
+        if (!isValidCoordinates) {
+          Swal.fire({
+              title: 'Perhatian!',
+              text: `Format data yang diinputkan salah! Format koordinat harus "long, lat"`,
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okayy'
+          })
         } else {
-          // const res = await axios.post(
-          //   this.BaseUrlGet + "createSostamByFF",
-          //   dataToStore,
-          //   {
-          //     headers: {
-          //       Authorization: `Bearer ` + this.authtoken
-          //     },
-          //   }
-          // )
-          console.log(dataToStore)
-          // reset form create value
-          this.options.ff.model = ''
-          this.table.lahans.items = []
-          this.dataToStore.distribution_location = ''
-          
-          this.initialize()
-          this.colorsnackbar = 'green'
-          this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
-          this.timeoutsnackbar = 10000
-          this.snackbar = true
+          const confirmSaving = await Swal.fire({
+            title: 'Apakah anda yakin?',
+            text: "Setelah ini anda tidak akan bisa membatalkannya!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#2e7d32',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Tidak Jadi',
+            confirmButtonText: 'Ya, Lanjutkan!'
+          })
+          if (confirmSaving.isConfirmed) {
+            this.dialogAdd.show = false
+            this.$store.state.loadingOverlay = true
+    
+            let dataToStore = {
+              ff_no: this.options.ff.model,
+              lahans: this.table.lahans.items,
+              farmer_attendance: this.table.farmer_attendance,
+              program_year: 2022,
+              distribution_time: this.dataToStore.distribution_time,
+              distribution_longitude: this.maps.location.lng,
+              distribution_latitude: this.maps.location.lat,
+              distribution_location: this.dataToStore.distribution_location,
+              distribution_rec_armada: this.dataToStore.distribution_rec_armada,
+              distribution_distribution_coordinates: this.dataToStore.distribution_location,
+              training_material: this.dataToStore.training_material,
+              planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
+              penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
+            }
+    
+            // await this.setUnavailableDistributionDates()
+            const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
+            if (isUnavailableDate == true) {
+              this.dataToStore.distribution_time = ''
+              this.colorsnackbar = 'red'
+              this.textsnackbar = `Tanggal distribusi sudah penuh!`
+              this.timeoutsnackbar = 10000
+              this.snackbar = true
+            } else {
+              // const res = await axios.post(
+              //   this.BaseUrlGet + "createSostamByFF",
+              //   dataToStore,
+              //   {
+              //     headers: {
+              //       Authorization: `Bearer ` + this.authtoken
+              //     },
+              //   }
+              // )
+              console.log(dataToStore)
+              // reset form create value
+              this.options.ff.model = ''
+              this.table.lahans.items = []
+              this.dataToStore.distribution_location = ''
+              
+              this.initialize()
+              this.colorsnackbar = 'green'
+              this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
+              this.timeoutsnackbar = 10000
+              this.snackbar = true
+            }
+          }
         }
       } catch (err) {
         console.log(err)
@@ -3281,7 +3347,6 @@ export default {
         this.dialogAdd.loading = true
         this.dialogAdd.show = true
         await this.getFFOptions()
-        await this.initializeMaps()
       } finally {
         this.dialogAdd.loading = false
       }
@@ -3335,6 +3400,18 @@ export default {
       } finally {
         this.options.ff.loading = false
       }
+    },
+    modalActions(val) {
+        if (val.type == 'save') {
+            this.dataToStore.distribution_coordinates = `${val.coordinate.lng}, ${val.coordinate.lat}`
+        }
+        if (['close', 'save'].includes(val.type)) {
+            this.modals[val.name].show = false
+        }
+    },
+    showModalPickCoordinate(data) {
+        this.modals.pick_coordinate.data = data
+        this.modals.pick_coordinate.show = true
     },
     // Utilities
     calendarGetNurseryColor(n, total, date) {
@@ -3619,90 +3696,6 @@ export default {
         }
       } else if(typeReturn == 'EXISTS' ) {
         return exists[secParams]
-      }
-    },
-    async initializeMaps() {
-      try {
-        const mapOptions = this.maps
-        mapboxgl.accessToken = mapOptions.accessToken
-        if (!mapboxgl.supported()) {
-            Swal.fire({
-                title: 'Warning!',
-                text: `Your browser does not support Mapbox GL.`,
-                icon: 'error',
-                confirmButtonColor: '#f44336',
-            }) 
-        } else {
-          let map = await new mapboxgl.Map({
-              container: 'mapboxDistributionLocationContainer', // container ID
-              style: 'mapbox://styles/mapbox/satellite-streets-v11', // style URL
-              center: mapOptions.center,
-              zoom: mapOptions.zoom,
-              projection: 'globe'
-              // projection: 'equirectangular'
-          });
-          // set geolocate for get current user location
-          const geolocate = new mapboxgl.GeolocateControl({
-            positionOptions: {
-              enableHighAccuracy: true
-            },
-            // When active the map will receive updates to the device's location as it changes.
-            trackUserLocation: true,
-            // Draw an arrow next to the location dot to indicate which direction the device is heading.
-            showUserHeading: false
-          })
-          // Map on Load
-          await map.on("load", async function() {
-            // add fog
-            await map.setFog({
-                color: 'rgb(186, 210, 235)', // Lower atmosphere
-                'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
-                'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
-                'space-color': 'rgb(11, 11, 25)', // Background color
-                'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
-            });
-            // Add Geocoder
-            map.addControl(
-              new MapboxGeocoder({
-                accessToken: mapboxgl.accessToken,
-                mapboxgl: mapboxgl
-              })
-            );
-            // add fullscreen function
-            await map.addControl(new mapboxgl.FullscreenControl());
-            // Add zoom and rotation controls to the map.
-            await map.addControl(new mapboxgl.NavigationControl());
-            // Add geolocate control to the map.
-            await map.addControl(geolocate);
-          })
-          mapOptions.location = {lng: mapOptions.center[0], lat: mapOptions.center[1]}
-          // set marker
-          const marker = new mapboxgl.Marker({
-            draggable: true
-          })
-          .setLngLat(mapOptions.center)
-          .addTo(map);
-          // Map on click
-          map.on('click', (e) => {
-            marker.setLngLat(e.lngLat)
-            showMarkerLngLat()
-          })
-          // show coordinates marker
-          // const coordinates = document.getElementById('coordinates');
-          function showMarkerLngLat() {
-            const lngLat = marker.getLngLat();
-            mapOptions.location = lngLat
-            // coordinates.style.display = 'block';
-            // coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
-          }
-          marker.on('drag', showMarkerLngLat);
-          // geolocate event
-          geolocate.on('geolocate', () => {
-            marker.setLngLat(map.getCenter())
-            showMarkerLngLat()
-          });
-        }
-      } catch (err) {console.log(err)} finally {
       }
     },
     numberFormat(num) {
