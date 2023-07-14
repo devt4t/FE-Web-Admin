@@ -311,7 +311,13 @@ export default {
                 return this.show
             },
             set: function(newVal) {
-                if (!newVal) this.$emit('dialogActions', false)
+                if (!newVal) {
+                    setTimeout(() => {
+                        this.table.items = []
+                        this.table.items_raw = []
+                    }, 200);
+                    this.$emit('dialogActions', false)
+                }
             }
         },
         tableItems() {

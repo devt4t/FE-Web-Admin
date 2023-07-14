@@ -1,6 +1,15 @@
 <template>
     <div>
         <FarmerLahanDetail :show="dialogs.farmer_lahan_detail.show" :data="dialogs.farmer_lahan_detail.data" @dialogActions="($val) => dialogActions($val)"/>
+        <AddFFModal
+            :show="dialogs.addEditFF.show"
+            :id="dialogs.addEditFF.id"
+            :programYear="options.programYear"
+            @dialogAct="dialogsAction($event)"
+            @showSnackbar="showSnackbar($event.text, $event.color)"
+            @swal="($v) => swalActions($v)"
+            @refreshTable="initialize"
+        />
         <v-dialog
             v-model="showModal"
             scrollable
@@ -65,12 +74,27 @@
                             </div>
                         </template>
                         <template v-slot:item.action="{ index, item }">
-                            <v-btn small rounded color="green white--text" class="pl-1"
-                                @click="dialogActions(true, item)"
-                            >
-                                <v-icon class="mr-1">mdi-information</v-icon>
-                                Detail
-                            </v-btn>
+                            <div class="d-flex align-center ma-0">
+                                <v-btn
+                                    v-if="cuAccess"
+                                    class="mr-1"
+                                    rounded
+                                    @click="editItem(item)"
+                                    color="warning white--text"
+                                    fab 
+                                    x-small
+                                >
+                                    <v-icon class="mr-1" small color="white">
+                                        mdi-pencil
+                                    </v-icon>
+                                </v-btn>
+                                <v-btn small rounded color="green white--text" class="pl-1"
+                                    @click="dialogActions(true, item)"
+                                >
+                                    <v-icon class="mr-1">mdi-information</v-icon>
+                                    Detail
+                                </v-btn>
+                            </div>
                         </template>
                     </v-data-table>
                 </v-card-text>
@@ -85,10 +109,12 @@ import moment from 'moment'
 import Swal from 'sweetalert2'
 
 import FarmerLahanDetail from '@/views/Dashboard/components/dialogs/FarmerLahanDetail'
+import AddFFModal from '@/views/Employee/components/FF/AddFFModal'
 export default {
     name: 'OldGEKOFFDetail',
     components: {
-        FarmerLahanDetail
+        FarmerLahanDetail,
+        AddFFModal
     },
     props: {
         show: {
@@ -105,7 +131,11 @@ export default {
             farmer_lahan_detail: {
                 show:false,
                 data: null
-            }
+            },
+            addEditFF: {
+                show: false,
+                id: "",
+            },
         },
         options: {
             programYear: '',
@@ -151,6 +181,12 @@ export default {
                 })
             }
             return true
+        },
+        cuAccess() {
+            const user = this.$store.state.User
+            if (user.role_group == 'IT') return true
+            if (user.role_name == 'UNIT MANAGER') return true
+            return false
         }
     },
     mounted() {
@@ -199,6 +235,15 @@ export default {
             }
             this.dialogs.farmer_lahan_detail.show = show
         },
+        dialogsAction(dialog) {
+            this.dialogs[dialog.name].show = dialog.status;
+            if (dialog.name == "changeFF" && dialog.status == false)
+                this.dialogs[dialog.name].id = "";
+        },
+        async editItem(item) {
+            this.dialogs.addEditFF.id = item.id.toString();
+            this.dialogs.addEditFF.show = true;
+        },
         async getTableData(getparams) {
             try {
                 this.table.loading.show = true
@@ -211,7 +256,36 @@ export default {
             } catch (err) {this.errorResponse(err)} finally {
                 this.table.loading.show = false
             }
-        }
+        },
+        initialize() {
+            this.getTableData({
+                program_year: this.options.programYear,
+                fc_no: this.data.fcNo
+            })
+        },
+        showSnackbar(text, color) {
+            alert(text)
+        },
+        swalActions(val) {
+            this.initialize();
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                showCloseButton: true,
+                timer: 10000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+                },
+            });
+
+            Toast.fire({
+                icon: val.type,
+                title: val.message,
+            });
+        },
     },
 };
 </script>
