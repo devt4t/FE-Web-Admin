@@ -330,6 +330,7 @@
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
                   <v-select
+                    disabled
                     v-model="defaultItem.opsi_pola_tanam"
                     :items="itemsOpsiPolaTanam"
                     item-text="text"
@@ -1998,7 +1999,7 @@
             <v-btn
               v-if="
                 (RoleAccesCRUDShow == true &&
-                  item.status != 'Sudah Verifikasi') ||
+                  item.approve != 1) ||
                   User.role_group == 'IT' ||
                   User.role_name == 'GIS STAFF'
               "
@@ -2020,7 +2021,7 @@
               Edit
             </v-btn>
             <v-btn
-              v-if="item.status == 'Sudah Verifikasi'"
+              v-if="item.approve == 1"
               class="w-100"
               rounded
               @click="() => showUnverifModal(item)"
