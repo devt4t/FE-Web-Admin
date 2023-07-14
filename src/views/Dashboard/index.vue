@@ -323,7 +323,7 @@ export default {
     totalData: {
       data1: {
         Judul: "Field Facilitator",
-        Count: "1",
+        Count: "0",
         link: "FieldFacilitator",
         icon: 'mdi-account',
         color: 'blue',
@@ -334,7 +334,7 @@ export default {
       },
       data2: {
         Judul: "Petani",
-        Count: "1",
+        Count: "0",
         link: "Farmer",
         icon: 'mdi-nature-people',
         color: 'orange',
@@ -345,7 +345,7 @@ export default {
       },
       data3: {
         Judul: "Lahan Petani",
-        Count: "11",
+        Count: "0",
         link: "Lahan",
         icon: 'mdi-land-fields',
         color: 'brown',
@@ -356,7 +356,7 @@ export default {
       },
       data4: {
         Judul: "Lahan Umum",
-        Count: "11",
+        Count: "0",
         link: "Lahan",
         icon: 'mdi-land-fields',
         color: 'brown',
@@ -367,7 +367,7 @@ export default {
       },
       data5: {
         Judul: "Monitoring 1",
-        Count: "111",
+        Count: "0",
         link: "Dashboard",
         icon: 'mdi-forest',
         color: 'green',
