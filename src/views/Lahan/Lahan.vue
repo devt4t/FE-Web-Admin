@@ -330,6 +330,7 @@
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
                   <v-select
+                    disabled
                     v-model="defaultItem.opsi_pola_tanam"
                     :items="itemsOpsiPolaTanam"
                     item-text="text"
@@ -1998,7 +1999,7 @@
             <v-btn
               v-if="
                 (RoleAccesCRUDShow == true &&
-                  item.status != 'Sudah Verifikasi') ||
+                  item.approve != 1) ||
                   User.role_group == 'IT' ||
                   User.role_name == 'GIS STAFF'
               "
@@ -2020,7 +2021,7 @@
               Edit
             </v-btn>
             <v-btn
-              v-if="item.status == 'Sudah Verifikasi'"
+              v-if="item.approve == 1"
               class="w-100"
               rounded
               @click="() => showUnverifModal(item)"
@@ -2164,6 +2165,7 @@ export default {
       { text: "Desa", value: "village_name", searchable: true},
       { text: "NIK Petani", value: "farmer_nik", searchable: true, sortable: false},
       { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
+      { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: false},
       { text: "Tahun Bergabung", value: "created_at", searchable: false},
       { text: "Luas Lahan", value: "land_area", searchable: false},
       { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
@@ -2511,6 +2513,9 @@ export default {
     // localStorage.setItem("token", this.authtoken);
     // this.getMU();
   },
+  destroyed() {
+    this.$store.state.loadingOverlay = false
+  },
 
   watch: {
     programYear: {
@@ -2765,7 +2770,17 @@ export default {
           }
         ).then(res => {
           if (typeof res.data.data.result !== 'undefined') {
-            let items = res.data.data.result.data
+            let items = res.data.data.result.data.map(val => {
+              let document_no = val.document_no
+              if (document_no) {
+                const matches = document_no.match(/\d+/g);
+                document_no = matches ? matches.join('') : document_no;
+              }
+              return {
+                ...val,
+                document_no: document_no
+              }
+            })
             const total = res.data.data.result.total
             const current_page = res.data.data.result.current_page
             const last_page = res.data.data.result.last_page

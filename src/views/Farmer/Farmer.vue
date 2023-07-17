@@ -927,17 +927,34 @@
           </v-container>
         </v-card-text>
         <v-divider></v-divider>
-        <v-card-actions v-if="defaultItem.waitingapproval == true">
+        <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            v-if="RoleAccesCRUDShow == true"
-            color="green"
-            text
+            v-if="defaultItem.waitingapproval && defaultItem.approve == 0"
+            :disabled="RoleAccesCRUDShow == false"
+            color="green white--text"
             @click="verifSubmit()"
-            outlined
+            rounded
+            block
             elevation="1"
           >
+            <v-icon class="mr-1">mdi-check-circle</v-icon>
             Verifikasi
+          </v-btn>
+          <v-btn
+            v-if="defaultItem.approve == 1"
+            class="w-100"
+            rounded
+            @click="() => showUnverifModal(defaultItem)"
+            color="red white--text"
+            :disabled="User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'"
+            block
+            small
+          >
+            <v-icon class="mr-1" small color="white">
+              mdi-undo
+            </v-icon>
+            Unverif
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1123,26 +1140,71 @@
       </template>
       <!-- Action table Column -->
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-3" @click="showDetail(item)" small color="info">
-          mdi-information-outline
-        </v-icon>
-        <v-icon
-          v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
-          class="mr-3"
-          @click="showEditModal(item)"
-          small
-          color="warning"
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
         >
-          mdi-pencil
-        </v-icon>
-        <v-icon
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+          <v-card
+            class="pa-2 d-flex flex-column align-stretch"
+            style="gap: 7px;"
+          >
+            <v-btn
+              class="w-100"
+              rounded
+              @click="showDetail(item)"
+              color="info white--text"
+              block
+              small
+            >
+              <v-icon
+                class="mr-1"
+                @click="showDetail(item)"
+                small
+                color="white"
+              >
+                mdi-information-outline
+              </v-icon>
+              Detail
+            </v-btn>
+            <v-btn
+              :disabled="RoleAccesCRUDShow == false || item.status == 'Sudah Verifikasi'"
+              class="w-100"
+              rounded
+              @click="showEditModal(item)"
+              color="warning white--text"
+              block
+              small
+            >
+              <v-icon
+                class="mr-1"
+                @click="showEditModal(item)"
+                small
+                color="white"
+              >
+                mdi-lead-pencil
+              </v-icon>
+              Edit
+            </v-btn>
+          </v-card>
+        </v-menu>
+        <!-- <v-icon
           v-if="RoleAccesCRUDShow == true && item.status != 'Sudah Verifikasi'"
           @click="showDeleteModal(item)"
           small
           color="red"
         >
           mdi-delete
-        </v-icon>
+        </v-icon> -->
       </template>
     </v-data-table>
 
@@ -1159,6 +1221,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import Swal from 'sweetalert2'
 
 export default {
   name: "Farmer",
@@ -2218,7 +2281,52 @@ export default {
         }
       }
     },
-
+    async showUnverifModal(farmer) {
+      const Toast = Swal.mixin({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          showCloseButton: true,
+          timer: 10000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+              toast.addEventListener('mouseenter', Swal.stopTimer)
+              toast.addEventListener('mouseleave', Swal.resumeTimer)
+          }
+      })
+      try {
+        const confirm = await Swal.fire({
+          title: 'Apakah kamu yakin?',
+          html: `Petani <b>${farmer.name}</b> dari FF <b>${farmer.ff_name}</b> akan di-unverif datanya.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#2e7d32',
+          cancelButtonColor: '#d33',
+          cancelButtonText: 'Tidak Jadi',
+          confirmButtonText: 'Ya, Lanjutkan!'
+        })
+        if (confirm.isConfirmed) {
+          this.dialogDetail = false
+          this.$store.state.loadingOverlay = true
+          this.$store.state.loadingOverlayText = 'Unverifikasi data...'
+          const res = await axios.post(this.$store.getters.getApiUrl(`UnverificationFarmer`), {farmer_no: farmer.farmer_no},this.$store.state.apiConfig)
+          if (res) {
+            Toast.fire({
+                icon: 'success',
+                title: 'Berhasil unverifikasi data petani!'
+            })
+            this.initialize()
+          }
+        }
+      } catch (err) {
+            Toast.fire({
+                icon: 'error',
+                title: 'Gagal unverifikasi data petani!'
+            })
+      } finally {
+          this.$store.state.loadingOverlay = false
+      }
+    },
     selectedMU(a) {
       // console.log(a);
       this.valueMU = a;
