@@ -1939,13 +1939,15 @@ export default {
           this.alerttoken = true;
         }
       } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-          this.dialogDetail = false;
-          this.dialogVerification = false;
-          localStorage.removeItem("token");
-          this.$router.push("/");
+        console.error(error);
+        if (error.response) {
+          if (error.response.status == 401) {
+            this.alerttoken = true;
+            this.dialogDetail = false;
+            this.dialogVerification = false;
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
         }
       }
     },
