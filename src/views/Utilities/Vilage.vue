@@ -23,6 +23,22 @@
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
+        <!-- program years-->
+          <v-select
+              color="success"
+              item-color="success"
+              v-model="localConfig.programYear"
+              :items="['All Data',...$store.state.programYear.options]"
+              :disabled="tableLoading"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Program Year"
+              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -49,7 +65,9 @@
               <v-card-text>
                 <v-container>
                   <v-row>
+
                     <v-col cols="12" lg="6">
+
                       <v-autocomplete
                         dense
                         hide-details
@@ -197,7 +215,9 @@
                             item-color="green"
                             :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                             :items="itemsTa.map(ita => {
-                              if (ita.program_year && assignTa.program_year) if (assignTa.program_year.every(pro => ita.program_year.split(',').includes(pro))) return ita
+                              if (ita.program_year && assignTa.program_year)
+                                if (assignTa.program_year.every(pro => ita.program_year.split(',').includes(pro)))
+                                  return ita
                               return null
                             }).filter(n => n)"
                             label="Pilih Target Area"
@@ -275,6 +295,13 @@
       <template v-slot:item.no="{ index }">
         {{ (itemsPerPage * (page-1)) + index + 1 }}
       </template>
+      <!--Status row-->
+      <template v-slot:item.status="{item}">
+        <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
+          <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
+          {{ getStatusColumn('text', item.status) }}
+        </v-chip>
+      </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
           mdi-pencil
@@ -308,7 +335,7 @@ export default {
         href: "breadcrumbs_dashboard",
       },
       {
-        text: "Vilage",
+        text: "Village",
         disabled: true,
         href: "breadcrumbs_link_1",
       },
@@ -328,6 +355,11 @@ export default {
       { text: "Kecamatan", value: "namaKecamatan" },
       { text: "Target Area", value: "namaTa" },
       { text: "Kode Pos", value: "post_code" },
+        /*YONGS
+        add data headers (Sample with postcode data)*/
+      {text: 'Status', value: 'status', align: 'center'},
+      {text : "Program Year", value: "program_year"},
+        /*End data headers*/
       { text: "Actions", value: "actions", sortable: false },
     ],
     dataobject: [],
@@ -339,9 +371,11 @@ export default {
       namaDesa: "",
       kode_kecamatan: "",
       namaKecamatan: "",
+      namaDesaKecamatan: "",
       area_code: "",
       namaTa: "",
       post_code: "",
+      program_year: "",
       ta_desas: []
     },
     ta_desas_default: {
@@ -352,13 +386,32 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
+    localConfig: {
+      programYear: '',
+    },
   }),
 
   created() {
     this.authtoken = localStorage.getItem("token");
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+   /*YONGS
+    create program year model*/
+    this.localConfig.programYear = this.$store.state.programYear.model
+    /*YONGS
+    End create program year model*/
     this.initialize();
   },
+  /*  YONGS
+  Initialize program year*/
+  watch: {
+    'localConfig.programYear': {
+      handler(val) {
+        this.initialize()
+      }
+    }
+  },
+  /*YONGS
+  End Initialize*/
   computed: {
     saveDisabled() {
       if (!this.defaultItem.kode_kecamatan) return true
@@ -379,11 +432,17 @@ export default {
     async initialize() {
       try {
         this.tableLoading = true
-        const response = await axios.get(this.BaseUrlGet + "GetDesaAdmin", {
+
+        const response = await axios.get(
+            this.BaseUrlGet + `GetDesaAdmin?program_year=${this.localConfig.programYear}`,
+            {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
+
+        // status desa condition
+
         // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result.map(val => {
@@ -393,6 +452,7 @@ export default {
                 return {
                   ...val2,
                   program_year: val2.program_year.split(',')
+                  //program_year: val2.program_year ? val2.program_year.split(',') : []
                 }
               })
             }
@@ -408,6 +468,25 @@ export default {
       } finally {
         this.tableLoading = false
       }
+    },
+    getStatusColumn(type, status) {
+      if (type == 'bg_color') {
+        if (status == '0') return 'orange'
+        if (status == '1') return 'green darken-1'
+        if (status == '2') return 'red'
+      }
+      if (type == 'icon') {
+        if (status == '0') return 'mdi-google-downasaur' //mdi:cancel
+        if (status == '1') return 'mdi-check-circle'
+        if (status == '2') return 'mdi-alert-rhombus-outline'
+      }
+      if (type == 'text') {
+        if (status == '0') return 'Belum Mengikuti RRA'
+        if (status == '1') return 'Potensial'
+        if (status == '2') return 'Tidak Potensial'
+      }
+
+      return ''
     },
     async verifDelete() {
       const datapost = {
@@ -483,6 +562,20 @@ export default {
         }
       }
     },
+//TEST, Ambil data Rrapra
+    /*async getRrapra_status(){
+    //need table
+      try {
+        this.table.loading.show = true
+        this.table.loading.text = "Sedang ambil data..."
+      }
+      catch (error){
+        this.table.items = []
+        this.errorResponse(err)
+      } finally {
+        this.table.loading.show = false
+      }
+    },*/
     async updateData() {
       const datapost = {
         id: this.defaultItem.id,
@@ -583,6 +676,8 @@ export default {
       this.defaultItem.kode_desa = "";
       this.defaultItem.namaDesa = "";
       this.defaultItem.post_code = "";
+      this.defaultItem.status_desa = "";
+      this.defaultItem.desa_program_year="";
       this.defaultItem.ta_desas = [JSON.parse(JSON.stringify(this.ta_desas_default))]
       this.dialog = true;
     },
