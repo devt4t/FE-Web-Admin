@@ -2513,6 +2513,7 @@ export default {
       { text: "Standard Trees", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
+     //{ text: "Tipe SPPT", value: "type_sppt", align: 'center'},
       { text: "Status", value: "is_validate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
