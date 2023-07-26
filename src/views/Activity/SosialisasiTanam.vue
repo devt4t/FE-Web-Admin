@@ -1273,6 +1273,7 @@
       loading-text="Loading... Please wait"
       :page="table.pagination.current_page"
       :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
         itemsPerPageOptions: [10, 25, 40, -1],
         showCurrentPage: true,
         showFirstLastPage: true,
@@ -1343,20 +1344,20 @@
                 hide-details
                 :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 rounded
-                label="Program Year"
+                label="Tahun Program"
                 class="mx-auto mx-lg-3"
                 style="max-width: 200px"
               ></v-select>
             </v-col>
             <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
               <v-btn
-                :disabled="!['iyas.muzani@trees4trees.org','bayu.pratama@trees4trees.org'].includes($store.state.User.email)"
+                :disabled="!['iyas.muzani@trees4trees.org','eaunggelia.triandi@trees4trees.org'].includes($store.state.User.email)"
                 dark
                 rounded
                 @click="showAddModal()"
                 color="green"
               >
-                <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Add FF Sostam
+                <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Tambah FF Sostam
               </v-btn>
               <!-- dropdown export button -->
               <v-menu
@@ -1392,7 +1393,7 @@
                       @click="downloadSuperAdmin()"
                       color="blue white--text"
                     >
-                      <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export All
+                      <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export Semua
                     </v-btn>
                   </v-list-item>
                 </v-list>
@@ -1424,7 +1425,7 @@
                 dense
                 :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 rounded
-                label="Page"
+                label="Halaman"
                 class="centered-select"
                 style="width: 50%;max-width: 100px;"
               ></v-select>
@@ -1443,7 +1444,7 @@
                 dense
                 :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 rounded
-                label="Kolom Search"
+                label="Kolom Pencarian"
                 class="centered-select"
                 style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
               ></v-select>
@@ -1457,7 +1458,7 @@
                 outlined
                 dense
                 rounded
-                label="Search"
+                label="Pencarian"
                 hide-details
                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
                 :loading="table.search.options.column_loading"
@@ -1527,7 +1528,7 @@
       <!-- Color Status -->
       <template v-slot:item.validation="{ item }">
         <v-chip :color="getColorStatus(item.validation)" dark>
-          {{ item.validation == 1 ? 'Verified FC' : (item.validation == 0 ? 'Unverified' : '-') }}
+          {{ item.validation == 1 ? 'Verifikasi FC' : (item.validation == 0 ? 'Belum Terverifikasi' : '-') }}
         </v-chip>
       </template>
       <!-- Action table -->
@@ -1602,7 +1603,7 @@
               <v-icon class="mr-1" small color="white">
                 mdi-delete
               </v-icon>
-                Delete
+                Hapus
               </v-btn>
             </v-list-item>
           </v-list>
@@ -2034,11 +2035,14 @@ export default {
   },
   computed: {
     disabledCreateSostamByFF() {
-      if (!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || this.table.lahans.items.length == 0 || !this.dataToStore.distribution_coordinates || this.dataToStore.distribution_rec_armada) return true
+      if (!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || this.table.lahans.items.length == 0 || !this.dataToStore.distribution_coordinates || !this.dataToStore.distribution_rec_armada) return true
+      if(this.table.farmer_attendance.length == 0) return  true
       return false
+
     }
   },
   mounted() {
+
     this.firstAccessPage();
     if (this.User.role_group != 'IT' || this.User.email != 'iyas.muzani@trees4trees.org') {
       // this.$store.state.maintenanceOverlay = true
@@ -2263,7 +2267,7 @@ export default {
               ff_no: this.options.ff.model,
               lahans: this.table.lahans.items,
               farmer_attendance: this.table.farmer_attendance,
-              program_year: 2022,
+              program_year: this.program_year,
               distribution_time: this.dataToStore.distribution_time,
               distribution_longitude: this.maps.location.lng,
               distribution_latitude: this.maps.location.lat,
@@ -2284,15 +2288,16 @@ export default {
               this.timeoutsnackbar = 10000
               this.snackbar = true
             } else {
-              // const res = await axios.post(
-              //   this.BaseUrlGet + "createSostamByFF",
-              //   dataToStore,
-              //   {
-              //     headers: {
-              //       Authorization: `Bearer ` + this.authtoken
-              //     },
-              //   }
-              // )
+              /*send online*/
+               const res = await axios.post(
+                 this.BaseUrlGet + "createSostamByFF",
+                 dataToStore,
+                 {
+                   headers: {
+                     Authorization: `Bearer ` + this.authtoken
+                   },
+              }
+              )
               console.log(dataToStore)
               // reset form create value
               this.options.ff.model = ''
@@ -3156,12 +3161,16 @@ export default {
         this.$store.state.loadingOverlay = true
         await axios.post(
           this.BaseUrlGet + "UnverificationSosisalisasiTanam",
+            console.log('Unverify data clicked'),
           datapost,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
+
             },
+
           }
+
         )
         await this.initialize();
       } catch (error) {
@@ -3334,10 +3343,16 @@ export default {
       }
     },
     async selectedKehadiranPetani(items) {
+      //Checkbox condition
       this.table.farmer_attendance = items.map(val => {
-        return {
-          farmer_no: val.farmer_no,
-          program_year: this.program_year
+        return val.farmer_no
+      })
+      this.table.lahans.items = this.table.lahans.items.map(val =>{
+        var attendance = 0
+        if(this.table.farmer_attendance.includes(val.farmer_no))attendance = 1
+        return{
+          ...val,
+          attendance: attendance
         }
       })
       console.log(this.table.farmer_attendance)
@@ -3368,7 +3383,14 @@ export default {
           }
         )
         this.dataToStore.selectedFF = res.data.data.result.ff
-        this.table.lahans.items = res.data.data.result.lahans
+        this.table.lahans.items = res.data.data.result.lahans.map(value => {
+          return{
+            ...value,
+            max_seed_amount: value.total_kayu+value.total_mpts,
+            training_material: this.dataToStore.training_material
+          }
+        })
+
         this.dataToStore.hasSostam = res.data.data.result.sostam > 0 ? true : false
       } catch (err) {
         console.log(err.response)

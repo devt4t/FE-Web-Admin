@@ -53,7 +53,7 @@
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
           <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
-            <v-icon small>mdi-plus</v-icon> Add Item
+            <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
           <v-dialog v-model="dialog" max-width="777" content-class="rounded-xl">
             <v-card>

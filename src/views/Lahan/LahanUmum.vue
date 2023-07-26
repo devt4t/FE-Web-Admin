@@ -44,19 +44,19 @@
                         <!-- Stepper Header -->
                         <v-stepper-header class="rounded-xl mx-2 my-2">
                             <v-stepper-step editable :complete="dialogs.createData.step > 1" step="1" color="success" class="rounded-xl">
-                                Main Data
+                                Data Utama
                             </v-stepper-step>
                             <v-divider></v-divider>
                             <v-stepper-step :editable="!inputs.mou.model == false && !inputs.employee.model == false && !inputs.pic.model == false && !inputs.picKtp.model == false && !inputs.landArea.model == false && !inputs.plantingArea.model == false && !inputs.croppingPattern.model == false && !inputs.landStatus.model == false && !inputs.landDistance.model == false && !inputs.landAccess.model == false && !inputs.mu.model == false && !inputs.province.model == false && !inputs.regency.model == false && !inputs.district.model == false && !inputs.village.model == false && !inputs.address.model == false" :complete="dialogs.createData.step > 2" step="2" color="success" class="rounded-xl">
-                                Seeds
+                                Bibit
                             </v-stepper-step>
                             <v-divider></v-divider>
                             <v-stepper-step :editable="(!inputs.mou.model == false && !inputs.employee.model == false && !inputs.pic.model == false && !inputs.picKtp.model == false && !inputs.landArea.model == false && !inputs.plantingArea.model == false && !inputs.croppingPattern.model == false && !inputs.landStatus.model == false && !inputs.landDistance.model == false && !inputs.landAccess.model == false && !inputs.mu.model == false && !inputs.province.model == false && !inputs.regency.model == false && !inputs.district.model == false && !inputs.village.model == false && !inputs.address.model == false && inputs.seeds.table.items.length > 0)" :complete="dialogs.createData.step > 3" step="3" color="success" class="rounded-xl">
-                                Coordinates & Period
+                                Koordinat & Periode
                             </v-stepper-step>
                             <v-divider></v-divider>
                             <v-stepper-step :editable="(!inputs.mou.model == false && !inputs.employee.model == false && !inputs.pic.model == false && !inputs.picKtp.model == false && !inputs.landArea.model == false && !inputs.plantingArea.model == false && !inputs.croppingPattern.model == false && !inputs.landStatus.model == false && !inputs.landDistance.model == false && !inputs.landAccess.model == false && !inputs.mu.model == false && !inputs.province.model == false && !inputs.regency.model == false && !inputs.district.model == false && !inputs.village.model == false && !inputs.address.model == false && inputs.seeds.table.items.length > 0 && !inputs.longitude.model == false && !inputs.latitude.model == false && !inputs.dateDistribution.model == false)" :complete="dialogs.createData.step > 4" step="4" color="success" class="rounded-xl">
-                                Photos
+                                Foto
                             </v-stepper-step>
                         </v-stepper-header>
                         <!-- Stepper Content -->
@@ -164,7 +164,7 @@
                                     </v-col>
                                 </v-row>
                                 <div class="pb-2 d-flex align-center">
-                                    <p class="mb-0"><v-icon class="mr-2">mdi-island</v-icon>Land</p>
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-island</v-icon>Lahan</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
                                 <v-row class="my-0">
@@ -306,7 +306,7 @@
                                     </v-col>
                                 </v-row>
                                 <div class="pb-2 d-flex align-center">
-                                    <p class="mb-0"><v-icon class="mr-2">mdi-map-marker</v-icon>Location</p>
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-map-marker</v-icon>Lokasi</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
                                 <v-row class="">
@@ -446,7 +446,7 @@
                                         hide-details
                                         item-color="success"
                                         :items="['KAYU', 'MPTS', 'CROPS']"
-                                        :label="'Category'"
+                                        :label="'Kategori'"
                                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                         outlined
                                         rounded
@@ -464,7 +464,7 @@
                                         item-value="tree_code"
                                         return-object
                                         :items="inputs.seeds[inputs.seeds.category.model]"
-                                        :label="'Seedling'"
+                                        :label="'Bibit'"
                                         placeholder="Pick ur tree..."
                                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                         outlined
@@ -487,7 +487,7 @@
                                         rounded
                                         outlined
                                         min="0"
-                                        label="Amount"
+                                        label="Jumlah"
                                         placeholder="Set amount..."
                                         v-model="inputs.seeds.amount"
                                         style="max-width: 200px;"
@@ -506,6 +506,7 @@
                                     :items="inputs.seeds.table.items"
                                     hide-default-footer
                                     :items-per-page="-1"
+
                                 >
                                     <!-- Index Column -->
                                     <template v-slot:item.index="{index}">{{ index+1 }}</template>
@@ -538,10 +539,10 @@
                             <!-- Coordinates + Period -->
                             <v-stepper-content step="3" class="pt-0">
                                 <div class="py-2 d-flex align-center">
-                                    <p class="mb-0"><v-icon class="mr-2">mdi-crosshairs-gps</v-icon>Coordinates</p>
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-crosshairs-gps</v-icon>Koordinat</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
-                                <p class="red--text mb-0">*Use dots (<strong>.</strong>) instead commas (<strong>,</strong>) and please <strong>check locations</strong> before saving!</p>
+                                <p class="red--text mb-0">*Gunakan (<strong>.</strong>) instead commas (<strong>,</strong>) and please <strong>check locations</strong> before saving!</p>
                                 <v-row class="my-0">
                                     <!-- Latitude -->
                                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -578,18 +579,18 @@
                                     <!-- Check Location -->
                                     <v-col cols="12" class="px-10">
                                         <v-tooltip top class="rounded-xl" color="rounded-xl">
-                                            Click for check coordinates in GoogleMaps
+                                            Klik Untuk Cek Koordinat di GoogleMaps
                                             <template v-slot:activator="{ on, attrs }">
                                                 <v-btn v-bind="attrs" v-on="on" color="info" rounded block :disabled="!inputs.latitude.model || !inputs.longitude.model" @click="openGoogleMap(inputs.latitude.model, inputs.longitude.model)"> 
                                                     <v-icon class="mr-2">mdi-map-marker</v-icon>
-                                                    Check Location
+                                                    Cek Lokasi
                                                 </v-btn>
                                             </template>
                                         </v-tooltip>
                                     </v-col>
                                 </v-row>
                                 <div class="py-2 d-flex align-center">
-                                    <p class="mb-0"><v-icon class="mr-2">mdi-timeline-clock</v-icon>Period</p>
+                                    <p class="mb-0"><v-icon class="mr-2">mdi-timeline-clock</v-icon>Periode</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
                                 <v-row class="my-0">
@@ -666,7 +667,7 @@
                                         rounded
                                         hide-details
                                         accept="image/png, image/jpeg, image/bmp"
-                                        placeholder="Photo 1"
+                                        placeholder="Foto 1"
                                         prepend-icon="mdi-camera"
                                         label="Photo 1 (*max 6mb)"
                                         v-on:change="photo1FileChanged"
@@ -777,7 +778,7 @@
                                 <v-icon class="d-none d-md-inline" left> mdi-close-circle-outline </v-icon>
                                 <v-icon class="d-inline d-md-none" center> mdi-close-circle-outline </v-icon>
                                 <span class="d-none d-md-inline-block"> 
-                                    Cancel
+                                    Keluar
                                 </span>
                             </v-btn>
                         </v-col>
@@ -829,7 +830,7 @@
                                 "
                             >
                                 <span class="d-none d-md-inline-block"> 
-                                    Save
+                                    Simpan
                                 </span>
                                 <v-icon class="d-none d-md-inline" right> mdi-checkbox-marked-circle-outline </v-icon>
                                 <v-icon class="d-inline d-md-none" center> mdi-checkbox-marked-circle-outline </v-icon>
@@ -880,14 +881,14 @@
                                 <v-expansion-panel-header>
                                     <v-btn rounded block color="green white--text" small>
                                         <v-icon class="mr-1">mdi-list-box</v-icon>
-                                        MAIN DATA
+                                        DATA UTAMA
                                     </v-btn>
                                 </v-expansion-panel-header>
                                 <v-expansion-panel-content>
                                     <v-simple-table class="custom-simple-table">
                                         <tbody>
                                             <tr>
-                                                <td>Program Year</td>
+                                                <td>Tahun Program</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.program_year }}</strong></td>
                                             </tr>
@@ -920,40 +921,40 @@
                                                 <td><strong>{{ dialogs.detail.data.ktp_no }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <th colspan="3" class="text-center"><v-icon>mdi-island</v-icon> Land Detail</th>
+                                                <th colspan="3" class="text-center"><v-icon>mdi-island</v-icon> Detail Lahan</th>
                                             </tr>
                                             <tr>
-                                                <td>Land Area</td>
+                                                <td>Area Lahan</td>
                                                 <td>:</td>
                                                 <td><strong>{{ numberFormat(dialogs.detail.data.luas_lahan) }}</strong>m<sup>2</sup></td>
                                             </tr>
                                             <tr>
-                                                <td>Land Coverage</td>
+                                                <td>Cakupan Lahan</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.tutupan_lahan }}</strong>%</td>
                                             </tr>
                                             <tr>
-                                                <td>Planting Area</td>
+                                                <td>Area Penanaman</td>
                                                 <td>:</td>
                                                 <td><strong>{{ numberFormat(dialogs.detail.data.luas_tanam) }}</strong>m<sup>2</sup></td>
                                             </tr>
                                             <tr>
-                                                <td>Cropping Pattern</td>
+                                                <td>Pola Tanam</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.pattern_planting }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Land Status</td>
+                                                <td>Status Lahan</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.status }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Distance from Home</td>
+                                                <td>Jarak Dari Rumah</td>
                                                 <td>:</td>
                                                 <td><strong>{{ numberFormat(dialogs.detail.data.jarak_lahan) }}</strong>m</td>
                                             </tr>
                                             <tr>
-                                                <td>Land Access</td>
+                                                <td>Akses Lahan</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.access_lahan }}</strong></td>
                                             </tr>
@@ -966,27 +967,27 @@
                                                 <td><strong>{{ dialogs.detail.data.mu_name }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Province</td>
+                                                <td>Provinsi</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.province_name }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Regency</td>
+                                                <td>Kabupaten/Kota</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.regency_name }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>District</td>
+                                                <td>Distrik</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.district_name }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Village</td>
+                                                <td>Desa</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.village_name }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Address</td>
+                                                <td>Alamat</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.address }}</strong></td>
                                             </tr>
@@ -998,7 +999,7 @@
                                 <v-expansion-panel-header>
                                     <v-btn rounded block color="green white--text" small>
                                         <v-icon class="mr-1">mdi-sprout</v-icon>
-                                        Seedling
+                                        Bibit
                                     </v-btn>
                                 </v-expansion-panel-header>
                                 <v-expansion-panel-content>
@@ -1006,9 +1007,9 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Category</th>
-                                                <th>Name</th>
-                                                <th>Amount</th>
+                                                <th>Kategori</th>
+                                                <th>Nama</th>
+                                                <th>Jumlah</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1026,21 +1027,21 @@
                                 <v-expansion-panel-header>
                                     <v-btn rounded block color="green white--text" small>
                                         <v-icon class="mr-1">mdi-table-clock</v-icon>
-                                        Coordinates & Period
+                                        Koordinat dan Periode
                                     </v-btn>
                                 </v-expansion-panel-header>
                                 <v-expansion-panel-content>
                                     <v-simple-table class="custom-simple-table">
                                         <tbody>
                                             <tr>
-                                                <th colspan="3" class="text-center"><v-icon>mdi-map-marker</v-icon> Coordinate</th>
+                                                <th colspan="3" class="text-center"><v-icon>mdi-map-marker</v-icon> Koordinat</th>
                                             </tr>
                                             <tr>
-                                                <td>LatLong</td>
+                                                <td>Latitude, Longtitude</td>
                                                 <td>:</td>
                                                 <td>            
                                                     <v-tooltip top class="rounded-xl" color="rounded-xl">
-                                                        Click for check coordinates in GoogleMaps
+                                                        Klik Untuk Cek Koordinat di GoogleMaps
                                                         <template v-slot:activator="{ on, attrs }">
                                                             <v-btn v-bind="attrs" v-on="on" text rounded :disabled="(!dialogs.detail.data.latitude || !dialogs.detail.data.longitude)" @click="openGoogleMap(dialogs.detail.data.latitude, dialogs.detail.data.longitude)"> 
                                                                 <strong>{{ dialogs.detail.data.latitude }}, {{ dialogs.detail.data.longitude }}</strong>
@@ -1050,25 +1051,25 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>Coordinate</td>
+                                                <td>Koordinat</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dialogs.detail.data.coordinate }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <th colspan="3" class="text-center"><v-icon>mdi-timeline-clock</v-icon> Period</th>
+                                                <th colspan="3" class="text-center"><v-icon>mdi-timeline-clock</v-icon> Periode</th>
                                             </tr>
                                             <tr>
-                                                <td>Planting Hole Date</td>
+                                                <td>Tanggal Lubang Tanam</td>
                                                 <td>:</td>
                                                     <td><strong>{{ dateFormat(dialogs.detail.data.planting_hole_date, 'DD MMMM Y') }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Distribution Date</td>
+                                                <td>Tanggal Distribusi</td>
                                                 <td>:</td>
                                                     <td><strong>{{ dateFormat(dialogs.detail.data.distribution_date, 'DD MMMM Y') }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Planting Date</td>
+                                                <td>Tanggal Tanam</td>
                                                 <td>:</td>
                                                 <td><strong>{{ dateFormat(dialogs.detail.data.planting_realization_date, 'DD MMMM Y') }}</strong></td>
                                             </tr>
@@ -1080,7 +1081,7 @@
                                 <v-expansion-panel-header>
                                     <v-btn rounded block color="green white--text" small>
                                         <v-icon class="mr-1">mdi-image-multiple</v-icon>
-                                        Photos
+                                        Foto
                                     </v-btn>
                                 </v-expansion-panel-header>
                                 <v-expansion-panel-content>
@@ -1098,7 +1099,7 @@
                                             ></v-card>
                                         </v-col>
                                         <v-col cols="12" lg="6">
-                                            <h4 class="text-center mb-2">Lands</h4>
+                                            <h4 class="text-center mb-2">Lahan</h4>
                                             <v-carousel 
                                                 cycle
                                                 height="300" 
@@ -1184,6 +1185,12 @@
             :items="tables.lahan.items"
             :loading="tables.lahan.loading"
             :search="tables.lahan.search"
+            :footer-props="{
+              itemsPerPageText: 'Jumlah Data Per Halaman',
+              itemsPerPageOptions: [10, 25, 40, -1],
+              showCurrentPage: true,
+              showFirstLastPage: true,
+            }"
         >
             <!-- Slot: Top -->
             <template v-slot:top>
@@ -1199,7 +1206,7 @@
                         hide-details
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
-                        label="Program Year"
+                        label="Tahun Program"
                         class="mx-auto mx-lg-2 mb-2 mb-lg-0"
                         style="max-width: 200px"
                     ></v-select>
@@ -1208,7 +1215,7 @@
                         v-model="tables.lahan.search"
                         append-icon="mdi-magnify"
                         color="green"
-                        label="Search"
+                        label="Pencarian"
                         hide-details
                         outlined
                         rounded
@@ -1223,7 +1230,7 @@
                     </v-btn>
                     <v-btn color="info" rounded @click="dialogActions('createData', true)" class="pl-2">
                         <v-icon class="mr-1">mdi-plus-circle</v-icon>
-                        Create Data
+                        Masukan Data
                     </v-btn>
                 </v-row>
             </template>
@@ -1243,7 +1250,7 @@
             <template v-slot:item.is_verified="{item}">
                 <v-chip :color="item.is_verified ? 'green' : 'red'" class="white--text pl-1">
                     <v-icon class="mr-1">mdi-{{ item.is_verified ? 'check' : 'close' }}-circle</v-icon>
-                    {{ item.is_verified ? 'Verified' : 'Unverified' }}
+                    {{ item.is_verified ? 'Terverifikasi' : 'Belum Terverifikasi' }}
                 </v-chip>
             </template>
             <!-- Slot: Action Column -->
@@ -1405,12 +1412,12 @@ export default {
         },
         inputs: {
             address: {
-                label: 'Address',
+                label: 'Alamat',
                 model: '',
                 loading: false
             },
             croppingPattern: {
-                label: 'Cropping Pattern',
+                label: 'Pola Tanam',
                 model: '',
                 items: [
                     'Pola Agroforestry Acak',
@@ -1426,22 +1433,22 @@ export default {
                     show: false,
                     key: 1315432
                 },
-                label: 'Distribution Date',
+                label: 'Tanggal Distribusi',
                 loading: false,
                 model: ''
             },
             dateHoleSurveillance: {
-                label: 'Hole Surveillance Date',
+                label: 'Tanggal Pengawasan Lubang',
                 loading: false,
                 model: ''
             },
             dateRealization: {
-                label: 'Planting Realization Date',
+                label: 'Tanggal Realisasi Tanam',
                 loading: false,
                 model: ''
             },
             district: {
-                label: 'District',
+                label: 'Distrik',
                 model: '',
                 items: [],
                 loading: false
@@ -1453,7 +1460,7 @@ export default {
                 loading: false
             },
             landAccess: {
-                label: 'Land Access',
+                label: 'Akses Lahan',
                 model: '',
                 items: [
                     'Jalan Kaki',
@@ -1463,12 +1470,12 @@ export default {
                 loading: false
             },
             landArea: {
-                label: 'Land Area',
+                label: 'Area Lahan',
                 model: 0,
                 loading: false
             },
             landCoverage: {
-                label: 'Land Coverage(%)',
+                label: 'Cakupan Lahan(%)',
                 items: [
                     {text: '0%', value: 0},
                     {text: '25%', value: 25},
@@ -1479,12 +1486,12 @@ export default {
                 loading: false
             },
             landDistance: {
-                label: 'Land Distance from Home',
+                label: 'Jarak Lahan Dari Rumah',
                 model: 0,
                 loading: false
             },
             landStatus: {
-                label: 'Land Status',
+                label: 'Status Lahan',
                 model: '',
                 loading: false
             },
@@ -1500,7 +1507,7 @@ export default {
             },
             mou: {
                 exist: false,
-                label: 'MoU Number',
+                label: 'Nomor MoU',
                 model: '',
                 loading: false,
             },
@@ -1529,34 +1536,34 @@ export default {
                 },
             },
             pic: {
-                label: 'PIC Name',
+                label: 'Nama PIC',
                 model: '',
                 loading: false
             },
             picKtp: {
-                label: 'PIC NIK / Ktp No',
+                label: 'NIK / No KTP PIC',
                 model: '',
                 loading: false
             },
             plantingArea: {
-                label: 'Planting Area',
+                label: 'Area Penanaman',
                 model: 0,
                 loading: false
             },
             programYear: {
-                label: 'Program Year',
+                label: 'Tahun Program',
                 model: null,
                 items: [],
                 loading: false
             },
             province: {
-                label: 'Province',
+                label: 'Provinsi',
                 model: '',
                 items: [],
                 loading: false
             },
             regency: {
-                label: 'Regency',
+                label: 'Kabupaten/Kota',
                 model: '',
                 items: [],
                 loading: false
@@ -1576,17 +1583,17 @@ export default {
                 table: {
                     headers: [
                         { text: 'No', value: 'index', align: 'center' },
-                        { text: 'Category', value: 'tree_category', align: 'center' },
-                        { text: 'Name', value: 'tree_name' },
-                        { text: 'Amount', value: 'tree_amount', align: 'right' },
-                        { text: 'Remove', value: 'remove', sortable: false, align: 'right' },
+                        { text: 'Kategori', value: 'tree_category', align: 'center' },
+                        { text: 'Nama', value: 'tree_name' },
+                        { text: 'Jumlah', value: 'tree_amount', align: 'right' },
+                        { text: 'Hapus', value: 'remove', sortable: false, align: 'right' },
                     ],
                     items: []
                 },
             },
             village: {
                 items: [],
-                label: 'Village',
+                label: 'Desa',
                 model: '',
                 loading: false
             },
