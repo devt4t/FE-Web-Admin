@@ -15,6 +15,12 @@
       :items="dataobject"
       :search="search"
       :loading="loadtable"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
       @update:page="($p) => page = $p"
@@ -25,8 +31,8 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
-            placeholder="Search..."
+            label="Pencarian"
+            placeholder="Pencarian..."
             hide-details
             dense
             rounded
@@ -38,7 +44,7 @@
           <v-dialog v-model="dialog" max-width="600px" content-class="rounded-xl" scrollable>
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Edit Item</span>
+                <span class="headline">Edit Data</span>
               </v-card-title>
               <v-card-text>
                 <v-container>
@@ -88,7 +94,7 @@
                         :items="itemsMenu"
                         item-value="id"
                         item-text="name"
-                        label="Pilih Tambah Menu Access"
+                        label="Pilih Tambah Akses Menu"
                         v-on:change="selectedMenuAccess($event)"
                       ></v-autocomplete>
                     </v-col>
@@ -100,7 +106,12 @@
                         :items="defaultItem.MenuTable"
                         class="elevation-1 rounded-xl"
                         append-icon="mdi-magnify"
-                        :items-per-page="5"
+                        :footer-props="{
+                          itemsPerPageText: 'Jumlah Data Per Halaman',
+                          itemsPerPageOptions: [5, 10, 25, 40, -1],
+                          showCurrentPage: true,
+                          showFirstLastPage: true,
+                        }"
                       >
                         <template v-slot:item.actions="{ item }">
                           <v-icon
@@ -120,9 +131,9 @@
                 <v-spacer></v-spacer>
                 <v-btn color="red" text rounded @click="close">
                   <v-icon class="mr-1">mdi-close-circle</v-icon>
-                  Cancel
+                  Keluar
                 </v-btn>
-                <v-btn color="green white--text" rounded @click="save"><v-icon class="mr-1">mdi-content-save</v-icon> Save </v-btn>
+                <v-btn color="green white--text" rounded @click="save"><v-icon class="mr-1">mdi-content-save</v-icon> Simpan </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -132,15 +143,15 @@
         {{ (itemsPerPage * (page-1)) + index + 1 }}
       </template>
       <template v-slot:item.Menu="{ item }">
-        <v-chip v-if="item.Menu.split(', ').length == itemsMenu.length" color="green white--text" class="pl-2" rounded><v-icon class="mr-1">mdi-shield-crown</v-icon> All Access</v-chip>
-        <v-chip v-else-if="!item.Menu" color="red white--text" class="pl-1" rounded><v-icon class="mr-1">mdi-close-circle</v-icon> No Access</v-chip>
+        <v-chip v-if="item.Menu.split(', ').length == itemsMenu.length" color="green white--text" class="pl-2" rounded><v-icon class="mr-1">mdi-shield-crown</v-icon> Semua Akses</v-chip>
+        <v-chip v-else-if="!item.Menu" color="red white--text" class="pl-1" rounded><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak Ada Akses</v-chip>
         <div v-else-if="item.Menu.split(', ').length <= 3">
           <v-chip v-for="(menuName, menuIndex) in item.Menu.split(', ')" color="green white--text" class="pl-1 mr-1" :key="menuName + menuIndex"><v-icon class="mr-1">mdi-numeric-{{ menuIndex + 1 }}-circle</v-icon> {{ menuName }}</v-chip>
         </div>
         <div v-else>
           <v-menu content-class="rounded-xl" max-height="400" offset-y>
             <template v-slot:activator="{on, attrs}">
-              <v-chip v-bind="attrs" v-on="on" color="green white--text"><v-icon class="mr-1">mdi-format-list-numbered</v-icon> {{ item.Menu.split(', ').length }} Access <v-icon>mdi-chevron-down</v-icon></v-chip>
+              <v-chip v-bind="attrs" v-on="on" color="green white--text"><v-icon class="mr-1">mdi-format-list-numbered</v-icon> {{ item.Menu.split(', ').length }} Akses <v-icon>mdi-chevron-down</v-icon></v-chip>
             </template>
             <v-card scrollable>
               <v-card-text>
@@ -207,7 +218,7 @@ export default {
       { text: "No", value: "no", width: '70' },
       { text: "Nama Emp", value: "NamaEmp", width: "20%" },
       { text: "Nama Manager", value: "NamaManager", width: "20%" },
-      { text: "Menu Access", value: "Menu" },
+      { text: "Akses Menu", value: "Menu" },
       { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
     headersmenu: [

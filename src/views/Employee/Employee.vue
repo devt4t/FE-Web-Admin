@@ -435,7 +435,7 @@
           <v-card-actions v-if="load == false">
             <v-btn color="red" rounded text @click="close">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
@@ -444,7 +444,7 @@
               rounded
               outlined
               @click="save"
-              ><v-icon class="mr-1">mdi-content-save</v-icon> Save
+              ><v-icon class="mr-1">mdi-content-save</v-icon> Simpan
             </v-btn>
           </v-card-actions>
         </v-form>
@@ -454,7 +454,7 @@
     <v-dialog v-model="dialogdetail" max-width="700px">
       <v-card>
         <v-card-title class="mb-1 headermodalstyle">
-          <span class="headline">Detail Employee</span>
+          <span class="headline">Detail Karyawan</span>
         </v-card-title>
         <v-card-text>
           <v-container
@@ -656,11 +656,11 @@
     <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
         <v-card-title class="headline"
-          >Are you sure you want to delete this item?</v-card-title
+          >Apa Anda Yakin Menghapus Data Ini?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="closeDelete">Keluar</v-btn>
           <v-btn color="blue darken-1" text @click="deleteItemConfirm"
             >OK</v-btn
           >
@@ -683,6 +683,9 @@
       :items="dataobject"
       :search="search"
       :loading="loadtable"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman'
+      }"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
       @update:page="($p) => (page = $p)"
@@ -693,8 +696,8 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
-            placeholder="Search..."
+            label="Pencarian"
+            placeholder="Pencarian..."
             hide-details
             dense
             rounded
@@ -714,7 +717,7 @@
             Excel</v-btn
           >
           <v-btn dark rounded @click="showAddModal()" color="blue">
-            <v-icon small>mdi-plus</v-icon> Add Item
+            <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
         </v-toolbar>
       </template>
@@ -781,7 +784,7 @@ export default {
         href: "breadcrumbs_link_1",
       },
     ],
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     dialogdetail: false,
     dialog: false,
@@ -801,7 +804,7 @@ export default {
       { text: "ID Karyawan", value: "nik" },
       { text: "Nama", value: "name" },
       { text: "No KTP", value: "ktp_no" },
-      { text: "Position", value: "emp_position" },
+      { text: "Posisi", value: "emp_position" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     dataobject: [],
@@ -1159,7 +1162,7 @@ export default {
       this.defaultItem.bpjs_tenagakerja_no = "";
       this.defaultItem.blood_type = "";
 
-      this.formTitle = "Add Item";
+      this.formTitle = "Tambah Data";
       this.dialog = true;
     },
     async editItem(item) {
@@ -1167,7 +1170,7 @@ export default {
       this.dialog = true;
       this.defaultItem = Object.assign({}, item);
       this.datepicker = item.birthday;
-      this.formTitle = "Edit Item";
+      this.formTitle = "Edit Data";
     },
 
     save() {

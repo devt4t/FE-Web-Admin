@@ -7,7 +7,7 @@
     >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2">
-                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document-edit</v-icon></v-btn> Field Coordinator Form</span>
+                <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-file-document-edit</v-icon></v-btn> Form Field Coordinator</span>
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text class="pa-0">
@@ -273,9 +273,10 @@
                     data-aos="zoom-in"
                     data-aos-duration="300"
                     data-aos-offset="-200"
-                    text rounded color="red" class="pl-2">
+                    text rounded color="red" class="pl-2"
+                    @click="showModal = false">
                     <v-icon class="mr-1">mdi-close-circle</v-icon>
-                    Close
+                    Keluar
                 </v-btn>
                 <v-divider class="mx-2"></v-divider>
                 <v-btn

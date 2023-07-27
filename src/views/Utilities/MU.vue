@@ -14,6 +14,9 @@
       :items="dataobject"
       :search="search"
       :loading="tableLoading"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman'
+      }"
       data-aos="fade-up"
       data-aos-delay="200"
       class="rounded-xl elevation-6 mx-3 pa-1"
@@ -34,15 +37,15 @@
               hide-details
               :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
               rounded
-              label="Program Year"
+              label="Tahun Program"
               class="mx-auto mr-lg-2 mb-2 mb-lg-0"
               style="max-width: 200px"
           ></v-select>
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
-            placeholder="Search..."
+            label="Pencarian"
+            placeholder="Pencarian..."
             hide-details
             dense
             rounded
@@ -52,7 +55,7 @@
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
           <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
-            <v-icon small>mdi-plus</v-icon> Add Item
+            <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px" content-class="rounded-xl">
             <v-card>
@@ -97,7 +100,7 @@
                               <v-list-item>
                               <v-list-item-content>
                                   <v-list-item-title>
-                                  No results matching. Press <kbd>enter</kbd> to create a new one
+                                  Tidak Ada Hasil yang Sama. Tekan <kbd>enter</kbd> Untuk Mencari Kembali
                                   </v-list-item-title>
                               </v-list-item-content>
                               </v-list-item>
@@ -129,12 +132,12 @@
               <v-card-actions>
                 <v-btn color="red darken-1" text rounded @click="close">
                   <v-icon class="mr-1">mdi-close-circle</v-icon>
-                  Cancel
+                  Keluar
                 </v-btn>
                 <v-spacer></v-spacer>
                 <v-btn color="green white--text" rounded @click="save" class="" :disabled="saveDisabled"> 
                   <v-icon class="mr-1">mdi-content-save</v-icon>
-                  Save 
+                  Simpan
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -142,12 +145,12 @@
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
+                >Apa Anda Yakin Menghapus Data Ini?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+                  >Keluar</v-btn
                 >
                 <v-btn color="blue darken-1" text @click="deleteItemConfirm"
                   >OK</v-btn
@@ -200,7 +203,7 @@ export default {
         href: "breadcrumbs_link_1",
       },
     ],
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     dialog: false,
     dialogDelete: false,
@@ -407,14 +410,14 @@ export default {
 
     showAddModal() {
       this.value = "add";
-      this.formTitle = "Add Item";
+      this.formTitle = "Tambah Data";
       this.defaultItem.id = "";
       this.defaultItem.mu_no = "";
       this.defaultItem.name = "";
       this.dialog = true;
     },
     editItem(item) {
-      this.formTitle = "Edit Item";
+      this.formTitle = "Edit Data";
       this.defaultItem = Object.assign({}, item);
       this.value = "edit";
       this.dialog = true;
@@ -437,8 +440,8 @@ export default {
     async save() {
       try {
         const confirm = await Swal.fire({
-            title: 'Apakah engkau yakin?',
-            text: "Setelah ini kamu tidak akan bisa membatalkannya!",
+            title: 'Apakah Anda yakin?',
+            text: "Setelah ini Anda tidak akan bisa membatalkannya!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#2e7d32',

@@ -39,6 +39,12 @@
       :search="table.search"
       :loading="table.loading.show"
       :loading-text="table.loading.text"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
       :class="
         `${
           $store.state.theme == 'dark' ? '' : ''
@@ -65,7 +71,7 @@
               transition: 'slide-y-transition',
             }"
             rounded
-            label="Program Year"
+            label="Tahun Program"
             class="mx-auto mr-lg-2 mb-2 mb-lg-0"
             style="max-width: 200px"
           ></v-select>
@@ -77,7 +83,7 @@
             outlined
             rounded
             class="mx-auto mb-2 mb-lg-0"
-            label="Search"
+            label="Pencarian"
             placeholder="Start type to search..."
             append-icon="mdi-magnify"
             v-model="table.search"
@@ -107,7 +113,7 @@
               "
             >
               <v-icon class="mr-1">mdi-plus-circle</v-icon>
-              Add
+              Tambah Data
             </v-btn>
           </div>
         </v-row>
@@ -129,7 +135,7 @@
           small
           class="font-weight-bold"
         >
-          Verified
+          Terverifikasi
         </v-chip>
         <v-chip
           color="error"
@@ -138,7 +144,7 @@
           small
           class="font-weight-bold"
         >
-          Not Verified
+          Belum Terverifikasi
         </v-chip>
       </template>
       <!-- Action Column -->

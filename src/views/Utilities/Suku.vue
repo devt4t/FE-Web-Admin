@@ -13,6 +13,9 @@
       :headers="headers"
       :items="dataobject"
       :search="search"
+      :footer-props="{
+        itemsPerPageText:'Jumlah Data Per Halaman'
+      }"
       class="rounded-xl elevation-6 mx-3 pa-1"
       data-aos="fade-up"
       data-aos-delay="200"
@@ -24,8 +27,8 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
-            placeholder="Search..."
+            label="Pencarian"
+            placeholder="Pencarian..."
             hide-details
             dense
             rounded
@@ -35,7 +38,7 @@
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
           <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
-            <v-icon small>mdi-plus</v-icon> Add Item
+            <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
@@ -58,21 +61,23 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="close">
-                  Cancel
+                  Keluar
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                <v-btn color="blue darken-1" text @click="save">
+                  Simpan
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
+                >Apa Anda Yakin Menghapus Data Ini?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+                  >Keluar</v-btn
                 >
                 <v-btn color="blue darken-1" text @click="deleteItemConfirm"
                   >OK</v-btn
@@ -124,7 +129,7 @@ export default {
         href: "breadcrumbs_link_1",
       },
     ],
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     dialog: false,
     dialogDelete: false,
@@ -278,7 +283,7 @@ export default {
 
     showAddModal() {
       this.value = "add";
-      this.formTitle = "Add Item";
+      this.formTitle = "Tambah Data";
       this.defaultItem.id = "";
       this.defaultItem.code = "";
       this.defaultItem.name = "";
@@ -286,7 +291,7 @@ export default {
     },
     editItem(item) {
       console.log(item);
-      this.formTitle = "Edit Item";
+      this.formTitle = "Edit Data";
       this.defaultItem = Object.assign({}, item);
       this.value = "edit";
       this.dialog = true;

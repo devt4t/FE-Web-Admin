@@ -483,9 +483,10 @@
           rounded
           color="red"
           class="pl-2"
+          @click="showModal = false"
         >
           <v-icon class="mr-1">mdi-close-circle</v-icon>
-          Close
+          Keluar
         </v-btn>
         <v-divider class="mx-2"></v-divider>
         <v-btn
@@ -500,7 +501,7 @@
           @click="() => save()"
         >
           <v-icon class="mr-1">mdi-content-save</v-icon>
-          Save
+          Simpan
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -689,7 +690,7 @@ export default {
             type: "file",
           },
         },
-        label: "List Petani",
+        label: "Daftar Petani",
         labelIcon: "mdi-list-box",
         model: [],
       },

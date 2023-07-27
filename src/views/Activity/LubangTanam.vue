@@ -1730,7 +1730,10 @@
       class="rounded elevation-6 mx-3 pa-1 rounded-xl mb-4"
       multi-sort
       :footer-props="{
-        itemsPerPageOptions: [10, 25, 40, -1]
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
       }"
     >
       <template v-slot:top>
@@ -1767,7 +1770,7 @@
                   color="green"
                 >
                   <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
-                  by Area
+                  Berdasarkan Area
                 </v-btn>
               </v-list-item>
               <v-list-item v-if="RoleAccesFilterShow == true">
@@ -1779,7 +1782,7 @@
                   color="green"
                 >
                   <v-icon class="mx-2" small>mdi-account-group</v-icon> 
-                  by Employee
+                  Berdasarkan Employee
                 </v-btn>
               </v-list-item>
             </v-list>
@@ -1795,7 +1798,7 @@
             hide-details
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
-            label="Program Year"
+            label="Tahun Program"
             class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
@@ -1811,7 +1814,7 @@
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
             :disabled="loadtable"
-            label="Land Program"
+            label="Program Lahan"
             class="mx-auto mx-lg-3 mr-lg-0"
             style="max-width: 200px"
           ></v-select>
@@ -1821,7 +1824,7 @@
             v-model="search"
             append-icon="mdi-magnify"
             color="green"
-            label="Search"
+            label="Pencarian"
             hide-details
             outlined
             rounded
@@ -1861,7 +1864,7 @@
                   color="green"
                 >
                   <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
-                  by Area
+                  Berdasarkan Area
                 </v-btn>
               </v-list-item>
               <v-list-item v-if="false">
@@ -1873,7 +1876,7 @@
                   color="green"
                 >
                   <v-icon class="mx-2" small>mdi-account-group</v-icon> 
-                  by Employee
+                  Berdasarkan Employee
                 </v-btn>
               </v-list-item>
             </v-list>

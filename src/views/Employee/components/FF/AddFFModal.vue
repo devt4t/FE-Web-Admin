@@ -4,7 +4,7 @@
     <v-card>
         <v-card-title class="ma-1 blue darken-2 rounded-xl">
             <v-icon color="white" class="mr-2">mdi-account-box</v-icon>
-            <span class="white--text"> Field Facilitator Form</span>
+            <span class="white--text"> Form Field Facilitator </span>
             <v-divider color="white" class="mx-2"></v-divider>
             <v-icon color="white" @click="() => showModal = false">mdi-close-circle</v-icon>
         </v-card-title>

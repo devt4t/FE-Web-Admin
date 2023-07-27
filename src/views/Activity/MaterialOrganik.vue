@@ -49,7 +49,7 @@
                     <v-simple-table>
                         <tbody>
                             <tr>
-                                <th>Organic No</th>
+                                <th>No Material Organik</th>
                                 <th>:</th>
                                 <td>{{ dialogs.detail.datas.organic_no }}</td>
                             </tr>
@@ -61,14 +61,14 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>Farmer</th>
+                                <th>Petani</th>
                                 <th>:</th>
                                 <td>{{ dialogs.detail.datas.farmer_name }} <br>
                                     <small>{{ dialogs.detail.datas.farmer_no }}</small>
                                 </td>
                             </tr>
                             <tr>
-                                <th>Organic Amount</th>
+                                <th>Jumlah Material Organik</th>
                                 <th>:</th>
                                 <td>{{ numberFormat(dialogs.detail.datas.organic_amount) }} {{ dialogs.detail.datas.uom }}<br>
                                     <small>{{ dialogs.detail.datas.organic_name }}</small>
@@ -187,6 +187,12 @@
             @update:page="($p) => tables.main.page = $p"
             @update:items-per-page="($p) => tables.main.itemsPerPage = $p"
             @current-items="($p) => checkCurrentItems($p)"
+            :footer-props="{
+              itemsPerPageText: 'Jumlah Data Per Halaman',
+              itemsPerPageOptions: [10, 25, 40, -1],
+              showCurrentPage: true,
+              showFirstLastPage: true,
+            }"
         >
             <!-- Toolbars -->
             <template v-slot:top>
@@ -203,7 +209,7 @@
                         hide-details
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
-                        label="Program Year"
+                        label="Tahun Program"
                         class=""
                         style="max-width: 200px"
                     ></v-select>
@@ -219,7 +225,7 @@
                         hide-details
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
-                        label="Land Program"
+                        label="Program Lahan"
                         class="ml-2"
                         style="max-width: 200px"
                     ></v-select>
@@ -231,7 +237,7 @@
                         dense
                         outlined
                         rounded
-                        label="Search"
+                        label="Pencarian"
                         placeholder="Start type to search..."
                         append-icon="mdi-magnify"
                         v-model="tables.main.search"
@@ -250,7 +256,7 @@
                         hide-details
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
-                        label="Organic Type"
+                        label="Tipe Material Organik"
                         class=""
                         style="max-width: 200px"
                     ></v-select>
@@ -409,23 +415,23 @@ export default {
                 itemsPerPage: 10,
                 headers: [
                     { text: "No", value: "no", width: '70' },
-                    { text: "Organic No", value: "organic_no" },
-                    { text: "Date", value: "created_at" },
-                    { text: "FF Name", value: "ff_name" },
-                    { text: "Farmer Name", value: "farmer_name" },
-                    { text: "Organic Name", value: "organic_name", align: 'center' },
-                    { text: "Amount", value: "organic_amount" },
+                    { text: "No Material Organik", value: "organic_no" },
+                    { text: "Tanggal", value: "created_at" },
+                    { text: "Nama FF", value: "ff_name" },
+                    { text: "Nama Petani", value: "farmer_name" },
+                    { text: "Nama Material Organik", value: "organic_name", align: 'center' },
+                    { text: "Jumlah Material Organik", value: "organic_amount" },
                     { text: "Status", value: "status", align: 'center' },
                     { text: "Actions", value: "actions", align: 'right' },
                 ],
                 headers2: [
                     { text: "No", value: "no", width: '70' },
-                    { text: "MOU No", value: "mou_no" },
-                    { text: "Date", value: "created_at" },
+                    { text: "No MOU", value: "mou_no" },
+                    { text: "Tanggal", value: "created_at" },
                     { text: "PIC T4T", value: "employee_name" },
                     { text: "PIC Lahan", value: "pic_lahan" },
-                    { text: "Organic Name", value: "organic_name", align: 'center' },
-                    { text: "Amount", value: "organic_amount" },
+                    { text: "Nama Material Organik", value: "organic_name", align: 'center' },
+                    { text: "Jumlah Material Organik", value: "organic_amount" },
                     { text: "Status", value: "status", align: 'center' },
                     { text: "Actions", value: "actions", align: 'right' },
                 ],

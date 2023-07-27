@@ -13,7 +13,7 @@
     <v-dialog v-model="dialogDetail" max-width="800px" content-class="rounded-xl" scrollable>
       <v-card>
         <v-card-title>
-          <span class="headline">Detail Petani</span>
+          <span class="headline">Detail Pohon</span>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -279,9 +279,9 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="close">
-              Cancel
+              Keluar
             </v-btn>
-            <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+            <v-btn color="blue darken-1" text @click="save"> Simpan </v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
@@ -291,7 +291,7 @@
       <v-card>
         <!-- Title -->
         <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
-          <span class="">Add Tree Locations</span>
+          <span class="">Tambah Lokasi Pohon</span>
           <v-spacer></v-spacer>
           <v-icon color="red" @click="closeDialogAdjustTreeLocation">mdi-close-circle</v-icon>
         </v-card-title>
@@ -436,14 +436,14 @@
         <v-card-actions>
           <v-btn rounded color="red white--text pr-3" @click="closeDialogAdjustTreeLocation">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
-            Close
+            Keluar
           </v-btn>
           <v-divider class="mx-2"></v-divider>
           <v-btn rounded color="green white--text px-3" @click="saveTreeLocations"
             :disabled="!dialogs.treeLocations.add.forms.mu_no"
           >
             <v-icon class="mr-1">mdi-content-save-check</v-icon>
-            Save
+            Simpan
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -452,12 +452,12 @@
     <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
       <v-card>
         <v-card-title class="headline"
-          >Are you sure you want to delete this item?</v-card-title
+          >Apa Anda Yakin Menghapus Data Ini?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="closeDelete"
-            >Cancel</v-btn
+            >Keluar</v-btn
           >
           <v-btn color="blue darken-1" text @click="verifDelete"
             >OK</v-btn
@@ -476,7 +476,7 @@
         <!-- Main Tree Section -->
         <v-expansion-panel class="rounded-xl">
           <v-expansion-panel-header>
-              <h3 class="dark--text"><v-icon class="mr-1">mdi-pine-tree</v-icon> Main Tree</h3>
+              <h3 class="dark--text"><v-icon class="mr-1">mdi-pine-tree</v-icon> Pohon Utama </h3>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
               <!-- loading overlay -->
@@ -488,13 +488,17 @@
                           size="123"
                           width="7"
                       ></v-progress-circular>
-                      <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting <strong>Main Trees</strong> data...</p>
+                      <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Mengambil Data <strong> Pohon Utama</strong></p>
                   </div>
               </v-overlay>
+
               <v-data-table
                 :headers="headers"
                 :items="dataobject"
                 :search="search"
+                :footer-props="{
+                  itemsPerPageText:'Jumlah Data Per Halaman'
+                }"
                 class=""
               >
                 <template v-slot:top>
@@ -506,12 +510,12 @@
                       v-model="search"
                       append-icon="mdi-magnify"
                       color="green"
-                      label="Search"
+                      label="Pencarian"
                       hide-details
                     ></v-text-field>
                     <v-divider class="mx-2"></v-divider>
                     <v-btn rounded dark class="mb-2" @click="showAddModal()" color="green">
-                      <v-icon small>mdi-plus</v-icon> Add Item
+                      <v-icon small>mdi-plus</v-icon> Tambah Data
                     </v-btn>
                   </v-toolbar>
                 </template>
@@ -530,7 +534,7 @@
         <!-- Tree Location Section -->
         <v-expansion-panel class="rounded-xl">
           <v-expansion-panel-header>
-              <h3 class="dark--text"><v-icon class="mr-1">mdi-forest</v-icon> Tree per-Management Unit</h3>
+              <h3 class="dark--text"><v-icon class="mr-1">mdi-forest</v-icon> Pohon per-Management Unit</h3>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
               <!-- loading overlay -->
@@ -542,13 +546,16 @@
                           size="123"
                           width="7"
                       ></v-progress-circular>
-                      <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting Trees in <strong>{{ expansions.treeLocations.optionsMU.model }}</strong> data...</p>
+                      <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Mengambil Data Pohon di <strong>{{ expansions.treeLocations.optionsMU.model }}</strong> data...</p>
                   </div>
               </v-overlay>
               <v-data-table
                 :headers="expansions.treeLocations.headers"
                 :items="expansions.treeLocations.items"
                 :search="expansions.treeLocations.search"
+                :footer-props="{
+                  itemsPerPageText:'Jumlah Data Per Halaman'
+                }"
                 class=""
               >
                 <template v-slot:top>
@@ -584,12 +591,12 @@
                       v-model="expansions.treeLocations.search"
                       append-icon="mdi-magnify"
                       color="green"
-                      label="Search"
+                      label="Pencarian"
                       hide-details
                     ></v-text-field>
                     <!-- add button -->
                     <v-btn rounded dark class="mb-2" @click="dialogs.treeLocations.add.show = true" color="green">
-                      <v-icon class="mr-1">mdi-nature-people</v-icon> Adjust Trees
+                      <v-icon class="mr-1">mdi-nature-people</v-icon> Sesuaikan Pohon
                     </v-btn>
                   </v-row>
                 </template>
@@ -626,9 +633,9 @@ export default {
       treeLocations: {
         headers: [
           {text: 'Management Unit', value: 'mu_name'},
-          {text: 'Tree Code', value: 'tree_code'},
-          {text: 'Tree Name', value: 'tree_name'},
-          {text: 'Tree Category', value: 'category', align: 'center'},
+          {text: 'Kode Pohon', value: 'tree_code'},
+          {text: 'Nama Pohon', value: 'tree_name'},
+          {text: 'Kategori Pohon', value: 'category', align: 'center'},
           // {text: 'Actions', value: 'actions', align: 'right'},
         ],
         items: [],
@@ -670,7 +677,7 @@ export default {
       },
     ],
     alerttoken: false,
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     dialog: false,
     dialogDelete: false,

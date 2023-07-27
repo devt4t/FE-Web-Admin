@@ -188,7 +188,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialogFilterEmp = false"
-            >Cancel</v-btn
+            >Keluar</v-btn
           >
           <v-btn color="blue darken-1" text @click="searchbyemp">Cari</v-btn>
         </v-card-actions>
@@ -1039,7 +1039,7 @@
                   color="green"
                 >
                   <v-icon class="mx-2" small>mdi-map-legend</v-icon>
-                  by Area
+                  Berdasarkan Area
                 </v-btn>
               </v-list-item>
               <v-list-item>
@@ -1051,7 +1051,7 @@
                   color="green white--text"
                 >
                   <v-icon class="mx-2" small>mdi-account-group</v-icon>
-                  by Employee
+                  Berdasarkan Karyawan
                 </v-btn>
               </v-list-item>
               <v-list-item>
@@ -1078,7 +1078,7 @@
               transition: 'slide-y-transition',
             }"
             rounded
-            label="Program Year"
+            label="Tahun Program"
             class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
@@ -1087,7 +1087,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            label="Pencarian"
             hide-details
             dense
             outlined

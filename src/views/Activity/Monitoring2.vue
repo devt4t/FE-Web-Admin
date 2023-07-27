@@ -23,6 +23,9 @@
       data-aos="fade-up"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
+      :footer-props="{
+      itemsPerPageText: 'Jumlah Data Per Halaman'
+      }"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
@@ -33,7 +36,7 @@
             rounded
             color="green"
             append-icon="mdi-magnify"
-            label="Search"
+            label="Pencarian"
             hide-details
           ></v-text-field>
         </v-toolbar>

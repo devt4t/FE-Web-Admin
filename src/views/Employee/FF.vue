@@ -209,7 +209,7 @@
               </v-col>
               <v-col sm="12" md="3" cols="3">
                 <div class="ml-2">
-                  <h4><strong>Bank Branch</strong></h4>
+                  <h4><strong>Cabang bank</strong></h4>
                   <h5>
                     {{ defaultItem.bank_branch }}
                   </h5>
@@ -217,7 +217,7 @@
               </v-col>
               <v-col sm="12" md="3" cols="3">
                 <div class="ml-2">
-                  <h4><strong>Bank Name</strong></h4>
+                  <h4><strong>Nama Bank</strong></h4>
                   <h5>
                     {{ defaultItem.bank_name }}
                   </h5>
@@ -236,7 +236,7 @@
             @click="nonactivateFF(defaultItem)"
           >
             <v-icon class="mr-1">mdi-account-off</v-icon>
-            Nonactivate
+            Nonaktifkan
           </v-btn>
           <v-btn
             v-else
@@ -248,7 +248,7 @@
             <v-icon class="mr-1" small color="white">
               mdi-account-check
             </v-icon>
-            Activate
+            Aktifkan
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -257,11 +257,11 @@
     <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
         <v-card-title class="headline"
-          >Are you sure you want to delete this item?</v-card-title
+          >Apa Anda Yakin Menghapus Data Ini?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="closeDelete">Keluar</v-btn>
           <v-btn color="blue darken-1" text @click="deleteItemConfirm"
             >OK</v-btn
           >
@@ -290,13 +290,13 @@
         </v-card-title>
         <v-card-text>
           <h2 class="text-center pt-4">
-            Do u want to
+            Apa Anda Mau
             {{
               dialogs.nonactivateConfirmation.model[1]
-                ? "Activate"
-                : "Nonactivate"
+                ? "Aktifkan"
+                : "Nonaktifkan"
             }}
-            this FF?
+            FF Ini?
           </h2>
           <v-row class="mt-10 align-center mb-0">
             <v-divider class="mx-2"></v-divider>
@@ -306,7 +306,7 @@
               @click="dialogs.nonactivateConfirmation.show = false"
             >
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Close
+              Keluar
             </v-btn>
             <v-btn
               rounded
@@ -343,6 +343,12 @@
       :items="dataobject"
       :search="search"
       :loading="loadtable"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1 mb-4"
     >
@@ -365,7 +371,7 @@
               transition: 'slide-y-transition',
             }"
             rounded
-            label="Program Year"
+            label="Tahun Program"
             class="mx-auto mr-lg-2 mb-2 mb-lg-0"
             style="max-width: 200px"
           ></v-select>
@@ -376,7 +382,7 @@
             dense
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            label="Pencarian"
             hide-details
           ></v-text-field>
           <v-divider class="mx-4" inset></v-divider>
@@ -388,14 +394,14 @@
             @click="showAddModal()"
             color="blue"
           >
-            <v-icon small>mdi-plus</v-icon> Add Item
+            <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
         </v-toolbar>
       </template>
       <!-- Status Column -->
       <template v-slot:item.active="{ item }">
         <v-chip :color="`${item.active ? 'green' : 'red'} white--text`">
-          {{ item.active ? "Active" : "Nonactive" }}
+          {{ item.active ? "Aktif" : "Nonaktif" }}
         </v-chip>
       </template>
       <!-- Actions Column -->
@@ -467,7 +473,7 @@
               <v-icon class="mr-1" small color="white">
                 mdi-delete
               </v-icon>
-              Delete
+              Hapus
             </v-btn>
             <!-- <v-btn
               v-if="item.active == 1"
@@ -571,7 +577,7 @@ export default {
         href: "breadcrumbs_link_1",
       },
     ],
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     dialogdetail: false,
     dialog: false,
@@ -588,11 +594,11 @@ export default {
     headers: [
       // { text: "ID", value: "id" },
       { text: "FF No", value: "ff_no" },
-      { text: "FF Name", value: "namaFF" },
-      { text: "FC Name", value: "namaFC" },
+      { text: "Nama FF", value: "namaFF" },
+      { text: "Nama FC", value: "namaFC" },
       { text: "MU", value: "mu_name" },
       { text: "TA", value: "ta_name" },
-      { text: "Village", value: "village_name" },
+      { text: "Desa", value: "village_name" },
       { text: "Email", value: "email" },
       { text: "Status", value: "active", align: "center" },
       { text: "Actions", value: "actions", sortable: false, align: "right" },
