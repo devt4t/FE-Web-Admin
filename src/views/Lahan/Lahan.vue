@@ -2460,7 +2460,7 @@ export default {
       village: "",
       water_availability: "",
       waitingapproval: false,
-      internal_code: "",
+      //internal_code: "",
       type_sppt: "",
       kepemilikan_sppt: "",
 
@@ -2532,7 +2532,7 @@ export default {
     fc_no_global: "",
     typegetdata: "",
 
-    itemsff: [],
+    //itemsff: [],
     itemspetani: [],
 
     itemsdetaillahan: [],
@@ -2900,7 +2900,7 @@ export default {
         this.dataobject = data.items
         this.table.datas.total = data.total
         //make new api for total data lahan
-        this.totalDataLahan.dataLahan1.Count = data.total
+        // this.totalDataLahan.dataLahan1.Count = data.total
 
         this.table.pagination.current_page = data.current_page
         this.table.pagination.length_page = data.last_page
@@ -2908,12 +2908,18 @@ export default {
         for (let index = 1; index <= data.last_page; index++) {
           pageOptions.push(index)
         }
+
         this.table.pagination.page_options = pageOptions
       }).finally(() => {
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
         this.loadtable = false
       })
+      /*await this.getTotalDataLahan().then(dataLahan => {
+        this.totalDataLahan.dataLahan1.Count =dataLahan.total
+      })*/
+
+
       // Get Total Data Lahan
       /*const totalDataLahan = await axios.get((this.$store.getters.getApiUrl(``)))
       const TDL = this.totalDataLahan
@@ -2922,6 +2928,35 @@ export default {
       TDL.dataLahan3.Count = await totalDataLahan.total.lahan_type|| 0
       TDL.dataLahan3.Count = await totalDataLahan.total.lahan_type|| 0*/
     },
+    // Get Total Data Lahan
+    /*async getTotalDataLahan(){
+      try {
+        const response = await axios.get(
+            this.BaseUrlGet + ``,
+            {
+              headers:{
+                Authorization: `Bearer ` + this.authtoken,
+              },
+
+            }
+
+        );
+        console.log("GET TOTAL DATA LAHAN")
+        if(response.data.length != 0){
+          this.totalDataLahan.dataLahan1 = response.data.data.result;
+        }
+        else {
+          console.log('Data Total Kosong')
+        }
+      }
+      catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.alerttoken = true;
+        }
+      }
+    },*/
+    //Total Lahan End
 
     async getMU() {
       try {
@@ -3233,7 +3268,6 @@ export default {
         }
       }
     },
-
     async getFF() {
       if (this.User.fc.fc) {
         this.fc_no_global = this.User.fc.fc;
@@ -3294,7 +3328,6 @@ export default {
         this.defaultItem.farmer_no = "";
       }
     },
-
     async getUMAll() {
       // if (this.User.fc.fc) {
       //   this.fc_no_global = this.User.fc.fc;
@@ -3385,7 +3418,6 @@ export default {
       }
       console.log(this.valueFFcode);
     },
-
     async UploadData() {
       // console.log(this.BaseUrlUpload);
       if (this.filephotoarray.length != 0) {
@@ -3484,7 +3516,6 @@ export default {
         }
       }
     },
-
     async updateData(datapost) {
       this.dialogDetail = false;
       try {
@@ -3518,7 +3549,6 @@ export default {
         }
       }
     },
-
     async updateDataGIS() {
       try {
         this.dialogGIS = false;
@@ -3571,7 +3601,6 @@ export default {
         this.$store.state.loadingOverlayText = null;
       }
     },
-
     async updateDataPohon(datapost) {
       this.dialogDetail = false;
       try {
@@ -3606,7 +3635,6 @@ export default {
         }
       }
     },
-
     selectedMU(a) {
       console.log(a);
       this.valueMU = a;
