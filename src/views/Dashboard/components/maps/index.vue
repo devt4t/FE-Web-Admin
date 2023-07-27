@@ -59,7 +59,7 @@ export default {
           'Wilayah Target',
           'Contoh Lahan'
         ],
-        label: 'Data Map',
+        label: 'Data Peta',
         model: 'Wilayah Target',
       },
       maps:{

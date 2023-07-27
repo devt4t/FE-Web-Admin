@@ -56,7 +56,7 @@
       <!-- Filters Panel -->
       <v-expansion-panel class="rounded-xl " >
         <v-expansion-panel-header>
-          <v-btn dark rounded color="green" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Set Progression Content</v-btn>
+          <v-btn dark rounded color="green" class="mx-2"><v-icon class="mr-1">mdi-cog</v-icon> Masukan Konten Progression</v-btn>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-row class="mx-2 pt-2">
@@ -71,7 +71,7 @@
                 rounded
                 v-model="options.programYear.model"
                 :items="$store.state.programYear.options"
-                label="Program Year"
+                label="Tahun Program"
                 type="string"
                 :rules="[(v) => !!v || 'Field is required']"
               ></v-select>
@@ -442,7 +442,7 @@
                 :loading="btn.generateButton.loading"
               >
                 <v-icon class="mr-1 " small>mdi-calendar-start</v-icon> 
-                <span class="">Generate</span>
+                <span class="">Jalankan</span>
               </v-btn>
               <v-btn 
                 v-if="options.FC.model"
@@ -989,7 +989,7 @@ export default {
           {value: "Realisasi Tanam", disabled: false},
           {value: "Material Organik (Pestisida)", disabled: true},
         ],
-        label: 'Activities',
+        label: 'Aktivitas',
         loading: false,
         model: [],
       }

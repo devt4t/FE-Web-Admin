@@ -86,7 +86,7 @@
             <v-spacer></v-spacer>
             <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
               <v-icon small class="mr-1">mdi-close</v-icon>
-              Cancel
+              Keluar
             </v-btn
             >
             <v-btn dark color="warning" rounded class="px-5" @click="searchbyarea">
@@ -147,7 +147,7 @@
             <v-spacer></v-spacer>
             <v-btn dark color="red" rounded class="px-5" @click="dialogFilterEmp = false">
               <v-icon small class="mr-1">mdi-close</v-icon>
-              Cancel
+              Keluar
             </v-btn
             >
             <v-btn dark color="warning" rounded class="px-5" @click="searchbyemp">
@@ -198,7 +198,7 @@
                 <v-col cols="12" class="d-flex justify-end">
                   <v-btn small color="info" rounded @click="getFFOptions">
                     <v-icon small class="mr-1">mdi-refresh</v-icon>
-                    Refresh FF
+                    Muat Ulang FF
                   </v-btn>
                 </v-col>
                 <!-- Select FF -->
@@ -403,7 +403,7 @@
                     <v-col cols="12" class="d-flex justify-end">
                       <v-btn :disabled="!options.ff.model" color="info" rounded @click="getLahansFF" small>
                         <v-icon class="mr-1" small>mdi-refresh</v-icon>
-                        Refresh
+                        Muat Ulang
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -477,7 +477,7 @@
                           <v-card-actions>
                             <v-btn color="red px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
                               <v-icon class="mr-1">mdi-close-circle</v-icon>
-                              Cancel
+                              Keluar
                             </v-btn>
                             <v-spacer></v-spacer>
                             <v-btn color="green px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
@@ -512,7 +512,7 @@
           <v-card-actions v-if="dialogAdd.loading == false" class="elevation-15 rounded-xl">
             <v-btn color="red px-5" rounded dark @click="dialogAdd.show = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn 
@@ -522,7 +522,7 @@
               :disabled="disabledCreateSostamByFF"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              Create Sostam
+              Buat Sostam
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -679,7 +679,7 @@
               <v-spacer></v-spacer>
               <v-btn color="red darken-1" dark rounded class="px-5" @click="close">
                 <v-icon class="mr-1">mdi-close-circle</v-icon>
-                Cancel
+                Keluar
               </v-btn>
               <v-btn color="green" dark rounded class="px-5" @click="save">
                 <v-icon class="mr-1">mdi-check-circle</v-icon>
@@ -694,7 +694,7 @@
       <v-dialog v-model="dialogShowEdit" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class=" justify-center"
-            >What you want to edit?</v-card-title
+            >Data Mana Yang Ingin Anda Edit?</v-card-title
           >
           <v-card-actions class="pb-3">
             <v-spacer></v-spacer>
@@ -792,7 +792,7 @@
             <v-btn dark color="red" rounded @click="closeDetailPohon" class="px-5 mb-2"
               >
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel</v-btn
+              Keluar</v-btn
             >
             <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
               :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 
@@ -854,7 +854,7 @@
             <v-btn rounded small color="red" dark @click="closeDetailEditPohon" class="px-3"
               >
               <v-icon small class="mr-1">mdi-close</v-icon>
-              Cancel</v-btn
+              Keluar</v-btn
             >
             <v-btn rounded small color="green" :disabled="(DetailTreesLahanTempData.land_area < 10000 && getDisabledSaveItemPohon(DetailTreesLahanTemp, DetailTreesLahanTempData, editedItemPohon)) || editedItemPohon.amount < 0" @click="saveEditPohonTemp" class="px-3 white--text"
             >
@@ -1118,7 +1118,7 @@
               elevation="1"
             >
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Close
+              Keluar
             </v-btn>
             <v-spacer></v-spacer>
             <p class="red--text small mb-0" v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') < 1">
@@ -1151,8 +1151,8 @@
       <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class=" justify-center"
-            >Are you sure you want to <strong> Verification</strong>?
-            <small class="red--text">this can't be undo</small>
+            >Apakah Anda yakin Untuk  <strong> Verifikasi</strong>?
+            <small class="red--text">Hasil Tidak Dapat Dikembalikan</small>
             </v-card-title
           >
           <v-card-actions class="pb-3">
@@ -1160,7 +1160,7 @@
             <v-btn color="red white--text" class="px-4" rounded @click="closeVerification"
               >
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel</v-btn
+              Keluar</v-btn
             >
             <v-btn
               color="success"
@@ -1169,7 +1169,7 @@
               @click="VerificationItemConfirm"
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              OK</v-btn
+              YA</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1180,13 +1180,13 @@
       <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="d-flex justify-center"
-            >Are you sure you want to delete this item?</v-card-title
+            >Apa Anda Yakin Menghapus Data Ini?</v-card-title
           >
           <v-card-actions class="pb-4">
             <v-spacer></v-spacer>
             <v-btn color="orange white--text" rounded small @click="closeDelete" class="px-4">
               <v-icon class="mr-1" small>mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn
             >
             <v-btn color="red white--text" rounded small @click="deleteItemConfirm" class="px-4">
@@ -1203,13 +1203,13 @@
       <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="d-flex justify-center"
-            >Are you sure you want to UNVERIF this item?</v-card-title
+            >Apa Anda Yakin Untuk UNVERIFIKASI Data Ini?</v-card-title
           >
           <v-card-actions class="pb-4">
             <v-spacer></v-spacer>
             <v-btn color="orange white--text" rounded small @click="dialogUnverif = false" class="px-4">
               <v-icon class="mr-1" small>mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn
             >
             <v-btn color="red white--text" rounded small @click="unverifItemConfirm" class="px-4">
@@ -1225,7 +1225,7 @@
       <v-dialog v-model="preview.signature.modal" max-width="500px" content-class="rounded-xl" scrollable>
         <v-card class="rounded-xl">
           <v-card-title>
-            Preview Signature Photo
+            Preview Foto Tanda Tangan
           </v-card-title>
           <v-card-text class="pa-1 fontall">
             <v-container>
@@ -1253,7 +1253,7 @@
               @click="preview.signature.modal = false"
             >
               <v-icon left> mdi-close-circle-outline </v-icon>
-              Close
+              Keluar
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1589,7 +1589,7 @@
               <v-icon class="mr-1" small color="white">
                 mdi-undo
               </v-icon>
-                Unverif
+                Unverifikasi
               </v-btn>
             </v-list-item>
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
@@ -3160,8 +3160,7 @@ export default {
         this.$store.state.loadingOverlayText = 'Unverification data...'
         this.$store.state.loadingOverlay = true
         await axios.post(
-          this.BaseUrlGet + "UnverificationSosisalisasiTanam",
-            console.log('Unverify data clicked'),
+          this.BaseUrlGet + "UnverificationSosialisasiTanam",
           datapost,
           {
             headers: {

@@ -23,6 +23,12 @@
             :loading="table.loading.show"
             :loading-text="table.loading.text"
             :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
+            :footer-props="{
+              itemsPerPageText: 'Jumlah Data Per Halaman',
+              itemsPerPageOptions: [10, 25, 40, -1],
+              showCurrentPage: true,
+              showFirstLastPage: true,
+             }"
         >
             <!-- Toolbars -->
             <template v-slot:top>
@@ -51,7 +57,7 @@
                         outlined
                         rounded
                         class="mx-auto mb-2 mb-lg-0"
-                        label="Search"
+                        label="Pencarian"
                         placeholder="Start type to search..."
                         append-icon="mdi-magnify"
                         v-model="table.search"

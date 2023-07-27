@@ -307,7 +307,7 @@
                           </v-col>
                           <!-- Date -->
                           <v-col cols="12" sm="12" md="12" lg="12">
-                            <p class="mb-1">Date</p>
+                            <p class="mb-1">Tanggal</p>
                                 <v-menu 
                                   rounded="xl"
                                   v-model="datePickerMenu"
@@ -629,7 +629,7 @@
               <v-icon class="d-none d-md-inline" left> mdi-close-circle-outline </v-icon>
               <v-icon class="d-inline d-md-none" center> mdi-close-circle-outline </v-icon>
               <span class="d-none d-md-inline-block"> 
-                Cancel
+                Keluar
               </span>
             </v-btn>
             <div class="d-flex align-center justify-center">
@@ -645,7 +645,7 @@
                 <v-icon class="d-none d-md-inline" left> mdi-chevron-left-circle-outline </v-icon>
                 <v-icon class="d-inline d-md-none" center> mdi-chevron-left-circle-outline </v-icon>
                 <span class="d-none d-md-inline-block"> 
-                  Back
+                  Kembali
                 </span>
               </v-btn>
               <v-btn
@@ -662,7 +662,7 @@
                 "
               >
                 <span class="d-none d-md-inline-block"> 
-                  Next
+                  Selanjutnya
                 </span>
                 <v-icon class="d-none d-md-inline" right> mdi-chevron-right-circle-outline </v-icon>
                 <v-icon class="d-inline d-md-none" center> mdi-chevron-right-circle-outline </v-icon>
@@ -686,7 +686,7 @@
               >
               </v-progress-circular>
               <span v-if="loadsave == false" class="d-none d-md-inline-block"> 
-                Save
+                Simpan
               </span>
               <v-icon v-if="loadsave == false" class="d-none d-md-inline" right> mdi-checkbox-marked-circle-outline </v-icon>
               <v-icon v-if="loadsave == false" class="d-inline d-md-none" center> mdi-checkbox-marked-circle-outline </v-icon>
@@ -1218,6 +1218,12 @@
       :loading="loadtable"
       loading-text="Loading... Please wait"
       :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
     >
       <template v-slot:top>
           <v-row class="pa-4 align-center px-5 justify-center">
@@ -1233,7 +1239,7 @@
               hide-details
               :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
               rounded
-              label="Program Year"
+              label="Tahun Program"
               class="mr-2"
               style="max-width: 200px"
             ></v-select>
@@ -1252,13 +1258,13 @@
                 size="15"
                 class="mr-1"
               ></v-progress-circular>
-              Refresh
+              Muat Ulang
             </v-btn>
             <v-divider class="d-none d-md-block mx-2"></v-divider>
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
-              label="Search"
+              label="Pencarian"
               outlined
               rounded
               class="mr-2"
@@ -1283,7 +1289,7 @@
               rounded
               :disabled="loadtable"
             >
-              <v-icon small>mdi-plus</v-icon> Add
+              <v-icon small>mdi-plus</v-icon> Tambah Data
             </v-btn>
             <v-fab-transition>
               <v-btn
@@ -1496,7 +1502,7 @@ export default {
       { text: "Desa", value: "desa", align: "start" },
       { text: "Tanggal", value: "training_date" },
       { text: "Tahun Tanam", value: "program_year" },
-      { text: "Created By", value: "created_by" },
+      { text: "Dibuat Oleh", value: "created_by" },
       { text: "Actions", align: 'right', value: "actions", sortable: false },
     ],
     // headers table list peserta pelatihan di form tambah pelatihan petani 

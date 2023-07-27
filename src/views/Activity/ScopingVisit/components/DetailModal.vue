@@ -48,7 +48,7 @@
                 <v-row class="ma-0 mx-2">
                     <v-col cols="12">
                         <div class="d-flex align-center">
-                            <p class="mb-0"><v-icon class="mr-2">mdi-vector-polygon-variant</v-icon>Polygon Data</p>
+                            <p class="mb-0"><v-icon class="mr-2">mdi-vector-polygon-variant</v-icon>Data Polygon</p>
                             <v-divider class="mx-2"></v-divider>
                         </div>
                     </v-col>
@@ -192,7 +192,7 @@
                     @click="() => sendEmailToGIS(raw_data.data_no)"
                 >
                     <v-icon class="mr-1">mdi-email-{{ emailToGis > 1 ? 'check' : 'arrow-right' }}</v-icon>
-                    Email to GIS
+                    Email ke GIS
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -481,7 +481,7 @@ export default {
                 }
             },
             {
-                title: 'Gallery',
+                title: 'Galeri',
                 icon: 'mdi-image-multiple',
                 type: 'column',
                 items: [

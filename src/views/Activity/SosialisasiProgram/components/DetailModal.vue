@@ -284,7 +284,7 @@ export default {
     groupingData: {
       "List Petani": [
         {
-          label: "List Petani",
+          label: "Daftar Petani",
           labelIcon: "mdi-flower",
           dataType: "table",
           dataSource: "",

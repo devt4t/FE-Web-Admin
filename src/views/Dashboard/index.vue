@@ -94,7 +94,7 @@
             v-model="options.programYear"
             :disabled="loading"
             :items="$store.state.programYear.options"
-            label="Program Year"
+            label="Tahun Program"
             :rules="[(v) => !!v || 'Field is required']"
             outlined
             class="mt-2 mr-1"

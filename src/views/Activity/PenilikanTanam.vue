@@ -97,7 +97,7 @@
       <v-dialog v-model="dialogFilterEmp" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="justify-center"
-            >Filter Pencarian By Emp</v-card-title
+            >Filter Pencarian Berdasarkan Emp</v-card-title
           >
           <v-card-text>
             <v-container>
@@ -141,7 +141,7 @@
             <v-spacer></v-spacer>
             <v-btn dark color="red" rounded class="px-5" @click="dialogFilterEmp = false">
               <v-icon small class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn
             >
             <v-btn color="green white--text" rounded class="px-5" @click="searchbyemp">
@@ -253,7 +253,7 @@
                         outlined
                       >
                         <v-icon left> mdi-close-circle-outline </v-icon>
-                        Cancel
+                        Keluar
                       </v-btn>
                       <v-btn
                         elevation="1"
@@ -328,7 +328,7 @@
                         outlined
                       >
                         <v-icon left> mdi-close-circle-outline </v-icon>
-                        Cancel
+                        Keluar
                       </v-btn>
                       <v-btn
                         elevation="1"
@@ -447,7 +447,7 @@
                         outlined
                       >
                         <v-icon left> mdi-close-circle-outline </v-icon>
-                        Cancel
+                        Keluar
                       </v-btn>
                       <v-btn
                         color="success"
@@ -685,7 +685,7 @@
                       outlined
                     >
                       <v-icon left> mdi-close-circle-outline </v-icon>
-                      Cancel
+                      Keluar
                     </v-btn>
                     <v-btn
                       elevation="1"
@@ -804,7 +804,7 @@
                       outlined
                     >
                       <v-icon left> mdi-close-circle-outline </v-icon>
-                      Cancel
+                      Keluar
                     </v-btn>
                     <v-btn
                       color="success"
@@ -1146,7 +1146,7 @@
           <v-card-actions v-if="dialogFormLahanUmum.loading == false">
             <v-btn color="red white--text" rounded @click="dialogFormLahanUmum.model = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-divider class="mx-2"></v-divider>
             <v-btn color="blue white--text" rounded 
@@ -1168,13 +1168,13 @@
       <v-dialog v-model="dialogFormLahanUmum.confirm" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="justify-center">
-            Are you sure you want to SAVE? <small class="red--text">This can't be undone!</small>
+            Are you sure you want to SAVE? <small class="red--text">Proses Ini Tidak Bisa Dikembalikan!</small>
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="pr-3" color="red white--text" rounded @click="dialogFormLahanUmum.confirm = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-btn
               color="green white--text"
@@ -1183,7 +1183,7 @@
               @click="saveLahanUmumMonitoring"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              OK, SAVE
+              OK, SIMPAN
             </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1270,10 +1270,10 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="closePohonTambah">
-              Cancel
+              Keluar
             </v-btn>
             <v-btn color="blue darken-1" text @click="savePohon">
-              Save
+              Simpan
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1287,7 +1287,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="closeDeletePohon"
-              >Cancel</v-btn
+              >Keluar</v-btn
             >
             <v-btn
               color="blue darken-1"
@@ -1390,7 +1390,7 @@
               @click="canceladdproduk"
             >
               <v-icon left> mdi-close-circle-outline </v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-btn
               color="success"
@@ -1399,7 +1399,7 @@
               @click="addProduct"
             >
               <v-icon left> mdi-plus-circle-outline </v-icon>
-              Add
+              Tambah Data
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1473,10 +1473,10 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn outlined color="red" text @click="closeDetailPohon"
-              >Cancel</v-btn
+              >Keluar</v-btn
             >
             <v-btn outlined color="blue" text @click="saveEditPohon"
-              >Save</v-btn
+              >Simpan</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1500,10 +1500,10 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn outlined color="red" text @click="closeDetailEditPohon"
-              >Cancel</v-btn
+              >Keluar</v-btn
             >
             <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-              >Save</v-btn
+              >Simpan</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1752,7 +1752,7 @@
               @click="verifSubmit()"
               elevation="1"
             >
-              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification FC
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi FC
             </v-btn>
             <v-btn
               v-else-if="RoleAccesCRUDShow == true && defaultItem.is_validate == 1 && User.role_name != 'FIELD COORDINATOR'"
@@ -1762,7 +1762,7 @@
               class="pr-3"
               elevation="1"
             >
-              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification UM
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi UM
             </v-btn>
             <v-btn
               v-if="defaultItem.is_verified == 0"
@@ -1773,7 +1773,7 @@
               @click="() => {verifSubmit()}"
               elevation="1"
             >
-              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification PIC
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi PIC
             </v-btn>
             <v-btn
               v-if="defaultItem.is_verified == 1"
@@ -1784,7 +1784,7 @@
               @click="() => {verifSubmit()}"
               elevation="1"
             >
-              <v-icon class="mr-1">mdi-check-circle</v-icon> Verification RM / PM
+              <v-icon class="mr-1">mdi-check-circle</v-icon> Verifikasi RM / PM
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -1794,13 +1794,13 @@
       <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="justify-center">
-            Are you sure you want to VERIFICATION? <small class="red--text">This can't be undone!</small>
+            Apa Anda Yakin Untuk Melakukan VERIFIKASI? <small class="red--text">Proses Ini Tidak Bisa Dikembalikan!</small>
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="pr-3" color="red white--text" text rounded @click="closeVerification">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-btn
               color="green white--text"
@@ -1809,7 +1809,7 @@
               @click="VerificationItemConfirm"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              OK, Verify
+              OK, Verifikasi
             </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1818,13 +1818,13 @@
       <v-dialog v-model="dialogVerificationUM" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="justify-center">
-            Are you sure you want to VERIFICATION? <small class="red--text">This can't be undone!</small>
+            Apa Anda Yakin Untuk Melakukan <strong> VERIFIKASI?</strong> <small class="red--text">Proses Ini Tidak Bisa Dikembalikan!</small>
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="pr-3" color="red white--text" rounded @click="dialogVerificationUM = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-btn
               color="green white--text"
@@ -1833,7 +1833,7 @@
               @click="VerificationUMItemConfirm"
             >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              OK, Verify
+              OK, Verifikasi
             </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1844,13 +1844,13 @@
       <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
         <v-card>
           <v-card-title class="justify-center text-center"
-            >Are you sure you want to <br> UNVERIFICATION <br> this data monitoring 1?</v-card-title
+            >Apa Anda Yakin Untuk Melakukan <br> UNVERIFIKASI? <br> Data Monitoring Ini?</v-card-title
           >
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn class="pr-3" color="red white--text" rounded @click="dialogUnverif = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-btn
               color="warning white--text"
@@ -1859,7 +1859,7 @@
               @click="unverifItemConfirm"
             >
               <v-icon class="mr-1 pl-2">mdi-undo</v-icon>
-              Yes, Unverif
+              Ya, Unverifikasi
             </v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1871,7 +1871,7 @@
         <v-card>
           <v-card-text>
             <p class="text-center grey--text text--darken-3 pt-4" style="font-size: 20px;">
-              Are u sure?! <br>You wanna DELETE this <br><b>{{ defaultItem.monitoring_no }}</b>?
+              Apa Anda Yakin Untuk <br> MENGHAPUS Ini? <br><b>{{ defaultItem.monitoring_no }}</b>?
             </p>
             <v-simple-table>
               <tbody>
@@ -1891,7 +1891,7 @@
                   <td><b>{{ defaultItem.pic_t4t_name || '-' }}</b></td>
                 </tr>
                 <tr v-if="generalSettings.landProgram.model == 'Petani'">
-                  <td>Farmer</td>
+                  <td>Petani</td>
                   <td>:</td>
                   <td><b>{{ defaultItem.nama_petani }}</b></td>
                 </tr>
@@ -1906,7 +1906,7 @@
           <v-card-actions>
             <v-btn class="pr-3" color="blue white--text" text rounded @click="() => dialogDelete = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-divider class="mx-2"></v-divider>
             <v-btn
@@ -1916,7 +1916,7 @@
               @click="() => {deleteItemConfirm()}"
             >
               <v-icon class="mr-1 pl-2">mdi-delete</v-icon>
-              Yes, Delete
+              Ya, Hapus
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -2017,6 +2017,7 @@
       class="rounded-xl elevation-6 mx-3 pa-1"
       multi-sort
       :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
         itemsPerPageOptions: [10, 20, 30, 40, -1],
         showCurrentPage: true,
         showFirstLastPage: true,
@@ -2039,8 +2040,7 @@
                 @click="showFilterArea()"
                 color="green"
               >
-                <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter by
-                Area
+                <v-icon class="mx-2" small>mdi-filter-variant</v-icon> Filter Berdasarkan Area
               </v-btn>
               <v-btn
                 v-if="RoleAccesFilterShow == true"
@@ -2050,8 +2050,7 @@
                 @click="showFilterEmployee()"
                 color="green"
               >
-                <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter by
-                Employee
+                <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter Berdasarkan Karyawan
               </v-btn>
             </v-card>
           </v-menu>
@@ -2066,7 +2065,7 @@
               hide-details
               :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
               rounded
-              label="Program Year"
+              label="Tahun Program"
               class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
               style="max-width: 200px"
           ></v-select>
@@ -2099,7 +2098,7 @@
             dense
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
-            label="Kolom"
+            label="Kolom Filter"
             class="centered-select"
             style="width: 50%;max-width: 130px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
           ></v-select>
@@ -2113,7 +2112,7 @@
             outlined
             dense
             rounded
-            label="Search"
+            label="Pencarian"
             hide-details
             style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;max-width: 200px;"
             :loading="pagination.search.options.column_loading"
@@ -2253,7 +2252,7 @@
       <template v-slot:item.is_validate="{ item }">
         <v-chip :color="item.is_validate > 0 ? `${ item.is_validate == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
           <v-icon class="mr-1">mdi-{{ item.is_validate > 0 ? `${ item.is_validate == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
-          {{ item.is_validate > 0 ? `Verified ${item.is_validate == 1 ? (generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC') : (generalSettings.landProgram.model == 'Petani' ? 'UM' : 'RM / PM')}` : 'Unverified' }}
+          {{ item.is_validate > 0 ? `Terverifikasi ${item.is_validate == 1 ? (generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC') : (generalSettings.landProgram.model == 'Petani' ? 'UM' : 'RM / PM')}` : 'Belum Terverifikasi' }}
         </v-chip>
       </template>
       
@@ -2325,7 +2324,7 @@ export default {
         programYear: '2022',
         landProgram: {
           items: ['Petani', 'Umum'],
-          label: 'Land Program',
+          label: 'Program Lahan',
           model: 'Petani',
         },
     },
@@ -2346,26 +2345,26 @@ export default {
             text: 'All',
             value: ''
           },{
-            text: 'Unverified',
+            text: 'Belum Terverifikasi',
             value: 0
           }, {
-            text: 'Verified FC',
+            text: 'Terverifikasi FC',
             value: 1
           }, {
-            text: 'Verified UM',
+            text: 'Terferifikasi UM',
             value: 2
           }],
           validation2: [{
             text: 'All',
             value: ''
           },{
-            text: 'Unverified',
+            text: 'Belum Terverifikasi',
             value: 0
           }, {
-            text: 'Verified PIC',
+            text: 'Terverifikasi PIC',
             value: 1
           }, {
-            text: 'Verified RM / PM',
+            text: 'Terverifikasi RM / PM',
             value: 2
           }]
         },
@@ -2500,7 +2499,7 @@ export default {
     downloadvaluepetani: false,
     downloadvaluetime: false,
     loaddownload: false,
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     search: "",
     type: "",
@@ -2508,9 +2507,9 @@ export default {
       { text: "No", value: "index", align: 'center', width: '2%', sortable: false },
       { text: "MU", value: "mu_name", search: true },
       { text: "FF", value: "nama_ff", search: true },
-      { text: "Farmer", value: "nama_petani", search: true },
-      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
-      { text: "Standard Trees", value: "qty_std", align: 'center', sortable: false },
+      { text: "Petani", value: "nama_petani", search: true },
+      { text: "Nomor Lahan", align: "start", value: "lahan_no", sortable: false, search: true },
+      { text: "Standar Pohon", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
      //{ text: "Tipe SPPT", value: "type_sppt", align: 'center'},
@@ -2522,8 +2521,8 @@ export default {
       { text: "MoU No", value: "mou_no", search: true },
       { text: "PIC T4T", value: "pic_t4t_name", search: true },
       { text: "PIC Lahan", value: "pic_lahan_name", search: true },
-      { text: "Lahan No", align: "start", value: "lahan_no", sortable: false, search: true },
-      { text: "Condition", value: "lahan_condition" },
+      { text: "No Lahan", align: "start", value: "lahan_no", sortable: false, search: true },
+      { text: "Kondisi", value: "lahan_condition" },
       { text: "Status", value: "is_validate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
@@ -2545,7 +2544,7 @@ export default {
       { text: "Jumlah", value: "qty", width: "15%" },
       { text: "Status", value: "status", width: "15%" },
       { text: "Kondisi", value: "condition", width: "15%" },
-      { text: "planting_date", value: "planting_date", width: "25%" },
+      { text: "Tanggal Tanam", value: "planting_date", width: "25%" },
       { text: "Actions", value: "actions", sortable: false, width: "10%" },
     ],
     DetailTreesLahanTemp: [],

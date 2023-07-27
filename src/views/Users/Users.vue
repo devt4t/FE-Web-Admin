@@ -14,6 +14,9 @@
       :items="dataobject"
       :search="search"
       :loading="table.loading"
+      :footer-props="{
+        itemsPerPageText:'Jumlah Data Per Halaman'
+      }"
       class="rounded-xl elevation-6 mx-3 pa-1"
       data-aos="fade-up"
       data-aos-delay="200"
@@ -25,8 +28,8 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
-            placeholder="Search..."
+            label="Pencarian"
+            placeholder="Pencarian..."
             hide-details
             dense
             rounded
@@ -36,7 +39,7 @@
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
           <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
-            <v-icon small>mdi-plus</v-icon> Add Item
+            <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
 
           <!-- Create Form Modal -->
@@ -71,7 +74,7 @@
                         :items="itemsType"
                         item-value="value"
                         item-text="text"
-                        label="Pilih Type"
+                        label="Pilih Tipe"
                         v-on:change="selectedType"
                         :rules="rules"
                       ></v-select>
@@ -102,9 +105,9 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="close">
-                  Cancel
+                  Keluar
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                <v-btn color="blue darken-1" text @click="save"> Simpan </v-btn>
               </v-card-actions>
               </v-form>
             </v-card>
@@ -112,12 +115,12 @@
           <v-dialog v-model="dialogReset" max-width="500px">
             <v-card>
               <v-card-title class="headline"
-                >Are you sure you want to reset password?</v-card-title
+                >Apa Anda Yakin Untuk Reset Password?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+                <v-btn color="blue darken-1" text @click="closeReset"
+                  >Keluar</v-btn
                 >
                 <v-btn color="blue darken-1" text @click="resetItemConfirm"
                   >OK</v-btn
@@ -129,12 +132,12 @@
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
               <v-card-title class="headline"
-                >Are you sure you want to delete this item?</v-card-title
+                >Apa Anda Yakin Menghapus Data Ini?</v-card-title
               >
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
+                  >Keluar</v-btn
                 >
                 <v-btn color="blue darken-1" text @click="deleteItemConfirm"
                   >OK</v-btn
@@ -192,7 +195,7 @@ export default {
       (value) => (value && value.length >= 1) || "Min 1 characters",
     ],
     alerttoken: false,
-    formTitle: "Add Item",
+    formTitle: "Tambah Data",
     value: "add",
     dialog: false,
     dialogDelete: false,
@@ -212,7 +215,7 @@ export default {
         width: "15%",
       },
       { text: "Nama", value: "name", width: "25%" },
-      { text: "Role", value: "role", width: "20%" },
+      { text: "Peran", value: "role", width: "20%" },
       { text: "Email", value: "email", width: "25%" },
       { text: "Actions", value: "actions", sortable: false, width: "15%" },
     ],
@@ -226,7 +229,7 @@ export default {
     },
     itemsType:[
       { text: "FF", value: "FF" },
-      { text: "Employee", value: "Employee" },
+      { text: "Karyawan", value: "Employee" },
     ],
     itemsEmp:[],
     itemsFF:[],
@@ -546,6 +549,9 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
+    closeReset(){
+      this.dialogReset =false;
+    },
     deleteItem(item){
       this.defaultItem.id = item.id;
       this.dialogDelete = true;
@@ -564,7 +570,7 @@ export default {
       this.defaultItem.employee_no = "";
       this.defaultItem.email = "";
       this.defaultItem.type = "FF";
-      this.formTitle = 'Add Item';
+      this.formTitle = 'Tambah Data';
       this.typeAdd = true;
       this.dialog = true;
     },
@@ -577,7 +583,7 @@ export default {
       this.defaultItem.email = item.email;
       if(item.role == 'ff'){this.defaultItem.type = 'FF';this.typeselectedFF = true;}
       else{this.defaultItem.type = 'Employee';this.typeselectedFF = false;}
-      this.formTitle = 'Edit Item';
+      this.formTitle = 'Edit Data';
       this.typeAdd = false;
       this.dialog = true;
     },

@@ -2887,6 +2887,7 @@ export default {
         }).catch(err => {
           this.dataobject = []
           this.errorResponse(err)
+
           reject(err)
         })
       })
@@ -2898,6 +2899,9 @@ export default {
       await this.getTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total
+        //make new api for total data lahan
+        this.totalDataLahan.dataLahan1.Count = data.total
+
         this.table.pagination.current_page = data.current_page
         this.table.pagination.length_page = data.last_page
         const pageOptions = []

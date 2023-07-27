@@ -23,7 +23,12 @@
             :loading="table.loading.show"
             :loading-text="table.loading.text"
             :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
-        >
+            :footer-props="{
+            itemsPerPageText: 'Jumlah Data Per Halaman',
+            itemsPerPageOptions: [10, 25, 40, -1],
+            showCurrentPage: true,
+            showFirstLastPage: true,
+             }">
             <!-- Toolbars -->
             <template v-slot:top>
                 <v-row class="my-2 mx-2 mx-lg-3 align-center">
@@ -39,7 +44,7 @@
                         hide-details
                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                         rounded
-                        label="Program Year"
+                        label="Tahun Program"
                         class="mx-auto mr-lg-2 mb-2 mb-lg-0"
                         style="max-width: 200px"
                     ></v-select>
@@ -165,7 +170,7 @@ export default {
                 { text: "ID Karyawan", value: "nik" },
                 { text: "Nama", value: "name" },
                 { text: "No KTP", value: "ktp_no" },
-                { text: "Position", value: "emp_position" },
+                { text: "Posisi", value: "emp_position" },
                 { text: "Unit Manager", value: "emp_position" },
                 { text: "Actions", value: "actions", sortable: false },
             ],

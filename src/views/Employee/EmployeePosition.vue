@@ -15,6 +15,12 @@
       :items="dataobject"
       :search="search"
       :loading="loadtable"
+      :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 40, -1],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
       @update:page="($p) => page = $p"
@@ -25,8 +31,8 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
-            placeholder="Search..."
+            label="Pencarian"
+            placeholder="Pencarian..."
             hide-details
             dense
             rounded
@@ -38,7 +44,7 @@
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
               <v-card-title class="mb-1 headermodalstyle">
-                <span class="headline">Edit Position</span>
+                <span class="headline">Edit Posisi</span>
               </v-card-title>
               <v-card-text>
                 <v-container>
@@ -127,7 +133,7 @@ export default {
       { text: "No", value: "no", width: '70' },
       { text: "NIK", value: "nik" },
       { text: "Nama Emp", value: "name" },
-      { text: "Position Group", value: "position_group" },
+      { text: "Grup Posisi", value: "position_group" },
       { text: "Nama Jabatan", value: "namaPosition" },
       { text: "Actions", value: "actions", sortable: false },
     ],

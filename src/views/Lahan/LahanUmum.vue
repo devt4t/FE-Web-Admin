@@ -542,7 +542,7 @@
                                     <p class="mb-0"><v-icon class="mr-2">mdi-crosshairs-gps</v-icon>Koordinat</p>
                                     <v-divider class="mx-2"></v-divider>
                                 </div>
-                                <p class="red--text mb-0">*Gunakan (<strong>.</strong>) instead commas (<strong>,</strong>) and please <strong>check locations</strong> before saving!</p>
+                                <p class="red--text mb-0">*Gunakan (<strong>.</strong>) bukan (<strong>,</strong>) dan tolong <strong>cek lokasi</strong> sebelum menyimpan!</p>
                                 <v-row class="my-0">
                                     <!-- Latitude -->
                                     <v-col cols="12" sm="12" md="6" lg="6">
@@ -669,7 +669,7 @@
                                         accept="image/png, image/jpeg, image/bmp"
                                         placeholder="Foto 1"
                                         prepend-icon="mdi-camera"
-                                        label="Photo 1 (*max 6mb)"
+                                        label="Foto 1 (*max 6mb)"
                                         v-on:change="photo1FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -692,9 +692,9 @@
                                         rounded
                                         hide-details
                                         accept="image/png, image/jpeg, image/bmp"
-                                        placeholder="Photo 2"
+                                        placeholder="Foto 2"
                                         prepend-icon="mdi-camera"
-                                        label="Photo 2 (*max 6mb)"
+                                        label="Foto 2 (*max 6mb)"
                                         v-on:change="photo2FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -717,9 +717,9 @@
                                         rounded
                                         hide-details
                                         accept="image/png, image/jpeg, image/bmp"
-                                        placeholder="Photo 3"
+                                        placeholder="Foto 3"
                                         prepend-icon="mdi-camera"
-                                        label="Photo 3 (*max 6mb)"
+                                        label="Foto 3 (*max 6mb)"
                                         v-on:change="photo3FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -742,9 +742,9 @@
                                         rounded
                                         hide-details
                                         accept="image/png, image/jpeg, image/bmp"
-                                        placeholder="MoU Photo"
+                                        placeholder="Foto MoU"
                                         prepend-icon="mdi-camera"
-                                        label="MoU Photo (*max 6mb)"
+                                        label="Foto MoU (*max 6mb)"
                                         v-on:change="photo4FileChanged"
                                         :rules="[(v) => !!v || 'Field is required']"
                                         ></v-file-input>
@@ -795,7 +795,7 @@
                                 <v-icon class="d-none d-md-inline" left> mdi-chevron-left-circle-outline </v-icon>
                                 <v-icon class="d-inline d-md-none" center> mdi-chevron-left-circle-outline </v-icon>
                                 <span class="d-none d-md-inline-block"> 
-                                    Back
+                                    Kembali
                                 </span>
                             </v-btn>
                             <v-btn
@@ -813,7 +813,7 @@
                                 "
                             >
                                 <span class="d-none d-md-inline-block"> 
-                                    Next
+                                    Lanjut
                                 </span>
                                 <v-icon class="d-none d-md-inline" right> mdi-chevron-right-circle-outline </v-icon>
                                 <v-icon class="d-inline d-md-none" center> mdi-chevron-right-circle-outline </v-icon>

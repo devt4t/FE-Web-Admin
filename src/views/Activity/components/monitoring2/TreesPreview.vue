@@ -8,7 +8,7 @@
                 <v-col cols="12" class="pb-0">
                     <v-card class="rounded-xl">
                         <v-card-text class="d-flex flex-column flex-lg-row align-center pa-2 px-3">
-                            <v-chip color="green white--text" class="px-5 mb-2 mb-lg-0"><v-icon class="mr-2">mdi-forest</v-icon> Trees Planted <v-icon small class="ml-1" @click="() => {dialogs.titleInfo.show = true}">mdi-information</v-icon></v-chip>
+                            <v-chip color="green white--text" class="px-5 mb-2 mb-lg-0"><v-icon class="mr-2">mdi-forest</v-icon> Pohon Tertanam <v-icon small class="ml-1" @click="() => {dialogs.titleInfo.show = true}">mdi-information</v-icon></v-chip>
                             <v-divider class="mx-2"></v-divider>
                             <v-autocomplete
                                 rounded
@@ -36,7 +36,7 @@
                                 color="green"
                                 item-color="green"
                                 class="mb-2 mb-lg-0"
-                                label="Program Year"
+                                label="Tahun Program"
                                 hide-details
                                 :disabled="disabledFilter"
                                 :items="$store.state.programYear.options"
@@ -170,10 +170,10 @@
                                                         @click="() => showDetail(programYear, mu_no.model, kayu.tree_code, 'KAYU')"
                                                     >
                                                         <v-icon class="mr-1">mdi-list-box</v-icon>
-                                                        List ({{ programYear }})
+                                                        Daftar ({{ programYear }})
                                                     </v-btn>
                                                 </template>
-                                                <span>Show farmer(s) who planted "{{ kayu.tree_name }}" in {{ programYear }}.</span>
+                                                <span>Menunjukan Petani Yang Menanam "{{ kayu.tree_name }}" di tahun {{ programYear }}.</span>
                                             </v-tooltip>
                                         </v-card-text>
                                     </v-card>
@@ -321,10 +321,10 @@
                                                         @click="() => showDetail(programYear, mu_no.model, mpts.tree_code, 'MPTS')"
                                                     >
                                                         <v-icon class="mr-1">mdi-list-box</v-icon>
-                                                        List ({{ programYear }})
+                                                        Daftar ({{ programYear }})
                                                     </v-btn>
                                                 </template>
-                                                <span>Show farmers who planted "{{ mpts.tree_name }}" in {{ programYear }}.</span>
+                                                <span>Menunjukan Petani Yang Menanam "{{ mpts.tree_name }}" di Tahun {{ programYear }}.</span>
                                             </v-tooltip>
                                         </v-card-text>
                                     </v-card>
