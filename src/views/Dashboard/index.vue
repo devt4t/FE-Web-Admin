@@ -220,20 +220,20 @@
                             :duration="5"
                             :delay="0"
                             easing="Power2.easeInOut"/>
-<!--                        {{totalData_petani_lahan[`data${n}`].openCase}}-->
-<!--                        <number-->
-<!--                            class="text-h6 mb-1 font-weight-bold"-->
-<!--                            v-if="false"-->
-<!--                            :ref="totalData_petani_lahan[`data${n}`].ref"-->
-<!--                            :key="totalData_petani_lahan[`data${n}`].key"-->
-<!--                            :format="_utils.numberFormat"-->
-<!--                            :from="0"-->
-<!--                            :to="totalData_petani_lahan[`data${n}`].subCount"-->
+                        {{totalData_petani_lahan[`data${n}`].openCase}}
+                        <number
+                            class="text-h6 mb-1 font-weight-bold"
+                            v-if="loading==false"
+                            :ref="totalData_petani_lahan[`data${n}`].ref"
+                            :key="totalData_petani_lahan[`data${n}`].key"
+                            :format="_utils.numberFormat"
+                            :from="0"
+                            :to="totalData_petani_lahan[`data${n}`].subCount"
 
-<!--                            :duration="5"-->
-<!--                            :delay="5"-->
-<!--                            easing="Power2.easeInOut"-->
-<!--                        />-->
+                            :duration="5"
+                            :delay="5"
+                            easing="Power2.easeInOut"
+                        />
                         <v-progress-circular v-else
                                              indeterminate
                                              :color="totalData_petani_lahan[`data${n}`].color"
@@ -397,9 +397,9 @@ export default {
       data1:{
         Judul: "Petani",
         Count: "0",
-        //openCase: "(Dari ",
-        //subCount: "0",
-        //closeCase: " )",
+        openCase: "(Dari ",
+        subCount: "0",
+        closeCase: " )",
         link: "Farmer",
         icon: 'mdi-nature-people',
         color: 'orange',
@@ -411,9 +411,9 @@ export default {
       data2:{
         Judul: "Lahan Petani",
         Count: "0",
-        //openCase: "(Dari ",
-        //subCount: "0",
-        //closeCase: " )",
+        openCase: "(Dari ",
+        subCount: "0",
+        closeCase: " )",
         link: "Lahan",
         icon: 'mdi-land-fields',
         color: 'brown',
@@ -557,6 +557,17 @@ export default {
           program_year: this.options.programYear,
           province: this.options.province.model
         })
+        //parameter total Petani
+        const totalPetaniParam = new URLSearchParams({
+          typegetdata: 'several',
+          program_year: this.options.programYear
+        })
+        const totalLahanParam = new URLSearchParams({
+          typegetdata: 'several',
+          program_year: this.options.programYear,
+          page: '1',
+          per_page: '10'
+        })
         // if selected mu
         if (this.options.mu_no.model) {
           if (this.options.mu_no.items.find(e => e.mu_no == this.options.mu_no.model)) params.set('mu_no', this.options.mu_no.model)
@@ -576,10 +587,17 @@ export default {
         tdEl.data1.Count = await totalData.total.ff || 0
         tdPL.data1.Count = await totalData.total.farmer || 0
         tdPL.data2.Count = await totalData.total.land_total || 0
-        tdPL.data1.subCount = await totalData.total.farmer || 0
-        tdPL.data2.subCount = await totalData.total.land_total|| 0
         tdEl.data2.Count = await totalData.total.land_general_total || 0
         tdEl.data3.Count = await totalData.total.trees || 0
+
+
+        const totalDataFarmer = await axios.get(this.$store.getters.getApiUrl(`GetFarmerAllAdmin?${totalPetaniParam}`), this.$store.state.apiConfig).then(res=>{return res.data.data.result})
+        console.log(totalDataFarmer.count);
+        tdPL.data1.subCount = await totalDataFarmer.count || 0
+
+        const totalDataLahan = await axios.get(this.$store.getters.getApiUrl(`GetLahanAllAdmin?${totalLahanParam}`), this.$store.state.apiConfig).then(res=>{return res.data})
+        tdPL.data2.subCount = await totalDataLahan.total|| 0
+
       } catch (error) {
         this.dataobject = [];
         this.catchingError(error)
