@@ -4673,8 +4673,12 @@ export default {
                         north.desa.items = []
                         north.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'north').kode_kecamatan
-                            if (editData != val) north.kecamatan.model = editData 
+
+                          const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'north')
+                          if(editData){
+
+                            if (editData != val) north.kecamatan.model = editData.kode_kecamatan
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4692,8 +4696,11 @@ export default {
                     if (north.border_type.model == 'Desa') {
                         north.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'north').kode_desa
-                            if (editData != val) north.desa.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'north')
+                          if(editData){
+
+                            if (editData != val) north.desa.model = editData.kode_desa
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4713,8 +4720,11 @@ export default {
                         east.desa.items = []
                         east.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'east').kode_kecamatan
-                            if (editData != val) east.kecamatan.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'east')
+                          if(editData){
+                            if (editData != val) east.kecamatan.model = editData.kode_kecamatan
+
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4732,8 +4742,11 @@ export default {
                     if (east.border_type.model == 'Desa') {
                         east.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'east').kode_desa
-                            if (editData != val) east.desa.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'east')
+                          if(editData){
+
+                            if (editData != val) east.desa.model = editData.kode_desa
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4753,8 +4766,11 @@ export default {
                         south.desa.items = []
                         south.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'south').kode_kecamatan
-                            if (editData != val) south.kecamatan.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'south')
+                          if(editData){
+
+                            if (editData != val) south.kecamatan.model = editData.kode_kecamatan
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4772,8 +4788,11 @@ export default {
                     if (south.border_type.model == 'Desa') {
                         south.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'south').kode_desa
-                            if (editData != val) south.desa.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'south')
+                          if(editData){
+
+                          if (editData != val) south.desa.model = editData.kode_desa
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4793,8 +4812,11 @@ export default {
                         west.desa.items = []
                         west.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'west').kode_kecamatan
-                            if (editData != val) west.kecamatan.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'west')
+                          if(editData){
+
+                          if (editData != val) west.kecamatan.model = editData.kode_kecamatan
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -4812,8 +4834,11 @@ export default {
                     if (west.border_type.model == 'Desa') {
                         west.desa.model = null
                         if (this.id && this.raw_data) {
-                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'west').kode_desa
-                            if (editData != val) west.desa.model = editData 
+                            const editData = this.raw_data.RRA.VillageBorder.find(n => n.point == 'west')
+                          if(editData){
+
+                          if (editData != val) west.desa.model = editData.kode_desa
+                          }
                         }
                     }
                 } catch (err) {this.errorResponse(err)} finally {
@@ -5553,6 +5578,15 @@ export default {
                 this.inputs.rra_pra_date_range.model =[ moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
                 // set default data for multiple inputs
                 this.loading.text = 'Setting default data...'
+
+              this.inputs.village_border.north.border_type.model = 'Kabupaten'
+              this.inputs.village_border.north.kabupaten.model = ''
+              this.inputs.village_border.south.border_type.model = 'Kabupaten'
+              this.inputs.village_border.south.kabupaten.model = ''
+              this.inputs.village_border.east.border_type.model = 'Kabupaten'
+              this.inputs.village_border.east.kabupaten.model = ''
+              this.inputs.village_border.west.border_type.model = 'Kabupaten'
+              this.inputs.village_border.west.kabupaten.model = ''
                 for (const [key, value] of Object.entries(this.inputs)) {
                     if (key == 'farmer_income') {
                         value.male_data = await JSON.parse(JSON.stringify(value.default))

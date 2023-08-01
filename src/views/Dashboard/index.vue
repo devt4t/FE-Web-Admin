@@ -127,7 +127,7 @@
         <v-card-text>
           <!-- Total Datas -->
           <v-row class="mt-0">
-            <v-col v-for="n in 3" :key="`totalDatasDashbiarasdakjsd${n}`" cols="12" md="4" class="">
+            <v-col v-for="n in 3" :key="`totalDatasDash${n}`" cols="12" md="4" class="">
               <div
                 data-aos="zoom-in"
                 :data-aos-delay="totalData[`data${n}`].dataAosDelay + 700">
@@ -220,20 +220,20 @@
                             :duration="5"
                             :delay="0"
                             easing="Power2.easeInOut"/>
-<!--                        {{totalData_petani_lahan[`data${n}`].openCase}}-->
-<!--                        <number-->
-<!--                            class="text-h6 mb-1 font-weight-bold"-->
-<!--                            v-if="false"-->
-<!--                            :ref="totalData_petani_lahan[`data${n}`].ref"-->
-<!--                            :key="totalData_petani_lahan[`data${n}`].key"-->
-<!--                            :format="_utils.numberFormat"-->
-<!--                            :from="0"-->
-<!--                            :to="totalData_petani_lahan[`data${n}`].subCount"-->
+                        {{totalData_petani_lahan[`data${n}`].openCase}}
+                        <number
+                            class="text-h6 mb-1 font-weight-bold"
+                            v-if="loading==false"
+                            :ref="totalData_petani_lahan[`data${n}`].ref"
+                            :key="totalData_petani_lahan[`data${n}`].key"
+                            :format="_utils.numberFormat"
+                            :from="0"
+                            :to="totalData_petani_lahan[`data${n}`].subCount"
 
-<!--                            :duration="5"-->
-<!--                            :delay="5"-->
-<!--                            easing="Power2.easeInOut"-->
-<!--                        />-->
+                            :duration="5"
+                            :delay="5"
+                            easing="Power2.easeInOut"
+                        />
                         <v-progress-circular v-else
                                              indeterminate
                                              :color="totalData_petani_lahan[`data${n}`].color"
@@ -397,9 +397,9 @@ export default {
       data1:{
         Judul: "Petani",
         Count: "0",
-        //openCase: "(Dari ",
-        //subCount: "0",
-        //closeCase: " )",
+        openCase: "(Dari ",
+        subCount: "0",
+        closeCase: " )",
         link: "Farmer",
         icon: 'mdi-nature-people',
         color: 'orange',
@@ -411,9 +411,9 @@ export default {
       data2:{
         Judul: "Lahan Petani",
         Count: "0",
-        //openCase: "(Dari ",
-        //subCount: "0",
-        //closeCase: " )",
+        openCase: "(Dari ",
+        subCount: "0",
+        closeCase: " )",
         link: "Lahan",
         icon: 'mdi-land-fields',
         color: 'brown',
@@ -576,10 +576,17 @@ export default {
         tdEl.data1.Count = await totalData.total.ff || 0
         tdPL.data1.Count = await totalData.total.farmer || 0
         tdPL.data2.Count = await totalData.total.land_total || 0
-        tdPL.data1.subCount = await totalData.total.farmer || 0
-        tdPL.data2.subCount = await totalData.total.land_total|| 0
+        /*tdPL.data1.subCount = await totalData.total.farmer || 0
+        tdPL.data2.subCount = await totalData.total.land_total|| 0*/
         tdEl.data2.Count = await totalData.total.land_general_total || 0
         tdEl.data3.Count = await totalData.total.trees || 0
+        tdPL.data2.subCount = await totalData.total.land_total|| 0
+
+
+        /*const totalDataFarmer = await axios.get(this.$store.getters.getApiUrl(`GetFarmerAllAdmin`), this.$store.state.apiConfig).then(res=>{return res.data.data.result.count})
+        tdPL.data1.subCount = await totalDataFarmer
+        console.log(totalData.total.ff);*/
+
       } catch (error) {
         this.dataobject = [];
         this.catchingError(error)
