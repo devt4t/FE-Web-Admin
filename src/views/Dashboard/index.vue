@@ -127,7 +127,7 @@
         <v-card-text>
           <!-- Total Datas -->
           <v-row class="mt-0">
-            <v-col v-for="n in 3" :key="`totalDatasDashbiarasdakjsd${n}`" cols="12" md="4" class="">
+            <v-col v-for="n in 3" :key="`totalDatasDash${n}`" cols="12" md="4" class="">
               <div
                 data-aos="zoom-in"
                 :data-aos-delay="totalData[`data${n}`].dataAosDelay + 700">
