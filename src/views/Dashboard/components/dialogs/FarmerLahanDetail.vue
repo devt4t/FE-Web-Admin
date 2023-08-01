@@ -163,7 +163,7 @@
                         </v-menu>
                     </template>
                     <template v-slot:header.lahan_approve>
-                        Status Petani 
+                        Status Lahan
                         <v-menu
                             rounded="xl"
                             bottom
