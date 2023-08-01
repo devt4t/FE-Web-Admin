@@ -557,6 +557,17 @@ export default {
           program_year: this.options.programYear,
           province: this.options.province.model
         })
+        //parameter total Petani
+        const totalPetaniParam = new URLSearchParams({
+          typegetdata: 'several',
+          program_year: this.options.programYear
+        })
+        const totalLahanParam = new URLSearchParams({
+          typegetdata: 'several',
+          program_year: this.options.programYear,
+          page: '1',
+          per_page: '10'
+        })
         // if selected mu
         if (this.options.mu_no.model) {
           if (this.options.mu_no.items.find(e => e.mu_no == this.options.mu_no.model)) params.set('mu_no', this.options.mu_no.model)
@@ -576,16 +587,16 @@ export default {
         tdEl.data1.Count = await totalData.total.ff || 0
         tdPL.data1.Count = await totalData.total.farmer || 0
         tdPL.data2.Count = await totalData.total.land_total || 0
-        /*tdPL.data1.subCount = await totalData.total.farmer || 0
-        tdPL.data2.subCount = await totalData.total.land_total|| 0*/
         tdEl.data2.Count = await totalData.total.land_general_total || 0
         tdEl.data3.Count = await totalData.total.trees || 0
-        tdPL.data2.subCount = await totalData.total.land_total|| 0
 
-        console.log('TEST');
 
-        const totalDataFarmer = await axios.get(this.$store.getters.getApiUrl(`GetFarmerAllAdmin`), this.$store.state.apiConfig).then(res=>{return res.data.data.result})
+        const totalDataFarmer = await axios.get(this.$store.getters.getApiUrl(`GetFarmerAllAdmin?${totalPetaniParam}`), this.$store.state.apiConfig).then(res=>{return res.data.data.result})
+        console.log(totalDataFarmer.count);
         tdPL.data1.subCount = await totalDataFarmer.count || 0
+
+        const totalDataLahan = await axios.get(this.$store.getters.getApiUrl(`GetLahanAllAdmin?${totalLahanParam}`), this.$store.state.apiConfig).then(res=>{return res.data})
+        tdPL.data2.subCount = await totalDataLahan.total|| 0
 
       } catch (error) {
         this.dataobject = [];
@@ -595,13 +606,6 @@ export default {
         this.$store.state.loadingOverlayText = null
         this.loading = false
       }
-    },
-    getTotalDataPetani(){
-      const petani = axios.get(this.BaseUrlGet + "GetLahanAllAdmin?" + params, {headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-      )
     },
     // Utilities
     catchingError(error) {
