@@ -30,6 +30,25 @@
         <!-- <v-card-title>LOGIN PAGE</v-card-title> -->
         <v-card-text class="pt-1 pb-0 px-3">
           <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">
+
+            <v-select
+                dense
+                color="success"
+                item-color="success"
+                :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
+                hide-details
+                rounded
+                required
+                v-model="tahunProgram"
+                :items="$store.state.programYear.options"
+                label="Tahun Program"
+                :rules="[(v) => !!v || 'Field is required']"
+                outlined
+                class="mb-4"
+            ></v-select>
+          </div>
+
+          <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">
             <v-text-field
               label="Email"
               name="email"
@@ -101,12 +120,14 @@ export default {
   name: "Trees",
   data: () => ({
     showPassword: false,
+    tahunProgram:"",
     email: "",
     password: "",
     authtoken: "",
     load: false,
     disablevalue: false,
     BaseUrlGet: "https://t4tapi.kolaborasikproject.com/api/",
+    //BaseUrlGet: "https://api.t4t-api.org/api/",
     BaseUrlUpload: "https://t4tadmin.kolaborasikproject.com/upload.php",
     BaseUrl: "https://t4tadmin.kolaborasikproject.com/",
     snackbar: false,
@@ -147,6 +168,7 @@ export default {
       this.load = true;
       this.disablevalue = true;
       const datapost = {
+        program_year: this.tahunProgram,
         email: this.email,
         password: this.password,
       };

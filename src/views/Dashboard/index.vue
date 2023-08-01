@@ -127,7 +127,7 @@
         <v-card-text>
           <!-- Total Datas -->
           <v-row class="mt-0">
-            <v-col v-for="n in 5" :key="`totalDatasDashbiarasdakjsd${n}`" cols="12" md="4" class="">
+            <v-col v-for="n in 3" :key="`totalDatasDashbiarasdakjsd${n}`" cols="12" md="4" class="">
               <div
                 data-aos="zoom-in"
                 :data-aos-delay="totalData[`data${n}`].dataAosDelay + 700">
@@ -151,7 +151,7 @@
                     </v-list-item-avatar>
                     <v-list-item-content class="px-3">
                       <div class="mb-2">
-                        {{ totalData[`data${n}`].Judul }}
+                        <strong>{{ totalData[`data${n}`].Judul }}</strong>
                       </div>
                       <v-list-item-title class="text-h5 mb-1 font-weight-bold">
                         <number
@@ -164,6 +164,7 @@
                           :duration="5"
                           :delay="0"
                           easing="Power2.easeInOut"/>
+
                         <v-progress-circular v-else
                             indeterminate
                             :color="totalData[`data${n}`].color"
@@ -176,6 +177,77 @@
                 </v-card>
               </div>
             </v-col>
+
+<!--Total Petani dan Lahan -->
+            <v-col v-for="n in 2" :key="`totalDatasDashbiarasdakjsd${n}`" cols="12" md="4" class="">
+              <div
+                  data-aos="zoom-in"
+                  :data-aos-delay="totalData_petani_lahan[`data${n}`].dataAosDelay + 700">
+                <v-card
+                    class="rounded-xl shadow-lg"
+                    @click="$router.push(totalData_petani_lahan[`data${n}`].link)"
+                >
+                  <v-list-item three-line>
+                    <v-list-item-avatar
+                        data-aos="zoom-in"
+                        data-aos-delay="800"
+                        tile
+                        size="80"
+                        :color="totalData_petani_lahan[`data${n}`].color"
+                        class="rounded-circle"
+                    >
+                      <v-icon style="font-size: 35px !important" color="white">
+                        {{ totalData_petani_lahan[`data${n}`].icon }}
+                      </v-icon>
+                    </v-list-item-avatar>
+                    <v-list-item-content class="px-3">
+                      <div class="mb-2">
+                        <strong>{{ totalData_petani_lahan[`data${n}`].Judul }}</strong>
+
+                      </div>
+                      <div class="mb-2" style="color: #1f9454">
+                        Terverifikasi<v-icon class="mr-1" color="green">mdi-check</v-icon>
+                      </div>
+                      <v-list-item-title >
+                        <number
+                            class="text-h5 mb-1 font-weight-bold"
+                            v-if="loading == false"
+                            :ref="totalData_petani_lahan[`data${n}`].ref"
+                            :key="totalData_petani_lahan[`data${n}`].key"
+                            :format="_utils.numberFormat"
+                            :from="0"
+                            :to="totalData_petani_lahan[`data${n}`].Count"
+                            :duration="5"
+                            :delay="0"
+                            easing="Power2.easeInOut"/>
+<!--                        {{totalData_petani_lahan[`data${n}`].openCase}}-->
+<!--                        <number-->
+<!--                            class="text-h6 mb-1 font-weight-bold"-->
+<!--                            v-if="false"-->
+<!--                            :ref="totalData_petani_lahan[`data${n}`].ref"-->
+<!--                            :key="totalData_petani_lahan[`data${n}`].key"-->
+<!--                            :format="_utils.numberFormat"-->
+<!--                            :from="0"-->
+<!--                            :to="totalData_petani_lahan[`data${n}`].subCount"-->
+
+<!--                            :duration="5"-->
+<!--                            :delay="5"-->
+<!--                            easing="Power2.easeInOut"-->
+<!--                        />-->
+                        <v-progress-circular v-else
+                                             indeterminate
+                                             :color="totalData_petani_lahan[`data${n}`].color"
+                                             size="27"
+                        ></v-progress-circular>
+                        {{totalData_petani_lahan[`data${n}`].closeCase}}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>{{ totalData_petani_lahan[`data${n}`].sub }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-card>
+              </div>
+            </v-col>
+
             <v-col cols="12" md="4" class="" v-if="getDetailSubordinateTitle">
               <div
                 data-aos="zoom-in"
@@ -320,6 +392,37 @@ export default {
       date: '',
       clock: ''
     },
+
+    totalData_petani_lahan:{
+      data1:{
+        Judul: "Petani",
+        Count: "0",
+        //openCase: "(Dari ",
+        //subCount: "0",
+        //closeCase: " )",
+        link: "Farmer",
+        icon: 'mdi-nature-people',
+        color: 'orange',
+        sub: 'Orang',
+        ref: 'totalFarmerNumber',
+        key: 321,
+        dataAosDelay: 200
+      },
+      data2:{
+        Judul: "Lahan Petani",
+        Count: "0",
+        //openCase: "(Dari ",
+        //subCount: "0",
+        //closeCase: " )",
+        link: "Lahan",
+        icon: 'mdi-land-fields',
+        color: 'brown',
+        sub: 'Lahan',
+        ref: 'totalLahanNumber',
+        key: 222,
+        dataAosDelay: 300
+      }
+    },
     totalData: {
       data1: {
         Judul: "Field Facilitator",
@@ -332,29 +435,31 @@ export default {
         key: 123,
         dataAosDelay: 100
       },
+      // data2: {
+      //   Judul: "Petani",
+      //   Count: "0",
+      //   subCount: "0",
+      //   link: "Farmer",
+      //   icon: 'mdi-nature-people',
+      //   color: 'orange',
+      //   sub: 'Orang',
+      //   ref: 'totalFarmerNumber',
+      //   key: 321,
+      //   dataAosDelay: 200
+      // },
+      // data3: {
+      //   Judul: "Lahan Petani",
+      //   Count: "0",
+      //   subCount: "0",
+      //   link: "Lahan",
+      //   icon: 'mdi-land-fields',
+      //   color: 'brown',
+      //   sub: 'Lahan',
+      //   ref: 'totalLahanNumber',
+      //   key: 222,
+      //   dataAosDelay: 300
+      // },
       data2: {
-        Judul: "Petani",
-        Count: "0",
-        link: "Farmer",
-        icon: 'mdi-nature-people',
-        color: 'orange',
-        sub: 'Orang',
-        ref: 'totalFarmerNumber',
-        key: 321,
-        dataAosDelay: 200
-      },
-      data3: {
-        Judul: "Lahan Petani",
-        Count: "0",
-        link: "Lahan",
-        icon: 'mdi-land-fields',
-        color: 'brown',
-        sub: 'Lahan',
-        ref: 'totalLahanNumber',
-        key: 222,
-        dataAosDelay: 300
-      },
-      data4: {
         Judul: "Lahan Umum",
         Count: "0",
         link: "Lahan",
@@ -363,9 +468,9 @@ export default {
         sub: 'Lahan',
         ref: 'totalLahanNumber',
         key: 222,
-        dataAosDelay: 400
+        dataAosDelay: 200
       },
-      data5: {
+      data3: {
         Judul: "Monitoring 1",
         Count: "0",
         link: "Dashboard",
@@ -374,7 +479,7 @@ export default {
         sub: 'Pohon',
         ref: 'totalPohonNumber',
         key: 111,
-        dataAosDelay: 500
+        dataAosDelay: 300
       },
     },
     User: {}
@@ -467,11 +572,14 @@ export default {
         // get total data dashboard
         const totalData = await axios.get(this.$store.getters.getApiUrl(`GekoDashboardTotalDatas?${params}`), this.$store.state.apiConfig).then(res => {return res.data.data.result})
         const tdEl = this.totalData
+        const tdPL = this.totalData_petani_lahan
         tdEl.data1.Count = await totalData.total.ff || 0
-        tdEl.data2.Count = await totalData.total.farmer || 0
-        tdEl.data3.Count = await totalData.total.land_total || 0
-        tdEl.data4.Count = await totalData.total.land_general_total || 0
-        tdEl.data5.Count = await totalData.total.trees || 0
+        tdPL.data1.Count = await totalData.total.farmer || 0
+        tdPL.data2.Count = await totalData.total.land_total || 0
+        tdPL.data1.subCount = await totalData.total.farmer || 0
+        tdPL.data2.subCount = await totalData.total.land_total|| 0
+        tdEl.data2.Count = await totalData.total.land_general_total || 0
+        tdEl.data3.Count = await totalData.total.trees || 0
       } catch (error) {
         this.dataobject = [];
         this.catchingError(error)

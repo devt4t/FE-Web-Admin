@@ -601,6 +601,7 @@
           </v-container>
           <v-container v-if="load == false">
             <!-- data pentani -->
+          <v-card class="rounded-xl shadow-lg" color="light-green">
             <v-row class="ma-0 mx-2">
               <v-col cols="12">
                 <div class="d-flex align-center">
@@ -613,6 +614,8 @@
                 </div>
               </v-col>
             </v-row>
+          </v-card>
+          <v-card class="rounded-xl shadow-lg">
             <v-row class="mt-3">
               <v-col sm="12" md="4" cols="4">
                 <div class="ml-2">
@@ -859,6 +862,8 @@
                 </div>
               </v-col>
             </v-row>
+          </v-card>
+          <v-card class="rounded-xl shadow-lg" color="light-green">
             <v-row class="ma-0 mx-2">
               <v-col cols="12">
                 <div class="d-flex align-center">
@@ -870,13 +875,17 @@
                   <v-divider class="mx-2" color="black"></v-divider>
                 </div>
               </v-col>
+            </v-row>
+            </v-card>
+         <v-card class="rounded-xl shadow-lg">
               <v-col cols="12">
                 <v-data-table
                   :headers="tables.sproutHeaders"
                   :items="defaultItem.FarmerDetail"
                 ></v-data-table>
               </v-col>
-            </v-row>
+         </v-card>
+          <v-card class="rounded-xl shadow-lg" color="light-green">
             <v-row class="ma-0 mx-2">
               <v-col cols="12">
                 <div class="d-flex align-center">
@@ -889,6 +898,8 @@
                 </div>
               </v-col>
             </v-row>
+          </v-card>
+          <v-card class="rounded-xl shadow-lg">
             <v-row class="mt-3">
               <v-col sm="12" md="4" cols="4">
                 <div class="ml-2">
@@ -924,6 +935,7 @@
                 </div>
               </v-col>
             </v-row>
+            </v-card>
           </v-container>
         </v-card-text>
         <v-divider></v-divider>
@@ -1322,7 +1334,7 @@ export default {
       phone: "",
       ethnic: "",
       origin: "",
-      join_date: "",
+      //join_date: "",
       group_no: "",
       education: "",
       non_formal_education: "",
@@ -1344,6 +1356,7 @@ export default {
       resultUpload: false,
       join_date: "",
     },
+
     itemsgender: [
       { text: "Laki-Laki", value: "male" },
       { text: "Perempuan", value: "female" },

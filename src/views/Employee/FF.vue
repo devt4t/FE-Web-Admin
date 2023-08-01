@@ -50,180 +50,186 @@
             </v-layout>
           </v-container>
           <v-container v-if="load == false">
-            <v-row class="ma-0 mx-2">
-              <v-col cols="12">
-                <div class="d-flex align-center">
-                  <p class="mb-0 grey--text text--darken-3">
-                    <v-icon color="grey darken-3" class="mr-2"
+            <v-card class="rounded-xl shadow-lg font-weight-bold" color="light-green">
+              <v-row class="ma-0 mx-2">
+                <v-col cols="12">
+                  <div class="d-flex align-center">
+                    <p class="mb-0 grey--text text--darken-3">
+                      <v-icon color="grey darken-3" class="mr-2"
                       >mdi-responsive</v-icon
-                    >Informasi Umum
-                  </p>
-                  <v-divider class="mx-2" color="black"></v-divider>
-                </div>
-              </v-col>
-            </v-row>
-            <v-row class="mt-3">
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>FF Number</strong></h4>
-                  <h5>
-                    {{ defaultItem.ff_no }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>No KTP</strong></h4>
-                  <h5>
-                    {{ defaultItem.ktp_no }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Nama FF</strong></h4>
-                  <h5>
-                    {{ defaultItem.name }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Alamat FF</strong></h4>
-                  <h5>
-                    {{ defaultItem.address }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Desa</strong></h4>
-                  <h5>
-                    {{ defaultItem.village }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Kode Pos</strong></h4>
-                  <h5>
-                    {{ defaultItem.post_code }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Kecamatan</strong></h4>
-                  <h5>
-                    {{ defaultItem.kecamatan }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Kabupaten/Kota</strong></h4>
-                  <h5>
-                    {{ defaultItem.city }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Provinsi</strong></h4>
-                  <h5>
-                    {{ defaultItem.province }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Working Area</strong></h4>
-                  <h5>
-                    {{ defaultItem.namaWorkingArea }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Target Area</strong></h4>
-                  <h5>
-                    {{ defaultItem.namaTA }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Management Unit</strong></h4>
-                  <h5>
-                    {{ defaultItem.namaMU }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>No Hp</strong></h4>
-                  <h5>
-                    {{ defaultItem.phone }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Jenis Kelamin</strong></h4>
-                  <h5>
-                    {{ defaultItem.gender }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Agama</strong></h4>
-                  <h5>
-                    {{ defaultItem.religion }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Tanggal Lahir</strong></h4>
-                  <h5>
-                    {{ defaultItem.birthday }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Status Perkawinan</strong></h4>
-                  <h5>
-                    {{ defaultItem.marrital }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Akun Bank</strong></h4>
-                  <h5>
-                    {{ defaultItem.bank_account }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Cabang bank</strong></h4>
-                  <h5>
-                    {{ defaultItem.bank_branch }}
-                  </h5>
-                </div>
-              </v-col>
-              <v-col sm="12" md="3" cols="3">
-                <div class="ml-2">
-                  <h4><strong>Nama Bank</strong></h4>
-                  <h5>
-                    {{ defaultItem.bank_name }}
-                  </h5>
-                </div>
-              </v-col>
-            </v-row>
+                      >Informasi Umum
+                    </p>
+                    <v-divider class="mx-2" color="black"></v-divider>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card>
+
+            <v-card class="rounded-xl shadow-lg">
+              <v-row class="mt-3">
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>FF Number</strong></h4>
+                    <h5>
+                      {{ defaultItem.ff_no }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>No KTP</strong></h4>
+                    <h5>
+                      {{ defaultItem.ktp_no }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Nama FF</strong></h4>
+                    <h5>
+                      {{ defaultItem.name }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Alamat FF</strong></h4>
+                    <h5>
+                      {{ defaultItem.address }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Desa</strong></h4>
+                    <h5>
+                      {{ defaultItem.village }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Kode Pos</strong></h4>
+                    <h5>
+                      {{ defaultItem.post_code }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Kecamatan</strong></h4>
+                    <h5>
+                      {{ defaultItem.kecamatan }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Kabupaten/Kota</strong></h4>
+                    <h5>
+                      {{ defaultItem.city }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Provinsi</strong></h4>
+                    <h5>
+                      {{ defaultItem.province }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Working Area</strong></h4>
+                    <h5>
+                      {{ defaultItem.namaWorkingArea }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Target Area</strong></h4>
+                    <h5>
+                      {{ defaultItem.namaTA }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Management Unit</strong></h4>
+                    <h5>
+                      {{ defaultItem.namaMU }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>No Hp</strong></h4>
+                    <h5>
+                      {{ defaultItem.phone }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Jenis Kelamin</strong></h4>
+                    <h5>
+                      {{ defaultItem.gender }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Agama</strong></h4>
+                    <h5>
+                      {{ defaultItem.religion }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Tanggal Lahir</strong></h4>
+                    <h5>
+                      {{ defaultItem.birthday }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Status Perkawinan</strong></h4>
+                    <h5>
+                      {{ defaultItem.marrital }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Akun Bank</strong></h4>
+                    <h5>
+                      {{ defaultItem.bank_account }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Cabang bank</strong></h4>
+                    <h5>
+                      {{ defaultItem.bank_branch }}
+                    </h5>
+                  </div>
+                </v-col>
+                <v-col sm="12" md="3" cols="3">
+                  <div class="ml-2">
+                    <h4><strong>Nama Bank</strong></h4>
+                    <h5>
+                      {{ defaultItem.bank_name }}
+                    </h5>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-card>
+
           </v-container>
         </v-card-text>
         <v-card-actions>
