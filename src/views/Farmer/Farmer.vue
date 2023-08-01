@@ -1007,6 +1007,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Modal Export -->
+    <exportModal :programYear="programYear" :show="dialogExport" :defaultData="dataobject" @close="() => dialogExport = false"/>
     <!-- END: MODAL -->
 
     <v-data-table
@@ -1235,11 +1238,17 @@ import axios from "axios";
 import moment from "moment";
 import Swal from 'sweetalert2'
 
+import exportModal from "./components/export.vue";
+
 export default {
   name: "Farmer",
-  authtoken: "",
+  components: {
+    exportModal
+  },
   data: () => ({
+    authtoken: "",
     showTesterData: false,
+    dialogExport: false,
     export_filter: {
       program_year: "",
       typegetdata: "",
@@ -1483,17 +1492,18 @@ export default {
 
   methods: {
     exportData() {
-      let params = new URLSearchParams({
-        program_year: this.export_filter.program_year,
-        typegetdata: this.export_filter.typegetdata,
-        ff: this.export_filter.ff.toString(),
-        mu: this.export_filter.mu,
-        ta: this.export_filter.ta,
-        village: this.export_filter.village,
-      });
-      window.open(
-        `${this.BaseUrlGet.slice(0, 38)}ExportFarmerAllAdmin?${params}`
-      );
+      // let params = new URLSearchParams({
+      //   program_year: this.export_filter.program_year,
+      //   typegetdata: this.export_filter.typegetdata,
+      //   ff: this.export_filter.ff.toString(),
+      //   mu: this.export_filter.mu,
+      //   ta: this.export_filter.ta,
+      //   village: this.export_filter.village,
+      // });
+      // window.open(
+      //   `${this.BaseUrlGet.slice(0, 38)}ExportFarmerAllAdmin?${params}`
+      // );
+      this.dialogExport = true
     },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
