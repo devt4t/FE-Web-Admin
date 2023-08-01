@@ -788,7 +788,7 @@
                     :items="itemsPotency"
                     item-text="text"
                     item-value="value"
-                    label="Potency"
+                    label="Potensi"
                     hide-details
                     rounded
                     dense
@@ -818,7 +818,7 @@
                     :items="itemsElevation"
                     item-text="text"
                     item-value="value"
-                    label="Elevation"
+                    label="Elevasi"
                     outlined
                     dense
                     hide-details
@@ -850,11 +850,11 @@
           <v-spacer></v-spacer>
           <v-btn outlined rounded color="red darken-1" @click="close">
             <v-icon left> mdi-close-circle-outline </v-icon>
-            Cancel
+            Keluar
           </v-btn>
           <v-btn rounded color="info white--text" class="px-3" @click="savegis">
             <v-icon left class=""> mdi-content-save-all-outline </v-icon>
-            Save
+            Simpan
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1237,7 +1237,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+    <!--Modal Detail Pohon-->
     <v-dialog v-model="dialogDetailPohon" max-width="500px">
       <v-card>
         <v-card-title class="mb-1 headermodalstyle"
@@ -1295,7 +1295,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+  <!--Modal Edit Pohon Detail-->
     <v-dialog v-model="dialogDetailPohonEdit" max-width="300px">
       <v-card>
         <v-card-text>
@@ -1313,16 +1313,16 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn outlined color="red" text @click="closeDetailEditPohon"
-          >Cancel</v-btn
+          >Keluar</v-btn
           >
           <v-btn outlined color="blue" text @click="saveEditPohonTemp"
-          >Save</v-btn
+          >Simpan</v-btn
           >
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+    <!-- Modal Edit-->
     <v-dialog
         v-model="dialogShowEdit"
         max-width="400px"
@@ -1361,8 +1361,8 @@
                   disabled
               >
                 <v-icon left> mdi-lead-pencil </v-icon>
-                Jumlah Pohon</v-btn
-              >
+                Jumlah Pohon
+              </v-btn>
             </v-col>
           </v-row>
           <v-row v-if="updateGisShow == true || User.role_name == 'GIS STAFF'">
@@ -1385,15 +1385,215 @@
       </v-card>
     </v-dialog>
 
+    <!--Modal Tutupan Lahan-->
+    <v-dialog
+        v-model="dialogTutupanLahan"
+        max-width="800px"
+        content-class="rounded-xl">
+      <v-card-title class="mb-1 headermodalstyle">
+        <span class="headline">Form Tutupan Lahan</span>
+      </v-card-title>
+      <v-card>
+        <v-form>
+          <v-container>
+
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                <v-select
+                    v-model="itemInTutupanLahan.lahan_no_tl"
+                    :items="itemsLahan_no_tl"
+                    item-text="text"
+                    item-value="farmer_no"
+                    label="Pilih Nomor Lahan..."
+                    title="Nomor Lahan"
+                    outlined
+                    clearable
+                    v-on:change="selectLahanNo"
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-select
+                    v-model="itemInTutupanLahan.lahan_no_tl"
+                    :items="itemsLahan_no_tl"
+                    item-text="name"
+                    item-value="farmer_no"
+                    label="Pilih Nomor Petani..."
+                    title="Nomor Petani"
+                    outlined
+                    clearable
+                    disabled
+                    v-on:change="selectPetani"
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-select
+                    v-model="itemInTutupanLahan.land_area_tl"
+                    :items="itemsLandArea_tl"
+                    item-text="name"
+                    item-value="land_area"
+                    label="Pilih Area Lahan..."
+                    title="Area Lahan"
+                    outlined
+                    clearable
+                    disabled
+                    v-on:change="selectPetani"
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                    color="success"
+                    v-model="itemInTutupanLahan.tutupan_lahan_now"
+                    label="Tutupan Lahan Sekarang"
+                    hide-details
+                    rounded
+                    outlined
+                    disabled
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                    color="success"
+                    v-model="itemInTutupanLahan.tutupan_lahan_new"
+                    label="Tutupan Lahan Baru"
+                    hide-details
+                    rounded
+                    outlined
+                    disabled
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="24" sm="12" md="12">
+                <v-text-field
+                    v-model="itemInTutupanLahan.reason_tl"
+                    :items="itemsLahan_no_tl"
+                    item-text="name"
+                    item-value="land_area"
+                    label="Tulis Alasan..."
+                    title="Alasan"
+                    outlined
+                    clearable
+                    v-on:change="selectPetani"
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                    color="success"
+                    v-model="itemInTutupanLahan.year_active_tl"
+                    label="Tahun Aktif"
+                    hide-details
+                    rounded
+                    outlined
+                    disabled
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                    color="success"
+                    v-model="programYear"
+                    label="Tahun Program"
+                    hide-details
+                    rounded
+                    outlined
+                    disabled
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-select
+                    v-model="itemInTutupanLahan.lahan_no_tl"
+                    :items="itemsLahan_no_tl"
+                    item-text="name"
+                    item-value="mu_no"
+                    label="Pilih Nomor MU..."
+                    title="Nomor MU"
+                    outlined
+                    clearable
+                    disabled
+                    v-on:change="selectPetani"
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-select
+                    v-model="itemInTutupanLahan.land_area_tl"
+                    :items="itemsLandArea_tl"
+                    item-text="name"
+                    item-value="target_area"
+                    label="Pilih Target Area..."
+                    title="Target Area"
+                    outlined
+                    clearable
+                    disabled
+                    v-on:change="selectPetani"
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-select>
+              </v-col>
+
+            </v-row>
+          </v-container>
+          <v-col cols="12" sm="12" md="12">
+            <v-file-input
+                accept="image/png, image/jpeg, image/bmp"
+                placeholder="Pilih Foto Tutupan Lahan 1"
+                prepend-icon="mdi-camera"
+                show-size
+                label="Pilih Foto Tutupan Lahan 1..."
+                v-on:change="pilihfototutupanlahan1"
+                :rules="[(v) => !!v || 'Field is required']"
+            ></v-file-input>
+          </v-col>
+          <v-col cols="12" sm="12" md="12">
+            <v-file-input
+                accept="image/png, image/jpeg, image/bmp"
+                placeholder="Pilih Foto Tutupan Lahan 2"
+                prepend-icon="mdi-camera"
+                show-size
+                label="Pilih Foto Tutupan Lahan 2..."
+                v-on:change="pilihfototutupanlahan2"
+                :rules="[(v) => !!v || 'Field is required']"
+            ></v-file-input>
+          </v-col>
+          <v-col cols="12" sm="12" md="12">
+            <v-file-input
+                accept="image/png, image/jpeg, image/bmp"
+                placeholder="Pilih Foto Tutupan Lahan 3"
+                prepend-icon="mdi-camera"
+                show-size
+                label="Pilih Foto Tutupan Lahan 3..."
+                v-on:change="pilihfototutupanlahan3"
+                :rules="[(v) => !!v || 'Field is required']"
+            ></v-file-input>
+          </v-col>
+          <v-card-actions v-if="load == false">
+            <v-spacer></v-spacer>
+            <v-btn outlined color="red darken-1" @click="close">
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Keluar
+            </v-btn>
+            <v-btn outlined color="blue darken-1" @click="saveTutupanLahan">
+              <v-icon left> mdi-content-save-all-outline </v-icon>
+              Simpan
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
+
     <!-- Modal Delete -->
     <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
         <v-card-title class="headline"
-        >Are you sure you want to delete this item?</v-card-title
+        >Apa Anda Yakin Menghapus Data Ini?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="closeDelete">Keluar</v-btn>
           <v-btn color="blue darken-1" text @click="deleteItemConfirm"
           >OK</v-btn
           >
@@ -1412,7 +1612,7 @@
         <v-card-title class="d-flex flex-column align-center justify-center">
           <v-icon color="orange" size="65">mdi-alert-circle</v-icon>
           <p class="mt-3 text-center">
-            Are you sure you want to UNVERIF this land:<br />
+            Apa Anda Yakin Untuk UNVERIF Lahan Ini:<br />
             <b>{{ unverifDialog.lahan_no || "-" }}</b
             >?
           </p>
@@ -1429,7 +1629,7 @@
             "
           >
             <v-icon class="mr-1">mdi-undo</v-icon>
-            Back
+            Keluar
           </v-btn>
           <v-divider class="mx-2"></v-divider>
           <v-btn
@@ -1443,7 +1643,7 @@
             "
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
-            Okay
+            OK
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1789,7 +1989,7 @@
           </v-menu>
         </v-row>
         <!--Row Total Data Lahan-->
-        <v-row v-if="false" class="pb-4 px-2">
+        <v-row class="pb-4 px-2">
           <v-col cols="12" lg="3" v-for="n in 4">
             <div
                 data-aos="zoom-in">
@@ -1998,8 +2198,8 @@
 
       <!-- Tutupan table -->
       <template v-slot:item.tutupan_lahan="{ item }">
-        {{ item.tutupan_lahan.replace("-", "")
-        }}{{ item.tutupan_lahan.includes("%") ? "" : "%" }}
+        {{ item.tutupan_lahan.replace("-", "") }}
+        {{ item.tutupan_lahan.includes("%") ? "" : "%" }}
       </template>
 
       <!-- Luas Lahan table -->
@@ -2073,6 +2273,26 @@
                 mdi-lead-pencil
               </v-icon>
               Edit
+            </v-btn>
+            <v-btn
+                v-if="item.approve != 1"
+                class="w-100"
+                rounded
+                @click="showTutupanLahanModal(item)"
+                color="success white--text"
+                block
+                small
+                disabled
+            >
+              <v-icon
+                  class="mr-1"
+                  @click="showTutupanLahanModal(item)"
+                  small
+                  color="white"
+              >
+                mdi-check-bold
+              </v-icon>
+              Tutupan Lahan
             </v-btn>
             <v-btn
                 v-if="item.approve == 1"
@@ -2176,6 +2396,8 @@ export default {
     dialogDetailPohonHapus: false,
     dialogDetailPohon: false,
     dialogShowEdit: false,
+
+    dialogTutupanLahan: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
     dialogGIS: false,
@@ -2189,6 +2411,9 @@ export default {
     itemsff: [],
     itemsMU: [],
     itemsTA: [],
+    itemsFarmer_tl: [],
+    itemsLandArea_tl: [],
+    itemsLahan_no_tl: [],
     itemsVillage: [],
     valueMU: "",
     valueTA: "",
@@ -2213,15 +2438,15 @@ export default {
     type: "",
     dataobject: [],
     headers: [
-      { text: "No", align: "center", value: "index"},
-      { text: "Nama FF", value: "ff_name", searchable: true},
+      { text: "No", align: "center", value: "index", sortable: false},
+      { text: "Nama FF", value: "ff_name", searchable: false, sortable: false},
       // { text: "Kode Petani", value: "kodePetani"},
       { text: "Nama Petani", value: "farmer_name", searchable: true},
       { text: "Kode Petani", value: "farmer_no", searchable: true, sortable: false},
       { text: "Desa", value: "village_name", searchable: true},
       { text: "NIK Petani", value: "farmer_nik", searchable: true, sortable: false},
       { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
-      { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: false},
+      { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: false, sortable: false},
       { text: "Tahun Bergabung", value: "created_at", searchable: false},
       { text: "Luas Lahan", value: "land_area", searchable: false},
       { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
@@ -2229,7 +2454,7 @@ export default {
       { text: "Jenis Bibit", value: "jenis_bibit", sortable: false},
       { text: "KAYU", value: "pohon_kayu", searchable: false},
       { text: "MPTS", value: "pohon_mpts", searchable: false},
-      { text: "KAYU + MPTS", value: "pohon_kayu_mpts", searchable: false},
+      { text: "KAYU + MPTS", value: "pohon_kayu_mpts", searchable: false, sortable: false},
       { text: "Status", value: "approve", sortable: false},
       { text: "Actions", value: "actions", sortable: false, align: "right"},
     ],
@@ -2481,6 +2706,25 @@ export default {
       dblahan3: "",
       dblahan4: "",
     },
+    itemInTutupanLahan: {
+      farmer_no_tl : "",
+      land_area_tl : "",
+      tutupan_lahan_now: "",
+      tutupan_lahan_new: "",
+      reason_tl: "",
+      lahan_no_tl: "",
+      year_active_tl: "",
+      program_year_tl: "",
+      submit_date_tl: "",
+      submit_date_fc_tl: "",
+      is_verified_tl: "",
+      verified_by_tl: "",
+      mu_no_tl: "",
+      target_area_tl: "",
+      tutupan_photo1: "",
+      tutupan_photo2: "",
+      tutupan_photo3: "",
+    },
     totalDataLahan: {
       dataLahan1:{
         Title : "Total Lahan",
@@ -2511,6 +2755,7 @@ export default {
         Subtitle: "Lahan"
       }
     },
+
     DetailTreesLahanTemp: [],
 
     itemTemp: {
@@ -2776,9 +3021,12 @@ export default {
           this.updateGisShow = false;
           this.crudLahanBasicShow = true;
           this.RoleAccesDownloadAllShow = false;
-        } else if (this.User.role == "20") {
+        }
+        //UM access
+        else if (this.User.role == "20") {
           this.RoleAccesCRUDShow = true;
-          this.RoleAccesFilterShow = false;
+          this.RoleAccesFilterShow = true;
+
           this.updateGisShow = false;
           this.crudLahanBasicShow = true;
           this.RoleAccesDownloadAllShow = true;
@@ -2836,7 +3084,7 @@ export default {
       return new Promise((resolve, reject) => {
         const params = new URLSearchParams({
           program_year: this.programYear,
-          tester_data: this.showTesterData ? 1 : 0,
+          //tester_data: this.showTesterData ? 1 : 0,
           status: this.filtered_status,
           page: this.table.pagination.current_page,
           per_page: this.table.pagination.per_page,
@@ -2852,15 +3100,22 @@ export default {
         })
         axios.get(
             this.BaseUrlGet +
-            "GetLahanAllAdminNew?" + params,
+            "GetLahanAllAdmin?" + params,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
               },
             }
         ).then(res => {
-          if (typeof res.data.data.result !== 'undefined') {
-            let items = res.data.data.result.data.map(val => {
+          if (typeof res.data !== 'undefined') {
+
+            let resData = res.data
+
+            this.totalDataLahan.dataLahan1.Count = resData.total;
+            this.totalDataLahan.dataLahan2.Count = resData.belum_lengkap;
+            this.totalDataLahan.dataLahan3.Count = resData.belum_verifikasi;
+            this.totalDataLahan.dataLahan4.Count = resData.terverifikasi;
+            let items = resData.lahan.data.map(val => {
               let document_no = val.document_no
               if (document_no) {
                 const matches = document_no.match(/\d+/g);
@@ -2872,9 +3127,9 @@ export default {
                 pohon_kayu_mpts: val.pohon_kayu+val.pohon_mpts
               }
             })
-            const total = res.data.data.result.total
-            const current_page = res.data.data.result.current_page
-            const last_page = res.data.data.result.last_page
+            const total = resData.lahan.total
+            const current_page = resData.lahan.current_page
+            const last_page = resData.lahan.last_page
             resolve({
               items,
               total,
@@ -2946,7 +3201,7 @@ export default {
           this.totalDataLahan.dataLahan1 = response.data.data.result;
         }
         else {
-          console.log('Data Total Kosong')
+          console.log('Data Total Lahan Kosong')
         }
       }
       catch (error) {
@@ -3394,7 +3649,8 @@ export default {
             "GetFFbyUMandFC?position=" +
             position +
             "&code=" +
-            valcode,
+            valcode +
+            `&program_year=${this.programYear}`,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
@@ -3766,7 +4022,16 @@ export default {
         this.itemspetani = [];
       }
     },
+    selectLahanNo(a){
+      console.log(a);
+      if(a!=null){
 
+      }
+      else {
+        this.itemInTutupanLahan.lahan_no_tl="";
+        this.itemsLahan_no_tl=[];
+      }
+    },
     async showFilterArea() {
       // console.log(localStorage.getItem("token"));
       await this.resetFilter();
@@ -3780,6 +4045,7 @@ export default {
       this.valueMU = "";
       this.valueFC = "";
       this.valueVillage = "";
+      this.valueTA ="";
       this.selectMU = "";
       this.selectTA = "";
       this.selectVillage = "";
@@ -3908,9 +4174,16 @@ export default {
     async showEditDetailModal(item) {
       this.type = "Edit";
       this.itemTemp = item;
+
       // await this.getDetail(item);
       console.log(this.itemTemp);
       this.dialogShowEdit = true;
+    },
+    async showTutupanLahanModal(item){
+      this.formTitle = "Form Tutupan Lahan";
+      this.showAdd = false;
+      this.dialogTutupanLahan = true;
+      await this.getDetail(this.itemTemp);
     },
     editDetailPohon(item) {
       console.log(item);
@@ -4007,6 +4280,7 @@ export default {
       this.dialog = false;
       this.dialogDetailPohon = false;
       this.dialogGIS = false;
+      this.dialogTutupanLahan = false;
     },
     closeDelete() {
       this.dialogDelete = false;
@@ -4051,6 +4325,11 @@ export default {
         this.colorsnackbar = "red";
         this.textsnackbar =
             "Gagal Simpan, Kolom required tidak boleh ada yang kosong";
+      }
+    },
+    async saveTutupanLahan(){
+      if(this.itemInTutupanLahan.tutupan_photo1 != null){
+        this.$router.push('Farmer')
       }
     },
 
@@ -4218,6 +4497,22 @@ export default {
         return true;
       } else {
         return false;
+      }
+    },
+    /*Tutupan Lahan Modal*/
+    pilihfototutupanlahan1(event){
+      if(event != null){
+
+      }
+    },
+    pilihfototutupanlahan2(event){
+      if(event != null){
+
+      }
+    },
+    pilihfototutupanlahan3(event){
+      if(event != null){
+
       }
     },
 
