@@ -582,10 +582,10 @@ export default {
         tdEl.data3.Count = await totalData.total.trees || 0
         tdPL.data2.subCount = await totalData.total.land_total|| 0
 
+        console.log('TEST');
 
-        /*const totalDataFarmer = await axios.get(this.$store.getters.getApiUrl(`GetFarmerAllAdmin`), this.$store.state.apiConfig).then(res=>{return res.data.data.result.count})
-        tdPL.data1.subCount = await totalDataFarmer
-        console.log(totalData.total.ff);*/
+        const totalDataFarmer = await axios.get(this.$store.getters.getApiUrl(`GetFarmerAllAdmin`), this.$store.state.apiConfig).then(res=>{return res.data.data.result})
+        tdPL.data1.subCount = await totalDataFarmer.count || 0
 
       } catch (error) {
         this.dataobject = [];
@@ -595,6 +595,13 @@ export default {
         this.$store.state.loadingOverlayText = null
         this.loading = false
       }
+    },
+    getTotalDataPetani(){
+      const petani = axios.get(this.BaseUrlGet + "GetLahanAllAdmin?" + params, {headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+      )
     },
     // Utilities
     catchingError(error) {
