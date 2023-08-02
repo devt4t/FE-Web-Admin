@@ -1390,6 +1390,7 @@
         v-model="dialogTutupanLahan"
         max-width="800px"
         content-class="rounded-xl">
+
       <v-card-title class="mb-1 headermodalstyle">
         <span class="headline">Form Tutupan Lahan</span>
       </v-card-title>
@@ -1399,48 +1400,36 @@
 
             <v-row>
               <v-col cols="12" sm="12" md="12">
-                <v-select
+                <v-text-field
                     v-model="itemInTutupanLahan.lahan_no_tl"
-                    :items="itemsLahan_no_tl"
-                    item-text="text"
-                    item-value="farmer_no"
-                    label="Pilih Nomor Lahan..."
-                    title="Nomor Lahan"
-                    outlined
-                    clearable
-                    v-on:change="selectLahanNo"
-                    :rules="[(v) => !!v || 'Field is required']"
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="12" md="12">
-                <v-select
-                    v-model="itemInTutupanLahan.lahan_no_tl"
-                    :items="itemsLahan_no_tl"
-                    item-text="name"
-                    item-value="farmer_no"
-                    label="Pilih Nomor Petani..."
-                    title="Nomor Petani"
+                    label="Pilih Nomor Lahan"
                     outlined
                     clearable
                     disabled
-                    v-on:change="selectPetani"
                     :rules="[(v) => !!v || 'Field is required']"
-                ></v-select>
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" sm="12" md="12">
+                <v-text-field
+                    v-model="itemInTutupanLahan.farmer_no_tl"
+                    label="Nama Petani"
+                    outlined
+                    clearable
+                    disabled
+                    :rules="[(v) => !!v || 'Field is required']"
+                ></v-text-field>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-select
+                <v-text-field
                     v-model="itemInTutupanLahan.land_area_tl"
-                    :items="itemsLandArea_tl"
-                    item-text="name"
-                    item-value="land_area"
-                    label="Pilih Area Lahan..."
-                    title="Area Lahan"
+                    label="Area Lahan"
                     outlined
                     clearable
                     disabled
                     v-on:change="selectPetani"
                     :rules="[(v) => !!v || 'Field is required']"
-                ></v-select>
+                ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
@@ -1455,21 +1444,19 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
-                <v-text-field
+                <v-select
                     color="success"
                     v-model="itemInTutupanLahan.tutupan_lahan_new"
                     label="Tutupan Lahan Baru"
                     hide-details
                     rounded
                     outlined
-                    disabled
                     :rules="[(v) => !!v || 'Field is required']"
-                ></v-text-field>
+                ></v-select>
               </v-col>
               <v-col cols="24" sm="12" md="12">
                 <v-text-field
                     v-model="itemInTutupanLahan.reason_tl"
-                    :items="itemsLahan_no_tl"
                     item-text="name"
                     item-value="land_area"
                     label="Tulis Alasan..."
@@ -1505,34 +1492,24 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-select
-                    v-model="itemInTutupanLahan.lahan_no_tl"
-                    :items="itemsLahan_no_tl"
-                    item-text="name"
-                    item-value="mu_no"
-                    label="Pilih Nomor MU..."
-                    title="Nomor MU"
+                <v-text-field
+                    v-model="itemInTutupanLahan.mu_no_tl"
+                    label="Nomor MU"
                     outlined
                     clearable
                     disabled
-                    v-on:change="selectPetani"
                     :rules="[(v) => !!v || 'Field is required']"
-                ></v-select>
+                ></v-text-field>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-select
+                <v-text-field
                     v-model="itemInTutupanLahan.land_area_tl"
-                    :items="itemsLandArea_tl"
-                    item-text="name"
-                    item-value="target_area"
                     label="Pilih Target Area..."
-                    title="Target Area"
                     outlined
                     clearable
                     disabled
-                    v-on:change="selectPetani"
                     :rules="[(v) => !!v || 'Field is required']"
-                ></v-select>
+                ></v-text-field>
               </v-col>
 
             </v-row>
@@ -2282,7 +2259,7 @@
                 color="success white--text"
                 block
                 small
-                disabled
+
             >
               <v-icon
                   class="mr-1"
@@ -2413,7 +2390,7 @@ export default {
     itemsTA: [],
     itemsFarmer_tl: [],
     itemsLandArea_tl: [],
-    itemsLahan_no_tl: [],
+    itemsLahan_tl: [],
     itemsVillage: [],
     valueMU: "",
     valueTA: "",
@@ -3117,6 +3094,8 @@ export default {
           if (typeof res.data !== 'undefined') {
 
             let resData = res.data
+            //
+            this.itemsLahan_tl = resData.lahan.data;
 
             this.totalDataLahan.dataLahan1.Count = resData.total;
             this.totalDataLahan.dataLahan2.Count = resData.belum_lengkap;
@@ -3333,6 +3312,7 @@ export default {
           this.defaultItem = Object.assign({}, response.data.data.result);
 
           this.defaultItem.ff_no = response.data.data.result.user_id;
+
           this.defaultItem.kode = response.data.data.result.farmer_no;
           if (response.data.data.result.type_sppt == 0) {
             this.defaultItem.kepemilikan_sppt = "Pribadi";
@@ -4030,16 +4010,6 @@ export default {
         this.itemspetani = [];
       }
     },
-    selectLahanNo(a){
-      console.log(a);
-      if(a!=null){
-
-      }
-      else {
-        this.itemInTutupanLahan.lahan_no_tl="";
-        this.itemsLahan_no_tl=[];
-      }
-    },
     async showFilterArea() {
       // console.log(localStorage.getItem("token"));
       await this.resetFilter();
@@ -4191,7 +4161,15 @@ export default {
       this.formTitle = "Form Tutupan Lahan";
       this.showAdd = false;
       this.dialogTutupanLahan = true;
-      await this.getDetail(this.itemTemp);
+      this.itemInTutupanLahan.lahan_no_tl = item.lahan_no;
+      this.itemInTutupanLahan.farmer_no_tl = item.farmer_name;
+      this.itemInTutupanLahan.land_area_tl = item.land_area;
+      this.itemInTutupanLahan.tutupan_lahan_now = item.tutupan_lahan;
+      // this.itemInTutupanLahan.mu_no_tl = item.;
+      // this.itemInTutupanLahan.target_area_tl = item.;
+
+      console.log(item)
+
     },
     editDetailPohon(item) {
       console.log(item);
@@ -4336,7 +4314,8 @@ export default {
       }
     },
     async saveTutupanLahan(){
-      if(this.itemInTutupanLahan.tutupan_photo1 != null){
+      if(this.itemInTutupanLahan.lahan_no_tl='' || this.itemInTutupanLahan.tutupan_photo1 == null || this.itemInTutupanLahan.tutupan_photo2 == null ||this.itemInTutupanLahan.tutupan_photo3 == null)
+      {
         this.$router.push('Farmer')
       }
     },

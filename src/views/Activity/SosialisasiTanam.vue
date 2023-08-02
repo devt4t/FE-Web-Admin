@@ -1947,7 +1947,7 @@ export default {
         show: false,
         text: 'Loading...'
       },
-      location: {lng: '', lat: ''},
+      location: {lat:'',lng:''},
       mapStyle: '',
       model: null,
       popup: {
@@ -2269,8 +2269,8 @@ export default {
               farmer_attendance: this.table.farmer_attendance,
               program_year: this.program_year,
               distribution_time: this.dataToStore.distribution_time,
-              distribution_longitude: this.maps.location.lng,
               distribution_latitude: this.maps.location.lat,
+              distribution_longitude: this.maps.location.lng,
               distribution_location: this.dataToStore.distribution_location,
               distribution_rec_armada: this.dataToStore.distribution_rec_armada,
               distribution_coordinates: this.dataToStore.distribution_coordinates,
@@ -3424,7 +3424,7 @@ export default {
     },
     modalActions(val) {
         if (val.type == 'save') {
-            this.dataToStore.distribution_coordinates = `${val.coordinate.lng}, ${val.coordinate.lat}`
+            this.dataToStore.distribution_coordinates = `${val.coordinate.lat},${val.coordinate.lng}`
         }
         if (['close', 'save'].includes(val.type)) {
             this.modals[val.name].show = false
