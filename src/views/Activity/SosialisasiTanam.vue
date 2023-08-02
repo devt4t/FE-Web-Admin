@@ -273,7 +273,7 @@
                           <v-date-picker 
                             color="green lighten-1 rounded-xl" 
                             v-model="dataToStore.distribution_time"
-                            min="2023-11-24"
+                            min="2023-12-01"
                             max="2024-01-31"
                             :allowed-dates="showingAvailableDates"
                             :key="datepicker2Key"
