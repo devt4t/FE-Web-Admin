@@ -2273,7 +2273,7 @@ export default {
               distribution_latitude: this.maps.location.lat,
               distribution_location: this.dataToStore.distribution_location,
               distribution_rec_armada: this.dataToStore.distribution_rec_armada,
-              distribution_distribution_coordinates: this.dataToStore.distribution_location,
+              distribution_coordinates: this.dataToStore.distribution_coordinates,
               training_material: this.dataToStore.training_material,
               planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
               penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
