@@ -1990,7 +1990,7 @@
         </v-row>
         <!--Row Total Data Lahan-->
         <v-row class="pb-4 px-2">
-          <v-col cols="12" lg="3" v-for="n in 4">
+          <v-col cols="12" lg="3" v-for="n in 5">
             <div
                 data-aos="zoom-in">
 <!--                 :data-aos-delay="totalDataLahan[`dataLahan${n}`].dataAosDelay +700"-->
@@ -2439,7 +2439,7 @@ export default {
     dataobject: [],
     headers: [
       { text: "No", align: "center", value: "index", sortable: false},
-      { text: "Nama FF", value: "ff_name", searchable: false, sortable: false},
+      { text: "Nama FF", value: "ff_name", searchable: true, sortable: false},
       // { text: "Kode Petani", value: "kodePetani"},
       { text: "Nama Petani", value: "farmer_name", searchable: true},
       { text: "Kode Petani", value: "farmer_no", searchable: true, sortable: false},
@@ -2753,6 +2753,13 @@ export default {
         icon: 'mdi-check-bold',
         color: 'green',
         Subtitle: "Lahan"
+      },
+      dataLahan5:{
+        Title : "Petani Belum Ada Lahan",
+        Count: "0",
+        icon: 'mdi-google-downasaur',
+        color: 'red',
+        Subtitle: "Petani"
       }
     },
 
@@ -3115,6 +3122,7 @@ export default {
             this.totalDataLahan.dataLahan2.Count = resData.belum_lengkap;
             this.totalDataLahan.dataLahan3.Count = resData.belum_verifikasi;
             this.totalDataLahan.dataLahan4.Count = resData.terverifikasi;
+            this.totalDataLahan.dataLahan5.Count = resData.belum_ada;
             let items = resData.lahan.data.map(val => {
               let document_no = val.document_no
               if (document_no) {
