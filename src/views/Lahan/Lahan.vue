@@ -2259,6 +2259,7 @@
                 color="success white--text"
                 block
                 small
+                disabled
 
             >
               <v-icon
@@ -4165,6 +4166,8 @@ export default {
       this.itemInTutupanLahan.farmer_no_tl = item.farmer_name;
       this.itemInTutupanLahan.land_area_tl = item.land_area;
       this.itemInTutupanLahan.tutupan_lahan_now = item.tutupan_lahan;
+
+      // this.itemInTutupanLahan.year_active_tl = item.;
       // this.itemInTutupanLahan.mu_no_tl = item.;
       // this.itemInTutupanLahan.target_area_tl = item.;
 

@@ -653,7 +653,7 @@
                       </v-overlay>
                       <v-date-picker
                         v-model="datepicker2"
-                        min="2022-11-24"
+                        min="2022-12-01"
                         max="2023-01-31"
                         :allowed-dates="showingAvailableDates"
                         @input="menu2 = false"
