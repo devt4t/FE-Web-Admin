@@ -1365,7 +1365,7 @@ export default {
 
         const response = await axios.get(
           this.auth.baseUrlGet +
-            "KPIFC?" + params,
+            "KPIFCDev?" + params,
           {
             headers: {
               Authorization: `Bearer ` + this.auth.token,
@@ -1526,7 +1526,7 @@ export default {
   
           await axios.get(
             this.auth.baseUrlGet +
-              "KPIFC?" + params,
+              "KPIFCDev?" + params,
             {
               headers: {
                 Authorization: `Bearer ` + this.auth.token,

@@ -1427,7 +1427,6 @@
                     outlined
                     clearable
                     disabled
-                    v-on:change="selectPetani"
                     :rules="[(v) => !!v || 'Field is required']"
                 ></v-text-field>
               </v-col>
@@ -1447,6 +1446,7 @@
                 <v-select
                     color="success"
                     v-model="itemInTutupanLahan.tutupan_lahan_new"
+                    :items="dialogMenus.progress_tutupan_lahan.items"
                     label="Tutupan Lahan Baru"
                     hide-details
                     rounded
@@ -1457,13 +1457,9 @@
               <v-col cols="24" sm="12" md="12">
                 <v-text-field
                     v-model="itemInTutupanLahan.reason_tl"
-                    item-text="name"
-                    item-value="land_area"
                     label="Tulis Alasan..."
-                    title="Alasan"
                     outlined
                     clearable
-                    v-on:change="selectPetani"
                     :rules="[(v) => !!v || 'Field is required']"
                 ></v-text-field>
               </v-col>
@@ -1503,7 +1499,7 @@
               </v-col>
               <v-col cols="12" sm="12" md="12">
                 <v-text-field
-                    v-model="itemInTutupanLahan.land_area_tl"
+                    v-model="itemInTutupanLahan.target_area_tl"
                     label="Pilih Target Area..."
                     outlined
                     clearable
@@ -2260,7 +2256,6 @@
                 block
                 small
                 disabled
-
             >
               <v-icon
                   class="mr-1"
@@ -2702,6 +2697,23 @@ export default {
       tutupan_photo1: "",
       tutupan_photo2: "",
       tutupan_photo3: "",
+      file_tutupan_photo1: "",
+      file_tutupan_photo2: "",
+      file_tutupan_photo3: "",
+
+    },
+    dialogMenus: {
+      progress_tutupan_lahan:{
+        label: 'Cakupan Lahan(%)',
+        items: [
+          {text: '0%', value: 0},
+          {text: '25%', value: 25},
+          {text: '50%', value: 50},
+          {text: '75%', value: 75},
+        ],
+        model: 0,
+        loading: false
+      }
     },
     totalDataLahan: {
       dataLahan1:{
@@ -3683,10 +3695,27 @@ export default {
           } else if (arraytemp[i] == "lahan3") {
             formData.append("files", this.defaultItem.filephoto4);
             namafile = "Lahan3_" + this.defaultItem.document_no;
-          } else {
+          } else if (arraytemp[i] == "lahan4"){
             formData.append("files", this.defaultItem.filephoto5);
             namafile = "Lahan4_" + this.defaultItem.document_no;
           }
+          else if (arraytemp[i] == "tutupan_lahan1"){
+            formData.append("files", this.itemInTutupanLahan.tutupan_photo1);
+            namafile = "TutupanLahan1_" + this.defaultItem.document_no;
+          }
+          else if (arraytemp[i] == "tutupan_lahan1"){
+            formData.append("files", this.itemInTutupanLahan.tutupan_photo1);
+            namafile = "TutupanLahan1_" + this.defaultItem.document_no;
+          }
+          else if (arraytemp[i] == "tutupan_lahan2"){
+            formData.append("files", this.itemInTutupanLahan.tutupan_photo2);
+            namafile = "TutupanLahan2_" + this.defaultItem.document_no;
+          }
+          else if (arraytemp[i] == "tutupan_lahan3"){
+            formData.append("files", this.itemInTutupanLahan.tutupan_photo3);
+            namafile = "TutupanLahan3_" + this.defaultItem.document_no;
+          }
+
           // console.log(namafile);
           try {
             const response = await axios.post(
@@ -3755,6 +3784,28 @@ export default {
           this.dialog = true;
         }
       } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.dialog = true;
+        }
+      }
+    },
+    //add tutupan lahan
+    async addTutupanLahan(datapost){
+      this.dialogTutupanLahan = false;
+      try {
+        const response = await axios.post(
+            this.BaseUrlGet + "AddLahanTutupanRequest",
+            datapost,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+        );
+        console.log(response.data.data.result)
+      }
+      catch (error){
         console.error(error.response);
         if (error.response.status == 401) {
           this.dialog = true;
@@ -4166,10 +4217,10 @@ export default {
       this.itemInTutupanLahan.farmer_no_tl = item.farmer_name;
       this.itemInTutupanLahan.land_area_tl = item.land_area;
       this.itemInTutupanLahan.tutupan_lahan_now = item.tutupan_lahan;
+      this.itemInTutupanLahan.mu_no_tl = item.mu_no;
+      this.itemInTutupanLahan.target_area_tl = item.target_area;
 
-      // this.itemInTutupanLahan.year_active_tl = item.;
-      // this.itemInTutupanLahan.mu_no_tl = item.;
-      // this.itemInTutupanLahan.target_area_tl = item.;
+      this.itemInTutupanLahan.year_active_tl = item.created_at.slice(0, 4);
 
       console.log(item)
 
@@ -4317,9 +4368,45 @@ export default {
       }
     },
     async saveTutupanLahan(){
-      if(this.itemInTutupanLahan.lahan_no_tl='' || this.itemInTutupanLahan.tutupan_photo1 == null || this.itemInTutupanLahan.tutupan_photo2 == null ||this.itemInTutupanLahan.tutupan_photo3 == null)
+      // console.log(this.itemInTutupanLahan.lahan_no_tl)
+      // console.log(this.programYear)
+      // console.log(this.itemInTutupanLahan.year_active_tl)
+      // console.log(this.itemInTutupanLahan.land_area_tl)
+      // console.log(this.itemInTutupanLahan.tutupan_lahan_now)
+      // console.log(this.itemInTutupanLahan.tutupan_lahan_new)
+      // console.log(this.itemInTutupanLahan.mu_no_tl)
+      // console.log(this.itemInTutupanLahan.target_area_tl)
+      if(
+          this.itemInTutupanLahan.lahan_no_tl != null&&
+          this.itemInTutupanLahan.tutupan_lahan_new != null &&
+          this.itemInTutupanLahan.mu_no_tl != null&&
+          this.itemInTutupanLahan.land_area_tl != null&&
+          this.itemInTutupanLahan.program_year_tl != null&&
+          this.itemInTutupanLahan.reason_tl != null
+      )
       {
-        this.$router.push('Farmer')
+        const postTutupan ={
+          lahan_no: this.itemInTutupanLahan.lahan_no_tl,
+          year_active : this.itemInTutupanLahan.year_active_tl,
+          program_year : this.programYear,
+          tutupan_lahan_now : this.itemInTutupanLahan.tutupan_lahan_now,
+          tutupan_lahan_new : this.itemInTutupanLahan.tutupan_lahan_new,
+          reason: this.itemInTutupanLahan.reason_tl,
+          mu_no : this.itemInTutupanLahan.mu_no_tl,
+          land_area : this.itemInTutupanLahan.land_area_tl,
+        }
+        console.log(postTutupan)
+
+        this.addTutupanLahan(postTutupan)
+
+        //direct link
+        //this.$router.push('Farmer')
+      }
+      else {
+        this.snackbar = true;
+        this.colorsnackbar = "red";
+        this.textsnackbar =
+            "Gagal Simpan, Kolom required tidak boleh ada yang kosong";
       }
     },
 
@@ -4355,7 +4442,7 @@ export default {
           this.defaultItem.fertilizer != null &&
           this.defaultItem.pesticide != null &&
           this.defaultItem.opsi_pola_tanam != null
-      ) {
+       ) {
         // var tipesppt = 0;
         // if (this.defaultItem.type_sppt == "bersama") {
         //   tipesppt = 1;
@@ -4491,7 +4578,11 @@ export default {
     },
     /*Tutupan Lahan Modal*/
     pilihfototutupanlahan1(event){
+      console.log(event)
       if(event != null){
+        this.itemInTutupanLahan.tutupan_photo1 = URL.createObjectURL(event);
+        this.itemInTutupanLahan.file_tutupan_photo1 = event;
+        this.filephotoarray.push('');
 
       }
     },
