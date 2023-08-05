@@ -192,6 +192,11 @@ const routes = [
     path: '/Users',
     name: 'Users',
     component: lazyLoad('Users/Users')
+  },
+  {
+    path: '/PermintaanTutupanLahan',
+    name: 'PermintaanTutupanLahan',
+    component: lazyLoad('Lahan/tutupanLahan')
   }
 ]
 

@@ -592,11 +592,11 @@
             <v-spacer></v-spacer>
             <v-btn outlined color="red darken-1" @click="close">
               <v-icon left> mdi-close-circle-outline </v-icon>
-              Cancel
+              Keluar
             </v-btn>
             <v-btn outlined color="blue darken-1" @click="save">
               <v-icon left> mdi-content-save-all-outline </v-icon>
-              Save
+              Simpan
             </v-btn>
           </v-card-actions>
         </v-form>
@@ -1394,10 +1394,23 @@
       <v-card-title class="mb-1 headermodalstyle">
         <span class="headline">Form Tutupan Lahan</span>
       </v-card-title>
-      <v-card>
+      <v-card style="position: relative">
         <v-form>
-          <v-container>
+          <v-container >
 
+            <!-- loading overlay -->
+            <v-overlay v-if="itemInTutupanLahan.loading.show" absolute justify-center align-center>
+              <div class="d-flex flex-column align-center justify-center">
+                <v-progress-circular
+                    :size="80"
+                    :width="7"
+                    indeterminate
+                    color="white"
+                >
+                </v-progress-circular>
+                <p class="mb-0 text-center mt-4">{{ itemInTutupanLahan.loading.text || 'Loading...' }}</p>
+              </div>
+            </v-overlay>
             <v-row>
               <v-col cols="12" sm="12" md="12">
                 <v-text-field
@@ -1412,7 +1425,7 @@
 
               <v-col cols="12" sm="12" md="12">
                 <v-text-field
-                    v-model="itemInTutupanLahan.farmer_no_tl"
+                    v-model="itemInTutupanLahan.farmer_name_tl"
                     label="Nama Petani"
                     outlined
                     clearable
@@ -1513,35 +1526,34 @@
           <v-col cols="12" sm="12" md="12">
             <v-file-input
                 accept="image/png, image/jpeg, image/bmp"
+                @change="val => {itemInTutupanLahan.tutupan_photo1 = val}"
                 placeholder="Pilih Foto Tutupan Lahan 1"
                 prepend-icon="mdi-camera"
                 show-size
                 label="Pilih Foto Tutupan Lahan 1..."
-                v-on:change="pilihfototutupanlahan1"
-                :rules="[(v) => !!v || 'Field is required']"
             ></v-file-input>
           </v-col>
           <v-col cols="12" sm="12" md="12">
             <v-file-input
                 accept="image/png, image/jpeg, image/bmp"
+                @change="val => {itemInTutupanLahan.tutupan_photo2 = val}"
                 placeholder="Pilih Foto Tutupan Lahan 2"
                 prepend-icon="mdi-camera"
                 show-size
                 label="Pilih Foto Tutupan Lahan 2..."
-                v-on:change="pilihfototutupanlahan2"
-                :rules="[(v) => !!v || 'Field is required']"
             ></v-file-input>
           </v-col>
           <v-col cols="12" sm="12" md="12">
             <v-file-input
                 accept="image/png, image/jpeg, image/bmp"
+                @change="val => {itemInTutupanLahan.tutupan_photo3 = val}"
                 placeholder="Pilih Foto Tutupan Lahan 3"
                 prepend-icon="mdi-camera"
                 show-size
                 label="Pilih Foto Tutupan Lahan 3..."
-                v-on:change="pilihfototutupanlahan3"
-                :rules="[(v) => !!v || 'Field is required']"
+
             ></v-file-input>
+            <!--v-on:change="pilihfototutupanlahan3"-->
           </v-col>
           <v-card-actions v-if="load == false">
             <v-spacer></v-spacer>
@@ -1568,8 +1580,7 @@
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="closeDelete">Keluar</v-btn>
           <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-          >OK</v-btn
-          >
+          >OK</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -1913,6 +1924,16 @@
           ></v-select>
           <v-divider class="d-none d-md-block mx-2"></v-divider>
           <v-btn
+
+              class="mb-2 mr-1 ml-2 d-none d-md-block"
+              @click="$router.push('PermintaanTutupanLahan')"
+              color="green white--text"
+              rounded
+              :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
+          >
+            <v-icon class="mr-1" small>mdi-land-plots-circle-variant</v-icon>Daftar Permintaan Pergantian Tutupan Lahan
+          </v-btn>
+          <v-btn
               class="mb-2 mr-1 ml-2 d-none d-md-block"
               @click="download()"
               color="blue white--text"
@@ -2255,7 +2276,6 @@
                 color="success white--text"
                 block
                 small
-                disabled
             >
               <v-icon
                   class="mr-1"
@@ -2678,9 +2698,12 @@ export default {
       dblahan2: "",
       dblahan3: "",
       dblahan4: "",
+
+
     },
     itemInTutupanLahan: {
       farmer_no_tl : "",
+      farmer_name_tl: "",
       land_area_tl : "",
       tutupan_lahan_now: "",
       tutupan_lahan_new: "",
@@ -2694,12 +2717,21 @@ export default {
       verified_by_tl: "",
       mu_no_tl: "",
       target_area_tl: "",
+
       tutupan_photo1: "",
       tutupan_photo2: "",
       tutupan_photo3: "",
+
       file_tutupan_photo1: "",
       file_tutupan_photo2: "",
       file_tutupan_photo3: "",
+
+      dbtutupanlahan1: "",
+
+      loading: {
+        show: false,
+        text: 'Loading...'
+      }
 
     },
     dialogMenus: {
@@ -3170,48 +3202,7 @@ export default {
         this.$store.state.loadingOverlayText = null
         this.loadtable = false
       })
-      /*await this.getTotalDataLahan().then(dataLahan => {
-        this.totalDataLahan.dataLahan1.Count =dataLahan.total
-      })*/
-
-
-      // Get Total Data Lahan
-      /*const totalDataLahan = await axios.get((this.$store.getters.getApiUrl(``)))
-      const TDL = this.totalDataLahan
-      TDL.dataLahan1.Count = await totalDataLahan.total.lahan_no || 0
-      TDL.dataLahan2.Count = await totalDataLahan.total.lahans || 0
-      TDL.dataLahan3.Count = await totalDataLahan.total.lahan_type|| 0
-      TDL.dataLahan3.Count = await totalDataLahan.total.lahan_type|| 0*/
     },
-    // Get Total Data Lahan
-    /*async getTotalDataLahan(){
-      try {
-        const response = await axios.get(
-            this.BaseUrlGet + ``,
-            {
-              headers:{
-                Authorization: `Bearer ` + this.authtoken,
-              },
-
-            }
-
-        );
-        console.log("GET TOTAL DATA LAHAN")
-        if(response.data.length != 0){
-          this.totalDataLahan.dataLahan1 = response.data.data.result;
-        }
-        else {
-          console.log('Data Total Lahan Kosong')
-        }
-      }
-      catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
-          this.alerttoken = true;
-        }
-      }
-    },*/
-    //Total Lahan End
 
     async getMU() {
       try {
@@ -3699,22 +3690,6 @@ export default {
             formData.append("files", this.defaultItem.filephoto5);
             namafile = "Lahan4_" + this.defaultItem.document_no;
           }
-          else if (arraytemp[i] == "tutupan_lahan1"){
-            formData.append("files", this.itemInTutupanLahan.tutupan_photo1);
-            namafile = "TutupanLahan1_" + this.defaultItem.document_no;
-          }
-          else if (arraytemp[i] == "tutupan_lahan1"){
-            formData.append("files", this.itemInTutupanLahan.tutupan_photo1);
-            namafile = "TutupanLahan1_" + this.defaultItem.document_no;
-          }
-          else if (arraytemp[i] == "tutupan_lahan2"){
-            formData.append("files", this.itemInTutupanLahan.tutupan_photo2);
-            namafile = "TutupanLahan2_" + this.defaultItem.document_no;
-          }
-          else if (arraytemp[i] == "tutupan_lahan3"){
-            formData.append("files", this.itemInTutupanLahan.tutupan_photo3);
-            namafile = "TutupanLahan3_" + this.defaultItem.document_no;
-          }
 
           // console.log(namafile);
           try {
@@ -3741,11 +3716,12 @@ export default {
                 this.defaultItem.dblahan2 = response.data.TempName;
               } else if (namafile.substring(0, 6) == "Lahan3") {
                 this.defaultItem.dblahan3 = response.data.TempName;
-              } else {
+              } else if (namafile.substring(0, 6) == "Lahan4"){
                 this.defaultItem.dblahan4 = response.data.TempName;
                 // console.log(response.data.TempName);
                 // console.log(this.defaultItem.signature);
               }
+
             } else {
               this.defaultItem.resultUpload = false;
               // this.dialog = false;
@@ -3792,8 +3768,9 @@ export default {
     },
     //add tutupan lahan
     async addTutupanLahan(datapost){
-      this.dialogTutupanLahan = false;
+
       try {
+
         const response = await axios.post(
             this.BaseUrlGet + "AddLahanTutupanRequest",
             datapost,
@@ -3803,7 +3780,20 @@ export default {
               },
             }
         );
+
         console.log(response.data.data.result)
+        this.$router.push('PermintaanTutupanLahan')
+        if (response.data.data.result == "success") {
+          this.dialog = false;
+          this.snackbar = true;
+          this.colorsnackbar = "green";
+          this.textsnackbar = "Sukses menambahkan data";
+        } else {
+          this.dialog = true;
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.textsnackbar = "Gagal Tambah Data, Tabel Belum Lengkap!";
+        }
       }
       catch (error){
         console.error(error.response);
@@ -4210,11 +4200,15 @@ export default {
       this.dialogShowEdit = true;
     },
     async showTutupanLahanModal(item){
+      this.itemInTutupanLahan.loading.show =true;
       this.formTitle = "Form Tutupan Lahan";
       this.showAdd = false;
       this.dialogTutupanLahan = true;
+      await this.getDetail(item);
+
       this.itemInTutupanLahan.lahan_no_tl = item.lahan_no;
-      this.itemInTutupanLahan.farmer_no_tl = item.farmer_name;
+      this.itemInTutupanLahan.farmer_no_tl = item.farmer_no;
+      this.itemInTutupanLahan.farmer_name_tl = item.farmer_name;
       this.itemInTutupanLahan.land_area_tl = item.land_area;
       this.itemInTutupanLahan.tutupan_lahan_now = item.tutupan_lahan;
       this.itemInTutupanLahan.mu_no_tl = item.mu_no;
@@ -4222,7 +4216,8 @@ export default {
 
       this.itemInTutupanLahan.year_active_tl = item.created_at.slice(0, 4);
 
-      console.log(item)
+      console.log(this.defaultItem.ff_no)
+      this.itemInTutupanLahan.loading.show = false;
 
     },
     editDetailPohon(item) {
@@ -4376,15 +4371,25 @@ export default {
       // console.log(this.itemInTutupanLahan.tutupan_lahan_new)
       // console.log(this.itemInTutupanLahan.mu_no_tl)
       // console.log(this.itemInTutupanLahan.target_area_tl)
+      //console.log(this.itemInTutupanLahan.farmer_no_tl)
+      console.log('start 1')
+      this.itemInTutupanLahan.loading.show =true;
       if(
+          this.defaultItem.ff_no != null &&
           this.itemInTutupanLahan.lahan_no_tl != null&&
           this.itemInTutupanLahan.tutupan_lahan_new != null &&
           this.itemInTutupanLahan.mu_no_tl != null&&
           this.itemInTutupanLahan.land_area_tl != null&&
           this.itemInTutupanLahan.program_year_tl != null&&
-          this.itemInTutupanLahan.reason_tl != null
+          this.itemInTutupanLahan.reason_tl != null&&
+          this.itemInTutupanLahan.farmer_no_tl != null&&
+          this.itemInTutupanLahan.tutupan_photo1 &&
+          this.itemInTutupanLahan.tutupan_photo2 &&
+          this.itemInTutupanLahan.tutupan_photo3
       )
       {
+        console.log('start 2')
+
         const postTutupan ={
           lahan_no: this.itemInTutupanLahan.lahan_no_tl,
           year_active : this.itemInTutupanLahan.year_active_tl,
@@ -4394,25 +4399,68 @@ export default {
           reason: this.itemInTutupanLahan.reason_tl,
           mu_no : this.itemInTutupanLahan.mu_no_tl,
           land_area : this.itemInTutupanLahan.land_area_tl,
+          farmer_no : this.itemInTutupanLahan.farmer_no_tl,
+          target_area : this.itemInTutupanLahan.target_area_tl,
+          user_id: this.defaultItem.ff_no,
+          tutupan_photo1: '',
+          tutupan_photo2: '',
+          tutupan_photo3: '',
         }
+        console.log('start 3')
+
+        if (this.itemInTutupanLahan.tutupan_photo1){
+          const namafile = this.defaultItem.document_no + this.programYear + "_TutupanLahan1";
+          const response = await axios.post(
+              this.BaseUrl + "land-coverage/upload.php?nama=",
+              this._utils.generateFormData({
+                nama: namafile,
+                fileToUpload: this.itemInTutupanLahan.tutupan_photo1
+              })
+          );
+          postTutupan.tutupan_photo1 = response.data.data.new_name
+        }if (this.itemInTutupanLahan.tutupan_photo2){
+        const namafile = this.defaultItem.document_no + this.programYear + "_TutupanLahan2";
+        const response = await axios.post(
+            this.BaseUrl + "land-coverage/upload.php?nama=",
+            this._utils.generateFormData({
+              nama: namafile,
+              fileToUpload: this.itemInTutupanLahan.tutupan_photo2
+            }),
+
+        );
+        postTutupan.tutupan_photo2 = response.data.data.new_name
+      }
+        if (this.itemInTutupanLahan.tutupan_photo3){
+        const namafile = this.defaultItem.document_no + this.programYear + "_TutupanLahan3";
+        const response = await axios.post(
+            this.BaseUrl + "land-coverage/upload.php?nama=",
+            this._utils.generateFormData({
+              nama: namafile,
+              fileToUpload: this.itemInTutupanLahan.tutupan_photo3
+            }),
+
+        );
+        postTutupan.tutupan_photo3 = response.data.data.new_name
+      }
         console.log(postTutupan)
-
-        this.addTutupanLahan(postTutupan)
-
-        //direct link
-        //this.$router.push('Farmer')
+        await this.addTutupanLahan(postTutupan)
+        this.dialogTutupanLahan = false;
       }
       else {
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.textsnackbar =
-            "Gagal Simpan, Kolom required tidak boleh ada yang kosong";
+        console.log('start end')
+        Swal.fire({
+          title: 'Gagal Simpan!',
+          text: `Kolom Belum Lengkap!`,
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay'
+        })
       }
+      this.itemInTutupanLahan.loading.show =false;
     },
 
     async save() {
       this.$refs.form.validate();
-
       // console.log(this.defaultItem.document_no.length);
       // console.log(this.defaultItem.latitude.length);
       // console.log(this.defaultItem.longitude.length);

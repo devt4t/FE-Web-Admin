@@ -397,15 +397,10 @@ export default {
   created() {
     this.authtoken = localStorage.getItem("token");
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
-   /*YONGS
-    create program year model*/
+
     this.localConfig.programYear = this.$store.state.programYear.model
-    /*YONGS
-    End create program year model*/
     this.initialize();
   },
-  /*  YONGS
-  Initialize program year*/
   watch: {
     'localConfig.programYear': {
       handler(val) {
@@ -413,8 +408,7 @@ export default {
       }
     }
   },
-  /*YONGS
-  End Initialize*/
+
   computed: {
     saveDisabled() {
       if (!this.defaultItem.kode_kecamatan) return true
