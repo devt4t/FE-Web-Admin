@@ -2318,7 +2318,7 @@ export default {
               planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
               penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
               start_pembuatan_lubang_tanam: this.dateFormat(this.dataToStore.start_pemlub_time, 'Y-MM-DD'),
-              end_distribution_time: this.dateFormat(this.dataToStore.end_planting_time, 'Y-MM-DD'),
+              end_planting_time: this.dateFormat(this.dataToStore.end_planting_time, 'Y-MM-DD'),
             }
     
             // await this.setUnavailableDistributionDates()
