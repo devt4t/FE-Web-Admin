@@ -3148,6 +3148,9 @@ export default {
             this.totalDataLahan.dataLahan3.Count = resData.belum_verifikasi;
             this.totalDataLahan.dataLahan4.Count = resData.terverifikasi;
             this.totalDataLahan.dataLahan5.Count = resData.belum_ada;
+
+
+
             let items = resData.lahan.data.map(val => {
               let document_no = val.document_no
               if (document_no) {
@@ -3163,6 +3166,10 @@ export default {
             const total = resData.lahan.total
             const current_page = resData.lahan.current_page
             const last_page = resData.lahan.last_page
+
+            // if(this.table.pagination.current_page > total){
+            //   this.table.pagination.current_page =1;
+            // }
             resolve({
               items,
               total,
