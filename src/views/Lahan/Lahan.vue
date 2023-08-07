@@ -2857,6 +2857,7 @@ export default {
       },
       datas: {
         total: 0,
+        total_terverifikasi: 0,
       },
       pagination: {
         current_page: 1,
@@ -3186,6 +3187,8 @@ export default {
       await this.getTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total
+
+
         //make new api for total data lahan
         // this.totalDataLahan.dataLahan1.Count = data.total
 
