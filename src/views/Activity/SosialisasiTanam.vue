@@ -468,6 +468,7 @@
                   </v-autocomplete>
                 </v-col>
                 <!-- Tanggal Distribusi -->
+
                 <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                   <p class="mb-1">Tanggal Distribusi</p>
                     <v-menu
@@ -512,7 +513,7 @@
                           <v-date-picker
                             color="green lighten-1 rounded-xl"
                             v-model="dataToStore.distribution_time"
-                            min="2023-11-24"
+                            min="2023-12-01"
                             max="2024-01-31"
                             :allowed-dates="showingAvailableDates"
                             :key="datepicker2Key"
@@ -525,9 +526,25 @@
                       </v-card>
                     </v-menu>
                 </v-col>
-                <!-- Tanggal Penilikan Lubang -->
+
                 <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Penilikan Lubang</p>
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col >
+                  <p class="mb-1"> Awal Pembuatan Lubang Tanam </p>
+                  <v-btn
+                      rounded
+                      large
+                      color="green lighten-1"
+                      disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.start_pemlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col>
+                  <p class="mb-1"> Batas Akhir Pembuatan Lubang Tanam</p>
                   <v-btn
                     rounded
                     large
@@ -538,9 +555,12 @@
                     {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
                   </v-btn>
                 </v-col>
-                <!-- Tanggal Realisasi Tanam -->
+                </v-col>
+
                 <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
-                  <p class="mb-1">Tanggal Realisasi Tanam</p>
+                <!-- Tanggal Realisasi Tanam -->
+                <v-col >
+                  <p class="mb-1">Tanggal Awal Realisasi Tanam</p>
                   <v-btn
                     rounded
                     large
@@ -550,6 +570,20 @@
                     <v-icon left> mdi-calendar </v-icon>
                     {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
                   </v-btn>
+                </v-col>
+                <v-col >
+                  <p class="mb-1">Batas Akhir Realisasi Tanam</p>
+                  <v-btn
+                      rounded
+                      large
+                      disabled
+                      color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.end_planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+
                 </v-col>
                 <!-- Lokasi Distribusi -->
                 <v-col cols="12">
@@ -913,8 +947,8 @@
                       </v-overlay>
                       <v-date-picker
                         v-model="datepicker2"
-                        min="2022-11-24"
-                        max="2023-01-31"
+                        min="2023-12-01"
+                        max="2024-01-31"
                         :allowed-dates="showingAvailableDates"
                         @input="menu2 = false"
                         color="green"
@@ -1955,6 +1989,7 @@ import LottieAnimation from 'lottie-web-vue';
 
 import treeAnimation from '@/assets/lottie/tree.json'
 import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
+import {Kebumen} from "@/store/scpecialEmails/nurseryTeam";
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
@@ -2074,6 +2109,7 @@ export default {
       opsi_pola_tanam: "",
       pembuatan_lubang_tanam: "",
       planting_time: "",
+      end_planting_time: "",
       planting_year: "",
       type_sppt: "",
       validate_by: "",
@@ -2262,10 +2298,13 @@ export default {
       distribution_time: '',
       distribution_location: '',
       planting_time: '',
+      end_planting_time: '',
       penlub_time: '',
       start_pemlub_time: '',
 
+
       absensi_photo: '',
+
       lahans: []
     },
     training_material_items: [],
@@ -2293,7 +2332,7 @@ export default {
         show: false,
         text: 'Loading...'
       },
-      location: {lng: '', lat: ''},
+      location: {lat:'',lng:''},
       mapStyle: '',
       model: null,
       popup: {
@@ -2355,8 +2394,10 @@ export default {
     },
     'dataToStore.distribution_time': {
       handler(newValue) {
-        this.dataToStore.penlub_time = moment(newValue).subtract(14, 'days')
-        this.dataToStore.planting_time = moment(newValue).add(7, 'days')
+        this.dataToStore.penlub_time = moment(newValue).subtract(21, 'days')
+        this.dataToStore.start_pemlub_time = moment(newValue).subtract(42, 'days')
+        this.dataToStore.planting_time = moment(newValue).add(1, 'days')
+        this.dataToStore.end_planting_time = moment(newValue).add(21, 'days')
       }
     },
 
@@ -2674,17 +2715,18 @@ export default {
               farmer_attendance: this.table.farmer_attendance,
               program_year: this.program_year,
               distribution_time: this.dataToStore.distribution_time,
-              distribution_longitude: this.maps.location.lng,
               distribution_latitude: this.maps.location.lat,
+              distribution_longitude: this.maps.location.lng,
               distribution_location: this.dataToStore.distribution_location,
               distribution_rec_armada: this.dataToStore.distribution_rec_armada,
-              distribution_distribution_coordinates: this.dataToStore.distribution_location,
+              distribution_coordinates: this.dataToStore.distribution_coordinates,
               training_material: this.dataToStore.training_material,
               planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
               penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
               start_pembuatan_lubang_tanam: this.dateFormat(this.dataToStore.start_pemlub_time, 'Y-MM-DD'),
               end_planting_time: this.dateFormat(this.dataToStore.end_planting_time, 'Y-MM-DD'),
               absent : '',
+
             }
             if(this.dataToStore.absensi_photo){
               const namafile = this.options.ff.model + this.program_year + "_AbsenPetani";
@@ -3956,7 +3998,7 @@ export default {
     },
     modalActions(val) {
         if (val.type == 'save') {
-            this.dataToStore.distribution_coordinates = `${val.coordinate.lng}, ${val.coordinate.lat}`
+            this.dataToStore.distribution_coordinates = `${val.coordinate.lat},${val.coordinate.lng}`
         }
         if (['close', 'save'].includes(val.type)) {
             this.modals[val.name].show = false
@@ -3967,31 +4009,35 @@ export default {
         this.modals.pick_coordinate.show = true
     },
     // Utilities
-    calendarGetNurseryColor(n, total, date) {
-        let maxFF = this.calendarGetMaxFF(n, date)
-        
-        if (total === maxFF) {
+    calendarGetNurseryColor(n, total, totalSeed) {
+        let maxFF = this.calendarGetMaxFF(n)
+        let maxSeed = this.calendarGetMaxSeed(n)
+        if (total === maxFF || maxSeed === totalSeed) {
             return 'green'
-        } else if (total > maxFF) {
+        } else if (total > maxFF || maxSeed < totalSeed ) {
             return 'red'
         } else {
             return 'yellow'
         }
     },
-    calendarGetMaxFF(n, date) {
-        if (n == 'Arjasari') {
-            if (date >= '2022-12-21' && date <= '2022-12-31') {
-                return 8
-            } else if (date >= '2023-01-01' && date <= '2023-01-31') {
-                return 5
-            } else return 4
+    calendarGetMaxSeed(n){
+      if(['Ciminyak', 'Cirasea', 'Soreang'].includes(n)){
+        return 40000
+      } else if(['Pati', 'Kebumen']){
+        return 25000
+      }
+    },
+    calendarGetMaxFF(n) {
+        if (n == 'Soreang') {
+            return 7
         } else if (n == 'Ciminyak') {
-            if (date >= '2022-12-21' && date <= '2022-12-31') {
-                return 8
-            } else return 4
-        } else if (n == 'Kebumen' || n == 'Pati') {
-            return 2
-        } else return 4
+            return 7
+        } else if (n == 'Kebumen') {
+            return 4
+        }else if (n == 'Pati' || n== 'Cirasea') {
+          return 7
+        }
+        else return 4
     },
     dateFormat(date, format) {
         return moment(date).format(format)
@@ -4086,21 +4132,25 @@ export default {
       } else return false
     },
     getNurseryAlocation(mu_no) {
-        const ciminyak   = ['023', '026', '027', '021' ]
-        const arjasari   = ['022', '024', '025', '020', '029']
+        const soreang = ['020', '021']
+        const ciminyak   = ['023', '026', '027']
+        const cirasea   = ['022', '024', '025', '029']
         const kebumen    = ['019']
         const pati       = ['015']
         
         let nursery = 'All'
+      console.log(mu_no)
 
         if (ciminyak.includes(mu_no)) {
             nursery = 'Ciminyak'
-        } else if (arjasari.includes(mu_no)) {
-            nursery = 'Arjasari'
+        } else if (cirasea.includes(mu_no)) {
+            nursery = 'Cirasea'
         } else if (kebumen.includes(mu_no)) {
             nursery = 'Kebumen'
         } else if (pati.includes(mu_no)) {
             nursery = 'Pati'
+        } else if(soreang.includes(mu_no)){
+            nursery = 'Soreang'
         }
         
         return nursery;
@@ -4269,6 +4319,7 @@ export default {
       await this.options.ff.items.forEach((ffVal) => {
         if (ffVal.ff_no == this.options.ff.model) {
           ff_mu_no = ffVal.mu_no
+          console.log(ffVal)
         } 
       })
 
@@ -4278,28 +4329,25 @@ export default {
       }
 
       // get ff nursery
-      let ff_nursery = this.getNurseryAlocation(ff_mu_no) 
+      let ff_nursery = this.getNurseryAlocation(ff_mu_no)
 
+      console.log(ff_nursery)
       let ffDatesFull = []
       let ffDatesAvailable = []
 
       const distributionDateRange = [
         {
-          month: '11',
-          year: '2023',
-          program_year: this.$store.state.programYear.model,
-          nursery: ff_nursery
-        },
-        {
           month: '12',
-          year: '2023',
+          year: '2022',
           program_year: this.$store.state.programYear.model,
+          /*program_year: '2022',*/
           nursery: ff_nursery
         },
         {
           month: '01',
-          year: '2024',
+          year: '2023',
           program_year: this.$store.state.programYear.model,
+          /*program_year: '2022',*/
           nursery: ff_nursery
         },
       ]
@@ -4317,7 +4365,8 @@ export default {
           const resData = res.data.data.result.datas || []
           resData.forEach((avData, avIndex) => {
             if (avData.nursery == ff_nursery) {
-              avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total, avData.date)
+              avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total,  avData.total_bibit_sostam)
+              console.log(avData);
               if (avData.color == 'yellow') {
                 ffDatesAvailable.push(this.dateFormat(avData.date, 'Y-MM-DD'))
               } else {

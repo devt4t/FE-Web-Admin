@@ -3162,7 +3162,7 @@ export default {
                         total_ff: evData.total,
                         total_bibit_sostam: evData.total_bibit_sostam,
                         total_bibit_penlub: evData.total_bibit_penlub,
-                        color: evData.nursery == 'Tidak Ada' ? 'blue' : this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date),
+                        color: evData.nursery == 'Tidak Ada' ? 'blue' : this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date, evData.total_bibit_sostam),
                         details: evData.details,
                     })
                 })
@@ -3989,18 +3989,28 @@ export default {
             })
         },
         // UTILITIES
-        calendarGetNurseryColor(n, total, date) {
+        calendarGetNurseryColor(n, total, date, totalSeed) {
             let maxFF = this.calendarGetMaxFF(n, date)
+            let maxSeed = this.calendarGetMaxSeed(n)
             
-            if (total === maxFF) {
+            if (total === maxFF  || maxSeed === totalSeed) {
                 return 'green'
-            } else if (total > maxFF) {
+            } else if (total > maxFF || maxSeed < totalSeed) {
                 return 'red'
             } else {
                 return 'yellow'
             }
         },
-        calendarGetMaxFF(n, date) {
+        calendarGetMaxSeed(n) {
+          if(['Ciminyak', 'Cirasea', 'Soreang'].includes(n)){
+            return 40000
+          } else if(['Pati', 'Kebumen']){
+            return 25000
+          }
+        },
+      calendarGetMaxFF(n, date) {
+          if(this.generalSettings.programYear == '2022'){
+
             if (n == 'Arjasari') {
                 if (date >= '2022-12-21' && date <= '2022-12-31') {
                     return 8
@@ -4013,7 +4023,19 @@ export default {
                 } else return 4
             } else if (n == 'Kebumen' || n == 'Pati') {
                 return 2
-            } else return 4
+            }else if (n == 'Cirasea') {
+              return 7
+            }
+            else return 4
+          }
+          else if (this.generalSettings.programYear == '2023'){
+            if(['Ciminyak', 'Cirasea', 'Soreang', 'Pati']){
+              return 7
+            }
+            else {
+              return 4
+            }
+          }
         },
         async confirmationOk(okText) {
             this.confirmation.show = false

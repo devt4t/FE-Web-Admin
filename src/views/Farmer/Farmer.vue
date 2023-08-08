@@ -1007,6 +1007,9 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Modal Export -->
+    <exportModal :programYear="programYear" :show="dialogExport" :defaultData="dataobject" @close="() => dialogExport = false"/>
     <!-- END: MODAL -->
 
     <v-data-table
@@ -1096,15 +1099,73 @@
           ></v-select>
           <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
           <!-- Search Input -->
+
+        </v-row>
+        <!--Row Total Data Petani-->
+        <v-row class="pb-4 px-2">
+          <v-col cols="12" lg="3" v-for="n in 4">
+            <div
+                data-aos="zoom-in">
+              <!--:data-aos-delay="totalDataLahan[`dataLahan${n}`].dataAosDelay +700"-->
+              <v-card class="rounded-xl shadow-lg">
+
+                <v-list-item three-line>
+                  <v-list-item-avatar
+                      data-aos="zoom-in"
+                      data-aos-delay="800"
+                      tile
+                      size="80"
+                      :color="itemsTotalPetani[`dataPetani${n}`].color"
+                      class="rounded-circle">
+                    <v-icon style="font-size: 35px !important" color="white">
+
+                      {{ itemsTotalPetani[`dataPetani${n}`].icon}}
+
+                    </v-icon>
+
+                  </v-list-item-avatar>
+                  <v-list-item-content class="px-3">
+                    <div class="mb-2  font-weight-bold">
+                      {{ itemsTotalPetani[`dataPetani${n}`].Title}}
+                    </div>
+                    <v-list-item-title class="text-h4 mb-1 font-weight-bold">
+                      <number
+                          v-if="load==false"
+                          :format="_utils.numberFormat"
+                          :from="0"
+                          :to="itemsTotalPetani[`dataPetani${n}`].Count"
+                          :duration="5"
+                          :delay="0"
+                          easing="Power.easeInOut"/>
+                      <v-progress-circular
+                          v-else
+                          indeterminate
+                          :color="itemsTotalPetani[`dataPetani${n}`].color"
+                          size="27">
+
+                      </v-progress-circular>
+                    </v-list-item-title>
+                    <div class="mb-4">
+                      {{itemsTotalPetani[`dataPetani${n}`].Subtitle}}
+                    </div>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-card>
+            </div>
+          </v-col>
+        </v-row>
+        <v-row class="pb-4 px-2">
+          <v-col cols="12" lg="6"></v-col>
+          <v-col cols="12" lg="6" class="d-flex">
           <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Pencarian"
-            hide-details
-            dense
-            outlined
-            rounded
-            class="mr-0 mr-lg-2 my-2 my-lg-0"
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Pencarian"
+              hide-details
+              dense
+              outlined
+              rounded
+              class="mr-0 mr-lg-2 my-2 my-lg-0"
           ></v-text-field>
           <!-- Add Button -->
           <!-- <v-btn
@@ -1120,14 +1181,15 @@
 
           <!-- Export Button -->
           <v-btn
-            rounded
-            :disabled="loadtable"
-            class="mb-2"
-            @click="exportData()"
-            color="blue white--text"
+              rounded
+              :disabled="loadtable"
+              class="mb-2"
+              @click="exportData()"
+              color="blue white--text"
           >
             <v-icon small>mdi-microsoft-excel</v-icon> Export
           </v-btn>
+          </v-col>
         </v-row>
       </template>
       <!-- /.Modals END -->
@@ -1235,11 +1297,17 @@ import axios from "axios";
 import moment from "moment";
 import Swal from 'sweetalert2'
 
+import exportModal from "./components/export.vue";
+
 export default {
   name: "Farmer",
-  authtoken: "",
+  components: {
+    exportModal
+  },
   data: () => ({
+    authtoken: "",
     showTesterData: false,
+    dialogExport: false,
     export_filter: {
       program_year: "",
       typegetdata: "",
@@ -1356,7 +1424,37 @@ export default {
       resultUpload: false,
       join_date: "",
     },
+    itemsTotalPetani:{
+      dataPetani1:{
+          Title : "Total Petani",
+          Count: "0",
+          icon: 'mdi-account',
+          color: 'orange',
+          Subtitle: "Orang"
+      },
+      dataPetani2:{
+        Title : "Total Petani Terverifikasi",
+        Count: "0",
+        icon: 'mdi-account-check',
+        color: 'green',
+        Subtitle: "Orang"
+      },
+      dataPetani3:{
+        Title : "Total Petani Belum Terverifikasi",
+        Count: "0",
+        icon: 'mdi-account-alert',
+        color: 'yellow',
+        Subtitle: "Orang"
+      },
+      dataPetani4:{
+        Title : "Total Petani Belum Lengkap",
+        Count: "0",
+        icon: 'mdi-account-remove',
+        color: 'red',
+        Subtitle: "Orang"
+      }
 
+    },
     itemsgender: [
       { text: "Laki-Laki", value: "male" },
       { text: "Perempuan", value: "female" },
@@ -1483,17 +1581,18 @@ export default {
 
   methods: {
     exportData() {
-      let params = new URLSearchParams({
-        program_year: this.export_filter.program_year,
-        typegetdata: this.export_filter.typegetdata,
-        ff: this.export_filter.ff.toString(),
-        mu: this.export_filter.mu,
-        ta: this.export_filter.ta,
-        village: this.export_filter.village,
-      });
-      window.open(
-        `${this.BaseUrlGet.slice(0, 38)}ExportFarmerAllAdmin?${params}`
-      );
+      // let params = new URLSearchParams({
+      //   program_year: this.export_filter.program_year,
+      //   typegetdata: this.export_filter.typegetdata,
+      //   ff: this.export_filter.ff.toString(),
+      //   mu: this.export_filter.mu,
+      //   ta: this.export_filter.ta,
+      //   village: this.export_filter.village,
+      // });
+      // window.open(
+      //   `${this.BaseUrlGet.slice(0, 38)}ExportFarmerAllAdmin?${params}`
+      // );
+      this.dialogExport = true
     },
     firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
@@ -1557,7 +1656,15 @@ export default {
           }
         );
         // console.log(response.data.data.result.data);
-        const resData = response.data.data.result.data;
+        let resData = response.data.data.result.data;
+        let totalsData = response.data.data.result;
+        this.itemsTotalPetani.dataPetani1.Count = totalsData.count;
+        this.itemsTotalPetani.dataPetani2.Count = totalsData.petani_sudah_verif;
+        this.itemsTotalPetani.dataPetani3.Count = totalsData.petani_belum_verif;
+        this.itemsTotalPetani.dataPetani4.Count = totalsData.petani_belum_lengkap;
+
+
+
         if (response.data.length != 0) {
           this.dataobject = resData;
           this.raw_data = resData;
