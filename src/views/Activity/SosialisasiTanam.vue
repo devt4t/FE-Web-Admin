@@ -160,6 +160,245 @@
         </v-card>
       </v-dialog>
 
+    <!--Modal Planting Perode-->
+<!--    <PickCoordinate :show="modals.pick_coordinate.show" :data="modals.pick_coordinate.data" @action="$v => modalActions($v)" />-->
+    <v-dialog v-model="dialogPeriodeTanam.show" max-width="999" content-class="rounded-xl" persistent scrollable>
+      <v-card rounded="xl" elevation="10">
+        <!-- Title -->
+        <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
+          <span class="">Tambah Data Periode Tanam</span>
+          <v-spacer></v-spacer>
+          <v-icon color="red" @click="dialogPeriodeTanam.show = false">mdi-close-circle</v-icon>
+        </v-card-title>
+
+        <v-card-text class="px-0 px-lg-5">
+          <!-- Loading -->
+          <v-overlay absolute :value="dialogPeriodeTanam.loading">
+            <div class="d-flex flex-column justify-center align-center">
+              <LottieAnimation
+                  ref="anim"
+                  :animationData="lottie.data.loading"
+                  :loop="true"
+                  style="height: 64px;"
+              />
+              <p class="mt-2 mb-0">Loading...
+                <v-progress-circular
+                    :size="17"
+                    :width="3"
+                    indeterminate
+                    color="white"
+                >
+                </v-progress-circular>
+              </p>
+            </div>
+          </v-overlay>
+          <!-- Content -->
+          <v-container>
+            <v-row>
+              <!-- Tanggal Distribusi -->
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                <p class="mb-1">Tanggal Distribusi</p>
+                <v-menu
+                    rounded="xl"
+                    transition="slide-x-transition"
+                    bottom
+                    right
+                    offset-x
+                    :close-on-content-click="false"
+                    v-model="datepicker2Show"
+                >
+                  <template v-slot:activator="{ on: menu, attrs }">
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on: tooltip }">
+                        <v-btn
+                            rounded
+                            large
+                            color="green lighten-1"
+                            v-bind="attrs"
+                            v-on="{...menu, ...tooltip}"
+                        >
+                          <v-icon left> mdi-calendar </v-icon>
+                          {{ dateFormat(dataToStore.distribution_time, 'dddd, DD MMMM Y') }}
+                        </v-btn>
+                      </template>
+                      <span>Klik untuk memunculkan datepicker</span>
+                    </v-tooltip>
+                  </template>
+                  <v-card class="rounded-xl pb-2">
+                    <v-overlay :value="datepicker2Loading">
+                      <div class="d-flex flex-column align-center justify-center">
+                        <v-progress-circular
+                            indeterminate
+                            color="white"
+                            size="64"
+                        ></v-progress-circular>
+                        <p class="mt-2 mb-0">Updating available dates...</p>
+                      </div>
+                    </v-overlay>
+                    <div class="d-flex flex-column align-center">
+                      <v-date-picker
+                          color="green lighten-1 rounded-xl"
+                          v-model="dataToStore.distribution_time"
+                          min="2023-12-01"
+                          max="2024-01-31"
+                          :allowed-dates="showingAvailableDates"
+                          :key="datepicker2Key"
+                      ></v-date-picker>
+                      <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                        <v-icon small class="mr-1">mdi-check-circle</v-icon>
+                        Set
+                      </v-btn>
+                    </div>
+                  </v-card>
+                </v-menu>
+              </v-col>
+
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col >
+                  <p class="mb-1"> Awal Pembuatan Lubang Tanam </p>
+                  <v-btn
+                      rounded
+                      large
+                      color="green lighten-1"
+                      disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.start_pemlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+
+                <!-- Tanggal Penilikan Lubang -->
+                <v-col>
+                  <p class="mb-1"> Batas Akhir Pembuatan Lubang Tanam</p>
+                  <v-btn
+                      rounded
+                      large
+                      color="green lighten-1"
+                      disabled
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.penlub_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+              </v-col>
+
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
+                <!-- Tanggal Realisasi Tanam -->
+                <v-col >
+                  <p class="mb-1">Tanggal Awal Realisasi Tanam</p>
+                  <v-btn
+                      rounded
+                      large
+                      disabled
+                      color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+                <v-col >
+                  <p class="mb-1">Batas Akhir Realisasi Tanam</p>
+                  <v-btn
+                      rounded
+                      large
+                      disabled
+                      color="green lighten-1"
+                  >
+                    <v-icon left> mdi-calendar </v-icon>
+                    {{ dateFormat(dataToStore.end_planting_time, 'dddd, DD MMMM Y') }}
+                  </v-btn>
+                </v-col>
+
+              </v-col>
+              <!-- Lokasi Distribusi -->
+              <v-col cols="12">
+                <div class="d-flex align-center my-0">
+                  <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-map-marker</v-icon>Pilih Lokasi Distribusi</p>
+                  <v-divider class="mx-2" color=""></v-divider>
+                </div>
+              </v-col>
+              <v-col cols="12" sm="12" md="12" lg="12" class="">
+                <v-text-field
+                    outlined
+                    rounded
+                    dense
+                    hide-details
+                    color="green"
+                    label="Koordinat Lokasi"
+                    v-model="dataToStore.distribution_coordinates"
+                >
+                  <template v-slot:append>
+                    <v-btn
+                        small
+                        rounded
+                        class="mb-2"
+                        color="green white--text"
+                        @click="() => showModalPickCoordinate({
+                                    model: dataToStore.distribution_coordinates
+                                })"
+                    >
+                      {{ dataToStore.distribution_coordinates ? 'Edit' : 'Ambil' }} Koordinat
+                    </v-btn>
+                  </template>
+                </v-text-field>
+              </v-col>
+              <!-- detail alamat -->
+              <v-col cols="12" sm="12" md="12" lg="12" class="">
+                <v-text-field
+                    color="green"
+                    dense
+                    outlined
+                    rounded
+                    placeholder="Balai Desa / Rumah Bp ... / dll"
+                    v-model="dataToStore.distribution_location"
+                    label="Detail Alamat Distribusi"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                ></v-text-field>
+              </v-col>
+              <!-- rekomendasi armada -->
+              <v-col cols="12" sm="12" md="12" lg="12" class="">
+                <v-text-field
+                    color="green"
+                    dense
+                    outlined
+                    rounded
+                    label="Rekomendasi Armada"
+                    placeholder="Truck / SS / yang lainnya"
+                    v-model="dataToStore.distribution_rec_armada"
+                    :rules="[(v) => !!v || 'Field is required']"
+                    hide-details
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions v-if="dialogPeriodeTanam.loading == false" class="elevation-15 rounded-xl">
+          <v-btn color="red px-5" rounded dark @click="dialogPeriodeTanam.show = false">
+            <v-icon class="mr-1">mdi-close-circle</v-icon>
+            Keluar
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green white--text"
+              rounded
+              @click="addDataPeriodeTanam"
+              :disabled="disabledCreatePeriodeTanamByFF"
+          >
+            <v-icon class="mr-1">mdi-check-circle</v-icon>
+            Buat Periode Tanam
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
+
+
+
+
       <!-- Modal Create Sostam Per~FF -->
       <PickCoordinate :show="modals.pick_coordinate.show" :data="modals.pick_coordinate.data" @action="$v => modalActions($v)" />
       <v-dialog v-model="dialogAdd.show" max-width="999" content-class="rounded-xl" persistent scrollable>
@@ -231,7 +470,7 @@
                 <!-- Tanggal Distribusi -->
                 <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                   <p class="mb-1">Tanggal Distribusi</p>
-                    <v-menu 
+                    <v-menu
                       rounded="xl"
                       transition="slide-x-transition"
                       bottom
@@ -270,8 +509,8 @@
                           </div>
                         </v-overlay>
                         <div class="d-flex flex-column align-center">
-                          <v-date-picker 
-                            color="green lighten-1 rounded-xl" 
+                          <v-date-picker
+                            color="green lighten-1 rounded-xl"
                             v-model="dataToStore.distribution_time"
                             min="2023-11-24"
                             max="2024-01-31"
@@ -330,7 +569,7 @@
                         v-model="dataToStore.distribution_coordinates"
                     >
                         <template v-slot:append>
-                            <v-btn 
+                            <v-btn
                                 small
                                 rounded
                                 class="mb-2"
@@ -390,6 +629,27 @@
                       v-model="dataToStore.training_material"
                   ></v-autocomplete>
                 </v-col>
+
+                <!--Upload Absen Sostam-->
+                <v-col cols="12">
+                  <div class="d-flex align-center my-0">
+                    <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-note-alert</v-icon>Upload Absen Sostam</p>
+                    <v-divider class="mx-2" color=""></v-divider>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      @change="val => {dataToStore.absensi_photo = val}"
+                      placeholder="Pilih Foto Absensi Sostam"
+                      prepend-icon="mdi-camera"
+                      show-size
+                      label="Pilih Foto Absensi Sostam..."
+                  ></v-file-input>
+                </v-col>
+
+
+
                 <!-- Table -->
                 <v-col cols="12" sm="12" md="12">
                   <v-row class="align-center mb-4">
@@ -515,9 +775,9 @@
               Keluar
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn 
-              color="green white--text" 
-              rounded 
+            <v-btn
+              color="green white--text"
+              rounded
               @click="createSostamByFF()"
               :disabled="disabledCreateSostamByFF"
             >
@@ -619,7 +879,7 @@
                   </v-col>
                   <v-col cols="12" lg="4" class="d-flex flex-column align-center">
                     <p class="mb-0"><strong>Penilikan Lubang</strong></p>
-                    <v-btn 
+                    <v-btn
                       rounded disabled class="black--text"
                     >
                       {{ dateFormat(datepicker1, 'ddd, DD MMMM Y') }}
@@ -630,7 +890,7 @@
                       <template v-slot:activator="{ on, attrs }">
                         <div class="d-flex flex-column align-center">
                           <p class="mb-0 mx-auto"><strong>Distribusi Bibit</strong></p>
-                          <v-btn 
+                          <v-btn
                             dark
                             rounded class=""
                             color="green"
@@ -665,7 +925,7 @@
                   </v-col>
                   <v-col cols="12" lg="4" class="d-flex flex-column align-center">
                     <p class="mb-0"><strong>Realisasi Tanam</strong></p>
-                    <v-btn 
+                    <v-btn
                       rounded disabled class="black--text"
                     >
                       {{ dateFormat(datepicker3, 'ddd, DD MMMM Y') }}
@@ -743,7 +1003,7 @@
                       <td><strong>{{ DetailTreesLahanTempData.tutupan_lahan || 0 }}</strong>%</td>
                     </tr>
                     <tr v-if="DetailTreesLahanTempData.planting_details && DetailTreesLahanTempData.land_area < 10000">
-                      <td>Max Bibit Kayu {{ getStatusTotalBibitInDetail(DetailTreesLahanTempData.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                      <td>Max Bibit Kayu {{ getTotalBibitInDetail(DetailTreesLahanTempData.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
                       <td>:</td>
                       <td><strong>{{ DetailTreesLahanTempData.max_seed_amount || getSeedCalculation(DetailTreesLahanTempData, 'total_max_trees') }}</strong> Bibit</td>
                     </tr>
@@ -795,11 +1055,11 @@
               Keluar</v-btn
             >
             <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text"
-              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 
-                || 
-                getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS') > Math.round(40/60 * getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU')) 
+              :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0
                 ||
-                (DetailTreesLahanTempData.land_area < 10000 && 
+                getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS') > Math.round(40/60 * getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU'))
+                ||
+                (DetailTreesLahanTempData.land_area < 10000 &&
                 DetailTreesLahanTempData.max_seed_amount < (getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') + getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS')))
               "
               >
@@ -1033,7 +1293,7 @@
                 <v-simple-table v-if="defaultItem.max_seed_amount && defaultItem.planting_details">
                   <tbody>
                     <tr>
-                      <td>Max Kayu 
+                      <td>Max Kayu
                         {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
                       <td>:</td>
                       <td><strong>{{ defaultItem.max_seed_amount }}</strong> Bibit</td>
@@ -1048,8 +1308,8 @@
                           :color="getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount)"
                           class="pr-2"
                         >
-                          {{ 
-                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +  
+                          {{
+                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +
                             getStatusTotalBibitInDetail(defaultItem.planting_details, 'MPTS')
                           }} Bibit
                           <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
@@ -1061,7 +1321,7 @@
                       <td>:</td>
                       <td>
                         <strong>
-                          {{ 
+                          {{
                             getStatusTotalBibitInDetail(defaultItem.planting_details, 'CROPS')
                           }}
                         </strong> Bibit
@@ -1130,11 +1390,11 @@
               rounded
               @click="verifSubmit()"
               :disabled="
-                getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0 
-                || 
-                getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0 
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0
                 ||
-                (defaultItem.land_area < 10000 
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0
+                ||
+                (defaultItem.land_area < 10000
                 &&
                 getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'red')"
               elevation="1"
@@ -1175,6 +1435,26 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+    <!--Modal Petani Susulan-->
+    <v-dialog v-model="dialogPetaniSusulan" max-width="500px" content-class="rounded-xl">
+      <v-card>
+        <v-card-title class="d-flex justify-center">
+          Apa Anda Yakin Melakukan Proses Ini?
+        </v-card-title>
+        <v-card-actions class="pb-4">
+          <v-spacer></v-spacer>
+          <v-btn color="red white--text" rounded small @click="closePetaniSusulan" class="px-4">
+            <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+            Keluar
+          </v-btn>
+          <v-btn color="green white--text" rounded small @click="approvePetaniSusulan" class="px-4">
+            <v-icon class="mr-1" small>mdi-save</v-icon>
+            Simpan
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
       <!-- Modal Delete -->
       <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
@@ -1278,7 +1558,14 @@
         showCurrentPage: true,
         showFirstLastPage: true,
       }"
+
     >
+    <!--CountDown-->
+      <template v-slot:item.countDown="{ item }">
+        <div :id="`counter-${item.id}`">
+          </div>
+          {{getCountDown(item)}}
+      </template>
 
       <template v-slot:top>
           <v-row class="pt-3 px-2">
@@ -1304,7 +1591,7 @@
                     <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
                   </v-btn>
                 </template>
-    
+
                 <v-list class="d-flex flex-column align-center">
                   <v-list-item>
                     <v-btn
@@ -1314,7 +1601,7 @@
                       @click="showFilterArea()"
                       color="green"
                     >
-                      <v-icon class="mx-2" small>mdi-map-legend</v-icon> 
+                      <v-icon class="mx-2" small>mdi-map-legend</v-icon>
                       by Area
                     </v-btn>
                   </v-list-item>
@@ -1327,7 +1614,7 @@
                       @click="showFilterEmployee()"
                       color="green"
                     >
-                      <v-icon class="mx-2" small>mdi-account-group</v-icon> 
+                      <v-icon class="mx-2" small>mdi-account-group</v-icon>
                       by Employee
                     </v-btn>
                   </v-list-item>
@@ -1373,7 +1660,7 @@
                     mdi-dots-vertical
                   </v-icon>
                 </template>
-      
+
                 <v-list class="d-flex flex-column align-center">
                   <v-list-item v-if="false">
                     <v-btn
@@ -1592,6 +1879,33 @@
                 Unverifikasi
               </v-btn>
             </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) && (User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR')">
+              <v-btn
+                  dark
+                  rounded
+                  @click="showPetaniSusulanModal(item)"
+                  color="green"
+                  block
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-plus-box-outline
+                </v-icon>
+                Petani Susulan
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) && (User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR')">
+              <v-btn
+                  dark
+                  rounded
+                  @click="showPlantingPeriode(item)"
+                  color="green"
+                  block>
+                <v-icon class="mr-1" small color="white">
+                  mdi-plus-outline
+                </v-icon>
+                Periode Tanam
+              </v-btn>
+            </v-list-item>
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
@@ -1606,9 +1920,10 @@
                 Hapus
               </v-btn>
             </v-list-item>
+
           </v-list>
         </v-menu>
-        
+
       </template>
     </v-data-table>
 
@@ -1634,7 +1949,9 @@
 import Swal from 'sweetalert2'
 import axios from "axios";
 import moment from "moment";
-import LottieAnimation from 'lottie-web-vue'
+import LottieAnimation from 'lottie-web-vue';
+
+
 
 import treeAnimation from '@/assets/lottie/tree.json'
 import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
@@ -1652,6 +1969,10 @@ export default {
       show: false,
       loading: false,
 
+    },
+    dialogPeriodeTanam: {
+      show: false,
+      loading: false,
     },
     dialogUnverif: false,
     program_year: '2022',
@@ -1687,6 +2008,7 @@ export default {
     menu3: "",
     dialog: false,
     dialogDelete: false,
+    dialogPetaniSusulan: false,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -1705,7 +2027,9 @@ export default {
       { text: "Nama Petani", value: "nama_petani"},
       { text: "No Lahan", align: "center", value: "no_lahan"},
       { text: "Luas Lahan", align: "center", value: "land_area"},
+      { text: "Koordinat", align: "center", value: "distribution_coordinates"},
       { text: "Pola Tanam", align: "center", value: "opsi_pola_tanam"},
+      { text: "Waktu Tunggu Validasi", align: "center", value: 'countDown', sortable: false},
       { text: "Total Bibit", align: "center", value: "trees_total", sortable: false},
       { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
       { text: "Status", align: "center", value: "validation"},
@@ -1755,9 +2079,19 @@ export default {
       validate_by: "",
       validate_name: "",
       validation: "",
+      status: "",
+      confirm_date: "",
       waitingapproval: false,
       max_seed_amount: '',
       tutupan_lahan: '',
+      countDown: '',
+      hour:'',
+      minute:'',
+      second:'',
+
+      hourCounter:12,
+      minuteCounter: 0,
+      secondCounter: 0,
 
       planting_details: [],
     },
@@ -1868,6 +2202,15 @@ export default {
       datas: {
         total: 0,
       },
+      timer : {
+        setHour: 12,
+        setMinute: 0,
+        setSecond: 0,
+
+        hourCount: 0,
+        minuteCount: 0,
+        secondCount: 0,
+      },
       pagination: {
         current_page: 1,
         per_page: 10,
@@ -1920,6 +2263,9 @@ export default {
       distribution_location: '',
       planting_time: '',
       penlub_time: '',
+      start_pemlub_time: '',
+
+      absensi_photo: '',
       lahans: []
     },
     training_material_items: [],
@@ -2003,6 +2349,7 @@ export default {
     'dataToStore.distribution_coordinates': {
       handler(val, oldVal) {
         if (val) {
+
         }
       }
     },
@@ -2012,6 +2359,7 @@ export default {
         this.dataToStore.planting_time = moment(newValue).add(7, 'days')
       }
     },
+
     'datepicker2': {
       handler(newValue) {
         this.datepicker1 = moment(newValue).subtract(14, 'days')
@@ -2039,6 +2387,10 @@ export default {
       if(this.table.farmer_attendance.length == 0) return  true
       return false
 
+    },
+    disabledCreatePeriodeTanamByFF(){
+      if(!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || !this.dataToStore.distribution_coordinates || !this.dataToStore.distribution_rec_armada) return true
+      return false
     }
   },
   mounted() {
@@ -2050,7 +2402,7 @@ export default {
   },
   destroyed() {
     this.$store.state.maintenanceOverlay = false
-    
+
     // reset loading overlay
     this.$store.state.loadingOverlay = false
     this.$store.state.loadingOverlayText = null
@@ -2076,7 +2428,7 @@ export default {
                 }
                 if (error.response.status === 500 || error.response.status === 400) {
                     let errMessage = error.response.data.message
-                    if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                    if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!'
                     Swal.fire({
                         title: 'Error!',
                         text: `${errMessage || error.message}`,
@@ -2180,7 +2532,7 @@ export default {
         this.table.pagination.length_page = data.last_page
         const pageOptions = []
         for (let index = 1; index <= data.last_page; index++) {
-          pageOptions.push(index)          
+          pageOptions.push(index)
         }
         this.table.pagination.page_options = pageOptions
       }).finally(() => {
@@ -2188,6 +2540,59 @@ export default {
         this.$store.state.loadingOverlayText = null
         this.loadtable = false
       })
+    },
+
+
+    getCountDown(item){
+
+      const hour = this.table.timer.setHour * 3600000;
+      const minute = this.table.timer.setMinute * 60000;
+      const second = this.table.timer.setSecond* 1000;
+
+      const setTime = hour + minute + second;
+      const startTime = moment(item.created_at);
+      const futureTime = startTime+setTime;
+      if(!item.distribution_coordinates ){
+        setInterval(function (){
+          const currentTime = Date.now();
+          const remainingTime = futureTime - currentTime;
+
+          var hrs = Math.floor((remainingTime/(1000*60*60))%24)
+          var mins = Math.floor((remainingTime/(1000*60))%60)
+          var secs = Math.floor((remainingTime/(1000))%60)
+
+          var resetHrs = '00'
+          var resrtMins = '00'
+          var resetSecs = '00'
+
+          if(remainingTime > 0){
+            document.getElementById(`counter-${item.id}`).innerHTML  = `${hrs} : ${mins} : ${secs}`
+
+          }
+          else if(remainingTime <0)
+          {
+            document.getElementById(`counter-${item.id}`).innerHTML  = `${resetHrs} : ${resrtMins} : ${resetSecs}`
+            if(!item.deletePeriod){
+              item.deletePeriod = true
+              axios.post(this.$store.getters.getApiUrl('deleteSosialisasiTanamPeriod'), {
+
+                form_no:item.form_no
+
+              },this.$store.state.apiConfig)
+            }
+
+          }
+          // console.log(secs)
+
+
+
+         /* if(remainingTime < 0){
+            console.log(remainingTime)
+          }*/
+        },1000)
+
+      }
+
     },
     getTableData() {
       return new Promise((resolve, reject) => {
@@ -2262,7 +2667,7 @@ export default {
           if (confirmSaving.isConfirmed) {
             this.dialogAdd.show = false
             this.$store.state.loadingOverlay = true
-    
+
             let dataToStore = {
               ff_no: this.options.ff.model,
               lahans: this.table.lahans.items,
@@ -2277,8 +2682,26 @@ export default {
               training_material: this.dataToStore.training_material,
               planting_time: this.dateFormat(this.dataToStore.planting_time, 'Y-MM-DD'),
               penlub_time: this.dateFormat(this.dataToStore.penlub_time, 'Y-MM-DD'),
+              start_pembuatan_lubang_tanam: this.dateFormat(this.dataToStore.start_pemlub_time, 'Y-MM-DD'),
+              end_planting_time: this.dateFormat(this.dataToStore.end_planting_time, 'Y-MM-DD'),
+              absent : '',
             }
-    
+            if(this.dataToStore.absensi_photo){
+              const namafile = this.options.ff.model + this.program_year + "_AbsenPetani";
+              console.log(this.dataToStore.absensi_photo)
+              const response = await axios.post(
+                  this.BaseUrl + "planting-socialization/upload.php",
+                  this._utils.generateFormData({
+                    nama: namafile,
+                    dir: 'planting-absent/',
+                    image: this.dataToStore.absensi_photo
+                  }),
+              );
+              console.log(response)
+
+              dataToStore.absent = response.data.data.new_name
+            }
+
             // await this.setUnavailableDistributionDates()
             const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
             if (isUnavailableDate == true) {
@@ -2303,7 +2726,7 @@ export default {
               this.options.ff.model = ''
               this.table.lahans.items = []
               this.dataToStore.distribution_location = ''
-              
+
               this.initialize()
               this.colorsnackbar = 'green'
               this.textsnackbar = `Berhasil menambah ${res.data.data.result.created['data']} data sostam`
@@ -2539,6 +2962,84 @@ export default {
           localStorage.removeItem("token");
           this.$router.push("/");
           this.load = false;
+        }
+      }
+    },
+
+    async verifPetaniSusulan(){
+      console.log('push petani susulan')
+      const datapost ={
+        form_no: this.defaultItem.form_no,
+
+      };
+      console.log(datapost);
+
+      try{
+        const response = await axios.post(
+            this.BaseUrlGet + "UpdatePetaniSusulan",
+            datapost,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+        );
+        console.log(response.data.data.result);
+        if (response.data.data.result == "success") {
+          this.dialogDetail = false;
+          this.dialogPetaniSusulan = false;
+          this.initialize();
+        } else {
+          this.dialogDetail = false;
+          this.dialogPetaniSusulan = false;
+        }
+      }catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.dialogDetail = false;
+          this.dialogPetaniSusulan = false;
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async pushDataPeriodeTanam(){
+      const datapost ={
+        form_no: this.defaultItem.form_no,
+        pembuatan_lubang_tanam:  this.dataToStore.penlub_time,
+        distribution_time: this.dataToStore.distribution_time,
+        distribution_location: this.dataToStore.distribution_location,
+        planting_time:  this.dataToStore.planting_time,
+        distribution_coordinates:  this.dataToStore.distribution_coordinates,
+        rec_armada:  this.dataToStore.distribution_rec_armada,
+        start_pembuatan_lubang_tanam:  this.dataToStore.start_pemlub_time,
+        end_planting_time: this.dataToStore.end_planting_time
+
+      };
+      console.log(datapost);
+      try{
+        const response = await axios.post(
+            this.BaseUrlGet + "createSosialisasiTanamPeriod",
+            datapost,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+        );
+        console.log(response.data.data.result);
+
+          this.dialogDetail = false;
+          this.dialogPeriodeTanam.show = false;
+          this.initialize();
+
+      }catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.dialogDetail = false;
+          this.dialogPeriodeTanam.show = false;
+          localStorage.removeItem("token");
+          this.$router.push("/");
         }
       }
     },
@@ -3048,7 +3549,7 @@ export default {
 
       this.DetailTreesLahanTemp = this.defaultItem.planting_details;
       this.DetailTreesLahanTempData = this.defaultItem
-      
+
       if (this.DetailTreesLahanTemp.length == 0) {
         this.snackbar = true;
         this.colorsnackbar = "red";
@@ -3144,6 +3645,28 @@ export default {
       this.defaultItem.form_no = item.form_no;
       this.dialogDelete = true;
     },
+    showPetaniSusulanModal(item){
+      console.log(item.form_no);
+      this.dialogPetaniSusulan = true;
+      this.defaultItem.form_no = item.form_no;
+    },
+    showPlantingPeriode(item){
+
+      console.log('coordinates: ' + this.dataToStore.distribution_coordinates)
+      console.log("show");
+      this.dialogPeriodeTanam.show = true;
+      this.defaultItem.form_no = item.form_no;
+
+      this.dataToStore.distribution_time = ''
+      this.dataToStore.start_pemlub_time = ''
+      this.dataToStore.penlub_time = ''
+      this.dataToStore.planting_time = ''
+      this.dataToStore.end_planting_time = ''
+      this.dataToStore.distribution_coordinates = ''
+      this.dataToStore.distribution_location = ''
+      this.dataToStore.distribution_rec_armada = ''
+
+    },
 
     showUnverifModal(item) {
       // console.log(item.form_no);
@@ -3193,6 +3716,15 @@ export default {
     },
     closeDelete() {
       this.dialogDelete = false;
+    },
+    closePetaniSusulan(){
+      this.dialogPetaniSusulan = false;
+    },
+    approvePetaniSusulan(){
+      this.verifPetaniSusulan();
+    },
+    addDataPeriodeTanam(){
+      this.pushDataPeriodeTanam();
     },
     closeDetailEditPohon() {
       this.dialogDetailPohonEdit = false;
