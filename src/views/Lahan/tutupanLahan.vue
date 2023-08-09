@@ -751,7 +751,6 @@ export default {
     showDetailTutupan(item){
       this.type = "Detail";
       this.dialogDetailTutupan =true;
-      console.log('start 1')
       this.getDetail(item)
 
     },
