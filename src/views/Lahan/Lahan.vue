@@ -4387,11 +4387,11 @@ export default {
       if(
           this.defaultItem.ff_no != null &&
           this.itemInTutupanLahan.lahan_no_tl != null&&
-          this.itemInTutupanLahan.tutupan_lahan_new != null &&
+          this.itemInTutupanLahan.tutupan_lahan_new != '' &&
           this.itemInTutupanLahan.mu_no_tl != null&&
           this.itemInTutupanLahan.land_area_tl != null&&
           this.itemInTutupanLahan.program_year_tl != null&&
-          this.itemInTutupanLahan.reason_tl != null&&
+          this.itemInTutupanLahan.reason_tl != ''&&
           this.itemInTutupanLahan.farmer_no_tl != null&&
           this.itemInTutupanLahan.tutupan_photo1 &&
           this.itemInTutupanLahan.tutupan_photo2 &&
@@ -4419,7 +4419,7 @@ export default {
         console.log('start 3')
 
         if (this.itemInTutupanLahan.tutupan_photo1){
-          const namafile = this.defaultItem.document_no + this.programYear + "_TutupanLahan1";
+          const namafile = this.itemInTutupanLahan.lahan_no_tl + this.programYear + "_TutupanLahan1";
           const response = await axios.post(
               this.BaseUrl + "land-coverage/upload.php?nama=",
               this._utils.generateFormData({
@@ -4429,7 +4429,7 @@ export default {
           );
           postTutupan.tutupan_photo1 = response.data.data.new_name
         }if (this.itemInTutupanLahan.tutupan_photo2){
-        const namafile = this.defaultItem.document_no + this.programYear + "_TutupanLahan2";
+        const namafile = this.defaultItem.lahan_no_tl + this.programYear + "_TutupanLahan2";
         const response = await axios.post(
             this.BaseUrl + "land-coverage/upload.php?nama=",
             this._utils.generateFormData({
@@ -4441,7 +4441,7 @@ export default {
         postTutupan.tutupan_photo2 = response.data.data.new_name
       }
         if (this.itemInTutupanLahan.tutupan_photo3){
-        const namafile = this.defaultItem.document_no + this.programYear + "_TutupanLahan3";
+        const namafile = this.defaultItem.lahan_no_tl + this.programYear + "_TutupanLahan3";
         const response = await axios.post(
             this.BaseUrl + "land-coverage/upload.php?nama=",
             this._utils.generateFormData({

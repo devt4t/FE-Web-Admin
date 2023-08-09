@@ -155,7 +155,7 @@
             <div class="ml-2">
               <h4><strong>Nama Petani</strong></h4>
               <h5>
-                {{ itemInTutupanLahan.farmer_no }}
+                {{ itemInTutupanLahan.farmer_name }}
               </h5>
             </div>
           </v-col>
@@ -294,7 +294,7 @@
                 <v-img
                     height="250"
                     width="250"
-                    v-bind:src="itemInTutupanLahan.tutupan_photo2"
+                    v-bind:src="itemInTutupanLahan.doc_tutupan_photo2"
                     class="my-1 mb-4"
                 ></v-img>
               </div>
@@ -305,7 +305,7 @@
                 <v-img
                     height="250"
                     width="250"
-                    v-bind:src="itemInTutupanLahan.tutupan_photo3"
+                    v-bind:src="itemInTutupanLahan.doc_tutupan_photo3"
                     class="my-1 mb-4"
                 ></v-img>
               </div>
@@ -358,7 +358,7 @@
 
             <v-col cols="12" sm="12" md="12">
               <v-text-field
-                  v-model="itemInTutupanLahan.farmer_no"
+                  v-model="itemInTutupanLahan.farmer_name"
                   label="Nama Petani"
                   outlined
                   clearable
@@ -558,23 +558,23 @@
           </v-btn>
         <!--showModal('detail', item)-->
           <v-btn
-              v-if="item.is_verified !=2 && item.is_verified != 1"
+              v-if="item.is_verified == 0"
               color="green white--text"
                  rounded
                  small
                  class="pl-1 mt-1 d-flex justify-start align-center"
-                 :disabled="!$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_group=='IT'"
+                 :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_group=='IT'"
                  @click="verifyTutupanFC(item)">
             <v-icon class="mr-1">mdi-check-bold</v-icon>
             Verifikasi FC
           </v-btn>
           <v-btn
-              v-if="item.is_verified != 2"
+              v-if="item.is_verified == 1"
               color="green darken-1 white--text"
                  rounded
                  small
                  class="pl-1 mt-1 d-flex justify-start align-center"
-                 :disabled="!$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
+                 :disabled="(item.is_verified == 1) && (!$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT')"
                  @click="verifyTutupanUM(item)">
             <v-icon class="mr-1">mdi-check-bold</v-icon>
             Verifikasi UM
@@ -609,6 +609,8 @@
 <script >
 import axios from 'axios'
 import Swal from "sweetalert2";
+import data from "bootstrap/js/src/dom/data";
+
 export default {
   data: () => ({
     dialog: false,
@@ -624,6 +626,8 @@ export default {
 
     itemInTutupanLahan:{
       ff_no: "",
+      fc_no: "",
+      farmer_name: "",
       farmer_no: "",
       land_area: "",
       tutupan_lahan_now: "",
@@ -645,6 +649,8 @@ export default {
 
       dbtutupanphoto1: "",
       doc_tutupan_photo1: "",
+      doc_tutupan_photo2: "",
+      doc_tutupan_photo3: "",
 
       loading: {
         show: false,
@@ -678,7 +684,7 @@ export default {
     ],
     table: {
       headers: [
-        {text: 'No Petani', value: 'farmer_no'},
+        {text: 'Nama Petani', value: 'farmer_name'},
         {text: 'No Lahan', value: 'lahan_no'},
         {text: 'Tutupan Lahan Sekarang', value: 'tutupan_lahan_now'},
         {text: 'Tutupan Lahan Baru', value: 'tutupan_lahan_new'},
@@ -734,6 +740,7 @@ export default {
     async getDetail(item){
       console.log(item)
       this.itemInTutupanLahan.farmer_no = item.farmer_no
+      this.itemInTutupanLahan.farmer_name = item.farmer_name
       this.itemInTutupanLahan.land_area = item.land_area
       this.itemInTutupanLahan.tutupan_lahan_now = item.tutupan_lahan_now
       this.itemInTutupanLahan.tutupan_lahan_new = item.tutupan_lahan_new
@@ -746,9 +753,26 @@ export default {
       this.itemInTutupanLahan.verified_by = item.verified_by
       this.itemInTutupanLahan.mu_no = item.mu_no
       this.itemInTutupanLahan.target_area = item.target_area
-
+      
+      if(item.tutupan_photo1 == '-'){
+        this.itemInTutupanLahan.doc_tutupan_photo1 = "/images/noimage2.png";
+      }else{
+        this.itemInTutupanLahan.doc_tutupan_photo1 = this.BaseUrl + item.tutupan_photo1;
+      }
+      if(item.tutupan_photo2 == '-'){
+        this.itemInTutupanLahan.doc_tutupan_photo2 = "/images/noimage2.png";
+      }else{
+        this.itemInTutupanLahan.doc_tutupan_photo2 = this.BaseUrl + item.tutupan_photo1;
+      }
+      if(item.tutupan_photo3 == '-'){
+        this.itemInTutupanLahan.doc_tutupan_photo3 = "/images/noimage2.png";
+      }else{
+        this.itemInTutupanLahan.doc_tutupan_photo3 = this.BaseUrl + item.tutupan_photo1;
+      }
+      
     },
     showDetailTutupan(item){
+      console.log('tutupan Lahan called')
       this.type = "Detail";
       this.dialogDetailTutupan =true;
       this.getDetail(item)
