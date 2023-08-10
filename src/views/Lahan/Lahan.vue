@@ -1230,6 +1230,7 @@
               @click="verif"
               outlined
               elevation="1"
+              
           >
             <v-icon left> mdi-checkbox-marked-circle-outline </v-icon>
             Verifikasi
@@ -2291,11 +2292,10 @@
                 rounded
                 @click="() => showUnverifModal(item)"
                 color="red white--text"
-                :disabled="
-                User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'
-              "
+                :disabled="User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'"
                 block
                 small
+                
             >
               <v-icon class="mr-1" small color="white">
                 mdi-undo
