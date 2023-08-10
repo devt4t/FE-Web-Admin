@@ -2116,6 +2116,7 @@ export default {
     dialog: false,
     dialogDelete: false,
     dialogPetaniSusulan: false,
+    dialogConfirmPetaniSusulan: false,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -3168,7 +3169,8 @@ export default {
           this.dialogPeriodeTanam.show = false;
           this.dialogConfirmPeriodeTanam = false;
           this.dialog =false;
-          //
+          this.dialogShowEdit = false;
+
           this.initialize();
 
       }catch (error) {
