@@ -205,7 +205,7 @@
                     right
                     offset-x
                     :close-on-content-click="false"
-                    v-model="datepicker2Show"
+                    v-model="pTDatePickerShow"
                 >
                   <template v-slot:activator="{ on: menu, attrs }">
                     <v-tooltip top>
@@ -244,7 +244,7 @@
                           :allowed-dates="showingAvailableDates"
                           :key="datepicker2Key"
                       ></v-date-picker>
-                      <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                      <v-btn color="green" class="white--text px-4" small rounded @click="pTDatePickerShow = false">
                         <v-icon small class="mr-1">mdi-check-circle</v-icon>
                         Set
                       </v-btn>
@@ -384,7 +384,7 @@
           <v-btn
               color="green white--text"
               rounded
-              @click="addDataPeriodeTanam"
+              @click="showConfirmationPeriodeTanam"
               :disabled="disabledCreatePeriodeTanamByFF"
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
@@ -393,6 +393,28 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="dialogConfirmPeriodeTanam" max-width="500px" content-class="rounded-xl">
+        <v-card>
+          <v-card-title class="d-flex justify-center"
+            >Apa Anda Yakin Untuk menambah Data Ini?</v-card-title
+          >
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn color="orange white--text" rounded small @click="dialogConfirmPeriodeTanam = false" class="px-4">
+              <v-icon class="mr-1" small>mdi-close-circle</v-icon>
+              Keluar
+            </v-btn
+            >
+            <v-btn color="green white--text" rounded small @click="addDataPeriodeTanam" class="px-4">
+              <v-icon class="mr-1" small>mdi-check-bold</v-icon>
+              OK
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
 
 
@@ -911,14 +933,6 @@
                       :rules="rules"
                     ></v-text-field>
                   </v-col>
-                  <v-col cols="12" lg="4" class="d-flex flex-column align-center">
-                    <p class="mb-0"><strong>Penilikan Lubang</strong></p>
-                    <v-btn
-                      rounded disabled class="black--text"
-                    >
-                      {{ dateFormat(datepicker1, 'ddd, DD MMMM Y') }}
-                    </v-btn>
-                  </v-col>
                   <v-col cols="12" lg="4">
                     <v-menu v-model="menu2" offset-x transition="slide-x-transition" rounded="xl">
                       <template v-slot:activator="{ on, attrs }">
@@ -957,14 +971,44 @@
                       ></v-date-picker>
                     </v-menu>
                   </v-col>
+
                   <v-col cols="12" lg="4" class="d-flex flex-column align-center">
-                    <p class="mb-0"><strong>Realisasi Tanam</strong></p>
+                  <v-col >
+                    <p class="mb-0"><strong>Awal Penilikan Lubang</strong></p>
                     <v-btn
                       rounded disabled class="black--text"
                     >
-                      {{ dateFormat(datepicker3, 'ddd, DD MMMM Y') }}
+                      {{ dateFormat(datepicker1) }}
                     </v-btn>
                   </v-col>
+                  <v-col>
+                    <p class="mb-0"><strong>Akhir Penilikan Lubang</strong></p>
+                    <v-btn
+                      rounded disabled class="black--text"
+                    >
+                      {{ dateFormat(datepicker4) }}
+                    </v-btn>
+                  </v-col>
+                </v-col>
+                <v-col cols="12" lg="4" class="d-flex flex-column align-center">
+                  <v-col>
+                    <p class="mb-0"><strong>Batas Awal Realisasi Tanam</strong></p>
+                    <v-btn
+                      rounded disabled class="black--text"
+                    >
+                      {{ dateFormat(datepicker3) }}
+                    </v-btn>
+                  </v-col>
+                  <v-col>
+                    <p class="mb-0"><strong>Batas Akhir Realisasi Tanam</strong></p>
+                    <v-btn
+                      rounded disabled class="black--text"
+                    >
+                      {{ dateFormat(datepicker5) }}
+                    </v-btn>
+                  </v-col>
+                </v-col>
+                  
                 </v-row>
               </v-container>
             </v-card-text>
@@ -992,12 +1036,17 @@
           >
           <v-card-actions class="pb-3">
             <v-spacer></v-spacer>
-            <v-btn rounded color="blue white--text" @click="showEditModal" class="px-5"
+            <v-row class="mx-2 my-0 mt-2 justify-center">
+              <v-col cols="14" lg="6">
+
+                <v-btn rounded color="blue white--text" @click="showEditModal" class="px-5 "
               :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
               >
               <v-icon class="mr-1">mdi-file-document-edit</v-icon>
               Edit Sosialisasi</v-btn
             >
+          </v-col>
+          </v-col><v-col cols="14" lg="6">
             <v-btn
               color="green white--text"
               rounded
@@ -1008,6 +1057,41 @@
               <v-icon class="mr-1">mdi-forest</v-icon>
               Jumlah Pohon</v-btn
             >
+          </v-col>
+            <v-col cols="14" lg="6">
+              <v-btn
+                  dark
+                  rounded
+                  @click="showPetaniSusulanModal"
+                  color="green"
+                  class="px-5"
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-plus-box-outline
+                </v-icon>
+                Petani Susulan
+              </v-btn>
+            </v-col>
+            <v-col cols="14" lg="6">
+              <v-btn
+                  dark
+                  rounded
+                  @click="showPlantingPeriode"
+                  color="green"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  mdi-plus-thick
+                </v-icon>
+                Periode Tanam
+              </v-btn>
+            </v-col>
+
+              
+              
+            </v-row>
+
+           
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
@@ -1098,7 +1182,7 @@
               "
               >
               <v-icon class="mr-1">mdi-check-circle</v-icon>
-              Save</v-btn
+              Simpan</v-btn
             >
             <v-spacer></v-spacer>
           </v-card-actions>
@@ -1913,33 +1997,6 @@
                 Unverifikasi
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) && (User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR')">
-              <v-btn
-                  dark
-                  rounded
-                  @click="showPetaniSusulanModal(item)"
-                  color="green"
-                  block
-              >
-                <v-icon class="mr-1" small color="white">
-                  mdi-plus-box-outline
-                </v-icon>
-                Petani Susulan
-              </v-btn>
-            </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) && (User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR')">
-              <v-btn
-                  dark
-                  rounded
-                  @click="showPlantingPeriode(item)"
-                  color="green"
-                  block>
-                <v-icon class="mr-1" small color="white">
-                  mdi-plus-outline
-                </v-icon>
-                Periode Tanam
-              </v-btn>
-            </v-list-item>
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
@@ -2010,16 +2067,31 @@ export default {
       loading: false,
     },
     dialogUnverif: false,
+    dialogConfirmPeriodeTanam: false,
     program_year: '2022',
     alerttoken: false,
     datepicker1: new Date().toISOString().substr(0, 10),
     datepicker2: new Date().toISOString().substr(0, 10),
+    datepicker3: new Date().toISOString().substr(0, 10),
+    datepicker4: new Date().toISOString().substr(0, 10),
+    datepicker5: new Date().toISOString().substr(0, 10),
     datepicker2Show: false,
     datepicker2Loading: false,
     datepicker2NotAvailable: [],
     datepicker2Key: 101,
     datepicker2Key2: 1011,
-    datepicker3: new Date().toISOString().substr(0, 10),
+    
+
+    // periode tanam date picker
+    pTDatePicker: new Date().toISOString().substr(0, 10),
+    pTDatePicker2: new Date().toISOString().substr(0, 10),
+    pTDatePicker3: new Date().toISOString().substr(0, 10),
+    pTDatePickerShow: false,
+    pTDatePickerLoading: false,
+    pTDatePickerNotAvailable: [],
+    pTDatePickerKey: 102,
+    pTDatePickerKey2: 1012,
+
     rules: [
       (value) => !!value || "Required.",
       (value) => (value && value.length >= 1) || "Min 1 characters",
@@ -2394,17 +2466,26 @@ export default {
     },
     'dataToStore.distribution_time': {
       handler(newValue) {
-        this.dataToStore.penlub_time = moment(newValue).subtract(21, 'days')
-        this.dataToStore.start_pemlub_time = moment(newValue).subtract(42, 'days')
-        this.dataToStore.planting_time = moment(newValue).add(1, 'days')
-        this.dataToStore.end_planting_time = moment(newValue).add(21, 'days')
+        this.dataToStore.penlub_time = moment(newValue).subtract(21, 'days').format('Y-MM-DD')
+        this.dataToStore.start_pemlub_time = moment(newValue).subtract(42, 'days').format('Y-MM-DD')
+        this.dataToStore.planting_time = moment(newValue).add(1, 'days').format('Y-MM-DD')
+        this.dataToStore.end_planting_time = moment(newValue).add(21, 'days').format('Y-MM-DD')
+
       }
     },
 
     'datepicker2': {
       handler(newValue) {
-        this.datepicker1 = moment(newValue).subtract(14, 'days')
-        this.datepicker3 = moment(newValue).add(7, 'days')
+        this.datepicker1 = moment(newValue).subtract(42, 'days').format('Y-MM-DD')
+        this.datepicker3 = moment(newValue).add(1, 'days').format('Y-MM-DD')
+        this.datepicker4 = moment(newValue).subtract(21, 'days').format('Y-MM-DD')
+        this.datepicker5 = moment(newValue).add(21, 'days').format('Y-MM-DD')
+      }
+    },
+    'pTDatePicker': {
+      handler(newValue) {
+        this.pTDatePicker2 = moment(newValue).subtract(14, 'days').format('Y-MM-DD')
+        this.pTDatePicker3 = moment(newValue).add(7, 'days').format('Y-MM-DD')
       }
     },
     'datepicker2Show': {
@@ -2414,6 +2495,14 @@ export default {
         }
       }
     },
+
+    'pTDatePickerShow' :{
+      async handler(newValue) {
+        if (newValue == true) {
+          // await this.setUnavailableDistributionDates()
+        }
+    }
+  },
     'menu2': {
       async handler(newValue) {
         if (newValue == true) {
@@ -2617,7 +2706,7 @@ export default {
               item.deletePeriod = true
               axios.post(this.$store.getters.getApiUrl('deleteSosialisasiTanamPeriod'), {
 
-                form_no:item.form_no
+                ff_no:item.ff_no
 
               },this.$store.state.apiConfig)
             }
@@ -2951,11 +3040,12 @@ export default {
     },
     async getDetail(item) {
       this.load = true;
+      console.log(item)
       try {
         const response = await axios.get(
           this.BaseUrlGet +
             "GetDetailSosisalisasiTanam?form_no=" +
-            item.form_no,
+            item.form_no ,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2990,6 +3080,7 @@ export default {
             this.datepicker1 = response.data.data.result.pembuatan_lubang_tanam;
             this.datepicker2 = response.data.data.result.distribution_time;
             this.datepicker3 = response.data.data.result.planting_time;
+            // this.datepicker4 = response.data.data.result
           }
 
           this.load = false;
@@ -3047,7 +3138,9 @@ export default {
     },
     async pushDataPeriodeTanam(){
       const datapost ={
+        program_year: this.program_year,
         form_no: this.defaultItem.form_no,
+        ff_no: this.defaultItem.ff_no,
         pembuatan_lubang_tanam:  this.dataToStore.penlub_time,
         distribution_time: this.dataToStore.distribution_time,
         distribution_location: this.dataToStore.distribution_location,
@@ -3073,6 +3166,9 @@ export default {
 
           this.dialogDetail = false;
           this.dialogPeriodeTanam.show = false;
+          this.dialogConfirmPeriodeTanam = false;
+          this.dialog =false;
+          //
           this.initialize();
 
       }catch (error) {
@@ -3259,6 +3355,7 @@ export default {
         pembuatan_lubang_tanam: this.datepicker1,
         distribution_time: this.datepicker2,
         planting_time: this.datepicker3,
+
         distribution_location: this.defaultItem.distribution_location,
       };
       console.log(datapost);
@@ -3298,10 +3395,13 @@ export default {
         farmer_no: this.defaultItem.farmer_no,
         no_lahan: this.defaultItem.no_lahan,
         program_year: this.defaultItem.planting_year,
-        pembuatan_lubang_tanam: this.datepicker1,
+        pembuatan_lubang_tanam: this.datepicker4,
         distribution_time: this.datepicker2,
         planting_time: this.datepicker3,
+        end_planting_time: this.datepicker5,
+        start_pembuatan_lubang_tanam: this.datepicker1,
         distribution_location: this.defaultItem.distribution_location,
+
       };
       console.log(datapost);
       this.dialogDetail = false;
@@ -3574,7 +3674,7 @@ export default {
     },
     async showEditModal() {
       this.type = "Edit";
-      console.log(this.itemTemp);
+      // console.log(this.itemTemp);
       this.dialog = true;
       this.dialogShowEdit = false;
       await this.getDetail(this.itemTemp);
@@ -3606,7 +3706,7 @@ export default {
       this.type = "Edit";
       this.itemTemp = item;
       // await this.getDetail(item);
-      console.log(this.itemTemp);
+      // console.log(this.itemTemp);
       this.dialogShowEdit = true;
     },
 
@@ -3687,17 +3787,18 @@ export default {
       this.defaultItem.form_no = item.form_no;
       this.dialogDelete = true;
     },
-    showPetaniSusulanModal(item){
-      console.log(item.form_no);
+    showPetaniSusulanModal(){
+      console.log(this.itemTemp);
       this.dialogPetaniSusulan = true;
-      this.defaultItem.form_no = item.form_no;
+      // this.dialogShowEdit = false;
+      this.defaultItem.form_no = this.itemTemp.form_no;
     },
-    showPlantingPeriode(item){
+    showPlantingPeriode(){
+      console.log(this.itemTemp)
 
-      console.log('coordinates: ' + this.dataToStore.distribution_coordinates)
-      console.log("show");
       this.dialogPeriodeTanam.show = true;
-      this.defaultItem.form_no = item.form_no;
+      this.defaultItem.form_no = this.itemTemp.form_no;
+      this.defaultItem.ff_no = this.itemTemp.ff_no;
 
       this.dataToStore.distribution_time = ''
       this.dataToStore.start_pemlub_time = ''
@@ -3748,6 +3849,10 @@ export default {
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
       }
+    },
+
+    showConfirmationPeriodeTanam(){
+      this.dialogConfirmPeriodeTanam = true;
     },
 
     deleteItemConfirm() {

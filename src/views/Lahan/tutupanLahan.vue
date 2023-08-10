@@ -772,7 +772,6 @@ export default {
       
     },
     showDetailTutupan(item){
-      console.log('tutupan Lahan called')
       this.type = "Detail";
       this.dialogDetailTutupan =true;
       this.getDetail(item)

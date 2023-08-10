@@ -1596,7 +1596,7 @@
         <v-card-title class="d-flex flex-column align-center justify-center">
           <v-icon color="orange" size="65">mdi-alert-circle</v-icon>
           <p class="mt-3 text-center">
-            Apa Anda Yakin Untuk UNVERIF Lahan Ini:<br />
+            Apa Anda Yakin Untuk UNVERIFIKASI Lahan Ini:<br />
             <b>{{ unverifDialog.lahan_no || "-" }}</b
             >?
           </p>
@@ -1643,13 +1643,12 @@
         </v-card-title>
         <v-card-text>
           <p class="mt-3 text-center">
-            This process also
-            <span class="red--text font-weight-bold">DELETE</span> all
-            activities data from land <b>{{ unverifDialog.lahan_no || "-" }}</b
+            Proses Ini Juga Akan
+            <span class="red--text font-weight-bold">MENGHAPUS</span> Semua Data Aktivitas Dari Lahan <b>{{ unverifDialog.lahan_no || "-" }}</b
           >!<br />
-            It's including "Sosialisasi Tanam", "Penilikan Lubang", "Material
-            Organik", "Distribusi", and "Realisasi Tanam / Monitoring 1".<br />
-            Still wanna process it??
+            Termasuk "Sosialisasi Tanam", "Penilikan Lubang", "Material
+            Organik", "Distribusi", dan "Realisasi Tanam / Monitoring 1".<br />
+            Tetap Ingin Melanjutkan Proses??
           </p>
         </v-card-text>
         <v-card-actions>
@@ -1660,7 +1659,7 @@
               @click="() => closeUnverification2()"
           >
             <v-icon class="mr-1">mdi-close-circle</v-icon>
-            No
+            Tidak
           </v-btn>
           <v-divider class="mx-2"></v-divider>
           <v-btn
@@ -1674,7 +1673,7 @@
             "
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
-            Sure!
+            Ya!
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1687,34 +1686,34 @@
       <v-card>
         <v-card-title class="d-flex flex-column align-center justify-center">
           <v-icon color="green" size="65">mdi-check-circle</v-icon>
-          <p>Unverif lahan data success!</p>
+          <p>Unverifikasi data lahan sukses!</p>
         </v-card-title>
         <v-card-text>
           <div v-if="unverifDialog.show3data.lahan" class="px-3">
             <p class="mb-0">Updated data:</p>
             <ol>
               <li v-if="unverifDialog.show3data.lahan.main">
-                Unverified data lahan.
+                Unverifikasi data lahan.
               </li>
             </ol>
             <p class="mb-0 pt-3">Deleted data:</p>
             <ol>
               <li v-if="unverifDialog.show3data.sostam.main">
-                Deleted data "Sosialisasi Tanam".
+                Hapus data "Sosialisasi Tanam".
               </li>
               <li v-if="unverifDialog.show3data.penlub.main">
-                Deleted data "Penilikan Lubang".
+                Hapus data "Penilikan Lubang".
               </li>
               <li
                   v-if="unverifDialog.show3data.material_organic.data.length > 0"
               >
-                Deleted data "Material Organik".
+                Hapus data "Material Organik".
               </li>
               <li v-if="unverifDialog.show3data.distribusi.main">
-                Deleted data "Distribusi".
+                Hapus data "Distribusi".
               </li>
               <li v-if="unverifDialog.show3data.mon1.main">
-                Deleted data "Realisasi Tanam / Monitoring 1".
+                Hapus data "Realisasi Tanam / Monitoring 1".
               </li>
             </ol>
           </div>
@@ -1733,7 +1732,7 @@
             "
           >
             <v-icon class="mr-1">mdi-close-circle</v-icon>
-            Okay
+            Ok
           </v-btn>
           <v-divider class="ml-2"></v-divider>
         </v-card-actions>
@@ -1750,8 +1749,7 @@
       <v-card>
         <v-card-title class="mb-1 headermodalstyle"
         ><span class=""
-        ><v-icon class="mr-1 white--text">mdi-land-fields</v-icon> Mass
-            Insert Data Lahan</span
+        ><v-icon class="mr-1 white--text">mdi-land-fields</v-icon> Masukan Data Lahan Secara Masal</span
         ></v-card-title
         >
         <v-card-text>
@@ -1773,7 +1771,7 @@
               @click="saveMassInsertDataLahan"
               rounded
               color="info white--text px-5"
-          ><v-icon>mdi-content-save</v-icon> SAVE</v-btn
+          ><v-icon>mdi-content-save</v-icon> SIMPAN</v-btn
           >
           <v-spacer></v-spacer>
         </v-card-actions>
@@ -1790,8 +1788,8 @@
       <v-card>
         <v-card-title class="mb-1 headermodalstyle"
         ><span class=""
-        ><v-icon class="mr-1 white--text">mdi-land-fields</v-icon> Mass
-            Update Data Coordinate</span
+        ><v-icon class="mr-1 white--text">mdi-land-fields</v-icon> 
+            Update Data Coordinate Secara Masal</span
         ></v-card-title
         >
         <v-card-text>
@@ -1815,7 +1813,7 @@
               @click="saveMassUpdateDataLahan"
               rounded
               color="info white--text px-5"
-          ><v-icon>mdi-content-save</v-icon> SAVE</v-btn
+          ><v-icon>mdi-content-save</v-icon> SIMPAN</v-btn
           >
           <v-spacer></v-spacer>
         </v-card-actions>
@@ -1965,8 +1963,8 @@
                   @click="insertDataLahan.show = true"
                   rounded
                   color="red white--text"
-              ><v-icon class="mr-1">mdi-land-fields</v-icon> Mass Insert Data
-                Lahan</v-btn
+              ><v-icon class="mr-1">mdi-land-fields</v-icon> Input Data
+                Lahan Secara Masal</v-btn
               >
               <v-btn
                   :disabled="
@@ -1976,8 +1974,8 @@
                   rounded
                   color="info white--text"
                   class="mt-2"
-              ><v-icon class="mr-1">mdi-map-check</v-icon> Mass Update Lat
-                Long</v-btn
+              ><v-icon class="mr-1">mdi-map-check</v-icon> Update Latitude dan
+                Longitude Secara Masal</v-btn
               >
             </v-card>
           </v-menu>
