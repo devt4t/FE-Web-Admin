@@ -127,7 +127,7 @@ export default {
     load: false,
     disablevalue: false,
     BaseUrlGet: "https://t4tapi.kolaborasikproject.com/api/",
-    // BaseUrlGet: "https://api.t4t-api.org/api/",
+    //BaseUrlGet: "https://api.t4t-api.org/api/",
     BaseUrlUpload: "https://t4tadmin.kolaborasikproject.com/upload.php",
     BaseUrl: "https://t4tadmin.kolaborasikproject.com/",
     snackbar: false,
