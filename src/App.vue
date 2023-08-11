@@ -74,6 +74,15 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
+        <v-list-item color="#71AF34" :to="'/report-data'" link 
+          :ripple="false"
+          v-if="$store.state.User.role_group == 'IT'"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-table-arrow-right</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title>Report Data</v-list-item-title>
+        </v-list-item>
       </v-list>
 
       <template v-slot:append>
@@ -310,7 +319,13 @@ export default {
         }
 
         var rslt = itemroutecheck.includes(this.$route.name);
-        var exceptionPage = ['SeedlingChangeRequest', 'GekoManual', 'ITPlayground', 'PermintaanTutupanLahan']
+        var exceptionPage = [
+          'SeedlingChangeRequest', 
+          'GekoManual', 
+          'ITPlayground', 
+          'PermintaanTutupanLahan', 
+          'ReportData'
+        ]
         const checkExceptionPage = exceptionPage.includes(this.$route.name)
         // console.log(this.$route.name);
         // console.log(itemroutecheck);

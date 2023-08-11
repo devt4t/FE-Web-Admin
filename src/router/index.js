@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+import exportReport from '@/views/Report/index'
+
 Vue.use(VueRouter)
 function lazyLoad(view){
   return() => import(`@/views/${view}.vue`)
@@ -197,6 +199,11 @@ const routes = [
     path: '/PermintaanTutupanLahan',
     name: 'PermintaanTutupanLahan',
     component: lazyLoad('Lahan/tutupanLahan')
+  },
+  {
+    path: '/report-data',
+    name: 'ReportData',
+    component: exportReport
   }
 ]
 
