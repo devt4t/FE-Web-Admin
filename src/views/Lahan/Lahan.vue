@@ -2256,6 +2256,7 @@
                 color="warning white--text"
                 block
                 small
+                disabled
             >
               <v-icon
                   class="mr-1"

@@ -1046,7 +1046,7 @@
               Edit Sosialisasi</v-btn
             >
           </v-col>
-          </v-col><v-col cols="14" lg="6">
+          <v-col cols="14" lg="6">
             <v-btn
               color="green white--text"
               rounded
