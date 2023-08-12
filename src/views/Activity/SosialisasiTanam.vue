@@ -1670,19 +1670,72 @@
       :server-items-length="table.datas.total"
       loading-text="Loading... Please wait"
       :page="table.pagination.current_page"
+      
       :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
         itemsPerPageOptions: [10, 25, 40, -1],
         showCurrentPage: true,
         showFirstLastPage: true,
       }"
+      
 
-    >
-    <!--CountDown-->
+      >
+      <!-- :show-expand="true"
+      single-expand
+      @item-expanded="checkExpandenItem" -->
+     <!--CountDown-->
       <template v-slot:item.countDown="{ item }">
         <div :id="`counter-${item.id}`">
           </div>
           {{getCountDown(item)}}
+      </template>
+
+      <!-- SOC Expantion Panel -->
+      <!-- <template v-slot:item.form_no="{item}">
+        <v-card>
+          <v-expansion-panels>
+          <v-expansion-panel >
+            <v-expansion-panel-header>
+              {{ item.form_no }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-data-table
+                data-aos="fade-up"
+                data-aos-delay="200"
+                class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+                :headers="headers"
+                :items="dataobject"
+                :loading="loadtable"
+                :options.sync="table.options"
+                :server-items-length="table.datas.total"
+                loading-text="Loading... Please wait"
+                :page="table.pagination.current_page"
+                :footer-props="{
+                  itemsPerPageText: 'Jumlah Data Per Halaman',
+                  itemsPerPageOptions: [10, 25, 40, -1],
+                  showCurrentPage: true,
+                  showFirstLastPage: true,
+                }"
+
+                >
+              </v-data-table>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+        </v-card>
+      </template>   -->
+
+      <!-- index column -->
+      <template v-slot:item.index="{item, index}">
+        <span v-if="loadtable == false">
+          {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
+        </span>
+        <v-progress-circular
+          v-else
+          indeterminate
+          color="green"
+          size="20"
+        ></v-progress-circular>
       </template>
 
       <template v-slot:top>
@@ -1907,18 +1960,7 @@
           </v-row>
       </template>
 
-      <!-- index column -->
-      <template v-slot:item.index="{item, index}">
-        <span v-if="loadtable == false">
-          {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
-        </span>
-        <v-progress-circular
-          v-else
-          indeterminate
-          color="green"
-          size="20"
-        ></v-progress-circular>
-      </template>
+      
 
       <!-- Luas Lahan kolom -->
       <template v-slot:item.land_area="{ item }">
@@ -1936,6 +1978,113 @@
           {{ item.validation == 1 ? 'Verifikasi FC' : (item.validation == 0 ? 'Belum Terverifikasi' : '-') }}
         </v-chip>
       </template>
+      <!-- Detail table -->
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+        <v-data-table
+        data-aos="fade-up"
+        data-aos-delay="200"
+        class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+        :headers="subMainTable.table.expandItem.subHeader"
+        :items="dataobject"
+        :loading="loadtable"
+        :options.sync="table.options"
+        :server-items-length="table.datas.total"
+        loading-text="Loading... Please wait"
+        :page="table.pagination.current_page"
+        
+        >
+        <!-- Action table -->
+      <template v-slot:item.subactions="{ item }">
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
+          </template>
+
+
+
+          <v-list class="d-flex flex-column align-stretch">
+            <v-list-item>
+              <v-btn
+                dark
+                class="w-100"
+                rounded
+                @click="showDetail(item)"
+                color="info"
+                block
+              >
+              <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                  mdi-information-outline
+              </v-icon>
+                Detail
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+              <v-btn
+                vi
+                dark
+                class="px-7"
+                rounded
+                @click="showEditDetailModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+                Edit
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation == 1) && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')">
+              <v-btn
+                rounded
+                @click="showUnverifModal(item)"
+                color="warning"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-undo
+              </v-icon>
+                Unverifikasi
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+              <v-btn
+                dark
+                rounded
+                @click="showDeleteModal(item)"
+                color="red"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-delete
+              </v-icon>
+                Hapus
+              </v-btn>
+            </v-list-item>
+
+          </v-list>
+        </v-menu>
+
+      </template>
+        
+      </v-data-table>
+        </td>
+
+        
+      
+
+      </template>
+
       <!-- Action table -->
       <template v-slot:item.actions="{ item }">
         <v-menu
@@ -1951,6 +2100,8 @@
               mdi-arrow-down-drop-circle
             </v-icon>
           </template>
+
+
 
           <v-list class="d-flex flex-column align-stretch">
             <v-list-item>
@@ -2066,6 +2217,7 @@ export default {
       show: false,
       loading: false,
     },
+
     dialogUnverif: false,
     dialogConfirmPeriodeTanam: false,
     program_year: '2022',
@@ -2128,6 +2280,27 @@ export default {
     formTitle: "Add Item",
     search: "",
     type: "",
+    subMainTable: {
+      table:{
+        expand: true,
+        expandItem: {
+          subHeader: [
+            { text: "No Form", value: "form_no"},
+            { text: "Field Facilitator", value: "nama_ff"},
+            { text: "Nama Petani", value: "nama_petani"},
+            { text: "No Lahan", align: "center", value: "no_lahan"},
+            { text: "Luas Lahan", align: "center", value: "land_area"},
+            { text: "Koordinat", align: "center", value: "distribution_coordinates"},
+            { text: "Pola Tanam", align: "center", value: "opsi_pola_tanam"},
+            { text: "Waktu Tunggu Validasi", align: "center", value: 'countDown', sortable: false},
+            { text: "Total Bibit", align: "center", value: "trees_total", sortable: false},
+            { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
+            { text: "Status", align: "center", value: "validation"},
+            { text: "Actions", align: "right", value: "subactions", sortable: false},
+            ]
+        }
+      }
+    },
     headers: [
       { text: "No", value: "index", sortable: false, align: 'center'},
       { text: "No Form", value: "form_no"},
@@ -2142,7 +2315,9 @@ export default {
       { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
       { text: "Status", align: "center", value: "validation"},
       { text: "Actions", align: "right", value: "actions", sortable: false},
+      // { text: "Detail Per-FF", align :"center", value: "data-table-expand", sortable: false}
     ],
+    
 
     headersdetail: [
       { text: "Nama Pohon", value: "tree_name", width: "20%" },
@@ -2569,6 +2744,9 @@ export default {
                 }
             }
         }
+    },
+    checkExpandenItem(item, value){
+      console.log(item, value)
     },
     async firstAccessPage() {
       this.program_year = this.$store.state.programYear.model
