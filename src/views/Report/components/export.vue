@@ -199,6 +199,16 @@ export default {
                         key: val.id
                     }
                 })
+                const showFields = config.fields.find(v => v.id === 'show_fields')
+                if (showFields) if (showFields.model.length > 0) {
+                    const fields = showFields.model.map(val => {
+                        return {
+                            label: val,
+                            key: val
+                        }
+                    })
+                    this.table.fields.push(...fields)
+                }
             } finally {
                 this.loading.show = false
                 this.loading.progress = 100

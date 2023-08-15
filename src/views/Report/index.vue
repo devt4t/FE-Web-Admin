@@ -3,7 +3,9 @@
         <exportModal :show="dialog.show" :config="dialog.config" @close="() => dialog.show = false"/>
         <v-container>
             <v-expansion-panels focusable
-                    data-aos="fade-up">
+                    data-aos="fade-up"
+                    v-model="expansion.model"
+            >
                 <v-expansion-panel
                     v-for="(conf, confIndex) in configs"
                     :key="`export-section-${confIndex}`"
@@ -41,6 +43,37 @@
                                         class="mt-2 mr-1"
                                     ></v-select>
                                 </div>
+                                <!-- multi-select -->
+                                <div v-if="filter.type == 'multi-select'">
+                                    <v-autocomplete
+                                        color="success"
+                                        item-color="success"
+                                        item-text="value"
+                                        item-value="value"
+                                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                        outlined
+                                        rounded
+                                        hide-details
+                                        chips
+                                        multiple
+                                        v-model="filter.model"
+                                        :items="filter.items"
+                                        :label="filter.label"
+                                    >
+                                        <template v-slot:selection="data">
+                                            <v-chip
+                                                v-bind="data.attrs"
+                                                :input-value="data.selected"
+                                                color="success"
+                                                close
+                                                @click="data.select"
+                                                @click:close="filter.model.splice(data.index, 1)"
+                                            >
+                                                {{ data.item }}
+                                            </v-chip>
+                                        </template>
+                                    </v-autocomplete>
+                                </div>
                             </v-col>
                         </v-row>
                         <div :key="`footer-export-${confIndex}-${disabledExportBtn(conf.fields)}`" class="mt-4">
@@ -64,6 +97,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import exportModal from "./components/export.vue";
 export default {
     name: 'OldGekoReportData',
@@ -507,6 +541,16 @@ export default {
                         filter: true
                     },
                     {
+                        col: 12,
+                        id: 'show_fields',
+                        icon: 'mdi-view-column',
+                        label: 'Tabel Kolom',
+                        type: 'multi-select',
+                        model: [],
+                        items: [],
+                        filter: true
+                    },
+                    {
                         id: 'mu_name',
                         icon: 'mdi-calendar',
                         label: 'MU',
@@ -579,114 +623,6 @@ export default {
                         list: true,
                     },
                     {
-                        id: 'polygon',
-                        icon: 'mdi-calendar',
-                        label: 'Polygon',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'document_no',
-                        icon: 'mdi-calendar',
-                        label: 'Nomor Dokumen',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'type_sppt',
-                        icon: 'mdi-calendar',
-                        label: 'Tipe Kepemilikan',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'jarak_lahan',
-                        icon: 'mdi-calendar',
-                        label: 'Jarak Lahan',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'access_to_lahan',
-                        icon: 'mdi-calendar',
-                        label: 'Akses Jalan',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'water_availability',
-                        icon: 'mdi-calendar',
-                        label: 'Ketersediaan Air',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'access_to_water_sources',
-                        icon: 'mdi-calendar',
-                        label: 'Akses Sumber Air',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'land_area',
-                        icon: 'mdi-calendar',
-                        label: 'Luas Lahan',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'planting_area',
-                        icon: 'mdi-calendar',
-                        label: 'Luas Area Tanam',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'lahan_type',
-                        icon: 'mdi-calendar',
-                        label: 'Tipe Lahan',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'opsi_pola_tanam',
-                        icon: 'mdi-calendar',
-                        label: 'Pola Tanam',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
-                        id: 'description',
-                        icon: 'mdi-calendar',
-                        label: 'Deskripsi',
-                        type: 'text',
-                        model: '',
-                        filter: false,
-                        list: true,
-                    },
-                    {
                         id: 'land_status',
                         icon: 'mdi-calendar',
                         label: 'Status Lahan',
@@ -701,8 +637,21 @@ export default {
         dialog: {
             show: false,
             config: {}
+        },
+        expansion: {
+            model: 0
         }
     }),
+
+    watch: {
+        'expansion.model': {
+            async handler(val) {
+                if (val == 3) {
+                    await this.getLahanFields()
+                }
+            }
+        }
+    },
 
     mounted() {
         
@@ -715,6 +664,29 @@ export default {
                 if (val.filter) if (!val.model) disabled = true
             })
             return disabled
+        },
+        async getLahanFields() {
+            try {
+                this.$store.state.loadingOverlay = true
+                this.$store.state.loadingOverlayText = 'Mengambil daftar kolom lahan...'
+                this.configs[3].fields.find(v => v.id == 'show_fields').items = await axios.get(
+                    this.$store.getters.getApiUrl(`TempGetLahanFields`),
+                    this.$store.state.apiConfig
+                ).then(res => {
+                    return res.data.map(val => {
+                        const existField = this.configs[3].fields.find(v => v.id == val.Field)
+                        if (!existField) {
+                            return val.Field
+                        }
+                    }).filter(v => v)
+                })
+            } catch (err) {
+                console.log(err)
+            } finally {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = 'Loading...'
+            }
+            
         },
         submitExport(config) {
             this.dialog.config = config
