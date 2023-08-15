@@ -11,6 +11,17 @@
                 <v-icon color="white lighten-1" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
+                <v-btn
+                    rounded
+                    outlined
+                    :disabled="loading.show"
+                    class="my-4"
+                    @click="startGettingData()"
+                    color="green"
+                    block
+                >
+                    <v-icon class="mr-1 ">mdi-play-circle</v-icon> Mulai Ambil Data
+                </v-btn>
                 <!-- Loading -->
                 <v-overlay absolute :value="loading.show" class="rounded-xl">
                     <div class="d-flex flex-column justify-center align-center">
@@ -166,7 +177,6 @@ export default {
         downloadExcel() {
             const table = document.getElementById("tableForExport");
             const wb = XLSX.utils.table_to_book(table);
-
             /* Export to file (start a download) */
             XLSX.writeFile(wb, `${this.download.title}.xlsx`);
         },
@@ -175,12 +185,13 @@ export default {
                 let loading = this.loading
                 const config = this.config
                 loading.show = true
-                loading.text = 'Preparing data...'
-                loading.progress = 0
+                loading.text = 'Menyiapkan kolom data...'
                 this.table.data = []
                 this.table.fields = []
 
                 this.download.title = config.title
+                if (config.fields.find(v => v.id === 'start_date') && config.fields.find(v => v.id === 'end_date'))this.download.title += ` ${config.fields.find(v => v.id === 'start_date').model} ~ ${config.fields.find(v => v.id === 'end_date').model}`
+
                 this.programYear = config.fields.find(v => v.id === 'program_year').model
                 this.table.fields = config.fields.filter(v => v.list).map(val => {
                     return {
@@ -188,20 +199,7 @@ export default {
                         key: val.id
                     }
                 })
-                if (config.section == 'farmer') {
-                    this.download.title += ` ${config.fields.find(v => v.id === 'start_date').model} ~ ${config.fields.find(v => v.id === 'end_date').model}`
-                    await this.getFarmerData()
-                } 
-                if (config.section == 'land-sppt') {
-                    await this.getLandSpptData()
-                }
-                if (config.section == 'land-seeds') {
-                    this.download.title += ` ${config.fields.find(v => v.id === 'start_date').model} ~ ${config.fields.find(v => v.id === 'end_date').model}`
-                    await this.getLandSeeds()
-                }
             } finally {
-                if (this.table.data.length > 0) this.downloadExcel()
-                await this.sendEmailToYongs()
                 this.loading.show = false
                 this.loading.progress = 100
             }
@@ -310,12 +308,77 @@ export default {
                 }
             }
         },
+        async getLandCompleteWithoutSeeds() {
+            let loading = this.loading
+            let store = this.$store
+            const config = this.config
+
+            const getLahanParams = new URLSearchParams({})
+            config.fields.filter(v => v.filter).map(val => {
+                getLahanParams.append(val.id, val.model)
+            }) 
+            getLahanParams.append('province', 'Jawa Barat')
+            const lahan_no = await axios.get(
+                store.getters.getApiUrl(`TempGetLahanAll?${getLahanParams}`),
+                store.state.apiConfig
+            ).then(response => {return response.data})
+            
+            if (lahan_no) {
+                if (lahan_no.length > 0) {
+                    const perCall = 200
+                    const totalLoop = Math.ceil(lahan_no.length/perCall)
+                    for (let index = 0; index < totalLoop; index++) {
+                        const lahanNoQueue = JSON.parse(JSON.stringify(lahan_no)).slice(index * perCall, (index + 1) * perCall)
+                        const url = store.getters.getApiUrl(`TempGetLahanCompleteWithoutSeeds`)
+                        const callData = await axios.post(url, {
+                            program_year: this.programYear,
+                            lahan_no: lahanNoQueue
+                        }, store.state.apiConfig)
+                        this.table.data.push(...callData.data)
+                        loading.progress = Math.round((100 / totalLoop) * (index + 1))
+                    }
+                }
+            }
+        },
         // reminder :)
-        async sendEmailToYongs() {
+        async sendEmailToYongs(message = null) {
+            const params = new URLSearchParams({
+                message: message || ''
+            })
             await axios.get(
-                this.$store.getters.getApiUrl(`EmailToYongs`),
+                this.$store.getters.getApiUrl(`EmailToYongs?${params}`),
                 this.$store.state.apiConfig
             )
+        },
+        async startGettingData() {
+            let loading = this.loading
+            const config = this.config
+            try {
+                loading.show = true
+                loading.text = 'Mengambil data...'
+                loading.progress = 0
+
+                if (config.section == 'farmer') {
+                    await this.getFarmerData()
+                } 
+                if (config.section == 'land-sppt') {
+                    await this.getLandSpptData()
+                }
+                if (config.section == 'land-seeds') {
+                    await this.getLandSeeds()
+                }
+                if (config.section == 'land-complete-without-seeds') {
+                    await this.getLandCompleteWithoutSeeds()
+                }
+                if (this.table.data.length > 0) {
+                    let emailMessage = config.title || ''
+                    await this.sendEmailToYongs(emailMessage)
+                    this.downloadExcel()
+                }
+            } finally {
+                this.loading.show = false
+                this.loading.progress = 100
+            }
         }
     },
 };
