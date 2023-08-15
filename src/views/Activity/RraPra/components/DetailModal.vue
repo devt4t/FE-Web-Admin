@@ -718,7 +718,7 @@ export default {
                             {text: 'Kapasitas (kg)', value: 'capacity'},
                             {text: 'Metode', value: 'method'},
                             {text: 'Periode Pemasaran', value: 'period'},
-                            { text: 'Detail', value: 'data-table-expand' },
+                            {text: 'Detail', value: 'data-table-expand' },
                         ]
                     }
                 },

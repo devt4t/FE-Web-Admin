@@ -1062,20 +1062,6 @@
               <v-btn
                   dark
                   rounded
-                  @click="showPetaniSusulanModal"
-                  color="green"
-                  class="px-5"
-              >
-                <v-icon class="mr-1" small color="white">
-                  mdi-plus-box-outline
-                </v-icon>
-                Petani Susulan
-              </v-btn>
-            </v-col>
-            <v-col cols="14" lg="6">
-              <v-btn
-                  dark
-                  rounded
                   @click="showPlantingPeriode"
                   color="green"
                   class="px-5"
@@ -1507,14 +1493,15 @@
               color="success"
               rounded
               @click="verifSubmit()"
-              :disabled="
-                getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0
+              :disabled="!defaultItem.signature || getStatusTotalBibitInDetail(defaultItem.planting_details, 'ALL') == 0
                 ||
                 getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') == 0
                 ||
                 (defaultItem.land_area < 10000
                 &&
-                getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'red')"
+                getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'red')
+                
+                "
               elevation="1"
               class="px-5 white--text"
             >
@@ -1670,6 +1657,9 @@
       :server-items-length="table.datas.total"
       loading-text="Loading... Please wait"
       :page="table.pagination.current_page"
+      :show-expand="true"
+      single-expand
+      @item-expanded="checkExpandenItem"
       :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
         itemsPerPageOptions: [10, 25, 40, -1],
@@ -1677,12 +1667,26 @@
         showFirstLastPage: true,
       }"
 
-    >
-    <!--CountDown-->
+      >
+     <!--CountDown-->
       <template v-slot:item.countDown="{ item }">
         <div :id="`counter-${item.id}`">
           </div>
           {{getCountDown(item)}}
+      </template>
+
+
+      <!-- index column -->
+      <template v-slot:item.index="{item, index}">
+        <span v-if="loadtable == false">
+          {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
+        </span>
+        <v-progress-circular
+          v-else
+          indeterminate
+          color="green"
+          size="20"
+        ></v-progress-circular>
       </template>
 
       <template v-slot:top>
@@ -1823,6 +1827,7 @@
             <v-col cols="12" lg="6">
               <!-- Page Table -->
               <v-select
+              v-if="false"
                 v-model="table.pagination.current_page"
                 :items="table.pagination.page_options"
                 hide-details
@@ -1907,18 +1912,7 @@
           </v-row>
       </template>
 
-      <!-- index column -->
-      <template v-slot:item.index="{item, index}">
-        <span v-if="loadtable == false">
-          {{ index + 1 + ((table.pagination.current_page - 1) * table.pagination.per_page) }}
-        </span>
-        <v-progress-circular
-          v-else
-          indeterminate
-          color="green"
-          size="20"
-        ></v-progress-circular>
-      </template>
+      
 
       <!-- Luas Lahan kolom -->
       <template v-slot:item.land_area="{ item }">
@@ -1931,11 +1925,155 @@
       </template>
 
       <!-- Color Status -->
+      
+
+      <!--Expand Detail table -->
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length" class="py-6">
+          <v-data-table
+          data-aos="fade-up"
+          data-aos-delay="200"
+          class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+          :headers="subMainTable.table.expandItem.subHeader"
+          :items="subMainTable.table.expandItem.subItem"
+          :loading="subMainTable.table.expandItem.loading"
+          :options.sync="subMainTable.table.expandItem.options"
+          :server-items-length="subMainTable.table.expandItem.total"
+          loading-text="Loading... Please wait"
+          :page="subMainTable.table.expandItem.current_page"
+          
+          :footer-props="{
+            itemsPerPageText: 'Jumlah Data Per Halaman',
+            itemsPerPageOptions: [10, 25, 40, -1],
+            showCurrentPage: true,
+            showFirstLastPage: true,
+          }"
+          >
+
+          <!-- index column -->
+          <template v-slot:item.subindex="{item, index}">
+            <span v-if="loadtable == false">
+              {{ index + 1 + ((subMainTable.table.expandItem.current_page - 1) * subMainTable.table.expandItem.per_page) }}
+            </span>
+            <v-progress-circular
+              v-else
+              indeterminate
+              color="green"
+              size="20"
+            >
+            </v-progress-circular>
+          </template>
+          <!-- Status -->
       <template v-slot:item.validation="{ item }">
         <v-chip :color="getColorStatus(item.validation)" dark>
           {{ item.validation == 1 ? 'Verifikasi FC' : (item.validation == 0 ? 'Belum Terverifikasi' : '-') }}
         </v-chip>
       </template>
+        <!-- Action table -->
+        <template v-slot:item.subactions="{ item }">
+          <v-menu
+            rounded="xl"
+            bottom
+            left
+            offset-y
+            transition="slide-y-transition"
+            :close-on-content-click="false"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon v-bind="attrs" v-on="on" color="dark">
+                mdi-arrow-down-drop-circle
+              </v-icon>
+            </template>
+
+
+
+            <v-list class="d-flex flex-column align-stretch">
+              <v-list-item>
+                <v-btn
+                  dark
+                  class="w-100"
+                  rounded
+                  @click="showDetail(item)"
+                  color="info"
+                  block
+                >
+                <v-icon class="mr-1" @click="showDetail(item)" small color="white">
+                    mdi-information-outline
+                </v-icon>
+                  Detail
+                </v-btn>
+              </v-list-item>
+              <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+                <v-btn
+                  vi
+                  dark
+                  class="px-7"
+                  rounded
+                  @click="showEditDetailModal(item)"
+                  color="warning"
+                  block
+                >
+                <v-icon class="mr-1" small color="white">
+                  mdi-pencil
+                </v-icon>
+                  Edit
+                </v-btn>
+              </v-list-item> -->
+              <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation == 1) && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')">
+                <v-btn
+                  rounded
+                  @click="showUnverifModal(item)"
+                  color="warning"
+                  block
+                >
+                <v-icon class="mr-1" small color="white">
+                  mdi-undo
+                </v-icon>
+                  Unverifikasi
+                </v-btn>
+              </v-list-item>
+            <v-list-item>
+              <v-btn
+                  dark
+                  rounded
+                  @click="verifPetaniSusulan(item)"
+                  color="green"
+                  class="px-5"
+              >
+                <v-icon class="mr-1" small color="white">
+                  mdi-plus-box-outline
+                </v-icon>
+                Petani Susulan
+              </v-btn>
+            </v-list-item>
+              <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+                <v-btn
+                  dark
+                  rounded
+                  @click="showDeleteModal(item)"
+                  color="red"
+                  block
+                  disabled
+                >
+                <v-icon class="mr-1" small color="white">
+                  mdi-delete
+                </v-icon>
+                  Hapus
+                </v-btn>
+              </v-list-item> -->
+
+            </v-list>
+          </v-menu>
+        </template>
+        
+      </v-data-table>
+        </td>
+
+        
+      
+
+      </template>
+
       <!-- Action table -->
       <template v-slot:item.actions="{ item }">
         <v-menu
@@ -1952,8 +2090,10 @@
             </v-icon>
           </template>
 
+
+
           <v-list class="d-flex flex-column align-stretch">
-            <v-list-item>
+            <!-- <v-list-item>
               <v-btn
                 dark
                 class="w-100"
@@ -1967,7 +2107,7 @@
               </v-icon>
                 Detail
               </v-btn>
-            </v-list-item>
+            </v-list-item> -->
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
               <v-btn
                 vi
@@ -1977,6 +2117,7 @@
                 @click="showEditDetailModal(item)"
                 color="warning"
                 block
+                
               >
               <v-icon class="mr-1" small color="white">
                 mdi-pencil
@@ -1997,20 +2138,21 @@
                 Unverifikasi
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
+            <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
                 rounded
                 @click="showDeleteModal(item)"
                 color="red"
                 block
+                disabled
               >
               <v-icon class="mr-1" small color="white">
                 mdi-delete
               </v-icon>
                 Hapus
               </v-btn>
-            </v-list-item>
+            </v-list-item> -->
 
           </v-list>
         </v-menu>
@@ -2066,6 +2208,7 @@ export default {
       show: false,
       loading: false,
     },
+
     dialogUnverif: false,
     dialogConfirmPeriodeTanam: false,
     program_year: '2022',
@@ -2128,21 +2271,45 @@ export default {
     formTitle: "Add Item",
     search: "",
     type: "",
+    subMainTable: {
+      table:{
+        expand: true,
+        expandItem: {
+          ff_no: null,
+          subItem: [],
+          options: {},
+          loading: false,
+          total: 0,
+          current_page: 1,
+          per_page: 10,
+          subHeader: [
+            { text: "No", value: "subindex", sortable: false, align: 'center'},
+            { text: "No Form", value: "form_no"},
+            { text: "Field Facilitator", value: "nama_ff"},
+            { text: "Nama Petani", value: "nama_petani"},
+            { text: "No Lahan", align: "center", value: "no_lahan"},
+            { text: "Luas Lahan", align: "center", value: "land_area"},
+            { text: "Koordinat", align: "center", value: "distribution_coordinates"},
+            { text: "Pola Tanam", align: "center", value: "opsi_pola_tanam"},
+            { text: "Waktu Tunggu Validasi", align: "center", value: 'countDown', sortable: false},
+            { text: "Total Bibit", align: "center", value: "trees_total", sortable: false},
+            { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
+            { text: "Status", align: "center", value: "validation"},
+            { text: "Actions", align: "right", value: "subactions", sortable: false},
+            ]
+        }
+      }
+    },
     headers: [
       { text: "No", value: "index", sortable: false, align: 'center'},
-      { text: "No Form", value: "form_no"},
-      { text: "Field Facilitator", value: "nama_ff"},
-      { text: "Nama Petani", value: "nama_petani"},
-      { text: "No Lahan", align: "center", value: "no_lahan"},
-      { text: "Luas Lahan", align: "center", value: "land_area"},
-      { text: "Koordinat", align: "center", value: "distribution_coordinates"},
-      { text: "Pola Tanam", align: "center", value: "opsi_pola_tanam"},
-      { text: "Waktu Tunggu Validasi", align: "center", value: 'countDown', sortable: false},
-      { text: "Total Bibit", align: "center", value: "trees_total", sortable: false},
-      { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
-      { text: "Status", align: "center", value: "validation"},
+      { text: "No Sosialisasi", value: "soc_no"},
+      { text: "Field Facilitator", value: "name"},
+      { text: "Tanggal Sosialisasi", value : "soc_date"},
+      { text: "Tahun Program", align: "center", value: "program_year", sortable: false},
       { text: "Actions", align: "right", value: "actions", sortable: false},
+      { text: "Detail Per-FF", align :"center", value: "data-table-expand", sortable: false}
     ],
+    
 
     headersdetail: [
       { text: "Nama Pohon", value: "tree_name", width: "20%" },
@@ -2197,6 +2364,7 @@ export default {
       hour:'',
       minute:'',
       second:'',
+      signature: '',
 
       hourCounter:12,
       minuteCounter: 0,
@@ -2250,6 +2418,7 @@ export default {
     dialogVerification: false,
     fc_no_global: "",
     typegetdata: "",
+    soc_no: "",
 
     filephotoarray: [],
 
@@ -2305,7 +2474,7 @@ export default {
             value: 1
           }]
         },
-        field: 'form_no',
+        field: 'soc_no',
         value: ''
       },
       datas: {
@@ -2455,6 +2624,16 @@ export default {
         }
       }
     },
+    'subMainTable.table.expandItem.options': {
+        handler(newValue) {
+          let {page, itemsPerPage, sortBy} = newValue
+          this.subMainTable.table.expandItem.current_page = page
+          this.subMainTable.table.expandItem.per_page = itemsPerPage
+          
+          this.getTableData(this.subMainTable.table.expandItem.ff_no)
+        },
+        deep: true
+    },
     program_year(newYear) {
       this.initialize()
     },
@@ -2570,6 +2749,12 @@ export default {
             }
         }
     },
+    async checkExpandenItem(item){
+      console.log(item)
+      this.soc_no = item.item.soc_no;
+      this.subMainTable.table.expandItem.ff_no = item.item.ff_no;
+      if(item.value )this.getTableData(item.item.ff_no);
+    },
     async firstAccessPage() {
       this.program_year = this.$store.state.programYear.model
       this.maps.accessToken = this.$store.state.maps.accessToken
@@ -2585,7 +2770,7 @@ export default {
 
       // get search options column
       this.table.search.options.column_loading = true
-      let searchColumns = ['form_no', 'nama_ff', 'nama_petani', 'no_lahan', 'land_area', 'opsi_pola_tanam', 'validation']
+      let searchColumns = ['soc_no', 'name', ]
       // set search column options
       await this.headers.forEach(val => {
         if (searchColumns.includes(val.value)) {
@@ -2656,7 +2841,7 @@ export default {
       this.loadtable = true;
       this.$store.state.loadingOverlayText = 'Getting sostam datas...'
       this.$store.state.loadingOverlay = true
-      await this.getTableData().then(data => {
+      await this.getSocTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total
         this.table.pagination.current_page = data.current_page
@@ -2725,21 +2910,68 @@ export default {
       }
 
     },
-    getTableData() {
+    getSocTableData(){
       return new Promise((resolve, reject) => {
-        const params = new URLSearchParams({
+        const socParams = new URLSearchParams({
           program_year: this.program_year,
           page: this.table.pagination.current_page,
           per_page: this.table.pagination.per_page,
+          typegetdata: this.typegetdata,
           sortBy: this.table.options.sortBy || '',
           sortDesc: this.table.options.sortDesc || '',
           search_column: this.table.search.field || '',
           search_value: this.table.search.value || '',
-          mu: this.valueMU,
-          ta: this.valueTA,
-          village: this.valueVillage,
-          typegetdata: this.typegetdata,
+          // mu: this.valueMU,
+          // ta: this.valueTA,
+          // village: this.valueVillage,
           ff: this.valueFFcode,
+        })
+        axios.get(this.BaseUrlGet + 
+         'GetSocAllAdmin?' + socParams,
+         {
+          headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+         }
+         ).then(res => {
+          if(typeof res.data.data.result !== 'undefined' ){
+            let items = res.data.data.result.data.data
+            const total = res.data.data.result.data.total
+            const current_page = res.data.data.result.data.current_page
+            const last_page = res.data.data.result.data.last_page
+            resolve({
+              items,
+              total,
+              current_page,
+              last_page
+            })
+          }else {
+            reject('Error')
+          }
+         })
+         .catch(err => {
+          this.sessionEnd(err)
+          reject(err)
+        })
+      })
+    },
+    getTableData(ff_no) {
+      return new Promise((resolve, reject) => {
+        this.subMainTable.table.expandItem.loading = true
+        const params = new URLSearchParams({
+          program_year: this.program_year,
+          page: this.subMainTable.table.expandItem.current_page,
+          per_page: this.subMainTable.table.expandItem.per_page,
+          // sortBy: this.table.options.sortBy || '',
+          // sortDesc: this.table.options.sortDesc || '',
+          // search_column: this.table.search.field || '',
+          // search_value: this.table.search.value || '',
+          // mu: this.valueMU,
+          // ta: this.valueTA,
+          // village: this.valueVillage,
+          typegetdata: 'all',
+          ff: ff_no,
+          // soc_no: this.soc_no,
         })
         axios.get(
           this.BaseUrlGet +
@@ -2755,12 +2987,18 @@ export default {
             const total = res.data.data.result.total
             const current_page = res.data.data.result.current_page
             const last_page = res.data.data.result.last_page
-            resolve({
-              items,
-              total,
-              current_page,
-              last_page
-            })
+            this.subMainTable.table.expandItem.subItem= items;
+            
+        this.subMainTable.table.expandItem.total = total
+        this.subMainTable.table.expandItem.current_page = current_page
+        this.subMainTable.table.expandItem.length_page = last_page
+        this.subMainTable.table.expandItem.loading = false
+            // resolve({
+            //   items,
+            //   total,
+            //   current_page,
+            //   last_page
+            // })
           } else {
             reject('Error')
           }
@@ -3100,13 +3338,23 @@ export default {
       }
     },
 
-    async verifPetaniSusulan(){
-      console.log('push petani susulan')
-      const datapost ={
-        form_no: this.defaultItem.form_no,
+    async verifPetaniSusulan(item){
+      
+      const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+              const datapost ={
+        form_no: item.form_no,
 
       };
-      console.log(datapost);
+      console.log(item);
 
       try{
         const response = await axios.post(
@@ -3136,6 +3384,8 @@ export default {
           this.$router.push("/");
         }
       }
+            }
+      
     },
     async pushDataPeriodeTanam(){
       const datapost ={
@@ -3206,7 +3456,7 @@ export default {
         if (response.data.data.result == "success") {
           this.dialogDetail = false;
           this.dialogVerification = false;
-          this.initialize();
+          this.getTableData(this.subMainTable.table.expandItem.ff_no);
         } else {
           this.dialogDetail = false;
           this.dialogVerification = false;
@@ -3390,6 +3640,51 @@ export default {
       }
     },
 
+    async updateDataByFarmers(){
+      const datapost = {
+        form_no: this.defaultItem.form_no,
+        ff_no: this.defaultItem.ff_no,
+        farmer_no: this.defaultItem.farmer_no,
+        no_lahan: this.defaultItem.no_lahan,
+        program_year: this.defaultItem.planting_year,
+        pembuatan_lubang_tanam: this.datepicker4,
+        distribution_time: this.datepicker2,
+        planting_time: this.datepicker3,
+        end_planting_time: this.datepicker5,
+        start_pembuatan_lubang_tanam: this.datepicker1,
+        distribution_location: this.defaultItem.distribution_location,
+      }
+      try {
+        this.$store.state.loadingOverlay = true
+        const response = await axios.post(
+          this.BaseUrlGet + "",
+          datapost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        console.log(response.data.data.result);
+        if (response.data.data.result == "success") {
+          this.$store.state.loadingOverlay = false
+          this.dialog = false;
+          this.snackbar = true;
+          this.colorsnackbar = "green";
+          this.textsnackbar = "Sukses mengubah data";
+          this.initialize();
+        } else {
+          this.dialog = true;
+          this.$store.state.loadingOverlay = false
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.dialog = true;
+          this.$store.state.loadingOverlay = false
+        }
+      }
+    },
     async updateData() {
       const datapost = {
         form_no: this.defaultItem.form_no,
@@ -3839,7 +4134,7 @@ export default {
           }
 
         )
-        await this.initialize();
+        await this.getTableData(this.subMainTable.table.expandItem.ff_no);
       } catch (error) {
         console.error(error.response);
         if (error.response.status == 401) {
@@ -3848,8 +4143,8 @@ export default {
           this.$router.push("/");
         }
       } finally {
-        this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = null
+        this.$store.state.loadingOverlay = false
       }
     },
 
@@ -3894,7 +4189,7 @@ export default {
     closeVerification() {
       this.dialogVerification = false;
     },
-
+    
     async save() {
       this.$refs.form.validate();
 
@@ -4493,12 +4788,35 @@ export default {
       this.datepicker2Key += 1
       this.datepicker2Key2 += 1
     },
-    sessionEnd(error) {
-        if (error.response.status == 401) {
-          this.alerttoken = true
-          localStorage.removeItem("token");
-          this.$router.push("/");
+    async sessionEnd(error) {
+      console.log(error)
+      if (error.response) {
+        if (error.response.status) {
+          if (error.response.status == 401) {
+            const confirm = await Swal.fire({
+              title: 'Session Ended!',
+              text: "Please login again.",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay'
+            })
+            if (confirm) {
+              localStorage.removeItem("token");
+              this.$router.push("/");
+            }
+          }
+          if (error.response.status === 500 || error.response.status === 400) {
+            let errMessage = error.response.data.message
+            if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!'
+            Swal.fire({
+              title: 'Error!',
+              text: `${errMessage || error.message}`,
+              icon: 'error',
+              confirmButtonColor: '#f44336',
+            })
+          }
         }
+      }
     },
   },
 };
