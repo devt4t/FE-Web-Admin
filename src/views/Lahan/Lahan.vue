@@ -3947,7 +3947,7 @@ export default {
         this.valueVillage = "";
         this.itemsVillage = [];
       }
-      this.initialize();
+      // this.initialize();
     },
     selectedTA(a) {
       console.log(a);
@@ -3961,7 +3961,7 @@ export default {
         this.valueVillage = "";
         this.itemsVillage = [];
       }
-      this.initialize();
+      // this.initialize();
     },
     selectedVillage(a) {
       console.log(a);
@@ -3969,7 +3969,7 @@ export default {
       if (a == null) {
         this.valueVillage = "";
       }
-      this.initialize();
+      // this.initialize();
     },
     selectedMUForm(a) {
       console.log(a);
@@ -4090,16 +4090,16 @@ export default {
       this.typegetdata = this.User.ff.value_data;
     },
     async searchbyarea() {
+      this.dialogFilterArea = false;
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
       await this.initialize();
-      await this.resetFilter();
-      this.dialogFilterArea = false;
+      // await this.resetFilter();
     },
     async searchbyemp() {
-      await this.initialize();
-      await this.resetFilter();
       this.dialogFilterEmp = false;
+      await this.initialize();
+      // await this.resetFilter();
     },
 
     showAddModal() {
