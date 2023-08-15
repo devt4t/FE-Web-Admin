@@ -1719,8 +1719,10 @@
                     v-bind="attrs"
                     v-on="on"
                     rounded
+                    disabled
                   >
-                    <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+                    <v-icon class="mr-1" small>mdi-filter-variant</v-icon> 
+                    Filter
                   </v-btn>
                 </template>
 
@@ -1874,6 +1876,7 @@
                 item-text="text"
                 hide-details
                 outlined
+                disabled
                 dense
                 :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 rounded
@@ -1891,6 +1894,7 @@
                 outlined
                 dense
                 rounded
+                disabled
                 label="Pencarian"
                 hide-details
                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
