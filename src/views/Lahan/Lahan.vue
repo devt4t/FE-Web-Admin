@@ -1892,12 +1892,25 @@
                   Filter Employee
                 </v-btn>
               </v-list-item>
-              <v-list-item>
+              <v-list-item v-if="RoleAccesFilterShow == true">
+                <v-btn
+                    block
+                    rounded
+                    dark
+                    class=" d-none d-md-block"
+                    @click="resetFilter()"
+                    color="green"
+                >
+                  <v-icon class="mx-1" small>mdi-refresh</v-icon>
+                  Reset Filter
+                </v-btn>
+              </v-list-item>
+              <!-- <v-list-item>
                 <v-switch
                     label="Data Tester"
                     v-model="showTesterData"
                 ></v-switch>
-              </v-list-item>
+              </v-list-item> -->
             </v-list>
           </v-menu>
           <!-- Program Year -->
@@ -4071,7 +4084,7 @@ export default {
       await this.resetFilter();
       this.dialogFilterEmp = true;
     },
-    resetFilter() {
+    async resetFilter() {
       this.valueMU = "";
       this.valueFC = "";
       this.valueVillage = "";
@@ -4088,6 +4101,10 @@ export default {
       this.selectFC = "";
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
+
+      console.log('test Reset Filter');
+
+       await this.initialize();
     },
     async searchbyarea() {
       this.dialogFilterArea = false;
