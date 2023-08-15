@@ -697,10 +697,20 @@
                   <v-file-input
                       accept="image/png, image/jpeg, image/bmp"
                       @change="val => {dataToStore.absensi_photo = val}"
-                      placeholder="Pilih Foto Absensi Sostam"
+                      placeholder="Pilih Foto Absensi Sostam 1"
                       prepend-icon="mdi-camera"
                       show-size
-                      label="Pilih Foto Absensi Sostam..."
+                      label="Pilih Foto Absensi Sostam 1..."
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      @change="val => {dataToStore.absensi_photo2 = val}"
+                      placeholder="Pilih Foto Absensi Sostam 2"
+                      prepend-icon="mdi-camera"
+                      show-size
+                      label="Pilih Foto Absensi Sostam 2..."
                   ></v-file-input>
                 </v-col>
 
@@ -2546,6 +2556,7 @@ export default {
 
 
       absensi_photo: '',
+      absensi_photo2: '',
 
       lahans: []
     },
@@ -3054,11 +3065,10 @@ export default {
               start_pembuatan_lubang_tanam: this.dateFormat(this.dataToStore.start_pemlub_time, 'Y-MM-DD'),
               end_planting_time: this.dateFormat(this.dataToStore.end_planting_time, 'Y-MM-DD'),
               absent : '',
-
+              absent2 : '',
             }
             if(this.dataToStore.absensi_photo){
-              const namafile = this.options.ff.model + this.program_year + "_AbsenPetani";
-              console.log(this.dataToStore.absensi_photo)
+              const namafile = this.options.ff.model + "_" + this.program_year + "_AbsenPetani";
               const response = await axios.post(
                   this.BaseUrl + "planting-socialization/upload.php",
                   this._utils.generateFormData({
@@ -3067,10 +3077,21 @@ export default {
                     image: this.dataToStore.absensi_photo
                   }),
               );
-              console.log(response)
-
               dataToStore.absent = response.data.data.new_name
             }
+            if(this.dataToStore.absensi_photo2){
+              const namafile = this.options.ff.model + "_" + this.program_year + "_AbsenPetani2";
+              const response = await axios.post(
+                  this.BaseUrl + "planting-socialization/upload.php",
+                  this._utils.generateFormData({
+                    nama: namafile,
+                    dir: 'planting-absent/',
+                    image: this.dataToStore.absensi_photo2
+                  }),
+              );
+              dataToStore.absent2 = response.data.data.new_name
+            }
+            console.log(dataToStore);
 
             // await this.setUnavailableDistributionDates()
             const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
