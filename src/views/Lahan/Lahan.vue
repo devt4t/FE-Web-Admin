@@ -1905,12 +1905,12 @@
                   Reset Filter
                 </v-btn>
               </v-list-item>
-              <v-list-item>
+              <!-- <v-list-item>
                 <v-switch
                     label="Data Tester"
                     v-model="showTesterData"
                 ></v-switch>
-              </v-list-item>
+              </v-list-item> -->
             </v-list>
           </v-menu>
           <!-- Program Year -->
