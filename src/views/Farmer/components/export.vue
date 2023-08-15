@@ -153,7 +153,6 @@ export default {
     computed: {
         showModal: {
             get: function () {
-                if (this.show) this.getTableData()
                 return this.show
             },
             set: function(newVal) {
@@ -163,6 +162,11 @@ export default {
     },
     
     watch: {
+        show: {
+            async handler(val) {
+                if (val) this.getTableData()
+            }
+        }
     },
 
     mounted() {
@@ -186,6 +190,7 @@ export default {
                 loading.progress = 0
                 let store = this.$store
                 const farmer_no = this.defaultData.map(val => {return val.kode})
+                console.log(this.defaultData)
                 const perCall = 100
                 const totalLoop = Math.ceil(farmer_no.length/perCall)
                 console.log(totalLoop)
