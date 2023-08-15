@@ -1734,7 +1734,7 @@
                       color="green"
                     >
                       <v-icon class="mx-2" small>mdi-map-legend</v-icon>
-                      by Area
+                      Berdasarkan Area
                     </v-btn>
                   </v-list-item>
                   <v-list-item>
@@ -1747,7 +1747,20 @@
                       color="green"
                     >
                       <v-icon class="mx-2" small>mdi-account-group</v-icon>
-                      by Employee
+                      Berdasarkan Karyawan
+                    </v-btn>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      v-if="RoleAccesFilterShow == true"
+                      rounded
+                      dark
+                      class="mx-3 mt-1"
+                      @click="resetFilter()"
+                      color="green"
+                    >
+                      <v-icon class="mx-2" small>mdi-refresh</v-icon>
+                      Reset Filter
                     </v-btn>
                   </v-list-item>
                 </v-list>
@@ -2932,9 +2945,9 @@ export default {
           sortDesc: this.table.options.sortDesc || '',
           search_column: this.table.search.field || '',
           search_value: this.table.search.value || '',
-          // mu: this.valueMU,
-          // ta: this.valueTA,
-          // village: this.valueVillage,
+          mu: this.valueMU,
+          ta: this.valueTA,
+          village: this.valueVillage,
           ff: this.valueFFcode,
         })
         axios.get(this.BaseUrlGet + 
@@ -3963,10 +3976,10 @@ export default {
       await this.resetFilter();
       this.dialogFilterEmp = true;
     },
-    resetFilter() {
-      // this.valueMU = "";
-      // this.valueTA = "";
-      // this.valueVillage = "";
+    async resetFilter() {
+      this.valueMU = "";
+      this.valueTA = "";
+      this.valueVillage = "";
       this.selectMU = "";
       this.selectTA = "";
       this.selectVillage = "";
@@ -3975,19 +3988,20 @@ export default {
       this.valueFC = "";
       this.selectUM = "";
       this.selectFC = "";
-      // this.valueFFcode = this.User.ff.ff;
+      this.valueFFcode = this.User.ff.ff;
       // this.typegetdata = this.User.ff.value_data;
+      await this.initialize();
     },
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
       await this.initialize();
-      await this.resetFilter();
+      // await this.resetFilter();
       this.dialogFilterArea = false;
     },
     async searchbyemp() {
       await this.initialize();
-      await this.resetFilter();
+      // await this.resetFilter();
       this.dialogFilterEmp = false;
     },
     async showEditModal() {

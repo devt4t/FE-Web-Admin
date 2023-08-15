@@ -1070,11 +1070,23 @@
                 </v-btn>
               </v-list-item>
               <v-list-item>
+                <v-btn
+                  :disabled="RoleAccesFilterShow == false"
+                  rounded
+                  class="mx-3 mt-1"
+                  @click="resetFilter()"
+                  color="green white--text"
+                >
+                  <v-icon class="mx-2" small>mdi-refresh</v-icon>
+                  Reset Filter
+                </v-btn>
+              </v-list-item>
+              <!-- <v-list-item>
                 <v-switch
                   label="Data Tester"
                   v-model="showTesterData"
                 ></v-switch>
-              </v-list-item>
+              </v-list-item> -->
             </v-list>
           </v-menu>
           <!-- Program Year -->
@@ -2577,7 +2589,7 @@ export default {
       await this.resetFilter();
       this.dialogFilterEmp = true;
     },
-    resetFilter() {
+    async resetFilter() {
       this.valueMU = "";
       this.valueTA = "";
       this.valueVillage = "";
@@ -2591,6 +2603,8 @@ export default {
       this.selectFC = "";
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
+
+      await this.initialize();
     },
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;
@@ -2601,7 +2615,7 @@ export default {
       this.export_filter.typegetdata = this.typegetdata;
       this.export_filter.ff = this.valueFFcode;
       await this.initialize();
-      await this.resetFilter();
+      // await this.resetFilter();
       this.dialogFilterArea = false;
     },
     async searchbyemp() {
@@ -2611,7 +2625,7 @@ export default {
       this.export_filter.typegetdata = "several";
       this.export_filter.ff = this.valueFFcode;
       await this.initialize();
-      await this.resetFilter();
+      // await this.resetFilter();
       this.dialogFilterEmp = false;
     },
 
