@@ -1267,9 +1267,19 @@
             </v-container>
             <!-- Content -->
             <v-container v-if="load == false">
+              <!-- Detail Map -->
+              <detailLokasiSostam
+                :section="'detailLokasiSostam'"
+                :long="defaultItem.long"
+                :lat="defaultItem.lat"
+                :ff_no="defaultItem.ff_no"
+              />
+
+
               <v-divider
                 style="background-color: black !important"
               ></v-divider>
+              <strong>Data Umum</strong>
               <v-simple-table>
                 <template v-slot:default>
                   <tbody>
@@ -1325,6 +1335,7 @@
               <v-divider
                 style="background-color: black !important"
               ></v-divider>
+              <strong>Keterangan Lahan</strong>
               <v-simple-table>
                 <template v-slot:default>
                   <tbody>
@@ -1364,12 +1375,32 @@
                         {{ defaultItem.tutupan_lahan }}%
                       </th>
                     </tr>
+                    
+                  </tbody>
+                </template>
+              </v-simple-table>
+              <v-divider
+                style="background-color: black !important"
+              ></v-divider>
+              <strong>Waktu dan Lokasi</strong>
+              <v-simple-table>
+                <template v-slot:default>
+                  <tbody>
+                    
                     <tr>
                       <th class="text-left" style="font-size: 14px">
                         Pembuatan Lubang Tanam
                       </th>
                       <td class="text-left" style="font-size: 14px">
-                        <strong>{{ gettanggal(defaultItem.pembuatan_lubang_tanam) }}</strong>
+                        <v-card 
+                          rounded 
+                          block
+                          darken
+                          color="orange" 
+                          class="align-center">
+                        <strong>{{ gettanggal(defaultItem.start_pembuatan_lubang_tanam) }} s/d 
+                          {{ gettanggal(defaultItem.pembuatan_lubang_tanam) }}</strong>
+                        </v-card>
                       </td>
                     </tr>
                     <tr>
@@ -1393,7 +1424,15 @@
                         Waktu Penanaman Petani
                       </th>
                       <td class="text-left" style="font-size: 14px">
-                        <strong>{{ gettanggal(defaultItem.planting_time) }}</strong>
+                        <v-card 
+                          rounded 
+                          block
+                          darken
+                          color="orange" 
+                          class="align-center">
+                          <strong>{{ gettanggal(defaultItem.planting_time) }} s/d 
+                          {{ gettanggal(defaultItem.end_planting_time) }}</strong>
+                        </v-card>
                       </td>
                     </tr>
                   </tbody>
@@ -2208,7 +2247,7 @@ import axios from "axios";
 import moment from "moment";
 import LottieAnimation from 'lottie-web-vue';
 
-
+import detailLokasiSostam from "@/views/Activity/components/sostam/DetailLahanSostamMap";
 
 import treeAnimation from '@/assets/lottie/tree.json'
 import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
@@ -2218,6 +2257,7 @@ import {Kebumen} from "@/store/scpecialEmails/nurseryTeam";
 export default {
   name: "SosialisasiTanam",
   components: {
+    detailLokasiSostam,
     LottieAnimation,
     PickCoordinate
   },
@@ -3016,10 +3056,10 @@ export default {
             const last_page = res.data.data.result.last_page
             this.subMainTable.table.expandItem.subItem= items;
             
-        this.subMainTable.table.expandItem.total = total
-        this.subMainTable.table.expandItem.current_page = current_page
-        this.subMainTable.table.expandItem.length_page = last_page
-        this.subMainTable.table.expandItem.loading = false
+            this.subMainTable.table.expandItem.total = total
+            this.subMainTable.table.expandItem.current_page = current_page
+            this.subMainTable.table.expandItem.length_page = last_page
+            this.subMainTable.table.expandItem.loading = false
             // resolve({
             //   items,
             //   total,
@@ -3347,6 +3387,12 @@ export default {
           this.defaultItem.waitingapproval = this.waitingapprovefunct(
             response.data.data.result.validation
           );
+          if(this.defaultItem.distribution_coordinates){
+            this.defaultItem.lat = this.defaultItem.distribution_coordinates.split(',')[0]
+          
+            this.defaultItem.long = this.defaultItem.distribution_coordinates.split(',')[1].replace(' ','')
+          }
+          
           if (this.type == "Detail") {
             this.load = false;
           } else {
