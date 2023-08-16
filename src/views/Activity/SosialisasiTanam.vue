@@ -2720,7 +2720,7 @@ export default {
   },
   computed: {
     disabledCreateSostamByFF() {
-      if (!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || this.table.lahans.items.length == 0 || !this.dataToStore.distribution_coordinates || !this.dataToStore.distribution_rec_armada) return true
+      if (!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || this.table.lahans.items.length == 0 || !this.dataToStore.distribution_rec_armada || !this.dataToStore.absensi_photo) return true
       if(this.table.farmer_attendance.length == 0) return  true
       return false
 
