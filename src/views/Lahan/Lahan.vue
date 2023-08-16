@@ -1861,7 +1861,8 @@
                   v-on="on"
                   rounded
               >
-                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Filter
+                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> 
+                Filter
               </v-btn>
             </template>
 
@@ -1897,7 +1898,7 @@
                     block
                     rounded
                     dark
-                    class=" d-none d-md-block"
+                    class=""
                     @click="resetFilter()"
                     color="green"
                 >

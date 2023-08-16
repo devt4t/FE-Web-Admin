@@ -172,38 +172,50 @@ export default {
         email: this.email,
         password: this.password,
       };
-      // console.log(datapost);
+      console.log(datapost);
       // console.log(this.BaseUrlGet);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
           this.BaseUrlGet + "LoginWeb",
           datapost
+          
         );
-        console.log(response.data.data.status.code);
+        if(datapost.program_year){
+            console.log(response.data.data.status.code);
+          this.snackbar = true;
+          if (response.data.data.status.code == 200) {
+            this.load = false;
+            this.disablevalue = false;
+            this.colorsnackbar = "green";
+            this.text = "Sukses Login";
+            // console.log(response.data.data.result.access_token);
+            localStorage.setItem("token", response.data.data.result.access_token);
+            localStorage.setItem(
+              "User",
+              JSON.stringify(response.data.data.result.User)
+            );
+            localStorage.setItem("BaseUrlGet", this.BaseUrlGet);
+            localStorage.setItem("BaseUrlUpload", this.BaseUrlUpload);
+            localStorage.setItem("BaseUrl", this.BaseUrl);
+            location.reload();
+            this.$router.push("/Dashboard");
+          } else {
+            this.load = false;
+            this.disablevalue = false;
+            this.colorsnackbar = "red";
+            this.text = "Gagal Login, username dan password salah";
+          }
+        }else{
+          this.load = false;
+        this.disablevalue = false;
+        console.error(error.response);
         this.snackbar = true;
-        if (response.data.data.status.code == 200) {
-          this.load = false;
-          this.disablevalue = false;
-          this.colorsnackbar = "green";
-          this.text = "Sukses Login";
-          // console.log(response.data.data.result.access_token);
-          localStorage.setItem("token", response.data.data.result.access_token);
-          localStorage.setItem(
-            "User",
-            JSON.stringify(response.data.data.result.User)
-          );
-          localStorage.setItem("BaseUrlGet", this.BaseUrlGet);
-          localStorage.setItem("BaseUrlUpload", this.BaseUrlUpload);
-          localStorage.setItem("BaseUrl", this.BaseUrl);
-          location.reload();
-          this.$router.push("/Dashboard");
-        } else {
-          this.load = false;
-          this.disablevalue = false;
-          this.colorsnackbar = "red";
-          this.text = "Gagal Login, username dan password salah";
+        this.colorsnackbar = "red";
+        this.text = "Tahun Program Tidak Boleh Kosong";
         }
+
+        
       } catch (error) {
         this.load = false;
         this.disablevalue = false;
