@@ -204,7 +204,7 @@ export default {
             this.load = false;
             this.disablevalue = false;
             this.colorsnackbar = "red";
-            this.text = "Gagal Login, username dan password salah";
+            this.text = "Gagal Login, email dan/atau password salah atau program year masih kosong!";
           }
         }else{
           this.load = false;
@@ -212,7 +212,7 @@ export default {
         console.error(error.response);
         this.snackbar = true;
         this.colorsnackbar = "red";
-        this.text = "Tahun Program Tidak Boleh Kosong";
+        this.text = "Gagal Login, email dan/atau password salah atau program year masih kosong!";
         }
 
         
@@ -222,7 +222,7 @@ export default {
         console.error(error.response);
         this.snackbar = true;
         this.colorsnackbar = "red";
-        this.text = "Gagal Login, username dan password salah";
+        this.text = "Gagal Login, email dan/atau password salah atau program year masih kosong!";
       }
     },
 
