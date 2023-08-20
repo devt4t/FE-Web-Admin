@@ -1230,7 +1230,7 @@
               @click="verif"
               outlined
               elevation="1"
-              
+              disabled
           >
             <v-icon left> mdi-checkbox-marked-circle-outline </v-icon>
             Verifikasi
@@ -2270,7 +2270,7 @@
                 color="warning white--text"
                 block
                 small
-                
+                disabled
             >
               <v-icon
                   class="mr-1"
@@ -2290,7 +2290,7 @@
                 color="success white--text"
                 block
                 small
-                
+                disabled
             >
               <v-icon
                   class="mr-1"
@@ -2311,7 +2311,7 @@
                 :disabled="User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'"
                 block
                 small
-                
+                disabled
             >
               <v-icon class="mr-1" small color="white">
                 mdi-undo
