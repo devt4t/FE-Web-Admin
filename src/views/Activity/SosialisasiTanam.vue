@@ -896,7 +896,7 @@
                       :rules="[(v) => !!v || 'Field is required']"
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" sm="12" md="12">
+                  <!-- <v-col cols="12" sm="12" md="12">
                     <v-select
                       disabled
                       rounded
@@ -909,8 +909,8 @@
                       clearable
                       :rules="[(v) => !!v || 'Field is required']"
                     ></v-select>
-                  </v-col>
-                  <v-col cols="12" sm="12" md="12">
+                  </v-col> -->
+                  <!-- <v-col cols="12" sm="12" md="12">
                     <v-text-field
                       disabled
                       rounded
@@ -919,7 +919,7 @@
                       outlined
                       :rules="[(v) => !!v || 'Field is required']"
                     ></v-text-field>
-                  </v-col>
+                  </v-col> -->
                   <v-col cols="12" sm="6" md="6">
                     <v-select
                       disabled
@@ -934,7 +934,9 @@
                       :rules="[(v) => !!v || 'Field is required']"
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6" md="6">
+                  
+
+                  <!-- <v-col cols="12" sm="6" md="6">
                     <v-text-field
                       rounded
                       v-model="defaultItem.distribution_location"
@@ -942,7 +944,35 @@
                       outlined
                       :rules="rules"
                     ></v-text-field>
-                  </v-col>
+                  </v-col> -->
+                  <!-- Update Photo Section -->
+                  <v-col cols="12">
+                  <div class="d-flex align-center my-0">
+                    <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-note-alert</v-icon>Upload Absen Sostam</p>
+                    <v-divider class="mx-2" color=""></v-divider>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      @change="val => {dataToStore.absensi_photo = val}"
+                      placeholder="Pilih Foto Absensi Sostam 1"
+                      prepend-icon="mdi-camera"
+                      show-size
+                      label="Pilih Foto Absensi Sostam 1..."
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      @change="val => {dataToStore.absensi_photo2 = val}"
+                      placeholder="Pilih Foto Absensi Sostam 2"
+                      prepend-icon="mdi-camera"
+                      show-size
+                      label="Pilih Foto Absensi Sostam 2..."
+                  ></v-file-input>
+                </v-col>
+
                   <v-col cols="12" lg="4">
                     <v-menu v-model="menu2" offset-x transition="slide-x-transition" rounded="xl">
                       <template v-slot:activator="{ on, attrs }">
@@ -1029,7 +1059,7 @@
                 <v-icon class="mr-1">mdi-close-circle</v-icon>
                 Keluar
               </v-btn>
-              <v-btn color="green" dark rounded class="px-5" @click="save">
+              <v-btn color="green" dark rounded class="px-5" @click="updateData">
                 <v-icon class="mr-1">mdi-check-circle</v-icon>
                 Save
               </v-btn>
@@ -1037,6 +1067,87 @@
           </v-form>
         </v-card>
       </v-dialog>
+
+      <!-- Modal Edit Absensi -->
+      <v-dialog v-model="dialogShowEditAbsensi" max-width="800px" content-class="rounded-xl">
+        <v-card rounded="xl">
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title class="mb-1 headermodalstyle rounded-xl">
+              <span class="">Edit Foto Absensi</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container
+                v-if="load == true"
+                fluid
+                fill-height
+                style="background-color: rgba(255, 255, 255, 0.5)"
+              >
+                <v-layout justify-center align-center>
+                  <v-progress-circular
+                    :size="80"
+                    :width="10"
+                    indeterminate
+                    color="primary"
+                  >
+                  </v-progress-circular>
+                </v-layout>
+              </v-container>
+              <v-container v-if="load == false">
+                <v-row>
+                  
+                  <!-- Update Photo Section -->
+                  <v-col cols="12">
+                  <div class="d-flex align-center my-0">
+                    <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-note-alert</v-icon>Upload Absen Sostam</p>
+                    <v-divider class="mx-2" color=""></v-divider>
+                  </div>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      @change="val => {dataToStore.absensi_photo = val}"
+                      placeholder="Pilih Foto Absensi Sostam 1"
+                      prepend-icon="mdi-camera"
+                      show-size
+                      label="Pilih Foto Absensi Sostam 1..."
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-file-input
+                      accept="image/png, image/jpeg, image/bmp"
+                      @change="val => {dataToStore.absensi_photo2 = val}"
+                      placeholder="Pilih Foto Absensi Sostam 2"
+                      prepend-icon="mdi-camera"
+                      show-size
+                      label="Pilih Foto Absensi Sostam 2..."
+                  ></v-file-input>
+                </v-col>
+                  
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions v-if="load == false">
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" dark rounded class="px-5" @click="close">
+                <v-icon class="mr-1">mdi-close-circle</v-icon>
+                Keluar
+              </v-btn>
+              <v-btn 
+              color="green" 
+              dark rounded class="px-5" 
+              @click="updateAbsentPhoto"
+              :disabled="disabledUpdateFotoAbsensi"
+              >
+                <v-icon class="mr-1">mdi-check-circle</v-icon>
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-form>
+        </v-card>
+      </v-dialog>
+
 
       <!-- What do you want to edit? -->
       <v-dialog v-model="dialogShowEdit" max-width="500px" content-class="rounded-xl">
@@ -1049,8 +1160,13 @@
             <v-row class="mx-2 my-0 mt-2 justify-center">
               <v-col cols="14" lg="6">
 
-                <v-btn rounded color="blue white--text" @click="showEditModal" class="px-5 "
+                <v-btn 
+                rounded 
+                color="blue white--text" 
+                @click="showEditModal" 
+                class="px-5 "
               :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+              disabled
               >
               <v-icon class="mr-1">mdi-file-document-edit</v-icon>
               Edit Sosialisasi</v-btn
@@ -1068,30 +1184,31 @@
               Jumlah Pohon</v-btn
             >
           </v-col>
-            <v-col cols="14" lg="6">
-              <v-btn
-                  dark
-                  rounded
-                  @click="showPlantingPeriode"
-                  color="green"
-                  class="px-5"
-                  >
-                <v-icon class="mr-1" small color="white">
-                  mdi-plus-thick
-                </v-icon>
-                Periode Tanam
-              </v-btn>
-            </v-col>
+          <v-col cols="14" lg="6">
+            <v-btn
+                dark
+                rounded
+                @click="showPlantingPeriode"
+                color="green"
+                :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+                class="px-5"
+                >
+              <v-icon class="mr-1" small color="white">
+                mdi-plus-thick
+              </v-icon>
+              Periode Tanam
+            </v-btn>
+          </v-col>      
 
-              
-              
-            </v-row>
+          
+        </v-row>
 
-           
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      
 
       <!-- List Edit Jumlah Pohon -->
       <v-dialog v-model="dialogDetailPohon" max-width="500px" content-class="rounded-xl">
@@ -2188,6 +2305,23 @@
                 Edit
               </v-btn>
             </v-list-item>
+            <!-- edit foto absen -->
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'FIELD COORDINATOR' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+              <v-btn
+                vi
+                dark
+                class="px-7"
+                rounded
+                @click="showEditAbsensiModal(item)"
+                color="success"
+                block
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+                Edit Foto Absensi
+              </v-btn>
+            </v-list-item>
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation == 1) && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')">
               <v-btn
                 rounded
@@ -2328,6 +2462,7 @@ export default {
     dialogFilterArea: false,
     dialogFilterEmp: false,
     dialogShowEdit: false,
+    dialogShowEditAbsensi: false,
     dialogDetailPohon: false,
     dialogDetailPohonEdit: false,
     loadtable: false,
@@ -2370,6 +2505,7 @@ export default {
       { text: "No Management Unit", value: "nama_mu"},
       { text: "Target Area", value: "nama_ta"},
       { text: "Field Facilitator", value: "name"},
+      { text: "Waktu Distribusi", value: "distribution_time"},
       { text: "Tanggal Sosialisasi", value : "soc_date"},
       { text: "Tahun Program", align: "center", value: "program_year", sortable: false},
       { text: "Actions", align: "right", value: "actions", sortable: false},
@@ -2768,6 +2904,10 @@ export default {
     disabledCreatePeriodeTanamByFF(){
       if(!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || !this.dataToStore.distribution_coordinates || !this.dataToStore.distribution_rec_armada) return true
       return false
+    },
+    disabledUpdateFotoAbsensi(){
+      if(!this.dataToStore.absensi_photo) return true
+      return false
     }
   },
   mounted() {
@@ -3003,6 +3143,7 @@ export default {
          ).then(res => {
           if(typeof res.data.data.result !== 'undefined' ){
             let items = res.data.data.result.data.data
+              
             const total = res.data.data.result.data.total
             const current_page = res.data.data.result.data.current_page
             const last_page = res.data.data.result.data.last_page
@@ -3015,6 +3156,7 @@ export default {
           }else {
             reject('Error')
           }
+          
          })
          .catch(err => {
           this.sessionEnd(err)
@@ -3768,12 +3910,87 @@ export default {
         }
       }
     },
+    async updateAbsentPhoto() {
+      const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+              const updatedatapost = {
+        ff_no: this.dataToStore.ff_no,
+        absent: '',
+        absent2: '',
+      };
+      if(this.dataToStore.absensi_photo){
+              const namafile = updatedatapost.ff_no + "_" + this.program_year + "_AbsenPetani";
+              const response = await axios.post(
+                  this.BaseUrl + "planting-socialization/upload.php",
+                  this._utils.generateFormData({
+                    nama: namafile,
+                    dir: 'planting-absent/',
+                    image: this.dataToStore.absensi_photo
+                  }),
+              );
+              updatedatapost.absent = response.data.data.new_name
+            }
+            if(this.dataToStore.absensi_photo2){
+              const namafile = updatedatapost.ff_no + "_" + this.program_year + "_AbsenPetani2";
+              const response = await axios.post(
+                  this.BaseUrl + "planting-socialization/upload.php",
+                  this._utils.generateFormData({
+                    nama: namafile,
+                    dir: 'planting-absent/',
+                    image: this.dataToStore.absensi_photo2
+                  }),
+              );
+              updatedatapost.absent2 = response.data.data.new_name
+            }
+      console.log(updatedatapost);
+      this.dialogShowEditAbsensi = false;
+      try {
+        this.$store.state.loadingOverlay = true
+        const response = await axios.post(
+          this.BaseUrlGet + "UpdateAbsenSosialisasi",
+          updatedatapost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        console.log(response.data.data.result);
+        if (response.data.data.result == "success") {
+          this.$store.state.loadingOverlay = false
+          this.dialog = false;
+          // this.snackbar = true;
+          // this.colorsnackbar = "green";
+          // this.textsnackbar = "Sukses mengubah data";
+          this.initialize();
+        } else {
+          this.dialog = true;
+          this.$store.state.loadingOverlay = false
+        }
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          this.dialog = true;
+          this.$store.state.loadingOverlay = false
+        }
+      }
+            }
+      
+    },
     async updateData() {
       const datapost = {
-        form_no: this.defaultItem.form_no,
+        //form_no: this.defaultItem.form_no,
         ff_no: this.defaultItem.ff_no,
-        farmer_no: this.defaultItem.farmer_no,
-        no_lahan: this.defaultItem.no_lahan,
+        //farmer_no: this.defaultItem.farmer_no,
+        //no_lahan: this.defaultItem.no_lahan,
         program_year: this.defaultItem.planting_year,
         pembuatan_lubang_tanam: this.datepicker4,
         distribution_time: this.datepicker2,
@@ -4058,12 +4275,16 @@ export default {
       // console.log(this.itemTemp);
       this.dialog = true;
       this.dialogShowEdit = false;
-      await this.getDetail(this.itemTemp);
-      await this.getPetani();
+      //await this.getDetail(this.itemTemp);
+      //console.log(this.itemTemp);
+      // await this.getPetani();
       //   console.log(item.farmer_no);
       //   console.log(item);
+
+      this.defaultItem.planting_year = this.itemTemp.program_year;
+      this.defaultItem.ff_no = this.itemTemp.ff_no
       this.formTitle = "Edit data";
-      this.defaultItem.farmer_no = this.itemTemp.farmer_no;
+      //this.defaultItem.farmer_no = this.itemTemp.farmer_no;
     },
     async showEditJumlahPohonModal() {
       // console.log(item.kode);
@@ -4087,8 +4308,17 @@ export default {
       this.type = "Edit";
       this.itemTemp = item;
       // await this.getDetail(item);
-      // console.log(this.itemTemp);
+      console.log(this.itemTemp);
       this.dialogShowEdit = true;
+    },
+    showEditAbsensiModal(item){
+      //console.log(item);
+      this.dataToStore.ff_no = item.ff_no;
+      this.dialogShowEditAbsensi = true;
+
+      this.dataToStore.absensi_photo = '';
+      this.dataToStore.absensi_photo2 = '';
+      
     },
 
     showPrintModal(item) {
@@ -4241,6 +4471,7 @@ export default {
     },
     close() {
       this.dialog = false;
+      this.dialogShowEditAbsensi = false
     },
     closeDelete() {
       this.dialogDelete = false;
@@ -4619,10 +4850,10 @@ export default {
     },
     getNurseryAlocation(mu_no) {
         const soreang = ['020', '021']
-        const ciminyak   = ['023', '026', '027']
+        const ciminyak   = ['023', '026', '027', '021']
         const cirasea   = ['022', '024', '025', '029']
         const kebumen    = ['019']
-        const pati       = ['015']
+        const pati       = ['015', '016']
         
         let nursery = 'All'
       console.log(mu_no)
@@ -4824,14 +5055,14 @@ export default {
       const distributionDateRange = [
         {
           month: '12',
-          year: '2022',
+          year: '2023',
           program_year: this.$store.state.programYear.model,
           /*program_year: '2022',*/
           nursery: ff_nursery
         },
         {
           month: '01',
-          year: '2023',
+          year: '2024',
           program_year: this.$store.state.programYear.model,
           /*program_year: '2022',*/
           nursery: ff_nursery
@@ -4849,6 +5080,7 @@ export default {
           }
         ).then(res => {
           const resData = res.data.data.result.datas || []
+          console.log(resData)
           resData.forEach((avData, avIndex) => {
             if (avData.nursery == ff_nursery) {
               avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total,  avData.total_bibit_sostam)
