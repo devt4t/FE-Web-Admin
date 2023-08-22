@@ -762,12 +762,12 @@ export default {
       if(item.tutupan_photo2 == '-'){
         this.itemInTutupanLahan.doc_tutupan_photo2 = "/images/noimage2.png";
       }else{
-        this.itemInTutupanLahan.doc_tutupan_photo2 = this.BaseUrl + item.tutupan_photo1;
+        this.itemInTutupanLahan.doc_tutupan_photo2 = this.BaseUrl + item.tutupan_photo2;
       }
       if(item.tutupan_photo3 == '-'){
         this.itemInTutupanLahan.doc_tutupan_photo3 = "/images/noimage2.png";
       }else{
-        this.itemInTutupanLahan.doc_tutupan_photo3 = this.BaseUrl + item.tutupan_photo1;
+        this.itemInTutupanLahan.doc_tutupan_photo3 = this.BaseUrl + item.tutupan_photo3;
       }
       
     },
