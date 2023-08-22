@@ -2505,7 +2505,7 @@ export default {
       { text: "Management Unit", value: "nama_mu"},
       { text: "Target Area", value: "nama_ta"},
       { text: "Field Facilitator", value: "name"},
-      { text: "Waktu Distribusi", value: "distribution_time"},
+      { text: "Waktu Distribusi", value: "distribution_date"},
       { text: "Tanggal Sosialisasi", value : "soc_date"},
       { text: "Tahun Program", align: "center", value: "program_year", sortable: false},
       { text: "Actions", align: "right", value: "actions", sortable: false},
