@@ -967,7 +967,6 @@ export default {
           this.itemInTutupanLahan.tutupan_photo2 &&
           this.itemInTutupanLahan.tutupan_photo3
       ){
-
         const postTutupan ={
           lahan_no: this.itemInTutupanLahan.lahan_no,
           year_active : this.itemInTutupanLahan.year_active,
@@ -1016,7 +1015,7 @@ export default {
           postTutupan.tutupan_photo3 = response.data.data.new_name
         }
         console.log(postTutupan)
-        await this.updateTutupanLahan(postTutupan);
+        // await this.updateTutupanLahan(postTutupan);
 
         this.dialogEditTutupanLahan= false;
 

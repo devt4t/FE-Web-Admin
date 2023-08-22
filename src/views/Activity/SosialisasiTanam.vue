@@ -2625,7 +2625,7 @@ export default {
       { text: "No Sosialisasi", value: "soc_no"},
       { text: "Management Unit", value: "nama_mu"},
       { text: "Target Area", value: "nama_ta"},
-      { text: "Field Facilitator", value: "ff_name"},
+      { text: "Field Facilitator", value: "name_ff"},
       { text: "Waktu Distribusi", value: "distribution_date"},
       { text: "Tanggal Sosialisasi", value : "soc_date"},
       { text: "Tahun Program", align: "center", value: "program_year", sortable: false},
@@ -3108,7 +3108,7 @@ export default {
 
       // get search options column
       this.table.search.options.column_loading = true
-      let searchColumns = ['soc_no', 'ff_name', ]
+      let searchColumns = ['soc_no', 'name_ff', ]
       // set search column options
       await this.headers.forEach(val => {
         if (searchColumns.includes(val.value)) {
