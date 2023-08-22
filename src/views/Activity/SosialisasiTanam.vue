@@ -2625,7 +2625,7 @@ export default {
       { text: "No Sosialisasi", value: "soc_no"},
       { text: "Management Unit", value: "nama_mu"},
       { text: "Target Area", value: "nama_ta"},
-      { text: "Field Facilitator", value: "name"},
+      { text: "Field Facilitator", value: "ff_name"},
       { text: "Waktu Distribusi", value: "distribution_date"},
       { text: "Tanggal Sosialisasi", value : "soc_date"},
       { text: "Tahun Program", align: "center", value: "program_year", sortable: false},
@@ -3108,7 +3108,7 @@ export default {
 
       // get search options column
       this.table.search.options.column_loading = true
-      let searchColumns = ['soc_no', 'name', ]
+      let searchColumns = ['soc_no', 'ff_name', ]
       // set search column options
       await this.headers.forEach(val => {
         if (searchColumns.includes(val.value)) {
@@ -3645,13 +3645,13 @@ export default {
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
           this.defaultItem.land_area = response.data.data.result.luas_lahan
-          if(response.data.data.result.absent == 'null'){
-            this.defaultItem.absensi1 = "/images/noimage2.png";
+          if(response.data.data.result.absent == null){
+            this.defaultItem.absensi1 = 'images/noimage2.png'
           }else{
             this.defaultItem.absensi1 = 'planting-socialization/planting-absent/'+response.data.data.result.absent
           }
-          if(response.data.data.result.absent2 == 'null'){
-            this.defaultItem.absensi2 = "/images/noimage2.png";
+          if(response.data.data.result.absent2 == null){
+            this.defaultItem.absensi2 = 'images/noimage2.png'
           }else{
             this.defaultItem.absensi2 = 'planting-socialization/planting-absent/'+response.data.data.result.absent2
           }
