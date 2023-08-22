@@ -2502,7 +2502,7 @@ export default {
     headers: [
       { text: "No", value: "index", sortable: false, align: 'center'},
       { text: "No Sosialisasi", value: "soc_no"},
-      { text: "No Management Unit", value: "nama_mu"},
+      { text: "Management Unit", value: "nama_mu"},
       { text: "Target Area", value: "nama_ta"},
       { text: "Field Facilitator", value: "name"},
       { text: "Waktu Distribusi", value: "distribution_time"},

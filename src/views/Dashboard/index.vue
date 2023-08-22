@@ -213,7 +213,7 @@
                             class="text-h5 mb-1 font-weight-bold"
                             v-if="loading == false"
                             :ref="totalData_petani_lahan[`data${n}`].ref"
-                            :key="totalData_petani_lahan[`data${n}`].key"
+                            
                             :format="_utils.numberFormat"
                             :from="0"
                             :to="totalData_petani_lahan[`data${n}`].Count"
