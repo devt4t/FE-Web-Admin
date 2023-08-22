@@ -229,7 +229,27 @@
                         class="ml-2"
                         style="max-width: 200px"
                     ></v-select>
+                    <!-- Refresh Button -->
+                    <v-btn
+                        @click="getMainTableData()"
+                        color="info white--text"
+                        rounded
+                        class="mx-auto mx-lg-3 mr-lg-0"
+                        :disabled="loadtable"
+                        >
+                        <v-icon v-if="!loadtable" small class="mr-1">mdi-refresh</v-icon> 
+                        <v-progress-circular
+                            v-else
+                            indeterminate
+                            size="15"
+                            class="mr-1"
+                        ></v-progress-circular>
+                        Muat Ulang
+                        </v-btn>
                     <v-divider class="mx-2"></v-divider>
+                    
+                    
+                    
                     <!-- Search Field -->
                     <v-text-field
                         color="green"
@@ -547,6 +567,7 @@ export default {
             this.programYear = this.$store.state.programYear.model
             await this.getMainTableData()
         },
+
         async getMainTableData() {
             this.tables.main.loadingText = 'Getting Data...'
             this.tables.main.loading = true

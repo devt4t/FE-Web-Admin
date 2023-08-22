@@ -2058,6 +2058,23 @@
                 class="mx-auto mx-lg-3"
                 style="max-width: 200px"
               ></v-select>
+              <!-- Refresh Button -->
+            <v-btn
+              @click="resetFilter"
+              color="info white--text"
+              rounded
+              class="mb-2 mb-lg-0"
+              :disabled="loadtable"
+            >
+              <v-icon v-if="!loadtable" small class="mr-1">mdi-refresh</v-icon> 
+              <v-progress-circular
+                v-else
+                indeterminate
+                size="15"
+                class="mr-1"
+              ></v-progress-circular>
+              Muat Ulang
+            </v-btn>
             </v-col>
             <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
               <v-btn
@@ -4065,10 +4082,10 @@ export default {
             })
             if(confirm.isConfirmed){
               const updatedatapost = {
-        ff_no: this.dataToStore.ff_no,
-        absent: '',
-        absent2: '',
-      };
+              ff_no: this.dataToStore.ff_no,
+              absent: '',
+              absent2: '',
+            };
       if(this.dataToStore.absensi_photo){
               const namafile = updatedatapost.ff_no + "_" + this.program_year + "_AbsenPetani";
               const response = await axios.post(
@@ -4398,6 +4415,12 @@ export default {
       this.selectUM = "";
       this.selectFC = "";
       this.valueFFcode = this.User.ff.ff;
+      
+      this.table.search.field = "";
+      this.table.search.value = "";
+
+      // this.search_column = "";
+      // this.search_value = "";
       // this.typegetdata = this.User.ff.value_data;
       await this.initialize();
     },

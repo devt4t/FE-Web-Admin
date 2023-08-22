@@ -1802,6 +1802,7 @@
             class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
+          
           <!-- Land Program -->
           <v-select
             color="success"
@@ -1818,6 +1819,23 @@
             class="mx-auto mx-lg-3 mr-lg-0"
             style="max-width: 200px"
           ></v-select>
+          <!-- Refresh Button -->
+          <v-btn
+              @click="resetFilter"
+              color="info white--text"
+              rounded
+              class="mx-auto mx-lg-3 mr-lg-0"
+              :disabled="loadtable"
+            >
+              <v-icon v-if="!loadtable" small class="mr-1">mdi-refresh</v-icon> 
+              <v-progress-circular
+                v-else
+                indeterminate
+                size="15"
+                class="mr-1"
+              ></v-progress-circular>
+              Muat Ulang
+            </v-btn>
           <v-divider class="mx-4 d-none d-md-block" inset></v-divider>
           <!-- Search Input -->
           <v-text-field
@@ -3792,6 +3810,10 @@ export default {
       this.selectFC = "";
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
+
+      this.initialize();
+
+
     },
     async searchbyarea() {
       this.valueFFcode = this.User.ff.ff;

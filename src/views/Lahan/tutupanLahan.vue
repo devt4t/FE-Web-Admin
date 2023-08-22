@@ -917,6 +917,7 @@ export default {
 
     //Update Data
     async updateTutupanLahan(datapost){
+
       try {
         const response = await axios.post(
             this.BaseUrlGet +"UpdateLahanTutupanRequest",
@@ -953,7 +954,18 @@ export default {
     },
     async saveTutupan(){
       this.itemInTutupanLahan.loading.show = true;
-      if(
+      
+      const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+              if(
           this.itemInTutupanLahan.form_no != null &&
           this.itemInTutupanLahan.ff_no != null &&
           this.itemInTutupanLahan.lahan_no != null &&
@@ -984,7 +996,7 @@ export default {
           tutupan_photo3: '',
         }
         if(this.itemInTutupanLahan.tutupan_photo1){
-          const namafile = this.defaultItem.document_no + this.localConfig.programYear + "_TutupanLahan1";
+          const namafile = postTutupan.lahan_no + "_" + this.localConfig.programYear + "_TutupanLahan1";
           const response = await axios.post(
               this.BaseUrl + "land-coverage/upload.php?nama=",
               this._utils.generateFormData({
@@ -994,7 +1006,7 @@ export default {
           );
           postTutupan.tutupan_photo1 = response.data.data.new_name
         }if(this.itemInTutupanLahan.tutupan_photo2){
-          const namafile = this.defaultItem.document_no + this.localConfig.programYear + "_TutupanLahan2";
+          const namafile = postTutupan.lahan_no + "_" + this.localConfig.programYear + "_TutupanLahan2";
           const response = await axios.post(
               this.BaseUrl + "land-coverage/upload.php?nama=",
               this._utils.generateFormData({
@@ -1004,7 +1016,7 @@ export default {
           );
           postTutupan.tutupan_photo2 = response.data.data.new_name
         }if(this.itemInTutupanLahan.tutupan_photo3){
-          const namafile = this.defaultItem.document_no + this.localConfig.programYear + "_TutupanLahan3";
+          const namafile = postTutupan.lahan_no + "_" + this.localConfig.programYear + "_TutupanLahan3";
           const response = await axios.post(
               this.BaseUrl + "land-coverage/upload.php?nama=",
               this._utils.generateFormData({
@@ -1015,7 +1027,7 @@ export default {
           postTutupan.tutupan_photo3 = response.data.data.new_name
         }
         console.log(postTutupan)
-        // await this.updateTutupanLahan(postTutupan);
+        await this.updateTutupanLahan(postTutupan);
 
         this.dialogEditTutupanLahan= false;
 
@@ -1032,6 +1044,8 @@ export default {
         })
       }
       this.itemInTutupanLahan.loading.show =false;
+            }
+      
     },
 
 
