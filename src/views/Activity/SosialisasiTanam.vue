@@ -1614,7 +1614,7 @@
               <v-divider
                 style="background-color: black !important"
               ></v-divider>
-              <v-row class="mt-2">
+              <v-row class="mt-2 py-4">
                 <v-col cols="12" md="6" lg="4">
                   <p>Tanda Tangan Petani</p>
                   <v-img
@@ -1634,6 +1634,50 @@
                   </v-img>
                 </v-col>
               </v-row>
+
+              <!--Preview Foto Absensi -->
+              <v-divider
+                style="background-color: black !important"
+              ></v-divider>
+              <v-row class="mt-2">
+                <v-col cols="12" md="6" lg="4">
+                  <p>Foto Absensi 1</p>
+                  <v-img
+                    aspect-ratio="1"
+                    lazy-src=""
+                    class="rounded-lg cursor-pointer elevation-5"
+                    transition="fade-transition"
+                    :src="(`${$store.state.apiUrlImage}${defaultItem.absensi1}`)"
+                    @click="() => {preview.absensi1.url = (`${$store.state.apiUrlImage}${defaultItem.absensi1}`); preview.absensi1.modal = true}"
+                  >
+                    <template v-slot:placeholder>
+                      <v-skeleton-loader
+                        class="mx-auto rounded-lg"
+                        type="image"
+                      ></v-skeleton-loader>
+                    </template>
+                  </v-img>
+                </v-col>
+                <v-col cols="12" md="6" lg="4">
+                  <p>Foto Absensi 2</p>
+                  <v-img
+                    aspect-ratio="1"
+                    lazy-src=""
+                    class="rounded-lg cursor-pointer elevation-5"
+                    transition="fade-transition"
+                    :src="(`${$store.state.apiUrlImage}${defaultItem.absensi2}`)"
+                    @click="() => {preview.absensi2.url = (`${$store.state.apiUrlImage}${defaultItem.absensi2}`); preview.absensi2.modal = true}"
+                  >
+                    <template v-slot:placeholder>
+                      <v-skeleton-loader
+                        class="mx-auto rounded-lg"
+                        type="image"
+                      ></v-skeleton-loader>
+                    </template>
+                  </v-img>
+                </v-col>
+              </v-row>
+
             </v-container>
           </v-card-text>
           <v-divider></v-divider>
@@ -1802,6 +1846,83 @@
               outlined
               class="rounded-lg"
               @click="preview.signature.modal = false"
+            >
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Keluar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
+      <!-- Preview Absensi1 Modal -->
+      <v-dialog v-model="preview.absensi1.modal" max-width="500px" content-class="rounded-xl" scrollable>
+        <v-card class="rounded-xl">
+          <v-card-title>
+            Preview Foto Absensi 1
+          </v-card-title>
+          <v-card-text class="pa-1 fontall">
+            <v-container>
+              <v-img
+                class="w-100 rounded-lg"
+                :lazy-src="`${preview.absensi1.url}`"
+                :src="`${preview.absensi1.url}`"
+              >
+                <template v-slot:placeholder>
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    type="image"
+                  ></v-skeleton-loader>
+                </template>
+              </v-img>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="red"
+              elevation="1"
+              outlined
+              class="rounded-lg"
+              @click="preview.absensi1.modal = false"
+            >
+              <v-icon left> mdi-close-circle-outline </v-icon>
+              Keluar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Preview Absensi2 Modal -->
+      <v-dialog v-model="preview.absensi2.modal" max-width="500px" content-class="rounded-xl" scrollable>
+        <v-card class="rounded-xl">
+          <v-card-title>
+            Preview Foto Absensi 2
+          </v-card-title>
+          <v-card-text class="pa-1 fontall">
+            <v-container>
+              <v-img
+                class="w-100 rounded-lg"
+                :lazy-src="`${preview.absensi2.url}`"
+                :src="`${preview.absensi2.url}`"
+              >
+                <template v-slot:placeholder>
+                  <v-skeleton-loader
+                    class="mx-auto"
+                    type="image"
+                  ></v-skeleton-loader>
+                </template>
+              </v-img>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="red"
+              elevation="1"
+              outlined
+              class="rounded-lg"
+              @click="preview.absensi2.modal = false"
             >
               <v-icon left> mdi-close-circle-outline </v-icon>
               Keluar
@@ -2567,6 +2688,8 @@ export default {
       minute:'',
       second:'',
       signature: '',
+      absensi1: '',
+      absensi2: '',
 
       hourCounter:12,
       minuteCounter: 0,
@@ -2722,6 +2845,14 @@ export default {
     },
     preview: {
       signature: {
+        modal: false,
+        url: '',
+      },
+      absensi1: {
+        modal: false,
+        url: '',
+      },
+      absensi2: {
         modal: false,
         url: '',
       },
@@ -2957,7 +3088,7 @@ export default {
         }
     },
     async checkExpandenItem(item){
-      console.log(item)
+      
       this.soc_no = item.item.soc_no;
       this.subMainTable.table.expandItem.ff_no = item.item.ff_no;
       if(item.value )this.getTableData(item.item.ff_no);
@@ -3514,6 +3645,18 @@ export default {
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
           this.defaultItem.land_area = response.data.data.result.luas_lahan
+          if(response.data.data.result.absent == 'null'){
+            this.defaultItem.absensi1 = "/images/noimage2.png";
+          }else{
+            this.defaultItem.absensi1 = 'planting-socialization/planting-absent/'+response.data.data.result.absent
+          }
+          if(response.data.data.result.absent2 == 'null'){
+            this.defaultItem.absensi2 = "/images/noimage2.png";
+          }else{
+            this.defaultItem.absensi2 = 'planting-socialization/planting-absent/'+response.data.data.result.absent2
+          }
+          
+          
           if (this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') {
             let maxSeedTrue = parseInt(this.getSeedCalculation(this.defaultItem, 'total_max_trees'))
             let totalBibitMPTSKAYU = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
