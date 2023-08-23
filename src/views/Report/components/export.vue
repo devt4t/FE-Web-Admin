@@ -270,7 +270,11 @@ export default {
                             program_year: this.programYear,
                             lahan_no: lahanNoQueue
                         }, store.state.apiConfig)
-                        this.table.data.push(...callData.data)
+                        const existLahanNo = this.table.data.map(val => { return val.lahan_no })
+                        const newLahanData = callData.data.filter(val => !existLahanNo.includes(val.lahan_no))
+                        if (newLahanData) if (newLahanData instanceof Array) if (newLahanData.length > 0) {
+                            this.table.data.push(...newLahanData)
+                        }
                         loading.progress = Math.round((100 / totalLoop) * (index + 1))
                     }
                 }
@@ -312,7 +316,11 @@ export default {
                             program_year: this.programYear,
                             lahan_no: lahanNoQueue
                         }, store.state.apiConfig)
-                        this.table.data.push(...callData.data)
+                        const existLahanNo = this.table.data.map(val => { return val.lahan_no })
+                        const newLahanData = callData.data.filter(val => !existLahanNo.includes(val.lahan_no))
+                        if (newLahanData) if (newLahanData instanceof Array) if (newLahanData.length > 0) {
+                            this.table.data.push(...newLahanData)
+                        }
                         loading.progress = Math.round((100 / totalLoop) * (index + 1))
                     }
                 }
