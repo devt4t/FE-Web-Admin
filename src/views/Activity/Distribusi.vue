@@ -286,7 +286,7 @@
                                                         hide-details
                                                         :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                                                         v-model="calendar.detailPeriodFF.newPeriod.nursery"
-                                                        :items="['Tidak Ada','Arjasari','Ciminyak','Kebumen','Pati']"
+                                                        :items="['Tidak Ada','Cirasea','Ciminyak','Soreang','Kebumen','Pati']"
                                                     ></v-select>
                                                 </td>
                                             </tr>
@@ -2526,7 +2526,7 @@ export default {
         generalSettings: {
             nursery: {
                 model: 'All',
-                options: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati'],
+                options: ['All', 'Cirasea', 'Ciminyak', 'Soreang', 'Kebumen', 'Pati'],
                 disabled: false,
             },
             type: {
@@ -3217,8 +3217,9 @@ export default {
                         if (this.User.role_group == 'IT' || 
                             this.User.role_name == 'REGIONAL MANAGER' || 
                             this.User.role_name == 'PLANNING MANAGER' || 
-                            nurseryEmails.Arjasari.includes(this.User.email) || 
-                            nurseryEmails.Ciminyak.includes(this.User.email) || 
+                            nurseryEmails.Cirasea.includes(this.User.email) || 
+                            nurseryEmails.Ciminyak.includes(this.User.email) ||
+                            nurseryEmails.Soreang.includes(this.User.email) || 
                             nurseryEmails.Kebumen.includes(this.User.email) || 
                             nurseryEmails.Pati.includes(this.User.email)
                         ) {} else params.created_by = this.User.email
@@ -3282,8 +3283,9 @@ export default {
                 this.User.role_group == 'IT' || 
                 this.User.role_name == 'REGIONAL MANAGER' || 
                 this.User.role_name == 'PLANNING MANAGER' || 
-                nurseryEmails.Arjasari.includes(this.User.email) || 
+                nurseryEmails.Cirasea.includes(this.User.email) || 
                 nurseryEmails.Ciminyak.includes(this.User.email) || 
+                nurseryEmails.Soreang.includes(this.User.email) ||
                 nurseryEmails.Kebumen.includes(this.User.email) || 
                 nurseryEmails.Pati.includes(this.User.email)
             )) {
@@ -3575,6 +3577,7 @@ export default {
             let dataToPost = {
                 bags_number: this.loadingLine.detailDialog.inputs.scanner.values,
                 ff_no: id,
+                transportation: this.loadingLine.detailDialog.transportations,
                 program_year: this.generalSettings.programYear
             }
             if (this.generalSettings.type.model == 'Umum') {
@@ -4178,24 +4181,28 @@ export default {
             return leftData
         },
         getNurseryAlocation(mu_no) {
-            const ciminyak   = ['023', '026', '027', '021' ]
-            const arjasari   = ['022', '024', '025', '020', '029']
-            const kebumen    = ['019']
-            const pati       = ['015']
-            
-            let nursery = 'All'
+        const soreang = ['020', '021']
+        const ciminyak   = ['023', '026', '027', '021']
+        const cirasea   = ['022', '024', '025', '029']
+        const kebumen    = ['019']
+        const pati       = ['015', '016']
+        
+        let nursery = 'All'
+        console.log(mu_no)
 
-            if (ciminyak.includes(mu_no)) {
-                nursery = 'Ciminyak'
-            } else if (arjasari.includes(mu_no)) {
-                nursery = 'Arjasari'
-            } else if (kebumen.includes(mu_no)) {
-                nursery = 'Kebumen'
-            } else if (pati.includes(mu_no)) {
-                nursery = 'Pati'
-            }
-            
-            return nursery;
+        if (ciminyak.includes(mu_no)) {
+            nursery = 'Ciminyak'
+        } else if (cirasea.includes(mu_no)) {
+            nursery = 'Cirasea'
+        } else if (kebumen.includes(mu_no)) {
+            nursery = 'Kebumen'
+        } else if (pati.includes(mu_no)) {
+            nursery = 'Pati'
+        } else if(soreang.includes(mu_no)){
+            nursery = 'Soreang'
+        }
+        
+        return nursery;
         },
         getPrintedLabelsPerActivities(label, type) {
             try {
@@ -4321,7 +4328,8 @@ export default {
                     this.$store.state.loadingOverlayText = null
                 }
             } else {
-                const nurserySite = ['Arjasari', 'Ciminyak', 'Kebumen', 'Pati']
+                const nurserySite = ['Cirasea', 'Soreang', 'Ciminyak', 'Kebumen', 'Pati']
+                console.log('nursery site ', this.$store.state.nurseryTeam.emails);
                 await nurserySite.forEach((val) => {
                     if (this.$store.state.nurseryTeam.emails[val].includes(this.User.email)) {
                         this.generalSettings.nursery.model = val
@@ -4421,6 +4429,7 @@ export default {
                 await this.loadingLine.detailDialog.inputs.scanner.farmers.map((farmer, fIndex) => {
                     if (farmer.bags_number.includes(newLabel)) {
                         this.loadingLine.detailDialog.inputs.scanner.farmers[fIndex].bags_number_loaded.push(newLabel)
+                        this.loadingLine.detailDialog.transportations[this.loadingLine.detailDialog.transportationIndex].loaded_labels.push(newLabel)
                     }
                 })
 

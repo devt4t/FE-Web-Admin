@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { version, version_date_time } from '../../package.json'
 import JustLoadingLineModul from './scpecialEmails/JustLoadingLineModul'
-import { Arjasari, Ciminyak, Kebumen, Pati } from './scpecialEmails/nurseryTeam'
+import { Cirasea, Ciminyak, Soreang, Kebumen, Pati } from './scpecialEmails/nurseryTeam'
 import TaskForceEmail from './scpecialEmails/taskForceTeam'
 
 Vue.use(Vuex)
@@ -41,8 +41,9 @@ export default new Vuex.Store({
     },
     nurseryTeam: {
       emails: {
-        Arjasari: Arjasari || [],
+        Cirasea: Cirasea || [],
         Ciminyak: Ciminyak || [],
+        Soreang: Soreang || [],
         Kebumen: Kebumen || [],
         Pati: Pati || [],
         JustLoadingLineModul: JustLoadingLineModul

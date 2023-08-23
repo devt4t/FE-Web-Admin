@@ -1376,6 +1376,20 @@
                           <strong>{{ numberFormat(defaultItem.counter_hole_standard) }}</strong>
                         </td>
                       </tr>
+                      <tr>
+                        <th class="text-left" style="font-size: 14px">
+                          Waktu Pembuatan Lubang Tanam
+                        </th>
+                        
+                          <td class="text-center" style="font-size: 14px">
+                            <v-card rounded-xl shadow-lg color="orange">
+                              <strong> {{  defaultItem.start_planting_hole }} s/d  {{  defaultItem.end_planting_hole }}</strong>
+                          
+                            </v-card>
+                          </td>
+                        
+                        
+                      </tr>
                       <tr v-if="land_program.model == 'Petani'" >
                         <th class="text-left" style="font-size: 14px">
                           Catatan
@@ -1936,6 +1950,19 @@
           {{ item.is_verified > 1 ? 'Verified' : 'Unverified'  }}
         </v-chip>
       </template>
+
+      <template v-slot:item.start_planting_hole="{ item }">
+        <v-chip :color="'green'"  dark>
+          {{ item.start_planting_hole }}
+        </v-chip> 
+      </template>
+      
+      <template v-slot:item.end_planting_hole="{ item }">
+        <v-chip :color="'orange'"  dark>
+          {{ item.end_planting_hole }}
+        </v-chip> 
+      </template>
+
       <template v-slot:item.is_validate="{ item }">
         <v-chip :color="getColorStatus(item.is_validate)" dark>
           {{ item.is_validate ? 'Verified' : 'Unverified'  }}
@@ -2164,6 +2191,8 @@ export default {
       { text: "KAYU", value: "pohon_kayu", align: 'center' },
       { text: "MPTS", value: "pohon_mpts", align: 'center' },
       { text: "CROPS", value: "tanaman_bawah", align: 'center' },
+      { text: "Awal Pembuatan Lubang", value: "start_planting_hole", align: 'center' },
+      { text: "Akhir Pembuatan Lubang", value: "end_planting_hole", align: 'center' },
       { text: "Status", value: "is_validate", align: 'center' },
       { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
@@ -2178,6 +2207,8 @@ export default {
       { text: "KAYU", value: "pohon_kayu", align: 'center' },
       { text: "MPTS", value: "pohon_mpts", align: 'center' },
       { text: "CROPS", value: "tanaman_bawah", align: 'center' },
+      { text: "Awal Pembuatan Lubang", value: "start_planting_hole", align: 'center' },
+      { text: "Akhir Pembuatan Lubang", value: "end_planting_hole", align: 'center' },
       { text: "Status", value: "is_verified", align: 'center' },
       { text: "Actions", value: "actions", sortable: false, align: 'right' },
     ],
@@ -2227,6 +2258,9 @@ export default {
       user_id: "FF000001",
       nama_petani: "",
       waitingapproval: false,
+
+      start_planting_hole: "",
+      end_planting_hole: "",
 
       gambarshow1: "",
       gambarshow2: "",
@@ -2929,10 +2963,14 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
+        // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result.data);
           this.defaultItem.list_detail = response.data.data.result.list_detail;
+          // this.defaultItem.start_planting_hole = response.data.result.data.start_planting_hole;
+          // this.defaultItem.end_planting_hole = response.data.result.data.end_planting_hole;
+
+          console.log(this.defaultItem.start_planting_hole + ' - ' + this.defaultItem.end_planting_hole);
           this.defaultItem.waitingapproval = this.waitingapprovefunct(
             response.data.data.result.data.is_validate
           );

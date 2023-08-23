@@ -161,7 +161,6 @@
       </v-dialog>
 
     <!--Modal Planting Perode-->
-<!--    <PickCoordinate :show="modals.pick_coordinate.show" :data="modals.pick_coordinate.data" @action="$v => modalActions($v)" />-->
     <v-dialog v-model="dialogPeriodeTanam.show" max-width="999" content-class="rounded-xl" persistent scrollable>
       <v-card rounded="xl" elevation="10">
         <!-- Title -->
@@ -393,6 +392,85 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+
+    <!-- Edit GIS -->
+    <v-dialog v-model="dialogEditGIS.show" max-width="999" content-class="rounded-xl" persistent scrollable>
+      <v-card rounded="xl" elevation="10">
+        <!-- Title -->
+        <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
+          <span class="">Edit Data GIS</span>
+          <v-spacer></v-spacer>
+          <v-icon color="red" @click="dialogEditGIS.show = false">mdi-close-circle</v-icon>
+        </v-card-title>
+
+        <v-card-text class="px-0 px-lg-5">
+          <!-- Loading -->
+          <v-overlay absolute :value="dialogEditGIS.loading">
+            <div class="d-flex flex-column justify-center align-center">
+              <LottieAnimation
+                  ref="anim"
+                  :animationData="lottie.data.loading"
+                  :loop="true"
+                  style="height: 64px;"
+              />
+              <p class="mt-2 mb-0">Loading...
+                <v-progress-circular
+                    :size="17"
+                    :width="3"
+                    indeterminate
+                    color="white"
+                >
+                </v-progress-circular>
+              </p>
+            </div>
+          </v-overlay>
+          <!-- Content -->
+          <v-container>
+            <v-row>
+              <!-- Lokasi Distribusi -->
+              <v-col cols="12">
+                <div class="d-flex align-center my-0">
+                  <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-map-marker</v-icon>Lokasi Distribusi</p>
+                  <v-divider class="mx-2" color=""></v-divider>
+                </div>
+              </v-col>
+              <v-text-field
+                    outlined
+                    rounded
+                    dense
+                    hide-details
+                    color="green"
+                    label="Koordinat Lokasi"
+                    v-model="dataToStore.distribution_coordinates"
+                >
+              </v-text-field>
+              
+            </v-row>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions v-if="dialogEditGIS.loading == false" class="elevation-15 rounded-xl">
+          <v-btn color="red px-5" rounded dark @click="dialogEditGIS.show = false">
+            <v-icon class="mr-1">mdi-close-circle</v-icon>
+            Keluar
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+              color="green white--text"
+              rounded
+              @click="SaveEditGIS"
+              :disabled="User.role_group !='IT' && User.role_name !='GIS STAFF' || disabledEditDataGIS"
+          >
+            <v-icon class="mr-1">mdi-check-circle</v-icon>
+            Edit Data GIS
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
+
 
     <v-dialog v-model="dialogConfirmPeriodeTanam" max-width="500px" content-class="rounded-xl">
         <v-card>
@@ -1198,7 +1276,8 @@
               </v-icon>
               Periode Tanam
             </v-btn>
-          </v-col>      
+          </v-col>
+                 
 
           
         </v-row>
@@ -2364,6 +2443,21 @@
                 Petani Susulan
               </v-btn>
             </v-list-item>
+            <v-list-item>
+              <v-btn
+                  dark
+                  rounded
+                  @click="showEditGIS(item)"
+                  color="green"
+                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'  && User.role_name != 'GIS STAFF'"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  mdi-file-document-edit
+                </v-icon>
+                Edit GIS
+              </v-btn>
+            </v-list-item>  
               <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
                 <v-btn
                   dark
@@ -2541,6 +2635,10 @@ export default {
 
     },
     dialogPeriodeTanam: {
+      show: false,
+      loading: false,
+    },
+    dialogEditGIS: {
       show: false,
       loading: false,
     },
@@ -3023,6 +3121,7 @@ export default {
       async handler(newValue) {
         if (newValue == true) {
           await this.setUnavailableDistributionDates()
+          console.log('datepicker2NotAvailable',this.datepicker2NotAvailable)
         }
       }
     },
@@ -3030,7 +3129,8 @@ export default {
     'pTDatePickerShow' :{
       async handler(newValue) {
         if (newValue == true) {
-          // await this.setUnavailableDistributionDates()
+          await this.setUnavailableDistributionDates()
+          console.log('datepicker2NotAvailable',this.datepicker2NotAvailable)
         }
     }
   },
@@ -3055,6 +3155,10 @@ export default {
     },
     disabledUpdateFotoAbsensi(){
       if(!this.dataToStore.absensi_photo) return true
+      return false
+    },
+    disabledEditDataGIS(){
+      if(!this.dataToStore.distribution_coordinates) return true
       return false
     }
   },
@@ -3771,6 +3875,50 @@ export default {
       }
             }
       
+    },
+    async SaveEditGIS(){
+      const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+              const postEditGIS ={
+                ff_no: this.dataToStore.ff_no,
+                distribution_coordinates: this.dataToStore.distribution_coordinates
+                };
+                console.log(postEditGIS);
+                try{
+                const response = await axios.post(
+                    this.BaseUrlGet + "",
+                    postEditGIS,
+                    {
+                      headers: {
+                        Authorization: `Bearer ` + this.authtoken,
+                      },
+                    }
+                );
+                console.log(response.data.data.result);
+
+                  this.dialogEditGIS.show = false;
+                  
+
+                  this.initialize();
+
+              }catch (error) {
+                console.error(error.response);
+                if (error.response.status == 401) {
+                  this.dialogEditGIS.show = false;
+                  localStorage.removeItem("token");
+                  this.$router.push("/");
+                }
+              }
+
+            }
     },
     async pushDataPeriodeTanam(){
       const datapost ={
@@ -4570,12 +4718,20 @@ export default {
       // this.dialogShowEdit = false;
       this.defaultItem.form_no = this.itemTemp.form_no;
     },
+
+    showEditGIS(item){
+      this.dataToStore.ff_no = item.ff_no
+      this.dataToStore.distribution_coordinates = item.distribution_coordinates
+      this.dialogEditGIS.show = true;
+    },
+
     showPlantingPeriode(){
       console.log(this.itemTemp)
 
       this.dialogPeriodeTanam.show = true;
       this.defaultItem.form_no = this.itemTemp.form_no;
       this.defaultItem.ff_no = this.itemTemp.ff_no;
+      this.defaultItem.mu_no = this.itemTemp.mu_no;
 
       this.dataToStore.distribution_time = ''
       this.dataToStore.start_pemlub_time = ''
@@ -4587,6 +4743,7 @@ export default {
       this.dataToStore.distribution_rec_armada = ''
 
     },
+
 
     showUnverifModal(item) {
       // console.log(item.form_no);
@@ -5202,11 +5359,12 @@ export default {
       await this.options.ff.items.forEach((ffVal) => {
         if (ffVal.ff_no == this.options.ff.model) {
           ff_mu_no = ffVal.mu_no
-          console.log(ffVal)
+          // console.log(ffVal)
         } 
       })
 
       // set mu ff in edit sostam
+      console.log('mu_no', this.defaultItem.mu_no)
       if (ff_mu_no == '') {
         if (this.defaultItem.mu_no) ff_mu_no = this.defaultItem.mu_no
       }
@@ -5246,7 +5404,7 @@ export default {
           }
         ).then(res => {
           const resData = res.data.data.result.datas || []
-          console.log(resData)
+          // console.log(resData)
           resData.forEach((avData, avIndex) => {
             if (avData.nursery == ff_nursery) {
               avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total,  avData.total_bibit_sostam)
