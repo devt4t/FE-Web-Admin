@@ -1,0 +1,234 @@
+<template><v-dialog
+    v-model="showModal"
+    scrollable
+    max-width="2500px"
+    transition="dialog-transition"
+    content-class="rounded-xl"
+    >
+    <v-card>
+        <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text" v-if="data">
+            <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Sostam
+            <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
+        </v-card-title>
+        <v-card-text>
+                <!-- Loading -->
+                <v-overlay absolute :value="table.loading.show" class="rounded-xl">
+                    <div class="d-flex flex-column justify-center align-center">
+                        <p class="mt-2 mb-0"> {{table.loading.text}}
+                            <v-progress-circular
+                                :size="17"
+                                :width="3"
+                                indeterminate
+                                color="white"
+                            >
+                            </v-progress-circular>
+                        </p>
+                    </div>
+                </v-overlay>
+            <v-row class="align-center ma-0 my-2">
+                FF: {{ data ? data.name_ff || '-' : '-' }}
+                <v-divider class="mx-2"></v-divider>
+            </v-row>
+
+            <table
+                id="tabelForExportSostam"
+                border="1"
+                style="border: 2px solid black;border-collapse: collapse; min-height: 200px
+                "
+            >
+                <tr>
+                    <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">Tahun Program: {{ data ? data.program_year || '': '' }}</th>
+                </tr>
+                <tr>
+                    <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
+                        <h2>
+                            Data Sostam FF {{ data ? data.name_ff || '-' : '-' }}
+                        </h2>
+                    </th>
+                </tr>
+                <tr>
+                    <td :colspan="table.headers.length" style="text-align: center;">
+                        <small>
+                            Export Time: {{ Date() }}
+                        </small>
+                    </td>
+                </tr>
+                <tr><td :colspan="table.headers.length"></td></tr>
+                <tr>
+                    <th v-for="header in table.headers" :key="`tabelForExportSostam${header.value}`" class="green darken-2 white--text">
+                        {{ header.text }}
+                        <div v-if="header.value == 'land_area'">(m<sup>2</sup>)</div>
+                        <div v-if="header.value == 'planting_area'">(m<sup>2</sup>)</div>
+                    </th>
+                </tr>
+                <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} lighten-4`">
+                        <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" :class="` lighten-3`">
+                            <!-- <span v-if="itemTable.value == 'farmer_nik'">
+                                '
+                            </span> -->
+                            <span v-if="itemTable.value == 'index'">
+                                {{ tableDataIndex + 1 }}
+                            </span>
+                            <span v-else>
+                                {{ tableData[itemTable.value] }}
+                            </span>
+                        </td>
+                    </tr>
+            </table>
+            
+        </v-card-text>
+        
+        <v-card-actions class="justify-center align-center">
+                <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
+                <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn>
+            </v-card-actions>
+    </v-card>
+</v-dialog>
+</template>
+<script>
+
+import axios from 'axios'
+import moment from 'moment'
+import Swal from 'sweetalert2'
+export default {
+    
+    props: {
+        show: {
+            type: Boolean,
+            default: false,
+        },
+        data: {
+            type: Object,
+            default: null,
+        },
+    },
+    data: () => ({
+        table: {
+            headers: [
+                {text: 'No', value: 'index', width: 75},
+                {text: 'No Form', value: 'form_no'},
+                {text: 'No Lahan', value: 'lahanNo'},
+                {text: 'Petani', value: 'petani'},
+                {text: 'Desa', value: 'desa', sortable: false},
+                {text: 'Nama kecamatan', value: 'nama_kec'},
+                {text: 'Nama Mu', value: 'nama_mu'},
+                {text: 'Lokasi', value: 'location'},
+                {text: 'Status Lahan', value: 'land_area', sortable: false},
+                {text: 'Area Tanam', value: 'planting_area'},
+                {text: 'Pohon Kayu', value: 'pohon_kayu'},
+                {text: 'Pohon MPTS', value: 'pohon_mpts'},
+                {text: 'Status', value: 'status'},
+                {text: 'Nama FF', value: 'ff'},
+                {text: 'Nama FC', value: 'nama_fc_lahan'},
+                {text: 'Tahun Tanam', value: 'planting_year'},
+                {text: 'Pembuatan Lubang Tanam', value: 'pembuatan_lubang_tanam'},
+                {text: 'Waktu Distribusi', value: 'distribution_time'},
+                {text: 'Lokasi Distribusi', value: 'distribution_location'},
+                {text: 'Waktu Tanam', value: 'planting_time'},
+                {text: 'Total Bibit', value: 'max_seed_amount'},
+            ],
+            items: [],
+            items_raw: [],
+            loading: {
+                show: false,
+                text: 'Loading...'
+            },
+            search: ''
+        }
+    }),
+    computed: {
+        showModal: {
+            get: function () {
+                if(this.show){
+                 
+                    this.getTableData({
+                        ff_no: this.data.ff_no,
+                        program_year: this.data.program_year
+                    })   
+                }
+                return this.show
+            },
+            set: function(newVal) {
+                if (!newVal) {
+                    setTimeout(() => {
+                        this.table.items = []
+                        this.table.items_raw = []
+                    }, 200);
+                    this.$emit('close', false)
+                }else{
+                }
+            }
+        },
+    },
+
+methods: {
+    downloadExcel() {
+        const table = document.getElementById("tabelForExportSostam");
+        const wb = XLSX.utils.table_to_book(table);
+
+        /* Export to file (start a download) */
+        XLSX.writeFile(wb, `DataSostam${this.data.program_year}-${this.data.ff_no}_${this.data.name_ff}.xlsx`);
+    },
+    downloadPDF() {
+        window.jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [1400, 700]
+        });
+        doc.autoTable({ 
+            html: '#tabelForExportSostam',
+            useCss: true,
+            tableLineWidth: 0,
+            theme: 'striped'
+         })
+        doc.save(`DataSostam${this.data.program_year}-${this.data.ff_no}_${this.data.name_ff}.pdf`);
+    },
+    
+    async errorResponse(error) {
+            console.log(error)
+            if (error.response) {
+                if (error.response.status) {
+                    if (error.response.status == 401) {
+                        const confirm = await Swal.fire({
+                            title: 'Session Ended!',
+                            text: "Please login again.",
+                            icon: 'warning',
+                            confirmButtonColor: '#2e7d32',
+                            confirmButtonText: 'Okay'
+                        })
+                        if (confirm) {
+                            localStorage.removeItem("token");
+                            this.$router.push("/");
+                        }
+                    }
+                    if (error.response.status === 500 || error.response.status === 400) {
+                        let errMessage = error.response.data.message
+                        if (errMessage) if (errMessage.includes("Duplicate entry")) errMessage = 'Data sudah ada!' 
+                        Swal.fire({
+                            title: 'Error!',
+                            text: `${errMessage || error.message}`,
+                            icon: 'error',
+                            confirmButtonColor: '#f44336',
+                        })
+                    }
+                }
+            }
+        },
+        async getTableData(getparams) {
+            try {
+                this.table.loading.show = true
+                const params = new URLSearchParams(getparams)
+                const url = `ExportSostamAllSuperAdmin?${params}`
+                const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                const data = call.data
+                this.table.items = data
+                this.table.items_raw = data
+            } catch (err) {this.errorResponse(err)} finally {
+                this.table.loading.show = false
+            }
+        }
+}
+
+}
+</script>

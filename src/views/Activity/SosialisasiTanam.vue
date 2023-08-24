@@ -16,6 +16,11 @@
     </div>
 
     <!-- MODAL -->
+    <Export
+    :show="dialogExportSostam"
+    :data="dialogExportSostamData"
+    @close="dialogExportSostam = false"
+    ></Export>
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px">
         <v-card rounded="xl">
@@ -2558,7 +2563,7 @@
               </v-btn>
             </v-list-item>
             <!-- export data -->
-            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'">
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER')) || User.role_group == 'IT'">
               <v-btn
                   :disabled="!$store.state.User.role_group=='IT'"
                 dark
@@ -2631,6 +2636,8 @@ import LottieAnimation from 'lottie-web-vue';
 
 import detailLokasiSostam from "@/views/Activity/components/sostam/DetailLahanSostamMap";
 
+import Export from "@/views/Activity/SosialisasiTanam/Export";
+
 import treeAnimation from '@/assets/lottie/tree.json'
 import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
 import {Kebumen} from "@/store/scpecialEmails/nurseryTeam";
@@ -2641,7 +2648,8 @@ export default {
   components: {
     detailLokasiSostam,
     LottieAnimation,
-    PickCoordinate
+    PickCoordinate,
+    Export
   },
   data: () => ({
     authtoken: "",
@@ -2673,6 +2681,11 @@ export default {
     datepicker2NotAvailable: [],
     datepicker2Key: 101,
     datepicker2Key2: 1011,
+
+
+    //Export Modals
+    dialogExportSostam: false,
+    dialogExportSostamData: null,
     
 
     // periode tanam date picker
@@ -4924,38 +4937,34 @@ export default {
       return tanggal + " " + bulanIndo[Math.abs(bulan)] + " " + tahun;
     },
     showExportModal(item){
-      console.log(item)
-      
-      var apiLink = this.BaseUrlGet;
-      window.open(
-        apiLink.substring(0, apiLink.length - 4)
-      );
+      this.dialogExportSostam = true;
+      this.dialogExportSostamData = item
     },
 
-    downloadSuperAdmin() {
-      var str = this.BaseUrlGet;
-      window.open(
-        str.substring(0, str.length - 4) +
-          "ExportSostamAllSuperAdmin?mu=" +
-          this.valueMU +
-          "&ta=" +
-          this.valueTA +
-          "&village=" +
-          this.valueVillage +
-          "&typegetdata=" +
-          this.typegetdata +
-          "&ff=" +
-          this.valueFFcode +
-          "&program_year=" +
-          this.program_year
-      );
+    // downloadSuperAdmin() {
+    //   var str = this.BaseUrlGet;
+    //   window.open(
+    //     str.substring(0, str.length - 4) +
+    //       "ExportSostamAllSuperAdmin?mu=" +
+    //       this.valueMU +
+    //       "&ta=" +
+    //       this.valueTA +
+    //       "&village=" +
+    //       this.valueVillage +
+    //       "&typegetdata=" +
+    //       this.typegetdata +
+    //       "&ff=" +
+    //       this.valueFFcode +
+    //       "&program_year=" +
+    //       this.program_year
+    //   );
 
-      // this.valueMUExcel = "";
-      // this.valueTAExcel = "";
-      // this.valueVillageExcel = "";
-      // this.typegetdataExcel = "";
-      // this.valueFFcodeExcel = "";
-    },
+    //   // this.valueMUExcel = "";
+    //   // this.valueTAExcel = "";
+    //   // this.valueVillageExcel = "";
+    //   // this.typegetdataExcel = "";
+    //   // this.valueFFcodeExcel = "";
+    // },
     getColorStatus(status) {
       if (status == 0) return "red";
       else return "green";
