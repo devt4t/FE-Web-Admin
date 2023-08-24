@@ -3946,7 +3946,7 @@ export default {
         distribution_location: this.dataToStore.distribution_location,
         planting_time:  this.dataToStore.planting_time,
         distribution_coordinates:  this.dataToStore.distribution_coordinates,
-        rec_armada:  this.dataToStore.distribution_rec_armada,
+        distribution_rec_armada:  this.dataToStore.distribution_rec_armada,
         start_pembuatan_lubang_tanam:  this.dataToStore.start_pemlub_time,
         end_planting_time: this.dataToStore.end_planting_time
 
