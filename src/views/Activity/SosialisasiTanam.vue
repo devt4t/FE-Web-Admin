@@ -3923,7 +3923,7 @@ export default {
                 console.log(postEditGIS);
                 try{
                 const response = await axios.post(
-                    this.BaseUrlGet + "",
+                    this.BaseUrlGet + "UpdateCoordinatebyGis",
                     postEditGIS,
                     {
                       headers: {
