@@ -2156,6 +2156,8 @@
             </v-btn>
             </v-col>
             <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
+              
+
               <v-btn
                   :disabled="!$store.state.User.role_group=='IT'"
                 dark
@@ -2165,6 +2167,7 @@
               >
                 <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Tambah FF Sostam
               </v-btn>
+              
               <!-- dropdown export button -->
               <v-menu
                 rounded="xl"
@@ -2192,7 +2195,7 @@
                       <v-icon small>mdi-plus</v-icon> Add
                     </v-btn>
                   </v-list-item>
-                  <v-list-item>
+                  <!-- <v-list-item>
                     <v-btn
                       :disabled="!valueMU && typegetdata == 'all'"
                       rounded
@@ -2201,7 +2204,7 @@
                     >
                       <v-icon class="mr-1" small>mdi-download-circle</v-icon> Export Semua
                     </v-btn>
-                  </v-list-item>
+                  </v-list-item> -->
                 </v-list>
               </v-menu>
             </v-col>
@@ -2552,6 +2555,19 @@
                 mdi-pencil
               </v-icon>
                 Edit Foto Absensi
+              </v-btn>
+            </v-list-item>
+            <!-- export data -->
+            <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'REGIONAL MANAGER')) || User.role_group == 'IT'">
+              <v-btn
+                  :disabled="!$store.state.User.role_group=='IT'"
+                dark
+                rounded
+                @click="showExportModal(item)"
+                color="blue"
+              >
+                <v-icon class="mr-1" small>mdi-microsoft-excel</v-icon> 
+                Export Data Sostam
               </v-btn>
             </v-list-item>
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation == 1) && (User.role_group == 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'REGIONAL MANAGER')">
@@ -4259,7 +4275,7 @@ export default {
               updatedatapost.absent2 = response.data.data.new_name
             }
       console.log(updatedatapost);
-      this.dialogShowEditAbsensi = false;
+      
       try {
         this.$store.state.loadingOverlay = true
         const response = await axios.post(
@@ -4275,18 +4291,18 @@ export default {
         if (response.data.data.result == "success") {
           this.$store.state.loadingOverlay = false
           this.dialog = false;
-          // this.snackbar = true;
-          // this.colorsnackbar = "green";
-          // this.textsnackbar = "Sukses mengubah data";
+          this.snackbar = true;
+          this.colorsnackbar = "green";
+          this.textsnackbar = "Sukses mengubah data";
           this.initialize();
         } else {
-          this.dialog = true;
+          this.dialogShowEditAbsensi = false;
           this.$store.state.loadingOverlay = false
         }
       } catch (error) {
         console.error(error.response);
         if (error.response.status == 401) {
-          this.dialog = true;
+          this.dialogShowEditAbsensi = false;
           this.$store.state.loadingOverlay = false
         }
       }
@@ -4906,6 +4922,14 @@ export default {
       var tahun = date.split("-")[0];
 
       return tanggal + " " + bulanIndo[Math.abs(bulan)] + " " + tahun;
+    },
+    showExportModal(item){
+      console.log(item)
+      
+      var apiLink = this.BaseUrlGet;
+      window.open(
+        apiLink.substring(0, apiLink.length - 4)
+      );
     },
 
     downloadSuperAdmin() {
