@@ -1273,7 +1273,7 @@
                 rounded
                 @click="showPlantingPeriode"
                 color="green"
-                :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+                :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'UNIT MANAGER'"
                 class="px-5"
                 >
               <v-icon class="mr-1" small color="white">

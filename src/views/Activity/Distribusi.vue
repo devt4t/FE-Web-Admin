@@ -3998,10 +3998,10 @@ export default {
             let maxFF = this.calendarGetMaxFF(n, date)
             let maxSeed = this.calendarGetMaxSeed(n)
             
-            if (total === maxFF  || maxSeed === totalSeed) {
-                return 'green'
-            } else if (total > maxFF || maxSeed < totalSeed) {
+            if (total > maxFF || maxSeed < totalSeed) {
                 return 'red'
+            } else if (total === maxFF  || maxSeed === totalSeed) {
+                return 'green'
             } else {
                 return 'yellow'
             }
