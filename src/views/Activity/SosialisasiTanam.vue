@@ -3149,7 +3149,7 @@ export default {
     'datepicker2Show': {
       async handler(newValue) {
         if (newValue == true) {
-          await this.setUnavailableDistributionDates()
+          // await this.setUnavailableDistributionDates()
           console.log('datepicker2NotAvailable',this.datepicker2NotAvailable)
         }
       }
@@ -5013,6 +5013,7 @@ export default {
       }
     },
     async getLahansFF() {
+      this.resetDataAddSostam();
       try {
         this.table.lahans.loading = true
 
@@ -5037,12 +5038,25 @@ export default {
           }
         })
 
+        await this.setUnavailableDistributionDates()
         this.dataToStore.hasSostam = res.data.data.result.sostam > 0 ? true : false
       } catch (err) {
         console.log(err.response)
       } finally {
         this.table.lahans.loading = false
       }
+    },
+    resetDataAddSostam(){
+      console.log('reset')
+      this.dataToStore.distribution_time = ''
+      this.dataToStore.start_pemlub_time = ''
+      this.dataToStore.penlub_time = ''
+      this.dataToStore.planting_time = ''
+      this.dataToStore.end_planting_time = ''
+      this.dataToStore.distribution_coordinates = ''
+      this.dataToStore.distribution_location = ''
+      this.dataToStore.distribution_rec_armada = ''
+
     },
     async getFFOptions() {
       try {
@@ -5441,7 +5455,7 @@ export default {
           resData.forEach((avData, avIndex) => {
             if (avData.nursery == ff_nursery) {
               avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total,  avData.total_bibit_sostam)
-              console.log(avData);
+              
               if (avData.color == 'yellow') {
                 ffDatesAvailable.push(this.dateFormat(avData.date, 'Y-MM-DD'))
               } else {
