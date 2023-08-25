@@ -5109,9 +5109,9 @@ export default {
     },
     calendarGetMaxSeed(n){
       if(['Ciminyak', 'Cirasea', 'Soreang'].includes(n)){
-        return 40000
+        return 35000
       } else if(['Pati', 'Kebumen']){
-        return 25000
+        return 20000
       }
     },
     calendarGetMaxFF(n) {
