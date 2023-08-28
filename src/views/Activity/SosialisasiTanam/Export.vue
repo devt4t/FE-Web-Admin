@@ -1,4 +1,5 @@
-<template><v-dialog
+<template>
+<v-dialog
     v-model="showModal"
     scrollable
     max-width="2500px"
@@ -62,7 +63,9 @@
                     </th>
                 </tr>
                 <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} lighten-4`">
-                        <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" :class="` lighten-3`">
+                        <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" :class="`
+                         lighten-3`">
+                            
                             <!-- <span v-if="itemTable.value == 'farmer_nik'">
                                 '
                             </span> -->
@@ -74,7 +77,10 @@
                             </span>
                         </td>
                     </tr>
-            </table>
+            
+                    
+            
+                </table>
             
         </v-card-text>
         
@@ -84,7 +90,9 @@
             </v-card-actions>
     </v-card>
 </v-dialog>
+
 </template>
+
 <script>
 
 import axios from 'axios'
@@ -107,25 +115,32 @@ export default {
             headers: [
                 {text: 'No', value: 'index', width: 75},
                 {text: 'No Form', value: 'form_no'},
-                {text: 'No Lahan', value: 'lahanNo'},
-                {text: 'Petani', value: 'petani'},
-                {text: 'Desa', value: 'desa', sortable: false},
-                {text: 'Nama kecamatan', value: 'nama_kec'},
-                {text: 'Nama Mu', value: 'nama_mu'},
-                {text: 'Lokasi', value: 'location'},
-                {text: 'Status Lahan', value: 'land_area', sortable: false},
-                {text: 'Area Tanam', value: 'planting_area'},
-                {text: 'Pohon Kayu', value: 'pohon_kayu'},
-                {text: 'Pohon MPTS', value: 'pohon_mpts'},
-                {text: 'Status', value: 'status'},
                 {text: 'Nama FF', value: 'ff'},
-                {text: 'Nama FC', value: 'nama_fc_lahan'},
-                {text: 'Tahun Tanam', value: 'planting_year'},
+                {text: 'Petani', value: 'petani'},
+                {text: 'No Lahan', value: 'lahanNo'},
+                {text: 'Desa', value: 'desa'},
+
+                {text: 'Tanggal Sosialisasi', value: 'soc_date'},
+                // {text: 'Jumlah Peserta', value: ''},
+
+                // {text: 'Nama kecamatan', value: 'nama_kec'},
+                // {text: 'Nama Mu', value: 'nama_mu'},
+                // {text: 'Lokasi', value: 'location'},
+                {text: 'Jumlah Pohon Kayu', value: 'pohon_kayu'},
+                {text: 'Jumlah Pohon MPTS', value: 'pohon_mpts'},
+                {text: 'Jumlah Total Bibit', value: 'max_seed_amount'},
+                // {text: 'Status Lahan', value: 'land_area', sortable: false},
+                // {text: 'Area Tanam', value: 'planting_area'},
+                
+                // {text: 'Nama FC', value: 'nama_fc_lahan'},
+                // {text: 'Tahun Tanam', value: 'planting_year'},
                 {text: 'Pembuatan Lubang Tanam', value: 'pembuatan_lubang_tanam'},
                 {text: 'Waktu Distribusi', value: 'distribution_time'},
+                {text: 'Koordinat Distribusi', value: 'distribution_coordinates'},
                 {text: 'Lokasi Distribusi', value: 'distribution_location'},
                 {text: 'Waktu Tanam', value: 'planting_time'},
-                {text: 'Total Bibit', value: 'max_seed_amount'},
+                
+                {text: 'Status', value: 'status'},
             ],
             items: [],
             items_raw: [],

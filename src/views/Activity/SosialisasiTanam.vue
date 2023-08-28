@@ -623,7 +623,7 @@
                             :allowed-dates="showingAvailableDates"
                             :key="datepicker2Key"
                           ></v-date-picker>
-                          <v-btn color="green" class="white--text px-4" small rounded @click="datepicker2Show = false">
+                          <v-btn color="green" class="white--text px-4" small rounded @click="this.setTanggalDistribusi">
                             <v-icon small class="mr-1">mdi-check-circle</v-icon>
                             Set
                           </v-btn>
@@ -806,7 +806,9 @@
                       <div class="d-flex align-center my-0">
                         <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>List Petani & Lahan</p>
                         <v-divider class="mx-2" color=""></v-divider>
-                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani</p>
+                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani, 
+                          <strong>{{ this.totalDataBibitSostam }}</strong> Bibit
+                        </p>
                       </div>
                     </v-col>
                     <v-col cols="12" class="d-flex justify-end">
@@ -2667,6 +2669,10 @@ export default {
       loading: false,
     },
 
+
+    totalDataBibitSostam: 0,
+
+
     dialogUnverif: false,
     dialogConfirmPeriodeTanam: false,
     program_year: '2022',
@@ -2682,6 +2688,9 @@ export default {
     datepicker2Key: 101,
     datepicker2Key2: 1011,
 
+    //distribution seed
+    tempSeed: 0,
+    totalDistributionSeed: 0,
 
     //Export Modals
     dialogExportSostam: false,
@@ -3175,7 +3184,9 @@ export default {
     disabledCreateSostamByFF() {
       if (!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || this.table.lahans.items.length == 0 || !this.dataToStore.distribution_rec_armada || !this.dataToStore.absensi_photo) return true
       if(this.table.farmer_attendance.length == 0) return  true
+
       return false
+
 
     },
     disabledCreatePeriodeTanamByFF(){
@@ -3345,6 +3356,7 @@ export default {
         this.loadtable = false
       })
     },
+    
 
 
     getCountDown(item){
@@ -3572,13 +3584,14 @@ export default {
             }
             console.log(dataToStore);
 
-            // await this.setUnavailableDistributionDates()
+            await this.setUnavailableDistributionDates()
+            
             const isUnavailableDate = this.datepicker2NotAvailable.includes(this.dateFormat(dataToStore.distribution_time, 'Y-MM-DD'))
             if (isUnavailableDate == true) {
               this.dataToStore.distribution_time = ''
               this.colorsnackbar = 'red'
               this.textsnackbar = `Tanggal distribusi sudah penuh!`
-              this.timeoutsnackbar = 10000
+              this.timeoutsnackbar = 20000
               this.snackbar = true
             } else {
               /*send online*/
@@ -5016,6 +5029,8 @@ export default {
       this.resetDataAddSostam();
       try {
         this.table.lahans.loading = true
+        
+        this.dialogAdd.loading = true
 
         const params = new URLSearchParams({
           ff_no: this.options.ff.model,
@@ -5030,20 +5045,26 @@ export default {
           }
         )
         this.dataToStore.selectedFF = res.data.data.result.ff
+        this.totalDataBibitSostam = 0;
         this.table.lahans.items = res.data.data.result.lahans.map(value => {
+          this.totalDataBibitSostam += parseInt( value.total_kayu+value.total_mpts )
           return{
             ...value,
             max_seed_amount: value.total_kayu+value.total_mpts,
-            training_material: this.dataToStore.training_material
+            training_material: this.dataToStore.training_material,
+            
           }
         })
 
         await this.setUnavailableDistributionDates()
+        this.checkTotalSeed();
         this.dataToStore.hasSostam = res.data.data.result.sostam > 0 ? true : false
       } catch (err) {
         console.log(err.response)
       } finally {
         this.table.lahans.loading = false
+        
+        this.dialogAdd.loading = false
       }
     },
     resetDataAddSostam(){
@@ -5058,6 +5079,12 @@ export default {
       this.dataToStore.distribution_rec_armada = ''
 
     },
+    async setTanggalDistribusi(){
+      this.datepicker2Show = false
+      await this.setUnavailableDistributionDates();
+    },
+
+
     async getFFOptions() {
       try {
         this.options.ff.loading = true
@@ -5096,6 +5123,16 @@ export default {
         this.modals.pick_coordinate.show = true
     },
     // Utilities
+
+    // checkTotalSeed(totalSeeds){
+    //   console.log('Total Seed', this.totalDistributionSeed)
+      
+    //   if(this.tempSeed + totalSeeds > 3500){
+
+    //   }
+    // },
+
+
     calendarGetNurseryColor(n, total, totalSeed) {
         let maxFF = this.calendarGetMaxFF(n)
         let maxSeed = this.calendarGetMaxSeed(n)
@@ -5109,9 +5146,9 @@ export default {
     },
     calendarGetMaxSeed(n){
       if(['Ciminyak', 'Cirasea', 'Soreang'].includes(n)){
-        return 35000
+        return 40000
       } else if(['Pati', 'Kebumen']){
-        return 20000
+        return 25000
       }
     },
     calendarGetMaxFF(n) {
@@ -5220,7 +5257,7 @@ export default {
     },
     getNurseryAlocation(mu_no) {
         const soreang = ['020', '021']
-        const ciminyak   = ['023', '026', '027', '021']
+        const ciminyak   = ['023', '026', '027']
         const cirasea   = ['022', '024', '025', '029']
         const kebumen    = ['019']
         const pati       = ['015', '016']
@@ -5411,10 +5448,11 @@ export default {
       })
 
       // set mu ff in edit sostam
-      console.log('mu_no', this.defaultItem.mu_no)
+      console.log('mu_no', this.dataToStore.selectedFF.mu_no)
       if (ff_mu_no == '') {
-        if (this.defaultItem.mu_no) ff_mu_no = this.defaultItem.mu_no
+        if (this.dataToStore.selectedFF.mu_no) ff_mu_no = this.dataToStore.selectedFF.mu_no
       }
+
 
       // get ff nursery
       let ff_nursery = this.getNurseryAlocation(ff_mu_no)
@@ -5425,6 +5463,7 @@ export default {
 
       const distributionDateRange = [
         {
+          // day: '1',
           month: '12',
           year: '2023',
           program_year: this.$store.state.programYear.model,
@@ -5432,6 +5471,7 @@ export default {
           nursery: ff_nursery
         },
         {
+          // day: '1',
           month: '01',
           year: '2024',
           program_year: this.$store.state.programYear.model,
@@ -5451,11 +5491,12 @@ export default {
           }
         ).then(res => {
           const resData = res.data.data.result.datas || []
+          
           // console.log(resData)
           resData.forEach((avData, avIndex) => {
             if (avData.nursery == ff_nursery) {
-              avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total,  avData.total_bibit_sostam)
-              
+              avData.color = this.calendarGetNurseryColor(avData.nursery, avData.total,  avData.total_bibit_sostam + this.totalDataBibitSostam) 
+              console.log(avData)
               if (avData.color == 'yellow') {
                 ffDatesAvailable.push(this.dateFormat(avData.date, 'Y-MM-DD'))
               } else {
@@ -5470,6 +5511,9 @@ export default {
           }
         })
       }))
+      
+
+
       this.datepicker2NotAvailable = ffDatesFull
       this.datepicker2Loading = false
       this.datepicker2Key += 1

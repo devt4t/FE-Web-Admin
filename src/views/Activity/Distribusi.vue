@@ -2397,7 +2397,7 @@ export default {
             events: [],
             focus: '',
             loading: false,
-            names: ['Arjasari', 'Ciminyak'],
+            names: ['Soreang', 'Ciminyak'],
             range: [ moment().format('Y-MM-DD'), '2023-01-31'],
             selectedElement: null,
             selectedEvent: {},
@@ -4008,9 +4008,9 @@ export default {
         },
         calendarGetMaxSeed(n) {
           if(['Ciminyak', 'Cirasea', 'Soreang'].includes(n)){
-            return 35000
+            return 40000
           } else if(['Pati', 'Kebumen']){
-            return 20000
+            return 25000
           }
         },
       calendarGetMaxFF(n, date) {
@@ -4182,7 +4182,7 @@ export default {
         },
         getNurseryAlocation(mu_no) {
         const soreang = ['020', '021']
-        const ciminyak   = ['023', '026', '027', '021']
+        const ciminyak   = ['023', '026', '027']
         const cirasea   = ['022', '024', '025', '029']
         const kebumen    = ['019']
         const pati       = ['015', '016']
