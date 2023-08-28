@@ -38,13 +38,21 @@
                 "
             >
                 <tr>
-                    <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">Tahun Program: {{ data ? data.program_year || '': '' }}</th>
+                    <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
+                        Tahun Program: {{ data ? data.program_year || '': '' }}</th>
                 </tr>
                 <tr>
                     <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
                         <h2>
                             Data Sostam FF {{ data ? data.name_ff || '-' : '-' }}
                         </h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
+                        
+                            Jumah Peserta: {{ this.totalPeserta }} Orang
+                        
                     </th>
                 </tr>
                 <tr>
@@ -63,19 +71,28 @@
                     </th>
                 </tr>
                 <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} lighten-4`">
-                        <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" :class="`
-                         lighten-3`">
-                            
-                            <!-- <span v-if="itemTable.value == 'farmer_nik'">
-                                '
-                            </span> -->
+                        <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" 
+                        :class="` 
+                        ${statusRowColor(tableData[itemTable.value], itemTable.value)}
+                        
+                        lighten-3`">
+
                             <span v-if="itemTable.value == 'index'">
                                 {{ tableDataIndex + 1 }}
+                            </span>
+                            
+                            <span v-else-if="itemTable.value == 'status'">
+                                <v-chip :color="getColorStatus(tableData[itemTable.value])" dark>
+                                    {{ tableData[itemTable.value] }}
+                                </v-chip>
                             </span>
                             <span v-else>
                                 {{ tableData[itemTable.value] }}
                             </span>
                         </td>
+                    </tr>
+                    <tr v-for="(tableData, dataStatusColor) in table.items">
+
                     </tr>
             
                     
@@ -111,6 +128,8 @@ export default {
         },
     },
     data: () => ({
+        totalPeserta : 0,
+
         table: {
             headers: [
                 {text: 'No', value: 'index', width: 75},
@@ -199,6 +218,17 @@ methods: {
          })
         doc.save(`DataSostam${this.data.program_year}-${this.data.ff_no}_${this.data.name_ff}.pdf`);
     },
+    statusRowColor(outputColor, itemKey){
+        if(itemKey == 'status'){
+            
+                if (outputColor == 'Belum Verifikasi') return "red";
+            else return "green";
+        }
+    },
+    getColorStatus(status) {
+      if (status == 'Belum Verifikasi') return "red";
+      else return "green";
+    },
     
     async errorResponse(error) {
             console.log(error)
@@ -236,7 +266,11 @@ methods: {
                 const params = new URLSearchParams(getparams)
                 const url = `ExportSostamAllSuperAdmin?${params}`
                 const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                const data = call.data
+                const data = call.data.listData
+                
+                const totalData = call.data.totalData
+                this.totalPeserta = totalData
+
                 this.table.items = data
                 this.table.items_raw = data
             } catch (err) {this.errorResponse(err)} finally {
