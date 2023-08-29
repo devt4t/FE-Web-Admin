@@ -2994,7 +2994,6 @@ export default {
           { text: "No", value: "index"},
           { text: "Petani", value: "farmer_name"},
           { text: "No Lahan", value: "lahan_no"},
-          { text: "Total Lahan", value: "total_lahan"},
           { text: "Total Kayu", value: "total_kayu", align: 'center'},
           { text: "Total MPTS", value: "total_mpts", align: 'center'},
           { text: "Kehadiran", value: "data-table-select", align: 'right', sortable: false},
@@ -5570,10 +5569,17 @@ export default {
           }
         })
       }))
-      
+      console.log(ffDatesFull)
 
+      let holiday = [
+        '2023-12-11',
+        '2023-12-22',
+        '2024-01-02',
+        '2024-01-13',
+        '2024-01-24',
+      ]
 
-      this.datepicker2NotAvailable = ffDatesFull
+      this.datepicker2NotAvailable = [...ffDatesFull, ...holiday]
       this.datepicker2Loading = false
       this.datepicker2Key += 1
       this.datepicker2Key2 += 1
