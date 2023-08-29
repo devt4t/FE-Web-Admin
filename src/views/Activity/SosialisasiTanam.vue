@@ -804,7 +804,8 @@
                   <v-row class="align-center mb-4">
                     <v-col cols="12" class="">
                       <div class="d-flex align-center my-0">
-                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>List Petani & Lahan</p>
+                        <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>
+                          List Petani & Lahan</p>
                         <v-divider class="mx-2" color=""></v-divider>
                         <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani, 
                           <strong>{{ this.totalDataBibitSostam }}</strong> Bibit
@@ -902,8 +903,8 @@
                     <template v-slot:item.index="{index}">
                       {{ index + 1 }}
                     </template>
-                    <template v-slot:item.total_lahan="{item}">
-                      <v-icon class="mr-1">mdi-land-fields</v-icon>{{ numberFormat(item.total_lahan) }}
+                    <template v-slot:item.no_lahan="{item}">
+                      {{ numberFormat(item.no_lahan) }}
                     </template>
                     <template v-slot:item.total_kayu="{item}">
                       <v-icon class="mr-1" color="green">mdi-sprout</v-icon>{{ numberFormat(item.total_kayu) }}
@@ -2202,6 +2203,8 @@
                       <v-icon small>mdi-plus</v-icon> Add
                     </v-btn>
                   </v-list-item>
+                  
+
                   <!-- <v-list-item>
                     <v-btn
                       :disabled="!valueMU && typegetdata == 'all'"
@@ -2590,6 +2593,16 @@
                 Unverifikasi
               </v-btn>
             </v-list-item>
+            <v-list-item>
+                    <v-btn
+                      :disabled="User.role_group != 'IT'"
+                      rounded
+                      @click="editDataSostamLahanPetani(item)"
+                      color="blue white--text"
+                    >
+                      <v-icon class="mr-1" small>mdi-refresh</v-icon> EDIT DATA SOSTAM LAHAN PETANI
+                    </v-btn>
+                  </v-list-item>
             <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
@@ -2980,6 +2993,7 @@ export default {
         header: [
           { text: "No", value: "index"},
           { text: "Petani", value: "farmer_name"},
+          { text: "No Lahan", value: "lahan_no"},
           { text: "Total Lahan", value: "total_lahan"},
           { text: "Total Kayu", value: "total_kayu", align: 'center'},
           { text: "Total MPTS", value: "total_mpts", align: 'center'},
@@ -3356,7 +3370,53 @@ export default {
         this.loadtable = false
       })
     },
-    
+
+    async editDataSostamLahanPetani(item){
+      const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+              const postDataEdit={
+              ff_no: item.ff_no
+                }
+                console.log(postDataEdit)
+                try{
+                  const response = await axios.post(
+                      this.BaseUrlGet + "test",
+                      postDataEdit,
+                      {
+                        headers: {
+                          Authorization: `Bearer ` + this.authtoken,
+                        },
+                      }
+                  );
+                  console.log(response.data.data.result);
+
+                    this.dialogDetail = false;
+                    this.dialogPeriodeTanam.show = false;
+                    this.dialogConfirmPeriodeTanam = false;
+                    this.dialog =false;
+                    this.dialogShowEdit = false;
+
+                    this.initialize();
+
+                }catch (error) {
+                  console.error(error.response);
+                  if (error.response.status == 401) {
+                    this.dialogDetail = false;
+                    this.dialogPeriodeTanam.show = false;
+                    localStorage.removeItem("token");
+                    this.$router.push("/");
+                  }
+                }
+            }
+      },
 
 
     getCountDown(item){
@@ -4807,7 +4867,6 @@ export default {
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
-
             },
 
           }
@@ -5037,7 +5096,7 @@ export default {
           program_year: this.program_year
         })
         const res = await axios.get(
-          this.BaseUrlGet + `getFFLahanSostam?${params}`,
+          this.BaseUrlGet + `getFFLahanSostamNew?${params}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
