@@ -372,6 +372,7 @@ export default {
             let loading = this.loading
             const config = this.config
             try {
+                this.table.data = []
                 loading.show = true
                 loading.text = 'Mengambil data...'
                 loading.progress = 0
