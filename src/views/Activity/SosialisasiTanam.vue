@@ -807,7 +807,7 @@
                         <p class="mb-0 grey--text text--darken-3" style="font-size: 17px"><v-icon class="mr-2">mdi-account-group</v-icon>
                           List Petani & Lahan</p>
                         <v-divider class="mx-2" color=""></v-divider>
-                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Petani, 
+                        <p class="mb-0"><strong>{{ table.lahans.items.length }}</strong> Lahan, 
                           <strong>{{ this.totalDataBibitSostam }}</strong> Bibit
                         </p>
                       </div>
