@@ -1373,7 +1373,7 @@
                 <!-- Calendar Section -->
                 <v-expansion-panel v-if="accessModul.calendar" class="rounded-xl">
                     <v-expansion-panel-header>
-                        <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon> Distribution Calendar</h3>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon>Kalender Distribusi</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
@@ -1392,7 +1392,7 @@
                             <v-spacer></v-spacer>
                             <!-- set calendar monthly -->
                             <v-btn
-                            
+                                v-if="this.calendar.type != 'month'"
                                 dark
                                 @click="setCalendarTypeMonthly"
                                 color="success"
