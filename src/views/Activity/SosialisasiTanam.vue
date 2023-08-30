@@ -2570,7 +2570,7 @@
             <!-- export data -->
             <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1 && (User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER')) || User.role_group == 'IT'">
               <v-btn
-                  :disabled="!$store.state.User.role_group=='IT' || !User.role_name == 'UNIT MANAGER'"
+                  :disabled="!$store.state.User.role_group=='IT' || !User.role_name == 'UNIT MANAGER' || !User.email == 'pandu@trees4trees.org'"
                 dark
                 rounded
                 @click="showExportModal(item)"

@@ -139,7 +139,7 @@ export default {
                 {text: 'No Lahan', value: 'lahanNo'},
                 {text: 'Desa', value: 'desa'},
 
-                {text: 'Tanggal Sosialisasi', value: 'soc_date'},
+                {text: 'Tanggal Sosialisasi/ Tanggal Pelatihan', value: 'soc_date'},
                 // {text: 'Jumlah Peserta', value: ''},
 
                 // {text: 'Nama kecamatan', value: 'nama_kec'},
