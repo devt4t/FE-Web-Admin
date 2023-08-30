@@ -465,7 +465,7 @@
               color="green white--text"
               rounded
               @click="SaveEditGIS"
-              :disabled="User.role_group !='IT' && User.role_name !='GIS STAFF' || disabledEditDataGIS"
+              :disabled="User.role_group !='IT' && User.role_name !='GIS STAFF' && User.role_name !='UNIT MANAGER' || disabledEditDataGIS"
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Edit Data GIS
@@ -3689,7 +3689,7 @@ export default {
     async getMU() {
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetManagementUnit",
+          this.BaseUrlGet + "GetManagementUnit" + `?program_year=${this.program_year}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -3719,13 +3719,14 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
+          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam + `&program_year=${this.program_year}`, 
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
             },
           }
         );
+        console.log(this.program_year)
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsTA = response.data.data.result;
@@ -3753,7 +3754,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam,
+          this.BaseUrlGet + "GetDesa?kode_ta=" + valparam + `&program_year=${this.program_year}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -3767,6 +3768,7 @@ export default {
           } else {
             this.itemsVillageForm = response.data.data.result;
           }
+          console.log(this.program_year)
           // this.dataobject = response.data.data.result;
         } else {
           console.log("Kosong");
@@ -4854,14 +4856,14 @@ export default {
       this.dialogUnverif = true;
     },
     async unverifItemConfirm() {
+      this.$store.state.loadingOverlayText = 'Unverification data...'
+      this.$store.state.loadingOverlay = true
       const datapost = {
         form_no: this.defaultItem.form_no,
       };
       // this.dialogDetail = false;
       try {
         this.dialogUnverif = false
-        this.$store.state.loadingOverlayText = 'Unverification data...'
-        this.$store.state.loadingOverlay = true
         await axios.post(
           this.BaseUrlGet + "UnverificationSosialisasiTanam",
           datapost,
@@ -4873,6 +4875,8 @@ export default {
           }
 
         )
+        this.$store.state.loadingOverlayText = null
+        this.$store.state.loadingOverlay = false
         await this.getTableData(this.subMainTable.table.expandItem.ff_no);
       } catch (error) {
         console.error(error.response);
@@ -4882,8 +4886,7 @@ export default {
           this.$router.push("/");
         }
       } finally {
-        this.$store.state.loadingOverlayText = null
-        this.$store.state.loadingOverlay = false
+        
       }
     },
 

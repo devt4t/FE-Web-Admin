@@ -1390,6 +1390,18 @@
                         </v-overlay>
                         <v-row class="">
                             <v-spacer></v-spacer>
+                            <!-- set calendar monthly -->
+                            <v-btn
+                            
+                                dark
+                                @click="setCalendarTypeMonthly"
+                                color="success"
+                                rounded
+                                small
+                                class="mr-4"
+                            >
+                                <v-icon small class="mr-1">mdi-calendar-multiselect</v-icon> Kalender Per Bulan
+                            </v-btn>
                             <!-- Refresh Button -->
                             <v-btn
                                 dark
@@ -1398,7 +1410,7 @@
                                 rounded
                                 small
                             >
-                                <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+                                <v-icon small class="mr-1">mdi-</v-icon> Refresh
                             </v-btn>
                             <v-spacer></v-spacer>
                         </v-row>
@@ -1445,6 +1457,7 @@
                                 :event-color="calendarGetEventColor"
                                 :event-text-color="calendarGetEventTextColor"
                                 :type="calendar.type"
+                                @click:more="calendarGetMoreEvent"
                                 @click:event="calendarShowEvent"
                                 @change="calendarUpdateRange"
                             >
@@ -3113,7 +3126,18 @@ export default {
                 this.calendar.detailBibit.loading = false
             })
         },
+        calendarGetMoreEvent(date){
+            console.log(date.date)
+            // this.calendar.selectedEvent = event
+            this.calendar.focus = date.date;
+            this.calendar.type = "day";
+
+        },
+        setCalendarTypeMonthly(){
+            this.calendar.type = "month";
+        },
         calendarShowEvent ({ nativeEvent, event }) {
+
             // console.log(event)
             const open = () => {
                 this.calendar.selectedEvent = event
