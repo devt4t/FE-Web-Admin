@@ -2593,7 +2593,7 @@
                 Unverifikasi
               </v-btn>
             </v-list-item>
-            <v-list-item>
+            <!-- <v-list-item>
                     <v-btn
                       :disabled="User.role_group != 'IT'"
                       rounded
@@ -2602,7 +2602,9 @@
                     >
                       <v-icon class="mr-1" small>mdi-refresh</v-icon> EDIT DATA SOSTAM LAHAN PETANI
                     </v-btn>
-                  </v-list-item>
+                  </v-list-item> -->
+
+
             <!-- <v-list-item v-if="(RoleAccesCRUDShow == true && item.validation != 1) || User.role_group == 'IT'">
               <v-btn
                 dark
@@ -5559,6 +5561,7 @@ export default {
                 ffDatesAvailable.push(this.dateFormat(avData.date, 'Y-MM-DD'))
               } else {
                 ffDatesFull.push(this.dateFormat(avData.date, 'Y-MM-DD'))
+                
               }
             }
           })
