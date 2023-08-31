@@ -33,9 +33,8 @@
 
             <table
                 id="tabelForExportSostam"
-                border="1"
-                style="border: 2px solid black;border-collapse: collapse; min-height: 200px
-                "
+                
+                style="border: 2px solid black;border-collapse: collapse; min-height: 200px"
             >
                 <tr>
                     <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
@@ -51,7 +50,7 @@
                 <tr>
                     <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
                         
-                            Jumah Peserta: {{ this.totalPeserta }} Orang
+                            Jumlah Lahan Petani: {{ this.totalLahan }} Orang
                         
                     </th>
                 </tr>
@@ -63,19 +62,20 @@
                     </td>
                 </tr>
                 <tr><td :colspan="table.headers.length"></td></tr>
-                <tr>
-                    <th v-for="header in table.headers" :key="`tabelForExportSostam${header.value}`" class="green darken-2 white--text">
+                <tr style="border: 2px solid black;border-collapse: collapse;">
+                    <th v-for="header in table.headers" :key="`tabelForExportSostam${header.value}`" class="green darken-2 white--text justify-center align-center">
                         {{ header.text }}
                         <div v-if="header.value == 'land_area'">(m<sup>2</sup>)</div>
                         <div v-if="header.value == 'planting_area'">(m<sup>2</sup>)</div>
                     </th>
                 </tr>
-                <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} lighten-4`">
+                <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
                         <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" 
                         :class="` 
                         ${statusRowColor(tableData[itemTable.value], itemTable.value)}
-                        
-                        lighten-3`">
+                        lighten-3`"
+                        style="border: 1px solid black;border-collapse: collapse;"
+                        >
 
                             <span v-if="itemTable.value == 'index'">
                                 {{ tableDataIndex + 1 }}
@@ -128,7 +128,7 @@ export default {
         },
     },
     data: () => ({
-        totalPeserta : 0,
+        totalLahan : 0,
 
         table: {
             headers: [
@@ -139,15 +139,15 @@ export default {
                 {text: 'No Lahan', value: 'lahanNo'},
                 {text: 'Desa', value: 'desa'},
 
-                {text: 'Tanggal Sosialisasi/ Tanggal Pelatihan', value: 'soc_date'},
+                {text: 'Tanggal Sosialisasi/ Tanggal Pelatihan', class: "justify-center align-center", value: 'soc_date'},
                 // {text: 'Jumlah Peserta', value: ''},
 
                 // {text: 'Nama kecamatan', value: 'nama_kec'},
                 // {text: 'Nama Mu', value: 'nama_mu'},
                 // {text: 'Lokasi', value: 'location'},
-                {text: 'Jumlah Pohon Kayu', value: 'pohon_kayu'},
-                {text: 'Jumlah Pohon MPTS', value: 'pohon_mpts'},
-                {text: 'Jumlah Total Bibit', value: 'max_seed_amount'},
+                {text: 'Jumlah Pohon Kayu', align: "center", value: 'pohon_kayu'},
+                {text: 'Jumlah Pohon MPTS', align: "center", value: 'pohon_mpts'},
+                {text: 'Jumlah Total Bibit', align: "center", value: 'max_seed_amount'},
                 // {text: 'Status Lahan', value: 'land_area', sortable: false},
                 // {text: 'Area Tanam', value: 'planting_area'},
                 
@@ -269,7 +269,7 @@ methods: {
                 const data = call.data.listData
                 
                 const totalData = call.data.totalData
-                this.totalPeserta = totalData
+                this.totalLahan = totalData
 
                 this.table.items = data
                 this.table.items_raw = data
