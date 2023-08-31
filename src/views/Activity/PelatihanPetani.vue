@@ -305,6 +305,29 @@
                               </template>
                             </v-autocomplete>
                           </v-col>
+
+                          <!-- Materi Pelatihan 2 -->
+                          <v-col cols="12" sm="12" md="12">
+                            <v-text-field
+                              item-color="success"
+                              :menu-props="{rounded: 'xl'}"
+                              outlined
+                              rounded
+                              hide-details
+                              v-model="dataToStore.soc_no"
+                              label="Nomor Sosialisasi"
+                              disabled
+                              :rules="[(v) => !!v || 'Field is required']"
+                            >
+                              <!-- <template v-slot:item="data">
+                                <v-list-item-content>
+                                  <v-list-item-title v-html="data.item.material_no"></v-list-item-title>
+                                  <v-list-item-subtitle>{{ data.item.material_name }}</v-list-item-subtitle>
+                                </v-list-item-content>
+                              </template> -->
+                            </v-text-field>
+                          </v-col>
+
                           <!-- Date -->
                           <v-col cols="12" sm="12" md="12" lg="12">
                             <p class="mb-1">Tanggal</p>
@@ -1409,13 +1432,14 @@ export default {
       um_no: "",
       fc_no: "",
       ff_no: "",
+      soc_no: "",
       absensi_img: "",
       absensi_img2: "",
       dokumentasi_img: "",
       materi_1: 'TR010',
       materi_2: null,
       material_organic: ['ORG22090001', 'ORG22090002'],
-      program_year: '2022',
+      program_year: '2023',
       date: '',
       farmers: []
     },
@@ -1496,7 +1520,8 @@ export default {
     search: "",
     type: "",
     headers: [
-      { text: "Form No", value: "training_no" },
+      { text: "No Form", value: "training_no" },
+      { text: "No Sosialisasi", value: "soc_no" },
       { text: "Nama FC", value: "fc_name" },
       { text: "Nama FF", value: "ff_name", align: "start" },
       { text: "Desa", value: "desa", align: "start" },
@@ -1863,6 +1888,7 @@ export default {
         this.loaddownload = false;
       }
     },
+
     async verif() {
       const datapost = {
         ph_form_no: this.defaultItem.ph_form_no,
@@ -1979,6 +2005,11 @@ export default {
       // if (this.User.fc.fc) {
       //   this.fc_no_global = this.User.fc.fc;
       // }
+      this.dataToStore.soc_no = null;
+      if(this.dataToStore.soc_no==null){
+        this.dataToStore.soc_no = 'SO-'+this.dataToStore.program_year+'-'+this.valueFFForm
+      }
+      console.log(this.dataToStore.soc_no)
       try {
         const response = await axios.get(
           this.BaseUrlGet +
@@ -2081,6 +2112,7 @@ export default {
       this.dataToStore.fc_no = this.selectFC
       this.dataToStore.ff_no = this.selectFF.ff_no
 
+
       // insert MU TA DESA
       this.dataToStore.mu_no = this.selectFF.mu_no
       this.dataToStore.target_area = this.selectFF.target_area
@@ -2105,6 +2137,7 @@ export default {
         village: this.selectFF.working_area,
         field_coordinator: this.dataToStore.fc_no,
         ff_no: this.dataToStore.ff_no,
+        soc_no: this.dataToStore.soc_no,
         user_id: this.User.email,
         status: 1,
         farmers: this.dataToStore.farmers
@@ -2390,6 +2423,7 @@ export default {
       if (this.options.materiPelatihan.length == 0) {
         await this.getTrainingMateriOption()
       }
+      
 
       // Get Organic Options
       if (this.options.material_organic.length == 0) {
@@ -2487,6 +2521,9 @@ export default {
         console.log(error)
       }
     },
+
+
+    
     // get options
     async getTrainingMateriOption() {
       try {
@@ -2544,6 +2581,7 @@ export default {
         um_no: "",
         fc_no: "",
         ff_no: "",
+        soc_no: null,
         absensi_img: "",
         materi_1: 'TR010',
         materi_2: null,
