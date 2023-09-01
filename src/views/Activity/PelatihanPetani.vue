@@ -1059,6 +1059,13 @@
         </v-card>
       </v-dialog>
 
+      <!-- modal export farmer training -->
+      <Export_PelatihanPetani
+        :show="dialogExportFarmerTraining"
+        :program_year="this.tables.programYear"
+        @close="dialogExportFarmerTraining = false"
+      >
+      </Export_PelatihanPetani>
       <!-- Preview Petani Modal -->
       <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl mx-1" scrollable>
         <v-card class="rounded-xl">
@@ -1414,11 +1421,12 @@ import { randomInt } from 'crypto';
 // import BaseUrl from "../../services/BaseUrl.js";
 import moment from 'moment'
 import VueHtml2pdf from 'vue-html2pdf'
-
+import Export_PelatihanPetani from "@/views/Activity/PelatihanPetani/Export_PelatihanPetani"
 export default {
   name: "LubangTanam",
   components: {
-    VueHtml2pdf
+    VueHtml2pdf,
+    Export_PelatihanPetani
   },
   authtoken: "",
   data: () => ({
@@ -1498,6 +1506,8 @@ export default {
     dialogDelete: false,
     idDelete: null,
     absensiDelete: null,
+    dialogExportFarmerTraining: false,
+    dialogExportFarmerTrainingData: null,
     dialogDetail: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
@@ -1739,20 +1749,21 @@ export default {
       }
     },
     async exportToExcel() {
-      try {
-        let params = new URLSearchParams({
-          token: localStorage.getItem('token'),
-          program_year: this.tables.programYear,
-        })
+      this.dialogExportFarmerTraining = true
+      // try {
+      //   let params = new URLSearchParams({
+      //     token: localStorage.getItem('token'),
+      //     program_year: this.tables.programYear,
+      //   })
 
-        if (this.User.ff.ff) if (this.User.ff.ff != '-') if (this.User.ff.ff.length > 0) params.set('ff', this.User.ff.ff.toString())
+      //   if (this.User.ff.ff) if (this.User.ff.ff != '-') if (this.User.ff.ff.length > 0) params.set('ff', this.User.ff.ff.toString())
 
-        const url = this.$store.getters.getApiUrl(`ExportFarmerTraining?${params}`);
+      //   const url = this.$store.getters.getApiUrl(`ExportFarmerTraining?${params}`);
 
-        window.open(url, '_blank');
-      } catch (err) {
-        this.sessionEnd(err)
-      }
+      //   window.open(url, '_blank');
+      // } catch (err) {
+      //   this.sessionEnd(err)
+      // }
     },
     async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
@@ -2701,7 +2712,9 @@ export default {
         return moment(date).format(format)
     },
     generateReport () {
-        this.$refs.html2Pdf.generatePdf()
+      this.dialogExportFarmerTraining = true
+        // this.$refs.html2Pdf.generatePdf()
+        
     },
     generateFormData(data) {
         let formData= new FormData()

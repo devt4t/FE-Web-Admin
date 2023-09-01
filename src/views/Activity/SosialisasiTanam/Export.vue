@@ -94,7 +94,6 @@
                     <tr v-for="(tableData, dataStatusColor) in table.items">
 
                     </tr>
-            
                     
             
                 </table>
