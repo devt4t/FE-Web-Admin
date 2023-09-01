@@ -40,6 +40,7 @@
                   v-on:change="selectedMU"
                   label="Management Unit"
                   clearable
+                  :rules="[(v) => !!v || 'Field is required']"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="12" md="12">
@@ -55,6 +56,7 @@
                   outlined
                   rounded
                   hide-details
+                  :rules="[(v) => !!v || 'Field is required']"
                 ></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="12" md="12">
@@ -70,6 +72,7 @@
                   outlined
                   rounded
                   hide-details
+                  :rules="[(v) => !!v || 'Field is required']"
                 ></v-autocomplete>
               </v-col>
             </v-row>
@@ -82,7 +85,12 @@
             Cancel
           </v-btn
           >
-          <v-btn color="green white--text" rounded class="px-5" @click="exportPenilikanLubangByExcel('area')">
+          <v-btn 
+          color="green white--text" 
+          rounded class="px-5" 
+          @click="exportPenilikanLubangByExcel"
+          :disabled="disabledExportData"
+          >
             <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
             Export
           </v-btn>
@@ -1732,7 +1740,18 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
+
+    <!-- modal export penlub -->
+    <Export_PenilikanLubangTanamPetaniVue
+    :show="dialogExportPenlubPetani"
+    :program_year="this.program_year"
+    :mu="this.selectMU"
+    :ta="this.selectTA"
+    :village="this.selectVillage"
+    @close="dialogExportPenlubPetani = false"
+    >
+    </Export_PenilikanLubangTanamPetaniVue>
+
     <v-data-table
       data-aos="fade-up"
       data-aos-delay="200"
@@ -1913,7 +1932,9 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <v-btn v-else rounded color="blue white--text" class="mr-2" @click="() => exportLahanUmum()" :disabled="loadtable || $store.state.loadingOverlay"><v-icon>mdi-microsoft-excel</v-icon> Export</v-btn>
+          <v-btn v-else rounded color="blue white--text" class="mr-2" @click="() => exportLahanUmum()" :disabled="loadtable || $store.state.loadingOverlay">
+            <v-icon>mdi-microsoft-excel</v-icon> 
+            Export</v-btn>
           <!-- Add Lahan umum planting hole -->
           <v-btn
             v-if="land_program.model == 'Umum'"
@@ -2082,10 +2103,14 @@
 // import ModalFarmer from "./ModalFarmer"
 import axios from "axios"
 import moment from 'moment'
+import Export_PenilikanLubangTanamPetaniVue from '@/views/Activity/PenilikanLubang/Export_PenilikanLubangTanamPetani.vue';
 // import BaseUrl from "../../services/BaseUrl.js"
 
 export default {
   name: "LubangTanam",
+  components: {
+    Export_PenilikanLubangTanamPetaniVue,
+  },
   authtoken: "",
   data: () => ({
     dialogAddPlantingHoleLahanUmum: {
@@ -2155,6 +2180,9 @@ export default {
     menu1: "",
     menu2: "",
     menu3: "",
+
+    dialogExportPenlubPetani: false,
+
     dialogAddonly: false,
     dialog: false,
     dialogDelete: false,
@@ -2417,6 +2445,12 @@ export default {
       }
     },
   },
+  computed: {
+    disabledExportData() {
+      if (!this.valueMU || !this.valueTA|| !this.valueVillage) return true
+      return false
+    }
+  },
   async mounted() {
     this.$store.state.loadingOverlayText = 'Getting planting hole datas...' 
     this.$store.state.loadingOverlay = true
@@ -2439,6 +2473,7 @@ export default {
 
   methods: {
     async showEditLahanUmumModal(item) {
+      
       this.$store.state.loadingOverlayText = 'Getting list lahan umum data...'
       this.$store.state.loadingOverlay = true
       
@@ -2701,6 +2736,13 @@ export default {
     async initialize() {
       this.loadtable = true;
       this.dataobject = [];
+      this.valueMU = '',
+      this.valueTA = '',
+      this.valueVillage = '',
+      this.selectMU='',
+      this.selectTA='',
+      this.selectVillage=''
+
       let params = {
         program_year: this.program_year,
         mu: this.valueMU,
@@ -4486,28 +4528,31 @@ export default {
     showExportDialog(type) {
       this.exportDialog[type].show = true
     },
-    exportPenilikanLubangByExcel(type) {
-      if (type == 'area') {
-        const params = new URLSearchParams({
-          program_year: this.program_year,
-          type: type,
-          mu: this.selectMU,
-          ta: this.selectTA,
-          village: this.selectVillage,
-        })
-        const url = `${this.BaseUrlGet.substring(0, this.BaseUrlGet.length - 4)}ExportExcelPenilikanLubang?${params}`
-        window.open(url)
-      }
+    exportPenilikanLubangByExcel() {
+
+      this.dialogExportPenlubPetani = true;
+      // if (type == 'area') {
+      //   const params = new URLSearchParams({
+      //     program_year: this.program_year,
+      //     type: type,
+      //     mu: this.selectMU,
+      //     ta: this.selectTA,
+      //     village: this.selectVillage,
+      //   })
+      //   const url = `${this.BaseUrlGet.substring(0, this.BaseUrlGet.length - 4)}ExportExcelPenilikanLubang?${params}`
+      //   window.open(url)
+      // }
     },
     exportLahanUmum() {
-        let params = new URLSearchParams({
-            program_year: this.program_year
-        })
-        const roles = ['REGIONAL MANAGER', 'PROGRAM MANAGER']
-        if (!roles.includes(this.User.role_name) && this.User.role_group != 'IT') params.set('created_by', this.User.email)
-        const url = this.$store.state.apiUrl.replace('api/', '') + `ExportLahanUmumPenilikanLubang?${params}`
-        // console.log(url)
-        window.open(url, 'blank')
+      this.dialogExportPenlubPetani = true;
+        // let params = new URLSearchParams({
+        //     program_year: this.program_year
+        // })
+        // const roles = ['REGIONAL MANAGER', 'PROGRAM MANAGER']
+        // if (!roles.includes(this.User.role_name) && this.User.role_group != 'IT') params.set('created_by', this.User.email)
+        // const url = this.$store.state.apiUrl.replace('api/', '') + `ExportLahanUmumPenilikanLubang?${params}`
+        // // console.log(url)
+        // window.open(url, 'blank')
     },
     photo1FileChanged (event) {
         if (event) {

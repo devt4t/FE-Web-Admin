@@ -32,19 +32,15 @@
                 </v-row> -->
     
                 <table
-                    id="tableForExportPelatihanPetani"
+                    id="tableForExportPenilikanLubangTanamPetani"
                     
                     class="ml-auto mr-auto"
                     style="border: 2px solid black;border-collapse: collapse; min-height: 200px; "
                 >
                     <tr>
-                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
-                            Tahun Program: {{ program_year }}</th>
-                    </tr>
-                    <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
                             <h2>
-                                Data Pelatihan Petani
+                                Data Export Penilikan Lubang Tanam
                             </h2>
                         </th>
                     </tr>
@@ -57,7 +53,7 @@
                     </tr>
                     <tr><td :colspan="table.headers.length"></td></tr>
                     <tr style="border: 2px solid black;border-collapse: collapse;">
-                        <th v-for="header in table.headers" :key="`tableForExportPelatihanPetani${header.value}`" class="green darken-2 white--text justify-center align-center">
+                        <th v-for="header in table.headers" :key="`tableForExportPenilikanLubangTanamPetani${header.value}`" class="green darken-2 white--text justify-center align-center">
                             {{ header.text }}
                             <div v-if="header.value == 'land_area'">(m<sup>2</sup>)</div>
                             <div v-if="header.value == 'planting_area'">(m<sup>2</sup>)</div>
@@ -116,6 +112,18 @@
             program_year:{
                 type: String,
                 default: ''
+            },
+            mu:{
+                type: String,
+                default:''
+            },
+            ta:{
+                type: String,
+                default:''
+            },
+            village:{
+                type: String,
+                default:''
             }
             // data: {
             //     type: Object,
@@ -128,17 +136,18 @@
             table: {
                 headers: [
                     {text: 'No', value: 'index', width: 75},
-                    {text: 'No Form', value: 'training_no'},
-                    {text: 'No Sosialisasi', value: 'soc_no'},
-                    {text: 'Nama MU', value: 'mu_name'},
-                    {text: 'Nama TA', value: 'ta_name'},
-                    {text: 'Nama FC', value: 'fc_name'},
-                    {text: 'Nama FF', value: 'ff_name'},
+                    {text: 'Unit Manager', value: 'um_name'},
+                    {text: 'Field Coordinator', value: 'fc_name'},
+                    {text: 'Field Facilitator', value: 'ff_name'},
+                    {text: 'Management Unit', value: 'mu_name'},
+                    {text: 'Target Area', value: 'fc_name'},
                     {text: 'Desa', value: 'village_name'},
+                    {text: 'Petani', value: 'farmer_name'},
     
-                    {text: 'Tanggal', value: 'training_date'},
+                    {text: 'Jumlah Lubang', value: 'holes'},
+                    {text: 'Jumlah Lubang Standar', value: 'holes_standard'},
                     
-                    {text: 'Tahun Tanam', align: "center", value: 'program_year'},
+                    {text: 'Status', align: "center", value: 'is_validate'},
                     
                     
                 ],
@@ -157,8 +166,11 @@
                     if(this.show){
                      
                         this.getTableData({
-                            token: localStorage.getItem('token'),
-                            program_year: this.program_year
+                            program_year: this.program_year,
+                            type: 'area',
+                            mu: this.mu,
+                            ta: this.ta,
+                            village: this.village
                         })   
                     }
                     return this.show
@@ -178,12 +190,12 @@
     
     methods: {
         downloadExcel() {
-            const table = document.getElementById("tableForExportPelatihanPetani");
+            const table = document.getElementById("tableForExportPenilikanLubangTanamPetani");
             const wb = XLSX.utils.table_to_book(table);
             console.log('export xlsx')
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataPelatihanPetani_${this.program_year}.xlsx`);
+            XLSX.writeFile(wb, `DataPenilikanLubangTanamPetani_${this.program_year}_${this.mu}_${this.ta}_${this.village}.xlsx`);
         },
         downloadPDF() {
             window.jsPDF = window.jspdf.jsPDF;
@@ -193,12 +205,12 @@
                 format: [1400, 700]
             });
             doc.autoTable({ 
-                html: '#tableForExportPelatihanPetani',
+                html: '#tableForExportPenilikanLubangTanamPetani',
                 useCss: true,
                 tableLineWidth: 0,
                 theme: 'striped'
              })
-            doc.save(`DataPelatihanPetani_${this.program_year}.pdf`);
+            doc.save(`DataPenilikanLubangTanamPetani_${this.program_year}_${this.mu}_${this.ta}_${this.village}.pdf`);
         },
         // statusRowColor(outputColor, itemKey){
         //     if(itemKey == 'status'){
@@ -246,12 +258,12 @@
                 try {
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)
-                    const url = `ExportFarmerTraining?${params}`
+                    const url = `ExportExcelPenilikanLubang?${params}`
                     const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                    const data = call.data.datas
+                    const data = call.data
                     
-                    const totalData = call.data.totalData
-                    this.totalLahan = totalData
+                    // const totalData = call.data.totalData
+                    // this.totalLahan = totalData
     
                     this.table.items = data
                     this.table.items_raw = data
