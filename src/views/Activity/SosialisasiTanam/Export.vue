@@ -55,6 +55,13 @@
                     </th>
                 </tr>
                 <tr>
+                    <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
+                        
+                            Jumlah Bibit Per-FF: {{ getTotalPohonKayu(table.items) + getTotalPohonMpts(table.items) }}
+                        
+                    </th>
+                </tr>
+                <tr>
                     <td :colspan="table.headers.length" style="text-align: center;">
                         <small>
                             Export Time: {{ Date() }}
@@ -79,6 +86,11 @@
 
                             <span v-if="itemTable.value == 'index'">
                                 {{ tableDataIndex + 1 }}
+                            </span>
+                            <span v-if="itemTable.value == 'total_bibit'"
+                            >
+                            {{tableData.pohon_kayu + tableData.pohon_mpts }}
+                                
                             </span>
                             
                             <span v-else-if="itemTable.value == 'status'">
@@ -128,6 +140,7 @@ export default {
     },
     data: () => ({
         totalLahan : 0,
+        totalBibitKayu : 0,
 
         table: {
             headers: [
@@ -146,7 +159,7 @@ export default {
                 // {text: 'Lokasi', value: 'location'},
                 {text: 'Jumlah Pohon Kayu', align: "center", value: 'pohon_kayu'},
                 {text: 'Jumlah Pohon MPTS', align: "center", value: 'pohon_mpts'},
-                {text: 'Jumlah Total Bibit', align: "center", value: 'max_seed_amount'},
+                {text: 'Jumlah Total Bibit', align: "center", value: 'total_bibit'},
                 // {text: 'Status Lahan', value: 'land_area', sortable: false},
                 // {text: 'Area Tanam', value: 'planting_area'},
                 
@@ -228,6 +241,38 @@ methods: {
       if (status == 'Belum Verifikasi') return "red";
       else return "green";
     },
+    getTotalPohonKayu(tables) {
+    
+        let totalBibitKayu = 0
+        if(tables.length){
+             totalBibitKayu = tables.reduce(( a, b) => {
+                const totalKayu =(parseInt(a.pohon_kayu + b.pohon_kayu))
+                
+                return {pohon_kayu: totalKayu}
+                
+            })
+            console.log(totalBibitKayu)
+
+        }
+
+      return totalBibitKayu.pohon_kayu 
+    },
+    getTotalPohonMpts(tables) {
+    
+    let totalBibitMpts = 0
+    if(tables.length){
+        totalBibitMpts = tables.reduce(( a, b) => {
+            const totalMpts =(parseInt(a.pohon_mpts + b.pohon_mpts))
+            
+            return {pohon_mpts: totalMpts}
+            
+        })
+        console.log(totalBibitMpts)
+
+    }
+
+    return totalBibitMpts.pohon_mpts 
+},
     
     async errorResponse(error) {
             console.log(error)
