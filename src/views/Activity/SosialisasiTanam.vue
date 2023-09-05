@@ -243,7 +243,7 @@
                       <v-date-picker
                           color="green lighten-1 rounded-xl"
                           v-model="dataToStore.distribution_time"
-                          min="2023-11-29"
+                          min="2023-12-01"
                           max="2024-01-31"
                           :allowed-dates="showingAvailableDates"
                           :key="datepicker2Key"
@@ -618,7 +618,7 @@
                           <v-date-picker
                             color="green lighten-1 rounded-xl"
                             v-model="dataToStore.distribution_time"
-                            min="2023-11-29"
+                            min="2023-12-01"
                             max="2024-01-31"
                             :allowed-dates="showingAvailableDates"
                             :key="datepicker2Key"
@@ -1087,7 +1087,7 @@
                       </v-overlay>
                       <v-date-picker
                         v-model="datepicker2"
-                        min="2023-11-29"
+                        min="2023-12-01"
                         max="2024-01-31"
                         :allowed-dates="showingAvailableDates"
                         @input="menu2 = false"
