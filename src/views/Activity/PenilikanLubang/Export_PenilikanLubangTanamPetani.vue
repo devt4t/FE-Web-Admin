@@ -59,9 +59,11 @@
                             <div v-if="header.value == 'planting_area'">(m<sup>2</sup>)</div>
                         </th>
                     </tr>
-                    <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
-                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" 
-                            :class="`lighten-3`"
+                    <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemTableForExportPenilikanLubangTanam${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
+                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportPenilikanLubangTanam${itemTable.value}`" 
+                            :class="`
+                            ${statusRowColor(tableData[itemTable.value], itemTable.value)}
+                            lighten-3`"
                             style="border: 1px solid black;border-collapse: collapse;"
                             >
     
@@ -69,11 +71,12 @@
                                     {{ tableDataIndex + 1 }}
                                 </span>
                                 
-                                <!-- <span v-else-if="itemTable.value == 'status'">
+                                <span v-else-if="itemTable.value == 'is_validate'">
                                     <v-chip :color="getColorStatus(tableData[itemTable.value])" dark>
-                                        {{ tableData[itemTable.value] }}
+                                        {{ getStatusText(tableData[itemTable.value]) }}
+                                        <!-- {{ tableData[itemTable.value] }} -->
                                     </v-chip>
-                                </span> -->
+                                </span>
                                 <span v-else>
                                     {{ tableData[itemTable.value] }}
                                 </span>
@@ -140,7 +143,7 @@
                     {text: 'Field Coordinator', value: 'fc_name'},
                     {text: 'Field Facilitator', value: 'ff_name'},
                     {text: 'Management Unit', value: 'mu_name'},
-                    {text: 'Target Area', value: 'fc_name'},
+                    {text: 'Target Area', value: 'ta_name'},
                     {text: 'Desa', value: 'village_name'},
                     {text: 'Petani', value: 'farmer_name'},
     
@@ -212,17 +215,21 @@
              })
             doc.save(`DataPenilikanLubangTanamPetani_${this.program_year}_${this.mu}_${this.ta}_${this.village}.pdf`);
         },
-        // statusRowColor(outputColor, itemKey){
-        //     if(itemKey == 'status'){
+        statusRowColor(outputColor, itemKey){
+            if(itemKey == 'is_validate'){
                 
-        //             if (outputColor == 'Belum Verifikasi') return "red";
-        //         else return "green";
-        //     }
-        // },
-        // getColorStatus(status) {
-        //   if (status == 'Belum Verifikasi') return "red";
-        //   else return "green";
-        // },
+                    if (outputColor == '0') return "red";
+                else return "green";
+            }
+        },
+        getColorStatus(status) {
+          if (status == '0') return "red";
+          else return "green";
+        },
+        getStatusText(status){
+            if(status == '0') return 'Belum Terverifikasi';
+            else return 'Terverifikasi'
+        },
         
         async errorResponse(error) {
                 console.log(error)

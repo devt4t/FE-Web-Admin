@@ -67,6 +67,7 @@
                   item-text="name"
                   v-on:change="selectedVillage"
                   label="Desa"
+                  :disabled="disabledExportVilageSelection"
                   clearable
                   :menu-props="{rounded: 'xl', offsetY: true}"
                   outlined
@@ -2446,6 +2447,10 @@ export default {
     },
   },
   computed: {
+    disabledExportVilageSelection(){
+      if(!this.valueMU ||!this.valueTA) return true
+      return false
+    },
     disabledExportData() {
       if (!this.valueMU || !this.valueTA|| !this.valueVillage) return true
       return false
@@ -2849,10 +2854,11 @@ export default {
             this.itemsTAForm = response.data.data.result;
           }
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
-        }
+        } 
       } catch (error) {
+        console.log("Kosong");
+        this.itemsTA = [];
+        this.itemsTAForm = [];
         console.error(error.response);
         if (error.response.status == 401) {
           localStorage.removeItem("token");
@@ -2884,10 +2890,11 @@ export default {
             this.itemsVillageForm = response.data.data.result;
           }
           // this.dataobject = response.data.data.result;
-        } else {
-          console.log("Kosong");
         }
       } catch (error) {
+        console.log("Kosong");
+        this.itemsVillage= [];
+        this.itemsVillageForm=[];
         console.error(error.response);
         if (error.response.status == 401) {
           localStorage.removeItem("token");

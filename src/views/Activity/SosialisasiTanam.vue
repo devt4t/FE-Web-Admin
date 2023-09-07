@@ -465,7 +465,7 @@
               color="green white--text"
               rounded
               @click="SaveEditGIS"
-              :disabled="User.role_group !='IT' && User.role_name !='GIS STAFF' && User.role_name !='UNIT MANAGER' || disabledEditDataGIS"
+              :disabled="User.role_group !='IT' && User.role_name !='GIS STAFF' || disabledEditDataGIS"
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Edit Data GIS
@@ -2657,7 +2657,7 @@ import Export from "@/views/Activity/SosialisasiTanam/Export";
 
 import treeAnimation from '@/assets/lottie/tree.json'
 import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
-import {Kebumen} from "@/store/scpecialEmails/nurseryTeam";
+// import {Kebumen} from "@/store/scpecialEmails/nurseryTeam";
 // import BaseUrl from "../../services/BaseUrl.js";
 
 export default {
@@ -5583,6 +5583,8 @@ export default {
         '2024-01-02',
         '2024-01-13',
         '2024-01-24',
+        '2024-02-04',
+        '2024-02-15',
       ]
 
       this.datepicker2NotAvailable = [...ffDatesFull, ...holiday]

@@ -358,7 +358,12 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn rounded color="green white--text pr-3" v-if="generalSettings.type.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org')" :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" @click="calendarUpdateDetailFFPeriod ">
+                        <v-btn 
+                        rounded 
+                        color="green white--text pr-3" 
+                        v-if="generalSettings.type.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' || User.email == 'faris.ardika@trees4trees.org' || User.email == 'fauzan.timur@trees4trees.org')" 
+                        :disabled="calendar.detailPeriodFF.newPeriod.distribution_time == dateFormat(calendar.detailPeriodFF.datas.period.distribution_time, 'Y-MM-DD') && calendar.detailPeriodFF.newPeriod.distribution_location == calendar.detailPeriodFF.datas.period.distribution_location" 
+                        @click="calendarUpdateDetailFFPeriod ">
                             <v-icon class="mr-1">mdi-content-save-check</v-icon>
                             Save
                         </v-btn>
