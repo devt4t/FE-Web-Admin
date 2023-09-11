@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import exportReport from '@/views/Report/index'
+import ViewDistribution from '@/views/Activity/components/distribusi/viewDistribution'
 
 Vue.use(VueRouter)
 function lazyLoad(view){
@@ -204,6 +205,11 @@ const routes = [
     path: '/report-data',
     name: 'ReportData',
     component: exportReport
+  },
+  {
+    path: '/LihatTanggalDistribusi',
+    name: 'LihatTanggalDistribusi',
+    component: ViewDistribution
   }
 ]
 

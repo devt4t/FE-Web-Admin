@@ -200,7 +200,7 @@ export default {
 		nursery: {
 			disabled: false,
 			model: 'All',
-			items: ['All', 'Arjasari', 'Ciminyak', 'Kebumen', 'Pati'],
+			items: ['All', 'Cirasea', 'Ciminyak', 'Soreang', 'Kebumen', 'Pati'],
 			show: true
 		},
 		programYear: '',
@@ -419,15 +419,17 @@ export default {
 		},
 		// utilities: set nursery site
         async setNurserySite() {
-            const arjasari = this.$store.state.nurseryTeam.emails.Arjasari
+            const cirasea = this.$store.state.nurseryTeam.emails.Cirasea
             const ciminyak = this.$store.state.nurseryTeam.emails.Ciminyak
+			const soreang = this.$store.state.nurseryTeam.emails.Soreang
             const kebumen = [...this.$store.state.nurseryTeam.emails.Kebumen, 'rizki.pradhitya@trees4trees.org']
             const pati = [...this.$store.state.nurseryTeam.emails.Pati, 'um_pati@t4t.org']
 			const user = this.$store.state.User
             const userEmail = user.email
             let nursery = this.nursery.model
-            if (arjasari.includes(userEmail)) nursery = 'Arjasari'
+            if (cirasea.includes(userEmail)) nursery = 'Cirasea'
             else if (ciminyak.includes(userEmail)) nursery = 'Ciminyak'
+			else if (soreang.includes(userEmail)) nursery = 'Soreang'
             else if (kebumen.includes(userEmail)) nursery = 'Kebumen'
             else if (pati.includes(userEmail)) nursery = 'Pati'
             if ( user.role_name == 'NURSERY MANAGER') this.nursery.disabled = true

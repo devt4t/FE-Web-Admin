@@ -323,7 +323,8 @@ export default {
           'SeedlingChangeRequest', 
           'GekoManual', 
           'ITPlayground', 
-          'PermintaanTutupanLahan', 
+          'PermintaanTutupanLahan',
+          'LihatTanggalDistribusi',
           'ReportData'
         ]
         const checkExceptionPage = exceptionPage.includes(this.$route.name)

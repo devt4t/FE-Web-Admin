@@ -1319,6 +1319,17 @@
         
         <!-- MAIN Ditribution -->
         <v-container fluid>
+            <!-- Other Menus -->
+            <v-card rounded="xl" class="mb-2 d-flex align-center flex-lg-row flex-column py-2" data-aos="fade-up" data-aos-delay="200">
+                <v-divider class="mx-2"></v-divider>
+                <v-btn 
+                rounded class="mr-2" 
+                color="green white--text" 
+                @click="$router.push('LihatTanggalDistribusi')">
+                <v-icon class="mr-1">mdi-eye-outline</v-icon> 
+                Lihat Detail Tanggal Distribusi</v-btn>
+
+            </v-card>
             <!-- General Settings -->
             <v-card rounded="xl" class="mb-2 d-flex align-center flex-lg-row flex-column py-2" data-aos="fade-up" data-aos-delay="200">
                 <v-divider class="mx-2"></v-divider>
