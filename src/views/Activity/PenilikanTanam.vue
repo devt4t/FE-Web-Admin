@@ -2198,7 +2198,20 @@
           </v-card>
         </v-menu>
       </template>
+      <template v-slot:item.start_monitoring_period="{item}">
+        <v-chip class="green white--text ma-1">
+          <v-icon class="white--text ma-1">mdi-clock-check</v-icon>
+          {{ item.start_monitoring_period }}
+        </v-chip>
 
+      </template>
+      <template v-slot:item.end_monitoring_period="{item}">
+        <v-chip class="orange white--text ma-1">
+          <v-icon class="white--text ma-1">mdi-clock-alert</v-icon>
+          {{ item.end_monitoring_period }}
+        </v-chip>
+
+      </template>
       <!-- Lahan Condition Column -->
       <template v-slot:item.lahan_condition="{ item }">
         <span style="text-transform: capitalize">
@@ -2512,7 +2525,9 @@ export default {
       { text: "Standar Pohon", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
-     //{ text: "Tipe SPPT", value: "type_sppt", align: 'center'},
+     
+      { text: "Awal Waktu Tanam", value: "start_monitoring_period", align: 'center', search: true },
+      { text: "Akhir Waktu Tanam", value: "end_monitoring_period", align: 'center', search: true },
       { text: "Status", value: "is_validate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],

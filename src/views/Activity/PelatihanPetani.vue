@@ -146,11 +146,11 @@
                   Main Data
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step :editable="!selectFF == false && !dataToStore.materi_2 == false" :complete="e1 > 2" step="2" color="success">
+                <v-stepper-step :editable="!selecttedVillage == false && !dataToStore.materi_2 == false" :complete="e1 > 2" step="2" color="success">
                   Peserta 
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step :editable="!selectFF == false && !dataToStore.materi_2 == false && listFarmerParticipantChecked.length > 0" :complete="e1 > 3" step="3" color="success">
+                <v-stepper-step :editable="!selecttedVillage == false && !dataToStore.materi_2 == false && listFarmerParticipantChecked.length > 0" :complete="e1 > 3" step="3" color="success">
                   Foto Absensi & Dokumentasi
                 </v-stepper-step>
               </v-stepper-header>
@@ -232,18 +232,52 @@
                               outlined
                               rounded
                               hide-details
-                              v-model="selectFF"
-                              :items="itemsff"
-                              item-text="name"
-                              item-value="ff_no"
-                              label="Field Facilitator"
+                              v-model="selecttedVillage"
+                              :items="itemsVillages"
+                              item-text="Desaname"
+                              item-value="kode_desa"
+                              label="Desa"
                               :loading="loading.ff"
                               :no-data-text="loading.ff ? 'Loading...' : 'Pilih FC'"
                               return-object
+                              hide-selected
                               type="string"
                               v-on:change="selectPetaniWithMUScope"
                               :rules="[(v) => !!v || 'Field is required']"
                             >
+                          
+                            <template v-slot:item="data">
+                              <v-list-item-content>
+                                <v-list-item-title v-html="data.item.Desaname"></v-list-item-title>
+                                <v-list-item-subtitle>{{ data.item.kode_desa }}</v-list-item-subtitle>
+                              </v-list-item-content>
+                            </template>
+                            </v-autocomplete>
+                          </v-col>
+
+                          <v-col cols="12" sm="12" md="12">
+                            <v-autocomplete
+                              color="success"
+                              item-color="success"
+                              :menu-props="{rounded: 'xl'}"
+                              outlined
+                              rounded
+                              hide-details
+                              v-model="selectAdditionalFF"
+                              :items="itemsff"
+                              item-text="name"
+                              item-value="ff_no"
+                              label="Field Facilitator Aktif"
+                              :loading="loading.ff"
+                              :no-data-text="loading.ff ? 'Loading...' : 'Pilih FC'"
+                              return-object
+                              hide-selected
+                              clearable
+                              multiple
+                              type="string"
+                              :rules="[(v) => !!v || 'Field is required']"
+                            >
+                          
                             <template v-slot:item="data">
                               <v-list-item-content>
                                 <v-list-item-title v-html="data.item.name"></v-list-item-title>
@@ -252,6 +286,8 @@
                             </template>
                             </v-autocomplete>
                           </v-col>
+
+                          
                         </v-row>
                       </v-col>
                       <v-col cols="12" sm="12" md="6" lg="6">
@@ -307,26 +343,7 @@
                           </v-col>
 
                           <!-- Materi Pelatihan 2 -->
-                          <v-col cols="12" sm="12" md="12">
-                            <v-text-field
-                              item-color="success"
-                              :menu-props="{rounded: 'xl'}"
-                              outlined
-                              rounded
-                              hide-details
-                              v-model="dataToStore.soc_no"
-                              label="Nomor Sosialisasi"
-                              disabled
-                              :rules="[(v) => !!v || 'Field is required']"
-                            >
-                              <!-- <template v-slot:item="data">
-                                <v-list-item-content>
-                                  <v-list-item-title v-html="data.item.material_no"></v-list-item-title>
-                                  <v-list-item-subtitle>{{ data.item.material_name }}</v-list-item-subtitle>
-                                </v-list-item-content>
-                              </template> -->
-                            </v-text-field>
-                          </v-col>
+                          
 
                           <!-- Date -->
                           <v-col cols="12" sm="12" md="12" lg="12">
@@ -394,9 +411,9 @@
                       <h4>List Peserta Pelatihan</h4>
                       <v-divider class="mx-2 mt-3"></v-divider>
                     </v-row>
-                    <v-row v-if="selectFF" class="">
+                    <v-row v-if="selecttedVillage" class="">
                       <v-col cols="12" sm="12" md="12" lg="6">
-                        <h3>{{ selectFF.ff_no }} - {{ selectFF.name }}</h3>
+                        <h3>{{ selecttedVillage.kode_desa }} - {{ selecttedVillage.Desaname }}</h3>
                       </v-col>
                       <!-- Material Organik -->
                       <v-col cols="12" sm="12" md="12" lg="6">
@@ -421,6 +438,9 @@
                         </v-select>
                       </v-col>
                     </v-row>
+
+                  
+
                     <v-row class="align-end">
                       <!-- <v-col cols="12" sm="12" md="6" class="d-flex align-end"> -->
                         <h4>Checked: {{ listFarmerParticipantChecked.length }}</h4>
@@ -451,11 +471,13 @@
                           :search="searchListPesertaPelatihan"
                           :single-select="false"
                           :key="componentKey.listFarmerParticipantTable"
-                          hide-default-footer
-                          :items-per-page="-1"
+                          :items-per-page="10"
                           :footer-props="{
-                            itemsPerPageOptions: [10, 25, 40, -1]
+                            itemsPerPageText: 'Jumlah Data Per Halaman',
+                            itemsPerPageOptions: [5, 10, 25, 40, -1]
                           }"
+                          @update:page="($p) => pageF = $p"
+                          @update:items-per-page="($p) => itemPerPageF = $p"
                         >
                           <template v-slot:header.data-table-select="{props,on}">
                             <v-simple-checkbox color="success" v-ripple v-bind="props" v-on="on"></v-simple-checkbox>
@@ -464,7 +486,7 @@
                             <v-simple-checkbox color="success" v-ripple :value="isSelected" @input="select($event)"></v-simple-checkbox>
                           </template>
                           <template v-slot:item.index="{ index }">
-                            {{ index + 1 }}
+                            {{ (itemPerPageF * (pageF-1)) + index + 1 }}
                           </template>
                           <template v-slot:item.photo="{item}">
                             <v-tooltip top>
@@ -531,6 +553,106 @@
                       </v-autocomplete>
                       </v-col>
                     </v-row>
+
+                  <div class="d-flex align-center my-4 py-4">
+                    <p class="mb-0"><v-icon class="mr-2">mdi-account-group</v-icon>Peserta Umum</p>
+                    <v-divider class="mx-2"></v-divider>
+                  </div>
+                  <v-row v-for="(assignPesertaTambahan, assignPesertaTambahanIndex) in dataToStore.peserta_tambahan" :key="`row-pesertaTambahan-assign-${assignPesertaTambahanIndex}`">
+                    <v-col cols="auto" class="d-flex align-start">
+                      <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ assignPesertaTambahanIndex + 1 }}</v-icon></v-btn>
+                    </v-col>
+                    <v-col>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-text-field
+                          dense
+                          color="success"
+                          hide-details
+                          small-chips
+                          item-color="success"
+                          v-model="assignPesertaTambahan.name"
+                          label="Nama"
+                          :rules="[(v) => !!v || 'Field is required']"
+                          outlined
+                          rounded
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-text-field
+                          dense
+                          color="success"
+                          hide-details
+                          small-chips
+                          item-color="success"
+                          v-model="assignPesertaTambahan.address"
+                          label="Alamat"
+                          :rules="[(v) => !!v || 'Field is required']"
+                          outlined
+                          rounded
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-text-field
+                          dense
+                          color="success"
+                          hide-details
+                          small-chips
+                          item-color="success"
+                          v-model="assignPesertaTambahan.phone"
+                          label="No Hp/WA"
+                          outlined
+                          rounded
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                          <v-select
+                          dense
+                          color="success"
+                          hide-details
+                          small-chips
+                          item-color="success"
+                          :items="listJenisKelamin"
+                          v-model="assignPesertaTambahan.gender"
+                          label="Jenis Kelamin"
+                          :rules="[(v) => !!v || 'Field is required']"
+                          outlined
+                          rounded
+                          >
+                          </v-select>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+                  <v-row class="justify-center">
+                      <v-btn
+                          data-aos="fade-right" 
+                          data-aos-offset="-10000" 
+                          fab 
+                          small 
+                          color="green white--text" 
+                          class="mx-1" 
+                          @click="() => modifyTotalSubData('+')"
+                      >
+                          <v-icon>mdi-plus</v-icon>
+                      </v-btn>
+                      <v-btn v-if="dataToStore.peserta_tambahan.length > 1"
+                          data-aos="fade-left" 
+                          data-aos-offset="-10000"  
+                          fab 
+                          small
+                          color="red" 
+                          outlined 
+                          class="mx-1"
+                          @click="() => modifyTotalSubData('-')"
+                      >
+                          <v-icon>mdi-minus</v-icon>
+                      </v-btn>
+                  </v-row>
+
                   </v-container>
                 </v-stepper-content>
                 <!-- Foto Absensi & Dokumentasi -->
@@ -679,7 +801,7 @@
                 color="primary"
                 @click="stepperMove('+')"
                 :disabled="
-                  (e1 == 1 && (!selectFF || !dataToStore.materi_2) ) || 
+                  (e1 == 1 && (!selecttedVillage || !dataToStore.materi_2) ) || 
                   (e1 == 2 && listFarmerParticipantChecked.length == 0) ||
                   e1 == 3
                 "
@@ -755,7 +877,7 @@
                     <v-col sm="12" class="mb-2">
                       <center>
                         <h2 class="text-center">{{ dialogDetailData.training_no }}</h2>
-                        <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
+                        <h3 class="text-center">Tahun Program : {{ dialogDetailData.program_year }}</h3>
                       </center>
                     </v-col>
                     <v-col sm="6" class="mb-2">
@@ -769,11 +891,6 @@
                           <td>Field Coordinator</td>
                           <td>:</td>
                           <td>{{ dialogDetailData.fc_name }}</td>
-                        </tr>
-                        <tr>
-                          <td>Field Facilitator</td>
-                          <td>:</td>
-                          <td>{{ dialogDetailData.ff_name }}</td>
                         </tr>
                         <tr>
                           <td>Tgl Pelatihan</td>
@@ -808,6 +925,7 @@
                     </v-col>
                     <v-col sm="12">
                       <table>
+                        
                         <tr>
                           <td>Materi Pelatihan 1</td>
                           <td>:</td>
@@ -820,6 +938,57 @@
                         </tr>
                       </table>
                     </v-col>
+
+                    <!-- <v-col sm="12">
+                      <p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{ dialogDetailData.field_facilitators.length }}</strong></p>
+                      <center>
+                        <table border="1" style="border-collapse: collapse;width: 100%;">
+                          <thead>
+                            <tr>
+                              <th rowspan="2">No</th>
+                              <th colspan="3">FF Berkontribusi</th>
+                            </tr>
+                            <tr>
+                              <th>Kode</th>
+                              <th>Nama</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(ff, ffIndex) in dialogDetailData.field_facilitators">
+                              <td align="center">{{ ffIndex + 1 }}</td>
+                              <td><span style="margin-left: 5px;">{{ ff.ff_no }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ ff.ff_name }}</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </center>
+                    </v-col> -->
+                    <v-col sm="12">
+                      <p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{ dialogDetailData.field_facilitators.length }}</strong></p>
+                      <center>
+                        <table border="1" style="border-collapse: collapse;width: 100%;">
+                          <thead>
+                            <tr>
+                              <th rowspan="2">No</th>
+                              <th colspan="3">FF Berkontribusi</th>
+                            </tr>
+                            <tr>
+                              <th>No FF</th>
+                              <th>Nama</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(ff, ffIndex) in dialogDetailData.field_facilitators" :key="ff.kode">
+                              <td align="center">{{ ffIndex + 1 }}</td>
+                              <td><span style="margin-left: 5px;">{{ ff.ff_additional }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ ff.name }}</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </center>
+                    </v-col>
+
+
                     <v-col sm="12">
                       <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
                       <center>
@@ -846,6 +1015,37 @@
                         </table>
                       </center>
                     </v-col>
+
+
+                    <v-col sm="12">
+                      <p style="margin-bottom: 5px;">Jumlah kehadiran Peserta Umum: <strong>{{ dialogDetailData.peserta_umums.length }}</strong></p>
+                      <center>
+                        <table border="1" style="border-collapse: collapse;width: 100%;">
+                          <thead>
+                            <tr>
+                              <th rowspan="2">No</th>
+                              <th colspan="3">Peserta Umum</th>
+                            </tr>
+                            <tr>
+                              <th>Nama</th>
+                              <th>Alamat</th>
+                              <th>Kontak</th>
+                              <th>Jenis Kelamin</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(pPublic, pPublicIndex) in dialogDetailData.peserta_umums" :key="pPublic.kode">
+                              <td align="center">{{ pPublicIndex + 1 }}</td>
+                              <td><span style="margin-left: 5px;">{{ pPublic.name }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ pPublic.address }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ pPublic.phone }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ pPublic.gender }}</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </center>
+                    </v-col>
+                    
                   </v-row>
                 </v-container>
               </section>
@@ -869,11 +1069,6 @@
                           <td>Field Coordinator</td>
                           <td>:</td>
                           <td><strong>{{ dialogDetailData.fc_name }}</strong></td>
-                        </tr>
-                        <tr>
-                          <td>Field Facilitator</td>
-                          <td>:</td>
-                          <td><strong>{{ dialogDetailData.ff_name }}</strong></td>
                         </tr>
                         <tr>
                           <td>Tgl Pelatihan</td>
@@ -930,8 +1125,27 @@
                     </template>
                   </v-simple-table>
                 </v-col>
-                <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8">
-                  <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
+                <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8"><p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
+                  <!-- Table List FF Berkontribusi -->
+                  <v-data-table
+                    :headers="tables.ffListDetailModal.headers"
+                    :items="dialogDetailData.field_facilitators"
+                    class="elevation-3 rounded-xl"
+                    item-key="kode_ff"
+                    :loading="tables.ffListDetailModal.loading"
+                    loading-text="Loading... Please wait"
+                    :search="tables.ffListDetailModal.search"
+                    :items-per-page="10"
+                    :footer-props="{
+                      itemsPerPageOptions: [10, 25, 40, -1]
+                    }"
+                  >
+                    <template v-slot:item.index="{ index }">
+                      {{ index + 1 }}
+                    </template>
+                  </v-data-table>
+
+                  <p class="py-4" style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
                   <!-- Table List Petani Peserta Pelatihan -->
                   <v-data-table
                     :headers="tables.farmerListDetailModal.headers"
@@ -961,6 +1175,25 @@
                         </template>
                         <span>Klik untuk preview</span>
                       </v-tooltip>
+                    </template>
+                  </v-data-table>
+                  <p class="py-4" style="margin-bottom: 5px;">Jumlah Peserta Umum: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
+                  <!-- Table List Peserta Umum -->
+                  <v-data-table
+                    :headers="tables.pesertaUmumListDetailModal.headers"
+                    :items="dialogDetailData.peserta_umums"
+                    class="elevation-3 rounded-xl"
+                    item-key="kode_pesertaUmum"
+                    :loading="tables.pesertaUmumListDetailModal.loading"
+                    loading-text="Loading... Please wait"
+                    :search="tables.pesertaUmumListDetailModal.search"
+                    :items-per-page="10"
+                    :footer-props="{
+                      itemsPerPageOptions: [10, 25, 40, -1]
+                    }"
+                  >
+                    <template v-slot:item.index="{ index }">
+                      {{ index + 1 }}
                     </template>
                   </v-data-table>
                 </v-col>
@@ -1034,7 +1267,7 @@
                       v-on="on"
                       dark
                       color="blue lighten-1"
-                      @click="generateReport"
+                      @click="generateExportDetail"
                       rounded
                       class="d-none d-lg-block"
                     >
@@ -1415,6 +1648,7 @@
 
 <script>
 // import ModalFarmer from "./ModalFarmer";
+import Swal from 'sweetalert2'
 import axios from "axios";
 import { truncate } from "fs";
 import { randomInt } from 'crypto';
@@ -1430,17 +1664,20 @@ export default {
   },
   authtoken: "",
   data: () => ({
+    pageF: 1,
+    itemPerPageF: 10,
     carousel: {
       absensi_img: 0
     },
     showedAbsensi2: false,
     overlay: false,
     datePickerMenu: false,
+    listJenisKelamin: ['Laki-laki', 'Perempuan'],
     dataToStore: {
       um_no: "",
       fc_no: "",
       ff_no: "",
-      soc_no: "",
+      additionalFF: [],
       absensi_img: "",
       absensi_img2: "",
       dokumentasi_img: "",
@@ -1449,7 +1686,14 @@ export default {
       material_organic: ['ORG22090001', 'ORG22090002'],
       program_year: '2023',
       date: '',
-      farmers: []
+      farmers: [],
+
+      name: "",
+      address: "",
+      phone: "",
+      gender: "",
+
+      peserta_tambahan: [],
     },
     // temporary
     temporaryTableDatas: [],
@@ -1463,12 +1707,34 @@ export default {
     tables: {
       // filter main table
       programYear: '',
+      ffListDetailModal:{
+        headers: [
+        { text: "No", value: "index", width: "15%" },
+        { text: "No FF", value: "ff_additional", width: "35%" },
+        { text: "Nama FF", value: "name", width: "50%" },
+        ],
+        items: [],
+        loading: false,
+        search: '' 
+      },
       farmerListDetailModal: {
         headers: [
         { text: "No", value: "index", width: "15%" },
         { text: "Foto", value: "photo", width: "20%" },
         { text: "No Petani", value: "farmer_no", width: "30%" },
         { text: "Nama Petani", value: "name", width: "40%" },
+        ],
+        items: [],
+        loading: false,
+        search: ''
+      },
+      pesertaUmumListDetailModal: {
+        headers: [
+        { text: "No", value: "index", width: "15%" },
+        { text: "Nama", value: "name", width: "20%" },
+        { text: "Alamat", value: "address", width: "30%" },
+        { text: "Kontak", value: "phone", width: "40%" },
+        { text: "Jenis Kelamin", value: "gender", width: "30%" },
         ],
         items: [],
         loading: false,
@@ -1531,9 +1797,7 @@ export default {
     type: "",
     headers: [
       { text: "No Form", value: "training_no" },
-      { text: "No Sosialisasi", value: "soc_no" },
       { text: "Nama FC", value: "fc_name" },
-      { text: "Nama FF", value: "ff_name", align: "start" },
       { text: "Desa", value: "desa", align: "start" },
       { text: "Tanggal", value: "training_date" },
       { text: "Tahun Tanam", value: "program_year" },
@@ -1573,6 +1837,7 @@ export default {
       user_id: "FF000001",
       nama_petani: "",
       waitingapproval: false,
+      kodeDesa: [],
 
       gambarshow1: "",
       gambarshow2: "",
@@ -1586,6 +1851,13 @@ export default {
       fileUpload3: "",
       fileUploadReady_gambar3: false,
       list_detail: [],
+    },
+    pesertaTambahan_default: {
+      name: '',
+      address: '',
+      phone: '',
+      gender: '',
+
     },
     itemsTahun: [
       { text: "2019", value: "2019" },
@@ -1605,6 +1877,7 @@ export default {
     itemsum: [],
     itemsfc: [],
     itemsff: [],
+    itemsVillages: [],
     itemspetani: [],
     itemspetaniallmu: [],
     itemsethnic: [],
@@ -1622,6 +1895,8 @@ export default {
     selectUM: "",
     selectFC: "",
     selectFF: "",
+    selectAdditionalFF: [],
+    selecttedVillage: "",
     selectMU: "",
     selectTA: "",
     selectVillage: "",
@@ -1728,6 +2003,8 @@ export default {
         );
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result;
+          this.defaultItem.kodeDesa = response.data.data.result.map(val => {
+            return val.village});
           this.valueMUExcel = this.valueMU;
           this.valueTAExcel = this.valueTA;
           this.valueVillageExcel = this.valueVillage;
@@ -1750,20 +2027,7 @@ export default {
     },
     async exportToExcel() {
       this.dialogExportFarmerTraining = true
-      // try {
-      //   let params = new URLSearchParams({
-      //     token: localStorage.getItem('token'),
-      //     program_year: this.tables.programYear,
-      //   })
-
-      //   if (this.User.ff.ff) if (this.User.ff.ff != '-') if (this.User.ff.ff.length > 0) params.set('ff', this.User.ff.ff.toString())
-
-      //   const url = this.$store.getters.getApiUrl(`ExportFarmerTraining?${params}`);
-
-      //   window.open(url, '_blank');
-      // } catch (err) {
-      //   this.sessionEnd(err)
-      // }
+      
     },
     async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
@@ -1870,6 +2134,38 @@ export default {
         this.sessionEnd(error)
       }
     },
+    async getVillages(fc_no){
+      let fcNo = fc_no ? fc_no : null
+      if (this.User.fc.fc && fcNo == null) {
+        this.fc_no_global = this.User.fc.fc;
+        fcNo = this.User.fc.fc
+      }
+      console.log("No fc : " + fcNo)
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet + "GetDesabyFC?fc_no=" + fcNo,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.itemsVillages = response.data.data.result;
+          this.console.log(this.itemsVillages)
+
+          this.loaddownload = false;
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+          this.loaddownload = false;
+        }
+      } catch (error) {
+        console.error(error.response);
+        this.sessionEnd(error)
+        this.loaddownload = false;
+      }
+    },
     async getFF(fc_no) {
       let fcNo = fc_no ? fc_no : null
       if (this.User.fc.fc && fcNo == null) {
@@ -1887,6 +2183,7 @@ export default {
         );
         if (response.data.length != 0) {
           this.itemsff = response.data.data.result.data;
+
           this.loaddownload = false;
           // this.dataobject = response.data.data.result;
         } else {
@@ -2016,15 +2313,10 @@ export default {
       // if (this.User.fc.fc) {
       //   this.fc_no_global = this.User.fc.fc;
       // }
-      this.dataToStore.soc_no = null;
-      if(this.dataToStore.soc_no==null){
-        this.dataToStore.soc_no = 'SO-'+this.dataToStore.program_year+'-'+this.valueFFForm
-      }
-      console.log(this.dataToStore.soc_no)
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetFarmerAllAdmin?typegetdata=several&ff=" +
+            "GetFarmerAllAdmin?typegetdata=several&village=" +
             this.valueFFForm,
           {
             headers: {
@@ -2100,6 +2392,28 @@ export default {
         }
       }
     },
+    async disableAvailableVillage(DesasFFCreate) {
+      if(this.defaultItem.kodeDesa.includes(DesasFFCreate)){
+        console.log(this.defaultItem.kodeDesa.includes(DesasFFCreate));
+        const confirm = await Swal.fire({
+              title: 'Warning!',
+              text: "Desa Sudah Melakukan Pelatihan!",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: false,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+              this.selectUM = "";
+              this.selectFC = "";
+              this.selectFF = "";
+              this.selectAdditionalFF = '';
+              this.dataToStore.materi_2 = "";
+            }
+      }
+    },
+
     async addingToTableFarmerParticipant(val) {
       this.listFarmerParticipant.push(val)
       this.listFarmerParticipantChecked.push(val)
@@ -2114,8 +2428,8 @@ export default {
     async saveFormFarmerTraining() {
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
-      this.loadsave = true
-      this.$store.state.loadingOverlay = true;this.$store.state.loadingOverlayText = 'Loading...';
+      // this.loadsave = true
+      // this.$store.state.loadingOverlay = true;this.$store.state.loadingOverlayText = 'Loading...';
       this.dialogAddonly = false
       this.showedAbsensi2 = false
       // insert UM FC FF data
@@ -2123,17 +2437,24 @@ export default {
       this.dataToStore.fc_no = this.selectFC
       this.dataToStore.ff_no = this.selectFF.ff_no
 
+      this.dataToStore.additionalFF = this.selectAdditionalFF
+      const pushAditionalFF = this.selectAdditionalFF.map(val => {
+        return val.ff_no
+      })
+
 
       // insert MU TA DESA
-      this.dataToStore.mu_no = this.selectFF.mu_no
-      this.dataToStore.target_area = this.selectFF.target_area
-      this.dataToStore.working_area = this.selectFF.working_area
+      this.dataToStore.mu_no = this.selecttedVillage.mu_no
+      this.dataToStore.target_area = this.selecttedVillage.area_code
+      this.dataToStore.working_area = this.selecttedVillage.kode_desa
 
       // insert list farmer participant
       await this.listFarmerParticipantChecked.forEach((farmerParticipant) => {
         this.dataToStore.farmers.push(farmerParticipant.kode)
       })
       this.temporaryTableDatas.push(this.dataToStore)
+
+
 
       const dataForPost = {
         training_date: this.dataToStore.date,
@@ -2143,12 +2464,19 @@ export default {
         program_year: this.dataToStore.program_year,
         absent: this.dataToStore.absensi_img,
         dokumentasi: this.dataToStore.dokumentasi_img,
-        mu_no: this.selectFF.mu_no,
-        target_area: this.selectFF.target_area,
-        village: this.selectFF.working_area,
+        mu_no: this.selecttedVillage.mu_no,
+        target_area: this.selecttedVillage.area_code,
+        ff_additional: this.selectAdditionalFF.map(val => {
+        return val.ff_no
+        }),
+        peserta_tambahan: this.dataToStore.peserta_tambahan.map(val => {
+          if(val.name && val.address && val.gender && val.phone)
+          return {...val}
+          return null
+        }),
+        village: this.selecttedVillage.kode_desa,
         field_coordinator: this.dataToStore.fc_no,
         ff_no: this.dataToStore.ff_no,
-        soc_no: this.dataToStore.soc_no,
         user_id: this.User.email,
         status: 1,
         farmers: this.dataToStore.farmers
@@ -2190,6 +2518,8 @@ export default {
         this.$store.state.loadingOverlay = false
         this.close()
       }
+      await this.resetvalue()
+      await this.initialize()
     },
 
     async showDetailFarmerTraining(training_no) {
@@ -2270,6 +2600,7 @@ export default {
         await this.GetFFbyUMandFC("UM", a);
         this.valueFC = "";
         this.selectFC = "";
+        this.selectVillagev = "";
         this.typegetdata = "several";
         this.loading.fc = false
       } else {
@@ -2279,6 +2610,8 @@ export default {
         this.typegetdata = this.User.ff.value_data;
       }
         this.selectFF = "";
+        this.selecttedVillage = "";
+        this.selectAdditionalFF = "";
         this.itemsff = [];
       // this.initialize();
     },
@@ -2290,12 +2623,16 @@ export default {
       if (a == null) {
         this.valueFC = "";
         this.selectFC = "";
+        this.selectVillage = "";
         this.selectFF = "";
+        this.selecttedVillage = "";
+        this.selectAdditionalFF = "";
         this.itemsff = [];
         this.typegetdata = this.User.ff.value_data;
         this.loading.ff = false
       } else {
         this.getFF(a)
+        this.getVillages(a)
         this.loading.ff = false
       }
     },
@@ -2354,11 +2691,13 @@ export default {
     },
     async selectPetaniWithMUScope(a) {
       if (a != null) {
-        this.valueFFForm = a.ff_no;
+        this.valueFFForm = a.kode_desa;
+        console.log(this.a)
+        this.disableAvailableVillage(this.selecttedVillage.kode_desa)
         this.loading.farmer = true
         this.loadtabledetail = true
         await this.getPetani();
-        await this.getPetaniByMU(a.mu_no, a.target_area);
+        await this.getPetaniByMU(a.mu_no, a.area_code);
         this.loadtabledetail = false
         this.listFarmerParticipant = []
         await this.itemspetani.forEach((val, index) => {
@@ -2408,6 +2747,7 @@ export default {
       this.valueFC = "";
       this.selectUM = "";
       this.selectFC = "";
+      this.selectVillage = "";
       this.valueFFcode = this.User.ff.ff;
       this.typegetdata = this.User.ff.value_data;
     },
@@ -2511,11 +2851,24 @@ export default {
       this.selectUM = null
       this.selectFC = null
       this.selectFF = null
+      this.selecttedVillage = null
+      
+      this.selectAdditionalFF = null
+      this.dataToStore.peserta_tambahan = []
+      
     },
     closeDelete() {
       this.idDelete = null
       this.dialogDelete = false;
     },
+    modifyTotalSubData(type) {
+        if (type == '+') {
+          this.dataToStore.peserta_tambahan.push(JSON.parse(JSON.stringify(this.pesertaTambahan_default)))
+        } else if (type == '-') {
+          this.dataToStore.peserta_tambahan.pop()
+        }
+    },
+
     async deleteExternalAbsensiImage(imagesName) {
       try {
         await axios.post(
@@ -2592,14 +2945,14 @@ export default {
         um_no: "",
         fc_no: "",
         ff_no: "",
-        soc_no: null,
         absensi_img: "",
         materi_1: 'TR010',
         materi_2: null,
         material_organic: ['ORG22090001', 'ORG22090002'],
         program_year: this.tables.programYear,
         date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10),
-        farmers: []
+        farmers: [],
+        peserta_tambahan: [JSON.parse(JSON.stringify(this.pesertaTambahan_default))]
       }
       this.absensiPreview = ""
       this.absensiPreview2 = ""
@@ -2619,7 +2972,7 @@ export default {
     absensiFileChanged (event) {
       if (event) {
         this.dataToStore.absensi_img = event
-        console.log(event.name)
+        
         this.absensiPreview = URL.createObjectURL(event)
       } else {
         this.dataToStore.absensi_img = ""
@@ -2638,7 +2991,7 @@ export default {
     dokumentasiFileChanged (event) {
       if (event) {
         this.dataToStore.dokumentasi_img = event
-        console.log(event.name)
+        
         this.dokumentasiPreview = URL.createObjectURL(event)
       } else {
         this.dataToStore.dokumentasi_img = ""
@@ -2716,6 +3069,9 @@ export default {
         // this.$refs.html2Pdf.generatePdf()
         
     },
+    generateExportDetail(){
+      this.$refs.html2Pdf.generatePdf()
+    },
     generateFormData(data) {
         let formData= new FormData()
 
@@ -2725,7 +3081,13 @@ export default {
 
             if (Array.isArray(value)){
             value.map(item => {
+              if(item instanceof Object){
+                formData.append(key+'[]' , JSON.stringify(item))
+
+              }else{
                 formData.append(key+'[]' , item)
+              }
+              
             })
             }else {
             formData.append(key, value)

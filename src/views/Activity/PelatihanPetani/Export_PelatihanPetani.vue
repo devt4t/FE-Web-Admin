@@ -8,7 +8,7 @@
         >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Sostam
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Pelatihan Petani
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
@@ -129,11 +129,11 @@
                 headers: [
                     {text: 'No', value: 'index', width: 75},
                     {text: 'No Form', value: 'training_no'},
-                    {text: 'No Sosialisasi', value: 'soc_no'},
+                    
                     {text: 'Nama MU', value: 'mu_name'},
                     {text: 'Nama TA', value: 'ta_name'},
                     {text: 'Nama FC', value: 'fc_name'},
-                    {text: 'Nama FF', value: 'ff_name'},
+                    
                     {text: 'Desa', value: 'village_name'},
     
                     {text: 'Tanggal', value: 'training_date'},

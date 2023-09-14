@@ -526,10 +526,12 @@ export default {
         post_code: this.defaultItem.post_code,
         name: this.defaultItem.namaDesa,
         ta_desas: this.defaultItem.ta_desas.map(val => {
-          if (val.program_year && val.area_code) return {...val, program_year: val.program_year.sort((a,b) => {return a - b}).toString()}
+          if (val.program_year && val.area_code) 
+          return {...val, program_year: val.program_year.sort((a,b) => {return a - b}).toString()}
           return null
         }).filter(n => n)
       };
+      
       console.log(datapost);
       // this.dialogDetail = false;
       try {

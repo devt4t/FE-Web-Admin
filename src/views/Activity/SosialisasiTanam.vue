@@ -15,12 +15,19 @@
       </v-alert>
     </div>
 
-    <!-- MODAL -->
+    <!-- MODAL EXPORT PER UM  -->
+    <ExportSostamByUM
+    :show="dialogexportsostamPerUM"
+    @close="dialogexportsostamPerUM = false"
+    >
+    </ExportSostamByUM>
+    <!-- MODAL EXPORT PER-FF-->
     <Export
-    :show="dialogExportSostam"
-    :data="dialogExportSostamData"
-    @close="dialogExportSostam = false"
-    ></Export>
+      :show="dialogExportSostam"
+      :data="dialogExportSostamData"
+      @close="dialogExportSostam = false"
+    >
+    </Export>
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px">
         <v-card rounded="xl">
@@ -2203,6 +2210,19 @@
                       <v-icon small>mdi-plus</v-icon> Add
                     </v-btn>
                   </v-list-item>
+                  <v-list-item>
+                    <v-btn
+                      v-if="RoleAccesCRUDShow == true"
+                      dark
+                      rounded
+                      class=""
+                      @click="showExportPerUMModal()"
+                      color="blue"
+                      disabled
+                    >
+                      <v-icon>mdi-download-box</v-icon> Export Data Sostam By UM
+                    </v-btn>
+                  </v-list-item>
                   
 
                   <!-- <v-list-item>
@@ -2654,6 +2674,7 @@ import LottieAnimation from 'lottie-web-vue';
 import detailLokasiSostam from "@/views/Activity/components/sostam/DetailLahanSostamMap";
 
 import Export from "@/views/Activity/SosialisasiTanam/Export";
+import ExportSostamByUM from "@/views/Activity/SosialisasiTanam/ExportSostamByUM"
 
 import treeAnimation from '@/assets/lottie/tree.json'
 import PickCoordinate from '@/views/Activity/components/sostam/PickCoordinate'
@@ -2666,7 +2687,8 @@ export default {
     detailLokasiSostam,
     LottieAnimation,
     PickCoordinate,
-    Export
+    Export,
+    ExportSostamByUM
   },
   data: () => ({
     authtoken: "",
@@ -2707,10 +2729,13 @@ export default {
     tempSeed: 0,
     totalDistributionSeed: 0,
 
-    //Export Modals
+    //Export per-ff Modals
     dialogExportSostam: false,
     dialogExportSostamData: null,
     
+    //Export per-UM modals
+    dialogexportsostamPerUM: false,
+    dialogexportsostamPerUMData: null,
 
     // periode tanam date picker
     pTDatePicker: new Date().toISOString().substr(0, 10),
@@ -5015,6 +5040,11 @@ export default {
     showExportModal(item){
       this.dialogExportSostam = true;
       this.dialogExportSostamData = item
+    },
+
+    showExportPerUMModal(){
+      this.dialogexportsostamPerUM = true;
+
     },
 
     // downloadSuperAdmin() {
