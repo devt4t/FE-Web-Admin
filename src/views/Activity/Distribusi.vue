@@ -4225,7 +4225,7 @@ export default {
         const ciminyak   = ['023', '026', '027']
         const cirasea   = ['022', '024', '025', '029']
         const kebumen    = ['019']
-        const pati       = ['015', '016']
+        const pati       = ['015', '016', '028']
         
         let nursery = 'All'
         console.log(mu_no)
