@@ -18,6 +18,9 @@
     <!-- MODAL EXPORT PER UM  -->
     <ExportSostamByUM
     :show="dialogexportsostamPerUM"
+    :program_year="this.program_year"
+    :um_no="this.selectExportUM"
+    :fc_no="this.selectExportFC"
     @close="dialogexportsostamPerUM = false"
     >
     </ExportSostamByUM>
@@ -28,6 +31,73 @@
       @close="dialogExportSostam = false"
     >
     </Export>
+
+    <v-dialog v-model="dialogExportDataSostam.show" max-width="500px">
+      <v-card rounded="xl">
+        <v-card-title class="">
+          <v-spacer></v-spacer>
+          Export Berdasarkan FC
+          <v-spacer></v-spacer>
+        </v-card-title
+        >
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    outlined
+                    rounded
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    v-model="selectExportUM"
+                    :items="itemsum"
+                    item-value="nik"
+                    item-text="name"
+                    v-on:change="selectedExportUM"
+                    label="Pilih Unit Manager"
+                    clearable
+                  ></v-autocomplete>
+                </v-col>
+              <v-col cols="12" sm="12" md="12">
+                <v-autocomplete
+                  v-model="selectExportFC"
+                  :items="itemsfc"
+                  item-value="nik"
+                  item-text="name"
+                  label="Field Coordinator"
+                  clearable
+                  :menu-props="{rounded: 'xl', offsetY: true}"
+                  outlined
+                  rounded
+                  hide-details
+                  :rules="[(v) => !!v || 'Field is required']"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-spacer></v-spacer>
+          <v-btn dark color="red" rounded class="px-5" @click="dialogExportDataSostam.show = false">
+            <v-icon small class="mr-1">mdi-close</v-icon>
+            Cancel
+          </v-btn
+          >
+          <v-btn 
+          color="green white--text" 
+          rounded class="px-5" 
+          :disabled="disabledExportSostamFF"
+          @click="showExportSostamPerFCModal()"
+          >
+            <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
+            Export
+          </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px">
         <v-card rounded="xl">
@@ -2212,13 +2282,12 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      v-if="RoleAccesCRUDShow == true"
+                      v-if="User.role_group == 'IT'"
                       dark
                       rounded
                       class=""
                       @click="showExportPerUMModal()"
                       color="blue"
-                      disabled
                     >
                       <v-icon>mdi-download-box</v-icon> Export Data Sostam By UM
                     </v-btn>
@@ -2692,6 +2761,14 @@ export default {
   },
   data: () => ({
     authtoken: "",
+
+    selectExportUM: "",
+    selectExportFC: "",
+
+    dialogExportDataSostam:{
+      show: false
+    },
+
     dialogAdd: {
       show: false,
       loading: false,
@@ -3228,6 +3305,10 @@ export default {
       return false
 
 
+    },
+    disabledExportSostamFF(){
+      if(!this.selectExportUM || !this.selectExportFC) return true
+      return false
     },
     disabledCreatePeriodeTanamByFF(){
       if(!this.dataToStore.distribution_time || !this.dataToStore.distribution_location || !this.dataToStore.distribution_coordinates || !this.dataToStore.distribution_rec_armada) return true
@@ -4219,6 +4300,7 @@ export default {
         if (response.data.length != 0) {
           this.itemsfc = response.data.data.result.data;
           // this.dataobject = response.data.data.result;
+          console.log(this.itemsfc)
         } else {
           console.log("Kosong");
         }
@@ -4542,6 +4624,7 @@ export default {
     selectedMU(a) {
       console.log(a);
       this.valueMU = a;
+      console.log(this.selectExportUM)
       if (a != null) {
         this.getTA("table");
         this.valueTA = "";
@@ -4596,6 +4679,23 @@ export default {
       }
       // this.initialize();
     },
+    selectedExportUM(a) {
+      console.log(a);
+      this.valueUM = a;
+
+      if (a != null) {
+        this.getEmpFCbyManager(a);
+        this.valueFC = "";
+        this.selectFC = "";
+        this.typegetdata = "several";
+      } else {
+        this.valueUM = "";
+        this.valueFC = "";
+        this.itemsfc = [];
+      }
+      // this.initialize();
+    },
+
     selectedFC(a) {
       console.log(a);
       this.valueFC = a;
@@ -5043,34 +5143,41 @@ export default {
     },
 
     showExportPerUMModal(){
-      this.dialogexportsostamPerUM = true;
+      console.log('open export')
+      // this.dialogexportsostamPerUM = true;
+      this.dialogExportDataSostam.show = true;
+
 
     },
+    showExportSostamPerFCModal(){
+      this.dialogexportsostamPerUM = true;
+      
+    },
 
-    // downloadSuperAdmin() {
-    //   var str = this.BaseUrlGet;
-    //   window.open(
-    //     str.substring(0, str.length - 4) +
-    //       "ExportSostamAllSuperAdmin?mu=" +
-    //       this.valueMU +
-    //       "&ta=" +
-    //       this.valueTA +
-    //       "&village=" +
-    //       this.valueVillage +
-    //       "&typegetdata=" +
-    //       this.typegetdata +
-    //       "&ff=" +
-    //       this.valueFFcode +
-    //       "&program_year=" +
-    //       this.program_year
-    //   );
+    downloadSuperAdmin() {
+      var str = this.BaseUrlGet;
+      window.open(
+        str.substring(0, str.length - 4) +
+          "ExportSostamSuperAdmin?mu=021" +
+          this.valueMU +
+          "&ta=021010" +
+          this.valueTA +
+          "&village=" +
+          this.valueVillage +
+          "&typegetdata=" +
+          this.typegetdata +
+          "&ff=" +
+          this.valueFFcode +
+          "&program_year=" +
+          this.program_year
+      );
 
-    //   // this.valueMUExcel = "";
-    //   // this.valueTAExcel = "";
-    //   // this.valueVillageExcel = "";
-    //   // this.typegetdataExcel = "";
-    //   // this.valueFFcodeExcel = "";
-    // },
+      // this.valueMUExcel = "";
+      // this.valueTAExcel = "";
+      // this.valueVillageExcel = "";
+      // this.typegetdataExcel = "";
+      // this.valueFFcodeExcel = "";
+    },
     getColorStatus(status) {
       if (status == 0) return "red";
       else return "green";

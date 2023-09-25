@@ -7,8 +7,8 @@
         content-class="rounded-xl"
         >
         <v-card>
-            <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text" v-if="data">
-                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Sostam Berdasarkan UM
+            <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Sostam Berdasarkan FC
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
@@ -26,8 +26,14 @@
                             </p>
                         </div>
                     </v-overlay>
+
+
                 <v-row class="align-center ma-0 my-2">
-                    UM: {{ data ? data.name_ff || '-' : '-' }}
+                    UM: {{ this.um_no }}
+                <v-divider class="mx-2"></v-divider>
+                </v-row>
+                <v-row class="align-center ma-0 my-2">
+                    FC: {{ this.fc_no }}
                     <v-divider class="mx-2"></v-divider>
                 </v-row>
     
@@ -38,28 +44,11 @@
                 >
                     <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
-                            Tahun Program: {{ data ? data.program_year || '': '' }}</th>
+                            FC: {{ this.fc_no }}</th>
                     </tr>
                     <tr>
-                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
-                            <h2>
-                                Data Sostam UM {{ data ? data.name_ff || '-' : '-' }}
-                            </h2>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
-                            
-                                Jumlah Lahan Petani: {{ this.totalLahan }} Orang
-                            
-                        </th>
-                    </tr>
-                    <tr>
-                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
-                            
-                                Jumlah Bibit Per-FF: {{ getTotalPohonKayu(table.items) + getTotalPohonMpts(table.items) }}
-                            
-                        </th>
+                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
+                            Tahun Program: {{ this.program_year }}</th>
                     </tr>
                     <tr>
                         <td :colspan="table.headers.length" style="text-align: center;">
@@ -76,8 +65,9 @@
                             <div v-if="header.value == 'planting_area'">(m<sup>2</sup>)</div>
                         </th>
                     </tr>
+                    
                     <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
-                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniDashboard${itemTable.value}`" 
+                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniSostamDashboard${itemTable.value}`" 
                             :class="` 
                             ${statusRowColor(tableData[itemTable.value], itemTable.value)}
                             lighten-3`"
@@ -93,10 +83,14 @@
                                     
                                 </span>
                                 
+                                
                                 <span v-else-if="itemTable.value == 'status'">
                                     <v-chip :color="getColorStatus(tableData[itemTable.value])" dark>
                                         {{ tableData[itemTable.value] }}
                                     </v-chip>
+                                </span>
+                                <span v-else-if="table.trees.find(v => itemTable.value == v.tree_code)">
+                                    {{ getSeedAmount(itemTable, tableData) }}
                                 </span>
                                 <span v-else>
                                     {{ tableData[itemTable.value] }}
@@ -133,16 +127,27 @@
                 type: Boolean,
                 default: false,
             },
-            data: {
-                type: Object,
-                default: null,
+            um_no: {
+                type: String,
+                default: ''
             },
+            fc_no: {
+                type: String,
+                default: ''
+            },
+            program_year: {
+                type: String,
+                default: ''
+            }
         },
         data: () => ({
             totalLahan : 0,
             totalBibitKayu : 0,
+
+
     
             table: {
+                trees: [],
                 headers: [
                     {text: 'No', value: 'index', width: 75},
                     {text: 'No Form', value: 'form_no'},
@@ -163,6 +168,7 @@
                     {text: 'Lokasi Distribusi', value: 'distribution_location'},
                     {text: 'Waktu Tanam', value: 'planting_time'},
                     
+                    
                     {text: 'Status', value: 'status'},
                 ],
                 items: [],
@@ -180,8 +186,10 @@
                     if(this.show){
                      
                         this.getTableData({
-                            ff_no: "FF00000272",
-                            program_year: 2023
+                            typegetdata: 'several',
+                            um: this.um_no,
+                            fc_no: this.fc_no,
+                            program_year: this.program_year
                         })   
                     }
                     return this.show
@@ -205,7 +213,7 @@
             const wb = XLSX.utils.table_to_book(table);
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataSostam${this.data.program_year}-${this.data.ff_no}_${this.data.name_ff}.xlsx`);
+            XLSX.writeFile(wb, `DataSostam-${this.program_year}_UM-${this.um_no}_FC-${this.fc_no}.xlsx`);
         },
         downloadPDF() {
             window.jsPDF = window.jspdf.jsPDF;
@@ -220,7 +228,7 @@
                 tableLineWidth: 0,
                 theme: 'striped'
              })
-            doc.save(`DataSostam${this.data.program_year}-${this.data.ff_no}_${this.data.name_ff}.pdf`);
+            doc.save(`DataSostam-${this.program_year}_UM-${this.um_no}_FC-${this.fc_no}.pdf`);
         },
         statusRowColor(outputColor, itemKey){
             if(itemKey == 'status'){
@@ -232,6 +240,15 @@
         getColorStatus(status) {
           if (status == 'Belum Verifikasi') return "red";
           else return "green";
+        },
+        getSeedAmount(item, data){
+
+            const tree_seed = data.seed_list.find(v=>v.tree_code == item.value)
+
+            if(tree_seed){
+                return tree_seed.amount
+            }
+            else return 0
         },
         getTotalPohonKayu(tables) {
         
@@ -300,10 +317,18 @@
                 try {
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)
-                    const url = `ExportSostamAllSuperAdmin?${params}`
+                    const url = `ExportSostamSuperAdmin?${params}`
                     const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
                     const data = call.data.listData
-                    
+                    const treesData = call.data.trees.map(val=>
+                    {
+                        this.table.headers.push({
+                            text: val.tree_name,
+                            value: val.tree_code
+                        })
+                        return val
+                    })
+                    this.table.trees = treesData                    
                     const totalData = call.data.totalData
                     this.totalLahan = totalData
     
