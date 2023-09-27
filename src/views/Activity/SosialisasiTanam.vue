@@ -2224,7 +2224,7 @@
               ></v-select>
               <!-- Refresh Button -->
             <v-btn
-            
+
               @click="resetFilter"
               color="info white--text"
               rounded
@@ -2283,7 +2283,7 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      v-if="User.role_group == 'IT' && User.role_name =='GIS STAFF'"
+                      v-if="User.role_group == 'IT' || User.role_name =='GIS STAFF'"
                       dark
                       rounded
                       class=""
