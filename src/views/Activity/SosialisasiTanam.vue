@@ -2224,6 +2224,7 @@
               ></v-select>
               <!-- Refresh Button -->
             <v-btn
+            
               @click="resetFilter"
               color="info white--text"
               rounded
@@ -2282,7 +2283,7 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      v-if="User.role_group == 'IT'"
+                      v-if="User.role_group == 'IT' && User.role_name =='GIS STAFF'"
                       dark
                       rounded
                       class=""
@@ -4116,10 +4117,7 @@ export default {
                 console.log(response.data.data.result);
 
                   this.dialogEditGIS.show = false;
-                  
-
-                  this.initialize();
-
+                  await this.resetFilter()
               }catch (error) {
                 console.error(error.response);
                 if (error.response.status == 401) {
