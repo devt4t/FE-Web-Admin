@@ -151,10 +151,14 @@
                 headers: [
                     {text: 'No', value: 'index', width: 75},
                     {text: 'No Form', value: 'form_no'},
+                    {text: 'Nama FC', value: 'nama_fc'},
                     {text: 'Nama FF', value: 'ff'},
                     {text: 'Petani', value: 'petani'},
-                    {text: 'No Lahan', value: 'lahanNo'},
+
+                    {text: 'Management Unit', value: 'nama_mu'},
+                    {text: 'Kecamatan', value: 'kecamatan'},
                     {text: 'Desa', value: 'desa'},
+                    {text: 'No Lahan', value: 'lahanNo'},
     
                     {text: 'Tanggal Sosialisasi/ Tanggal Pelatihan', class: "justify-center align-center", value: 'soc_date'},
                     

@@ -202,6 +202,26 @@
                               :rules="[(v) => !!v || 'Field is required']"
                             ></v-autocomplete>
                           </v-col>
+                          <!-- TA -->
+                          <!-- <v-col cols="12" sm="12" md="12">
+                            <v-autocomplete
+                              color="success"
+                              item-color="success"
+                              :menu-props="{rounded: 'xl'}"
+                              outlined
+                              rounded
+                              hide-details
+                              v-model="selectFC"
+                              :items="itemsfc"
+                              item-value="nik"
+                              item-text="name"
+                              v-on:change="selectedFC"
+                              label="Target Area"
+                              :rules="[(v) => !!v || 'Field is required']"
+                              :loading="loading.fc"
+                              :no-data-text="loading.fc ? 'Loading...' : 'Pilih UM'"
+                            ></v-autocomplete>
+                          </v-col> -->
                           <!-- FC -->
                           <v-col cols="12" sm="12" md="12">
                             <v-autocomplete
@@ -223,7 +243,7 @@
                               :readonly="User.role_name === 'FIELD COORDINATOR'"
                             ></v-autocomplete>
                           </v-col>
-                          <!-- FF -->
+                          <!-- Desa -->
                           <v-col cols="12" sm="12" md="12">
                             <v-autocomplete
                               color="success"
@@ -1002,14 +1022,16 @@
                               <th>Kode</th>
                               <th>Nama</th>
                               <th>NIK / No KTP</th>
+                              <th>Nama FF</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr v-for="(farmer, fIndex) in dialogDetailData.farmers" :key="farmer.kode">
                               <td align="center">{{ fIndex + 1 }}</td>
                               <td><span style="margin-left: 5px;">{{ farmer.farmer_no }}</span></td>
-                              <td><span style="margin-left: 5px;">{{ farmer.name }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ farmer.farmer_name }}</span></td>
                               <td><span style="margin-left: 5px;">{{ farmer.nik }}</span></td>
+                              <td><span style="margin-left: 5px;">{{ farmer.ff_name }}</span></td>
                             </tr>
                           </tbody>
                         </table>
@@ -1125,8 +1147,27 @@
                     </template>
                   </v-simple-table>
                 </v-col>
-                <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8"><p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
+                <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8"><p style="margin-bottom: 5px;">Jumlah FC Hadir: <strong>0</strong></p>
+                  <!-- Table List FC -->
+                  <v-data-table
+                    :headers="tables.fcListDetailModal.headers"
+                    :items="dialogDetailData.field_facilitators"
+                    class="elevation-3 rounded-xl"
+                    item-key="kode_ff"
+                    :loading="tables.fcListDetailModal.loading"
+                    loading-text="Loading... Please wait"
+                    :search="tables.fcListDetailModal.search"
+                    :items-per-page="10"
+                    :footer-props="{
+                      itemsPerPageOptions: [10, 25, 40, -1]
+                    }"
+                  >
+                    <template v-slot:item.index="{ index }">
+                      {{ index + 1 }}
+                    </template>
+                  </v-data-table>
                   <!-- Table List FF Berkontribusi -->
+                  <p class="py-4" style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{ dialogDetailData.farmers.length }}</strong></p>
                   <v-data-table
                     :headers="tables.ffListDetailModal.headers"
                     :items="dialogDetailData.field_facilitators"
@@ -1196,6 +1237,7 @@
                       {{ index + 1 }}
                     </template>
                   </v-data-table>
+                  
                 </v-col>
                 <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="4">
                   <h4>Foto Absensi</h4>
@@ -1707,6 +1749,16 @@ export default {
     tables: {
       // filter main table
       programYear: '',
+      fcListDetailModal:{
+        headers: [
+        { text: "No", value: "index", width: "15%" },
+        { text: "No FC", value: "", width: "35%" },
+        { text: "Nama FC", value: "", width: "50%" },
+        ],
+        items: [],
+        loading: false,
+        search: '' 
+      },
       ffListDetailModal:{
         headers: [
         { text: "No", value: "index", width: "15%" },
@@ -1721,8 +1773,9 @@ export default {
         headers: [
         { text: "No", value: "index", width: "15%" },
         { text: "Foto", value: "photo", width: "20%" },
-        { text: "No Petani", value: "farmer_no", width: "30%" },
-        { text: "Nama Petani", value: "name", width: "40%" },
+        { text: "Nama Panggilan Petani", value: "nickname", width: "30%" },
+        { text: "Nama Petani", value: "farmer_name", width: "40%" },
+        { text: "Nama FF", value: "ff_name", width: "40%" },
         ],
         items: [],
         loading: false,
@@ -1876,6 +1929,7 @@ export default {
     itemslahan: [],
     itemsum: [],
     itemsfc: [],
+    createItemsTA: [],
     itemsff: [],
     itemsVillages: [],
     itemspetani: [],
@@ -2134,6 +2188,30 @@ export default {
         this.sessionEnd(error)
       }
     },
+    async getTAbyManager(managerCode){
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+            "GetTargetAreaByManager?manager_code=" +
+            managerCode,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        console.log(response)
+        if (response.data.length != 0) {
+          this.createItemsTA = response.data.data.result;
+          // this.dataobject = response.data.data.result;
+        } else {
+          alert("Kosong");
+        }
+      } catch (error) {
+        console.error(error.response);
+        this.sessionEnd(error)
+      }
+    },
     async getVillages(fc_no){
       let fcNo = fc_no ? fc_no : null
       if (this.User.fc.fc && fcNo == null) {
@@ -2283,6 +2361,8 @@ export default {
         this.sessionEnd(error)
       }
     },
+    // Get TA By Manager
+    
     async GetFFbyUMandFC(position, valcode) {
       try {
         const response = await axios.get(
@@ -2594,6 +2674,29 @@ export default {
     },
     async selectedUM(a) {
       this.valueUM = a;
+      if (a != null) {
+        this.loading.fc = true
+        await this.getEmpFCbyManager(a);
+        await this.getTAbyManager(a);
+        await this.GetFFbyUMandFC("UM", a);
+        this.valueFC = "";
+        this.selectFC = "";
+        this.selectVillagev = "";
+        this.typegetdata = "several";
+        this.loading.fc = false
+      } else {
+        this.valueUM = "";
+        this.valueFC = "";
+        this.itemsfc = [];
+        this.typegetdata = this.User.ff.value_data;
+      }
+        this.selectFF = "";
+        this.selecttedVillage = "";
+        this.selectAdditionalFF = "";
+        this.itemsff = [];
+      // this.initialize();
+    },
+    async createSelectedTA(a){
       if (a != null) {
         this.loading.fc = true
         await this.getEmpFCbyManager(a);

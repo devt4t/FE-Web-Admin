@@ -2289,7 +2289,7 @@
                       @click="showExportPerUMModal()"
                       color="blue"
                     >
-                      <v-icon>mdi-download-box</v-icon> Export Data Sostam By UM
+                      <v-icon>mdi-download-box</v-icon> Export Data Sostam By FC
                     </v-btn>
                   </v-list-item>
                   
