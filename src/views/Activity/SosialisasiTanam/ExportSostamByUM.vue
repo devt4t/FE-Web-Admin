@@ -29,11 +29,11 @@
 
 
                 <v-row class="align-center ma-0 my-2">
-                    UM: {{ this.um_no }}
+                    UM: {{ this.data_um_name }}
                 <v-divider class="mx-2"></v-divider>
                 </v-row>
                 <v-row class="align-center ma-0 my-2">
-                    FC: {{ this.fc_no }}
+                    FC: {{ this.data_fc_name }}
                     <v-divider class="mx-2"></v-divider>
                 </v-row>
     
@@ -44,7 +44,7 @@
                 >
                     <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
-                            FC: {{ this.fc_no }}</th>
+                            FC: {{ this.data_fc_name }}</th>
                     </tr>
                     <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
@@ -67,7 +67,7 @@
                     </tr>
                     
                     <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
-                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportLahanPetaniSostamDashboard${itemTable.value}`" 
+                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportSostambyFC${itemTable.value}`" 
                             :class="` 
                             ${statusRowColor(tableData[itemTable.value], itemTable.value)}
                             lighten-3`"
@@ -96,9 +96,6 @@
                                     {{ tableData[itemTable.value] }}
                                 </span>
                             </td>
-                        </tr>
-                        <tr v-for="(tableData, dataStatusColor) in table.items">
-    
                         </tr>
                         
                 
@@ -141,9 +138,10 @@
             }
         },
         data: () => ({
-            totalLahan : 0,
+            totalData : 0,
             totalBibitKayu : 0,
-
+            data_um_name: '',
+            data_fc_name: '',
 
     
             table: {
@@ -334,7 +332,9 @@
                     })
                     this.table.trees = treesData                    
                     const totalData = call.data.totalData
-                    this.totalLahan = totalData
+                    this.totalData = totalData
+                    this.data_um_name = call.data.dataUM.name
+                    this.data_fc_name = call.data.dataFC.name
     
                     this.table.items = data
                     this.table.items_raw = data
