@@ -307,7 +307,6 @@
                                                                     color="green white--text"
                                                                     v-bind="attrs"
                                                                     v-on="on"
-                                                                    disabled
                                                                 >
                                                                     {{ dateFormat(calendar.detailPeriodFF.newPeriod.distribution_time, 'DD MMMM Y') }}
                                                                 </v-btn>
