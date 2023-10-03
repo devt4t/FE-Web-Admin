@@ -1702,6 +1702,14 @@
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
+                        Rekomanedasi Armada
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{ defaultItem.rec_armada }}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
                         Waktu Penanaman Petani
                       </th>
                       <td class="text-left" style="font-size: 14px">
@@ -2927,6 +2935,7 @@ export default {
       alamat: "",
       current_crops: "",
       distribution_location: "",
+      rec_armada: "",
       distribution_time: "",
       document_no: "",
       farmer_no: "",

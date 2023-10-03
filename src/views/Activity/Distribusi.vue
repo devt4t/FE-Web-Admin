@@ -307,6 +307,7 @@
                                                                     color="green white--text"
                                                                     v-bind="attrs"
                                                                     v-on="on"
+                                                                    disabled
                                                                 >
                                                                     {{ dateFormat(calendar.detailPeriodFF.newPeriod.distribution_time, 'DD MMMM Y') }}
                                                                 </v-btn>
@@ -4046,8 +4047,10 @@ export default {
             }
         },
         calendarGetMaxSeed(n) {
-          if(['Ciminyak', 'Cirasea', 'Soreang'].includes(n)){
+          if(['Cirasea', 'Soreang'].includes(n)){
             return 40000
+          }else if('Ciminyak'){
+            return 50000
           } else if(['Pati', 'Kebumen']){
             return 25000
           }
