@@ -3294,7 +3294,7 @@ export default {
     'pTDatePickerShow' :{
       async handler(newValue) {
         if (newValue == true) {
-          await this.setUnavailableDistributionDates()
+          // await this.setUnavailableDistributionDates()
           console.log('datepicker2NotAvailable',this.datepicker2NotAvailable)
         }
     }
