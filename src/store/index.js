@@ -36,7 +36,7 @@ export default new Vuex.Store({
       emails: TaskForceEmail
     },
     maps: {
-      accessToken: 'pk.eyJ1IjoidmlydHVhbGVzdGF0ZSIsImEiOiJja3JxOGV5aTQxbnZmMnBub3d5MjRkcWtwIn0.wsiGxsh4YBe2wBynfZpH2A',
+      accessToken: 'pk.eyJ1IjoiYmlsbGlvbmFpcmUwMjkiLCJhIjoiY2p3a3V5Zms5MHdzaTN5bnhxenFvcHFiNiJ9.jrcibCk1tIIShgL_mh7ipA',
       mapStyle: 'mapbox://styles/mapbox/satellite-streets-v12'
     },
     nurseryTeam: {

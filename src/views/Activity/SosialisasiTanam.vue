@@ -321,7 +321,7 @@
                           color="green lighten-1 rounded-xl"
                           v-model="dataToStore.distribution_time"
                           min="2023-12-01"
-                          max="2024-01-31"
+                          max="2024-02-01"
                           :allowed-dates="showingAvailableDates"
                           :key="datepicker2Key"
                       ></v-date-picker>
@@ -1353,7 +1353,7 @@
                 rounded
                 @click="showPlantingPeriode"
                 color="green"
-                :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'UNIT MANAGER'"
+                :disabled="User.role_group != 'IT'"
                 class="px-5"
                 >
               <v-icon class="mr-1" small color="white">
@@ -3294,6 +3294,7 @@ export default {
     'pTDatePickerShow' :{
       async handler(newValue) {
         if (newValue == true) {
+          //Check Point
           // await this.setUnavailableDistributionDates()
           console.log('datepicker2NotAvailable',this.datepicker2NotAvailable)
         }

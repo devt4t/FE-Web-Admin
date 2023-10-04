@@ -1939,6 +1939,16 @@
           <v-btn
 
               class="mb-2 mr-1 ml-2 d-none d-md-block"
+              @click=""
+              color="blue white--text"
+              rounded
+              :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
+          >
+            <v-icon class="mr-1" small>mdi-barcode-off</v-icon>Daftar Barcode Lahan Rusak
+          </v-btn>
+          <v-btn
+
+              class="mb-2 mr-1 ml-2 d-none d-md-block"
               @click="$router.push('PermintaanTutupanLahan')"
               color="green white--text"
               rounded
@@ -2303,6 +2313,23 @@
               Tutupan Lahan
             </v-btn>
             <v-btn
+                class="w-100"
+                rounded
+                @click=""
+                color="blue white--text"
+                block
+                small
+            >
+              <v-icon
+                  class="mr-1"
+                  small
+                  color="white"
+              >
+                mdi-barcode-scan
+              </v-icon>
+              Barcode Digital
+            </v-btn>
+            <v-btn
                 v-if="item.approve == 1"
                 class="w-100"
                 rounded
@@ -2352,16 +2379,19 @@ import axios from "axios";
 import Swal from 'sweetalert2'
 import DetailLahanMap from "@/views/Lahan/components/DetailLahanMap";
 import data from "bootstrap/js/src/dom/data";
+import VueBarcode from 'vue-barcode';
 
 export default {
   components: {
     DetailLahanMap,
+    'barcode': VueBarcode
   },
   name: "Lahan",
   data: () => ({
+    barcodeValue: 'test12345678',
     showTesterData: false,
     raw_data: [],
-    filtered_status: 'Semua',
+    filtered_status: 'Semua', 
     unverifDialog: {
       show: false,
       show2: false,
