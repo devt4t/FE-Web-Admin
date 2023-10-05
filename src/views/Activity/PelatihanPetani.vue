@@ -1196,9 +1196,16 @@
     <!-- END: MODAL -->
 
     <!-- main table -->
-    <v-data-table data-aos="fade-up" data-aos-delay="200" :headers="headers" :items="dataobject" :search="search"
-      :loading="loadtable" loading-text="Loading... Please wait"
-      :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`" :footer-props="{
+    <v-data-table 
+      data-aos="fade-up" 
+      data-aos-delay="200" 
+      :headers="headers" 
+      :items="dataobject" 
+      :search="search"
+      :loading="loadtable" 
+      loading-text="Loading... Please wait"
+      :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`" 
+      :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
         itemsPerPageOptions: [10, 25, 40, -1],
         showCurrentPage: true,
@@ -1242,6 +1249,12 @@
       <!-- Date -->
       <template v-slot:item.training_date="{ item }">
         {{ dateFormat(item.training_date, 'DD MMMM Y') }}
+      </template>
+      <!-- Status Color -->
+      <template v-slot:item.status="{ item }">
+        <v-chip :color="statusColor(item.status)" dark>
+          {{ item.status == 1 ? 'Terverifikasi' : (item.status == 0 ? 'Belum Terverifikasi' : '-')  }}
+        </v-chip>
       </template>
       <!-- Action table -->
       <template v-slot:item.actions="{ item, index }">
@@ -1466,6 +1479,7 @@ export default {
       { text: "Tanggal", value: "training_date" },
       { text: "Tahun Tanam", value: "program_year" },
       { text: "Dibuat Oleh", value: "created_by" },
+      { text: "Status", value: "status" },
       { text: "Actions", align: 'right', value: "actions", sortable: false },
     ],
     // headers table list peserta pelatihan di form tambah pelatihan petani 
@@ -2843,6 +2857,10 @@ export default {
     },
     dateFormat(date, format) {
       return moment(date).format(format)
+    },
+    statusColor(status){
+      if(status == 0) return "red";
+      else return "green";
     },
     generateReport() {
       this.dialogExportFarmerTraining = true
