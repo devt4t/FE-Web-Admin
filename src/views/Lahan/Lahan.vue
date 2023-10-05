@@ -1386,6 +1386,37 @@
       </v-card>
     </v-dialog>
 
+    <!-- Modal Digital Barcode -->
+    <v-dialog
+    v-model="dialogDigitalBarcode.modal"
+    max-width="800px"
+    content-class="rounded-xl">
+    <v-card-title class="mb-1 headermodalstyle">
+        <span class="headline">Barcode Digital</span>
+    </v-card-title>
+    <v-card style="position: relative">
+      <v-overlay v-if="dialogDigitalBarcode.loading.show" absolute justify-center align-center>
+        <div class="d-flex flex-column align-center justify-center">
+          <v-progress-circular
+              :size="80"
+              :width="7"
+              indeterminate
+              color="white"
+          >
+          </v-progress-circular>
+          <p class="mb-0 text-center mt-4">{{ dialogDigitalBarcode.loading.text || 'Loading...' }}</p>
+        </div>
+      </v-overlay>
+      <div class="d-flex flex-column align-center justify-center py-4" id="app">
+        <h3>Code QR: {{ this.barcodeValue }}</h3>
+        <qr-code v-bind:text="barcodeValue">
+          Show this if the rendering fails.
+        </qr-code>
+      </div>
+
+    </v-card>
+    </v-dialog>
+
     <!--Modal Tutupan Lahan-->
     <v-dialog
         v-model="dialogTutupanLahan"
@@ -2315,7 +2346,7 @@
             <v-btn
                 class="w-100"
                 rounded
-                @click=""
+                @click="ShowDigitalBarcodeModal(item)"
                 color="blue white--text"
                 block
                 small
@@ -2380,15 +2411,19 @@ import Swal from 'sweetalert2'
 import DetailLahanMap from "@/views/Lahan/components/DetailLahanMap";
 import data from "bootstrap/js/src/dom/data";
 import VueBarcode from 'vue-barcode';
+// import VueQrcode from 'vue-qrcode'
+import VueQRCodeComponent from 'vue-qrcode-component'
 
 export default {
   components: {
     DetailLahanMap,
-    'barcode': VueBarcode
+    'barcode': VueBarcode,
+    // VueQrcode,
+    'qr-code': VueQRCodeComponent,
   },
   name: "Lahan",
   data: () => ({
-    barcodeValue: 'test12345678',
+    barcodeValue: '10_TESTSOSV10',
     showTesterData: false,
     raw_data: [],
     filtered_status: 'Semua', 
@@ -2435,6 +2470,13 @@ export default {
     dialogShowEdit: false,
 
     dialogTutupanLahan: false,
+    dialogDigitalBarcode: {
+      modal: false,
+      loading: {
+        show: false,
+        text: 'Sedang Memuat Barcode...'
+      }
+    },
     dialogFilterArea: false,
     dialogFilterEmp: false,
     dialogGIS: false,
@@ -4277,6 +4319,13 @@ export default {
       console.log(this.defaultItem.ff_no)
       this.itemInTutupanLahan.loading.show = false;
 
+    },
+    async ShowDigitalBarcodeModal(items){
+      console.log(items)
+      this.dialogDigitalBarcode.modal = true
+      this.dialogDigitalBarcode.loading.show = true
+      this.barcodeValue = items.lahan_no
+      this.dialogDigitalBarcode.loading.show = false
     },
     editDetailPohon(item) {
       console.log(item);

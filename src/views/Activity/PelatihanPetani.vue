@@ -1764,7 +1764,7 @@ export default {
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam,
+          this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam + "&program_year=" + this.dataToStore.program_year,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
