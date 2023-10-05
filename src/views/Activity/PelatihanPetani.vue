@@ -604,7 +604,7 @@
                 Kembali
               </span>
             </v-btn>
-            <v-btn class="ml-1" elevation="1" rounded outlined color="primary" @click="stepperMove('+')" :disabled="(e1 == 1 && (!selecttedVillage || selectAdditionalFF.length == 0 || selectMultiFC.length == 0 || !dataToStore.materi_2)) ||
+            <v-btn class="ml-1" elevation="1" rounded outlined color="primary" @click="stepperMove('+')" :disabled="(e1 == 1 && (!selecttedVillage || selectAdditionalFF.length == 0 || selectMultiFC.length == 0 || !dataToStore.materi_2 )) ||
               (e1 == 2 && listFarmerParticipantChecked.length == 0) ||
               e1 == 3
               ">
@@ -674,11 +674,11 @@
                         <td>:</td>
                         <td>{{ dialogDetailData.um_name }}</td>
                       </tr>
-                      <tr>
+                      <!-- <tr>
                         <td>Field Coordinator</td>
                         <td>:</td>
                         <td>{{ dialogDetailData.fc_name }}</td>
-                      </tr>
+                      </tr> -->
                       <tr>
                         <td>Tgl Pelatihan</td>
                         <td>:</td>
@@ -726,30 +726,32 @@
                     </table>
                   </v-col>
 
-                  <!-- <v-col sm="12">
-                      <p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{ dialogDetailData.field_facilitators.length }}</strong></p>
-                      <center>
-                        <table border="1" style="border-collapse: collapse;width: 100%;">
-                          <thead>
-                            <tr>
-                              <th rowspan="2">No</th>
-                              <th colspan="3">FF Berkontribusi</th>
-                            </tr>
-                            <tr>
-                              <th>Kode</th>
-                              <th>Nama</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="(ff, ffIndex) in dialogDetailData.field_facilitators">
-                              <td align="center">{{ ffIndex + 1 }}</td>
-                              <td><span style="margin-left: 5px;">{{ ff.ff_no }}</span></td>
-                              <td><span style="margin-left: 5px;">{{ ff.ff_name }}</span></td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </center>
-                    </v-col> -->
+                    <v-col sm="12">
+                    <p style="margin-bottom: 5px;">Jumlah FC: <strong>{{
+                      dialogDetailData.field_coordinator.length }}</strong></p>
+                    <center>
+                      <table border="1" style="border-collapse: collapse;width: 100%;">
+                        <thead>
+                          <tr>
+                            <th rowspan="2">No</th>
+                            <th colspan="3">FC</th>
+                          </tr>
+                          <tr>
+                            <th>No FC</th>
+                            <th>Nama FC</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(fc, fcIndex) in dialogDetailData.field_coordinator" :key="fc.kode">
+                            <td align="center">{{ fcIndex + 1 }}</td>
+                            <td><span style="margin-left: 5px;">{{ fc.fc_no }}</span></td>
+                            <td><span style="margin-left: 5px;">{{ fc.name }}</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </center>
+                  </v-col>
+
                   <v-col sm="12">
                     <p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{
                       dialogDetailData.field_facilitators.length }}</strong></p>
@@ -857,11 +859,11 @@
                         <td>:</td>
                         <td><strong>{{ dialogDetailData.um_name }}</strong></td>
                       </tr>
-                      <tr>
+                      <!-- <tr>
                         <td>Field Coordinator</td>
                         <td>:</td>
                         <td><strong>{{ dialogDetailData.fc_name }}</strong></td>
-                      </tr>
+                      </tr> -->
                       <tr>
                         <td>Tgl Pelatihan</td>
                         <td>:</td>
@@ -920,7 +922,7 @@
               <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8">
                 <p style="margin-bottom: 5px;">Jumlah FC Hadir: <strong>0</strong></p>
                 <!-- Table List FC -->
-                <v-data-table :headers="tables.fcListDetailModal.headers" :items="dialogDetailData.field_facilitators"
+                <v-data-table :headers="tables.fcListDetailModal.headers" :items="dialogDetailData.field_coordinator"
                   class="elevation-3 rounded-xl" item-key="kode_ff" :loading="tables.fcListDetailModal.loading"
                   loading-text="Loading... Please wait" :search="tables.fcListDetailModal.search" :items-per-page="10"
                   :footer-props="{
@@ -1361,8 +1363,8 @@ export default {
       fcListDetailModal: {
         headers: [
           { text: "No", value: "index", width: "15%" },
-          { text: "No FC", value: "", width: "35%" },
-          { text: "Nama FC", value: "", width: "50%" },
+          { text: "No FC", value: "fc_no", width: "35%" },
+          { text: "Nama FC", value: "name", width: "50%" },
         ],
         items: [],
         loading: false,
@@ -1459,7 +1461,7 @@ export default {
     type: "",
     headers: [
       { text: "No Form", value: "training_no" },
-      { text: "Nama FC", value: "fc_name" },
+      { text: "Nama Unit Manager", value: "um_name" },
       { text: "Desa", value: "desa", align: "start" },
       { text: "Tanggal", value: "training_date" },
       { text: "Tahun Tanam", value: "program_year" },
@@ -2213,6 +2215,7 @@ export default {
         program_year: this.dataToStore.program_year,
         absent: this.dataToStore.absensi_img,
         dokumentasi: this.dataToStore.dokumentasi_img,
+        unit_manager: this.selectUM,
         fc_additional: this.selectMultiFC,
         ff_additional: this.selectAdditionalFF,
         peserta_tambahan: this.dataToStore.peserta_tambahan.map(val => {
