@@ -251,24 +251,6 @@
               </v-btn>
             </template>
             <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-              <v-btn color="info white--text"
-                     rounded
-                     small
-                     class="pl-1 d-flex justify-start align-center"
-                     @click="showDetailTutupan(item)">
-                <v-icon class="mr-1">mdi-information</v-icon>
-                Detail
-              </v-btn>
-                  <!--showModal('detail', item)-->
-              <v-btn color="orange white--text"
-                     rounded
-                     small
-                     class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_group=='IT'"
-                     @click="showEditTutupan(item)">
-                <v-icon class="mr-1">mdi-pencil-circle</v-icon>
-                Edit
-              </v-btn>
             <!--showModal('detail', item)-->
               <v-btn
                   v-if="item.is_verified == 0"
@@ -276,12 +258,12 @@
                      rounded
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_group=='IT'"
-                     @click="verifyTutupanFC(item)">
+                     :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
+                     @click="verifBarcodeRusak(item)">
                 <v-icon class="mr-1">mdi-check-bold</v-icon>
-                Verifikasi FC
+                Verifikasi
               </v-btn>
-              <v-btn
+              <!-- <v-btn
                   v-if="item.is_verified == 1"
                   color="green darken-1 white--text"
                      rounded
@@ -291,15 +273,15 @@
                      @click="verifyTutupanUM(item)">
                 <v-icon class="mr-1">mdi-check-bold</v-icon>
                 Verifikasi UM
-              </v-btn>
+              </v-btn> -->
               <v-btn
                   v-if="item.is_verified != 0"
                   color="red white--text"
                      rounded
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
-                     @click="unverifyTutupanUM(item)">
+                     :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
+                     @click="unverifBarcodeRusak(item)">
                 <v-icon class="mr-1">mdi-check-bold</v-icon>
                 Unverifikasi
               </v-btn>
@@ -407,6 +389,7 @@
             {text: 'Nama Petani', value: 'farmer_name'},
             {text: 'No Lahan', value: 'lahan_no'},
             {text: 'Management Unit', value: 'nama_mu'},
+            {text: 'Target Area', value: 'nama_ta'},
             {text: 'Desa', value: 'nama_desa'},
             {text: 'Alasan', value: 'reason'},
             {text: 'Status', value: 'is_verified', align: 'center'},
@@ -458,326 +441,172 @@
           await this.getTableData()
         },
     
-    
-    
-        async getDetail(item){
-          console.log(item)
-          this.itemInBarcodeRusak.farmer_no = item.farmer_no
-          this.itemInBarcodeRusak.farmer_name = item.farmer_name
-          this.itemInBarcodeRusak.land_area = item.land_area
-          this.itemInBarcodeRusak.tutupan_lahan_now = item.tutupan_lahan_now
-          this.itemInBarcodeRusak.tutupan_lahan_new = item.tutupan_lahan_new
-          this.itemInBarcodeRusak.reason = item.reason
-          this.itemInBarcodeRusak.lahan_no = item.lahan_no
-          this.itemInBarcodeRusak.year_active = item.year_active
-          this.itemInBarcodeRusak.program_year = item.program_year
-          this.itemInBarcodeRusak.submit_date_ff = item.submit_date_ff
-          this.itemInBarcodeRusak.submit_date_fc = item.submit_date_fc
-          this.itemInBarcodeRusak.verified_by = item.verified_by
-          this.itemInBarcodeRusak.mu_no = item.mu_no
-          this.itemInBarcodeRusak.target_area = item.target_area
-          
-          if(item.tutupan_photo1 == '-'){
-            this.itemInBarcodeRusak.doc_tutupan_photo1 = "/images/noimage2.png";
-          }else{
-            this.itemInBarcodeRusak.doc_tutupan_photo1 = this.BaseUrl + item.tutupan_photo1;
-          }
-          if(item.tutupan_photo2 == '-'){
-            this.itemInBarcodeRusak.doc_tutupan_photo2 = "/images/noimage2.png";
-          }else{
-            this.itemInBarcodeRusak.doc_tutupan_photo2 = this.BaseUrl + item.tutupan_photo2;
-          }
-          if(item.tutupan_photo3 == '-'){
-            this.itemInBarcodeRusak.doc_tutupan_photo3 = "/images/noimage2.png";
-          }else{
-            this.itemInBarcodeRusak.doc_tutupan_photo3 = this.BaseUrl + item.tutupan_photo3;
-          }
-          
-        },
-        showDetailTutupan(item){
-          this.type = "Detail";
-          this.dialogDetailTutupan =true;
-          this.getDetail(item)
-    
-        },
-    
-        showEditTutupan(item){
-          this.type = "Edit";
-          this.dialogEditTutupanLahan = true;
-          this.getDetail(item)
-        },
+
     
         //verifikasi FC
-        async verifyTutupanFC(item){
+        async verifBarcodeRusak(item){
           console.log('start')
-          this.$store.state.loadingOverlay = true;
-          this.$store.state.loadingOverlayText = "Verifikasi Tutupan Lahan!";
-    
           const datapost ={
-            form_no: item.form_no,
-            verified_by: item.mu_no,
-            is_verified: item.is_verified,
-    
+            lahan_no: item.lahan_no,
+            verified_by: this.userEmpNo
           };
-          try {
-            const response =await axios.post(
-                this.BaseUrlGet + "VerificationLahanTutupanFC",
-                datapost,
-                {
-                  headers: {
-                    Authorization: `Bearer ` + this.authtoken,
-                  },
-                }
-            );
-            console.log('result data: '+response.data.data.result);
-            if (response.data.data.result == "success") {
-              this.dialogDetail = false;
-              this.initialize();
-            } else {
-              this.dialogDetail = false;
-              this.alerttoken = true;
+          const confirm = await Swal.fire({
+            title: 'Konfirmasi',
+            text: "Verifikasi Lahan "+item.lahan_no+"?",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Ya!',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+          })
+          if(confirm.isConfirmed){
+            this.$store.state.loadingOverlay = true;
+            this.$store.state.loadingOverlayText = "Verifikasi Barcode Lahan!";
+      
+            try {
+              const response =await axios.post(
+                  this.BaseUrlGet + "VerificationLahanBarcodeFC",
+                  datapost,
+                  {
+                    headers: {
+                      Authorization: `Bearer ` + this.authtoken,
+                    },
+                  }
+              );
+              console.log('result data: '+response.data.data.result);
+              if (response.data.data.result == "success") {
+                this.initialize();
+              } else {
+                this.alerttoken = true;
+              }
+            } catch (error){
+              if (error.response.status == 401) {
+                this.alerttoken = true;
+              }
             }
-          } catch (error){
-            if (error.response.status == 401) {
-              this.alerttoken = true;
-              this.dialogDetail = false;
+            finally {
+              this.getTableData();
+              this.$store.state.loadingOverlay = false;
+              this.$store.state.loadingOverlayText = null;
+              console.log('end')
             }
-          }
-          finally {
-            this.getTableData();
-            this.$store.state.loadingOverlay = false;
-            this.$store.state.loadingOverlayText = null;
-            console.log('end')
+
           }
         },
         //verifikasi UM
         async verifyTutupanUM(item){
           console.log('start')
-          this.$store.state.loadingOverlay = true;
-          this.$store.state.loadingOverlayText = "Verifikasi Tutupan Lahan!";
-    
           const datapost ={
-            form_no: item.form_no,
-            verified_by: item.mu_no,
-            is_verified: item.is_verified,
+            lahan_no: item.lahan_no,
+            verified_by: this.userEmpNo
     
           };
-          try {
-            const response =await axios.post(
-                this.BaseUrlGet + "VerificationLahanTutupanUM",
-                datapost,
-                {
-                  headers: {
-                    Authorization: `Bearer ` + this.authtoken,
-                  },
-                }
-            );
-            console.log('result data: '+response.data.data.result);
-            if (response.data.data.result == "success") {
-              this.dialogDetail = false;
-              this.initialize();
-            } else {
-              this.dialogDetail = false;
-              this.alerttoken = true;
+          const confirm = await Swal.fire({
+            title: 'Konfirmasi',
+            text: "Unverifikasi Lahan "+item.lahan_no+"?",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Ya!',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+          })
+          if(confirm.isConfirmed){
+            this.$store.state.loadingOverlay = true;
+            this.$store.state.loadingOverlayText = "Verifikasi Tutupan Lahan!";
+      
+            try {
+              const response =await axios.post(
+                  this.BaseUrlGet + "UnverificationBarcodeLahanRusak",
+                  datapost,
+                  {
+                    headers: {
+                      Authorization: `Bearer ` + this.authtoken,
+                    },
+                  }
+              );
+              console.log('result data: '+response.data.data.result);
+              if (response.data.data.result == "success") {
+                this.initialize();
+              } else {
+                this.alerttoken = true;
+              }
+            } catch (error){
+              if (error.response.status == 401) {
+                this.alerttoken = true;
+              }
             }
-          } catch (error){
-            if (error.response.status == 401) {
-              this.alerttoken = true;
-              this.dialogDetail = false;
+            finally {
+              this.getTableData();
+              this.$store.state.loadingOverlay = false;
+              this.$store.state.loadingOverlayText = null;
+              console.log('end')
             }
-          }
-          finally {
-            this.getTableData();
-            this.$store.state.loadingOverlay = false;
-            this.$store.state.loadingOverlayText = null;
-            console.log('end')
+
           }
         },
         //verifikasi UM
-        async unverifyTutupanUM(item){
+        async unverifBarcodeRusak(item){
           console.log('start')
-          this.$store.state.loadingOverlay = true;
-          this.$store.state.loadingOverlayText = "Unverifikasi Tutupan Lahan!";
-    
           const datapost ={
-            form_no: item.form_no,
-            verified_by: item.mu_no,
-            is_verified: item.is_verified,
+            lahan_no: item.lahan_no,
+            verified_by: this.userEmpNo
     
           };
-          try {
-            const response =await axios.post(
-                this.BaseUrlGet + "UnverificationLahanTutupan",
-                datapost,
-                {
-                  headers: {
-                    Authorization: `Bearer ` + this.authtoken,
-                  },
-                }
-            );
-            console.log('result data: '+response.data.data.result);
-            if (response.data.data.result == "success") {
-              this.dialogDetail = false;
-              this.initialize();
-            } else {
-              this.dialogDetail = false;
-              this.alerttoken = true;
+          const confirm = await Swal.fire({
+            title: 'Konfirmasi',
+            text: "Unverifikasi Lahan "+item.lahan_no+"?",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Ya!',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+          })
+          if(confirm.isConfirmed){
+            this.$store.state.loadingOverlay = true;
+            this.$store.state.loadingOverlayText = "Verifikasi Tutupan Lahan!";
+      
+            try {
+              const response =await axios.post(
+                  this.BaseUrlGet + "UnverificationBarcodeLahanRusak",
+                  datapost,
+                  {
+                    headers: {
+                      Authorization: `Bearer ` + this.authtoken,
+                    },
+                  }
+              );
+              console.log('result data: '+response.data.data.result);
+              if (response.data.data.result == "success") {
+                this.initialize();
+              } else {
+                this.alerttoken = true;
+              }
+            } catch (error){
+              if (error.response.status == 401) {
+                this.alerttoken = true;
+              }
             }
-          } catch (error){
-            if (error.response.status == 401) {
-              this.alerttoken = true;
-              this.dialogDetail = false;
+            finally {
+              this.getTableData();
+              this.$store.state.loadingOverlay = false;
+              this.$store.state.loadingOverlayText = null;
+              console.log('end')
             }
-          }
-          finally {
-            this.getTableData();
-            this.$store.state.loadingOverlay = false;
-            this.$store.state.loadingOverlayText = null;
-            console.log('end')
+
           }
         },
     
     
         //Update Data
-        async updateTutupanLahan(datapost){
-    
-          try {
-            const response = await axios.post(
-                this.BaseUrlGet +"UpdateLahanTutupanRequest",
-                datapost,
-                {
-                  headers: {
-                    Authorization: `Bearer ` + this.authtoken,
-                  },
-                }
-            );
-            await this.getTableData();
-    
-            this.dialogEditTutupanLahan = false;
-            console.log(response.data.result);
-            if (response.data.data.result == "success") {
-              this.dialog = false;
-              this.snackbar = true;
-              this.colorsnackbar = "green";
-              this.textsnackbar = "Sukses mengubah data";
-              this.initialize();
-            } else {
-              this.dialog = true;
-            }
-    
-          }catch (error){
-            if (error.response.status == 401) {
-              this.dialog = true;
-            } else {
-              this.snackbar = true;
-              this.colorsnackbar = "red";
-              this.textsnackbar = "Gagal Simpan! Kolom Tidak Boleh Ada Yang Kosong.";
-            }
-          }
-        },
-        async saveTutupan(){
-          this.itemInBarcodeRusak.loading.show = true;
-          
-          const confirm = await Swal.fire({
-                  title: 'Konfirmasi',
-                  text: "Apakah Anda Yakin?",
-                  icon: 'warning',
-                  confirmButtonColor: '#2e7d32',
-                  confirmButtonText: 'Ya!',
-                  showCancelButton: true,
-                  cancelButtonColor: '#d33',
-                })
-                if(confirm.isConfirmed){
-                  if(
-              this.itemInBarcodeRusak.form_no != null &&
-              this.itemInBarcodeRusak.ff_no != null &&
-              this.itemInBarcodeRusak.lahan_no != null &&
-              this.itemInBarcodeRusak.tutupan_lahan_new != null &&
-              this.itemInBarcodeRusak.mu_no != null &&
-              this.itemInBarcodeRusak.land_area != null &&
-              this.itemInBarcodeRusak.program_year != null &&
-              this.itemInBarcodeRusak.reason != null &&
-              this.itemInBarcodeRusak.farmer_no != null &&
-              this.itemInBarcodeRusak.tutupan_photo1 &&
-              this.itemInBarcodeRusak.tutupan_photo2 &&
-              this.itemInBarcodeRusak.tutupan_photo3
-          ){
-            const postTutupan ={
-              lahan_no: this.itemInBarcodeRusak.lahan_no,
-              year_active : this.itemInBarcodeRusak.year_active,
-              program_year : this.itemInBarcodeRusak.program_year,
-              tutupan_lahan_now : this.itemInBarcodeRusak.tutupan_lahan_now,
-              tutupan_lahan_new : this.itemInBarcodeRusak.tutupan_lahan_new,
-              reason: this.itemInBarcodeRusak.reason,
-              mu_no : this.itemInBarcodeRusak.mu_no,
-              land_area : this.itemInBarcodeRusak.land_area,
-              farmer_no : this.itemInBarcodeRusak.farmer_no,
-              target_area : this.itemInBarcodeRusak.target_area,
-              user_id: this.itemInBarcodeRusak.mu_no,
-              tutupan_photo1: '',
-              tutupan_photo2: '',
-              tutupan_photo3: '',
-            }
-            if(this.itemInBarcodeRusak.tutupan_photo1){
-              const namafile = postTutupan.lahan_no + "_" + this.localConfig.programYear + "_TutupanLahan1";
-              const response = await axios.post(
-                  this.BaseUrl + "land-coverage/upload.php?nama=",
-                  this._utils.generateFormData({
-                    nama: namafile,
-                    fileToUpload: this.itemInBarcodeRusak.tutupan_photo1
-                  }),
-              );
-              postTutupan.tutupan_photo1 = response.data.data.new_name
-            }if(this.itemInBarcodeRusak.tutupan_photo2){
-              const namafile = postTutupan.lahan_no + "_" + this.localConfig.programYear + "_TutupanLahan2";
-              const response = await axios.post(
-                  this.BaseUrl + "land-coverage/upload.php?nama=",
-                  this._utils.generateFormData({
-                    nama: namafile,
-                    fileToUpload: this.itemInBarcodeRusak.tutupan_photo2
-                  }),
-              );
-              postTutupan.tutupan_photo2 = response.data.data.new_name
-            }if(this.itemInBarcodeRusak.tutupan_photo3){
-              const namafile = postTutupan.lahan_no + "_" + this.localConfig.programYear + "_TutupanLahan3";
-              const response = await axios.post(
-                  this.BaseUrl + "land-coverage/upload.php?nama=",
-                  this._utils.generateFormData({
-                    nama: namafile,
-                    fileToUpload: this.itemInBarcodeRusak.tutupan_photo3
-                  }),
-              );
-              postTutupan.tutupan_photo3 = response.data.data.new_name
-            }
-            console.log(postTutupan)
-            await this.updateTutupanLahan(postTutupan);
-    
-            this.dialogEditTutupanLahan= false;
-    
-    
-          }
-          else {
-            console.log('start end')
-            Swal.fire({
-              title: 'Gagal Simpan!',
-              text: `Kolom Belum Lengkap!`,
-              icon: 'warning',
-              confirmButtonColor: '#2e7d32',
-              confirmButtonText: 'Okay'
-            })
-          }
-          this.itemInBarcodeRusak.loading.show =false;
-                }
-          
-        },
+       
     
     
         //Status
         getStatusColumn(type, is_verified) {
           if (type == 'bg_color') {
             if (is_verified == '0') return 'red'
-            if (is_verified == '1') return 'orange'
-            if (is_verified == '2') return 'green darken-1'
+            if (is_verified == '1') return 'green darken-1'
+            // if (is_verified == '2') return 'green darken-1'
           }
           if (type == 'icon') {
             if (is_verified == '0') return 'mdi-alpha-x-circle'
@@ -786,7 +615,7 @@
           }
           if (type == 'text') {
             if (is_verified == '0') return 'Belum Terverifikasi'
-            if (is_verified == '1') return 'Terverifikasi FC'
+            if (is_verified == '1') return 'Terverifikasi'
             if (is_verified == '2') return 'Terverifikasi UM'
           }
     
