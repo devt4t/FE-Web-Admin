@@ -1970,7 +1970,7 @@
           <v-btn
 
               class="mb-2 mr-1 ml-2 d-none d-md-block"
-              @click=""
+              @click="$router.push('DaftarQRLahanRusak')"
               color="blue white--text"
               rounded
               :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
@@ -2019,6 +2019,7 @@
                   @click="insertDataLahan.show = true"
                   rounded
                   color="red white--text"
+                  disabled
               ><v-icon class="mr-1">mdi-land-fields</v-icon> Input Data
                 Lahan Secara Masal</v-btn
               >
@@ -2030,6 +2031,7 @@
                   rounded
                   color="info white--text"
                   class="mt-2"
+                  disabled
               ><v-icon class="mr-1">mdi-map-check</v-icon> Update Latitude dan
                 Longitude Secara Masal</v-btn
               >
@@ -2344,6 +2346,22 @@
               Tutupan Lahan
             </v-btn>
             <v-btn
+            v-if="item.approve == 1"
+            class="w-100"
+            rounded
+                @click="() => showUnverifModal(item)"
+                color="red white--text"
+                :disabled="User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'"
+                block
+                small
+                disabled
+                >
+              <v-icon class="mr-1" small color="white">
+                mdi-undo
+              </v-icon>
+              Unverif
+            </v-btn>
+            <v-btn
                 class="w-100"
                 rounded
                 @click="ShowDigitalBarcodeModal(item)"
@@ -2361,20 +2379,21 @@
               Barcode Digital
             </v-btn>
             <v-btn
-                v-if="item.approve == 1"
-                class="w-100"
+            class="w-100"
                 rounded
-                @click="() => showUnverifModal(item)"
+                @click="laporBarcodeRusak(item)"
                 color="red white--text"
-                :disabled="User.role_name != 'UNIT MANAGER' && User.role_group != 'IT'"
                 block
                 small
-                disabled
             >
-              <v-icon class="mr-1" small color="white">
-                mdi-undo
+              <v-icon
+                  class="mr-1"
+                  small
+                  color="white"
+              >
+                mdi-barcode-off
               </v-icon>
-              Unverif
+              Lapor Barcode Rusak
             </v-btn>
             <!-- <v-btn
               v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
@@ -2423,7 +2442,7 @@ export default {
   },
   name: "Lahan",
   data: () => ({
-    barcodeValue: '10_TESTSOSV10',
+    barcodeValue: '',
     showTesterData: false,
     raw_data: [],
     filtered_status: 'Semua', 
@@ -2475,6 +2494,14 @@ export default {
       loading: {
         show: false,
         text: 'Sedang Memuat Barcode...'
+      }
+    },
+    dialogLaporQrRusak: {
+      namaPetani: '',
+      noLahan: '',
+      loading: {
+        show: false,
+        text: 'Sedang Mengirim Data...'
       }
     },
     dialogFilterArea: false,
@@ -4321,11 +4348,61 @@ export default {
 
     },
     async ShowDigitalBarcodeModal(items){
-      console.log(items)
       this.dialogDigitalBarcode.modal = true
       this.dialogDigitalBarcode.loading.show = true
       this.barcodeValue = items.lahan_no
       this.dialogDigitalBarcode.loading.show = false
+    },
+    async laporBarcodeRusak(items){
+      // console.log(items)
+      this.dialogLaporQrRusak.namaPetani = items.farmer_name
+      this.dialogLaporQrRusak.noLahan = items.lahan_no
+
+      // console.log(this.dialogLaporQrRusak.noLahan)
+      const confirm = await Swal.fire({
+        title: 'Konfirmasi',
+        text: "Laporkan QR Code Lahan "+this.dialogLaporQrRusak.noLahan+", Milik Petani "+this.dialogLaporQrRusak.namaPetani+"?",
+        icon: 'warning',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'Ya!',
+        showCancelButton: true,
+        cancelButtonColor: '#d33',
+      })
+      if(confirm.isConfirmed){
+        // console.log('token ',this.authtoken)
+        try{
+          const response = await axios.post(
+              this.BaseUrlGet + "AddLahanBarcodeRequest?lahan_no="+items.lahan_no,
+              {},
+              this.$store.state.apiConfig
+          );
+          console.log(response.data.data.result)
+          this.$router.push('DaftarQRLahanRusak')
+          if (response.data.data.result == "success") {
+            this.snackbar = true;
+            this.colorsnackbar = "green";
+            this.textsnackbar = "Sukses menambahkan data";
+          } else {
+            this.snackbar = true;
+            this.colorsnackbar = "red";
+            this.textsnackbar = "Gagal Tambah Data, Terdapat Kesalahan!";
+          }
+          }
+          catch (error){
+          console.error(error.response);
+          if (error.response.status == 401) {
+            this.dialogLaporQrRusak.namaPetani = ''
+            this.dialogLaporQrRusak.noLahan = ''
+          }
+
+          }
+
+        this.dialogLaporQrRusak.namaPetani = ''
+        this.dialogLaporQrRusak.noLahan = ''
+      }else{
+        this.dialogLaporQrRusak.namaPetani = ''
+        this.dialogLaporQrRusak.noLahan = ''
+      };
     },
     editDetailPohon(item) {
       console.log(item);

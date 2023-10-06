@@ -202,6 +202,11 @@ const routes = [
     component: lazyLoad('Lahan/tutupanLahan')
   },
   {
+    path: '/DaftarQRLahanRusak',
+    name: 'DaftarQRLahanRusak',
+    component: lazyLoad('Lahan/QrLahanRusak')
+  },
+  {
     path: '/report-data',
     name: 'ReportData',
     component: exportReport

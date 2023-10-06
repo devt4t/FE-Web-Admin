@@ -324,6 +324,7 @@ export default {
           'GekoManual', 
           'ITPlayground', 
           'PermintaanTutupanLahan',
+          'DaftarQRLahanRusak',
           'LihatTanggalDistribusi',
           'ReportData'
         ]

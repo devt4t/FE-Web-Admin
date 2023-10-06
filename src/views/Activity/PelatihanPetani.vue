@@ -227,7 +227,7 @@
                           <v-autocomplete color="success" item-color="success" :menu-props="{ rounded: 'xl' }" outlined
                             rounded hide-details v-model="selectUM" :items="itemsum" item-value="nik" item-text="name"
                             v-on:change="selectedUM" label="Unit Manager" :loading="loading.um"
-                            :readonly="User.role_name === 'FIELD COORDINATOR' || User.role_name === 'UNIT MANAGER'"
+                            
                             :rules="[(v) => !!v || 'Field is required']"></v-autocomplete>
                         </v-col>
 
@@ -242,7 +242,7 @@
                             rounded 
                             hide-details 
                             v-model="selectMultiFC" 
-                            :items="itemsfc" 
+                            :items="itemCreateFc" 
                             item-value="nik"
                             item-text="name" 
                             multiple 
@@ -250,9 +250,7 @@
                             label="Field Coordinator"
                             :disabled="selectUM == ''"
                             :rules="[(v) => !!v || 'Field is required']" 
-                            :loading="loading.fc"
-                            :no-data-text="loading.fc ? 'Loading...' : 'Pilih UM'"
-                            :readonly="User.role_name === 'FIELD COORDINATOR'">
+                            :no-data-text="loading.fc ? 'Loading...' : 'Pilih UM'">
                             <template v-slot:item="data">
                               <v-list-item-content>
                                 <v-list-item-title v-html="data.item.name"></v-list-item-title>
@@ -1554,6 +1552,7 @@ export default {
     itemslahan: [],
     itemsum: [],
     itemsfc: [],
+    itemCreateFc: [],
     createItemsTA: [],
     itemsff: [],
     itemsVillages: [],
@@ -1674,9 +1673,10 @@ export default {
           "&program_year=" +
           this.tables.programYear +
           "&typegetdata=" +
-          this.typegetdata +
-          "&ff=" +
-          this.valueFFcode,
+          this.typegetdata, 
+          // +
+          // "&ff=" +
+          // this.valueFFcode,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -2002,7 +2002,9 @@ export default {
           }
         );
         if (response.data.length != 0) {
-          this.itemsfc = response.data.data.result.data;
+          // this.itemsfc = response.data.data.result.data;
+          this.itemCreateFc = response.data.data.result.data;
+          console.log(this.itemCreateFc)
           // this.dataobject = response.data.data.result;
         } else {
           alert("Kosong");
@@ -2375,6 +2377,7 @@ export default {
       this.valueUM = a;
       if (a != null) {
         this.loading.fc = true
+        console.log(this.valueUM)
         await this.getEmpFCbyManager(a);
         // await this.getTAbyManager(a);
         // await this.GetFFbyUMandFC("UM", a);
@@ -2387,9 +2390,10 @@ export default {
         this.valueUM = "";
         this.valueFC = "";
         this.itemsfc = [];
+        this.itemCreateFc = [];
         this.typegetdata = this.User.ff.value_data;
       }
-      this.selectFF = "";
+      // this.selectFF = "";
       // this.selecttedVillage = "";
       this.selectMultiFC = [];
       // this.selectAdditionalFF = [];
@@ -2553,6 +2557,7 @@ export default {
         this.$refs.form.reset();
       }
       this.itemsff = []
+      this.itemCreateFc = []
 
       // Get Training Materi Options
       if (this.options.materiPelatihan.length == 0) {
@@ -2575,8 +2580,8 @@ export default {
       if (this.User.role_name === "FIELD COORDINATOR") {
         this.selectUM = this.User.EmployeeStructure.manager_code
         await this.selectedUM(this.User.EmployeeStructure.manager_code)
-        this.selectFC = this.User.employee_no
-        await this.selectedFC(this.User.employee_no)
+        // this.selectFC = this.User.employee_no
+        // await this.selectedFC(this.User.employee_no)
       }
       // Unit Manager
       if (this.User.role_name === "UNIT MANAGER") {

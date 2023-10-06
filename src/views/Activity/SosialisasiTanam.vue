@@ -4156,7 +4156,9 @@ export default {
 
       };
       console.log(datapost);
+      
       try{
+        
         const response = await axios.post(
             this.BaseUrlGet + "createSosialisasiTanamPeriod",
             datapost,
