@@ -1502,6 +1502,7 @@ export default {
       { text: "Foto", value: "photo", width: "10%" },
       { text: "No Petani", value: "kode", width: "20%" },
       { text: "Nama Petani", value: "nama", width: "30%" },
+      { text: "Nama FF", value: "user", width: "30%" },
       { text: "NIK", value: "nik", width: "20%" },
       // { text: "Del", value: "actions", sortable: false, width: "10%" },
     ],
