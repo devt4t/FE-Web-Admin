@@ -2019,7 +2019,6 @@
                   @click="insertDataLahan.show = true"
                   rounded
                   color="red white--text"
-                  disabled
               ><v-icon class="mr-1">mdi-land-fields</v-icon> Input Data
                 Lahan Secara Masal</v-btn
               >
@@ -2031,7 +2030,6 @@
                   rounded
                   color="info white--text"
                   class="mt-2"
-                  disabled
               ><v-icon class="mr-1">mdi-map-check</v-icon> Update Latitude dan
                 Longitude Secara Masal</v-btn
               >

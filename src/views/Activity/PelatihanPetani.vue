@@ -404,9 +404,15 @@
                   <v-row>
                     <v-col cols="12" sm="12" md="12">
                       <!-- Table List Petani Peserta Pelatihan -->
-                      <v-data-table :headers="headerListProduct" :items="listFarmerParticipant"
-                        class="elevation-3 rounded-xl" item-key="kode" :loading="loadtabledetail"
-                        loading-text="Loading... Please wait" v-model="listFarmerParticipantChecked" show-select
+                      <v-data-table 
+                        :headers="headerListProduct" 
+                        :items="listFarmerParticipant"
+                        class="elevation-3 rounded-xl" 
+                        item-key="kode" 
+                        :loading="loadtabledetail"
+                        loading-text="Loading... Please wait" 
+                        v-model="listFarmerParticipantChecked" 
+                        show-select
                         :search="searchListPesertaPelatihan" :single-select="false"
                         :key="componentKey.listFarmerParticipantTable" :items-per-page="10" :footer-props="{
                           itemsPerPageText: 'Jumlah Data Per Halaman',
@@ -721,6 +727,11 @@
                         <td>:</td>
                         <td>{{ dialogDetailData.materi_2 }}</td>
                       </tr>
+                      <tr>
+                        <td>Materi Pelatihan 3</td>
+                        <td>:</td>
+                        <td>{{ dialogDetailData.materi_3 }}</td>
+                      </tr>
                     </table>
                   </v-col>
 
@@ -912,6 +923,11 @@
                         <td>Materi Pelatihan 2</td>
                         <td>:</td>
                         <td><strong>{{ dialogDetailData.materi_2 }}</strong></td>
+                      </tr>
+                      <tr>
+                        <td>Materi Pelatihan 3</td>
+                        <td>:</td>
+                        <td><strong>{{ dialogDetailData.materi_3 }}</strong></td>
                       </tr>
                     </tbody>
                   </template>
@@ -1346,7 +1362,7 @@ export default {
       dokumentasi_img: "",
       materi_1: 'TR010',
       materi_2: null,
-      materi_3: null,
+      materi_3: '-',
       material_organic: ['ORG22090001', 'ORG22090002'],
       program_year: '2023',
       date: '',
@@ -1487,7 +1503,7 @@ export default {
       { text: "No Petani", value: "kode", width: "20%" },
       { text: "Nama Petani", value: "nama", width: "30%" },
       { text: "NIK", value: "nik", width: "20%" },
-      { text: "Del", value: "actions", sortable: false, width: "10%" },
+      // { text: "Del", value: "actions", sortable: false, width: "10%" },
     ],
     dataobject: [],
     defaultItem: {
@@ -1572,6 +1588,7 @@ export default {
     valueUM: "",
     valueFC: "",
     selectUM: "",
+    UMVal: "",
     selectFC: "",
     selectMultiFC: [],
     selectCreateTA: "",
@@ -1664,7 +1681,8 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-          "GetFarmerTrainingAllAdmin?mu=" +
+          "GetFarmerTrainingAllAdmin?um="+ this.UMVal +
+          "&mu=" +
           this.valueMU +
           "&ta=" +
           this.valueTA +
@@ -1726,12 +1744,24 @@ export default {
       this.dataToStore.program_year = this.tables.programYear
       this.dataToStore.date = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 70000)).toISOString().substr(0, 10)
       // this.fc_no_global = this.User.fc.fc;
+      if (this.User.role_name === "FIELD COORDINATOR") {
+        this.UMVal = this.User.EmployeeStructure.manager_code
+        await this.selectedUM(this.User.EmployeeStructure.manager_code)
+        // this.selectFC = this.User.employee_no
+        // await this.selectedFC(this.User.employee_no)
+      }
+      // Unit Manager
+      if (this.User.role_name === "UNIT MANAGER") {
+        this.UMVal = this.User.employee_no
+        await this.selectedUM(this.User.employee_no)
+      }
       await this.checkRoleAccess();
       await this.initialize();
       await this.getMU();
       await this.getFF();
       await this.getUMAll();
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
+
     },
 
     async getMU() {
@@ -2490,7 +2520,8 @@ export default {
         this.listFarmerParticipant = []
         await this.itemspetani.forEach((val, index) => {
           let programYearPetani = this.getProgramYearPetani(val.mou_no)
-          if (programYearPetani == 2022) {
+          //select petani by program year
+          if (programYearPetani == this.dataToStore.program_year) {
             this.listFarmerParticipant.push(val)
           }
         });
