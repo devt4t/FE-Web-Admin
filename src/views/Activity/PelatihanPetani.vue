@@ -668,11 +668,22 @@
                   <v-col sm="12" class="mb-2">
                     <center>
                       <h2 class="text-center">{{ dialogDetailData.training_no }}</h2>
+                      
                       <h3 class="text-center">Tahun Program : {{ dialogDetailData.program_year }}</h3>
                     </center>
+                    
                   </v-col>
                   <v-col sm="6" class="mb-2">
                     <table>
+                      <v-chip
+                        color=""
+                        :style="{backgroundColor: getDetailStatusColor(dialogDetailData.status), color: 'white'}"
+                      >
+                        <strong>
+                          {{ getDetailStatusText(dialogDetailData.status) }}
+
+                        </strong>
+                      </v-chip>
                       <tr>
                         <td>Unit Manager</td>
                         <td>:</td>
@@ -730,7 +741,7 @@
                       <tr>
                         <td>Materi Pelatihan 3</td>
                         <td>:</td>
-                        <td>{{ dialogDetailData.materi_3 }}</td>
+                        <td>{{ this.setUndefinedMateri3(dialogDetailData.materi_3) }}</td>
                       </tr>
                     </table>
                   </v-col>
@@ -927,7 +938,7 @@
                       <tr>
                         <td>Materi Pelatihan 3</td>
                         <td>:</td>
-                        <td><strong>{{ dialogDetailData.materi_3 }}</strong></td>
+                        <td><strong>{{ setUndefinedMateri3(dialogDetailData.materi_3) }}</strong></td>
                       </tr>
                     </tbody>
                   </template>
@@ -1324,7 +1335,7 @@
                   rounded 
                   @click="showUnverifModal(item)" 
                   
-                  color="red">
+                  color="orange">
                     <v-icon class="mr-1">
                       mdi-alpha-x-circle-outline
                     </v-icon>
@@ -2393,6 +2404,18 @@ export default {
       } finally {
         this.$store.state.loadingOverlay = false
       }
+    },
+    getDetailStatusText(itemStatus){
+      if(itemStatus == 0) return 'Belum Terverifikasi'
+      else return 'Terverifikasi'
+    },
+    getDetailStatusColor(itemStatus){
+      if(itemStatus == 1) return 'green'
+      else return 'red'
+    },
+    setUndefinedMateri3(items){
+      if(items == 'undefined' || items == 'null') return ' -'
+      else return items
     },
 
     selectedMU(a) {
