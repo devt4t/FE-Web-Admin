@@ -934,7 +934,7 @@
                 </v-simple-table>
               </v-col>
               <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8">
-                <p style="margin-bottom: 5px;">Jumlah FC Hadir: <strong>0</strong></p>
+                <p style="margin-bottom: 5px;">Jumlah FC Hadir: <strong>{{ dialogDetailData.field_coordinator.length }} </strong></p>
                 <!-- Table List FC -->
                 <v-data-table :headers="tables.fcListDetailModal.headers" :items="dialogDetailData.field_coordinator"
                   class="elevation-3 rounded-xl" item-key="kode_ff" :loading="tables.fcListDetailModal.loading"
@@ -948,7 +948,7 @@
                 </v-data-table>
                 <!-- Table List FF Berkontribusi -->
                 <p class="py-4" style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{
-                  dialogDetailData.farmers.length }}</strong></p>
+                  dialogDetailData.field_facilitators.length }}</strong></p>
                 <v-data-table :headers="tables.ffListDetailModal.headers" :items="dialogDetailData.field_facilitators"
                   class="elevation-3 rounded-xl" item-key="kode_ff" :loading="tables.ffListDetailModal.loading"
                   loading-text="Loading... Please wait" :search="tables.ffListDetailModal.search" :items-per-page="10"
@@ -987,7 +987,7 @@
                   </template>
                 </v-data-table>
                 <p class="py-4" style="margin-bottom: 5px;">Jumlah Peserta Umum: <strong>{{
-                  dialogDetailData.farmers.length }}</strong></p>
+                  dialogDetailData.peserta_umums.length }}</strong></p>
                 <!-- Table List Peserta Umum -->
                 <v-data-table :headers="tables.pesertaUmumListDetailModal.headers" :items="dialogDetailData.peserta_umums"
                   class="elevation-3 rounded-xl" item-key="kode_pesertaUmum"
@@ -1292,6 +1292,46 @@
                   </v-btn>
                 </template>
                 <span>Detail</span>
+              </v-tooltip>
+            </v-list-item>
+            <v-list-item v-if="item.status == 0 && User.role_group == 'IT' || User.role_name == 'SOCIAL OFFICER'">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn 
+                  dark 
+                  v-bind="attrs" 
+                  v-on="on" 
+                  rounded 
+                  @click="showVerifModal(item)" 
+                  
+                  color="green">
+                    <v-icon class="mr-1">
+                      mdi-check
+                    </v-icon>
+                    Verifikasi
+                  </v-btn>
+                </template>
+                <span>Verifikasi</span>
+              </v-tooltip>
+            </v-list-item>
+            <v-list-item v-if="item.status == 1 && User.role_group == 'IT' || User.role_name == 'SOCIAL OFFICER'">
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn 
+                  dark 
+                  v-bind="attrs" 
+                  v-on="on" 
+                  rounded 
+                  @click="showUnverifModal(item)" 
+                  
+                  color="red">
+                    <v-icon class="mr-1">
+                      mdi-alpha-x-circle-outline
+                    </v-icon>
+                    Unverifikasi
+                  </v-btn>
+                </template>
+                <span>Unverifikasi</span>
               </v-tooltip>
             </v-list-item>
             <v-list-item v-if="getDeleteAccess(User, item)">
@@ -2625,6 +2665,107 @@ export default {
     showDeleteModal(item) {
       this.idDelete = item.ft_id;
       this.dialogDelete = true;
+    },
+    async showVerifModal(item){
+      const param ={
+       training_no: item.training_no,
+       verified_by: this.User.employee_no 
+      }
+      const confirm = await Swal.fire({
+        title: 'Konfirmasi',
+        text: "Verifikasi Pelatihan "+item.training_no+"?",
+        icon: 'warning',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'Ya!',
+        showCancelButton: true,
+        cancelButtonColor: '#d33',
+      })
+      if(confirm.isConfirmed){
+        this.$store.state.loadingOverlay = true;
+        this.$store.state.loadingOverlayText = "Verifikasi Pelatihan Petani!";
+        try {
+          const response =await axios.post(
+              this.BaseUrlGet + "VerificationFarmerTraining",
+              param,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+          );
+          console.log('result data: '+response.data.data.result);
+          if (response.data.data.result == "success") {
+            this.initialize();
+            this.$store.state.loadingOverlay = false;
+            this.$store.state.loadingOverlayText = null;
+          } else {
+            this.alerttoken = true;
+          }
+        } catch (error){
+          if (error.response.status == 401) {
+            this.alerttoken = true;
+            this.$store.state.loadingOverlay = false;
+            this.$store.state.loadingOverlayText = null;
+          }
+        }
+        finally {
+          this.getTableData();
+          this.$store.state.loadingOverlay = false;
+          this.$store.state.loadingOverlayText = null;
+          console.log('end')
+        }
+      }
+    },
+
+    async showUnverifModal(item){
+      const param ={
+       training_no: item.training_no,
+       verified_by: this.User.employee_no 
+      }
+      const confirm = await Swal.fire({
+        title: 'Konfirmasi',
+        text: "Unverifikasi Pelatihan "+item.training_no+"?",
+        icon: 'warning',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'Ya!',
+        showCancelButton: true,
+        cancelButtonColor: '#d33',
+      })
+      if(confirm.isConfirmed){
+        this.$store.state.loadingOverlay = true;
+        this.$store.state.loadingOverlayText = "Unverifikasi Pelatihan Petani!";
+        try {
+          const response =await axios.post(
+              this.BaseUrlGet + "UnverificationFarmerTraining",
+              param,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+          );
+          console.log('result data: '+response.data.data.result);
+          if (response.data.data.result == "success") {
+            this.initialize();
+            this.$store.state.loadingOverlay = false;
+            this.$store.state.loadingOverlayText = null;
+          } else {
+            this.alerttoken = true;
+          }
+        } catch (error){
+          if (error.response.status == 401) {
+            this.alerttoken = true;
+            this.$store.state.loadingOverlay = false;
+            this.$store.state.loadingOverlayText = null;
+          }
+        }
+        finally {
+          this.getTableData();
+          this.$store.state.loadingOverlay = false;
+          this.$store.state.loadingOverlayText = null;
+          console.log('end')
+        }
+      }
     },
 
     async deleteItemConfirm() {

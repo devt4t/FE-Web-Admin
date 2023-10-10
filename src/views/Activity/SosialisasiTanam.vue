@@ -2561,7 +2561,7 @@
                   rounded
                   @click="showEditGIS(item)"
                   color="green"
-                  :disabled="User.role_group != 'IT' && User.role_name != 'UNIT MANAGER'  && User.role_name != 'GIS STAFF'"
+                  :disabled="User.role_group != 'IT' && User.role_name != 'GIS STAFF'"
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
