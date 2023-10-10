@@ -3074,6 +3074,7 @@ export default {
     getDeleteAccess(user, item) {
       if (user.role_group === 'IT') return true
       else if (user.role_name === 'UNIT MANAGER') return true
+      else if (user.role_name === 'FIELD COORDINATOR') return true
       else if (item.mu_name === 'CITARIK' && user.role_name === 'REGIONAL MANAGER') return true
       else return false
     },
