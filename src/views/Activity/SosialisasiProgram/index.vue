@@ -95,7 +95,7 @@
               :disabled="table.loading.show || table.items.length == 0"
               rounded
               class="mr-2"
-              @click="() => exportExcel()"
+              @click="exportExcel()"
             >
               <v-icon class="mr-1">mdi-microsoft-excel</v-icon>
               Export
@@ -183,6 +183,13 @@
         </v-menu>
       </template>
     </v-data-table>
+    <ExportSosprog
+    :show="showExportSosprog"
+    :items="this.table.items"
+    :program_year="this.localConfig.programYear"
+    @close="showExportSosprog = false"
+    >
+    </ExportSosprog>
   </div>
 </template>
 
@@ -192,13 +199,17 @@ import Swal from "sweetalert2";
 
 import FormModal from "./components/FormModal.vue";
 import DetailModal from "./components/DetailModal.vue";
+import ExportSosprog from "./components/ExportSosprog.vue";
+
 
 export default {
   components: {
     FormModal,
     DetailModal,
+    ExportSosprog,
   },
   data: () => ({
+    showExportSosprog: false,
     breadcrumbs: [
       {
         text: "Activities",
@@ -324,6 +335,9 @@ export default {
       } finally {
         this.table.loading.show = false;
       }
+    },
+    exportExcel(){
+      this.showExportSosprog = true;
     },
     modalActions(val) {
       if (val.type == "close") {

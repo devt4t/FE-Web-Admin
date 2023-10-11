@@ -745,8 +745,15 @@
                       </tr>
                     </table>
                   </v-col>
+                </v-row>
+              </v-container>
+            </section>
 
-                    <v-col sm="12">
+            <section slot="pdf-content">
+              <v-container v-if="dialogDetailData">
+                <v-row>
+                  <!-- jumlah FC -->
+                  <v-col sm="12">
                     <p style="margin-bottom: 5px;">Jumlah FC: <strong>{{
                       dialogDetailData.field_coordinator.length }}</strong></p>
                     <center>
@@ -772,6 +779,7 @@
                     </center>
                   </v-col>
 
+                  <!-- tabel ff berkontribusi -->
                   <v-col sm="12">
                     <p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{
                       dialogDetailData.field_facilitators.length }}</strong></p>
@@ -798,7 +806,7 @@
                     </center>
                   </v-col>
 
-
+                  <!-- tabel kehadiran petani -->
                   <v-col sm="12">
                     <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length
                     }}</strong></p>
@@ -829,7 +837,7 @@
                     </center>
                   </v-col>
 
-
+                  <!-- tabel peserta umum -->
                   <v-col sm="12">
                     <p style="margin-bottom: 5px;">Jumlah kehadiran Peserta Umum: <strong>{{
                       dialogDetailData.peserta_umums.length }}</strong></p>
@@ -859,10 +867,10 @@
                       </table>
                     </center>
                   </v-col>
-
                 </v-row>
               </v-container>
             </section>
+
           </vue-html2pdf>
           <v-container v-if="dialogDetailData">
             <div class="mb-2">
