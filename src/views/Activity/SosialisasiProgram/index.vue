@@ -91,8 +91,9 @@
           <v-divider class="mx-2 d-none d-lg-block"></v-divider>
           <div class="mx-auto">
             <v-btn
+              v-if="User.role_group == 'IT' || User.role_name == 'UNIT MANAGER'"
               color="green white--text"
-              :disabled="table.loading.show || table.items.length == 0"
+              :disabled="table.loading.show || table.items.length == 0 "
               rounded
               class="mr-2"
               @click="exportExcel()"
@@ -261,6 +262,7 @@ export default {
       search: "",
     },
     user: "",
+    User: "",
   }),
   watch: {
     'localConfig.programYear': {
@@ -307,6 +309,9 @@ export default {
     },
     async firstAccessPage() {
       // set general config to local config
+      this.User = JSON.parse(localStorage.getItem("User"));
+      // console.log(this.User)
+
       this.user = this.$store.state.User;
       this.localConfig.programYear = this.$store.state.programYear.model;
       await this.getTableData();

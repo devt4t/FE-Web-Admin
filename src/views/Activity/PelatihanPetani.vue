@@ -663,7 +663,7 @@
             :manual-pagination="false" pdf-format="a4" pdf-orientation="portrait" pdf-content-width="800px"
             ref="html2Pdf">
             <section slot="pdf-content">
-              <v-container v-if="dialogDetailData">
+              <v-container v-if="dialogDetailData.training_no">
                 <v-row>
                   <v-col sm="12" class="mb-2">
                     <center>
@@ -753,7 +753,7 @@
               <v-container v-if="dialogDetailData">
                 <v-row>
                   <!-- jumlah FC -->
-                  <v-col sm="12">
+                  <v-col sm="12" v-if="dialogDetailData.field_coordinator">
                     <p style="margin-bottom: 5px;">Jumlah FC: <strong>{{
                       dialogDetailData.field_coordinator.length }}</strong></p>
                     <center>
@@ -780,7 +780,7 @@
                   </v-col>
 
                   <!-- tabel ff berkontribusi -->
-                  <v-col sm="12">
+                  <v-col sm="12" v-if="dialogDetailData.field_facilitators">
                     <p style="margin-bottom: 5px;">Jumlah FF Berkontribusi: <strong>{{
                       dialogDetailData.field_facilitators.length }}</strong></p>
                     <center>
@@ -807,7 +807,7 @@
                   </v-col>
 
                   <!-- tabel kehadiran petani -->
-                  <v-col sm="12">
+                  <v-col sm="12" v-if="dialogDetailData.farmers">
                     <p style="margin-bottom: 5px;">Jumlah kehadiran petani: <strong>{{ dialogDetailData.farmers.length
                     }}</strong></p>
                     <center>
@@ -838,7 +838,7 @@
                   </v-col>
 
                   <!-- tabel peserta umum -->
-                  <v-col sm="12">
+                  <v-col sm="12" v-if="dialogDetailData.peserta_umums">
                     <p style="margin-bottom: 5px;">Jumlah kehadiran Peserta Umum: <strong>{{
                       dialogDetailData.peserta_umums.length }}</strong></p>
                     <center>
@@ -871,8 +871,11 @@
               </v-container>
             </section>
 
+          
+
+
           </vue-html2pdf>
-          <v-container v-if="dialogDetailData">
+          <v-container v-if="dialogDetailData.training_no">
             <div class="mb-2">
               <h2 class="text-center">{{ dialogDetailData.training_no }}</h2>
               <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
@@ -952,7 +955,7 @@
                   </template>
                 </v-simple-table>
               </v-col>
-              <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8">
+              <v-col cols="12" xs="12" sm="12" md="12" lg="8" xl="8" v-if="dialogDetailData.field_coordinator">
                 <p style="margin-bottom: 5px;">Jumlah FC Hadir: <strong>{{ dialogDetailData.field_coordinator.length }} </strong></p>
                 <!-- Table List FC -->
                 <v-data-table :headers="tables.fcListDetailModal.headers" :items="dialogDetailData.field_coordinator"
@@ -1064,10 +1067,21 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn v-bind="attrs" v-on="on" dark color="blue lighten-1" @click="generateExportDetail" rounded
                     class="d-none d-lg-block">
-                    <v-icon class="mr-1" small>mdi-printer</v-icon> Export
+                    <v-icon class="mr-1" small>mdi-printer</v-icon> Export PDF
                   </v-btn>
                 </template>
                 <span>Export to .pdf</span>
+              </v-tooltip>
+            </v-col>
+            <v-col>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-if="User.role_group == 'IT' || User.role_group == 'SOCIAL OFFICER'" v-bind="attrs" v-on="on" dark color="blue lighten-1" @click="generateExportDetailExcel" rounded
+                    class="d-none d-lg-block">
+                    <v-icon class="mr-1" small>mdi-printer</v-icon> Export Excel
+                  </v-btn>
+                </template>
+                <span>Export to .xlsx</span>
               </v-tooltip>
             </v-col>
             <v-col align="end">
@@ -1084,6 +1098,270 @@
     <Export_PelatihanPetani :show="dialogExportFarmerTraining" :program_year="this.tables.programYear"
       @close="dialogExportFarmerTraining = false">
     </Export_PelatihanPetani>
+
+    <v-dialog 
+      v-model="dialogExportExcel.modal"
+      scrollable
+      max-width="2500px"
+      transition="dialog-transition"
+      content-class="rounded-xl"
+      >
+      <v-card>
+        <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
+            <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Pelatihan Petani
+            <v-icon color="white" class="ml-auto" @click="dialogExportExcel.modal = false">mdi-close-circle</v-icon>
+        </v-card-title>
+        <v-card-text>
+          <!-- Loading -->
+          <v-overlay absolute :value="dialogExportExcel.loading.show" class="rounded-xl">
+            <div class="d-flex flex-column justify-center align-center">
+                <p class="mt-2 mb-0"> {{dialogExportExcel.loading.text}}
+                  <v-progress-circular
+                      :size="17"
+                      :width="3"
+                      indeterminate
+                      color="white"
+                  >
+                  </v-progress-circular>
+                </p>
+              </div>
+          </v-overlay>
+        <table 
+          v-if="dialogDetailData.training_no" 
+          class="ml-auto mr-auto" 
+          style="border: 2px solid black;
+          border-collapse: collapse; 
+          min-height: 200px"
+           
+          id="tabelForExportPelatihanPetani">
+          <!-- <div class="mb-2">
+            
+            <h2 class="text-center">{{ dialogDetailData.training_no }}</h2>
+            <h3 class="text-center">Program Year : {{ dialogDetailData.program_year }}</h3>
+          </div> -->
+          <tr>
+            <th  style="text-align: center; font-size: 15px;" colspan="5">
+              {{ dialogDetailData.training_no }}
+            </th>
+          </tr>
+          <tr>
+              <th align="center" style="text-align: center;font-size: 15px;" colspan="5">
+                  Tahun Program: {{ dialogDetailData.program_year }}</th>
+          </tr>
+          <tr>
+            <td style="text-align: center;" colspan="5">
+                <small>
+                    Export Time: {{ Date() }}
+                </small>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" :style="{backgroundColor: getDetailStatusColor(dialogDetailData.status), color: 'white'}">
+              {{ getDetailStatusText(dialogDetailData.status) }}
+            </td>
+          </tr>
+          <tr style="text-align: left; margin-left: 2em;font-size: 13px;">
+            <td>Unit Manager: </td>
+            <td>{{ dialogDetailData.um_name }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Tgl Pelatihan: </td>
+            <td>{{ dateFormat(dialogDetailData.training_date, 'LL') }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Management Unit: </td>
+            <td>{{ dialogDetailData.management_unit }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Target Area: </td>
+            <td>{{ dialogDetailData.target_area }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Desa: </td>
+            <td>{{ dialogDetailData.desa }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Material Organik: </td>
+            <td>Pupuk, Pestisida</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Materi Pelatihan 1: </td>
+            <td colspan="3">{{ dialogDetailData.materi_1 }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Materi Pelatihan 2: </td>
+            <td colspan="3">{{ dialogDetailData.materi_2 }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td>Materi Pelatihan 3: </td>
+            <td colspan="3">{{ this.setUndefinedMateri3(dialogDetailData.materi_3) }}</td>
+          </tr>
+          <tr style="text-align: left;font-size: 13px;">
+            <td colspan="2">Jumlah FC: {{dialogDetailData.field_coordinator.length }}</td>
+          </tr>
+              <tr>
+                <th rowspan="2">No</th>
+                <th colspan="2">FC</th>
+              </tr>
+              <tr>
+                <th>No FC</th>
+                <th>Nama FC</th>
+              </tr>
+            <tbody>
+              <tr v-for="(fc, fcIndex) in dialogDetailData.field_coordinator" :key="fc.kode">
+                <td align="center">{{ fcIndex + 1 }}</td>
+                <td><span style="margin-left: 5px;">{{ fc.fc_no }}</span></td>
+                <td><span style="margin-left: 5px;">{{ fc.name }}</span></td>
+              </tr>
+            </tbody>
+          <tr style="text-align: left;font-size: 13px;">
+            <td colspan="3">Jumlah FF Berkontribusi: {{ dialogDetailData.field_facilitators.length }}</td>
+          </tr>
+          
+              <tr>
+                <th rowspan="2">No</th>
+                <th colspan="2">FF Berkontribusi</th>
+              </tr>
+              <tr>
+                <th>No FF</th>
+                <th>Nama</th>
+              </tr>
+            
+            <tbody>
+              <tr v-for="(ff, ffIndex) in dialogDetailData.field_facilitators" :key="ff.kode">
+                <td align="center">{{ ffIndex + 1 }}</td>
+                <td><span style="margin-left: 5px;">{{ ff.ff_additional }}</span></td>
+                <td><span style="margin-left: 5px;">{{ ff.name }}</span></td>
+              </tr>
+            </tbody>
+          <tr style="text-align: left;font-size: 13px;">
+            <td colspan="3">Jumlah Petani Hadir: {{dialogDetailData.farmers.length }}</td>
+          </tr>
+              <tr>
+                <th rowspan="2">No</th>
+                <th colspan="4">Petani Peserta</th>
+              </tr>
+              <tr>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>NIK / No KTP</th>
+                <th>Nama FF</th>
+              </tr>
+            <tbody>
+              <tr v-for="(farmer, fIndex) in dialogDetailData.farmers" :key="farmer.kode">
+                <td align="center">{{ fIndex + 1 }}</td>
+                <td><span style="margin-left: 5px;">{{ farmer.farmer_no }}</span></td>
+                <td><span style="margin-left: 5px;">{{ farmer.farmer_name }}</span></td>
+                <td><span style="margin-left: 5px;">{{ farmer.nik }}</span></td>
+                <td><span style="margin-left: 5px;">{{ farmer.ff_name }}</span></td>
+              </tr>
+            </tbody>
+          <tr style="text-align: left;font-size: 13px;">
+            <td colspan="3">Jumlah Kehadiran Peserta Umum: {{dialogDetailData.peserta_umums.length }}</td>
+          </tr>
+
+              <tr>
+                <th rowspan="2">No</th>
+                <th colspan="4">Peserta Umum</th>
+              </tr>
+              <tr>
+                <th>Nama</th>
+                <th>Alamat</th>
+                <th>Kontak</th>
+                <th>Jenis Kelamin</th>
+              </tr>
+            
+            <tbody>
+              <tr v-for="(pPublic, pPublicIndex) in dialogDetailData.peserta_umums" :key="pPublic.kode">
+                <td align="center">{{ pPublicIndex + 1 }}</td>
+                <td><span style="margin-left: 5px;">{{ pPublic.name }}</span></td>
+                <td><span style="margin-left: 5px;">{{ pPublic.address }}</span></td>
+                <td><span style="margin-left: 5px;">{{ pPublic.phone }}</span></td>
+                <td><span style="margin-left: 5px;">{{ pPublic.gender }}</span></td>
+              </tr>
+            </tbody>
+          <!-- <v-col sm="5" class="mb-2 ml-auto mr-auto" >
+            <table>
+              <v-chip
+                color=""
+                :style="{backgroundColor: getDetailStatusColor(dialogDetailData.status), color: 'white'}"
+              >
+                <strong>
+                  {{ getDetailStatusText(dialogDetailData.status) }}
+
+                </strong>
+              </v-chip>
+              <tr>
+                <td>Unit Manager</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.um_name }}</td>
+              </tr>
+              <tr>
+                <td>Field Coordinator</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.fc_name }}</td>
+              </tr>
+              <tr>
+                <td>Tgl Pelatihan</td>
+                <td>:</td>
+                <td>{{ dateFormat(dialogDetailData.training_date, 'LL') }}</td>
+              </tr>
+            </table>
+          </v-col> -->
+          <!-- <v-col sm="5" class="mb-2 ml-auto">
+            <table>
+              <tr>
+                <td>Management Unit</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.management_unit }}</td>
+              </tr>
+              <tr>
+                <td>Target Area</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.target_area }}</td>
+              </tr>
+              <tr>
+                <td>Desa</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.desa }}</td>
+              </tr>
+              <tr>
+                <td>Material Organik</td>
+                <td>:</td>
+                <td>Pupuk, Pestisida</td>
+              </tr>
+            </table>
+          </v-col> -->
+          <!-- <v-col sm="5" class="mb-2 ml-auto mr-auto">
+            <table>
+              <tr>
+                <td>Materi Pelatihan 1</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.materi_1 }}</td>
+              </tr>
+              <tr>
+                <td>Materi Pelatihan 2</td>
+                <td>:</td>
+                <td>{{ dialogDetailData.materi_2 }}</td>
+              </tr>
+              <tr>
+                <td>Materi Pelatihan 3</td>
+                <td>:</td>
+                <td>{{ this.setUndefinedMateri3(dialogDetailData.materi_3) }}</td>
+              </tr>
+            </table>
+          </v-col> -->
+        </table>
+      </v-card-text>
+        <v-card-actions class="mr-auto ml-auto mb-auto">
+          <v-btn :disabled="dialogExportExcel.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-auto ml-auto">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
+        </v-card-actions>
+        
+      </v-card>
+
+      
+    </v-dialog>
+
     <!-- Preview Petani Modal -->
     <v-dialog v-model="preview.petani.modal" max-width="500px" content-class="rounded-xl mx-1" scrollable>
       <v-card class="rounded-xl">
@@ -1406,6 +1684,14 @@ export default {
     carousel: {
       absensi_img: 0
     },
+    dialogExportExcel:{
+      loading:{
+        show: false,
+        text: ''
+      },
+      modal: false,
+    },
+
     showedMateri3: false,
     showedAbsensi2: false,
     overlay: false,
@@ -1436,7 +1722,7 @@ export default {
     },
     // temporary
     temporaryTableDatas: [],
-    dialogDetailData: null,
+    dialogDetailData: {},
     absensiPreview: '',
     absensiPreview2: '',
     dokumentasiPreview: '',
@@ -1789,6 +2075,15 @@ export default {
     async exportToExcel() {
       this.dialogExportFarmerTraining = true
 
+    },
+    
+    downloadExcel() {
+      window.alert()
+        const table = document.getElementById("tabelForExportPelatihanPetani");
+        const wb = XLSX.utils.table_to_book(table);
+
+        /* Export to file (start a download) */
+        XLSX.writeFile(wb, `DataSosialisasiProgram-testtahun.xlsx`);
     },
     async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
@@ -3078,6 +3373,9 @@ export default {
     },
     generateExportDetail() {
       this.$refs.html2Pdf.generatePdf()
+    },
+    generateExportDetailExcel(){
+      this.dialogExportExcel.modal = true
     },
     generateFormData(data) {
       let formData = new FormData()

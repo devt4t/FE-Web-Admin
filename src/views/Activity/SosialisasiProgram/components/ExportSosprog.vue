@@ -208,7 +208,7 @@
             const wb = XLSX.utils.table_to_book(table);
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataSosialisasiProgram-${this.program_year}.xlsx`);
+            XLSX.writeFile(wb, `DataSosialisasiProgram.xlsx`);
         },
         downloadPDF() {
             window.jsPDF = window.jspdf.jsPDF;
