@@ -90,6 +90,16 @@ const routes = [
     component: lazyLoad('TruckDriver/TruckDriver')
   },
   {
+    path: '/Donor',
+    name: 'Donor',
+    component: lazyLoad('Donor/Donor')
+  },
+  {
+    path: '/Project',
+    name: 'Project',
+    component: lazyLoad('Project/Project')
+  },
+  {
     path: '/Trees',
     name: 'Trees',
     component: lazyLoad('Trees/Trees')

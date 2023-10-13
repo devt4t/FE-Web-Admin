@@ -1354,7 +1354,7 @@
         </table>
       </v-card-text>
         <v-card-actions class="mr-auto ml-auto mb-auto">
-          <v-btn :disabled="dialogExportExcel.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-auto ml-auto">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
+          <v-btn :disabled="dialogExportExcel.loading.show" color="green white--text" rounded @click="downloadExcel(dialogDetailData.training_no)"><v-icon class="mr-auto ml-auto">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
         </v-card-actions>
         
       </v-card>
@@ -2077,13 +2077,12 @@ export default {
 
     },
     
-    downloadExcel() {
-      window.alert()
+    downloadExcel(noPelatihan) {
         const table = document.getElementById("tabelForExportPelatihanPetani");
         const wb = XLSX.utils.table_to_book(table);
 
         /* Export to file (start a download) */
-        XLSX.writeFile(wb, `DataSosialisasiProgram-testtahun.xlsx`);
+        XLSX.writeFile(wb, `DataPelatihanPetani-${this.tables.programYear}-${noPelatihan}.xlsx`);
     },
     async firstAccessPage() {
       this.authtoken = localStorage.getItem("token");
