@@ -1387,10 +1387,10 @@
                       </tr>
                       <tr>
                         <th class="text-left" style="font-size: 14px">
-                          Persentase Serapan Bibit
+                          Persentase Adjustment Bibit
                         </th>
                         <td class="text-center" style="font-size: 14px">
-                          <v-card rounded-xl shadow-lg color="blue" darken class="white--text">
+                          <v-card rounded-xl shadow-lg color="red" darken class="white--text">
                             <strong>{{ percentageFormat(defaultItem.total_holes, defaultItem.max_seed_amount) }}%</strong>
                           </v-card>
                         </td>
@@ -4498,7 +4498,7 @@ export default {
         return new Intl.NumberFormat('id-ID').format(num)
     },
     percentageFormat(val1, val2){
-      return ((val1 * 100)/ val2).toFixed(2)
+      return (((val1 - val2) * 100)/ val2).toFixed(2)
     },
     async UnverificationItemConfirm(uniqId) {
       if (uniqId) {
