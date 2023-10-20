@@ -71,6 +71,8 @@ export default {
         icon: "mdi-database",
         active: false,
         items: [
+          { title: "Project", to: "/Project"},
+          { title: "Donor", to: "/Donor"},
           { title: "Farmer", to: "/Farmer" },
           { title: "Lahan", to: "/Lahan" },
           { title: "Trees", to: "/Trees" },

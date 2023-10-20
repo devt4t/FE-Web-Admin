@@ -1379,6 +1379,24 @@
                       </tr>
                       <tr>
                         <th class="text-left" style="font-size: 14px">
+                          Total Bibit Sostam
+                        </th>
+                        <td class="text-left" style="font-size: 14px">
+                          <strong>{{ numberFormat(defaultItem.max_seed_amount) }}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="text-left" style="font-size: 14px">
+                          Persentase Serapan Bibit
+                        </th>
+                        <td class="text-center" style="font-size: 14px">
+                          <v-card rounded-xl shadow-lg color="blue" darken class="white--text">
+                            <strong>{{ percentageFormat(defaultItem.total_holes, defaultItem.max_seed_amount) }}%</strong>
+                          </v-card>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="text-left" style="font-size: 14px">
                           Jumlah Lubang Standar
                         </th>
                         <td class="text-left" style="font-size: 14px">
@@ -2272,6 +2290,7 @@ export default {
       latitude: "",
       longitude: "",
       total_holes: 0,
+      max_seed_amount: 0,
       planting_year: "2021",
       farmer_signature: "",
       gambar1: "",
@@ -4477,6 +4496,9 @@ export default {
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    percentageFormat(val1, val2){
+      return ((val1 * 100)/ val2).toFixed(2)
     },
     async UnverificationItemConfirm(uniqId) {
       if (uniqId) {
