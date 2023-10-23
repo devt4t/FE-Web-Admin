@@ -520,8 +520,12 @@
                       @click="() => modifyTotalSubData('+')">
                       <v-icon>mdi-plus</v-icon>
                     </v-btn>
-                    <v-btn v-if="dataToStore.peserta_tambahan.length > 1" data-aos="fade-left" data-aos-offset="-10000"
-                      fab small color="red" outlined class="mx-1" @click="() => modifyTotalSubData('-')">
+                    <v-btn 
+                      v-if="dataToStore.peserta_tambahan.length > 1" 
+                      data-aos="fade-left" 
+                      data-aos-offset="-10000"
+                      fab small color="red" 
+                      outlined class="mx-1" @click="() => modifyTotalSubData('-')">
                       <v-icon>mdi-minus</v-icon>
                     </v-btn>
                   </v-row>
@@ -532,17 +536,42 @@
               <v-stepper-content class="pa-3" step="3">
                 <!-- Content -->
                 <v-container>
+                  <div class="py-1 red--text">
+                    <strong>*Jika File Foto Lebih Besar Dari 1MB, Silahkan Compress Terlebih Dahulu!</strong>
+                  </div>
+                  <div class="py-4">
+                    <v-btn 
+                      color="orange" 
+                      rounded
+                      href="https://www.iloveimg.com/compress-image"
+                      target="_blank"
+                      >
+                      <v-icon>mdi-zip-box</v-icon>
+                      Link Compress Foto
+                    </v-btn>
+                  </div>
                   <v-row>
                     <!-- Absensi Foto -->
                     <v-col cols="12" sm="12" md="12" lg="6">
                       <v-row>
                         <!-- Absensi File -->
                         <v-col cols="12" sm="12" md="12">
-                          <v-file-input color="success" item-color="success" outlined rounded hide-details
-                            accept="image/png, image/jpeg, image/bmp" placeholder="Foto Absensi Tertulis"
-                            prepend-icon="mdi-camera" label="Foto Absensi Tertulis" v-on:change="absensiFileChanged"
+                          <v-file-input 
+                            color="success" 
+                            item-color="success" 
+                            outlined
+                            :show-size="true" 
+                            rounded 
+                            hide-details
+                            v-model="dataToStore.absensi_img"
+                            accept="image/png, image/jpeg, image/bmp" 
+                            placeholder="Foto Absensi Tertulis"
+                            prepend-icon="mdi-camera" 
+                            label="Foto Absensi Tertulis" 
+                            v-on:change="absensiFileChanged"
                             :key="componentKey.absensiImageInput"
-                            :rules="[(v) => !!v || 'Field is required']"></v-file-input>
+                            :rules="[(v) => !!v || 'Field is required']"
+                            ></v-file-input>
                           <v-card elevation="2" class="rounded-xl" height="300"
                             v-if="absensiPreview && absensiPreview !== ''">
                             <v-img height="300" v-bind:src="absensiPreview" class="my-2 mb-4 rounded-xl"
@@ -555,10 +584,21 @@
                             <v-icon>mdi-plus</v-icon>
                             Add more image
                           </v-btn>
-                          <v-file-input v-if="showedAbsensi2" color="success" item-color="success"
-                            :menu-props="{ rounded: 'xl' }" outlined rounded hide-details
-                            accept="image/png, image/jpeg, image/bmp" placeholder="Foto Absensi Tertulis 2"
-                            prepend-icon="mdi-camera" label="Foto Absensi Tertulis 2" v-on:change="absensiFileChanged2"
+                          <v-file-input 
+                            v-if="showedAbsensi2" 
+                            color="success" 
+                            item-color="success"
+                            :menu-props="{ rounded: 'xl' }" 
+                            outlined 
+                            rounded 
+                            hide-details
+                            :show-size="true"
+                            v-model="dataToStore.absensi_img2"
+                            accept="image/png, image/jpeg, image/bmp" 
+                            placeholder="Foto Absensi Tertulis 2"
+                            prepend-icon="mdi-camera" 
+                            label="Foto Absensi Tertulis 2" 
+                            v-on:change="absensiFileChanged2"
                             :key="componentKey.absensiImageInput2"></v-file-input>
                           <v-card elevation="2" class="rounded-xl" height="300"
                             v-if="absensiPreview2 && absensiPreview2 !== ''">
@@ -572,9 +612,19 @@
                       <v-row>
                         <!-- Dokumentasi File -->
                         <v-col cols="12" sm="12" md="12">
-                          <v-file-input color="success" item-color="success" outlined rounded hide-details
-                            accept="image/png, image/jpeg, image/bmp" placeholder="Foto Dokumentasi"
-                            prepend-icon="mdi-camera" label="Foto Dokoumentasi" v-on:change="dokumentasiFileChanged"
+                          <v-file-input 
+                            color="success" 
+                            item-color="success" 
+                            outlined 
+                            rounded 
+                            hide-details
+                            :show-size="true"
+                            v-model="dataToStore.dokumentasi_img"
+                            accept="image/png, image/jpeg, image/bmp" 
+                            placeholder="Foto Dokumentasi"
+                            prepend-icon="mdi-camera" 
+                            label="Foto Dokoumentasi" 
+                            v-on:change="dokumentasiFileChanged"
                             :key="componentKey.dokumentasiImageInput"
                             :rules="[(v) => !!v || 'Field is required']"></v-file-input>
                           <v-card elevation="2" class="rounded-xl" height="300"
@@ -3243,6 +3293,8 @@ export default {
         fc_no: "",
         ff_no: "",
         absensi_img: "",
+        absensi_img2: "",
+        dokumentasi_img: "",
         materi_1: 'TR010',
         materi_2: null,
         material_organic: ['ORG22090001', 'ORG22090002'],
@@ -3253,6 +3305,7 @@ export default {
       }
       this.absensiPreview = ""
       this.absensiPreview2 = ""
+      this.dokumentasiPreview = ""
       this.componentKey.absensiImageInput += 1
       this.componentKey.absensiImageInput2 += 1
       this.e1 = 1;
@@ -3266,30 +3319,83 @@ export default {
         return text.slice(4, 8)
       }
     },
-    absensiFileChanged(event) {
+    async absensiFileChanged(event) {
+      
       if (event) {
         this.dataToStore.absensi_img = event
+        // console.log(this.dataToStore.absensi_img)
+        console.log(event['size'])
+        if(event['size'] < 1000000){
+          console.log('menampilkan foto')
+          this.absensiPreview = URL.createObjectURL(event)
+        }else{
+          const confirm = await Swal.fire({
+          title: 'Peringatan!',
+          text: "File Terlalu Besar!",
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Ok!',
+          showCancelButton: false,
+          })
+          if(confirm.isConfirmed){
+            console.log('gagal Input')
+            this.dataToStore.absensi_img = ""
+            this.absensiPreview = ""      
+          }
+        }
 
-        this.absensiPreview = URL.createObjectURL(event)
       } else {
         this.dataToStore.absensi_img = ""
         this.absensiPreview = ""
       }
     },
-    absensiFileChanged2(event) {
+    async absensiFileChanged2(event) {
       if (event) {
         this.dataToStore.absensi_img2 = event
-        this.absensiPreview2 = URL.createObjectURL(event)
+        if(event['size'] < 1000000){
+          this.absensiPreview2 = URL.createObjectURL(event)
+
+        }else{
+          const confirm = await Swal.fire({
+            title: 'Peringatan!',
+            text: "File Terlalu Besar!",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Ok!',
+            showCancelButton: false,
+            })
+            if(confirm.isConfirmed){
+              console.log('gagal Input')
+              this.dataToStore.absensi_img2 = ""
+              this.absensiPreview2 = ""
+            }
+        }
       } else {
         this.dataToStore.absensi_img2 = ""
         this.absensiPreview2 = ""
       }
     },
-    dokumentasiFileChanged(event) {
+    async dokumentasiFileChanged(event) {
       if (event) {
         this.dataToStore.dokumentasi_img = event
-
-        this.dokumentasiPreview = URL.createObjectURL(event)
+        if(event['size'] < 1000000){
+          this.dokumentasiPreview = URL.createObjectURL(event)
+        }
+        else{
+          const confirm = await Swal.fire({
+            title: 'Peringatan!',
+            text: "File Terlalu Besar!",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Ok!',
+            showCancelButton: false,
+            })
+            if(confirm.isConfirmed){
+              console.log('gagal Input')
+              this.dataToStore.dokumentasi_img = ""
+              this.dokumentasiPreview = ""
+            }
+        }
       } else {
         this.dataToStore.dokumentasi_img = ""
         this.dokumentasiPreview = ""

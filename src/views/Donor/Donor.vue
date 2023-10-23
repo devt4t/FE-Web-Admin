@@ -165,14 +165,19 @@
       tableLoading: false,
       headers: [
         {text: 'No', value: 'index'},
-        {text: 'Nama', value: 'farmer_name'},
-        {text: 'Negara', value: 'lahan_no'},
-        {text: 'No Partisipan', value: 'nama_mu'},
+        {text: 'No Partisipan', value: 'participant_no'},
+        {text: 'Kategori', value: 'category'},
+        {text: 'Nama Depan', value: 'first_name'},
+        {text: 'Nama Belakang', value: 'last_name'},
+        {text: 'Alamat 1', value: 'address1'},
+        {text: 'Alamat 2', value: 'address2'},
+        {text: 'Perusahaan', value: 'company'},
+        {text: 'Kota', value: 'city'},
         {text: 'Actions', value: 'actions', align: 'right'},
       ],
       dataobject: [],
       dataSwitch: "Donor",
-      dataSwitchItems: ["Donor", "Participant", "else"],
+      dataSwitchItems: ["Donor", "Manufaktur", "Sponsor"],
 
       snackbar: false,
       textsnackbar: "Test",
@@ -208,16 +213,16 @@
             this.$store.state.loadingOverlayText = 'Memuat Data...'
             const User = this.$store.state.User
             const created_by = []
-            let url = this.$store.getters.getApiUrl(`GetLahanBarcodeRequestAdmin?user_id=`)
+            let url = this.$store.getters.getApiUrl(`GetDonorAllAdmin`)
             const res = await axios.get(url, this.$store.state.apiConfig)
             if(this.dataSwitch == "Donor"){
-              this.dataobject = res.data.data.result
+              this.dataobject = res.data.donors
             }
-            else if(this.dataSwitch == "Participant"){
-              this.dataobject = res.data.data.result1
+            else if(this.dataSwitch == "Manufaktur"){
+              this.dataobject = res.data.manufacturs
             }
-            else if(this.dataSwitch == "else"){
-              this.dataobject = res.data.data.result
+            else if(this.dataSwitch == "Sponsor"){
+              this.dataobject = res.data.sponsors
             }
             } catch (err) {
             this.dataobject = []
