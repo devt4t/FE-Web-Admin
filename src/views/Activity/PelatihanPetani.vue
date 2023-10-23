@@ -537,7 +537,7 @@
                 <!-- Content -->
                 <v-container>
                   <div class="py-1 red--text">
-                    <strong>*Jika File Foto Lebih Besar Dari 1MB, Silahkan Compress Terlebih Dahulu!</strong>
+                    <strong>*Jika File Foto Lebih Besar Dari 1.5 MB, Silahkan Compress Terlebih Dahulu!</strong>
                   </div>
                   <div class="py-4">
                     <v-btn 
@@ -3325,7 +3325,7 @@ export default {
         this.dataToStore.absensi_img = event
         // console.log(this.dataToStore.absensi_img)
         console.log(event['size'])
-        if(event['size'] < 1000000){
+        if(event['size'] < 1500000){
           console.log('menampilkan foto')
           this.absensiPreview = URL.createObjectURL(event)
         }else{
@@ -3352,7 +3352,7 @@ export default {
     async absensiFileChanged2(event) {
       if (event) {
         this.dataToStore.absensi_img2 = event
-        if(event['size'] < 1000000){
+        if(event['size'] < 1500000){
           this.absensiPreview2 = URL.createObjectURL(event)
 
         }else{
@@ -3378,7 +3378,7 @@ export default {
     async dokumentasiFileChanged(event) {
       if (event) {
         this.dataToStore.dokumentasi_img = event
-        if(event['size'] < 1000000){
+        if(event['size'] < 1500000){
           this.dokumentasiPreview = URL.createObjectURL(event)
         }
         else{
