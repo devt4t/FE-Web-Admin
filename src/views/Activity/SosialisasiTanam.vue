@@ -2292,7 +2292,7 @@
                   </v-list-item>
                   <v-list-item>
                     <v-btn
-                      v-if="User.role_group == 'IT' || User.role_name =='GIS STAFF' || User.role_group =='SOCIAL OFFICER'"
+                      v-if="User.role_group == 'IT' || User.role_name =='GIS STAFF' || User.role_name == 'SOCIAL OFFICER'"
                       dark
                       rounded
                       class=""
