@@ -503,7 +503,8 @@
                         </v-col>
                         <v-col cols="12">
                           <v-text-field dense color="success" hide-details small-chips item-color="success"
-                            v-model="assignPesertaTambahan.phone" label="No Hp/WA" outlined rounded>
+                            v-model="assignPesertaTambahan.phone" label="No Hp/WA"
+                            :rules="[(v) => !!v || 'Field is required']" outlined rounded>
                           </v-text-field>
                         </v-col>
                         <v-col cols="12">
@@ -1061,10 +1062,16 @@
                 <p class="py-4" style="margin-bottom: 5px;">Jumlah Peserta Umum: <strong>{{
                   dialogDetailData.peserta_umums.length }}</strong></p>
                 <!-- Table List Peserta Umum -->
-                <v-data-table :headers="tables.pesertaUmumListDetailModal.headers" :items="dialogDetailData.peserta_umums"
-                  class="elevation-3 rounded-xl" item-key="kode_pesertaUmum"
-                  :loading="tables.pesertaUmumListDetailModal.loading" loading-text="Loading... Please wait"
-                  :search="tables.pesertaUmumListDetailModal.search" :items-per-page="10" :footer-props="{
+                <v-data-table 
+                  :headers="tables.pesertaUmumListDetailModal.headers" 
+                  :items="dialogDetailData.peserta_umums"
+                  class="elevation-3 rounded-xl" 
+                  item-key="kode_pesertaUmum"
+                  :loading="tables.pesertaUmumListDetailModal.loading" 
+                  loading-text="Loading... Please wait"
+                  :search="tables.pesertaUmumListDetailModal.search" 
+                  :items-per-page="10" 
+                  :footer-props="{
                     itemsPerPageOptions: [10, 25, 40, -1]
                   }">
                   <template v-slot:item.index="{ index }">

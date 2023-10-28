@@ -1500,7 +1500,7 @@
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Verifikasi
           </v-btn>
-          <v-btn
+          <!-- <v-btn
             v-if="defaultItem.is_verified == 1"
             color="green white--text"
             @click="verifSubmit()"
@@ -1509,7 +1509,7 @@
           >
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Verification
-          </v-btn>
+          </v-btn> -->
           <v-btn
             v-else-if="defaultItem.is_verified == 2"
             color="red white--text"
