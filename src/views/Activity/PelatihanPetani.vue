@@ -1133,7 +1133,7 @@
             <v-col>
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-if="User.role_group == 'IT' || User.role_group == 'SOCIAL OFFICER'" v-bind="attrs" v-on="on" dark color="blue lighten-1" @click="generateExportDetailExcel" rounded
+                  <v-btn v-if="User.role_group == 'IT' || User.role_name == 'SOCIAL OFFICER'" v-bind="attrs" v-on="on" dark color="blue lighten-1" @click="generateExportDetailExcel" rounded
                     class="d-none d-lg-block">
                     <v-icon class="mr-1" small>mdi-printer</v-icon> Export Excel
                   </v-btn>

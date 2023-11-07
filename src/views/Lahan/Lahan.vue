@@ -2031,8 +2031,15 @@
                   color="info white--text"
                   class="mt-2"
               ><v-icon class="mr-1">mdi-map-check</v-icon> Update Latitude dan
-                Longitude Secara Masal</v-btn
-              >
+                Longitude Secara Masal
+              </v-btn>
+              <v-btn
+                  :disabled="User.role_group != 'IT'"
+                  rounded
+                  color="success white--text"
+                  class="mt-2"
+              ><v-icon class="mr-1">mdi-land-plots-marker</v-icon> Tambah Data Lahan
+              </v-btn>
             </v-card>
           </v-menu>
         </v-row>

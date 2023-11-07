@@ -693,6 +693,7 @@ export default {
       { text: "Pohon Buah/MPTS", value: "Pohon_Buah" },
       { text: "Perkebunan", value: "Perkebunan" },
       { text: "Tanaman Bawah/Empon-empon", value: "Tanaman_Bawah_Empon" },
+      { text: "Mangrove", value: "mangrove"},
     ],
     headers: [
       {
