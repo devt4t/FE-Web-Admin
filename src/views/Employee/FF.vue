@@ -19,6 +19,14 @@
       @swal="($v) => swalActions($v)"
       @refreshTable="initialize"
     />
+    <!-- modal edit email ff -->
+    <editEmailModal
+      :show="dialogs.editEmailFF.show"
+      :email="dialogs.editEmailFF.value"
+      @close="dialogs.editEmailFF.show = false"
+    />
+      
+    
     <!-- modal list ff farmers -->
     <ShowFarmerList :show="dialogs.listFarmer.show" :ff_no="dialogs.listFarmer.ff_no" />
     <!-- dialog detail -->
@@ -467,6 +475,25 @@
               Edit
             </v-btn>
             <v-btn
+              v-if="
+                (RoleAccesCRUDShow == true &&
+                  item.validation != 1 &&
+                  (User.role_name == 'UNIT MANAGER' ||
+                    User.role_name == 'REGIONAL MANAGER')) ||
+                  User.role_group == 'IT'"
+              class="mb-1"
+              block
+              small
+              rounded
+              @click="editEmail(item)"
+              color="info white--text"
+            >
+              <v-icon class="mr-1" small color="white">
+                mdi-pencil
+              </v-icon>
+              Edit Email
+            </v-btn>
+            <v-btn
               v-if="User.role_group == 'IT' && item.active != 1 && false"
               dark
               rounded
@@ -542,18 +569,23 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
+import editEmailModal from "./components/FF/editEmailModal.vue"
 import ChangeFFModal from "./components/FF/ChangeFFModal.vue";
 import AddFFModal from "./components/FF/AddFFModal.vue";
 import ShowFarmerList from "./components/FF/ShowFarmerList.vue";
 
 export default {
   name: "FieldFacilitator",
-  components: { ChangeFFModal, AddFFModal, ShowFarmerList },
+  components: { editEmailModal, ChangeFFModal, AddFFModal, ShowFarmerList },
   data: () => ({
     dialogs: {
       addEditFF: {
         show: false,
         id: "",
+      },
+      editEmailFF: {
+        show: false,
+        value: "",
       },
       changeFF: {
         show: false,
@@ -1210,7 +1242,10 @@ export default {
       this.dialogs.addEditFF.id = item.id.toString();
       this.dialogs.addEditFF.show = true;
     },
-
+    async editEmail(item){
+      this.dialogs.editEmailFF.show = true;
+      this.dialogs.editEmailFF.value = item.email
+    },
     deleteItem(item) {
       console.log(item.id);
       this.defaultItem.id = item.id;

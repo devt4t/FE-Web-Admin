@@ -1941,6 +1941,20 @@
                   color="green"
                   item-color="green"
                   :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Tahun Program"
+                  :items="[2021,2022,2023]"
+                  v-model="dialogs.exportFilter.program_year"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                   label="Regional Manager"
                   :loading="dialogs.exportFilter.filters.rm.loading"
                   :item-value="dialogs.exportFilter.filters.rm.itemVal"
@@ -1996,6 +2010,15 @@
             <v-divider class="mx-2"></v-divider>
             <v-hover v-slot="{hover}">
               <v-btn rounded :color="`green ${hover ? 'white--text' : ''}`" :outlined="!hover" @click="() => exportData()" :disabled="dialogs.exportFilter.filters.ff.model.length < 1 || dialogs.exportFilter.filters.ff.loading"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
+            </v-hover>
+            <v-hover v-slot="{hover}">
+              <v-btn v-if="User.role_group == 'IT'"
+                rounded 
+                :color="`green ${hover ? 'white--text' : ''}`" 
+                :outlined="!hover" 
+                @click="() => exportDataByUM()" 
+                :disabled="dialogs.exportFilter.filters.um.model < 1 ||dialogs.exportFilter.filters.um.loading">
+                <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export By UM</v-btn>
             </v-hover>
             <v-divider class="mx-2"></v-divider>
           </v-card-actions>
@@ -2436,6 +2459,7 @@ export default {
     },
     dialogs: {
       exportFilter: {
+        program_year: '2021',
         model: false,
         filters: {
           rm: {
@@ -5061,6 +5085,7 @@ export default {
         filters.rm.model = managerCode
         await this.getFiltersOptions('um', managerCode)
         filters.um.model = user.employee_no
+
         await this.getFiltersOptions('fc', user.employee_no)
       } else if (user.role_name == 'REGIONAL MANAGER') {
         filters.rm.model = user.employee_no
@@ -5076,7 +5101,6 @@ export default {
       const dialog = this.dialogs.exportFilter
       dialog.model = false
       let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoring?'
-
       const params = new URLSearchParams({
         program_year: this.generalSettings.programYear,
         land_program: this.generalSettings.landProgram.model,
@@ -5085,6 +5109,20 @@ export default {
       url += params.toString()
       window.open(url, "blank")
     },
+
+    async exportDataByUM() {
+      const dialog = this.dialogs.exportFilter
+      dialog.model = false
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoring?'
+      const params = new URLSearchParams({
+        program_year: this.dialogs.exportFilter.program_year,
+        land_program: this.generalSettings.landProgram.model,
+        UM: this.dialogs.exportFilter.filters.um.model
+      })
+      url += params.toString()
+      window.open(url, "blank")
+    },
+
     async exportLahanUmum() {
       const dialog = this.dialogs.exportFilter
       dialog.model = false
@@ -5105,7 +5143,9 @@ export default {
         filters.loading = true
         let url = ''
         if (type == 'rm') url = this.$store.getters.getApiUrl('GetEmployeebyPosition?position_code=23')
-        else if (type == 'um' && data) url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=20`)
+        else if (type == 'um' && data) 
+          url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=20`)
+
         else if (type == 'fc' && data) url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${data}&position=19`)
         filters.model = ''
         this.dialogs.exportFilter.filters.ff.model = []

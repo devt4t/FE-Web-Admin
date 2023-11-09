@@ -1680,9 +1680,9 @@ export default {
         if (response.data.length != 0) {
           this.dataobject = resData;
           this.raw_data = resData;
-          if (this.showTesterData === false) {
-            this.dataobject = this.filterDataDummy(resData);
-          }
+          // if (this.showTesterData === false) {
+          //   this.dataobject = this.filterDataDummy(resData);
+          // }
           this.loadtable = false;
         } else {
           this.dataobject = [];

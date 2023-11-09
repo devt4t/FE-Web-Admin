@@ -1771,6 +1771,10 @@
       </v-card>
     </v-dialog>
 
+    <!-- Modal Add Data Lahan For CSR -->
+    <tambahDataLahan
+    :show="showAddLahan" @close="showAddLahan=false">
+    </tambahDataLahan>
     <!-- Modal Mass Insert Lahan -->
     <v-dialog
         v-model="insertDataLahan.show"
@@ -2035,6 +2039,7 @@
               </v-btn>
               <v-btn
                   :disabled="User.role_group != 'IT'"
+                  @click="showAddLahan = true"
                   rounded
                   color="success white--text"
                   class="mt-2"
@@ -2437,10 +2442,12 @@ import data from "bootstrap/js/src/dom/data";
 import VueBarcode from 'vue-barcode';
 // import VueQrcode from 'vue-qrcode'
 import VueQRCodeComponent from 'vue-qrcode-component'
+import tambahDataLahan from "@/views/Lahan/components/tambahDataLahan.vue";
 
 export default {
   components: {
     DetailLahanMap,
+    tambahDataLahan,
     'barcode': VueBarcode,
     // VueQrcode,
     'qr-code': VueQRCodeComponent,
@@ -2448,6 +2455,7 @@ export default {
   name: "Lahan",
   data: () => ({
     barcodeValue: '',
+    showAddLahan: false,
     showTesterData: false,
     raw_data: [],
     filtered_status: 'Semua', 
