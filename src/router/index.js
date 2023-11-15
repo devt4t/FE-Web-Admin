@@ -120,6 +120,11 @@ const routes = [
     component: lazyLoad('Activity/SosialisasiTanam')
   },
   {
+    path: '/AdjustmentDataSostam',
+    name: 'AdjustmentDataSostam',
+    component: lazyLoad('Activity/components/sostam/AdjustmentDataSostam')
+  },
+  {
     path: '/PelatihanPetani',
     name: 'PelatihanPetani',
     component: lazyLoad('Activity/PelatihanPetani')

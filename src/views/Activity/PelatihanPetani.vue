@@ -1087,9 +1087,14 @@
                     <v-carousel cycle height="250" v-model="carousel.absensi_img" show-arrows-on-hover
                       hide-delimiter-background class="rounded-xl elevation-5 mb-2">
                       <v-carousel-item v-for="(absensiImg, aIIndex) in dialogDetailData.absent" :key="aIIndex">
-                        <v-img aspect-ratio="1" class="rounded-xl cursor-pointer" transition="fade-transition"
-                          :src="absensiImg" @click="() => { showLightbox(dialogDetailData.absent, aIIndex); }"
-                          v-bind="attrs" v-on="on">
+                        <v-img 
+                          aspect-ratio="1" 
+                          class="rounded-xl cursor-pointer" 
+                          transition="fade-transition"
+                          :src="absensiImg" 
+                          @click="() => { showLightbox(dialogDetailData.absent, aIIndex); }"
+                          v-bind="attrs" 
+                          v-on="on">
                           <template v-slot:placeholder>
                             <v-skeleton-loader class="mx-auto rounded-xl" type="image"></v-skeleton-loader>
                           </template>

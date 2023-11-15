@@ -999,7 +999,10 @@
           </v-card-text>
 
           <v-card-actions v-if="dialogAdd.loading == false" class="elevation-15 rounded-xl">
-            <v-btn color="red px-5" rounded dark @click="dialogAdd.show = false">
+            <v-btn color="red px-5" 
+            rounded 
+            dark 
+            @click="dialogAdd.show = false">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Keluar
             </v-btn>
@@ -1891,6 +1894,108 @@
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Verifikasi
             </v-btn>
+            <v-btn
+              dark
+              color="blue"
+              class="px-5"
+              rounded
+              @click="dialogAdjustmentDataBibit = true"
+              :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
+              outlined
+              elevation="1"
+            >
+              <v-icon class="mr-1">mdi-pencil</v-icon>
+              Adjust Data Bibit Sostam
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- modal adjust data bibit -->
+      <v-dialog v-model="dialogAdjustmentDataBibit" max-width="800px" scrollable persistent content-class="rounded-xl">
+        <v-card rounded="xl">
+            <v-card-title color="orange" class="mb-1 headermodalstyle">
+              <span>Adjust Jumlah Bibit</span>
+            </v-card-title>
+            <v-simple-table>
+            <tbody>
+              <tr>
+                <td>Total Kayu {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                <td>:</td>
+                <td>
+                  <v-btn
+                    rounded
+                    dark
+                    :color="getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount)"
+                    class="pr-2"
+                  >
+                    {{
+                      getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +
+                      getStatusTotalBibitInDetail(defaultItem.planting_details, 'MPTS')
+                    }} Bibit
+                    <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
+                  </v-btn>
+                </td>
+                
+              </tr>
+            </tbody>
+            </v-simple-table>
+          <v-divider></v-divider>
+          <v-card-text>
+            <h4 class="mt-3 red--text"><strong>Klik Jumlah Bibit Pada Tabel Untuk Mengubah!</strong></h4>
+            <v-data-table
+              :headers="headerUpdateDetailBibit"
+              :items="dataToStore.adjustment_planting_details"
+              class="elevation-1"
+            >
+            <template v-slot:body="{ items, headers }">
+                <tbody>
+                    <tr v-for="(item,idx,k) in items" :key="idx">
+                        <td v-for="(header,key) in headers" :key="key">
+                            <v-edit-dialog
+                            :return-value.sync="item[header.value]"
+                            @save="simpanJumlah"
+                            large
+                            > {{item[header.value]}}
+                            <template 
+                            v-if="header.value == 'amount'"
+                            v-slot:input>
+                              <v-text-field
+                                  v-model="item[header.value]"
+                                  label="Edit"
+                                  single-line
+                                  type="number"
+                                  @change="$v=>$v > item.maxAmount? item[header.value]=item.maxAmount:''"
+                                  :rules="[
+                                    v => (!!v && v <= item.maxAmount)|| 'Jumlah Tidak Bisa Lebih!'
+                                  ]"
+                                ></v-text-field>
+                              </template>
+                            </v-edit-dialog>
+                        </td>
+                    </tr>
+                </tbody>
+              </template>
+            </v-data-table>
+          </v-card-text>
+          <v-card-actions class="elevation-15 rounded-xl">
+            <v-btn 
+            color="red px-5" 
+            rounded 
+            dark 
+            @click="dialogAdjustmentDataBibit = false">
+              <v-icon class="mr-1">mdi-close-circle</v-icon>
+              Keluar
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="green white--text"
+              rounded
+              @click="saveDataAdjustment"
+            >
+              <v-icon class="mr-1">mdi-check-circle</v-icon>
+              Simpan
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -2252,11 +2357,22 @@
             </v-col>
             <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
               
+              <v-btn
+                dark
+                rounded
+                class="mb-2 mr-1 ml-2 d-none d-md-block"
+                color="orange"
+                @click="$router.push('AdjustmentDataSostam')"
+                :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
+              >
+                <v-icon class="mr-1" small>mdi-pencil</v-icon> Data Adjustment Bibit Sostam
+              </v-btn>
 
               <v-btn
                   :disabled="!$store.state.User.role_group=='IT'"
                 dark
                 rounded
+                class="mb-2 mr-1 ml-2 d-none d-md-block"
                 @click="showAddModal()"
                 color="green"
               >
@@ -2860,6 +2976,7 @@ export default {
     dialogPetaniSusulan: false,
     dialogConfirmPetaniSusulan: false,
     dialogDetail: false,
+    dialogAdjustmentDataBibit: false,
     dialogFilterArea: false,
     dialogFilterEmp: false,
     dialogShowEdit: false,
@@ -2915,6 +3032,11 @@ export default {
     
 
     headersdetail: [
+      { text: "Nama Pohon", value: "tree_name", width: "20%" },
+      { text: "Kategori", value: "tree_category", width: "20%" },
+      { text: "Jumlah", value: "amount", width: "15%" },
+    ],
+    headerUpdateDetailBibit:[
       { text: "Nama Pohon", value: "tree_name", width: "20%" },
       { text: "Kategori", value: "tree_category", width: "20%" },
       { text: "Jumlah", value: "amount", width: "15%" },
@@ -2977,6 +3099,7 @@ export default {
       secondCounter: 0,
 
       planting_details: [],
+      
     },
     disabledVerification: false,
     itemsTahun: [
@@ -3161,7 +3284,8 @@ export default {
 
       absensi_photo: '',
       absensi_photo2: '',
-
+      adjustment_planting_details: [],
+      totalAdjustmentSeed: '',
       lahans: []
     },
     training_material_items: [],
@@ -3988,6 +4112,11 @@ export default {
         console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.defaultItem = Object.assign({}, response.data.data.result);
+          this.dataToStore.adjustment_planting_details = response.data.data.result.planting_details.map((val)=>{
+            return {
+              ...val, maxAmount: val.amount
+            }
+          })
           this.defaultItem.land_area = response.data.data.result.luas_lahan
           if(response.data.data.result.absent == null){
             this.defaultItem.absensi1 = 'images/noimage2.png'
@@ -4004,6 +4133,7 @@ export default {
           if (this.defaultItem.max_seed_amount == null || this.defaultItem.max_seed_amount == 'null') {
             let maxSeedTrue = parseInt(this.getSeedCalculation(this.defaultItem, 'total_max_trees'))
             let totalBibitMPTSKAYU = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
+            
             let separator = maxSeedTrue - totalBibitMPTSKAYU
             console.log('separator = ' + separator)
             if (separator < 0 && this.defaultItem.land_area < 10000) {
@@ -5739,6 +5869,78 @@ export default {
       this.datepicker2Loading = false
       this.datepicker2Key += 1
       this.datepicker2Key2 += 1
+    },
+    simpanJumlah(){
+      // this.dataToStore.adjustment_planting_details.map((val)=>{
+      //   if(parseInt(val.amount) > val.maxAmount){
+      //     const findTree = this.dataToStore.adjustment_planting_details.find(v=>v.tree_code == val.tree_code)
+      //     console.log(findTree)
+      //     if(findTree){
+      //       findTree.amount= val.maxAmount
+      //       console.log(findTree)
+      //     }
+      //   }
+      // })
+      // console.log(this.dataToStore.adjustment_planting_details);
+
+    },
+    async saveDataAdjustment(){
+      this.dataToStore.totalAdjustmentSeed = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
+      // console.log(this.dataToStore.totalAdjustmentSeed)
+      const confirm = await Swal.fire({
+        title: 'Apa Anda Yakin?',
+        text: "Pastikan Data Perubahan yang Dimasukan Benar!",
+        icon: 'warning',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'Okay',
+        showCancelButton: true
+      })
+      if (confirm.isConfirmed){
+        this.dialogDetail = false
+        this.dialogAdjustmentDataBibit = false
+        const dataToPost = {
+          form_no: this.defaultItem.form_no,
+          totalAdjustmentSeed: this.dataToStore.totalAdjustmentSeed,
+          seed_details: this.dataToStore.adjustment_planting_details
+        }
+        console.log(dataToPost)
+        const sendData = await axios.post(this.BaseUrlGet + "AddAdjustment", dataToPost,
+        {
+          headers: {
+            Authorization: `Bearer ` + this.authtoken
+          },
+        })
+        console.log(dataToPost)
+        //  reset form create value
+        this.colorsnackbar = 'green'
+        this.textsnackbar = `Berhasil menambah ${sendData.data.data.result.created['data']} data adjustment sostam`
+        this.timeoutsnackbar = 10000
+        this.snackbar = true
+        this.$router.push('AdjustmentDataSostam')  
+      }
+    },
+    generateFormData(data) {
+      let formData = new FormData()
+
+      const objectArray = Object.entries(data)
+
+      objectArray.forEach(([key, value]) => {
+
+        if (Array.isArray(value)) {
+          value.map(item => {
+            if (item instanceof Object) {
+              formData.append(key + '[]', JSON.stringify(item))
+
+            } else {
+              formData.append(key + '[]', item)
+            }
+
+          })
+        } else {
+          formData.append(key, value)
+        }
+      })
+      return formData
     },
     async sessionEnd(error) {
       console.log(error)

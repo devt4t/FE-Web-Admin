@@ -22,7 +22,9 @@
     <!-- modal edit email ff -->
     <editEmailModal
       :show="dialogs.editEmailFF.show"
+      :ff_no="dialogs.editEmailFF.ff_no"
       :email="dialogs.editEmailFF.value"
+      :dataEmail ="this.dataEmail"
       @close="dialogs.editEmailFF.show = false"
     />
       
@@ -398,7 +400,17 @@
             append-icon="mdi-magnify"
             label="Pencarian"
             hide-details
+            style="max-width: 400px"
           ></v-text-field>
+          <v-btn
+            dark
+            rounded
+            class="mb-2"
+            @click="initialize()"
+            color="blue"
+          >
+            <v-icon small>mdi-refresh</v-icon> Refresh
+          </v-btn>
           <v-divider class="mx-4" inset></v-divider>
           <v-btn
             v-if="RoleAccesCRUDShow == true"
@@ -586,6 +598,7 @@ export default {
       editEmailFF: {
         show: false,
         value: "",
+        ff_no: "",
       },
       changeFF: {
         show: false,
@@ -642,6 +655,7 @@ export default {
       { text: "Actions", value: "actions", sortable: false, align: "right" },
     ],
     dataobject: [],
+    dataEmail: [],
     defaultItem: {
       id: "",
       address: "",
@@ -786,6 +800,10 @@ export default {
         // console.log(response.data.data.result);
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result.data;
+          this.dataEmail = response.data.data.result.data.map(val => {
+            return val.email
+          })
+          console.log(this.dataEmail)
           this.loadtable = false;
         } else {
           console.log("Kosong");
@@ -1245,6 +1263,7 @@ export default {
     async editEmail(item){
       this.dialogs.editEmailFF.show = true;
       this.dialogs.editEmailFF.value = item.email
+      this.dialogs.editEmailFF.ff_no = item.ff_no
     },
     deleteItem(item) {
       console.log(item.id);

@@ -326,7 +326,8 @@ export default {
           'PermintaanTutupanLahan',
           'DaftarQRLahanRusak',
           'LihatTanggalDistribusi',
-          'ReportData'
+          'ReportData',
+          'AdjustmentDataSostam',
         ]
         const checkExceptionPage = exceptionPage.includes(this.$route.name)
         // console.log(this.$route.name);

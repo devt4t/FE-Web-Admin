@@ -1,0 +1,478 @@
+<template>
+    <div>
+      <v-breadcrumbs
+        :dark="$store.state.theme == 'dark'"
+        data-aos="fade-right"
+        class="breadcrumbsmain"
+        :items="itemsbr"
+        divider=">"
+        large
+      ></v-breadcrumbs>
+  
+      <v-data-table
+        data-aos="fade-up"
+        data-aos-delay="200"
+        multi-sort
+        :headers="headers"
+        :items="dataobject"
+        :search="search"
+        :loading="tableLoading"
+        :footer-props="{
+          itemsPerPageText: 'Jumlah Data Per Halaman'
+        }"
+        class="rounded-xl elevation-6 mx-3 pa-1"
+        @update:page="($p) => page = $p"
+        @update:items-per-page="($p) => itemsPerPage = $p"
+      >
+        <template v-slot:top>
+          <v-toolbar flat class="rounded-xl">
+          <!-- program years-->
+            <v-select
+                color="success"
+                item-color="success"
+                v-model="localConfig.programYear"
+                :items="['All Data',...$store.state.programYear.options]"
+                :disabled="tableLoading"
+                outlined
+                dense
+                hide-details
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                label="Tahun Program"
+                class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+                style="max-width: 200px"
+            ></v-select>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Pencarian"
+              placeholder="Pencarian..."
+              hide-details
+              dense
+              rounded
+              outlined
+              color="green"
+              style="max-width: 350px;"
+            ></v-text-field>
+            <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
+          
+          </v-toolbar>
+        </template>
+        <template v-slot:item.index="{ index }">
+          {{ (itemsPerPage * (page-1)) + index + 1 }}
+        </template>
+        <!--Status row-->
+        <template v-slot:item.validation="{item}">
+          <v-chip :color="getStatusColumn('bg_color', item.validation)" class="white--text">
+            <v-icon class="mr-1">{{ getStatusColumn('icon', item.validation) }}</v-icon>
+            {{ getStatusColumn('text', item.validation) }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-menu content-class="rounded-xl">
+            <template v-slot:activator="{attrs, on}">
+              <v-btn v-bind="attrs" v-on="on" small fab icon>
+                <v-icon>mdi-menu-down</v-icon>
+              </v-btn>
+            </template>
+            <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+            <!--showModal('detail', item)-->
+                <v-btn
+                  color="blue white--text"
+                  rounded
+                  small
+                  class="pl-1 mt-1 d-flex justify-start align-center"
+                  :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
+                  @click="ShowDialogDetail(item)"
+                  >
+                <v-icon class="mr-1">information-outline</v-icon>
+                Detail
+              </v-btn>
+              <!-- <v-btn
+                  color="blue white--text"
+                  rounded
+                  small
+                  class="pl-1 mt-1 d-flex justify-start align-center"
+                  :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
+                  @click="ShowDialogDetail(item)">
+                <v-icon class="mr-1">mdi-pencil</v-icon>
+                Edit
+              </v-btn> -->
+              <v-btn
+                  v-if="item.validation == 0"
+                  color="green white--text"
+                     rounded
+                     small
+                     class="pl-1 mt-1 d-flex justify-start align-center"
+                     :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
+                     @click="verify(item)">
+                <v-icon class="mr-1">mdi-check-bold</v-icon>
+                Verifikasi
+              </v-btn>
+              <v-btn
+                  v-if="item.validation == 0"
+                  color="red white--text"
+                     rounded
+                     small
+                     class="pl-1 mt-1 d-flex justify-start align-center"
+                     :disabled="!$store.state.User.role_name=='FIELD COORDINATOR' && !$store.state.User.role_name=='UNIT MANAGER' && !$store.state.User.role_group=='IT'"
+                     @click="openDelete(item)">
+                <v-icon class="mr-1">mdi-trash-can</v-icon>
+                Hapus
+              </v-btn>
+              <!-- <v-btn
+                  v-if="item.validation != 0"
+                  color="red white--text"
+                     rounded
+                     small
+                     class="pl-1 mt-1 d-flex justify-start align-center"
+                     :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
+                     @click="">
+                <v-icon class="mr-1">mdi-check-bold</v-icon>
+                Unverifikasi
+              </v-btn> -->
+                <!--{showModal('form', item)}-->
+            </v-card>
+          </v-menu>
+        </template>
+
+      </v-data-table>
+
+      <DetailAdjustmentSostam
+      :show="detailModal.show"
+      :data="detailModal.data"
+      @close="detailModal.show = false">
+      </DetailAdjustmentSostam>
+  
+      <v-snackbar
+        v-model="snackbar"
+        :color="colorsnackbar"
+        :timeout="timeoutsnackbar"
+      >
+        {{ textsnackbar }}
+      </v-snackbar>
+    </div>
+  </template>
+  
+  <script>
+  import axios from "axios";
+  import Swal from "sweetalert2";
+  import DetailAdjustmentSostam from "@/views/Activity/components/sostam/DetailAdjustmentSostam"
+  
+  export default {
+    name: "AdjustmentDataSostam",
+    components:{
+      DetailAdjustmentSostam
+    },
+    data: () => ({
+
+      page: 1,
+      itemsPerPage: 10,
+      itemsbr: [
+        {
+          text: "Sosialisasi Tanam",
+          disabled: true,
+          href: "breadcrumbs_dashboard",
+        },
+        {
+          text: "Adjustment Data Sostam",
+          disabled: true,
+          href: "breadcrumbs_link_1",
+        },
+      ],
+      search: "",
+      authtoken: "",
+      BaseUrlGet: "",
+      tableLoading: false,
+      headers: [
+        {text: 'No', value: 'index'},
+        {text: 'No Form', value: 'form_no'},
+        {text: 'Field Facilitator', value: 'nama_ff'},
+        {text: 'Nama Petani', value: 'nama_petani'},
+        {text: 'No Lahan', value: 'lahan_no'},
+        {text: 'Luas Lahan', value: 'land_area'},
+        {text: 'Koordinat', value: 'distribution_coordinates'},
+        {text: 'Pola Tanam', value: 'opsi_pola_tanam'},
+        {text: 'Total Bibit', value: 'max_seed_amount'},
+        {text: 'Total Bibit Adjustment', value: 'max_seed_amount_new'},
+        {text: 'Tahun Tanam', value: 'program_year'},
+        {text: 'Status', value: 'validation'},
+        {text: 'Diverifikasi Oleh', value: 'nama_employee'},
+        {text: 'Actions', value: 'actions', align: 'right'},
+      ],
+      dataobject: [],
+      detailDataObject: [],
+
+      snackbar: false,
+      textsnackbar: "Test",
+      timeoutsnackbar: 2000,
+      colorsnackbar: null,
+      localConfig: {
+        programYear: '',
+      },
+      detailModal: {
+        show: false,
+        data: "",
+      },
+      User: '',
+      UMVal: '',
+      employee_no: '',
+
+      load: false,
+    }),
+  
+    created() {
+      this.authtoken = localStorage.getItem("token");
+      this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+  
+      this.localConfig.programYear = this.$store.state.programYear.model
+      this.initialize();
+    },
+    watch: {
+      'localConfig.programYear': {
+        handler(val) {
+          this.initialize()
+        }
+      }
+    },
+  
+    computed: {
+      
+    },
+    async mounted(){
+      await this.firstAccessPage();
+    },
+    methods: {
+      async initialize() {
+        try {
+            this.$store.state.loadingOverlay = true
+            this.$store.state.loadingOverlayText = 'Memuat Data...'
+            const response = await axios.get(
+            this.BaseUrlGet +
+            "GetSocializationAdjustmentAll?program_year="+this.localConfig.programYear,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          if (response.data.length != 0) {
+            this.dataobject = response.data.data.result;
+            this.$store.state.loadingOverlay = false
+            this.$store.state.loadingOverlayText = ''
+          } else {
+            this.dataobject = [];
+            this.$store.state.loadingOverlay = false
+            this.$store.state.loadingOverlayText = ''
+          }
+        } catch (error) {
+          console.error(error);
+          if (error.response.status == 401) {
+            this.sessionEnd(error)
+          } else {
+            this.dataobject = [];
+            this.$store.state.loadingOverlay = false
+            this.$store.state.loadingOverlayText = ''
+          }
+        }
+      },
+      async firstAccessPage(){
+        this.User = JSON.parse(localStorage.getItem("User"))
+        this.employee_no = this.User.employee_no;
+
+        if (this.User.role_name === "FIELD COORDINATOR") {
+        this.UMVal = this.User.EmployeeStructure.manager_code
+        // this.selectFC = this.User.employee_no
+        // await this.selectedFC(this.User.employee_no)
+      }
+      // Unit Manager
+        if (this.User.role_name === "UNIT MANAGER") {
+          this.UMVal = this.User.employee_no
+        }
+      },
+      async openDelete(item){
+        const confirm = await Swal.fire({
+            title: 'Apa Anda Yakin?',
+            text: "Anda Akan Melakukan Hapus Data Adjustment!",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'ya',
+            showCancelButton: true
+        })
+        if (confirm.isConfirmed){
+          const datapost ={
+            form_no: item.form_no,
+          }
+          console.log(datapost)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + "DeleteAdjustment",
+              datapost,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            if (response.data.data.result == "success") {
+              this.initialize();
+            } else {
+              this.alerttoken = true;
+            }
+          } catch (error) {
+            console.error(error.response);
+            this.sessionEnd(error)
+          }
+        }
+        this.initialize();
+      },
+      // verif adjustment
+      async verify(item){
+        const confirm = await Swal.fire({
+            title: 'Apa Anda Yakin Untuk Verifikasi?',
+            text: "Setelah Melakukan Verifikasi, Data Adjustment Tidak Dapat Diubah Maupun Dihapus!",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'ya',
+            showCancelButton: true
+        })
+        if (confirm.isConfirmed){
+          
+          const datapost ={
+            form_no: item.form_no,
+            validate_by: this.employee_no,
+          }
+          console.log(datapost)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + "AdjustmentValidation",
+              datapost,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            if (response.data.data.result == "success") {
+              this.initialize();
+            } else {
+              this.alerttoken = true;
+            }
+          } catch (error) {
+            console.error(error.response);
+            this.sessionEnd(error)
+          }
+        }
+      },
+      ShowDialogDetail(item){
+        this.detailModal.data = item.form_no
+        
+        this.detailModal.show = true
+
+
+      },
+      SelectedDataSwitch(){
+        console.log(this.dataSwitch)
+        this.initialize();
+      },
+      getStatusTotalBibitInDetail(seeds, typeReturn, secParams = null) {
+        let exists = {
+          KAYU: 0,
+          MPTS: 0,
+          CROPS: 0
+        }
+        let total = {
+          KAYU: 0,
+          MPTS: 0,
+          CROPS: 0
+        }
+        seeds.forEach((seed) => {
+          total[seed.tree_category] += parseInt(seed.amount)
+          exists[seed.tree_category] += 1
+        })
+        if (typeReturn == 'KAYU' || typeReturn == 'MPTS' || typeReturn == 'CROPS') {
+          return total[typeReturn]
+        } else if (typeReturn == 'ALL') {
+          return total.KAYU + total.MPTS + total.CROPS
+        } else if (typeReturn == 'COLOR') {
+          if (total.KAYU > 0 && (total.KAYU >= (Math.round(60 / 100 * (total.KAYU + total.MPTS)))) && (total.MPTS <= (Math.round(40/100 * (total.KAYU + total.MPTS))))) {
+            return 'green'
+          } else {
+            return 'red'
+          }
+        } else if(typeReturn == 'EXISTS' ) {
+          return exists[secParams]
+        }
+      },
+      getStatusColumn(type, status) {
+        if (type == 'bg_color') {
+          if (status == '0') return 'orange'
+          if (status == '1') return 'green darken-1'
+          if (status == '2') return 'red'
+        }
+        if (type == 'icon') {
+          if (status == '0') return 'mdi-google-downasaur' //mdi:cancel
+          if (status == '1') return 'mdi-check-circle'
+          if (status == '2') return 'mdi-alert-rhombus-outline'
+        }
+        if (type == 'text') {
+          if (status == '0') return 'Belum Terverifikasi'
+          if (status == '1') return 'Terverifikasi'
+          // if (status == '2') return 'Tidak Potensial'
+        }
+  
+        return ''
+      },
+      async initializeDetailAdjustment(form_no){
+      try {
+        const response = await axios.get(
+          this.BaseUrlGet +
+          "GetSocializationAdjustmentDetail?form_no="+form_no,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.detailDataObject = response.data.data.result;
+          console.log(this.detailDataObject)
+        } else {
+          this.detailDataObject = [];
+        }
+        } catch (error) {
+          console.error(error);
+          if (error.response.status == 401) {
+            this.sessionEnd(error)
+          } else {
+            this.detailDataObject = [];
+          }
+        }
+      },
+      sessionEnd(error) {
+      if (error.response.status == 401) {
+        this.alerttoken = true
+        this.dialogAddonly = false
+        this.showedAbsensi2 = false
+        this.showedMateri3 = false
+        this.dialog = false
+        this.dialogDelete = false
+        this.dialogDetail = false
+        this.dialogFilterArea = false
+        this.dialogFilterEmp = false
+        this.dialogShowEdit = false
+        this.dialogDetailPohon = false
+        this.dialogDetailPohonEdit = false
+        this.dialogAddProduct = false
+        this.dialogCetakPilihan = false
+        this.dialogdownload = false
+        this.preview.petani.modal = false
+        this.preview.absensi.modal = false
+        this.preview.addParticipant.modal = false
+        localStorage.removeItem("token");
+        this.$router.push("/");
+      }
+    },
+    },
+  };
+  </script>
