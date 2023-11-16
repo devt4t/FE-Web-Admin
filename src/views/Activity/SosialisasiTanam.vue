@@ -2542,7 +2542,7 @@
                 <p><strong>Persentase Adjustment Sostam: </strong></p>
                 
                 <v-progress-linear
-                  v-model="progressBar.value"
+                  :value="progressBar.value"
                   color="amber"
                   height="25"
                 >
