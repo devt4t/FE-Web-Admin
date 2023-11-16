@@ -2466,6 +2466,7 @@
                 style="width: 50%;max-width: 100px;"
               ></v-select>
             </v-col>
+            
             <v-col cols="12" lg="6" class="d-flex">
               <!-- Select Search Field -->
               <v-select
@@ -2534,6 +2535,20 @@
                 class="centered-select"
                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
               ></v-select>
+            </v-col>
+            
+            <v-col cols="12" lg="6" class="d-none d-lg-flex align-center">
+              <v-row class="pb-4 px-2">
+                <p><strong>Persentase Adjustment Sostam: </strong></p>
+                
+                <v-progress-linear
+                  v-model="progressBar.value"
+                  color="amber"
+                  height="25"
+                >
+                <strong>{{ Math.ceil(progressBar.value) }}%</strong>
+                </v-progress-linear>
+              </v-row>
             </v-col>
           </v-row>
       </template>
@@ -2974,6 +2989,7 @@ export default {
       },
     ],
     User: [],
+    mu_no: "",
     menu1: "",
     menu2: "",
     menu3: "",
@@ -3060,6 +3076,9 @@ export default {
     dataobject: [],
     editedItem: {
       name: "",
+    },
+    progressBar: {
+      value: 0,
     },
     defaultItem: {
       id: "",
@@ -3605,6 +3624,7 @@ export default {
       this.loadtable = true;
       this.$store.state.loadingOverlayText = 'Getting sostam datas...'
       this.$store.state.loadingOverlay = true
+      await this.getAdjustmentProgress();
       await this.getSocTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total
@@ -3720,6 +3740,28 @@ export default {
 
       }
 
+    },
+    getAdjustmentProgress(){ 
+      axios.get(this.BaseUrlGet + 
+         'SeedTotalAdjustmentPerNursery?program_year=' + this.program_year,
+         {
+          headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+         }
+         ).then(res => {
+          if(typeof res.data !== 'undefined' ){
+            this.progressBar.value = res.data.progress_adjustment
+            console.log(this.progressBar.value)
+          }else {
+            reject('Error')
+          }
+          
+         })
+         .catch(err => {
+          this.sessionEnd(err)
+          reject(err)
+        })
     },
     getSocTableData(){
       return new Promise((resolve, reject) => {
@@ -5906,7 +5948,7 @@ export default {
         text: "Pastikan Data Perubahan yang Dimasukan Benar!",
         icon: 'warning',
         confirmButtonColor: '#2e7d32',
-        confirmButtonText: 'Okay',
+        confirmButtonText: 'Ya',
         showCancelButton: true
       })
       if (confirm.isConfirmed){
@@ -5926,6 +5968,16 @@ export default {
         })
         console.log(dataToPost)
         //  reset form create value
+        const notif = await Swal.fire({
+        title: 'Berhasil Menyimpan Data Adjustment!',
+        icon: 'success',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'OK',
+        })
+        if(notif.isConfirmed){
+          this.$router.push('AdjustmentDataSostam')
+        }
+
         this.colorsnackbar = 'green'
         this.textsnackbar = `Berhasil menambah ${sendData.data.data.result.created['data']} data adjustment sostam`
         this.timeoutsnackbar = 10000

@@ -227,7 +227,6 @@
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
   
       this.localConfig.programYear = this.$store.state.programYear.model
-      this.initialize();
     },
     watch: {
       'localConfig.programYear': {
@@ -377,10 +376,6 @@
         this.detailModal.show = true
 
 
-      },
-      SelectedDataSwitch(){
-        console.log(this.dataSwitch)
-        this.initialize();
       },
       getStatusTotalBibitInDetail(seeds, typeReturn, secParams = null) {
         let exists = {
