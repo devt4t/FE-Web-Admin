@@ -1895,6 +1895,7 @@
               Verifikasi
             </v-btn>
             <v-btn
+              v-if="adjustmentStatus == true && defaultItem.waitingapproval == false"
               dark
               color="blue"
               class="px-5"
@@ -1920,20 +1921,20 @@
             <v-simple-table>
             <tbody>
               <tr>
-                <td>Total Kayu {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
+                <td>Total Kayu {{ getStatusTotalBibitInDetail(dataToStore.adjustment_planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
                 <td>:</td>
                 <td>
                   <v-btn
                     rounded
                     dark
-                    :color="getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount)"
+                    :color="getStatusTotalBibitInDetail(dataToStore.adjustment_planting_details, 'COLOR', defaultItem.max_seed_amount)"
                     class="pr-2"
                   >
                     {{
-                      getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +
-                      getStatusTotalBibitInDetail(defaultItem.planting_details, 'MPTS')
+                      getStatusTotalBibitInDetail(dataToStore.adjustment_planting_details, 'KAYU') +
+                      getStatusTotalBibitInDetail(dataToStore.adjustment_planting_details, 'MPTS')
                     }} Bibit
-                    <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
+                    <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(dataToStore.adjustment_planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
                   </v-btn>
                 </td>
                 
@@ -2594,6 +2595,11 @@
           {{ item.validation == 1 ? 'Verifikasi FC' : (item.validation == 0 ? 'Belum Terverifikasi' : '-') }}
         </v-chip>
       </template>
+      <template v-slot:item.adjustment_validation="{ item }">
+        <v-chip :color="getColorStatus(item.adjustment_validation)" dark>
+          {{ item.adjustment_validation == 1 ? 'Verifikasi FC' : (item.adjustment_validation == 0 ? 'Belum Terverifikasi' : item.adjustment_validation == null ? 'Belum Melakukan Adjustment' : '-') }}
+        </v-chip>
+      </template>
         <!-- Action table -->
         <template v-slot:item.subactions="{ item }">
           <v-menu
@@ -2988,6 +2994,7 @@ export default {
     formTitle: "Add Item",
     search: "",
     type: "",
+    adjustmentStatus: false,
     subMainTable: {
       table:{
         expand: true,
@@ -3012,6 +3019,7 @@ export default {
             { text: "Total Bibit", align: "center", value: "trees_total", sortable: false},
             { text: "Tahun Tanam", align: "center", value: "planting_year", sortable: false},
             { text: "Status", align: "center", value: "validation"},
+            { text: "Status Adjustment", align: "center", value: "adjustment_validation"},
             { text: "Actions", align: "right", value: "subactions", sortable: false},
             ]
         }
@@ -4852,6 +4860,12 @@ export default {
       this.type = "Detail";
       this.dialogDetail = true;
       this.disabledVerification = false
+      if(item.adjustment_validation == null){
+        this.adjustmentStatus = true
+      }else{
+        this.adjustmentStatus = false
+      }
+      console.log(this.adjustmentStatus)
       await this.getDetail(item);
     },
 
@@ -5320,7 +5334,7 @@ export default {
       // this.valueFFcodeExcel = "";
     },
     getColorStatus(status) {
-      if (status == 0) return "red";
+      if (status == 0 || status == null) return "red";
       else return "green";
     },
     async getOpsiPolaTanamOptions() {
@@ -5885,7 +5899,7 @@ export default {
 
     },
     async saveDataAdjustment(){
-      this.dataToStore.totalAdjustmentSeed = parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.defaultItem.planting_details, 'MPTS'))
+      this.dataToStore.totalAdjustmentSeed = parseInt(this.getStatusTotalBibitInDetail(this.dataToStore.adjustment_planting_details, 'KAYU')) + parseInt(this.getStatusTotalBibitInDetail(this.dataToStore.adjustment_planting_details, 'MPTS'))
       // console.log(this.dataToStore.totalAdjustmentSeed)
       const confirm = await Swal.fire({
         title: 'Apa Anda Yakin?',
@@ -5916,8 +5930,8 @@ export default {
         this.textsnackbar = `Berhasil menambah ${sendData.data.data.result.created['data']} data adjustment sostam`
         this.timeoutsnackbar = 10000
         this.snackbar = true
-        this.$router.push('AdjustmentDataSostam')  
       }
+      this.$router.push('AdjustmentDataSostam')
     },
     generateFormData(data) {
       let formData = new FormData()
