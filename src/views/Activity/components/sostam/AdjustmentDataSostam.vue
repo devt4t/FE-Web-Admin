@@ -215,6 +215,7 @@
         data: "",
       },
       User: '',
+      valueFFcode: '',
       UMVal: '',
       employee_no: '',
 
@@ -247,9 +248,14 @@
         try {
             this.$store.state.loadingOverlay = true
             this.$store.state.loadingOverlayText = 'Memuat Data...'
+            const param = new URLSearchParams({
+              program_year: this.localConfig.programYear,
+              ff: this.valueFFcode,
+            })
+            console.log(param)
             const response = await axios.get(
             this.BaseUrlGet +
-            "GetSocializationAdjustmentAll?program_year="+this.localConfig.programYear,
+            "GetSocializationAdjustmentAll?"+ param,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
@@ -279,6 +285,7 @@
       async firstAccessPage(){
         this.User = JSON.parse(localStorage.getItem("User"))
         this.employee_no = this.User.employee_no;
+        this.valueFFcode = this.User.ff.ff;
 
         if (this.User.role_name === "FIELD COORDINATOR") {
         this.UMVal = this.User.EmployeeStructure.manager_code
