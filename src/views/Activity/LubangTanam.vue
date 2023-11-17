@@ -1914,7 +1914,7 @@
           ></v-text-field>
           <!-- dropdown export button -->
           <v-btn
-            v-if="User.role_group == 'IT' || User.role_name == 'NURSERY' || User.role_name == 'NURSERY MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER' || User.role_name == 'TRAINING PROGRAM OFFICER'"
+            v-if="User.role_group == 'IT' || User.email == 'pandu@trees4trees.org'"
             class=""
             color="info white--text"
             v-bind="attrs"
