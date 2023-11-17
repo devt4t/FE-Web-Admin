@@ -5975,7 +5975,7 @@ export default {
         confirmButtonText: 'OK',
         })
         if(notif.isConfirmed){
-          this.$router.push('AdjustmentDataSostam')
+          //this.$router.push('AdjustmentDataSostam')
         }
 
         this.colorsnackbar = 'green'

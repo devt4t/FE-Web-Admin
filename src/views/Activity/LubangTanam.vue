@@ -1371,6 +1371,14 @@
                       </tr>
                       <tr>
                         <th class="text-left" style="font-size: 14px">
+                          Total Bibit Adjustment Sostam
+                        </th>
+                        <td class="text-left" style="font-size: 14px">
+                          <strong>{{ numberFormat(defaultItem.total_bibit_adjustment) }}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="text-left" style="font-size: 14px">
                           Jumlah Lubang
                         </th>
                         <td class="text-left" style="font-size: 14px">
@@ -1490,8 +1498,10 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <p v-if="defaultItem.total_bibit_adjustment < defaultItem.total_holes" class="red--text"><strong>Lubang Tanam Tidak Boleh Lebih Dari Total Bibit Adjustment!</strong></p>
+          <p v-if="defaultItem.total_bibit_adjustment == null" class="red--text"><strong>Anda Belum Mengisi Adjustment Data Sostam!</strong></p>
           <v-btn
-            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true"
+            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true && defaultItem.total_bibit_adjustment != null && defaultItem.total_bibit_adjustment >= defaultItem.total_holes"
             color="green white--text"
             @click="verifSubmit()"
             rounded
@@ -2309,6 +2319,8 @@ export default {
       user_id: "FF000001",
       nama_petani: "",
       waitingapproval: false,
+
+      total_bibit_adjustment: 0,
 
       start_planting_hole: "",
       end_planting_hole: "",
