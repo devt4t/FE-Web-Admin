@@ -1358,7 +1358,6 @@
                 color="green"
                 :disabled="User.role_group != 'IT'"
                 class="px-5"
-                disabled
                 >
               <v-icon class="mr-1" small color="white">
                 mdi-plus-thick
