@@ -1931,7 +1931,12 @@
             <v-icon color="red" @click="() => dialogs.exportFilter.model = false">mdi-close-circle</v-icon>
           </v-card-title>
           <v-card-text>
-            <v-row class="mt-0">
+            <v-switch
+              v-model="switchExportFilter"
+              flat
+              :label="`Pindah Model Filter`"
+            ></v-switch>
+            <v-row v-if="switchExportFilter == false" class="mt-0">
               <v-col :cols="12">
                 <v-autocomplete
                   rounded
@@ -2004,20 +2009,58 @@
                 ></v-autocomplete>
               </v-col>
             </v-row>
-            <v-alert dark color="green" dense class="rounded-xl mt-3 mb-0" icon="mdi-information" >{{ whatTodoTextExport }}</v-alert>
+            <v-row v-if="switchExportFilter == true" class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Tahun Program"
+                  :items="[2021,2022,2023]"
+                  v-model="dialogs.exportFilter.program_year"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Management Unit"
+                  item-value="mu_no"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.mu.loading"
+                  :items="itemsMU"
+                  v-model="dialogs.exportFilter.filters.mu.model"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
           </v-card-text>
           <v-card-actions>
             <v-divider class="mx-2"></v-divider>
             <v-hover v-slot="{hover}">
-              <v-btn rounded :color="`green ${hover ? 'white--text' : ''}`" :outlined="!hover" @click="() => exportData()" :disabled="dialogs.exportFilter.filters.ff.model.length < 1 || dialogs.exportFilter.filters.ff.loading"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
+              <v-btn v-if="User.role_group == 'IT' && switchExportFilter == false"
+              rounded 
+              :color="`green ${hover ? 'white--text' : ''}`" 
+              :outlined="!hover" 
+              @click="() => exportData()" 
+              :disabled="dialogs.exportFilter.filters.ff.model.length < 1 || dialogs.exportFilter.filters.ff.loading">
+              <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
             </v-hover>
             <v-hover v-slot="{hover}">
-              <v-btn v-if="User.role_group == 'IT'"
+              <v-btn v-if="User.role_group == 'IT' && switchExportFilter == true"
                 rounded 
                 :color="`green ${hover ? 'white--text' : ''}`" 
                 :outlined="!hover" 
-                @click="() => exportDataByUM()" 
-                :disabled="dialogs.exportFilter.filters.um.model < 1 ||dialogs.exportFilter.filters.um.loading">
+                @click="() => exportDataByMU()" 
+                :disabled="dialogs.exportFilter.filters.mu.model < 1 ||dialogs.exportFilter.filters.mu.loading">
                 <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export By UM</v-btn>
             </v-hover>
             <v-divider class="mx-2"></v-divider>
@@ -2486,6 +2529,13 @@ export default {
           ff: {
             loading: false,
             model: []
+          },
+          mu: {
+            itemVal: 'mu_no',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
           }
         }
       }
@@ -2694,6 +2744,8 @@ export default {
     dialogVerificationUM: false,
     fc_no_global: "",
     typegetdata: "",
+
+    switchExportFilter: false,
 
     itemspetanidownload: "",
     itemsdistribusidownload: "",
@@ -5110,14 +5162,14 @@ export default {
       window.open(url, "blank")
     },
 
-    async exportDataByUM() {
+    async exportDataByMU() {
       const dialog = this.dialogs.exportFilter
       dialog.model = false
-      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoring?'
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportMonitoringArea?'
       const params = new URLSearchParams({
         program_year: this.dialogs.exportFilter.program_year,
         land_program: this.generalSettings.landProgram.model,
-        UM: this.dialogs.exportFilter.filters.um.model
+        mu_no: this.dialogs.exportFilter.filters.mu.model
       })
       url += params.toString()
       window.open(url, "blank")

@@ -1764,6 +1764,7 @@
     <Export_PenilikanLubangTanamPetaniVue
     :show="dialogExportPenlubPetani"
     :program_year="this.program_year"
+    :itemData="this.itemDataObject"
     :mu="this.selectMU"
     :ta="this.selectTA"
     :village="this.selectVillage"
@@ -1902,7 +1903,18 @@
             class="mr-2"
           ></v-text-field>
           <!-- dropdown export button -->
-          <v-menu
+          <v-btn
+            v-if="User.role_group == 'IT' || User.role_name == 'NURSERY' || User.role_name == 'NURSERY MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER' || User.role_name == 'TRAINING PROGRAM OFFICER'"
+            class=""
+            color="info white--text"
+            v-bind="attrs"
+            v-on="on"
+            rounded
+            @click="exportPenilikanLubangByExcel()"
+          >
+            <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Export
+          </v-btn>
+          <!-- <v-menu
             rounded="xl"
             bottom
             right
@@ -1912,19 +1924,9 @@
             v-if="land_program.model == 'Petani'"
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-if="User.role_group == 'IT' || User.role_name == 'NURSERY' || User.role_name == 'NURSERY MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER' || User.role_name == 'TRAINING PROGRAM OFFICER'"
-                class=""
-                color="info white--text"
-                v-bind="attrs"
-                v-on="on"
-                rounded
-              >
-                <v-icon class="mr-1" small>mdi-filter-variant</v-icon> Export
-              </v-btn>
-            </template>
+            </template> -->
 
-            <v-list class="d-flex flex-column align-center">
+            <!-- <v-list class="d-flex flex-column align-center">
               <v-list-item>
                 <v-btn
                   rounded
@@ -1949,8 +1951,8 @@
                   Berdasarkan Employee
                 </v-btn>
               </v-list-item>
-            </v-list>
-          </v-menu>
+            </v-list> -->
+          <!-- </v-menu> -->
           <v-btn v-else rounded color="blue white--text" class="mr-2" @click="() => exportLahanUmum()" :disabled="loadtable || $store.state.loadingOverlay">
             <v-icon>mdi-microsoft-excel</v-icon> 
             Export</v-btn>
@@ -2201,6 +2203,7 @@ export default {
     menu3: "",
 
     dialogExportPenlubPetani: false,
+    itemDataObject: [],
 
     dialogAddonly: false,
     dialog: false,
@@ -2798,6 +2801,7 @@ export default {
           const USER = JSON.parse(localStorage.getItem('User'));
           if (this.land_program.model == 'Petani') { 
             this.dataobject = response.data.data.result.data;
+            this.itemDataObject = this.dataobject;
           } else if (this.land_program.model == 'Umum') { 
             this.dataobject = response.data.data.result;
           }

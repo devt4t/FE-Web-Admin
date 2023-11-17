@@ -70,6 +70,9 @@
                                 <span v-if="itemTable.value == 'index'">
                                     {{ tableDataIndex + 1 }}
                                 </span>
+                                <span v-if="itemTable.value == 'total_kayu_mpts'">
+                                    {{ tableData.pohon_kayu + tableData.pohon_mpts }}
+                                </span>
                                 
                                 <span v-else-if="itemTable.value == 'is_validate'">
                                     <v-chip :color="getColorStatus(tableData[itemTable.value])" dark>
@@ -116,18 +119,22 @@
                 type: String,
                 default: ''
             },
-            mu:{
-                type: String,
-                default:''
+            itemData:{
+                type: Array,
+                default:[]
             },
-            ta:{
-                type: String,
-                default:''
-            },
-            village:{
-                type: String,
-                default:''
-            }
+            // mu:{
+            //     type: String,
+            //     default:''
+            // },
+            // ta:{
+            //     type: String,
+            //     default:''
+            // },
+            // village:{
+            //     type: String,
+            //     default:''
+            // }
             // data: {
             //     type: Object,
             //     default: null,
@@ -139,16 +146,14 @@
             table: {
                 headers: [
                     {text: 'No', value: 'index', width: 75},
-                    {text: 'Unit Manager', value: 'um_name'},
-                    {text: 'Field Coordinator', value: 'fc_name'},
-                    {text: 'Field Facilitator', value: 'ff_name'},
-                    {text: 'Management Unit', value: 'mu_name'},
-                    {text: 'Target Area', value: 'ta_name'},
-                    {text: 'Desa', value: 'village_name'},
-                    {text: 'Petani', value: 'farmer_name'},
-    
-                    {text: 'Jumlah Lubang', value: 'holes'},
-                    {text: 'Jumlah Lubang Standar', value: 'holes_standard'},
+                    {text: 'Field Facilitator', value: 'nama_ff'},
+                    {text: 'Nama Petani', value: 'nama_petani'},
+                    {text: 'No Lahan', value: 'lahan_no'},
+                    {text: 'Total Lubang', value: 'total_holes'},
+                    {text: 'Total Lubang Standar', value: 'start_planting_hole'},
+                    {text: 'KAYU', value: 'pohon_kayu'},
+                    {text: 'MPTS', value: 'pohon_mpts'},
+                    {text: 'Total KAYU + MPTS', value: 'total_kayu_mpts'},
                     
                     {text: 'Status', align: "center", value: 'is_validate'},
                     
@@ -156,6 +161,7 @@
                 ],
                 items: [],
                 items_raw: [],
+                total_kayu_mpts: [],
                 loading: {
                     show: false,
                     text: 'Loading...'
@@ -170,10 +176,10 @@
                      
                         this.getTableData({
                             program_year: this.program_year,
-                            type: 'area',
-                            mu: this.mu,
-                            ta: this.ta,
-                            village: this.village
+                            // type: 'area',
+                            // mu: this.mu,
+                            // ta: this.ta,
+                            // village: this.village
                         })   
                     }
                     return this.show
@@ -198,7 +204,7 @@
             console.log('export xlsx')
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataPenilikanLubangTanamPetani_${this.program_year}_${this.mu}_${this.ta}_${this.village}.xlsx`);
+            XLSX.writeFile(wb, `DataPenilikanLubangTanamPetani_${this.program_year}.xlsx`);
         },
         downloadPDF() {
             window.jsPDF = window.jspdf.jsPDF;
@@ -213,7 +219,7 @@
                 tableLineWidth: 0,
                 theme: 'striped'
              })
-            doc.save(`DataPenilikanLubangTanamPetani_${this.program_year}_${this.mu}_${this.ta}_${this.village}.pdf`);
+            doc.save(`DataPenilikanLubangTanamPetani_${this.program_year}.pdf`);
         },
         statusRowColor(outputColor, itemKey){
             if(itemKey == 'is_validate'){
@@ -261,19 +267,21 @@
                     }
                 }
             },
+
             async getTableData(getparams) {
                 try {
                     this.table.loading.show = true
-                    const params = new URLSearchParams(getparams)
-                    const url = `ExportExcelPenilikanLubang?${params}`
-                    const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                    const data = call.data
+                    // const params = new URLSearchParams(getparams)
+                    // const url = `ExportExcelPenilikanLubang?${params}`
+                    // const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                    // const data = call.data
                     
                     // const totalData = call.data.totalData
                     // this.totalLahan = totalData
     
-                    this.table.items = data
-                    this.table.items_raw = data
+                    this.table.items = this.itemData
+                    this.table.items_raw = this.itemData
+                    console.log(this.table.items)
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
                 }
