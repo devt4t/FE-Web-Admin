@@ -5975,6 +5975,7 @@ export default {
         })
         if(notif.isConfirmed){
           //this.$router.push('AdjustmentDataSostam')
+          await this.initialize()
         }
 
         this.colorsnackbar = 'green'
@@ -5982,6 +5983,7 @@ export default {
         this.timeoutsnackbar = 10000
         this.snackbar = true
       }
+      await this.initialize() 
       this.$router.push('AdjustmentDataSostam')
     },
     generateFormData(data) {

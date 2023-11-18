@@ -184,6 +184,12 @@
       authtoken: "",
       BaseUrlGet: "",
       tableLoading: false,
+      table: {
+        current_page: 1,
+        per_page: 10,
+        length_page: 0,
+        page_option: []
+      },
       headers: [
         {text: 'No', value: 'index'},
         {text: 'No Form', value: 'form_no'},
@@ -202,6 +208,7 @@
       ],
       dataobject: [],
       detailDataObject: [],
+
 
       snackbar: false,
       textsnackbar: "Test",
