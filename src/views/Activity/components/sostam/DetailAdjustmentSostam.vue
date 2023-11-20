@@ -68,6 +68,14 @@
                     </tr>
                     <tr>
                       <th class="text-left" style="font-size: 14px">
+                        Koordinat Distribusi
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{defaultItem.distribution_coordinates}}</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th class="text-left" style="font-size: 14px">
                         No Ktp
                       </th>
                       <td class="text-left" style="font-size: 14px">
@@ -89,43 +97,41 @@
               <div>
                 <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
                 <v-simple-table >
-                  <!-- <tbody>
+                  <tbody>
                     <tr>
-                      <td>Max Kayu
-                        {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
-                      <td>:</td>
-                      <td><strong>{{ defaultItem.max_seed_amount }}</strong> Bibit</td>
-                    </tr>
-                    <tr>
-                      <td>Total Kayu {{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'MPTS') > 0 ? '(+MPTS)' : '' }}</td>
-                      <td>:</td>
-                      <td>
-                        <v-btn
-                          rounded
-                          dark
-                          :color="getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount)"
-                          class="pr-2"
-                        >
-                          {{
-                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'KAYU') +
-                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'MPTS')
-                          }} Bibit
-                          <v-icon class="ml-2">{{ getStatusTotalBibitInDetail(defaultItem.planting_details, 'COLOR', defaultItem.max_seed_amount) == 'green' ? 'mdi-check-circle' : 'mdi-close-circle' }}</v-icon>
-                        </v-btn>
+                      <th
+                        class="text-left"
+                        style="width: 200px; font-size: 14px"
+                      >
+                        Total Bibit Sebelum Adjustment 
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{defaultItem.max_seed_amount}}</strong>
                       </td>
                     </tr>
-                    <tr v-if="getStatusTotalBibitInDetail(defaultItem.planting_details, 'EXISTS', 'CROPS') > 0">
-                      <td>Total Crops</td>
-                      <td>:</td>
-                      <td>
-                        <strong>
-                          {{
-                            getStatusTotalBibitInDetail(defaultItem.planting_details, 'CROPS')
-                          }}
-                        </strong> Bibit
+                    <tr>
+                      <th
+                        class="text-left"
+                        style="width: 200px; font-size: 14px"
+                      >
+                        Total Bibit Setelah Adjustment 
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{defaultItem.max_seed_amount_new}}</strong>
                       </td>
                     </tr>
-                  </tbody> -->
+                    <tr>
+                      <th
+                        class="text-left"
+                        style="width: 200px; font-size: 14px"
+                      >
+                        Persentase Adjustment Bibit 
+                      </th>
+                      <td class="text-left" style="font-size: 14px">
+                        <strong>{{defaultItem.percentage.toFixed(2)}}%</strong>
+                      </td>
+                    </tr>
+                  </tbody>
                 </v-simple-table>
                 <h3 class="ml-1">
                   <v-data-table
@@ -133,9 +139,9 @@
                     :items="itemDataPlanting"
                     class="elevation-1"
                   >
-                    <!-- <template v-slot:item.tree_category="{ item }">
-                              {{ gettype(item.tree_category) }}
-                            </template> -->
+                    <template v-slot:item.percentage="{ item }">
+                              {{ item.percentage }}%
+                            </template>
                   </v-data-table>
                 </h3>
               </div>
@@ -208,11 +214,18 @@
               ktp_no: "",
               address: "",
               lahan_no: "",
+              max_seed_amount: 0,
+              max_seed_amount_new: 0,
+              distribution_coordinates: 0,
+              percentage: 0,
             },
             headers: [
               {text: 'Nama Pohon', value: 'tree_name'},
               {text: 'Kategori', value: 'tree_category'},
+              {text: 'Jumlah Sebelum Adjustment', value: 'amount_old'},
               {text: 'Jumlah Adjustment', value: 'amount_new'},
+              {text: 'Persentase Pengurangan', value: 'percentage'},
+
             ],
             items: [],
             items_raw: [],
@@ -292,9 +305,14 @@
                     this.defaultItem.form_no = data.form_no
                     this.defaultItem.program_year = data.program_year
                     this.defaultItem.lahan_no = data.lahan_no
+                    this.defaultItem.max_seed_amount_new = data.max_seed_amount_new,
+                    this.defaultItem.max_seed_amount = data.max_seed_amount,
                     this.defaultItem.ff_name = data.ff_no
                     this.defaultItem.farmer_name = data.nama_petani
                     this.defaultItem.ktp_no = data.ktp_no
+                    this.defaultItem.distribution_coordinates = data.distribution_coordinates
+                    this.defaultItem.percentage = data.percentage
+
                     
                     // this.itemData = data
                     this.itemDataPlanting= data.planting_details

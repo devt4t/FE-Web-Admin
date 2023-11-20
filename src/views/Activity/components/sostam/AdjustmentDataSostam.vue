@@ -17,12 +17,17 @@
         :items="dataobject"
         :search="search"
         :loading="tableLoading"
-        :footer-props="{
-          itemsPerPageText: 'Jumlah Data Per Halaman'
-        }"
+        loading-text="Loading... Please wait"
         class="rounded-xl elevation-6 mx-3 pa-1"
-        @update:page="($p) => page = $p"
-        @update:items-per-page="($p) => itemsPerPage = $p"
+        :options.sync="table.options"
+        :page="table.current_page"
+        :server-items-length="table.total_data"
+        :footer-props="{
+        itemsPerPageText: 'Jumlah Data Per Halaman',
+        itemsPerPageOptions: [10, 25, 50, 100],
+        showCurrentPage: true,
+        showFirstLastPage: true,
+      }"
       >
         <template v-slot:top>
           <v-toolbar flat class="rounded-xl">
@@ -188,7 +193,9 @@
         current_page: 1,
         per_page: 10,
         length_page: 0,
-        page_option: []
+        page_options: [],
+        total_data: 0,
+        options: {}
       },
       headers: [
         {text: 'No', value: 'index'},
@@ -240,7 +247,16 @@
         handler(val) {
           this.initialize()
         }
-      }
+      },
+      'table.options': {
+      handler(newValue) {
+        let {page, itemsPerPage} = newValue
+        this.table.current_page = page
+        this.table.per_page = itemsPerPage
+        this.initialize()
+        },
+        deep: true
+      },
     },
   
     computed: {
@@ -256,6 +272,8 @@
             this.$store.state.loadingOverlayText = 'Memuat Data...'
             const param = new URLSearchParams({
               program_year: this.localConfig.programYear,
+              page: this.table.current_page,
+              per_page: this.table.per_page,
               ff: this.valueFFcode,
             })
             console.log(param)
@@ -269,9 +287,18 @@
             }
           );
           if (response.data.length != 0) {
-            this.dataobject = response.data.data.result;
+            this.dataobject = response.data.data.result.data;
             this.$store.state.loadingOverlay = false
             this.$store.state.loadingOverlayText = ''
+
+            this.table.total_data = response.data.data.result.total
+            this.table.current_page = response.data.data.result.current_page
+            this.table.length_page = response.data.data.result.last_page
+            const pageOptions = []
+            for (let index = 1; index <= response.data.data.result.last_page; index++) {
+              pageOptions.push(index)
+            }
+            this.table.page_options = pageOptions
           } else {
             this.dataobject = [];
             this.$store.state.loadingOverlay = false
