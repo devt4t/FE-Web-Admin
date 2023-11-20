@@ -1965,11 +1965,13 @@
                                   label="Edit"
                                   single-line
                                   type="number"
-                                  @change="$v=>$v > item.maxAmount? item[header.value]=item.maxAmount:''"
+                                  
+                                ></v-text-field>
+                                <!-- Amount Limitation -->
+                                <!-- @change="$v=>$v > item.maxAmount? item[header.value]=item.maxAmount:''"
                                   :rules="[
                                     v => (!!v && v <= item.maxAmount)|| 'Jumlah Tidak Bisa Lebih!'
-                                  ]"
-                                ></v-text-field>
+                                  ]" -->
                               </template>
                             </v-edit-dialog>
                         </td>

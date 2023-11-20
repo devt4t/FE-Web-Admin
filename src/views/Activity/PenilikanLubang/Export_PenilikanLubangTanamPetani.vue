@@ -150,7 +150,7 @@
                     {text: 'Nama Petani', value: 'nama_petani'},
                     {text: 'No Lahan', value: 'lahan_no'},
                     {text: 'Total Lubang', value: 'total_holes'},
-                    {text: 'Total Lubang Standar', value: 'start_planting_hole'},
+                    {text: 'Total Lubang Standar', value: 'counter_hole_standard'},
                     {text: 'KAYU', value: 'pohon_kayu'},
                     {text: 'MPTS', value: 'pohon_mpts'},
                     {text: 'Total KAYU + MPTS', value: 'total_kayu_mpts'},
