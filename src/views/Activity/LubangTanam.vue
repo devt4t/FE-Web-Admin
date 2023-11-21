@@ -14,7 +14,47 @@
         Session Token Login Habis, Login Kembali !
       </v-alert>
     </div>
-
+    <v-dialog v-model="dialogExportFilter" content-class="rounded-xl" max-width="500">
+        <v-card>
+          <v-card-title>
+            Export Filter
+            <v-divider class="mx-2"></v-divider>
+            <v-icon color="red" @click="() => dialogExportFilter = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <v-row class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Facilitator"
+                  :loading="options.ff.loading"
+                  item-value="ff_no"
+                  item-text="name"
+                  :items="options.ff.items"
+                  v-model="options.ff.ExportModel"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-divider class="mx-2"></v-divider>
+            <v-hover v-slot="{hover}">
+              <v-btn
+              rounded 
+              :color="`green ${hover ? 'white--text' : ''}`" 
+              :outlined="!hover" 
+              @click="() => exportData()">
+              <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
+            </v-hover>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     <!-- Modal Export By Area -->
     <v-dialog v-model="exportDialog.area.show" max-width="500px">
       <v-card rounded="xl">
@@ -1777,10 +1817,8 @@
     <Export_PenilikanLubangTanamPetaniVue
     :show="dialogExportPenlubPetani"
     :program_year="this.program_year"
-    :itemData="this.itemDataObject"
-    :mu="this.selectMU"
-    :ta="this.selectTA"
-    :village="this.selectVillage"
+    :typegetdata="this.typegetdata"
+    :ff="this.options.ff.ExportModel"
     @close="dialogExportPenlubPetani = false"
     >
     </Export_PenilikanLubangTanamPetaniVue>
@@ -2299,6 +2337,13 @@ export default {
     editedItem: {
       name: "",
     },
+    options: {
+      ff: {
+        loading: false,
+        items: [],
+        ExportModel: ""
+      }
+    },
     defaultItem: {
       id: "",
       ph_form_no: "",
@@ -2515,6 +2560,34 @@ export default {
   },
 
   methods: {
+    async getFFOptions() {
+      try {
+        this.options.ff.loading = true
+
+        const params = new URLSearchParams({
+          typegetdata: this.typegetdata,
+          ff: this.valueFFcode.join(),
+          program_year: this.program_year
+        })
+        
+        const res = await axios.get(
+          this.BaseUrlGet + `getFFOptionsSostam?${params}`,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        this.options.ff.items = res.data.data.result
+      } catch (err) {
+        console.log(err.response)
+      } finally {
+        this.options.ff.loading = false
+      }
+    },
+    
+
+
     async showEditLahanUmumModal(item) {
       
       this.$store.state.loadingOverlayText = 'Getting list lahan umum data...'
@@ -2699,12 +2772,16 @@ export default {
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;
+      this.program_year = this.$store.state.programYear.model
+      
       this.typegetdata = this.User.ff.value_data == '-' ? 'all' : this.User.ff.value_data;
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.BaseUrl = localStorage.getItem("BaseUrl");
       this.employee_no = this.User.employee_no;
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
       // this.fc_no_global = this.User.fc.fc;
+      await this.getFFOptions();
+      this.$store.state.loadingOverlayText = 'Memuat Opsi Export Per-FF...' 
 
       this.$store.state.loadingOverlayText = 'Checking roles...' 
       await this.checkRoleAccess();
@@ -2723,7 +2800,6 @@ export default {
       this.$store.state.loadingOverlayText = 'Getting Trees datas...' 
       await this.getTrees();
       this.$store.state.loadingOverlayText = 'Getting table datas...' 
-      this.program_year = this.$store.state.programYear.model
     },
     checkRoleAccess() {
       if (this.User.role_group == "IT") {
@@ -4577,9 +4653,13 @@ export default {
     showExportDialog(type) {
       this.exportDialog[type].show = true
     },
-    exportPenilikanLubangByExcel() {
-      // this.dialogExportFilter = true;
+    exportData(){
+      
       this.dialogExportPenlubPetani = true;
+    },
+    exportPenilikanLubangByExcel() {
+      this.dialogExportFilter = true;
+      // this.dialogExportPenlubPetani = true;
       // if (type == 'area') {
       //   const params = new URLSearchParams({
       //     program_year: this.program_year,
@@ -4593,7 +4673,7 @@ export default {
       // }
     },
     exportLahanUmum() {
-      this.dialogExportPenlubPetani = true;
+      this.dialogExportFilter = true;
         // let params = new URLSearchParams({
         //     program_year: this.program_year
         // })

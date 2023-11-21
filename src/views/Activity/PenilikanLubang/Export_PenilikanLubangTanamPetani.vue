@@ -119,14 +119,14 @@
                 type: String,
                 default: ''
             },
-            itemData:{
-                type: Array,
-                default:[]
+            ff:{
+                type: String,
+                default:''
             },
-            // mu:{
-            //     type: String,
-            //     default:''
-            // },
+            typegetdata:{
+                type: String,
+                default:''
+            },
             // ta:{
             //     type: String,
             //     default:''
@@ -176,10 +176,8 @@
                      
                         this.getTableData({
                             program_year: this.program_year,
-                            // type: 'area',
-                            // mu: this.mu,
-                            // ta: this.ta,
-                            // village: this.village
+                            ff: this.ff,
+                            typegetdata: this.typegetdata
                         })   
                     }
                     return this.show
@@ -271,16 +269,17 @@
             async getTableData(getparams) {
                 try {
                     this.table.loading.show = true
-                    // const params = new URLSearchParams(getparams)
-                    // const url = `ExportExcelPenilikanLubang?${params}`
-                    // const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                    // const data = call.data
+                    const params = new URLSearchParams(getparams)
+                    const url = `GetPlantingHoleAdmin?${params}`
+                    const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                    const data = call.data.data.result.data
+                    console.log(call)
                     
-                    // const totalData = call.data.totalData
-                    // this.totalLahan = totalData
+                    const totalData = call.data.totalData
+                    this.totalLahan = totalData
     
-                    this.table.items = this.itemData
-                    this.table.items_raw = this.itemData
+                    this.table.items = data
+                    this.table.items_raw = data
                     console.log(this.table.items)
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
