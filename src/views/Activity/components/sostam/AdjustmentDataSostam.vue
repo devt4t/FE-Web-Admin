@@ -455,8 +455,8 @@
       //unverification
       async unverify(item){
         const confirm = await Swal.fire({
-            title: 'Apa Anda Yakin Untuk Verifikasi?',
-            text: "Setelah Melakukan Verifikasi, Data Adjustment Tidak Dapat Diubah Maupun Dihapus!",
+            title: 'Apa Anda Yakin Untuk Unverifikasi?',
+            text: "Unverifikasi Hanya Dapat Dilakukan Oleh Tim IT!",
             icon: 'warning',
             confirmButtonColor: '#2e7d32',
             confirmButtonText: 'ya',

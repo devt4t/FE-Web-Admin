@@ -5961,32 +5961,46 @@ export default {
           seed_details: this.dataToStore.adjustment_planting_details
         }
         console.log(dataToPost)
-        const sendData = await axios.post(this.BaseUrlGet + "AddAdjustment", dataToPost,
-        {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken
-          },
-        })
-        console.log(dataToPost)
-        //  reset form create value
-        const notif = await Swal.fire({
-        title: 'Berhasil Menyimpan Data Adjustment!',
-        icon: 'success',
-        confirmButtonColor: '#2e7d32',
-        confirmButtonText: 'OK',
-        })
-        if(notif.isConfirmed){
-          //this.$router.push('AdjustmentDataSostam')
-          await this.initialize()
-        }
+        try{
 
-        this.colorsnackbar = 'green'
-        this.textsnackbar = `Berhasil menambah ${sendData.data.data.result.created['data']} data adjustment sostam`
-        this.timeoutsnackbar = 10000
-        this.snackbar = true
+          const sendData = await axios.post(this.BaseUrlGet + "AddAdjustment", dataToPost,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken
+            },
+          })
+          console.log(dataToPost)
+          //  reset form create value
+          const notif = await Swal.fire({
+          title: 'Berhasil Menyimpan Data Adjustment!',
+          icon: 'success',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'OK',
+          })
+          if(notif.isConfirmed){
+            //this.$router.push('AdjustmentDataSostam')
+            await this.initialize()
+            this.getTableData(this.subMainTable.table.expandItem.ff_no)
+          }
+  
+          this.colorsnackbar = 'green'
+          this.textsnackbar = `Berhasil menambah ${sendData.data.data.result.created['data']} data adjustment sostam`
+          this.timeoutsnackbar = 10000
+          this.snackbar = true
+        }catch (error) {
+          console.error(error.response);
+          //  Swal.fire({
+          //   title: 'error',
+          //   icon: 'warning',
+          //   confirmButtonColor: '#2e7d32',
+          //   confirmButtonText: 'OK',
+            
+          // })
+        }
+        this.initialize()
       }
-      await this.initialize() 
-      this.$router.push('AdjustmentDataSostam')
+      this.initialize() 
+      // this.$router.push('AdjustmentDataSostam')
     },
     generateFormData(data) {
       let formData = new FormData()
