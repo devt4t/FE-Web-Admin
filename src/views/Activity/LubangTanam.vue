@@ -1499,9 +1499,12 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p v-if="defaultItem.total_bibit_adjustment < defaultItem.total_holes" class="red--text"><strong>Lubang Tanam Tidak Boleh Lebih Dari Total Bibit Adjustment!</strong></p>
-          <p v-if="defaultItem.total_bibit_adjustment == null" class="red--text"><strong>Anda Belum Mengisi Adjustment Data Sostam!</strong></p>
+          <p v-if="defaultItem.total_bibit_adjustment == null" class="red--text">
+            <strong v-if="defaultItem.total_bibit_adjustment == null">Anda Belum Mengisi Adjustment Data Sostam!</strong>
+            <strong v-if="defaultItem.counter_hole_standard <= defaultItem.total_holes">Jumlah Lubang Standar Tidak Boleh Kurang Dari Total Lubang!</strong>
+          </p>
           <v-btn
-            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true && defaultItem.total_bibit_adjustment != null && defaultItem.total_bibit_adjustment >= defaultItem.total_holes"
+            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true && defaultItem.total_bibit_adjustment != null && defaultItem.total_bibit_adjustment >= defaultItem.total_holes && defaultItem.counter_hole_standard <= defaultItem.total_holes"
             color="green white--text"
             @click="verifSubmit()"
             rounded
@@ -2213,6 +2216,7 @@ export default {
     menu3: "",
 
     dialogExportPenlubPetani: false,
+    dialogExportFilter: false,
     itemDataObject: [],
 
     dialogAddonly: false,
@@ -4574,7 +4578,7 @@ export default {
       this.exportDialog[type].show = true
     },
     exportPenilikanLubangByExcel() {
-
+      // this.dialogExportFilter = true;
       this.dialogExportPenlubPetani = true;
       // if (type == 'area') {
       //   const params = new URLSearchParams({

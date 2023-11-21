@@ -47,18 +47,37 @@
                 class="mx-auto mr-lg-2 mb-2 mb-lg-0"
                 style="max-width: 200px"
             ></v-select>
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Pencarian"
-              placeholder="Pencarian..."
-              hide-details
-              dense
-              rounded
-              outlined
-              color="green"
-              style="max-width: 350px;"
-            ></v-text-field>
+            <v-col cols="12" lg="6" class="d-flex">
+              <v-select
+                  color="success"
+                  item-color="success"
+                  v-model="search.column"
+                  :items="search.options"
+                  item-value="value"
+                  item-text="text"
+                  hide-details
+                  outlined
+                  dense
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  rounded
+                  label="Kolom Pencarian"
+                  class="centered-select"
+                  style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                ></v-select>
+              <v-text-field
+                color="success"
+                item-color="success"
+                v-model="search.model"
+                placeholder="Pencarian..."
+                append-icon="mdi-magnify"
+                outlined
+                dense
+                rounded
+                label="Pencarian"
+                hide-details
+                style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+              ></v-text-field>
+            </v-col>
             <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
           
           </v-toolbar>
@@ -113,6 +132,17 @@
                      @click="verify(item)">
                 <v-icon class="mr-1">mdi-check-bold</v-icon>
                 Verifikasi
+              </v-btn>
+              <v-btn
+                  v-if="item.validation == 1"
+                  color="red white--text"
+                     rounded
+                     small
+                     class="pl-1 mt-1 d-flex justify-start align-center"
+                     :disabled="!$store.state.User.role_group=='IT'"
+                     @click="unverify(item)">
+                <v-icon class="mr-1">mdi-pencil-remove</v-icon>
+                Unverifikasi
               </v-btn>
               <v-btn
                   v-if="item.validation == 0"
@@ -185,7 +215,15 @@
           href: "breadcrumbs_link_1",
         },
       ],
-      search: "",
+      search: {
+        model: "",
+        column: "",
+        options: [
+          {text: "Nama FF", value: "nama_ff"},
+          {text: "Nomor Lahan", value: "lahan_no"},
+          {text: "Nama Petani", value: "name_farmer"},
+        ]
+      },
       authtoken: "",
       BaseUrlGet: "",
       tableLoading: false,
@@ -257,6 +295,14 @@
         },
         deep: true
       },
+      'search.model': {
+        handler() {
+          setTimeout(() => {
+            this.initialize()
+          }, 1000);
+        },
+        deep: true
+    },
     },
   
     computed: {
@@ -275,6 +321,8 @@
               page: this.table.current_page,
               per_page: this.table.per_page,
               ff: this.valueFFcode,
+              search_column: this.search.column || '',
+              search_value: this.search.model || '',
             })
             console.log(param)
             const response = await axios.get(
@@ -386,6 +434,43 @@
           try {
             const response = await axios.post(
               this.BaseUrlGet + "AdjustmentValidation",
+              datapost,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            if (response.data.data.result == "success") {
+              this.initialize();
+            } else {
+              this.alerttoken = true;
+            }
+          } catch (error) {
+            console.error(error.response);
+            this.sessionEnd(error)
+          }
+        }
+      },
+      //unverification
+      async unverify(item){
+        const confirm = await Swal.fire({
+            title: 'Apa Anda Yakin Untuk Verifikasi?',
+            text: "Setelah Melakukan Verifikasi, Data Adjustment Tidak Dapat Diubah Maupun Dihapus!",
+            icon: 'warning',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'ya',
+            showCancelButton: true
+        })
+        if (confirm.isConfirmed){
+          
+          const datapost ={
+            ff_no: item.ff_no,
+          }
+          console.log(datapost)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + "AdjustmentUnvalidation",
               datapost,
               {
                 headers: {
