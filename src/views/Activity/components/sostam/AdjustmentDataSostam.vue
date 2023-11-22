@@ -33,7 +33,7 @@
           <v-toolbar flat class="rounded-xl">
           <!-- dropdown filter button -->
             <v-menu
-              v-if="User.role_group != 'IT'"
+              v-if="User.role_group == 'IT'"
               rounded="xl"
               bottom
               right
