@@ -31,7 +31,72 @@
       >
         <template v-slot:top>
           <v-toolbar flat class="rounded-xl">
+          <!-- dropdown filter button -->
+            <v-menu
+              v-if="User.role_group != 'IT'"
+              rounded="xl"
+              bottom
+              right
+              offset-y
+              transition="slide-y-transition"
+              :close-on-content-click="false"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  dark
+                  class=""
+                  color="warning"
+                  v-bind="attrs"
+                  v-on="on"
+                  rounded
+                >
+                  <v-icon class="mr-1" small>mdi-filter-variant</v-icon> 
+                  Filter
+                </v-btn>
+              </template>
+
+              <v-list class="d-flex flex-column align-center">
+                <v-list-item>
+                  <v-btn
+                    rounded
+                    dark
+                    class="px-9"
+                    @click="showFilterArea()"
+                    color="green"
+                  >
+                    <v-icon class="mx-2" small>mdi-map-legend</v-icon>
+                    Berdasarkan Area
+                  </v-btn>
+                </v-list-item>
+                <!-- <v-list-item>
+                  <v-btn
+                    v-if="RoleAccesFilterShow == true"
+                    rounded
+                    dark
+                    class="mx-3 mt-1"
+                    @click="showFilterEmployee()"
+                    color="green"
+                  >
+                    <v-icon class="mx-2" small>mdi-account-group</v-icon>
+                    Berdasarkan Karyawan
+                  </v-btn>
+                </v-list-item> -->
+                <!-- <v-list-item>
+                  <v-btn
+                    rounded
+                    dark
+                    class="mx-3 mt-1"
+                    @click="resetFilter()"
+                    color="green"
+                  >
+                    <v-icon class="mx-2" small>mdi-refresh</v-icon>
+                    Reset Filter
+                  </v-btn>
+                </v-list-item> -->
+              </v-list>
+            </v-menu>
           <!-- program years-->
+          <v-col cols="2" lg="1" class="d-flex">
             <v-select
                 color="success"
                 item-color="success"
@@ -47,6 +112,8 @@
                 class="mx-auto mr-lg-2 mb-2 mb-lg-0"
                 style="max-width: 200px"
             ></v-select>
+          </v-col>
+            <!-- search -->
             <v-col cols="12" lg="6" class="d-flex">
               <v-select
                   color="success"
@@ -178,6 +245,89 @@
       :data="detailModal.data"
       @close="detailModal.show = false">
       </DetailAdjustmentSostam>
+
+      <!-- Modal Filter Area -->
+      <v-dialog v-model="dialogFilterArea.show" max-width="500px">
+        <v-card rounded="xl">
+          <v-card-title class="">
+            <v-spacer></v-spacer>
+            Filter Pencarian Area
+            <v-spacer></v-spacer>
+          </v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="dialogFilterArea.mu_value"
+                    :items="dialogFilterArea.itemsMU"
+                    item-value="mu_no"
+                    item-text="name"
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    outlined
+                    rounded
+                    hide-details
+                    v-on:change="selectedMU"
+                    label="Management Unit"
+                    clearable
+                  ></v-autocomplete>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="dialogFilterArea.ta_value"
+                    :items="dialogFilterArea.itemsTA"
+                    item-value="area_code"
+                    item-text="name"
+                    v-on:change="selectedTA"
+                    label="Target Area"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    outlined
+                    rounded
+                    hide-details
+                  ></v-autocomplete>
+                </v-col>
+                <!-- <v-col cols="12" sm="12" md="12">
+                  <v-autocomplete
+                    v-model="selectVillage"
+                    :items="itemsVillage"
+                    item-value="kode_desa"
+                    item-text="name"
+                    v-on:change="selectedVillage"
+                    label="Desa"
+                    clearable
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    color="green"
+                    item-color="green"
+                    outlined
+                    rounded
+                    hide-details
+                  ></v-autocomplete>
+                </v-col> -->
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions class="pb-4">
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea.show = false">
+              <v-icon small class="mr-1">mdi-close</v-icon>
+              Keluar
+            </v-btn
+            >
+            <v-btn dark color="warning" rounded class="px-5" @click="searchbyarea">
+              <v-icon small class="mr-1">mdi-filter</v-icon>
+              Cari
+            </v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
   
       <v-snackbar
         v-model="snackbar"
@@ -266,6 +416,13 @@
         show: false,
         data: "",
       },
+      dialogFilterArea: {
+        show: false,
+        mu_value: "",
+        ta_value: "",
+        itemsMU: [],
+        itemsTA: []
+      },
       User: '',
       valueFFcode: '',
       UMVal: '',
@@ -323,6 +480,8 @@
               ff: this.valueFFcode,
               search_column: this.search.column || '',
               search_value: this.search.model || '',
+              mu: this.dialogFilterArea.mu_value,
+              ta: this.dialogFilterArea.ta_value
             })
             console.log(param)
             const response = await axios.get(
@@ -569,6 +728,72 @@
             this.detailDataObject = [];
           }
         }
+      },
+      async showFilterArea() {
+        // console.log(localStorage.getItem("token"));
+        // await this.resetFilter();
+        this.getMU()
+        this.dialogFilterArea.show = true;
+      },
+      selectedMU(){
+        console.log(this.dialogFilterArea.mu_value)
+        this.getTA();
+      },
+      async getMU() {
+        try {
+          const response = await axios.get(
+            this.BaseUrlGet + "GetManagementUnit" + `?program_year=${this.localConfig.programYear}`,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          if (response.data.length != 0) {
+            this.dialogFilterArea.itemsMU = response.data.data.result;
+            // this.dataobject = response.data.data.result;
+          } else {
+            console.log("Kosong");
+            this.dialogFilterArea.itemsMU = []
+          }
+        } catch (error) {
+          this.dialogFilterArea.itemsMU= []
+          console.error(error.response);
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        }
+      },
+      async getTA() {
+        var valparam = this.dialogFilterArea.mu_value
+        try {
+          const response = await axios.get(
+            this.BaseUrlGet + "GetTargetArea?mu_no=" + valparam + `&program_year=${this.localConfig.programYear}`, 
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          console.log(this.localConfig.programYear)
+          if (response.data.length != 0) {
+              this.dialogFilterArea.itemsTA = response.data.data.result;
+            // this.dataobject = response.data.data.result;
+          } else {
+            console.log("Kosong");
+          }
+        } catch (error) {
+          console.error(error.response);
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        }
+      },
+      async searchbyarea(){
+        await this.initialize()
+        this.dialogFilterArea.show= false
       },
       sessionEnd(error) {
       if (error.response.status == 401) {
