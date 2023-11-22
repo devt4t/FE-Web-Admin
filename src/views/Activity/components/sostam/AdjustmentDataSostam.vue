@@ -443,7 +443,7 @@
       },
       'table.options': {
       handler(newValue) {
-        let {page, itemsPerPage} = newValue
+        let {page, itemsPerPage, sortBy} = newValue
         this.table.current_page = page
         this.table.per_page = itemsPerPage
         this.initialize()
@@ -478,6 +478,7 @@
               ff: this.valueFFcode,
               search_column: this.search.column || '',
               search_value: this.search.model || '',
+              sortBy: this.table.options.sortBy || '',
               mu: this.dialogFilterArea.mu_value,
               ta: this.dialogFilterArea.ta_value
             })
