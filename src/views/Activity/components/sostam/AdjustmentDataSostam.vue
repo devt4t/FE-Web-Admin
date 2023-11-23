@@ -150,8 +150,10 @@
           </v-toolbar>
         </template>
         <template v-slot:item.index="{ index }">
-          {{ (itemsPerPage * (page-1)) + index + 1 }}
-        </template>
+        <span>
+          {{ index + 1 + ((table.current_page - 1) * table.per_page) }}
+        </span>
+      </template>
         <!--Status row-->
         <template v-slot:item.validation="{item}">
           <v-chip :color="getStatusColumn('bg_color', item.validation)" class="white--text">

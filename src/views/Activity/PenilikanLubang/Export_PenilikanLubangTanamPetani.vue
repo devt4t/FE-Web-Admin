@@ -8,7 +8,7 @@
         >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Sostam
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Data Penilikan Lubang Tanam FF: {{ this.ff }}
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
@@ -40,8 +40,11 @@
                     <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
                             <h2>
-                                Data Export Penilikan Lubang Tanam
+                                Data Export Penilikan Lubang Tanam FF: {{ this.ff }}
                             </h2>
+                            <h3>
+                                Tahun Program: {{ this.program_year }}
+                            </h3>
                         </th>
                     </tr>
                     <tr>
@@ -178,6 +181,9 @@
                             program_year: this.program_year,
                             ff: this.ff,
                             typegetdata: this.typegetdata
+                        }),
+                        this.getDataFF({
+                            ff_no: this.ff
                         })   
                     }
                     return this.show
@@ -202,7 +208,7 @@
             console.log('export xlsx')
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataPenilikanLubangTanamPetani_${this.program_year}.xlsx`);
+            XLSX.writeFile(wb, `DataPenilikanLubangTanamPetani_${this.program_year}_${this.ff}.xlsx`);
         },
         downloadPDF() {
             window.jsPDF = window.jspdf.jsPDF;
@@ -217,7 +223,7 @@
                 tableLineWidth: 0,
                 theme: 'striped'
              })
-            doc.save(`DataPenilikanLubangTanamPetani_${this.program_year}.pdf`);
+            doc.save(`DataPenilikanLubangTanamPetani_${this.program_year}_${this.ff}.pdf`);
         },
         statusRowColor(outputColor, itemKey){
             if(itemKey == 'is_validate'){
@@ -271,6 +277,25 @@
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)
                     const url = `GetPlantingHoleAdmin?${params}`
+                    const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                    const data = call.data.data.result.data
+                    console.log(call)
+                    
+                    const totalData = call.data.totalData
+                    this.totalLahan = totalData
+    
+                    this.table.items = data
+                    this.table.items_raw = data
+                    console.log(this.table.items)
+                } catch (err) {this.errorResponse(err)} finally {
+                    this.table.loading.show = false
+                }
+            },
+            async getDataFF(params){
+                try {
+                    this.table.loading.show = true
+                    const parameter = new URLSearchParams(params)
+                    const url = `getSingleDataFF?${parameter}`
                     const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
                     const data = call.data.data.result.data
                     console.log(call)
