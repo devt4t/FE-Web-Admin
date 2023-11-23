@@ -40,7 +40,7 @@
                     <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 20px;">
                             <h2>
-                                Data Export Penilikan Lubang Tanam FF: {{ this.ff }}
+                                Data Export Penilikan Lubang Tanam FF: {{ this.ff_name }}
                             </h2>
                             <h3>
                                 Tahun Program: {{ this.program_year }}
@@ -145,7 +145,7 @@
         },
         data: () => ({
             totalLahan : 0,
-    
+            ff_name: "",
             table: {
                 headers: [
                     {text: 'No', value: 'index', width: 75},
@@ -298,14 +298,10 @@
                     const url = `getSingleDataFF?${parameter}`
                     const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
                     const data = call.data.data.result.data
-                    console.log(call)
-                    
-                    const totalData = call.data.totalData
-                    this.totalLahan = totalData
-    
-                    this.table.items = data
-                    this.table.items_raw = data
-                    console.log(this.table.items)
+                    this.ff_name = data.map((val)=> {
+                        return val.name
+                    })
+                    console.log(this.ff_name)
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
                 }

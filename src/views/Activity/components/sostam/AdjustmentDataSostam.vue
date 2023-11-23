@@ -373,7 +373,7 @@
         options: [
           {text: "Nama FF", value: "nama_ff"},
           {text: "Nomor Lahan", value: "lahan_no"},
-          {text: "Nama Petani", value: "name_farmer"},
+          {text: "Nama Petani", value: "nama_petani"},
         ]
       },
       authtoken: "",
