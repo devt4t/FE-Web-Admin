@@ -1840,7 +1840,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Print Label & Receipt Section -->
-                <v-expansion-panel v-if="accessModul.packingLabel" class="rounded-xl">
+                <v-expansion-panel v-if="false &&accessModul.packingLabel" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-printer</v-icon> Print Label & Receipt</h3>
                     </v-expansion-panel-header>
@@ -2071,7 +2071,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Loading Line Section -->
-                <v-expansion-panel v-if="accessModul.loadingLine" class="rounded-xl">
+                <v-expansion-panel v-if="false && accessModul.loadingLine" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-human-dolly</v-icon> Loading Line</h3>
                     </v-expansion-panel-header>
