@@ -1839,6 +1839,461 @@
                         </v-sheet>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
+
+                <!-- Nursery Calendar Section -->
+                <v-expansion-panel v-if=" false && accessModul.calendar" class="rounded-xl">
+                    <v-expansion-panel-header>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon>Kalender Distribusi Nursery</h3>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        <!-- loading overlay -->
+                        <v-overlay :value="calendar.loading" absolute class="rounded-xl" color="white">
+                            <div class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="green"
+                                    size="123"
+                                    width="7"
+                                ></v-progress-circular>
+                                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">Getting distribution datas in <strong>{{ generalSettings.nursery.model }}</strong> Nursery...</p>
+                            </div>
+                        </v-overlay>
+                        <v-row class="">
+                            <v-spacer></v-spacer>
+                            <!-- set calendar monthly -->
+                            <v-btn
+                                v-if="this.calendar.type != 'month'"
+                                dark
+                                @click="setCalendarTypeMonthly"
+                                color="success"
+                                rounded
+                                small
+                                class="mr-4"
+                            >
+                                <v-icon small class="mr-1">mdi-calendar-multiselect</v-icon> Kalender Per Bulan
+                            </v-btn>
+                            <!-- Refresh Button -->
+                            <v-btn
+                                dark
+                                @click="calendarUpdateRangeNew({start: $refs.calendar.renderProps.start, end: $refs.calendar.renderProps.end})"
+                                color="info"
+                                rounded
+                                small
+                            >
+                                <v-icon small class="mr-1">mdi-</v-icon> Refresh
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                        </v-row>
+                        <v-row class="mb-1 align-center">
+                            <v-divider class="mx-2"></v-divider>
+                            <v-btn
+                                fab
+                                text
+                                small
+                                color="green white--text"
+                                @click="calendarPrev"
+                            >
+                                <v-icon>
+                                mdi-chevron-left-circle
+                                </v-icon>
+                            </v-btn>
+                            <v-toolbar-title v-if="$refs.calendar">
+                                {{ $refs.calendar.title }}
+                            </v-toolbar-title>
+                            <v-btn
+                                fab
+                                text
+                                small
+                                color="green white--text"
+                                @click="calendarNext"
+                            >
+                                <v-icon>
+                                mdi-chevron-right-circle
+                                </v-icon>
+                            </v-btn>
+                            <v-divider class="mx-2"></v-divider>
+                        </v-row>
+                        <v-sheet height="750">
+                            <v-calendar
+                                ref="calendar"
+                                v-model="calendar.focus"
+                                color="green"
+                                :start="calendar.range[0]"
+                                :end="calendar.range[1]"
+                                show-week
+                                class="rounded-xl overflow-hidden"
+                                :event-margin-bottom="5"
+                                :events="calendar.events"
+                                :event-color="calendarGetEventColor"
+                                :event-text-color="calendarGetEventTextColor"
+                                :type="calendar.type"
+                                @click:more="calendarGetMoreEvent"
+                                @click:event="calendarShowEvent"
+                                @change="calendarUpdateRangeNew"
+                            >
+                                <!-- <template v-slot:day-label="{day}">
+                                    {{ day }}
+                                </template> -->
+                                <template v-slot:event="{event}">
+                                    <h4 class="mx-1 text-center" v-if="generalSettings.type.model == 'Petani'">
+                                        <v-icon v-if="event.color == 'green'" dark small>mdi-check-circle</v-icon>
+                                        <v-icon v-else-if="event.color == 'red'" dark small>mdi-close-circle</v-icon>
+                                        {{ event.name }} ~ {{ event.total_ff }} FF 
+                                    </h4>
+                                    <h4 class="mx-1 text-center" v-else-if="generalSettings.type.model == 'Umum'">
+                                        <v-icon v-if="event.color == 'green'" dark small>mdi-check-circle</v-icon>
+                                        <v-icon v-else-if="event.color == 'red'" dark small>mdi-close-circle</v-icon>
+                                        <v-icon v-else-if="event.color == 'blue'" dark small>mdi-help-circle</v-icon>
+                                        {{ event.name == 'Tidak Ada' ? 'Unallocated' : event.name }} ~ {{ event.total_ff }} PIC 
+                                    </h4>
+                                </template>
+                            </v-calendar>
+                            <v-menu
+                                v-if="generalSettings.type.model == 'Petani'"
+                                v-model="calendar.selectedOpen"
+                                :close-on-content-click="false"
+                                :close-on-click="false"
+                                :activator="calendar.selectedElement"
+                                transition="scale-transition"
+                                offset-y
+                                rounded="xl"
+                            >
+                                <!-- Card Detail Event -->
+                                <v-card
+                                    color="grey lighten-4"
+                                    min-width="350px"
+                                    max-height="700"
+                                    class="red"
+                                    flat
+                                >
+                                    <v-toolbar
+                                    :color="calendar.selectedEvent.color"
+                                    :dark="calendar.selectedEvent.color == 'yellow' ? false : true"
+                                    >
+                                        <v-btn icon>
+                                            <v-icon>mdi-calendar</v-icon>
+                                        </v-btn>
+                                        <v-toolbar-title>
+                                            <strong>{{ calendar.selectedEvent.name }}</strong>
+                                        </v-toolbar-title>
+                                        <v-divider class="mx-2"></v-divider>
+                                        <v-btn icon @click="calendar.selectedOpen = false">
+                                            <v-icon>mdi-close-circle</v-icon>
+                                        </v-btn>
+                                    </v-toolbar>
+                                    <v-card-text class="white">
+                                        <v-simple-table class="rounded-xl">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Tanggal</td>
+                                                    <td>:</td>
+                                                    <td>{{ dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Sostam</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'sostam')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Penlub</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibit(calendar.selectedEvent, 'nursery', 'penlub')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_penlub) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total FF</td>
+                                                    <td>:</td>
+                                                    <td>{{ calendar.selectedEvent.total_ff }} FF</td>
+                                                </tr>
+                                            </tbody>
+                                        </v-simple-table>
+                                        <v-data-table 
+                                            hide-default-footer
+                                            :items-per-page="-1"
+                                            :headers="calendar.table.headers"
+                                            :items="calendar.selectedEvent.details"
+                                            dense
+                                        >
+                                            <!-- No Column -->
+                                            <template v-slot:item.no="{index}">
+                                                {{ index+1 }}
+                                            </template>
+                                            <!-- Total Bibit Sostam Column -->
+                                            <template v-slot:item.total_bibit_sostam="{item}">
+                                                {{ numberFormat(item.total_bibit_sostam) }} Bibit
+                                            </template>
+                                            <!-- Progress Penlub Column -->
+                                            <template v-slot:item.progress_penlub="{item}">
+                                                <v-chip :color="`${item.progress_penlub == 100 ? 'green' : (item.progress_penlub > 0 ? 'orange' : 'red')} white--text`">
+                                                    {{ item.progress_penlub }} %
+                                                </v-chip>
+                                            </template>
+                                            <!-- Total Bibit Penlub Column -->
+                                            <template v-slot:item.total_bibit_penlub="{item}">
+                                                {{ numberFormat(item.total_bibit_penlub) }} Bibit
+                                            </template>
+                                            <!-- Action Column -->
+                                            <template v-slot:item.actions="{item}">
+                                                <v-menu
+                                                    rounded="xl"
+                                                    bottom
+                                                    left
+                                                    offset-y
+                                                    transition="slide-y-transition"
+                                                    :close-on-content-click="false"
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-icon v-bind="attrs" v-on="on" color="dark">
+                                                        mdi-arrow-down-drop-circle
+                                                        </v-icon>
+                                                    </template>
+
+                                                    <v-list class="d-flex flex-column align-stretch">
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="blue white--text" rounded 
+                                                                @click="calendarShowDetailFFPeriod(item)"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-calendar</v-icon>
+                                                                Period
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibit(item, 'ff', 'sostam')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-seed</v-icon>
+                                                                Sostam Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibit(item, 'ff', 'penlub')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-sprout</v-icon>
+                                                                Penlub Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                    </v-list>
+                                                </v-menu>
+                                            </template>
+                                        </v-data-table>
+                                    </v-card-text>
+                                    <v-card-actions class="white">
+                                        <v-btn
+                                            outlined
+                                            color="red"
+                                            rounded
+                                            @click="calendar.selectedOpen = false"
+                                        >
+                                            <v-icon class="mr-1">mdi-close</v-icon>
+                                            Close
+                                        </v-btn>
+                                        <v-divider class="mx-2"></v-divider>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-menu>
+                            <v-menu
+                                v-else-if="generalSettings.type.model == 'Umum'"
+                                v-model="calendar.selectedOpen"
+                                :close-on-content-click="false"
+                                :close-on-click="false"
+                                :activator="calendar.selectedElement"
+                                transition="scale-transition"
+                                offset-y
+                                rounded="xl"
+                            >
+                                <!-- Card Detail Event -->
+                                <v-card
+                                    color="grey lighten-4"
+                                    min-width="350px"
+                                    max-height="700"
+                                    class="red"
+                                    flat
+                                >
+                                    <v-toolbar
+                                    :color="calendar.selectedEvent.color"
+                                    :dark="calendar.selectedEvent.color == 'yellow' ? false : true"
+                                    >
+                                        <v-btn icon>
+                                            <v-icon>mdi-calendar</v-icon>
+                                        </v-btn>
+                                        <v-toolbar-title>
+                                            <strong>{{ calendar.selectedEvent.name === 'Tidak Ada' ? 'Unallocated' : calendar.selectedEvent.name }}</strong>
+                                        </v-toolbar-title>
+                                        <v-divider class="mx-2"></v-divider>
+                                        <v-btn icon @click="calendar.selectedOpen = false">
+                                            <v-icon>mdi-close-circle</v-icon>
+                                        </v-btn>
+                                    </v-toolbar>
+                                    <v-card-text class="white">
+                                        <v-simple-table class="rounded-xl">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Tanggal</td>
+                                                    <td>:</td>
+                                                    <td>{{ dateFormat(calendar.selectedEvent.start, 'dddd, DD MMMM Y') }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Lahan</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibitLahanUmum(calendar.selectedEvent, 'nursery', 'lahan')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_sostam) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Bibit Penlub</td>
+                                                    <td>:</td>
+                                                    <td>    
+                                                        <v-tooltip top>
+                                                            Click for preview detailed seed
+                                                            <template v-slot:activator="{ on, attrs }">
+                                                                <strong 
+                                                                    v-bind="attrs"
+                                                                    v-on="on"
+                                                                    class="cursor-pointer" 
+                                                                    @click="calendarShowDetailTotalBibitLahanUmum(calendar.selectedEvent, 'nursery', 'penlub')"
+                                                                >
+                                                                    {{ numberFormat(calendar.selectedEvent.total_bibit_penlub) }} Bibit
+                                                                </strong>
+                                                            </template>
+                                                        </v-tooltip>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total</td>
+                                                    <td>:</td>
+                                                    <td>{{ calendar.selectedEvent.total_ff }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </v-simple-table>
+                                        <v-data-table 
+                                            hide-default-footer
+                                            :items-per-page="-1"
+                                            :headers="calendar.table2.headers"
+                                            :items="calendar.selectedEvent.details"
+                                            dense
+                                        >
+                                            <!-- No Column -->
+                                            <template v-slot:item.no="{index}">
+                                                {{ index+1 }}
+                                            </template>
+                                            <!-- Total Bibit Sostam Column -->
+                                            <template v-slot:item.total_bibit_lahan="{item}">
+                                                {{ numberFormat(item.total_bibit_lahan) }} Bibit
+                                            </template>
+                                            <!-- Total Bibit Penlub Column -->
+                                            <template v-slot:item.total_bibit_penlub="{item}">
+                                                {{ numberFormat(item.total_bibit_penlub) }} Bibit
+                                            </template>
+                                            <!-- Action Column -->
+                                            <template v-slot:item.actions="{item}">
+                                                <v-menu
+                                                    rounded="xl"
+                                                    bottom
+                                                    left
+                                                    offset-y
+                                                    transition="slide-y-transition"
+                                                    :close-on-content-click="false"
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-icon v-bind="attrs" v-on="on" color="dark">
+                                                        mdi-arrow-down-drop-circle
+                                                        </v-icon>
+                                                    </template>
+
+                                                    <v-list class="d-flex flex-column align-stretch">
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="blue white--text" rounded 
+                                                                @click="calendarShowDetailLahanUmumPeriod(item)"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-calendar</v-icon>
+                                                                Nursery & Period
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'mou_no', 'lahan')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-seed</v-icon>
+                                                                Lahan Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                        <v-list-item>
+                                                            <v-btn 
+                                                                block color="green white--text" rounded 
+                                                                @click="calendarShowDetailTotalBibitLahanUmum(item, 'mou_no', 'penlub')"
+                                                            >
+                                                                <v-icon class="mr-1">mdi-sprout</v-icon>
+                                                                Penlub Seeds
+                                                            </v-btn>
+                                                        </v-list-item>
+                                                    </v-list>
+                                                </v-menu>
+                                            </template>
+                                        </v-data-table>
+                                    </v-card-text>
+                                    <v-card-actions class="white">
+                                        <v-btn
+                                            outlined
+                                            color="red"
+                                            rounded
+                                            @click="calendar.selectedOpen = false"
+                                        >
+                                            <v-icon class="mr-1">mdi-close</v-icon>
+                                            Close
+                                        </v-btn>
+                                        <v-divider class="mx-2"></v-divider>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-menu>
+                        </v-sheet>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+
                 <!-- Print Label & Receipt Section -->
                 <v-expansion-panel v-if="false &&accessModul.packingLabel" class="rounded-xl">
                     <v-expansion-panel-header>
@@ -2398,7 +2853,9 @@ export default {
             },
             imageUrl: localStorage.getItem('BaseUrl'),
             baseUrl: localStorage.getItem('BaseUrlGet'),
+
             token: localStorage.getItem('token'),
+            nurseryToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw'
         },
         dataJSON: {
             trucks: trucksJSON
@@ -2767,6 +3224,7 @@ export default {
                     this.distributionReport.loading = true
                     // refresh calendar
                     await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    await this.calendarUpdateRangeNew({start: calendar.start, end: calendar.end})
                     this.packingLabel.loadingText = 'Getting packing label data...'
                     this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
                     this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
@@ -2830,6 +3288,7 @@ export default {
                             end: this.$refs.calendar.renderProps.end,
                         }
                         await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                        await this.calendarUpdateRangeNew({start: calendar.start, end: calendar.end})
                     }
                     this.packingLabel.loadingText = 'Getting packing label data...'
                     this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
@@ -2988,6 +3447,7 @@ export default {
                         }
                         // refresh calendar
                         this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                        this.calendarUpdateRangeNew({start: calendar.start, end: calendar.end})
                         // refresh packing label table
                         this.getPackingLabelTableData()
                     } else {
@@ -3045,6 +3505,7 @@ export default {
                     }
                     // refresh calendar
                     this.calendarUpdateRange({start: calendar.start, end: calendar.end})
+                    this.calendarUpdateRangeNew({start: calendar.start, end: calendar.end})
                     // refresh packing label table
                     this.getPackingLabelTableData()
                 }).catch(err => {
@@ -3211,6 +3672,46 @@ export default {
                 // console.log(events)
                 this.calendar.events = events
                 this.calendar.loading = false
+            }
+        },
+        async calendarUpdateRangeNew({start,end}){
+            await this.getUserException()
+            if (this.accessModul.calendar) {
+                this.calendar.loading = true
+
+                const params = new URLSearchParams({
+                    month: this.dateFormat(start.date, 'MM'),
+                    year: this.dateFormat(start.date, 'Y'),
+                    program_year: this.generalSettings.programYear,
+                })
+                let url = 'https://backend.geninelabs.live/api/custom/data-calendar-distribution?'
+                const res = await axios.get(
+                    url + params,
+                    {
+                        headers: {
+                            Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                        },
+                    }
+                ).catch(err => {
+                    this.sessionEnd(err)
+                })
+                const resData = res.data.data.result.datas
+                const events = []
+    
+                // await resData.forEach((evData, evIndex) => {
+                //     events.push({
+                //         name: evData.nursery,
+                //         start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
+                //         total_ff: evData.total,
+                //         total_bibit_sostam: evData.total_bibit_sostam,
+                //         total_bibit_penlub: evData.total_bibit_penlub,
+                //         color: evData.nursery == 'Tidak Ada' ? 'blue' : this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date, evData.total_bibit_sostam),
+                //         details: evData.details,
+                //     })
+                // })
+                // // console.log(events)
+                // this.calendar.events = events
+                // this.calendar.loading = false
             }
         },
         // FF

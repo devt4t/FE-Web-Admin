@@ -2855,12 +2855,12 @@ export default {
     async initialize() {
       this.loadtable = true;
       this.dataobject = [];
-      this.valueMU = '',
-      this.valueTA = '',
-      this.valueVillage = '',
-      this.selectMU='',
-      this.selectTA='',
-      this.selectVillage=''
+      // this.valueMU = '',
+      // this.valueTA = '',
+      // this.valueVillage = '',
+      // this.selectMU='',
+      // this.selectTA='',
+      // this.selectVillage=''
 
       let params = {
         program_year: this.program_year,

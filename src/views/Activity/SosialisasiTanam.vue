@@ -2229,7 +2229,7 @@
       @item-expanded="checkExpandenItem"
       :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
-        itemsPerPageOptions: [10, 25, 40, -1],
+        itemsPerPageOptions: [10, 25, 50, 100, 250, 500],
         showCurrentPage: true,
         showFirstLastPage: true,
       }"
