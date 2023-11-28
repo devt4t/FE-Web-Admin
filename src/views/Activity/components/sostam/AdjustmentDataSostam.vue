@@ -15,7 +15,6 @@
         multi-sort
         :headers="headers"
         :items="dataobject"
-        :search="search"
         :loading="tableLoading"
         loading-text="Loading... Please wait"
         class="rounded-xl elevation-6 mx-3 pa-1"
@@ -283,7 +282,6 @@
                     :items="dialogFilterArea.itemsTA"
                     item-value="area_code"
                     item-text="name"
-                    v-on:change="selectedTA"
                     label="Target Area"
                     clearable
                     :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"

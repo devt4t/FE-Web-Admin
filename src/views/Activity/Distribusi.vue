@@ -769,15 +769,15 @@
                             <!-- General Data -->
                             <v-simple-table>
                                 <tbody>
-                                    <tr>
+                                    <!-- <tr>
                                         <td>Distribution No</td>
                                         <td>:</td>
                                         <td><strong>{{ distributionReport.dialogs.detail.data.distribution_no }}</strong></td>
-                                    </tr>
+                                    </tr> -->
                                     <tr v-if="generalSettings.type.model == 'Petani'">
                                         <td>Field Facilitator</td>
                                         <td>:</td>
-                                        <td><strong>{{ distributionReport.dialogs.detail.data.ff_name || '-' }}</strong></td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.loading_line[0].ff_name || '-' }}</strong></td>
                                     </tr>
                                     <tr v-else-if="generalSettings.type.model == 'Umum'">
                                         <td>PIC T4T</td>
@@ -797,7 +797,7 @@
                                     <tr>
                                         <td>Distribution Date</td>
                                         <td>:</td>
-                                        <td><strong>{{ dateFormat(distributionReport.dialogs.detail.data.distribution_date, 'dddd, DD MMMM Y') }}</strong></td>
+                                        <td><strong>{{ dateFormat(distributionReport.dialogs.detail.data.loading_line[0].distribution_date, 'dddd, DD MMMM Y') }}</strong></td>
                                     </tr>
                                 </tbody>
                             </v-simple-table>
@@ -824,8 +824,8 @@
                                                     dense
                                                     :headers="[
                                                         {text: 'No', value: 'no', align: 'center', sortable: false},
-                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
-                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
                                                     ]"
                                                     :items="distributionReport.dialogs.detail.labels.printed"
                                                     :items-per-page="-1"
@@ -867,9 +867,9 @@
                                                     dense
                                                     :headers="[
                                                         {text: 'No', value: 'no', align: 'center', sortable: false},
-                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
-                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
-                                                        {text: 'PIC Load', value: 'loaded_by', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                        {text: 'PIC Load', value: 'rel_implementor_load_id', sortable: false},
                                                     ]"
                                                     :items="distributionReport.dialogs.detail.labels.loaded"
                                                     :items-per-page="-1"
@@ -915,9 +915,9 @@
                                                     dense
                                                     :headers="[
                                                         {text: 'No', value: 'no', align: 'center', sortable: false},
-                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
-                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
-                                                        {text: 'PIC Distribute', value: 'distributed_by', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                        {text: 'PIC Distribute', value: 'implementor_distribute_id', sortable: false},
                                                     ]"
                                                     :items="distributionReport.dialogs.detail.labels.distributed"
                                                     :items-per-page="-1"
@@ -959,9 +959,9 @@
                                                     dense
                                                     :headers="[
                                                         {text: 'No', value: 'no', align: 'center', sortable: false},
-                                                        {text: 'Bag Number', value: 'bag_number', sortable: false},
-                                                        {text: 'Seedling', value: 'tree_list', sortable: false},
-                                                        {text: 'PIC Load', value: 'loaded_by', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                        // {text: 'PIC Load', value: 'loaded_by', sortable: false},
                                                     ]"
                                                     :items="distributionReport.dialogs.detail.labels.lost"
                                                     :items-per-page="-1"
@@ -1072,7 +1072,7 @@
                                 </v-col>
                             </v-row>
                             <!-- Photos -->
-                            <v-row class="ma-0 mt-4">
+                            <!-- <v-row class="ma-0 mt-4">
                                 <v-col cols="12" class="d-flex align-center">
                                     <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Images</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
@@ -1101,7 +1101,7 @@
                                         ></v-img
                                     ></v-card>
                                 </v-col>
-                            </v-row>
+                            </v-row> -->
                         </div>
                     </v-card-text>
                     <v-card-actions class="" v-if="distributionReport.dialogs.detail.data">
@@ -1841,13 +1841,13 @@
                 </v-expansion-panel>
 
                 <!-- Nursery Calendar Section -->
-                <v-expansion-panel v-if=" false && accessModul.calendar" class="rounded-xl">
+                <v-expansion-panel v-if="false&&accessModul.calendar" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-calendar</v-icon>Kalender Distribusi Nursery</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
-                        <v-overlay :value="calendar.loading" absolute class="rounded-xl" color="white">
+                        <v-overlay :value="calendar.nurseryLoading" absolute class="rounded-xl" color="white">
                             <div class="d-flex flex-column align-center justify-center">
                                 <v-progress-circular
                                     indeterminate
@@ -1916,14 +1916,14 @@
                         <v-sheet height="750">
                             <v-calendar
                                 ref="calendar"
-                                v-model="calendar.focus"
+                                v-model="calendar.nurseryFocus"
                                 color="green"
-                                :start="calendar.range[0]"
-                                :end="calendar.range[1]"
+                                :start="calendar.nurseryRange[0]"
+                                :end="calendar.nurseryRange[1]"
                                 show-week
                                 class="rounded-xl overflow-hidden"
                                 :event-margin-bottom="5"
-                                :events="calendar.events"
+                                :events="calendar.nurseryEvents"
                                 :event-color="calendarGetEventColor"
                                 :event-text-color="calendarGetEventTextColor"
                                 :type="calendar.type"
@@ -2684,11 +2684,13 @@
                         </v-overlay>
                         <v-row>
                             <!-- Distribution Report Table -->
+                            <!-- geko report data -->
+                            <!-- :headers="distributionReport.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']" -->
                             <v-col cols="12">
                                 <v-data-table
                                     multi-sort
-                                    :headers="distributionReport.table[generalSettings.type.model == 'Petani' ? 'headers' : 'headers2']"
-                                    :items="distributionReport.table.items"
+                                    :headers="distributionReport.table.headers3"
+                                    :items="distributionReport.table.NurseryItems"
                                     :loading="distributionReport.table.loading"
                                     :footer-props="{
                                         itemsPerPageOptions: [10, 25, 40, -1]
@@ -2775,6 +2777,19 @@
                                             </v-btn>
                                         </v-row>
                                     </template>
+                                    <!-- mu column -->
+                                    <template v-slot:item.mu_name="{item}">
+                                        {{  item.loading_line[0].mu_name }}
+                                    </template>
+                                    <template v-slot:item.ff_name="{item}">
+                                        {{  item.loading_line[0].ff_name }}
+                                    </template>
+                                    <template v-slot:item.status="{item}">
+                                        {{  item.loading_line[0].status_allocation_seed }}
+                                        <v-chip v-if="(item.loading_line[0].status_allocation_seed == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
+                                        <v-chip v-else-if="(item.loading_line[0].status_allocation_seed == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
+                                        <v-chip v-else-if="(item.loading_line[0].status_allocation_seed == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified</v-chip>
+                                    </template>
                                     <!-- All Bags Column -->
                                     <template v-slot:item.sum_all_bags="{item}">
                                         <div class="d-flex align-center justify-content-between">
@@ -2790,14 +2805,12 @@
                                         </div>
                                     </template>
                                     <!-- Status Column -->
-                                    <template v-slot:item.status="{item}">
-                                        <v-chip v-if="(item.status == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
-                                        <v-chip v-else-if="(item.status == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'FC' : 'PIC T4T' }}</v-chip>
-                                        <v-chip v-else-if="(item.status == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified {{ generalSettings.type.model == 'Petani' ? 'UM' : 'PM / RM' }}</v-chip>
-                                    </template>
+                                    <!-- <template v-slot:item.status="{item}">
+                                        
+                                    </template> -->
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded @click="getDistributionReportDetail(item.distribution_no)">
+                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded @click="newDetailDistributionReport(item)">
                                             <v-icon class="mr-1">mdi-information</v-icon>
                                             Detail
                                         </v-btn>
@@ -2881,10 +2894,14 @@ export default {
                 }
             },
             events: [],
+            nurseryEvents:[],
             focus: '',
+            nurseryFocus: '',
             loading: false,
+            nurseryLoading: false,
             names: ['Soreang', 'Ciminyak'],
             range: [ moment().format('Y-MM-DD'), '2023-01-31'],
+            nurseryRange: [ moment().format('Y-MM-DD'), '2023-01-31'],
             selectedElement: null,
             selectedEvent: {},
             selectedOpen: false,
@@ -3002,7 +3019,19 @@ export default {
                     {text: 'Status', value: 'status', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
+                headers3: [
+                    {text: 'Management Unit', value: 'mu_name'},
+                    {text: 'FF Name', value: 'ff_name'},
+                    {text: 'Farmer Name', value: 'farmer_name'},
+                    // {text: 'Bags', value: 'sum_all_bags', align: 'center'},
+                    {text: 'KAYU', value: 'adj_kayu', align: 'center'},
+                    {text: 'MPTS', value: 'adj_mpts', align: 'center'},
+                    // {text: 'CROPS', value: 'adj_crops', align: 'center'},
+                    {text: 'Status Alokasi Bibit', value: 'status', align: 'center'},
+                    {text: 'Actions', value: 'actions', align: 'right', sortable: false},
+                ],
                 items: [],
+                NurseryItems: [],
                 loading: false,
             },
         },
@@ -3198,10 +3227,16 @@ export default {
                 // console.log(newValue)
             }
         },
+        'calendar.nurseryEvents': {
+            handler(newValue) {
+                // console.log(newValue)
+            }
+        },
         'distributionReport.datePicker.model': {
             async handler(newVal) {
                 this.distributionReport.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
                 await this.getDistributionReportTable()
+                await this.reportNursery()
             }
         },
         'expansions.model': {
@@ -3246,7 +3281,7 @@ export default {
         'generalSettings.programYear': {
             async handler(newValue) {
                 this.calendar.range = [ moment().format('Y-MM-DD'), `${newValue + 1}-01-31`]
-                
+                this.calendar.nurseryRange = [ moment().format('Y-MM-DD'), `${newValue + 1}-01-31`]
                 this.packingLabel.loadingText = 'Waiting for completed get distribution calendar data...'
                 this.packingLabel.loading = true
                 this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
@@ -3255,6 +3290,7 @@ export default {
                 this.distributionReport.loading = true
                 // refresh calendar
                 this.calendar.focus = this.calendar.range[0]
+                this.calendar.nurseryFocus = this.calendar.nurseryRange[0]
                 this.packingLabel.loadingText = 'Getting packing label data...'
                 this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
                 this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
@@ -3332,6 +3368,36 @@ export default {
         // CALENDAR
         calendarGetEventColor (event) {
             return event.color
+        },
+        async reportNursery(){
+            await this.getUserException()
+            if (this.accessModul.calendar) {
+                this.calendar.nurseryLoading = true
+
+                const params ={
+                    ff_no: this.User.ff.ff.toString(),
+                    program_year: this.generalSettings.programYear,
+                    distribution_date: this.distributionReport.datePicker.model,
+                    status_data: "custom"
+                }
+                console.log(params)
+                let url = 'https://backend.geninelabs.live/api/custom/reportDetailFarmer?'
+                const res = await axios.get(
+                    url,
+                    {
+                        headers: {
+                            Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                        },
+                        params: params
+                    }
+                ).catch(err => {
+                    this.sessionEnd(err)
+                })
+                const resData = res.data.data
+                this.distributionReport.table.NurseryItems = resData
+                console.log(detailLabels)
+
+            }
         },
         calendarGetEventTextColor (event) {
             const color = event.color 
@@ -3669,7 +3735,7 @@ export default {
                         details: evData.details,
                     })
                 })
-                // console.log(events)
+                console.log(events)
                 this.calendar.events = events
                 this.calendar.loading = false
             }
@@ -3677,7 +3743,7 @@ export default {
         async calendarUpdateRangeNew({start,end}){
             await this.getUserException()
             if (this.accessModul.calendar) {
-                this.calendar.loading = true
+                this.calendar.nurseryLoading = true
 
                 const params = new URLSearchParams({
                     month: this.dateFormat(start.date, 'MM'),
@@ -3695,23 +3761,23 @@ export default {
                 ).catch(err => {
                     this.sessionEnd(err)
                 })
-                const resData = res.data.data.result.datas
+                const resData = res.data.data
                 const events = []
     
-                // await resData.forEach((evData, evIndex) => {
-                //     events.push({
-                //         name: evData.nursery,
-                //         start: this.dateFormat(evData.date, 'YYYY-MM-DD'),
-                //         total_ff: evData.total,
-                //         total_bibit_sostam: evData.total_bibit_sostam,
-                //         total_bibit_penlub: evData.total_bibit_penlub,
-                //         color: evData.nursery == 'Tidak Ada' ? 'blue' : this.calendarGetNurseryColor(evData.nursery, evData.total, evData.date, evData.total_bibit_sostam),
-                //         details: evData.details,
-                //     })
-                // })
-                // // console.log(events)
-                // this.calendar.events = events
-                // this.calendar.loading = false
+                await resData.forEach((evData, evIndex) => {
+                    events.push({
+                        mu_no: evData.mu_no,
+                        start: evData.distribution_date,
+                        ff_no: evData.ff_no,
+                        nurseryProgress: evData.progress,
+                        nurseryTotalSeed: evData.total_seed,
+                        created_at: evData.created_at,
+                        color: evData.color
+                    })
+                })
+                // console.log(events)
+                this.calendar.nurseryEvents = events
+                this.calendar.nurseryLoading = false
             }
         },
         // FF
@@ -4174,6 +4240,23 @@ export default {
                     this.distributionReport.table.loading = false
                 })
             }
+        },
+        async newDetailDistributionReport(item){
+            console.log(item)
+            this.distributionReport.dialogs.detail  = {
+                    adjustment: item.detail_seed_farmers,
+                    data: item,
+                    disabledSave: true,
+                    labels: {
+                        printed: item.detail_labels,
+                        loaded: item.detail_labels.filter(v => v.is_loaded == 1),
+                        distributed: item.detail_labels.filter(v => v.is_distributed == 1),
+                        lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
+                    },
+                    loading: false,
+                    loadingText: null,
+                    show: true
+                }
         },
         async getDistributionReportDetail(distribution_no) {
             let url = `${this.apiConfig.baseUrl}`
@@ -4683,6 +4766,8 @@ export default {
             this.loadingLine.loading = true
             this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
             this.distributionReport.loading = true
+
+            await this.reportNursery()
 
             await this.getPackingLabelTableData()
             this.packingLabel.loading = false

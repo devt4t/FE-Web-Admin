@@ -1958,7 +1958,6 @@
             v-if="User.role_group == 'IT' || User.email == 'pandu@trees4trees.org'"
             class=""
             color="info white--text"
-            v-bind="attrs"
             v-on="on"
             rounded
             @click="exportPenilikanLubangByExcel()"
@@ -2121,9 +2120,8 @@
                 Edit
               </v-btn>
             </v-list-item> -->
-            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER') && item.is_validate == 1">
+            <v-list-item v-if="(User.role_group == 'IT' && User.role_name == 'UNIT MANAGER') && item.is_validate == 1">
               <v-btn
-                :disabled="item.is_checked == 1"
                 block
                 rounded
                 @click="dialogUnverificationData = item.ph_form_no;dialogUnverification = true;"
@@ -2137,7 +2135,6 @@
             </v-list-item>
             <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER') && item.is_verified == 2">
               <v-btn
-                :disabled="item.is_checked == 1"
                 color="red white--text"
                 @click="dialogUnverificationData = item.lahan_no;dialogUnverification = true;"
                 rounded
