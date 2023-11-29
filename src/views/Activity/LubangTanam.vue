@@ -2120,7 +2120,7 @@
                 Edit
               </v-btn>
             </v-list-item> -->
-            <v-list-item v-if="(User.role_group == 'IT' && User.role_name == 'UNIT MANAGER') && item.is_validate == 1">
+            <v-list-item v-if="User.role_group == 'IT'">
               <v-btn
                 block
                 rounded
