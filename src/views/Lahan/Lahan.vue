@@ -1230,7 +1230,7 @@
               @click="verif"
               outlined
               elevation="1"
-              disabled
+              :disabled="User.role_group != 'IT'"
           >
             <v-icon left> mdi-checkbox-marked-circle-outline </v-icon>
             Verifikasi
