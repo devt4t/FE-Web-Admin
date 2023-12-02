@@ -1549,9 +1549,12 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p v-if="defaultItem.total_bibit_adjustment < defaultItem.total_holes" class="red--text"><strong>Lubang Tanam Tidak Boleh Lebih Dari Total Bibit Adjustment!</strong></p>
+          <p v-if="defaultItem.total_bibit_adjustment < defaultItem.totalBibitPenilikanLubang" class="red--text"><strong>Jumlah Bibit Penilikan Lubang Tidak Boleh Lebih Dari Total Bibit Adjustment!</strong></p>
           <p v-if="defaultItem.total_bibit_adjustment == null" class="red--text">
             <strong v-if="defaultItem.total_bibit_adjustment == null">Anda Belum Mengisi Adjustment Data Sostam!</strong>
             <strong v-if="defaultItem.counter_hole_standard <= defaultItem.total_holes">Jumlah Lubang Standar Tidak Boleh Kurang Dari Total Lubang!</strong>
+            
+
           </p>
           <v-btn
             v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true && defaultItem.total_bibit_adjustment != null && defaultItem.total_bibit_adjustment >= defaultItem.total_holes && defaultItem.counter_hole_standard <= defaultItem.total_holes && defaultItem.totalBibitPenilikanLubang <= defaultItem.total_bibit_adjustment"
