@@ -2139,6 +2139,7 @@
                 rounded
                 @click="dialogUnverificationData = item.ph_form_no;dialogUnverification = true;"
                 color="red white--text"
+                :disabled="item.is_validate == 0"
               >
               <v-icon class="mr-1" small color="white">
                 mdi-power
