@@ -984,7 +984,7 @@
                                 </v-col>
                             </v-row>
                             <!-- Seedling Adjustment -->
-                            <v-row class="ma-0 mt-4">
+                            <!-- <v-row class="ma-0 mt-4">
                                 <v-col cols="12" class="d-flex align-center">
                                     <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Adjusting Distributed Seedling</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
@@ -1070,7 +1070,7 @@
                                         </template>
                                     </v-data-table>
                                 </v-col>
-                            </v-row>
+                            </v-row> -->
                             <!-- Photos -->
                             <!-- <v-row class="ma-0 mt-4">
                                 <v-col cols="12" class="d-flex align-center">
@@ -1108,14 +1108,15 @@
                         <v-btn color="red white--text" rounded @click="distributionReport.dialogs.detail.show = false">
                             <v-icon color="white">
                                 mdi-close-circle
-                            </v-icon>
+                            </v-icon>   
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="generalSettings.type.model == 'Petani' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
-                        <v-btn v-else-if="generalSettings.type.model == 'Umum' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
+                        <v-btn @click="updateVerifikasiReportNursery()" :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-check-bold</v-icon> Verifikasi FC</v-btn>
+                        <!-- <v-btn v-if="generalSettings.type.model == 'Petani' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Verifikasi FC</v-btn> -->
+                        <!-- <v-btn v-else-if="generalSettings.type.model == 'Umum' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
                         <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
-                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn>
+                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn> -->
                     </v-card-actions>
                 </v-card>
             </v-dialog> 
@@ -3530,6 +3531,9 @@ export default {
                 this.calendar.detailPeriodFF.loading = false
                 this.calendar.detailPeriodFF.loadingText = ''
             }
+        },
+        async updateVerifikasiReportNursery(){
+            window.alert("Verif Report Data")
         },
         async calendarUpdateDetailLahanUmumPeriod() {
             const datapost = {

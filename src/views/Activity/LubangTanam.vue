@@ -1481,7 +1481,16 @@
                   style="background-color: black !important"
                 ></v-divider>
                 <div>
-                  <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
+                  <p class="mt-3">
+                    
+                      Jenis dan Jumlah Bibit
+                    
+                  </p>
+                  <p class="text-left" style="font-size: 16px">
+                    <strong>
+                    Total Bibit Penilikan Lubang: {{ defaultItem.totalBibitPenilikanLubang }} 
+                  </strong>
+                  </p>
                   <h3 class="ml-1">
                     <v-data-table
                       :headers="headersdetail"
@@ -1491,6 +1500,7 @@
                       <!-- <template v-slot:item.tree_category="{ item }">
                             {{ gettype(item.tree_category) }}
                           </template> -->
+
                     </v-data-table>
                   </h3>
                 </div>
@@ -1544,7 +1554,7 @@
             <strong v-if="defaultItem.counter_hole_standard <= defaultItem.total_holes">Jumlah Lubang Standar Tidak Boleh Kurang Dari Total Lubang!</strong>
           </p>
           <v-btn
-            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true && defaultItem.total_bibit_adjustment != null && defaultItem.total_bibit_adjustment >= defaultItem.total_holes && defaultItem.counter_hole_standard <= defaultItem.total_holes"
+            v-if="defaultItem.waitingapproval == true && RoleAccesCRUDShow == true && defaultItem.total_bibit_adjustment != null && defaultItem.total_bibit_adjustment >= defaultItem.total_holes && defaultItem.counter_hole_standard <= defaultItem.total_holes && defaultItem.totalBibitPenilikanLubang <= defaultItem.total_bibit_adjustment"
             color="green white--text"
             @click="verifSubmit()"
             rounded
@@ -2371,6 +2381,8 @@ export default {
       start_planting_hole: "",
       end_planting_hole: "",
 
+      totalBibitPenilikanLubang: "",
+
       gambarshow1: "",
       gambarshow2: "",
       gambarshow3: "",
@@ -3131,7 +3143,10 @@ export default {
           // this.defaultItem.start_planting_hole = response.data.result.data.start_planting_hole;
           // this.defaultItem.end_planting_hole = response.data.result.data.end_planting_hole;
 
-          console.log(this.defaultItem.start_planting_hole + ' - ' + this.defaultItem.end_planting_hole);
+          var totalBibitPenlub = this.defaultItem.list_detail.reduce((accumulator, object)=>{
+            return accumulator + object.amount;
+          }, 0);
+          this.defaultItem.totalBibitPenilikanLubang = totalBibitPenlub;
           this.defaultItem.waitingapproval = this.waitingapprovefunct(
             response.data.data.result.data.is_validate
           );
