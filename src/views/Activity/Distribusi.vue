@@ -3205,10 +3205,12 @@ export default {
             text: '',
             timeout: 10000,
         },
-        User: JSON.parse(localStorage.getItem("User"))
+        User: JSON.parse(localStorage.getItem("User")),
+        UserLogin: [],
     }),
     async mounted() {
         // set program year
+        this.UserLogin = this.User.ff.ff 
         this.generalSettings.programYear = this.$store.state.programYear.model
 
         await this.getUserException()
@@ -3238,8 +3240,8 @@ export default {
         'distributionReport.datePicker.model': {
             async handler(newVal) {
                 this.distributionReport.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
-                await this.getDistributionReportTable()
                 await this.reportNursery()
+                // await this.getDistributionReportTable()
             }
         },
         'expansions.model': {
@@ -3276,7 +3278,8 @@ export default {
                     this.loadingLine.loading = false
                     this.distributionReport.loadingText = 'Getting distribution report data...'
                     // refresh distribution report table
-                    await this.getDistributionReportTable()
+                    // await this.getDistributionReportTable()
+                    // await this.reportNursery()
                     this.distributionReport.loading = false
                 }
             }
@@ -3307,7 +3310,8 @@ export default {
                 this.loadingLine.loading = false
                 this.distributionReport.loadingText = 'Getting distribution report data...'
                 // refresh distribution report table
-                await this.getDistributionReportTable()
+                // await this.getDistributionReportTable()
+                // await this.reportNursery()
                 this.distributionReport.loading = false
             }
         },
@@ -3342,7 +3346,8 @@ export default {
                     this.loadingLine.loading = false
                     this.distributionReport.loadingText = 'Getting distribution report data...'
                     // refresh distribution report table
-                    await this.getDistributionReportTable()
+                    // await this.getDistributionReportTable()
+                    // await this.reportNursery()
                     this.distributionReport.loading = false
                 }
             }
@@ -3373,12 +3378,12 @@ export default {
             return event.color
         },
         async reportNursery(){
-            await this.getUserException()
+            // await this.getUserException()
             if (this.accessModul.calendar) {
                 this.distributionReport.table.loading = true
 
                 const params ={
-                    ff_no: this.User.ff.ff.toString(),
+                    ff_no: this.UserLogin.toString(),
                     program_year: this.generalSettings.programYear,
                     distribution_date: this.distributionReport.datePicker.model,
                     status_data: "custom",
@@ -3396,6 +3401,7 @@ export default {
                     }
                 ).catch(err => {
                     this.sessionEnd(err)
+                    this.distributionReport.table.loading = false
                 })
                 const resData = res.data.data
                 this.distributionReport.table.NurseryItems = resData
@@ -4008,7 +4014,8 @@ export default {
                     await this.getLoadinglineTableData()
                     this.loadingLine.loading = false
                     this.loadingLine.loadingText = null
-                    await this.getDistributionReportTable()
+                    // await this.getDistributionReportTable()
+                    await this.reportNursery()
                 }
             } else if (this.User.role_group != 'IT' || this.User.role_name != 'NURSERY' || this.User.role_name != 'NURSERY MANAGER') {
                 this.snackbar.text = `Can't use this modul from this user.`
@@ -4986,15 +4993,15 @@ export default {
                     this.generalSettings.nursery.disabled = true
 
                     // access modul: Field Coordinator
-                    if (this.User.role_name == 'FIELD COORDINATOR') {
-                        this.accessModul = {
-                            calendar: false,
-                            packingLabel: false,
-                            loadingLine: false,
-                            distributionReport: true
-                        }
-                        this.expansions.model = [0]
-                    }
+                    // if (this.User.role_name == 'FIELD COORDINATOR') {
+                    //     this.accessModul = {
+                    //         calendar: false,
+                    //         packingLabel: false,
+                    //         loadingLine: false,
+                    //         distributionReport: true
+                    //     }
+                    //     this.expansions.model = [0]
+                    // }
 
                     this.$store.state.loadingOverlay = false
                     this.$store.state.loadingOverlayText = null
