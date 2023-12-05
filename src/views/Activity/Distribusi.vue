@@ -3381,7 +3381,8 @@ export default {
                     ff_no: this.User.ff.ff.toString(),
                     program_year: this.generalSettings.programYear,
                     distribution_date: this.distributionReport.datePicker.model,
-                    status_data: "custom"
+                    status_data: "custom",
+                    limit: 10000
                 }
                 console.log(params)
                 let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
