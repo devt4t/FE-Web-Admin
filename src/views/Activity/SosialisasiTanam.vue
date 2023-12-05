@@ -5969,7 +5969,6 @@ export default {
               Authorization: `Bearer ` + this.authtoken
             },
           })
-          console.log(dataToPost)
           //  reset form create value
           const notif = await Swal.fire({
           title: 'Berhasil Menyimpan Data Adjustment!',

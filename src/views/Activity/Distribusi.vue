@@ -1112,7 +1112,7 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn @click="updateVerifikasiReportNursery()" :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-check-bold</v-icon> Verifikasi FC</v-btn>
+                        <v-btn v-if="distributionReport.dialogs.detail.data.verified_by == null" @click="updateVerifikasiReportNursery()" :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-check-bold</v-icon> Verifikasi FC</v-btn>
                         <!-- <v-btn v-if="generalSettings.type.model == 'Petani' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Verifikasi FC</v-btn> -->
                         <!-- <v-btn v-else-if="generalSettings.type.model == 'Umum' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
                         <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
@@ -2768,7 +2768,7 @@
                                             <!-- Refresh Button -->
                                             <v-btn
                                                 readonly
-                                                @click="getDistributionReportTable()"
+                                                @click="reportNursery()"
                                                 color="info white--text"
                                                 rounded
                                                 small
@@ -2786,10 +2786,9 @@
                                         {{  item.loading_line[0].ff_name }}
                                     </template>
                                     <template v-slot:item.status="{item}">
-                                        {{  item.loading_line[0].status_allocation_seed }}
-                                        <v-chip v-if="(item.loading_line[0].status_allocation_seed == 0)" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
-                                        <v-chip v-else-if="(item.loading_line[0].status_allocation_seed == 1)" color="warning white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
-                                        <v-chip v-else-if="(item.loading_line[0].status_allocation_seed == 2)" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-checkbox-multiple-marked-circle</v-icon> Verified</v-chip>
+                                        <v-chip v-if="item.verified_by == null" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
+                                        <v-chip v-else-if="item.verified_by != null" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
+                                        
                                     </template>
                                     <!-- All Bags Column -->
                                     <template v-slot:item.sum_all_bags="{item}">
@@ -2843,6 +2842,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 import axios from 'axios'
 import moment from 'moment'
 import { QrcodeStream } from "vue-qrcode-reader"
@@ -2952,6 +2952,7 @@ export default {
             },
             dialogs: {
                 detail: {
+                    farmerNo: "",
                     adjustment: [],
                     data: null,
                     disabledSave: true,
@@ -3025,10 +3026,11 @@ export default {
                     {text: 'FF Name', value: 'ff_name'},
                     {text: 'Farmer Name', value: 'farmer_name'},
                     // {text: 'Bags', value: 'sum_all_bags', align: 'center'},
-                    {text: 'KAYU', value: 'adj_kayu', align: 'center'},
-                    {text: 'MPTS', value: 'adj_mpts', align: 'center'},
+                    // {text: 'KAYU', value: 'adj_kayu', align: 'center'},
+                    // {text: 'MPTS', value: 'adj_mpts', align: 'center'},
                     // {text: 'CROPS', value: 'adj_crops', align: 'center'},
-                    {text: 'Status Alokasi Bibit', value: 'status', align: 'center'},
+                    {text: 'Status Penerimaan Petani', value: 'status', align: 'center'},
+                    {text: 'Diverifikasi Oleh', value: 'verified_by', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
                 items: [],
@@ -3373,7 +3375,7 @@ export default {
         async reportNursery(){
             await this.getUserException()
             if (this.accessModul.calendar) {
-                this.calendar.nurseryLoading = true
+                this.distributionReport.table.loading = true
 
                 const params ={
                     ff_no: this.User.ff.ff.toString(),
@@ -3382,7 +3384,7 @@ export default {
                     status_data: "custom"
                 }
                 console.log(params)
-                let url = 'https://backend.geninelabs.live/api/custom/reportDetailFarmer?'
+                let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
                 const res = await axios.get(
                     url,
                     {
@@ -3396,6 +3398,7 @@ export default {
                 })
                 const resData = res.data.data
                 this.distributionReport.table.NurseryItems = resData
+                this.distributionReport.table.loading = false
                 console.log(detailLabels)
 
             }
@@ -3533,7 +3536,43 @@ export default {
             }
         },
         async updateVerifikasiReportNursery(){
-            window.alert("Verif Report Data")
+            const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin Untuk Verifikasi Penerimaan Bibit Oleh Petani?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+                this.distributionReport.dialogs.detail.show = false;
+                const params = {
+                    farmer_no: this.distributionReport.dialogs.detail.farmerNo,
+                    verified_by: this.User.email, 
+                }
+                console.log(params)
+                try{
+                    const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-verification-geko', params,
+                    {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                    },
+                    })
+                    //  reset form create value
+                    const notif = await Swal.fire({
+                    title: 'Berhasil Verifikasi Data Penerimaan Bibit Petani!',
+                    icon: 'success',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'OK',
+                    })
+                    if(notif.isConfirmed){
+                        await this.reportNursery()
+                    }
+                    }catch (error) {
+                    console.error(error.response);
+                    }
+            }
         },
         async calendarUpdateDetailLahanUmumPeriod() {
             const datapost = {
@@ -4216,7 +4255,7 @@ export default {
         // DISTRIBUTION REPORT
         async getDistributionReportTable() {
             if (this.accessModul.distributionReport == true) {
-                this.distributionReport.table.loading = true
+                // this.distributionReport.table.loading = true
                 let url = 'GetDistributionReport?'
                 if (this.generalSettings.type.model == 'Umum') url = 'GetUmumDistributionReport?'
                 let params = {
@@ -4241,13 +4280,13 @@ export default {
                     this.distributionReport.table.items = [] 
                     this.sessionEnd(err)
                 }).finally(() => {
-                    this.distributionReport.table.loading = false
+                    // this.distributionReport.table.loading = false
                 })
             }
         },
         async newDetailDistributionReport(item){
-            console.log(item)
             this.distributionReport.dialogs.detail  = {
+                    farmerNo: item.farmer_no,
                     adjustment: item.detail_seed_farmers,
                     data: item,
                     disabledSave: true,
