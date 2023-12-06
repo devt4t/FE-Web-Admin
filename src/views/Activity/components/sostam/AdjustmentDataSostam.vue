@@ -202,7 +202,7 @@
                 Verifikasi
               </v-btn>
               <v-btn
-                  v-if="item.validation == 1"
+                  v-if="item.validation == 1 && $store.state.User.role_group=='IT'"
                   color="red white--text"
                      rounded
                      small
