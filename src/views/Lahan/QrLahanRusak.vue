@@ -309,6 +309,8 @@
     export default {
       data: () => ({
         userEmpNo: '',
+        fcData: [],
+        userGetParams: [],
 
         dialog: false,
         dialogDetailBarcodeRusak: {
@@ -434,10 +436,35 @@
           // this.user = this.$store.state.User
           this.User = JSON.parse(localStorage.getItem("User"));
           this.userEmpNo = this.User.employee_no;
+          if(this.User.role_name == 'UNIT MANAGER'){
+            this.getEmpFCbyManager(this.userEmpNo)
+            // this.userGetParams = this.userEmpNo
+            await this.getTableData()
+          }else if(this.User.role_group == 'IT'){
+            this.userGetParams = ''
+            await this.getTableData()
+          }
+          else{
+            this.userGetParams = this.userEmpNo
+            await this.getTableData()
+          }
           // console.log(this.userEmpNo);
           this.localConfig.programYear = this.$store.state.programYear.model
           this.BaseUrl = localStorage.getItem("BaseUrl");
           this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+        },
+        async getEmpFCbyManager(valcodeum) {
+          let url = this.$store.getters.getApiUrl(`GetEmployeebyManager?manager_code=${valcodeum}&position=19`)
+          const res = await axios.get(url, this.$store.state.apiConfig)
+          const dataFormRes = res.data.data.result.data
+          this.fcData = dataFormRes.map(val => {
+            if(val.nik){
+              return val.nik
+            }
+            return null
+          })
+          this.userGetParams = this.fcData
+          console.log(this.fcData.toString().split(','))
           await this.getTableData()
         },
     
@@ -628,7 +655,8 @@
             this.table.loading.show = true
             const User = this.$store.state.User
             const created_by = []
-            let url = this.$store.getters.getApiUrl(`GetLahanBarcodeRequestAdmin?user_id=${this.userEmpNo}`)
+            
+            let url = this.$store.getters.getApiUrl(`GetLahanBarcodeRequestAdmin?user_id=`+ this.userGetParams)
             const res = await axios.get(url, this.$store.state.apiConfig)
             this.table.items = res.data.data.result
     

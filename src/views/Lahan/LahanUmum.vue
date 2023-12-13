@@ -633,8 +633,8 @@
                                                 </v-overlay>
                                                 <v-date-picker
                                                     v-model="inputs.dateDistribution.model"
-                                                    min="2022-11-24"
-                                                    max="2023-01-31"
+                                                    min="2023-12-01"
+                                                    max="2024-01-31"
                                                     @input="inputs.dateDistribution.datepicker.show = false"
                                                     color="green"
                                                     class="rounded-xl"

@@ -984,22 +984,26 @@
                                 </v-col>
                             </v-row>
                             <!-- Seedling Adjustment -->
-                            <!-- <v-row class="ma-0 mt-4">
+                            <v-row class="ma-0 mt-4">
                                 <v-col cols="12" class="d-flex align-center">
-                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Adjusting Distributed Seedling</h3><v-divider class="mx-2"></v-divider>
+                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Jumlah Penerimaan Bibit</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
-                                <v-col cols="12" md="12" v-for="(adjustmentData, adjIndex) in distributionReport.dialogs.detail.adjustment" :key="adjustmentData.lahan_no">
+                                <v-col cols="12" md="12">
+                                <!-- <v-col cols="12" md="12" v-for="(adjustmentData, adjIndex) in distributionReport.dialogs.detail.adjustment" :key="adjustmentData.lahan_no">
                                     <v-row class="align-center ma-0">
                                         Lahan {{ adjIndex + 1 }} : <strong class="ml-1">{{ adjustmentData.lahan_no }}</strong> <v-divider class="ml-2"></v-divider>
-                                    </v-row>
+                                    </v-row> -->
                                     <v-data-table
                                         :headers="[
                                             {text: 'No', value: 'no', align: 'center'},
-                                            {text: 'Category', value: 'tree_category', align: 'center'},
-                                            {text: 'Name', value: 'tree_name'},
-                                            {text: 'Amount', value: 'adjust', align: 'center', sortable: false},
+                                            {text: 'Kode', value: 'tree_code'},
+                                            {text: 'Nama', value: 'rel_tree_id', align: 'center'},
+                                            {text: 'Jumlah Load', value: 'total_load', align: 'center', sortable: false},
+                                            {text: 'Jumlah Rusak', value: 'total_damaged', align: 'center', sortable: false},
+                                            {text: 'Jumlah Hilang', value: 'total_missing', align: 'center', sortable: false},
+                                            {text: 'Jumlah Diterima', value: 'total_received', align: 'center', sortable: false},
                                         ]"
-                                        :items="distributionReport.dialogs.detail.adjustment[adjIndex].items"
+                                        :items="distributionReport.dialogs.detail.adjustment"
                                         :items-per-page="-1"
                                         hide-default-footer
                                         class="rounded-xl elevation-5 overflow-hidden mt-2"
@@ -1007,7 +1011,7 @@
                                         <template v-slot:item.no="{index}">
                                             {{ index + 1 }}
                                         </template>
-                                        <template v-slot:item.adjust="{index}">
+                                        <!-- <template v-slot:item.adjust="{index}">
                                             <v-row class="ma-0 align-center justify-end justify-lg-center">
                                                 <v-text-field 
                                                     color="green"
@@ -1067,10 +1071,10 @@
                                                     v-model="distributionReport.dialogs.detail.adjustment[adjIndex].items[index].total_tree_received"
                                                 ></v-text-field>
                                             </v-row>
-                                        </template>
+                                        </template> -->
                                     </v-data-table>
                                 </v-col>
-                            </v-row> -->
+                            </v-row>
                             <!-- Photos -->
                             <!-- <v-row class="ma-0 mt-4">
                                 <v-col cols="12" class="d-flex align-center">

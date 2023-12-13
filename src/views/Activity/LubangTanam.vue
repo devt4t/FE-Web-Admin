@@ -2147,7 +2147,7 @@
                 Unverif
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="User.role_group == 'IT' && item.is_verified == 2">
+            <!-- <v-list-item v-if="User.role_group == 'IT' && item.is_verified == 2">
               <v-btn
                 color="red white--text"
                 @click="dialogUnverificationData = item.lahan_no;dialogUnverification = true;"
@@ -2157,7 +2157,22 @@
                 <v-icon class="mr-1">mdi-power</v-icon>
                 Unverif
               </v-btn>
-            </v-list-item>
+            </v-list-item> -->
+            
+            <!-- <v-list-item v-if="User.role_group == 'IT'">
+              <v-btn
+                block
+                rounded
+                @click="UnverificationPerFF(item)"
+                color="red white--text"
+                :disabled="item.is_validate == 0"
+              >
+              <v-icon class="mr-1" small color="white">
+                mdi-power
+              </v-icon>
+                Unverifikasi Per-FF
+              </v-btn>
+            </v-list-item> -->
           </v-list>
         </v-menu>
         <!-- <v-icon
@@ -2184,6 +2199,7 @@
 
 <script>
 // import ModalFarmer from "./ModalFarmer"
+import Swal from 'sweetalert2'
 import axios from "axios"
 import moment from 'moment'
 import Export_PenilikanLubangTanamPetaniVue from '@/views/Activity/PenilikanLubang/Export_PenilikanLubangTanamPetani.vue';
@@ -4612,6 +4628,46 @@ export default {
     percentageFormat(val1, val2){
       return (((val1 - val2) * 100)/ val2).toFixed(2)
     },
+    // async UnverificationPerFF(item){
+    //   const ConfirmFFUnverification = await Swal.fire({
+    //     title: 'Konfirmasi',
+    //     text: "Apakah Anda Yakin Untuk Unverifikasi Data Penilikan Lubang Per-FF?",
+    //     icon: 'warning',
+    //     confirmButtonColor: '#2e7d32',
+    //     confirmButtonText: 'Ya!',
+    //     showCancelButton: true,
+    //     cancelButtonColor: '#d33',
+    //   })
+    //   if(ConfirmFFUnverification.isConfirmed){
+    //     const params = {
+    //       ff_no: item.user_id
+    //     }
+    //     console.log(params)
+    //     await axios.post(this.BaseUrlGet + 'UnverificationPerFF', params, {
+    //       headers: {
+    //         Authorization: `Bearer ` + this.authtoken,
+    //       }
+    //     }).then(() => {
+    //       this.colorsnackbar = 'green'
+    //       this.timeoutsnackbar = 10000
+    //       this.textsnackbar = 'Unverif Success!'
+    //       this.initialize()
+    //     }).catch(err => {
+    //       this.colorsnackbar = 'red'
+    //       this.timeoutsnackbar = 10000
+    //       this.textsnackbar = 'Unverif Failed!'
+    //       if (err.response.status == 401) {
+    //         this.alerttoken = true
+    //         localStorage.removeItem("token")
+    //         this.$router.push("/")
+    //       }
+    //     }).finally(() => {
+    //       this.snackbar = true
+    //       this.$store.state.loadingOverlay = false
+    //       this.$store.state.loadingOverlayText = null
+    //     })
+    //   }
+    // },
     async UnverificationItemConfirm(uniqId) {
       if (uniqId) {
         this.dialogDetail = false
