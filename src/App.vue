@@ -66,13 +66,46 @@
             dense
             :ripple="false"
           >
+          <template>
             <v-list-item-content>
               <v-list-item-title
                 class="itemchild"
                 v-text="child.title"
               ></v-list-item-title>
             </v-list-item-content>
-          </v-list-item>
+          </template>
+          
+          <!-- <template v-if="child.title=='Realisasi Tanam'">
+            <v-list-item
+              v-for="sub_child in child.items"
+              :key="sub_child.title"
+              v-model="sub_child.active"
+              :prepend-icon="sub_child.icon"
+              no-action
+              color="#71AF34"
+              class="fontall"
+              :ripple="false"
+              dense  
+              >
+              <v-list-item-content>
+                <v-list-item-title
+                  class="itemsubchild"
+                  v-text="sub_child.title"
+                ></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </template> -->
+        </v-list-item>
+
+        <!-- <template v-if="item.title == 'Activities'">
+          <v-list-item-content color="#71AF34" 
+            :ripple="false"
+            v-if="$store.state.User.role_group == 'IT'"
+          >
+            <v-list-item-title>Monitoring</v-list-item-title>
+          </v-list-item-content>
+        </template> -->
+
         </v-list-group>
         <v-list-item color="#71AF34" :to="'/report-data'" link 
           :ripple="false"
@@ -411,6 +444,7 @@ export default {
               else if (valMenuItem.title === 'Lubang Tanam') activitiesRearrange[6] = valMenuItem
               else if (valMenuItem.title === 'Material Organik') activitiesRearrange[7] = valMenuItem
               else if (valMenuItem.title === 'Distribusi') activitiesRearrange[8] = valMenuItem
+
               else if (valMenuItem.title === 'Realisasi Tanam') activitiesRearrange[9] = valMenuItem
               else if (valMenuItem.title === 'Monitoring 2') activitiesRearrange[10] = valMenuItem
             }
@@ -424,6 +458,7 @@ export default {
       this.nameadmin = name;
       // this.nameadmin = this.User.name;
       this.statusadmin = this.User.role_name;
+      console.log(this.items)
     }
   },
   mounted() {

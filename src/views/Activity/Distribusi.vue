@@ -785,7 +785,7 @@
                                         <td><strong>{{ distributionReport.dialogs.detail.data.pic_t4t || '-' }}</strong></td>
                                     </tr>
                                     <tr v-if="generalSettings.type.model == 'Petani'">
-                                        <td>Farmer</td>
+                                        <td>Petani</td>
                                         <td>:</td>
                                         <td><strong>{{ distributionReport.dialogs.detail.data.farmer_name || '-' }}</strong></td>
                                     </tr>
@@ -795,9 +795,22 @@
                                         <td><strong>{{ distributionReport.dialogs.detail.data.pic_lahan || '-' }}</strong></td>
                                     </tr>
                                     <tr>
-                                        <td>Distribution Date</td>
+                                        <td>Tanggal Distribusi</td>
                                         <td>:</td>
                                         <td><strong>{{ dateFormat(distributionReport.dialogs.detail.data.loading_line[0].distribution_date, 'dddd, DD MMMM Y') }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Persentase Penerimaan Petani</td>
+                                        <td>:</td>
+                                        <td><div>
+                                            <v-progress-linear
+                                                :value="percentageFormat(distributionReport.dialogs.detail.totalSeedArrival, distributionReport.dialogs.detail.labels.loaded.length)"
+                                                color="orange"
+                                                height="25"
+                                                >
+                                                <strong>{{ Math.ceil(percentageFormat(distributionReport.dialogs.detail.totalSeedArrival, distributionReport.dialogs.detail.labels.loaded.length)) }}%</strong>
+                                                </v-progress-linear>
+                                        </div></td>
                                     </tr>
                                 </tbody>
                             </v-simple-table>
@@ -1076,36 +1089,36 @@
                                 </v-col>
                             </v-row>
                             <!-- Photos -->
-                            <!-- <v-row class="ma-0 mt-4">
+                            <v-row class="ma-0 mt-4">
                                 <v-col cols="12" class="d-flex align-center">
-                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Images</h3><v-divider class="mx-2"></v-divider>
+                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Foto Penerimaan Petani</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
                                 <v-col cols="12" lg="6">
-                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Receiver: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
-                                    <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Photo</h4>
-                                    <v-card v-if="distributionReport.dialogs.detail.data.distribution_photo" elevation="2" class="rounded-xl" height="300">
+                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Penerima: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
+                                    <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Foto</h4>
+                                    <v-card v-if="distributionReport.dialogs.detail.distribution_photo" elevation="2" class="rounded-xl" height="300">
                                         <v-img
                                             height="300"
-                                            v-bind:src="`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.distribution_photo}`"
+                                            v-bind:src="`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detail.distribution_photo}`"
                                             class="my-2 mb-4 rounded-xl cursor-pointer"
                                             id="Distribution Photo"
-                                            @click="showLightbox(`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.distribution_photo}`)"
+                                            @click="showLightbox(`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detail.distribution_photo}`)"
                                         ></v-img
                                     ></v-card>
                                 </v-col>
                                 <v-col cols="12" lg="6" v-if="generalSettings.type.model == 'Petani'">
-                                    <h4 class="text-center">Farmer Signature</h4>
-                                    <v-card v-if="distributionReport.dialogs.detail.data.farmer_signature" elevation="2" class="rounded-xl" height="300">
+                                    <h4 class="text-center">Tanda Tangan Petani</h4>
+                                    <v-card v-if="distributionReport.dialogs.detail.farmer_signature_photo" elevation="2" class="rounded-xl" height="300">
                                         <v-img
                                             height="300"
-                                            v-bind:src="`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.farmer_signature}`"
+                                            v-bind:src="`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detail.farmer_signature_photo}`"
                                             class="my-2 mb-4 rounded-xl cursor-pointer"
                                             id="Farmer Signature"
-                                            @click="showLightbox(`${apiConfig.imageUrl}${distributionReport.dialogs.detail.data.farmer_signature}`)"
+                                            @click="showLightbox(`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detail.farmer_signature_photo}`)"
                                         ></v-img
                                     ></v-card>
                                 </v-col>
-                            </v-row> -->
+                            </v-row>
                         </div>
                     </v-card-text>
                     <v-card-actions class="" v-if="distributionReport.dialogs.detail.data">
@@ -1116,7 +1129,13 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="distributionReport.dialogs.detail.data.verified_by == null && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && (distributionReport.dialogs.detail.labels.distributed.length > 0 || distributionReport.dialogs.detail.labels.lost.length > 0)" @click="updateVerifikasiReportNursery()" :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-check-bold</v-icon> Verifikasi FC</v-btn>
+                        <v-btn v-if="distributionReport.dialogs.detail.data.verified_by == null && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival == distributionReport.dialogs.detail.labels.loaded.length" @click="updateVerifikasiReportNursery()" :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
+                            rounded 
+                            color="green white--text" 
+                            class="px-4">
+                            <v-icon 
+                            class="mr-1">mdi-check-bold
+                            </v-icon> Verifikasi FC</v-btn>
                         <!-- <v-btn v-if="generalSettings.type.model == 'Petani' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Verifikasi FC</v-btn> -->
                         <!-- <v-btn v-else-if="generalSettings.type.model == 'Umum' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
                         <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
@@ -2697,6 +2716,9 @@
                                     :headers="distributionReport.table.headers3"
                                     :items="distributionReport.table.NurseryItems"
                                     :loading="distributionReport.table.loading"
+                                    :options.sync="distributionReport.table.options"
+                                    :page="distributionReport.table.page"
+                                    :server-items-length="distributionReport.table.totalDatas"
                                     :footer-props="{
                                         itemsPerPageOptions: [10, 25, 40, -1]
                                     }"
@@ -2869,6 +2891,7 @@ export default {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             },
+            nurseryImageUrl: '',
             imageUrl: localStorage.getItem('BaseUrl'),
             baseUrl: localStorage.getItem('BaseUrlGet'),
 
@@ -2956,8 +2979,11 @@ export default {
             },
             dialogs: {
                 detail: {
+                    distribution_photo: "",
+                    farmer_signature_photo: "",
                     farmerNo: "",
                     adjustment: [],
+                    totalSeedArrival: 0,
                     data: null,
                     disabledSave: true,
                     labels: {
@@ -3039,6 +3065,12 @@ export default {
                 ],
                 items: [],
                 NurseryItems: [],
+                options: {},
+                totalDatas: 0,
+                total_page: 0,
+                per_page_options: [10, 25, 50, 100],
+                per_page: 10,
+                page: 1,
                 loading: false,
             },
         },
@@ -3225,6 +3257,15 @@ export default {
         this.$store.state.loadingOverlay = false
     },
     watch: {
+        'distributionReport.table.options' : {
+            handler(newValue){
+                let {page, itemsPerPage} = newValue
+                this.distributionReport.table.page = page
+                this.distributionReport.table.per_page = itemsPerPage
+                console.log(this.distributionReport.table.per_page, page)
+                this.reportNursery()
+            },
+        },
         'calendar.detailPeriodFF.newPeriod.distribution_time' : {
             handler(newValue) {
                 this.calendar.detailPeriodFF.newPeriod.hole_time = moment(newValue).subtract(14, 'days').format('Y-MM-DD')
@@ -3264,19 +3305,19 @@ export default {
                     this.packingLabel.loading = true
                     this.loadingLine.loadingText = 'Waiting for completed get distribution calendar data...'
                     this.loadingLine.loading = true
-                    this.distributionReport.loadingText = 'Waiting for completed get distribution calendar data...'
-                    this.distributionReport.loading = true
+                    // this.distributionReport.loadingText = 'Waiting for completed get distribution calendar data...'
+                    // this.distributionReport.loading = true
                     // refresh calendar
                     await this.calendarUpdateRange({start: calendar.start, end: calendar.end})
                     await this.calendarUpdateRangeNew({start: calendar.start, end: calendar.end})
                     this.packingLabel.loadingText = 'Getting packing label data...'
                     this.loadingLine.loadingText = 'Waiting for completed get packing label data...'
-                    this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
+                    // this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
                     // refresh packing label table
                     await this.getPackingLabelTableData()
                     this.packingLabel.loading = false
                     this.loadingLine.loadingText = 'Getting loading line data...'
-                    this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
+                    // this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
                     // refresh loading line table
                     await this.getLoadinglineTableData()
                     this.loadingLine.loading = false
@@ -3391,7 +3432,8 @@ export default {
                     program_year: this.generalSettings.programYear,
                     distribution_date: this.distributionReport.datePicker.model,
                     status_data: "custom",
-                    limit: 10000
+                    page: this.distributionReport.table.page,
+                    limit: this.distributionReport.table.per_page
                 }
                 console.log(params)
                 let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
@@ -3409,8 +3451,9 @@ export default {
                 })
                 const resData = res.data.data
                 this.distributionReport.table.NurseryItems = resData
+                this.distributionReport.table.totalDatas = res.data.total
+                this.distributionReport.table.total_page = res.data.totalPage
                 this.distributionReport.table.loading = false
-                console.log(detailLabels)
 
             }
         },
@@ -4298,6 +4341,8 @@ export default {
         },
         async newDetailDistributionReport(item){
             this.distributionReport.dialogs.detail  = {
+                    farmer_signature_photo: item.file_signature.url,
+                    distribution_photo: item.file_accept.url,
                     farmerNo: item.farmer_no,
                     adjustment: item.detail_seed_farmers,
                     data: item,
@@ -4312,6 +4357,7 @@ export default {
                     loadingText: null,
                     show: true
                 }
+            this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
         },
         async getDistributionReportDetail(distribution_no) {
             let url = `${this.apiConfig.baseUrl}`
@@ -4551,6 +4597,9 @@ export default {
                 this.$store.state.loadingOverlay = false
                 this.$store.state.loadingOverlayText = null
             })
+        },
+        percentageFormat(partial, total){
+          return ((partial * 100)/ total).toFixed(2)
         },
         async saveScannedDistribution() {
             let url = this.apiConfig.baseUrl + 'UpdatedDistributionLahanUmum'
