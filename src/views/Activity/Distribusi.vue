@@ -2720,7 +2720,7 @@
                                     :page="distributionReport.table.page"
                                     :server-items-length="distributionReport.table.totalDatas"
                                     :footer-props="{
-                                        itemsPerPageOptions: [10, 25, 40, -1]
+                                        itemsPerPageOptions: [10, 25, 50, 100]
                                     }"
                                 >
                                     <!-- Toolbar -->
