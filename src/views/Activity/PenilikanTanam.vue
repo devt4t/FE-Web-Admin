@@ -1598,7 +1598,7 @@
                         </tr>
                         <tr>
                           <th class="text-left" style="font-size: 14px">
-                            Pohon Sesuai Standar
+                            Pohon Hidup
                           </th>
                           <td class="text-left" style="font-size: 14px">
                             <strong>{{ defaultItem.qty_std || 0 }}</strong>

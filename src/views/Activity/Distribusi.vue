@@ -17,7 +17,64 @@
           divider='>'
           large
         ></v-breadcrumbs>
+        
         <!-- MODAL -->
+        <!-- dialog export filter -->
+        <v-dialog 
+                content-class="rounded-xl elevation-0 mx-1" 
+                top
+                persistent
+                max-width="1000px" 
+                scrollable 
+                v-model="distributionReport.dialogs.exportFilter.show"
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title color="green" class="mb-1 headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-text-box-check
+                            </v-icon>
+                            Filter Export Report Distribusi
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="distributionReport.dialogs.exportFilter.show = false">
+                            mdi-close-circle
+                        </v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        
+
+                    </v-card-text>
+                    <v-card-actions class="">
+                        <v-btn color="red white--text" rounded @click="distributionReport.dialogs.exportFilter.show = false">
+                            <v-icon color="white">
+                                mdi-close-circle
+                            </v-icon>   
+                            Close
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+                        <v-btn
+                            @click="distributionReport.dialogExportDistributionReport.show = true" 
+                            :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
+                            rounded 
+                            color="green white--text" 
+                            class="px-4">
+                            <v-icon 
+                            class="mr-1">mdi-check-bold
+                            </v-icon> Export
+                        </v-btn>
+                        </v-card-actions>
+                </v-card>
+            </v-dialog> 
+        <!-- dialog Export -->
+        <exportReportDistribusi
+            :show="distributionReport.dialogExportDistributionReport.show"
+            :distribution_date="distributionReport.datePicker.model"
+            :ff_no="'FF00001100'"
+            @close="distributionReport.dialogExportDistributionReport.show = false"
+        >
+        </exportReportDistribusi>
+
             <!-- Detail Seed Modal -->
             <v-dialog 
                 content-class="rounded-xl elevation-0" 
@@ -2835,12 +2892,13 @@
                                             <!-- Export Button -->
                                             <v-btn
                                                 readonly
-                                                @click="() => exportExcel('distribution_report')"
+                                                @click="distributionReport.dialogs.exportFilter.show=true"
                                                 color="green white--text"
                                                 class="mr-1"
                                                 :disabled="distributionReport.table.loading"
                                                 rounded
                                                 small
+                                                disabled
                                             >
                                                 <v-icon small class="mr-1">mdi-microsoft-excel</v-icon> Export
                                             </v-btn>
@@ -2926,10 +2984,12 @@ import axios from 'axios'
 import moment from 'moment'
 import { QrcodeStream } from "vue-qrcode-reader"
 import trucksJSON from '@/utils/trucks'
+import exportReportDistribusi from '@/views/Activity/distribusi/exportReportDistribusi'
 
 export default {
     components: {
-        QrcodeStream
+        QrcodeStream,
+        exportReportDistribusi
     },
     data: () => ({
         accessModul: {
@@ -3024,6 +3084,10 @@ export default {
             type: null
         },
         distributionReport: {
+            dialogExportDistributionReport:{
+                show: false,
+                ff_model: ''
+            },
             datePicker: {
                 loading: false,
                 model: moment().format('Y-MM-DD'),
@@ -3031,6 +3095,11 @@ export default {
                 show: false,
             },
             dialogs: {
+                exportFilter:{
+                    show: false,
+                    user_ff_list: [],
+
+                },
                 detail: {
                     distribution_photo: "",
                     farmer_signature_photo: "",
