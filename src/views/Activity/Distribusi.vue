@@ -800,6 +800,14 @@
                                         <td><strong>{{ dateFormat(distributionReport.dialogs.detail.data.loading_line[0].distribution_date, 'dddd, DD MMMM Y') }}</strong></td>
                                     </tr>
                                     <tr>
+                                        <td>Penerimaan Pupuk</td>
+                                        <td>:</td>
+                                        <td>
+                                            <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 0" color="orange white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak Menerima</v-chip>
+                                            <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima</v-chip>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td>Persentase Penerimaan Petani</td>
                                         <td>:</td>
                                         <td><div>
@@ -1129,13 +1137,26 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="distributionReport.dialogs.detail.data.verified_by == null && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival == distributionReport.dialogs.detail.labels.loaded.length" @click="updateVerifikasiReportNursery()" :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
+                        <v-btn v-if="(distributionReport.dialogs.detail.data.verified_by == null || distributionReport.dialogs.detail.data.verified_by == '') && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival == distributionReport.dialogs.detail.labels.loaded.length" 
+                            @click="updateVerifikasiReportNursery()" 
+                            :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
                             rounded 
                             color="green white--text" 
                             class="px-4">
                             <v-icon 
                             class="mr-1">mdi-check-bold
-                            </v-icon> Verifikasi FC</v-btn>
+                            </v-icon> Verifikasi FC
+                        </v-btn>
+                        <v-btn v-if="(distributionReport.dialogs.detail.data.verified_by != '' && distributionReport.dialogs.detail.data.verified_by != null)" 
+                            @click="updateUnverifikasiReportNursery()"
+                            :disabled="User.role_group != 'IT'" 
+                            rounded 
+                            color="red white--text" 
+                            class="px-4">
+                            <v-icon 
+                            class="mr-1">mdi-lock-open-remove
+                            </v-icon> Unverifikasi
+                        </v-btn>
                         <!-- <v-btn v-if="generalSettings.type.model == 'Petani' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Verifikasi FC</v-btn> -->
                         <!-- <v-btn v-else-if="generalSettings.type.model == 'Umum' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
                         <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
@@ -2779,13 +2800,45 @@
                                                 </div>
                                             </v-menu>
                                             <v-divider class="mx-2"></v-divider>
+                                            <!-- search -->
+                                            <v-col cols="12" lg="6" class="d-flex">
+                                                <!-- <v-select
+                                                    color="success"
+                                                    item-color="success"
+                                                    v-model="distributionReport.table.search.column"
+                                                    :items="distributionReport.table.search.options"
+                                                    item-value="value"
+                                                    item-text="text"
+                                                    hide-details
+                                                    outlined
+                                                    dense
+                                                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                                    rounded
+                                                    label="Kolom Pencarian"
+                                                    class="centered-select"
+                                                    style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                                                    ></v-select> -->
+                                                <v-text-field
+                                                    color="success"
+                                                    item-color="success"
+                                                    v-model="distributionReport.table.search.model"
+                                                    placeholder="Pencarian..."
+                                                    append-icon="mdi-magnify"
+                                                    outlined
+                                                    dense
+                                                    rounded
+                                                    label="Pencarian Nama Petani"
+                                                    hide-details
+                                                    
+                                                ></v-text-field>
+                                            </v-col>
                                             <!-- Export Button -->
                                             <v-btn
                                                 readonly
                                                 @click="() => exportExcel('distribution_report')"
                                                 color="green white--text"
                                                 class="mr-1"
-                                                :disabled="distributionReport.table.loading || distributionReport.table.items.length == 0"
+                                                :disabled="distributionReport.table.loading"
                                                 rounded
                                                 small
                                             >
@@ -2812,8 +2865,8 @@
                                         {{  item.loading_line[0].ff_name }}
                                     </template>
                                     <template v-slot:item.status="{item}">
-                                        <v-chip v-if="item.verified_by == null" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
-                                        <v-chip v-else-if="item.verified_by != null" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
+                                        <v-chip v-if="item.verified_by == null || item.verified_by == ''" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
+                                        <v-chip v-else-if="item.verified_by != null || item.verified_by != ''" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
                                         
                                     </template>
                                     <!-- All Bags Column -->
@@ -3052,9 +3105,9 @@ export default {
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
                 headers3: [
-                    {text: 'Management Unit', value: 'mu_name'},
-                    {text: 'FF Name', value: 'ff_name'},
-                    {text: 'Farmer Name', value: 'farmer_name'},
+                    {text: 'Management Unit', value: 'mu_name', sortable: false},
+                    {text: 'Nama FF', value: 'ff_name'},
+                    {text: 'Nama Petani', value: 'farmer_name'},
                     // {text: 'Bags', value: 'sum_all_bags', align: 'center'},
                     // {text: 'KAYU', value: 'adj_kayu', align: 'center'},
                     // {text: 'MPTS', value: 'adj_mpts', align: 'center'},
@@ -3072,6 +3125,14 @@ export default {
                 per_page: 10,
                 page: 1,
                 loading: false,
+                search:{
+                    options:[
+                        {text: "Nama FF", value: "ff_name"},
+                        {text: "Nama Petani", value: "farmer_name"},
+                    ],
+                    column: 'ff_name',
+                    model: ''
+                }
             },
         },
         expansions: {
@@ -3257,6 +3318,14 @@ export default {
         this.$store.state.loadingOverlay = false
     },
     watch: {
+        'distributionReport.table.search.model' : {
+            handler() {
+            setTimeout(() => {
+                    this.reportNursery()
+                }, 1000);
+            },
+            deep: true
+        },
         'distributionReport.table.options' : {
             handler(newValue){
                 let {page, itemsPerPage} = newValue
@@ -3433,7 +3502,8 @@ export default {
                     distribution_date: this.distributionReport.datePicker.model,
                     status_data: "custom",
                     page: this.distributionReport.table.page,
-                    limit: this.distributionReport.table.per_page
+                    limit: this.distributionReport.table.per_page,
+                    search: this.distributionReport.table.search.model
                 }
                 console.log(params)
                 let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
@@ -3587,6 +3657,45 @@ export default {
             } finally {
                 this.calendar.detailPeriodFF.loading = false
                 this.calendar.detailPeriodFF.loadingText = ''
+            }
+        },
+        async updateUnverifikasiReportNursery(){
+            const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin Untuk Unverifikasi Penerimaan Bibit Oleh Petani?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+                this.distributionReport.dialogs.detail.show = false;
+                const params = {
+                    farmer_no: this.distributionReport.dialogs.detail.farmerNo,
+                    verified_by: null, 
+                }
+                console.log(params)
+                try{
+                    const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-verification-geko', params,
+                    {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                    },
+                    })
+                    //  reset form create value
+                    const notif = await Swal.fire({
+                    title: 'Berhasil Unverifikasi Data Penerimaan Bibit Petani!',
+                    icon: 'success',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'OK',
+                    })
+                    if(notif.isConfirmed){
+                        await this.reportNursery()
+                    }
+                    }catch (error) {
+                    console.error(error.response);
+                    }
             }
         },
         async updateVerifikasiReportNursery(){
@@ -4821,6 +4930,9 @@ export default {
         },
         dateFormat(date, format) {
             return moment(date).format(format)
+        },
+        exportDistributionReport(){
+
         },
         exportExcel(type, data = null) {
             let url = null
