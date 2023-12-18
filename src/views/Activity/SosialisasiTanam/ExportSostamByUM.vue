@@ -68,10 +68,10 @@
                     
                     <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
                             <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportSostambyFC${itemTable.value}`" 
-                            :class="` 
-                            ${statusRowColor(tableData[itemTable.value], itemTable.value)}
+                            :class="` ${statusRowColor(tableData[itemTable.value], itemTable.value)}
                             lighten-3`"
-                            style="border: 1px solid black;border-collapse: collapse;"
+                            style="border: 1px solid black;
+                            border-collapse: collapse;"
                             >
     
                                 <span v-if="itemTable.value == 'index'">

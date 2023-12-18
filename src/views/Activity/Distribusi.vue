@@ -20,57 +20,58 @@
         
         <!-- MODAL -->
         <!-- dialog export filter -->
-        <v-dialog 
-                content-class="rounded-xl elevation-0 mx-1" 
-                top
-                persistent
-                max-width="1000px" 
-                scrollable 
-                v-model="distributionReport.dialogs.exportFilter.show"
-            >
-                <v-card class="elevation-5 rounded-xl">
-                    <v-card-title color="green" class="mb-1 headermodalstyle rounded-xl d-flex align-center">
-                        <span class="d-flex align-center">
-                            <v-icon color="white" class="mr-1">
-                                mdi-text-box-check
-                            </v-icon>
-                            Filter Export Report Distribusi
-                        </span>
-                        <v-divider class="mx-2" dark></v-divider>
-                        <v-icon color="white" @click="distributionReport.dialogs.exportFilter.show = false">
-                            mdi-close-circle
-                        </v-icon>
-                    </v-card-title>
-                    <v-card-text>
-                        
+        <v-dialog v-model="distributionReport.dialogs.exportFilter.show" content-class="rounded-xl" max-width="500">
+            <v-card>
+                <v-card-title>
+                    Export Filter
+                    <v-divider class="mx-2"></v-divider>
+                    <v-icon color="red" @click="distributionReport.dialogs.exportFilter.show = false">mdi-close-circle</v-icon>
+                </v-card-title>
 
-                    </v-card-text>
-                    <v-card-actions class="">
-                        <v-btn color="red white--text" rounded @click="distributionReport.dialogs.exportFilter.show = false">
-                            <v-icon color="white">
-                                mdi-close-circle
-                            </v-icon>   
-                            Close
-                        </v-btn>
-                        <v-divider class="mx-2"></v-divider>
-                        <v-btn
-                            @click="distributionReport.dialogExportDistributionReport.show = true" 
-                            :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
-                            rounded 
-                            color="green white--text" 
-                            class="px-4">
-                            <v-icon 
-                            class="mr-1">mdi-check-bold
-                            </v-icon> Export
-                        </v-btn>
-                        </v-card-actions>
-                </v-card>
-            </v-dialog> 
+                <v-card-text>
+                    <p class="red--text">
+                        <strong>
+                            *Sesuaikan Tanggal Distribusi Terlebih Dahulu!!
+                        </strong>
+                    </p>
+                    <v-row class="mt-0">
+                    <v-col :cols="12">
+                        <v-autocomplete
+                        rounded
+                        outlined
+                        dense
+                        hide-details
+                        color="green"
+                        item-color="green"
+                        :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                        label="Field Facilitator"
+                        item-value="ff_no"
+                        item-text="name"
+                        :items="distributionReport.dialogs.exportFilter.ff_item"
+                        v-model="distributionReport.dialogs.exportFilter.ff_model"
+                        ></v-autocomplete>
+                    </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-divider class="mx-2"></v-divider>
+                    <v-hover v-slot="{hover}">
+                    <v-btn
+                    rounded 
+                    :color="`green ${hover ? 'white--text' : ''}`" 
+                    :outlined="!hover" 
+                    @click="distributionReport.dialogExportDistributionReport.show = true">
+                    <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
+                    </v-hover>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <!-- dialog Export -->
         <exportReportDistribusi
             :show="distributionReport.dialogExportDistributionReport.show"
             :distribution_date="distributionReport.datePicker.model"
-            :ff_no="'FF00001100'"
+            :ff_no="distributionReport.dialogs.exportFilter.ff_model"
+            :program_year="this.generalSettings.programYear"
             @close="distributionReport.dialogExportDistributionReport.show = false"
         >
         </exportReportDistribusi>
@@ -3097,7 +3098,9 @@ export default {
             dialogs: {
                 exportFilter:{
                     show: false,
-                    user_ff_list: [],
+                    user_ff_list: '',
+                    ff_item: [],
+                    ff_model: ''
 
                 },
                 detail: {
@@ -5051,6 +5054,8 @@ export default {
             this.loadingLine.loading = true
             this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
             this.distributionReport.loading = true
+            this.distributionReport.dialogs.exportFilter.user_ff_list= this.User.ff.ff;
+            await this.getFFOptions()
 
             await this.reportNursery()
 
@@ -5066,6 +5071,30 @@ export default {
             await this.getDistributionReportTable() 
             this.distributionReport.loading = false
             this.distributionReport.loadingText = null
+        },
+        async getFFOptions() {
+            try {
+
+                const params = new URLSearchParams({
+                typegetdata: 'several',
+                ff: this.distributionReport.dialogs.exportFilter.user_ff_list.join(),
+                program_year: this.generalSettings.programYear
+                })
+                
+                const res = await axios.get(
+                    this.apiConfig.baseUrl + `getFFOptionsSostam?${params}`,
+                {
+                    headers: {
+                    Authorization: `Bearer ${this.apiConfig.token}`,
+                    },
+                }
+                )
+                this.distributionReport.dialogs.exportFilter.ff_item = res.data.data.result
+            } catch (err) {
+                console.log(err.response)
+            } finally {
+                
+            }
         },
         generateFormData(data) {
             let formData= new FormData()

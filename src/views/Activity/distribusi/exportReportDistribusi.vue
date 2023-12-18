@@ -26,16 +26,6 @@
                             </p>
                         </div>
                     </v-overlay>
-
-
-                <v-row class="align-center ma-0 my-2">
-                    MU: 
-                <v-divider class="mx-2"></v-divider>
-                </v-row>
-                <v-row class="align-center ma-0 my-2">
-                    FC: 
-                    <v-divider class="mx-2"></v-divider>
-                </v-row>
     
                 <table
                     id="tabelForExportReportDistribusi"
@@ -44,11 +34,7 @@
                 >
                     <tr>
                         <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
-                            FF: </th>
-                    </tr>
-                    <tr>
-                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
-                            Tahun Program: </th>
+                            Tahun Program: {{ this.program_year }}</th>
                     </tr>
                     <tr>
                         <td :colspan="table.headers.length" style="text-align: center;">
@@ -70,6 +56,19 @@
                             <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportSostambyFC${itemTable.value}`" 
                             style="border: 1px solid black;border-collapse: collapse;"
                             >
+                                <span v-if="itemTable.value == 'index'">
+                                        {{ tableDataIndex + 1 }}
+                                </span>
+                                <span v-if="itemTable.value == 'mu_name'">
+                                    {{ tableData.loading_line[0].mu_name }}
+                                </span>
+                                <span v-else-if="itemTable.value == 'ff_name'">
+                                    {{ tableData.loading_line[0].ff_name }}
+                                </span>
+                                <span v-else-if="itemTable.value == 'farmer_name'">
+                                    {{ tableData.farmer_name }}
+                                </span>
+
                             </td>
                         </tr>
                         
@@ -123,9 +122,9 @@
                 trees: [],
                 headers: [
                     {text: 'No', value: 'index', width: 75},
-                    {text: 'Management Unit', value: 'nama_mu'},
-                    {text: 'Nama FF', value: 'form_no'},
-                    {text: 'Nama Petani', value: 'nama_fc'},
+                    {text: 'Management Unit', value: 'mu_name'},
+                    {text: 'Nama FF', value: 'ff_name'},
+                    {text: 'Nama Petani', value: 'farmer_name'},
                 ],
                 items: [],
                 items_raw: [],
@@ -235,7 +234,7 @@
                         this.distributionReport.table.loading = false
                     })
                     const data = res.data.data
-                    console.log(data)
+                    // console.log(data)
                     // const treesData = res.data.trees.map(val=>
                     // {
                     //     this.table.headers.push({
@@ -250,8 +249,9 @@
                     // this.data_um_name = call.data.dataUM.name
                     // this.data_fc_name = call.data.dataFC.name
     
-                    // this.table.items = data
-                    // this.table.items_raw = data
+                    this.table.items = data
+                    console.log(this.table.items)
+                    this.table.items_raw = data
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
                 }

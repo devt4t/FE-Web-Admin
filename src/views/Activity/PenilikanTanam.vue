@@ -1653,6 +1653,7 @@
                                 hide-details
                                 dense
                                 rounded
+                                disabled
                                 :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.hidup"></v-text-field>
                             </td>
@@ -1665,6 +1666,7 @@
                                 hide-details
                                 dense
                                 rounded
+                                disabled
                                 :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.mati"></v-text-field>
                             </td>
@@ -1677,6 +1679,7 @@
                                 hide-details
                                 dense
                                 rounded
+                                disabled
                                 :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup"></v-text-field>
                             </td>
@@ -1689,6 +1692,7 @@
                                 hide-details
                                 dense
                                 rounded
+                                disabled
                                 :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati"></v-text-field>
                             </td>
@@ -1701,6 +1705,7 @@
                                 hide-details
                                 dense
                                 rounded
+                                disabled
                                 :readonly="disabledEditSeedInDetailModal"
                                 v-model="defaultItem.list_detail[seedIndex].seedling.hilang"></v-text-field>
                             </td>
