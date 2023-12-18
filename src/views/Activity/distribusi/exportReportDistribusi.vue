@@ -45,15 +45,22 @@
                     </tr>
                     <tr><td :colspan="table.headers.length"></td></tr>
                     <tr style="border: 2px solid black;border-collapse: collapse;">
-                        <th v-for="header in table.headers" :key="`tabelForExportReportDistribusi${header.value}`" class="green darken-2 white--text justify-center align-center">
+                        <th v-for="(header, headerIndex) in table.headers" :key="`tabelForExportReportDistribusi${headerIndex}`" class="green darken-2 white--text justify-center align-center" rowspan="2">
                             {{ header.text }}
-                            <!-- <div v-if="header.value == 'land_area'">(m<sup>2</sup>)</div>
-                            <div v-if="header.value == 'planting_area'">(m<sup>2</sup>)</div> -->
+                        </th>
+                        
+                        <th v-for="(header, headerIndex) in table.headersTree" :key="`tabelForExportReportDistribusitree${headerIndex}`" class="green darken-2 white--text justify-center align-center" colspan="5">
+                            {{ header.text }}
                         </th>
                     </tr>
-                    
+                    <tr>
+                        <th v-for="n in statusTree" class="green white--text">
+                            {{ n.text}}
+                        </th>
+                    </tr>
                     <tr v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`" :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
-                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportSostambyFC${itemTable.value}`" 
+                            <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForExportSostambyFC${itemTableIndex}-${tableDataIndex}`" 
+                            
                             style="border: 1px solid black;border-collapse: collapse;"
                             >
                                 <span v-if="itemTable.value == 'index'">
@@ -65,10 +72,18 @@
                                 <span v-else-if="itemTable.value == 'ff_name'">
                                     {{ tableData.loading_line[0].ff_name }}
                                 </span>
-                                <span v-else-if="itemTable.value == 'farmer_name'">
-                                    {{ tableData.farmer_name }}
-                                </span>
+                                <span v-else-if="table.trees.find(v => itemTable.value == v.tree_code)">
+                                    
+                                    <!-- {{ tableData.detail_seed_farmers.find(v=> v.tree_code == itemTable.value) }} -->
 
+
+                                </span>
+                                <span v-else>
+                                    {{ tableData[itemTable.value] }}
+                                </span>
+                            </td>
+                            <td v-for="n in statusTree" :class="table.trees.find(v => n.value.split('-')[0] == v.tree_code) && getSeedAmount(n, tableData) > 0 ? 'green': ''">
+                                {{ getSeedAmount(n, tableData) }} 
                             </td>
                         </tr>
                         
@@ -79,7 +94,7 @@
             
             <v-card-actions class="justify-center align-center">
                     <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
-                    <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn>
+                    <!-- <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn> -->
                 </v-card-actions>
         </v-card>
     </v-dialog>
@@ -112,6 +127,7 @@
             }
         },
         data: () => ({
+            statusTree: [],
             totalData : 0,
             totalBibitKayu : 0,
             data_um_name: '',
@@ -126,6 +142,7 @@
                     {text: 'Nama FF', value: 'ff_name'},
                     {text: 'Nama Petani', value: 'farmer_name'},
                 ],
+                headersTree: [],
                 items: [],
                 items_raw: [],
                 loading: {
@@ -185,7 +202,15 @@
              })
             doc.save(`DataReportDistribusi-${this.program_year}_FF-${this.ff_no}_FC-${this.fc_no}.pdf`);
         },
-
+        getSeedAmount(item, data){
+            const total_column = item.value.split('-')
+            const tree_seed = data.detail_seed_farmers.find(v =>v.tree_code == total_column[0])
+            // console.log(data.detail_seed_farmers)
+            if(tree_seed){
+                return tree_seed[total_column[1]] || 0
+            }
+            else return 0
+        },
         async errorResponse(error) {
                 console.log(error)
                 if (error.response) {
@@ -221,6 +246,7 @@
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)
                     const url = `https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?${params}`
+                    const treeUrl = `GetTreesAll`
                     const res = await axios.get(
                         url,
                         {
@@ -233,30 +259,40 @@
                         this.sessionEnd(err)
                         this.distributionReport.table.loading = false
                     })
+                    const resTree = await axios.get(
+                        this.$store.getters.getApiUrl(treeUrl), this.$store.state.apiConfig)
+
+                    this.table.trees = resTree.data.data.result.data.map(val=>
+                    {
+                        this.table.headersTree.push({
+                            text: val.tree_name,
+                            value: val.tree_code
+                        })
+                        const subheader = [{text: 'Dimuat', value: 'total_load'},
+                        {text: 'Rusak', value: 'total_damaged'},
+                        {text: 'Ditolak', value: 'total_reject'},
+                        {text: 'Diterima', value: 'total_received'},
+                        {text: 'Hilang', value: 'total_missing'}]
+                        subheader.map( v => {
+                            this.statusTree.push({
+                            text: v.text,
+                            value: val.tree_code+'-'+v.value
+                        })
+                        })
+                        return val
+                    })
+
                     const data = res.data.data
-                    // console.log(data)
-                    // const treesData = res.data.trees.map(val=>
-                    // {
-                    //     this.table.headers.push({
-                    //         text: val.tree_name,
-                    //         value: val.tree_code
-                    //     })
-                    //     return val
-                    // })
-                    // this.table.trees = treesData                    
-                    // const totalData = call.data.totalData
-                    // this.totalData = totalData
-                    // this.data_um_name = call.data.dataUM.name
-                    // this.data_fc_name = call.data.dataFC.name
-    
+                    
+                    // this.table.trees = treeData
                     this.table.items = data
-                    console.log(this.table.items)
                     this.table.items_raw = data
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
                 }
             }
-    }
+
+        }
     
     }
     </script>

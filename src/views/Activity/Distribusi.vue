@@ -2899,7 +2899,6 @@
                                                 :disabled="distributionReport.table.loading"
                                                 rounded
                                                 small
-                                                disabled
                                             >
                                                 <v-icon small class="mr-1">mdi-microsoft-excel</v-icon> Export
                                             </v-btn>

@@ -330,7 +330,8 @@
                         })
                         return val
                     })
-                    this.table.trees = treesData                    
+                    this.table.trees = treesData
+                    console.log(this.table.trees)               
                     const totalData = call.data.totalData
                     this.totalData = totalData
                     this.data_um_name = call.data.dataUM.name
