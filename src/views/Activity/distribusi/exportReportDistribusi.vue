@@ -72,6 +72,9 @@
                                 <span v-else-if="itemTable.value == 'ff_name'">
                                     {{ tableData.loading_line[0].ff_name }}
                                 </span>
+                                <span v-else-if="itemTable.value == 'total_pupuk'">
+                                    {{new Intl.NumberFormat().format(tableData.loading_line[0].total_pupuk)}} ML
+                                </span>
                                 <span v-else-if="table.trees.find(v => itemTable.value == v.tree_code)">
                                     
                                     <!-- {{ tableData.detail_seed_farmers.find(v=> v.tree_code == itemTable.value) }} -->
@@ -142,6 +145,7 @@
                     {text: 'Management Unit', value: 'mu_name'},
                     {text: 'Nama FF', value: 'ff_name'},
                     {text: 'Nama Petani', value: 'farmer_name'},
+                    {text: 'Jumlah Pupuk Diterima', value: 'total_pupuk'},
                 ],
                 headersTree: [],
                 items: [],
