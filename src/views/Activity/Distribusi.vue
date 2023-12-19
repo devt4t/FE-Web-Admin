@@ -1160,7 +1160,7 @@
                                     <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Foto Penerimaan Petani</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
                                 <v-col cols="12" lg="6">
-                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Penerima: {{ distributionReport.dialogs.detail.data.distribution_note || '-' }}</h4>
+                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Penerima: {{ distributionReport.dialogs.detail.data.farmer_name || '-' }}</h4>
                                     <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Foto</h4>
                                     <v-card v-if="distributionReport.dialogs.detail.distribution_photo" elevation="2" class="rounded-xl" height="300">
                                         <v-img
@@ -5053,6 +5053,7 @@ export default {
             this.loadingLine.loading = true
             this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
             this.distributionReport.loading = true
+            console.log(this.User)
             this.distributionReport.dialogs.exportFilter.user_ff_list= this.User.ff.ff;
             await this.getFFOptions()
 

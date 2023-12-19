@@ -33,17 +33,17 @@
                     style="border: 2px solid black;border-collapse: collapse; min-height: 200px"
                 >
                     <tr>
-                        <th :colspan="table.headers.length" align="center" style="text-align: center;font-size: 15px;">
+                        <th :colspan="table.headers.length + statusTree.length " align="center" style="text-align: center;font-size: 15px;">
                             Tahun Program: {{ this.program_year }}</th>
                     </tr>
                     <tr>
-                        <td :colspan="table.headers.length" style="text-align: center;">
+                        <td :colspan="table.headers.length + statusTree.length" style="text-align: center;">
                             <small>
                                 Export Time: {{ Date() }}
                             </small>
                         </td>
                     </tr>
-                    <tr><td :colspan="table.headers.length"></td></tr>
+                    <tr><td :colspan="table.headers.length + statusTree.length"></td></tr>
                     <tr style="border: 2px solid black;border-collapse: collapse;">
                         <th v-for="(header, headerIndex) in table.headers" :key="`tabelForExportReportDistribusi${headerIndex}`" class="green darken-2 white--text justify-center align-center" rowspan="2">
                             {{ header.text }}
@@ -53,8 +53,8 @@
                             {{ header.text }}
                         </th>
                     </tr>
-                    <tr>
-                        <th v-for="n in statusTree" class="green white--text">
+                    <tr style="border: 2px solid black;border-collapse: collapse;">
+                        <th v-for="(n, nIndex) in statusTree" :key="`itemTreeExportReport-${nIndex}`" class="green white--text">
                             {{ n.text}}
                         </th>
                     </tr>
@@ -82,7 +82,8 @@
                                     {{ tableData[itemTable.value] }}
                                 </span>
                             </td>
-                            <td v-for="n in statusTree" :class="table.trees.find(v => n.value.split('-')[0] == v.tree_code) && getSeedAmount(n, tableData) > 0 ? 'green': ''">
+                            <td v-for="(n, nIndex) in statusTree" :key="`tableItemForExportSostambyFC-${nIndex}-${tableDataIndex}`" 
+                            :class=" getSeedColor(n, tableData)">
                                 {{ getSeedAmount(n, tableData) }} 
                             </td>
                         </tr>
@@ -94,7 +95,7 @@
             
             <v-card-actions class="justify-center align-center">
                     <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn>
-                    <!-- <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn> -->
+                    <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn>
                 </v-card-actions>
         </v-card>
     </v-dialog>
@@ -192,7 +193,7 @@
             var doc = new jsPDF({
                 orientation: 'landscape',
                 unit: 'px',
-                format: [1400, 700]
+                format: [4500, 700]
             });
             doc.autoTable({ 
                 html: '#tabelForExportReportDistribusi',
@@ -200,6 +201,7 @@
                 tableLineWidth: 0,
                 theme: 'striped'
              })
+            //  console.log(doc)
             doc.save(`DataReportDistribusi-${this.program_year}_FF-${this.ff_no}_FC-${this.fc_no}.pdf`);
         },
         getSeedAmount(item, data){
@@ -210,6 +212,20 @@
                 return tree_seed[total_column[1]] || 0
             }
             else return 0
+        },
+        getSeedColor(n, tableData){
+            const total = this.getSeedAmount(n, tableData)
+            // console.log(n)
+            let treeBgColor = ''
+
+            if(total > 0){
+                if(n.value.includes('total_load')){treeBgColor = 'blue'}
+                else if(n.value.includes('total_damaged')){treeBgColor = 'orange'}
+                else if(n.value.includes('total_missing')){treeBgColor = 'red'}
+                else if(n.value.includes('total_reject')){treeBgColor = 'red'}
+                else if(n.value.includes('received')){treeBgColor = 'green'}
+                return `${treeBgColor} white--text`
+            }
         },
         async errorResponse(error) {
                 console.log(error)
@@ -246,7 +262,7 @@
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)
                     const url = `https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?${params}`
-                    const treeUrl = `GetTreesAll`
+                    const treeUrl = `GetTreesLocation`
                     const res = await axios.get(
                         url,
                         {
@@ -261,12 +277,14 @@
                     })
                     const resTree = await axios.get(
                         this.$store.getters.getApiUrl(treeUrl), this.$store.state.apiConfig)
+                        const unique = [...new Set(resTree.data.data.result.data.sort((a,b) => a.tree_name.localeCompare(b.tree_name)).map(item => item.tree_code))];
 
-                    this.table.trees = resTree.data.data.result.data.map(val=>
+                    this.table.trees = unique.map(val=>
                     {
+                        const findKey = resTree.data.data.result.data.find(v=>v.tree_code == val)
                         this.table.headersTree.push({
-                            text: val.tree_name,
-                            value: val.tree_code
+                            text: findKey.tree_name,
+                            value: findKey.tree_code
                         })
                         const subheader = [{text: 'Dimuat', value: 'total_load'},
                         {text: 'Rusak', value: 'total_damaged'},
@@ -276,7 +294,7 @@
                         subheader.map( v => {
                             this.statusTree.push({
                             text: v.text,
-                            value: val.tree_code+'-'+v.value
+                            value: findKey.tree_code+'-'+v.value
                         })
                         })
                         return val
