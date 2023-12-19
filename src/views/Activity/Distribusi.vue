@@ -862,7 +862,7 @@
                                         <td>:</td>
                                         <td>
                                             <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 0" color="orange white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak Menerima</v-chip>
-                                            <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima</v-chip>
+                                            <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.loading_line[0].total_pupuk )}} ML</v-chip>
                                         </td>
                                     </tr>
                                     <tr>
@@ -3175,6 +3175,10 @@ export default {
                     {text: 'Status', value: 'status', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
+                headersReportFF: [
+                    {text: 'Managemgent Unit', value: 'mu_name'},
+                    {text: 'Nama FF', value: 'ff_name'}
+                ],
                 headers3: [
                     {text: 'Management Unit', value: 'mu_name', sortable: false},
                     {text: 'Nama FF', value: 'ff_name'},
@@ -3189,6 +3193,7 @@ export default {
                 ],
                 items: [],
                 NurseryItems: [],
+                NurseryFFItems: [],
                 options: {},
                 totalDatas: 0,
                 total_page: 0,
@@ -3595,6 +3600,36 @@ export default {
                 this.distributionReport.table.totalDatas = res.data.total
                 this.distributionReport.table.total_page = res.data.totalPage
                 this.distributionReport.table.loading = false
+                await this.reportNurseryFF()
+            }
+        },
+        async reportNurseryFF(){
+            // await this.getUserException()
+            if (this.accessModul.calendar) {
+                const params ={
+                    ff_no: this.UserLogin.toString(),
+                    program_year: this.generalSettings.programYear,
+                    distribution_date: this.distributionReport.datePicker.model,
+                    status_data: "custom",
+                    page: this.distributionReport.table.page,
+                    limit: this.distributionReport.table.per_page,
+                    search: this.distributionReport.table.search.model
+                }
+                console.log(params)
+                let url = 'https://backend.geninelabs.live/api/custom/reportDetailFF?'
+                const res = await axios.get(
+                    url,
+                    {
+                        headers: {
+                            Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                        },
+                        params: params
+                    }
+                ).catch(err => {
+                    this.sessionEnd(err)
+                })
+                const resData = res.data.data
+                console.log(resData)
 
             }
         },
