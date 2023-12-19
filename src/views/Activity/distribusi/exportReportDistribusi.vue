@@ -158,12 +158,7 @@
                 get: function () {
                     if(this.show){
                      
-                        this.getTableData({
-                            limit: 100,
-                            ff_no: this.ff_no,
-                            distribution_date: this.distribution_date,
-                            program_year: this.program_year
-                        })   
+                        this.getTableData()   
                     }
                     return this.show
                 },
@@ -181,6 +176,11 @@
         },
     
     methods: {
+        resetParams(){
+            this.ff_no = ''
+            this.distribution_date= ''
+            this.program_year= ''
+        },
         downloadExcel() {
             const table = document.getElementById("tabelForExportReportDistribusi");
             const wb = XLSX.utils.table_to_book(table);
@@ -257,10 +257,15 @@
                     }
                 }
             },
-            async getTableData(getparams) {
+            async getTableData() {
                 try {
                     this.table.loading.show = true
-                    const params = new URLSearchParams(getparams)
+                    const params = {
+                        limit: 100,
+                        ff_no: this.ff_no,
+                        distribution_date: this.distribution_date,
+                        program_year: this.program_year
+                    }
                     const url = `https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?${params}`
                     const treeUrl = `GetTreesLocation`
                     const res = await axios.get(
