@@ -260,6 +260,9 @@
             async getTableData() {
                 try {
                     this.table.loading.show = true
+                    this.table.headersTree = []
+                    this.table.trees=[]
+                    this.statusTree=[]
                     const params = {
                         limit: 100,
                         ff_no: this.ff_no,
