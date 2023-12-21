@@ -3189,7 +3189,7 @@
                                                                 class="centered-select"
                                                                 style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
                                                                 ></v-select> -->
-                                                            <v-text-field
+                                                            <!-- <v-text-field
                                                                 color="success"
                                                                 item-color="success"
                                                                 v-model="distributionReport.table.search.model"
@@ -3201,7 +3201,7 @@
                                                                 label="Pencarian Nama Petani"
                                                                 hide-details
                                                                 
-                                                            ></v-text-field>
+                                                            ></v-text-field> -->
                                                         </v-col>
                                                     </v-row>
                                                 </template>
@@ -4924,9 +4924,9 @@ export default {
                     loading: false,
                     loadingText: null,
                     show: true,
-                    totalSeedArrival: this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+                    // totalSeedArrival: this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
                 }
-            // this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+            this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
         },
         async getDistributionReportDetail(distribution_no) {
             let url = `${this.apiConfig.baseUrl}`
