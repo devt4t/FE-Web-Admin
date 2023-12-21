@@ -34,6 +34,10 @@
                 >
                     <tr>
                         <th :colspan="table.headers.length + statusTree.length " align="center" style="text-align: center;font-size: 15px;">
+                            Field Coordinator: {{ this.fc_name }}</th>
+                    </tr>
+                    <tr>
+                        <th :colspan="table.headers.length + statusTree.length " align="center" style="text-align: center;font-size: 15px;">
                             Tahun Program: {{ this.program_year }}</th>
                     </tr>
                     <tr>
@@ -67,13 +71,13 @@
                                         {{ tableDataIndex + 1 }}
                                 </span>
                                 <span v-if="itemTable.value == 'mu_name'">
-                                    {{ tableData.loading_line[0].mu_name }}
+                                    {{ tableData.mu_name }}
                                 </span>
                                 <span v-else-if="itemTable.value == 'ff_name'">
-                                    {{ tableData.loading_line[0].ff_name }}
+                                    {{ tableData.ff_name }}
                                 </span>
                                 <span v-else-if="itemTable.value == 'total_pupuk'">
-                                    {{new Intl.NumberFormat().format(tableData.loading_line[0].total_pupuk)}} ML
+                                    {{new Intl.NumberFormat().format(tableData.total_pupuk)}} ML
                                 </span>
                                 <span v-else-if="table.trees.find(v => itemTable.value == v.tree_code)">
                                     
@@ -121,6 +125,18 @@
                 type: String,
                 default: ''
             },
+            mu_no: {
+                type: String,
+                default: ''
+            },
+            fc_name: {
+                type: String,
+                default: ''
+            },
+            data:{
+                type: Array,
+                default: []
+            },
             distribution_date:{
                 type: String,
                 default: ''
@@ -134,8 +150,6 @@
             statusTree: [],
             totalData : 0,
             totalBibitKayu : 0,
-            data_um_name: '',
-            data_fc_name: '',
 
     
             table: {
@@ -267,26 +281,26 @@
                     this.table.headersTree = []
                     this.table.trees=[]
                     this.statusTree=[]
-                    const params = {
-                        limit: 100,
-                        ff_no: this.ff_no,
-                        distribution_date: this.distribution_date,
-                        program_year: this.program_year
-                    }
-                    const url = `https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?${params}`
-                    const treeUrl = `GetTreesLocation`
-                    const res = await axios.get(
-                        url,
-                        {
-                            headers: {
-                                Authorization: `Bearer ` + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw'
-                            },
-                            params: params
-                        }
-                    ).catch(err => {
-                        this.sessionEnd(err)
-                        this.distributionReport.table.loading = false
-                    })
+                    // const params = {
+                    //     limit: 100,
+                    //     ff_no: this.ff_no,
+                    //     distribution_date: this.distribution_date,
+                    //     program_year: this.program_year
+                    // }
+                    // const url = `https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?${params}` 
+                    const treeUrl = `GetTreesLocation?mu_no=`+this.mu_no
+                    // const res = await axios.get(
+                    //     url,
+                    //     {
+                    //         headers: {
+                    //             Authorization: `Bearer ` + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw'
+                    //         },
+                    //         params: params
+                    //     }
+                    // ).catch(err => {
+                    //     this.sessionEnd(err)
+                    //     this.distributionReport.table.loading = false
+                    // })
                     const resTree = await axios.get(
                         this.$store.getters.getApiUrl(treeUrl), this.$store.state.apiConfig)
                         const unique = [...new Set(resTree.data.data.result.data.sort((a,b) => a.tree_name.localeCompare(b.tree_name)).map(item => item.tree_code))];
@@ -312,10 +326,12 @@
                         return val
                     })
 
-                    const data = res.data.data
+                    // const data = res.data.data
                     
                     // this.table.trees = treeData
-                    this.table.items = data
+                    this.table.items = this.data
+                    console.log(this.table.items)
+                    console.log(this.data)
                     this.table.items_raw = data
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false

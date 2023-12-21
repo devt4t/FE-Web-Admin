@@ -20,7 +20,7 @@
         
         <!-- MODAL -->
         <!-- dialog export filter -->
-        <v-dialog v-model="distributionReport.dialogs.exportFilter.show" content-class="rounded-xl" max-width="500">
+        <!-- <v-dialog v-model="distributionReport.dialogs.exportFilter.show" content-class="rounded-xl" max-width="500">
             <v-card>
                 <v-card-title>
                     Export Filter
@@ -65,12 +65,15 @@
                     </v-hover>
                 </v-card-actions>
             </v-card>
-        </v-dialog>
+        </v-dialog> -->
         <!-- dialog Export -->
         <exportReportDistribusi
             :show="distributionReport.dialogExportDistributionReport.show"
             :distribution_date="distributionReport.datePicker.model"
             :ff_no="distributionReport.dialogs.exportFilter.ff_model"
+            :mu_no="distributionReport.dialogs.exportFilter.mu_no"
+            :fc_name="this.distributionReport.dialogs.exportFilter.fc_name"
+            :data="distributionReport.dialogs.exportFilter.farmerData"
             :program_year="this.generalSettings.programYear"
             @close="distributionReport.dialogExportDistributionReport.show = false"
         >
@@ -832,10 +835,15 @@
                                         <td>:</td>
                                         <td><strong>{{ distributionReport.dialogs.detail.data.distribution_no }}</strong></td>
                                     </tr> -->
+                                    <tr>
+                                        <td>Management Unit</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.mu_name || '-' }}</strong></td>
+                                    </tr>
                                     <tr v-if="generalSettings.type.model == 'Petani'">
                                         <td>Field Facilitator</td>
                                         <td>:</td>
-                                        <td><strong>{{ distributionReport.dialogs.detail.data.loading_line[0].ff_name || '-' }}</strong></td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.ff_name || '-' }}</strong></td>
                                     </tr>
                                     <tr v-else-if="generalSettings.type.model == 'Umum'">
                                         <td>PIC T4T</td>
@@ -851,11 +859,6 @@
                                         <td>PIC Lahan</td>
                                         <td>:</td>
                                         <td><strong>{{ distributionReport.dialogs.detail.data.pic_lahan || '-' }}</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tanggal Distribusi</td>
-                                        <td>:</td>
-                                        <td><strong>{{ dateFormat(distributionReport.dialogs.detail.data.loading_line[0].distribution_date, 'dddd, DD MMMM Y') }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td>Penerimaan Pupuk</td>
@@ -2768,9 +2771,192 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
                 <!-- Distribution Report Section -->
-                <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
+                <!-- <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
                     <v-expansion-panel-header>
                         <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> Distribution Report</h3>
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        
+                        <v-overlay :value="distributionReport.loading" absolute class="rounded-xl" color="white">
+                            <div class="d-flex flex-column align-center justify-center">
+                                <v-progress-circular
+                                    indeterminate
+                                    color="green"
+                                    size="100"
+                                    width="7"
+                                ></v-progress-circular>
+                                <p v-if="distributionReport.loadingText" class="mt-2 mb-0 green--text white rounded-xl px-2 py-1 text-center">{{ distributionReport.loadingText }}</p>
+                            </div>
+                        </v-overlay>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-data-table
+                                    multi-sort
+                                    :headers="distributionReport.table.headers3"
+                                    :items="distributionReport.table.NurseryItems"
+                                    :loading="distributionReport.table.loading"
+                                    :options.sync="distributionReport.table.options"
+                                    :page="distributionReport.table.page"
+                                    :server-items-length="distributionReport.table.totalDatas"
+                                    :footer-props="{
+                                        itemsPerPageOptions: [10, 25, 50, 100]
+                                    }"
+                                >
+                                    
+                                    <template v-slot:top>
+                                        <v-row class="ma-2 mb-0 align-center">
+                                            <v-menu 
+                                                rounded="xl"
+                                                transition="slide-x-transition"
+                                                bottom
+                                                min-width="100"
+                                                offset-y
+                                                :close-on-content-click="true"
+                                                v-model="distributionReport.datePicker.show"
+                                                :disabled="distributionReport.table.loading"
+                                            >
+                                                <template v-slot:activator="{ on: menu, attrs }">
+                                                    <v-tooltip top>
+                                                        <template v-slot:activator="{ on: tooltip }">
+                                                            <v-text-field
+                                                                dense
+                                                                color="green"
+                                                                class="mb-2 mb-lg-0"
+                                                                hide-details
+                                                                outlined
+                                                                label="Distribution Date"
+                                                                rounded
+                                                                v-bind="attrs"
+                                                                v-on="{...menu, ...tooltip}"
+                                                                readonly
+                                                                v-model="distributionReport.datePicker.modelShow"
+                                                                style="max-width: 250px"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <span>Klik untuk memunculkan datepicker</span>
+                                                    </v-tooltip>
+                                                </template>
+                                                <div class="rounded-xl pb-2 white">
+                                                    <v-overlay :value="distributionReport.datePicker.loading">
+                                                        <div class="d-flex flex-column align-center justify-center">
+                                                            <v-progress-circular
+                                                                indeterminate
+                                                                color="white"
+                                                                size="64"
+                                                            ></v-progress-circular>
+                                                            <p class="mt-2 mb-0">Updating available dates...</p>
+                                                        </div>
+                                                    </v-overlay>
+                                                    <div class="d-flex flex-column align-center rounded-xl">
+                                                        <v-date-picker 
+                                                            color="green lighten-1 rounded-xl" 
+                                                            v-model="distributionReport.datePicker.model"
+                                                            min="2022-11-24"
+                                                        ></v-date-picker>
+                                                    </div>
+                                                </div>
+                                            </v-menu>
+                                            <v-divider class="mx-2"></v-divider>
+                                            
+                                            <v-col cols="12" lg="6" class="d-flex">
+                                                <v-select
+                                                    color="success"
+                                                    item-color="success"
+                                                    v-model="distributionReport.table.search.column"
+                                                    :items="distributionReport.table.search.options"
+                                                    item-value="value"
+                                                    item-text="text"
+                                                    hide-details
+                                                    outlined
+                                                    dense
+                                                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                                    rounded
+                                                    label="Kolom Pencarian"
+                                                    class="centered-select"
+                                                    style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                                                    ></v-select>
+                                                <v-text-field
+                                                    color="success"
+                                                    item-color="success"
+                                                    v-model="distributionReport.table.search.model"
+                                                    placeholder="Pencarian..."
+                                                    append-icon="mdi-magnify"
+                                                    outlined
+                                                    dense
+                                                    rounded
+                                                    label="Pencarian Nama Petani"
+                                                    hide-details
+                                                    
+                                                ></v-text-field>
+                                            </v-col>
+                                            
+                                            <v-btn
+                                                readonly
+                                                @click="distributionReport.dialogs.exportFilter.show=true"
+                                                color="green white--text"
+                                                class="mr-1"
+                                                :disabled="distributionReport.table.loading"
+                                                rounded
+                                                small
+                                            >
+                                                <v-icon small class="mr-1">mdi-microsoft-excel</v-icon> Export
+                                            </v-btn>
+                                            
+                                            <v-btn
+                                                readonly
+                                                @click="reportNursery()"
+                                                color="info white--text"
+                                                rounded
+                                                small
+                                                :disabled="distributionReport.table.loading"
+                                            >
+                                                <v-icon small class="mr-1">mdi-refresh</v-icon> Refresh
+                                            </v-btn>
+                                        </v-row>
+                                    </template>
+                                    
+                                    <template v-slot:item.mu_name="{item}">
+                                        {{  item.loading_line[0].mu_name }}
+                                    </template>
+                                    <template v-slot:item.ff_name="{item}">
+                                        {{  item.loading_line[0].ff_name }}
+                                    </template>
+                                    <template v-slot:item.status="{item}">
+                                        <v-chip v-if="item.verified_by == null || item.verified_by == ''" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
+                                        <v-chip v-else-if="item.verified_by != null || item.verified_by != ''" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
+                                        
+                                    </template>
+                                    
+                                    <template v-slot:item.sum_all_bags="{item}">
+                                        <div class="d-flex align-center justify-content-between">
+                                            <div class="d-flex flex-column align-center mr-1 mr-lg-5">
+                                                <v-icon>mdi-printer </v-icon> {{ item.sum_all_bags }}
+                                            </div>
+                                            <div class="d-flex flex-column align-center mx-1 mx-lg-5">
+                                                <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
+                                            </div>
+                                            <div class="d-flex flex-column align-center ml-1 ml-lg-5">
+                                                <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
+                                            </div>
+                                        </div>
+                                    </template>
+                                    
+                                    <template v-slot:item.actions="{item}">
+                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded @click="newDetailDistributionReport(item)">
+                                            <v-icon class="mr-1">mdi-information</v-icon>
+                                            Detail
+                                        </v-btn>
+                                    </template>
+                                </v-data-table>
+                            </v-col>
+                        </v-row>
+                    </v-expansion-panel-content>
+                </v-expansion-panel> -->
+                <!-- INI TESTING UNTUK DEV -->
+                 <!-- Distribution Report Section -->
+                 <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
+                    <v-expansion-panel-header>
+                        <h3 class="dark--text"><v-icon class="mr-1">mdi-notebook-check</v-icon> Distribution Report TEST</h3>
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <!-- loading overlay -->
@@ -2792,12 +2978,15 @@
                             <v-col cols="12">
                                 <v-data-table
                                     multi-sort
-                                    :headers="distributionReport.table.headers3"
-                                    :items="distributionReport.table.NurseryItems"
+                                    :headers="distributionReport.table.headersReportFF"
+                                    :items="distributionReport.table.NurseryFFItems"
                                     :loading="distributionReport.table.loading"
                                     :options.sync="distributionReport.table.options"
                                     :page="distributionReport.table.page"
                                     :server-items-length="distributionReport.table.totalDatas"
+                                    :show-expand="true"
+                                    single-expand
+                                    @item-expanded="expandTableReport"
                                     :footer-props="{
                                         itemsPerPageOptions: [10, 25, 50, 100]
                                     }"
@@ -2859,8 +3048,8 @@
                                             </v-menu>
                                             <v-divider class="mx-2"></v-divider>
                                             <!-- search -->
-                                            <v-col cols="12" lg="6" class="d-flex">
-                                                <!-- <v-select
+                                            <!-- <v-col cols="12" lg="6" class="d-flex">
+                                                <v-select
                                                     color="success"
                                                     item-color="success"
                                                     v-model="distributionReport.table.search.column"
@@ -2875,7 +3064,7 @@
                                                     label="Kolom Pencarian"
                                                     class="centered-select"
                                                     style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
-                                                    ></v-select> -->
+                                                    ></v-select>
                                                 <v-text-field
                                                     color="success"
                                                     item-color="success"
@@ -2889,7 +3078,7 @@
                                                     hide-details
                                                     
                                                 ></v-text-field>
-                                            </v-col>
+                                            </v-col> -->
                                             <!-- Export Button -->
                                             <v-btn
                                                 readonly
@@ -2899,13 +3088,14 @@
                                                 :disabled="distributionReport.table.loading"
                                                 rounded
                                                 small
+                                                disabled
                                             >
                                                 <v-icon small class="mr-1">mdi-microsoft-excel</v-icon> Export
                                             </v-btn>
                                             <!-- Refresh Button -->
                                             <v-btn
                                                 readonly
-                                                @click="reportNursery()"
+                                                @click="reportNurseryFF()"
                                                 color="info white--text"
                                                 rounded
                                                 small
@@ -2927,30 +3117,128 @@
                                         <v-chip v-else-if="item.verified_by != null || item.verified_by != ''" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
                                         
                                     </template>
-                                    <!-- All Bags Column -->
-                                    <template v-slot:item.sum_all_bags="{item}">
-                                        <div class="d-flex align-center justify-content-between">
-                                            <div class="d-flex flex-column align-center mr-1 mr-lg-5">
-                                                <v-icon>mdi-printer </v-icon> {{ item.sum_all_bags }}
-                                            </div>
-                                            <div class="d-flex flex-column align-center mx-1 mx-lg-5">
-                                                <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
-                                            </div>
-                                            <div class="d-flex flex-column align-center ml-1 ml-lg-5">
-                                                <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
-                                            </div>
-                                        </div>
-                                    </template>
                                     <!-- Status Column -->
                                     <!-- <template v-slot:item.status="{item}">
                                         
                                     </template> -->
                                     <!-- Actions Column -->
                                     <template v-slot:item.actions="{item}">
-                                        <v-btn color="info white--text" class="pl-1 pr-3" small rounded @click="newDetailDistributionReport(item)">
-                                            <v-icon class="mr-1">mdi-information</v-icon>
-                                            Detail
-                                        </v-btn>
+                                        <v-menu
+                                            rounded="xl"
+                                            bottom
+                                            left
+                                            offset-y
+                                            transition="slide-y-transition"
+                                            :close-on-content-click="false"
+                                        >
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-icon v-bind="attrs" v-on="on" color="dark">
+                                            mdi-arrow-down-drop-circle
+                                            </v-icon>
+                                        </template>
+                                        <v-list class="d-flex flex-column align-stretch">
+                                            <v-list-item>
+                                                <v-btn
+                                                    vi
+                                                    dark
+                                                    class="px-7"
+                                                    rounded
+                                                    @click="exportReportFromDetail(item)"
+                                                    color="green"
+                                                    block
+                                                    
+                                                >
+                                                <v-icon class="mr-1" small color="white">
+                                                    mdi-download-box
+                                                </v-icon>
+                                                    Export
+                                                </v-btn>
+                                            </v-list-item>
+                                        </v-list>
+                                        </v-menu>
+                                    </template>
+                                    <!-- Expand Main Table -->
+                                    <template v-slot:expanded-item="{ headers, item }">
+                                        <td :colspan="headers.length" class="py-6">
+                                            <v-data-table
+                                                data-aos="fade-up"
+                                                data-aos-delay="200"
+                                                class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+                                                :headers="distributionReport.table.headersReportFarmer"
+                                                :items="distributionReport.table.NurseryFarmerItems.detail_farmers"
+                                                :loading="distributionReport.table.loading"
+                                                >
+
+                                                <!-- SubToolBar -->
+                                                <template v-slot:top>
+                                                    <v-row class="ma-2 mb-0 align-center">
+                                                        <v-col cols="12" lg="6" class="d-flex">
+                                                            <!-- <v-select
+                                                                color="success"
+                                                                item-color="success"
+                                                                v-model="distributionReport.table.search.column"
+                                                                :items="distributionReport.table.search.options"
+                                                                item-value="value"
+                                                                item-text="text"
+                                                                hide-details
+                                                                outlined
+                                                                dense
+                                                                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                                                                rounded
+                                                                label="Kolom Pencarian"
+                                                                class="centered-select"
+                                                                style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                                                                ></v-select> -->
+                                                            <v-text-field
+                                                                color="success"
+                                                                item-color="success"
+                                                                v-model="distributionReport.table.search.model"
+                                                                placeholder="Pencarian..."
+                                                                append-icon="mdi-magnify"
+                                                                outlined
+                                                                dense
+                                                                rounded
+                                                                label="Pencarian Nama Petani"
+                                                                hide-details
+                                                                
+                                                            ></v-text-field>
+                                                        </v-col>
+                                                    </v-row>
+                                                </template>
+                                                <template v-slot:item.status="{item}">
+                                                    <v-chip v-if="item.verified_by == null || item.verified_by == ''" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Unverified</v-chip>
+                                                    <v-chip v-else-if="item.verified_by != null || item.verified_by != ''" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
+                                                    
+                                                </template>
+
+                                                <!-- All Bags Column -->
+                                                <!-- <template v-slot:item.sum_all_bags="{item}">
+                                                    <div class="d-flex align-center justify-content-between">
+                                                        <div class="d-flex flex-column align-center mr-1 mr-lg-5">
+                                                            <v-icon>mdi-printer </v-icon> {{ item.sum_all_bags }}
+                                                        </div>
+                                                        <div class="d-flex flex-column align-center mx-1 mx-lg-5">
+                                                            <v-icon>mdi-truck-check </v-icon> {{ item.sum_loaded_bags }}
+                                                        </div>
+                                                        <div class="d-flex flex-column align-center ml-1 ml-lg-5">
+                                                            <v-icon>mdi-basket-check </v-icon> {{ item.sum_distributed_bags }}
+                                                        </div>
+                                                    </div>
+                                                </template> -->
+
+                                                <!-- Status Column -->
+                                                <!-- <template v-slot:item.status="{item}">
+                                                    
+                                                </template> -->
+                                                <!-- Actions Column -->
+                                                <template v-slot:item.actions="{item}">
+                                                    <v-btn color="info white--text" class="pl-1 pr-3" small rounded @click="DetailDistributionReportFarmer(item)">
+                                                        <v-icon class="mr-1">mdi-information</v-icon>
+                                                        Detail
+                                                    </v-btn>
+                                                </template>
+                                            </v-data-table>
+                                        </td>
                                     </template>
                                 </v-data-table>
                             </v-col>
@@ -3099,8 +3387,10 @@ export default {
                     show: false,
                     user_ff_list: '',
                     ff_item: [],
-                    ff_model: ''
-
+                    ff_model: '',
+                    fc_name: '',
+                    mu_no: '',
+                    farmerData: [],
                 },
                 detail: {
                     distribution_photo: "",
@@ -3176,17 +3466,23 @@ export default {
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
                 headersReportFF: [
-                    {text: 'Managemgent Unit', value: 'mu_name'},
-                    {text: 'Nama FF', value: 'ff_name'}
+                    {text: 'Managemgent Unit', value: 'mu_name', sortable: false},
+                    {text: 'Nama FF', value: 'ff_no'},
+                    {text: 'Nama FF', value: 'ff_name'},
+                    {text: 'Menu Lainnya', value: 'actions'}, 
+                    {text: 'Detail Petani', value: 'data-table-expand', align: 'right', sortable: false},
+                ],
+                headersReportFarmer: [
+                    {text: 'Kode Petani', value: 'farmer_no'},
+                    {text: 'Nama Petani', value: 'farmer_name'},
+                    {text: 'Status Penerimaan Petani', value: 'status', align: 'center'},
+                    {text: 'Diverifikasi Oleh', value: 'verified_by', align: 'center'},
+                    {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
                 headers3: [
                     {text: 'Management Unit', value: 'mu_name', sortable: false},
                     {text: 'Nama FF', value: 'ff_name'},
                     {text: 'Nama Petani', value: 'farmer_name'},
-                    // {text: 'Bags', value: 'sum_all_bags', align: 'center'},
-                    // {text: 'KAYU', value: 'adj_kayu', align: 'center'},
-                    // {text: 'MPTS', value: 'adj_mpts', align: 'center'},
-                    // {text: 'CROPS', value: 'adj_crops', align: 'center'},
                     {text: 'Status Penerimaan Petani', value: 'status', align: 'center'},
                     {text: 'Diverifikasi Oleh', value: 'verified_by', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
@@ -3194,6 +3490,7 @@ export default {
                 items: [],
                 NurseryItems: [],
                 NurseryFFItems: [],
+                NurseryFarmerItems: [],
                 options: {},
                 totalDatas: 0,
                 total_page: 0,
@@ -3397,7 +3694,8 @@ export default {
         'distributionReport.table.search.model' : {
             handler() {
             setTimeout(() => {
-                    this.reportNursery()
+                    // this.reportNursery()
+                    this.reportNurseryFF()
                 }, 1000);
             },
             deep: true
@@ -3408,7 +3706,8 @@ export default {
                 this.distributionReport.table.page = page
                 this.distributionReport.table.per_page = itemsPerPage
                 console.log(this.distributionReport.table.per_page, page)
-                this.reportNursery()
+                // this.reportNursery()
+                this.reportNurseryFF()
             },
         },
         'calendar.detailPeriodFF.newPeriod.distribution_time' : {
@@ -3430,7 +3729,8 @@ export default {
         'distributionReport.datePicker.model': {
             async handler(newVal) {
                 this.distributionReport.datePicker.modelShow = this.dateFormat(newVal, 'DD MMMM Y')
-                await this.reportNursery()
+                // await this.reportNursery()
+                await this.reportNurseryFF()
                 // await this.getDistributionReportTable()
             }
         },
@@ -3567,11 +3867,49 @@ export default {
         calendarGetEventColor (event) {
             return event.color
         },
-        async reportNursery(){
+        expandTableReport(item){
+            this.distributionReport.table.NurseryFarmerItems = item.item
+            console.log(item)
+        },
+        // async reportNursery(){
+        //     // await this.getUserException()
+        //     if (this.accessModul.calendar) {
+        //         this.distributionReport.table.loading = true
+
+        //         const params ={
+        //             ff_no: this.UserLogin.toString(),
+        //             program_year: this.generalSettings.programYear,
+        //             distribution_date: this.distributionReport.datePicker.model,
+        //             status_data: "custom",
+        //             page: this.distributionReport.table.page,
+        //             limit: this.distributionReport.table.per_page,
+        //             search: this.distributionReport.table.search.model
+        //         }
+        //         console.log(params)
+        //         let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
+        //         const res = await axios.get(
+        //             url,
+        //             {
+        //                 headers: {
+        //                     Authorization: `Bearer ` + this.apiConfig.nurseryToken
+        //                 },
+        //                 params: params
+        //             }
+        //         ).catch(err => {
+        //             this.sessionEnd(err)
+        //             this.distributionReport.table.loading = false
+        //         })
+        //         const resData = res.data.data
+        //         this.distributionReport.table.NurseryItems = resData
+        //         this.distributionReport.table.totalDatas = res.data.total
+        //         this.distributionReport.table.total_page = res.data.totalPage
+        //         this.distributionReport.table.loading = false
+        //     }
+        // },
+        async reportNurseryFF(){
             // await this.getUserException()
             if (this.accessModul.calendar) {
                 this.distributionReport.table.loading = true
-
                 const params ={
                     ff_no: this.UserLogin.toString(),
                     program_year: this.generalSettings.programYear,
@@ -3582,7 +3920,7 @@ export default {
                     search: this.distributionReport.table.search.model
                 }
                 console.log(params)
-                let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
+                let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFF?'
                 const res = await axios.get(
                     url,
                     {
@@ -3596,40 +3934,10 @@ export default {
                     this.distributionReport.table.loading = false
                 })
                 const resData = res.data.data
-                this.distributionReport.table.NurseryItems = resData
+                this.distributionReport.table.NurseryFFItems = resData
                 this.distributionReport.table.totalDatas = res.data.total
                 this.distributionReport.table.total_page = res.data.totalPage
                 this.distributionReport.table.loading = false
-                await this.reportNurseryFF()
-            }
-        },
-        async reportNurseryFF(){
-            // await this.getUserException()
-            if (this.accessModul.calendar) {
-                const params ={
-                    ff_no: this.UserLogin.toString(),
-                    program_year: this.generalSettings.programYear,
-                    distribution_date: this.distributionReport.datePicker.model,
-                    status_data: "custom",
-                    page: this.distributionReport.table.page,
-                    limit: this.distributionReport.table.per_page,
-                    search: this.distributionReport.table.search.model
-                }
-                console.log(params)
-                let url = 'https://backend.geninelabs.live/api/custom/reportDetailFF?'
-                const res = await axios.get(
-                    url,
-                    {
-                        headers: {
-                            Authorization: `Bearer ` + this.apiConfig.nurseryToken
-                        },
-                        params: params
-                    }
-                ).catch(err => {
-                    this.sessionEnd(err)
-                })
-                const resData = res.data.data
-                console.log(resData)
 
             }
         },
@@ -3797,7 +4105,7 @@ export default {
                     confirmButtonText: 'OK',
                     })
                     if(notif.isConfirmed){
-                        await this.reportNursery()
+                        await this.reportNurseryFF()
                     }
                     }catch (error) {
                     console.error(error.response);
@@ -3836,7 +4144,7 @@ export default {
                     confirmButtonText: 'OK',
                     })
                     if(notif.isConfirmed){
-                        await this.reportNursery()
+                        await this.reportNurseryFF()
                     }
                     }catch (error) {
                     console.error(error.response);
@@ -3980,6 +4288,29 @@ export default {
             }).finally(() => {
                 this.calendar.detailBibit.loading = false
             })
+        },
+        async getFCbyFF(params){
+            let url = this.apiConfig.baseUrl+ 'GetEmployeebyFF?ff_no='+ params
+
+            const FC = await axios.get(url,
+            {
+                headers: {
+                    Authorization: `Bearer ` + this.apiConfig.token
+                }
+            })
+            this.distributionReport.dialogs.exportFilter.fc_name = FC.data.data.result[0].name 
+            // console.log(this.distributionReport.dialogs.exportFilter.fc_name)
+            // return FC.data.data.result[0].name
+        },
+        exportReportFromDetail(item){
+            this.distributionReport.dialogs.exportFilter.ff_model = item.ff_no
+            this.distributionReport.dialogExportDistributionReport.show = true
+            this.distributionReport.dialogs.exportFilter.mu_no = item.loading_line[0].mu_no
+            this.distributionReport.dialogs.exportFilter.farmerData = item.detail_farmers
+            // this.distributionReport.dialogs.exportFilter.fc_name = this.getFCbyFF(item.ff_no)
+            this.getFCbyFF(item.ff_no)
+
+            console.log(item)
         },
         calendarGetMoreEvent(date){
             console.log(date.date)
@@ -4277,7 +4608,8 @@ export default {
                     this.loadingLine.loading = false
                     this.loadingLine.loadingText = null
                     // await this.getDistributionReportTable()
-                    await this.reportNursery()
+                    // await this.reportNursery()
+                    await this.reportNurseryFF()
                 }
             } else if (this.User.role_group != 'IT' || this.User.role_name != 'NURSERY' || this.User.role_name != 'NURSERY MANAGER') {
                 this.snackbar.text = `Can't use this modul from this user.`
@@ -4573,6 +4905,28 @@ export default {
                     show: true
                 }
             this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+        },
+        async DetailDistributionReportFarmer(item){
+            console.log(item)
+            this.distributionReport.dialogs.detail  = {
+                    farmer_signature_photo: item.file_signature.url,
+                    distribution_photo: item.file_accept.url,
+                    farmerNo: item.farmer_no,
+                    adjustment: item.detail_seed_farmers,
+                    data: item,
+                    disabledSave: true,
+                    labels: {
+                        printed: item.detail_labels,
+                        loaded: item.detail_labels.filter(v => v.is_loaded == 1),
+                        distributed: item.detail_labels.filter(v => v.is_distributed == 1),
+                        lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
+                    },
+                    loading: false,
+                    loadingText: null,
+                    show: true,
+                    totalSeedArrival: this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+                }
+            // this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
         },
         async getDistributionReportDetail(distribution_no) {
             let url = `${this.apiConfig.baseUrl}`
@@ -5037,9 +5391,6 @@ export default {
         dateFormat(date, format) {
             return moment(date).format(format)
         },
-        exportDistributionReport(){
-
-        },
         exportExcel(type, data = null) {
             let url = null
             if (type == 'bibit_by_ff') {
@@ -5092,7 +5443,8 @@ export default {
             this.distributionReport.dialogs.exportFilter.user_ff_list= this.User.ff.ff;
             await this.getFFOptions()
 
-            await this.reportNursery()
+            // await this.reportNursery()
+            await this.reportNurseryFF()
 
             await this.getPackingLabelTableData()
             this.packingLabel.loading = false
