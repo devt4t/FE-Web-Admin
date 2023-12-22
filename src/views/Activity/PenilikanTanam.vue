@@ -1650,6 +1650,7 @@
                                 outlined
                                 hide-details
                                 dense
+                                @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam.fotoHidup)"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.ditanam.hidup }}
@@ -1661,6 +1662,7 @@
                                 outlined
                                 hide-details
                                 dense
+                                @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam.fotoMati)"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.ditanam.mati }}
@@ -1673,7 +1675,7 @@
                                 hide-details
                                 dense
                                 rounded>
-                                <v-icon class="mr-1">mdi-image</v-icon>
+                                <v-icon class="mr-1">mdi-sprout</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup }}
                               </v-btn>
                             </td>
@@ -1684,7 +1686,7 @@
                                 hide-details
                                 dense
                                 rounded>
-                                <v-icon class="mr-1">mdi-image</v-icon>
+                                <v-icon class="mr-1">mdi-sprout</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati }}
                               </v-btn>
                             </td>
@@ -1695,7 +1697,7 @@
                                 hide-details
                                 dense
                                 rounded>
-                                <v-icon class="mr-1">mdi-image</v-icon>
+                                <v-icon class="mr-1">mdi-eye-remove-outline</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.hilang }}
                               </v-btn>
                             </td>
@@ -1706,9 +1708,9 @@
                   </div>
                 </v-col>
                 <v-col cols="12">
-                  <div class="text-center mb-2"><v-icon>mdi-image-multiple</v-icon> Photos</div>
-                  <v-row>
-                    <v-col cols="12" lg="4">
+                  <div class="text-center mb-2"><v-icon>mdi-image-multiple</v-icon> Foto Bibit Belum Ditanam</div>
+                  <v-row class="justify-center align-center">
+                    <!-- <v-col cols="12" lg="4">
                       <v-img
                         height="250"
                         v-bind:src="defaultItem.gambarshow1"
@@ -1723,7 +1725,7 @@
                         @click="showLightbox(defaultItem.gambarshow2)"
                         class="my-1 mb-4 rounded-xl cursor-pointer"
                       ></v-img>
-                    </v-col>
+                    </v-col> -->
                     <v-col cols="12" lg="4">
                       <v-img
                         height="250"
@@ -2660,6 +2662,12 @@ export default {
       user_id: "FF000001",
       nama_petani: "",
       waitingapproval: false,
+
+      fotoJenis_Tanam_Hidup: '',
+      fotoJenis_Tanam_Mati: '',
+      fotoJenis_blmTanam_Hidup: '',
+      fotoJenis_blmTanam_Mati: '',
+      fotoJenis_blmTanam_Hilang: '',
 
       gambarshow1: "",
       gambarshow2: "",
@@ -4381,6 +4389,10 @@ export default {
       await this.resetFilter();
       await this.initialize();
     },
+    openDialogPhotoDetailJenis(item){
+      this.showLightbox(this.BaseUrl+item)
+      console.log(item)
+    },
 
     resetvalue() {
       this.defaultItem.id = "";
@@ -4979,11 +4991,15 @@ export default {
           seedling: {
             ditanam: {
               hidup: 0,
-              mati: 0
+              fotoHidup: '',
+              mati: 0,
+              fotoMati: '',
             },
             blm_ditanam: {
               hidup: 0,
-              mati: 0
+              fotoHidup: '',
+              mati: 0,
+              fotoMati: '',
             },
             hilang: 0
           }
@@ -4992,24 +5008,32 @@ export default {
         if (checkExistsID > -1) {
           if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
             grouping[checkExistsID].seedling.ditanam.hidup += parseInt(data.amount)
+            grouping[checkExistsID].seedling.ditanam.fotoHidup = data.tree_photo
           } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
             grouping[checkExistsID].seedling.ditanam.mati += parseInt(data.amount)
+            grouping[checkExistsID].seedling.ditanam.fotoMati = data.tree_photo
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
+            grouping[checkExistsID].seedling.blm_ditanam.fotoHidup = data.tree_photo
           } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
             grouping[checkExistsID].seedling.blm_ditanam.mati += parseInt(data.amount)
+            grouping[checkExistsID].seedling.blm_ditanam.fotoMati = data.tree_photo
           } else if (data.status == 'hilang' && data.condition == 'hilang') {
             grouping[checkExistsID].seedling.hilang += parseInt(data.amount)
           } 
         } else {
           if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
             pushData.seedling.ditanam.hidup += parseInt(data.amount)
+            pushData.seedling.ditanam.fotoHidup = data.tree_photo
           } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
             pushData.seedling.ditanam.mati += parseInt(data.amount)
+            pushData.seedling.ditanam.fotoMati = data.tree_photo
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
+            pushData.seedling.blm_ditanam.fotoHidup = data.tree_photo
           } else if (data.status == 'belum_ditanam' && data.condition == 'mati') {
             pushData.seedling.blm_ditanam.mati += parseInt(data.amount)
+            pushData.seedling.blm_ditanam.fotoMati = data.tree_photo
           } else if (data.status == 'hilang' && data.condition == 'hilang') {
             pushData.seedling.hilang += parseInt(data.amount)
           } 
