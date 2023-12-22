@@ -52,12 +52,30 @@
                         <th v-for="(header, headerIndex) in table.headers" :key="`tabelForExportReportDistribusi${headerIndex}`" class="green darken-2 white--text justify-center align-center" rowspan="2">
                             {{ header.text }}
                         </th>
-                        
+                        <th class="green darken-2 white--text justify-center align-center" colspan="5">
+                            Jumlah Bibit
+
+                        </th>
                         <th v-for="(header, headerIndex) in table.headersTree" :key="`tabelForExportReportDistribusitree${headerIndex}`" class="green darken-2 white--text justify-center align-center" colspan="5">
                             {{ header.text }}
                         </th>
                     </tr>
-                    <tr style="border: 2px solid black;border-collapse: collapse;">
+
+                    <tr style="border: 2px solid black;border-collapse: collapse;" class="green white--text">
+                        <th>
+                            Dimuat
+                        </th>
+                        <th>
+                            Rusak
+                        </th>
+                        <th>
+                            Ditolak
+                        </th>
+                        <th>
+                            Diterima
+                        </th><th>
+                            Hilang
+                        </th>
                         <th v-for="(n, nIndex) in statusTree" :key="`itemTreeExportReport-${nIndex}`" class="green white--text">
                             {{ n.text}}
                         </th>
@@ -88,6 +106,31 @@
                                 <span v-else>
                                     {{ tableData[itemTable.value] }}
                                 </span>
+                            </td>
+                            <td>
+                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                                    return acc+parseInt(val.total_load)
+                                }, 0) }}
+                            </td>
+                            <td>
+                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                                    return acc+parseInt(val.total_damaged)
+                                }, 0) }}
+                            </td>
+                            <td>
+                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                                    return acc+parseInt(val.total_reject || 0)
+                                }, 0) }}
+                            </td>
+                            <td>
+                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                                    return acc+parseInt(val.total_received)
+                                }, 0) }}
+                            </td>
+                            <td>
+                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                                    return acc+parseInt(val.total_missing)
+                                }, 0) }}
                             </td>
                             <td v-for="(n, nIndex) in statusTree" :key="`tableItemForExportSostambyFC-${nIndex}-${tableDataIndex}`" 
                             :class=" getSeedColor(n, tableData)">
@@ -151,6 +194,7 @@
             totalData : 0,
             totalBibitKayu : 0,
 
+
     
             table: {
                 trees: [],
@@ -160,6 +204,7 @@
                     {text: 'Nama FF', value: 'ff_name'},
                     {text: 'Nama Petani', value: 'farmer_name'},
                     {text: 'Jumlah Pupuk Diterima', value: 'total_pupuk'},
+                    // {text: 'Total Bibit', value:'seed_total'}
                 ],
                 headersTree: [],
                 items: [],
