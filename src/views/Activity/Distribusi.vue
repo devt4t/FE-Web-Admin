@@ -855,6 +855,11 @@
                                         <td>:</td>
                                         <td><strong>{{ distributionReport.dialogs.detail.data.farmer_name || '-' }}</strong></td>
                                     </tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
+                                        <td>Tanggal Distribusi</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.distribution_date || '-' }}</strong></td>
+                                    </tr>
                                     <tr v-else-if="generalSettings.type.model == 'Umum'">
                                         <td>PIC Lahan</td>
                                         <td>:</td>
@@ -1163,7 +1168,7 @@
                                     <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Foto Penerimaan Petani</h3><v-divider class="mx-2"></v-divider>
                                 </v-col>
                                 <v-col cols="12" lg="6">
-                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Penerima: {{ distributionReport.dialogs.detail.data.farmer_name || '-' }}</h4>
+                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Penerima: {{ distributionReport.dialogs.detail.data.user_accepted || '-' }}</h4>
                                     <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Foto</h4>
                                     <v-card v-if="distributionReport.dialogs.detail.distribution_photo" elevation="2" class="rounded-xl" height="300">
                                         <v-img
@@ -3908,6 +3913,11 @@ export default {
         // },
         async reportNurseryFF(){
             // await this.getUserException()
+            this.distributionReport.table.NurseryFFItems = []
+            this.distributionReport.table.totalDatas = 0
+            this.distributionReport.table.total_page = 0
+            this.distributionReport.table.loading
+
             if (this.accessModul.calendar) {
                 this.distributionReport.table.loading = true
                 const params ={
@@ -4110,6 +4120,7 @@ export default {
                     }catch (error) {
                     console.error(error.response);
                     }
+                    await this.reportNurseryFF()
             }
         },
         async updateVerifikasiReportNursery(){
@@ -4290,7 +4301,7 @@ export default {
             })
         },
         async getFCbyFF(params){
-            let url = this.apiConfig.baseUrl+ 'GetEmployeebyFF?ff_no='+ params
+            let url = this.apiConfig.baseUrl+ 'GetEmployeebyFF?ff_no='+ params +'&program_year='+ this.generalSettings.programYear
 
             const FC = await axios.get(url,
             {
@@ -4886,26 +4897,26 @@ export default {
                 })
             }
         },
-        async newDetailDistributionReport(item){
-            this.distributionReport.dialogs.detail  = {
-                    farmer_signature_photo: item.file_signature.url,
-                    distribution_photo: item.file_accept.url,
-                    farmerNo: item.farmer_no,
-                    adjustment: item.detail_seed_farmers,
-                    data: item,
-                    disabledSave: true,
-                    labels: {
-                        printed: item.detail_labels,
-                        loaded: item.detail_labels.filter(v => v.is_loaded == 1),
-                        distributed: item.detail_labels.filter(v => v.is_distributed == 1),
-                        lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
-                    },
-                    loading: false,
-                    loadingText: null,
-                    show: true
-                }
-            this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
-        },
+        // async newDetailDistributionReport(item){
+        //     this.distributionReport.dialogs.detail  = {
+        //             farmer_signature_photo: item.file_signature.url,
+        //             distribution_photo: item.file_accept.url,
+        //             farmerNo: item.farmer_no,
+        //             adjustment: item.detail_seed_farmers,
+        //             data: item,
+        //             disabledSave: true,
+        //             labels: {
+        //                 printed: item.detail_labels,
+        //                 loaded: item.detail_labels.filter(v => v.is_loaded == 1),
+        //                 distributed: item.detail_labels.filter(v => v.is_distributed == 1),
+        //                 lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
+        //             },
+        //             loading: false,
+        //             loadingText: null,
+        //             show: true
+        //         }
+        //     this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+        // },
         async DetailDistributionReportFarmer(item){
             console.log(item)
             this.distributionReport.dialogs.detail  = {

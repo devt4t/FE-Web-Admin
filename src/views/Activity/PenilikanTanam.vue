@@ -1645,69 +1645,59 @@
                             <td>{{ seed.tree_category }}</td>
                             <td>{{ seed.tree_name }}</td>
                             <td class="text-center">
-                              <v-text-field 
-                                color="green"
-                                type="number"
-                                min="0"
+                              <v-btn 
+                                color="green white--text"
                                 outlined
                                 hide-details
                                 dense
-                                rounded
-                                disabled
-                                :readonly="disabledEditSeedInDetailModal"
-                                v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.hidup"></v-text-field>
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                                {{ defaultItem.list_detail[seedIndex].seedling.ditanam.hidup }}
+                              </v-btn>
                             </td>
                             <td class="text-center">
-                              <v-text-field 
-                                color="green"
-                                type="number"
-                                min="0"
+                              <v-btn 
+                                color="red white--text"
                                 outlined
                                 hide-details
                                 dense
-                                rounded
-                                disabled
-                                :readonly="disabledEditSeedInDetailModal"
-                                v-model="defaultItem.list_detail[seedIndex].seedling.ditanam.mati"></v-text-field>
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                                {{ defaultItem.list_detail[seedIndex].seedling.ditanam.mati }}
+                              </v-btn>
                             </td>
                             <td class="text-center">
-                              <v-text-field 
-                                color="green"
-                                type="number"
-                                min="0"
+                              <v-btn 
+                                color="green white--text"
                                 outlined
                                 hide-details
                                 dense
-                                rounded
-                                disabled
-                                :readonly="disabledEditSeedInDetailModal"
-                                v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup"></v-text-field>
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                                {{ defaultItem.list_detail[seedIndex].seedling.blm_ditanam.hidup }}
+                              </v-btn>
                             </td>
                             <td class="text-center">
-                              <v-text-field 
-                                color="green"
-                                type="number"
-                                min="0"
+                              <v-btn 
+                                color="red white--text"
                                 outlined
                                 hide-details
                                 dense
-                                rounded
-                                disabled
-                                :readonly="disabledEditSeedInDetailModal"
-                                v-model="defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati"></v-text-field>
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                                {{ defaultItem.list_detail[seedIndex].seedling.blm_ditanam.mati }}
+                              </v-btn>
                             </td>
                             <td class="text-center">
-                              <v-text-field 
-                                color="green"
-                                type="number"
-                                min="0"
+                              <v-btn 
+                                color="orange white--text"
                                 outlined
                                 hide-details
                                 dense
-                                rounded
-                                disabled
-                                :readonly="disabledEditSeedInDetailModal"
-                                v-model="defaultItem.list_detail[seedIndex].seedling.hilang"></v-text-field>
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                                {{ defaultItem.list_detail[seedIndex].seedling.hilang }}
+                              </v-btn>
                             </td>
                           </tr>
                         </tbody>
@@ -2601,7 +2591,7 @@ export default {
       { text: "FF", value: "nama_ff", search: true },
       { text: "Petani", value: "nama_petani", search: true },
       { text: "Nomor Lahan", align: "start", value: "lahan_no", sortable: false, search: true },
-      { text: "Standar Pohon", value: "qty_std", align: 'center', sortable: false },
+      { text: "Bibit", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
      
