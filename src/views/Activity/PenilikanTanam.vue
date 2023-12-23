@@ -1665,7 +1665,11 @@
                                 @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam.fotoMati)"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
-                                {{ defaultItem.list_detail[seedIndex].seedling.ditanam.mati }}
+                                {{ defaultItem.list_detail[seedIndex].seedling.ditanam.mati }} 
+                                <v-tooltip
+                                  activator="parent"
+                                  location="end"
+                                >Tooltip</v-tooltip>
                               </v-btn>
                             </td>
                             <td class="text-center">
@@ -4994,6 +4998,7 @@ export default {
               fotoHidup: '',
               mati: 0,
               fotoMati: '',
+              keterangan: ''
             },
             blm_ditanam: {
               hidup: 0,
@@ -5012,6 +5017,7 @@ export default {
           } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
             grouping[checkExistsID].seedling.ditanam.mati += parseInt(data.amount)
             grouping[checkExistsID].seedling.ditanam.fotoMati = data.tree_photo
+            grouping[checkExistsID].seedling.ditanam.keterangan = data.tree_description
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
             grouping[checkExistsID].seedling.blm_ditanam.fotoHidup = data.tree_photo
@@ -5028,6 +5034,7 @@ export default {
           } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
             pushData.seedling.ditanam.mati += parseInt(data.amount)
             pushData.seedling.ditanam.fotoMati = data.tree_photo
+            pushData.seedling.ditanam.keterangan = data.tree_description
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
             pushData.seedling.blm_ditanam.fotoHidup = data.tree_photo
