@@ -438,7 +438,7 @@
                 theme: 'grid'
              })
             //  console.log(doc)
-            doc.save(`DataReportDistribusi-${this.program_year}_FF-${this.ff_no}_FC-${this.fc_no}.pdf`);
+            doc.save(`DataReportDistribusi-${this.program_year}_FF-${this.ff_no}_FC-${this.fc_name}.pdf`);
         },
         getSeedAmount(item, data){
             const total_column = item.value.split('-')
