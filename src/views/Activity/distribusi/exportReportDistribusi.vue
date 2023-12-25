@@ -33,33 +33,29 @@
                     style="border: 2px solid black;border-collapse: collapse; min-height: 200px"
                 >
                     <tr>
-                        <th :colspan="table.headers.length + statusTree.length " align="center" style="text-align: center;font-size: 15px;">
+                        <th :colspan="table.headers.length + (4 * 3)" align="center" style="text-align: center;font-size: 15px;">
                             Field Coordinator: {{ this.fc_name }}</th>
                     </tr>
                     <tr>
-                        <th :colspan="table.headers.length + statusTree.length " align="center" style="text-align: center;font-size: 15px;">
+                        <th :colspan="table.headers.length + (4 * 3) " align="center" style="text-align: center;font-size: 15px;">
                             Tahun Program: {{ this.program_year }}</th>
                     </tr>
                     <tr>
-                        <td :colspan="table.headers.length + statusTree.length" style="text-align: center;">
+                        <td :colspan="table.headers.length + (4 * 3)" style="text-align: center;">
                             <small>
                                 Export Time: {{ Date() }}
                             </small>
                         </td>
                     </tr>
-                    <tr><td :colspan="table.headers.length + statusTree.length"></td></tr>
+                    <tr><td :colspan="table.headers.length + (4 * 3)"></td></tr>
                     <tr style="border: 2px solid black;border-collapse: collapse;">
                         <th v-for="(header, headerIndex) in table.headers" :key="`tabelForExportReportDistribusi${headerIndex}`" class="green darken-2 white--text justify-center align-center" rowspan="2">
                             {{ header.text }}
                         </th>
-                        <th class="green darken-2 white--text justify-center align-center" colspan="5">
-                            Jumlah Total Pohon
-                        </th>
-                        <th class="green darken-2 white--text justify-center align-center" colspan="5">
-                            Jumlah Total MPTS
-                        </th>
-                        <th class="green darken-2 white--text justify-center align-center" colspan="5">
-                            Jumlah Total Pohon + MPTS
+                        <th v-for="totalTHeader in ['KAYU', 'MPTS', 'KAYU + MPTS']" 
+                            :key="`${totalTHeader}-header-tree-total`"
+                        class="green darken-2 white--text justify-center align-center" colspan="4">
+                            {{ totalTHeader }}
                         </th>
                         
                         <!-- <th v-for="(header, headerIndex) in table.headersTree" :key="`tabelForExportReportDistribusitree${headerIndex}`" class="green darken-2 white--text justify-center align-center" colspan="5">
@@ -69,48 +65,48 @@
 
                     <tr style="border: 2px solid black;border-collapse: collapse;" class="green white--text">
                         <!-- total kayu -->
-                        <th>
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Dimuat
                         </th>
-                        <th>
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Rusak
                         </th>
-                        <th>
+                        <!-- <th style="border: 1px solid black;border-collapse: collapse;">
                             Ditolak
-                        </th>
-                        <th>
+                        </th> -->
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Diterima
-                        </th><th>
+                        </th><th style="border: 1px solid black;border-collapse: collapse;">
                             Hilang
                         </th>
                         <!-- total mpts -->
-                        <th>
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Dimuat
                         </th>
-                        <th>
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Rusak
                         </th>
-                        <th>
+                        <!-- <th style="border: 1px solid black;border-collapse: collapse;">
                             Ditolak
-                        </th>
-                        <th>
+                        </th> -->
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Diterima
-                        </th><th>
+                        </th><th style="border: 1px solid black;border-collapse: collapse;">
                             Hilang
                         </th>
                         <!-- total kayu+mpts -->
-                        <th>
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Dimuat
                         </th>
-                        <th>
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Rusak
                         </th>
-                        <th>
+                        <!-- <th style="border: 1px solid black;border-collapse: collapse;">
                             Ditolak
-                        </th>
-                        <th>
+                        </th> -->
+                        <th style="border: 1px solid black;border-collapse: collapse;">
                             Diterima
-                        </th><th>
+                        </th><th style="border: 1px solid black;border-collapse: collapse;">
                             Hilang
                         </th>
                         <!-- <th v-for="(n, nIndex) in statusTree" :key="`itemTreeExportReport-${nIndex}`" class="green white--text">
@@ -132,7 +128,7 @@
                                     {{ tableData.ff_name }}
                                 </span>
                                 <span v-else-if="itemTable.value == 'total_pupuk'">
-                                    {{new Intl.NumberFormat().format(tableData.total_pupuk)}} ML
+                                    {{new Intl.NumberFormat().format(tableData.total_pupuk)}} ml
                                 </span>
                                 <span v-else-if="table.trees.find(v => itemTable.value == v.tree_code)">
                                     
@@ -144,80 +140,80 @@
                                     {{ tableData[itemTable.value] }}
                                 </span>
                             </td>
-                            <!-- total pohon -->
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <!-- total kayu -->
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_load)
                                 }, 0) }}
                             </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_damaged)
                                 }, 0) }}
                             </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <!-- <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_reject || 0)
                                 }, 0) }}
-                            </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            </td> -->
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_received)
                                 }, 0) }}
                             </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_missing)
                                 }, 0) }}
                             </td>
                             <!-- total MPTS -->
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_load)
                                 }, 0) }}
                             </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_damaged)
                                 }, 0) }}
                             </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <!-- <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_reject || 0)
                                 }, 0) }}
-                            </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            </td> -->
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_received)
                                 }, 0) }}
                             </td>
-                            <td>
-                                {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
+                            <td style="border: 1px solid black;border-collapse: collapse;">
+                                {{ tableData.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc,val)=> {
                                     return acc+parseInt(val.total_missing)
                                 }, 0) }}
                             </td>
                             <!-- Total pohon+mpts -->
-                            <td>
+                            <td style="border: 1px solid black;border-collapse: collapse;">
                                 {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
                                     return acc+parseInt(val.total_load)
                                 }, 0) }}
                             </td>
-                            <td>
+                            <td style="border: 1px solid black;border-collapse: collapse;">
                                 {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
                                     return acc+parseInt(val.total_damaged)
                                 }, 0) }}
                             </td>
-                            <td>
+                            <!-- <td style="border: 1px solid black;border-collapse: collapse;">
                                 {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
                                     return acc+parseInt(val.total_reject || 0)
                                 }, 0) }}
-                            </td>
-                            <td>
+                            </td> -->
+                            <td style="border: 1px solid black;border-collapse: collapse;">
                                 {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
                                     return acc+parseInt(val.total_received)
                                 }, 0) }}
                             </td>
-                            <td>
+                            <td style="border: 1px solid black;border-collapse: collapse;">
                                 {{ tableData.detail_seed_farmers.reduce((acc,val)=> {
                                     return acc+parseInt(val.total_missing)
                                 }, 0) }}
@@ -227,8 +223,90 @@
                                 {{ getSeedAmount(n, tableData) }} 
                             </td> -->
                         </tr>
-                        
-                
+                        <tr>
+                            <td colspan="4" style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">JUMLAH</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.total_pupuk)
+                            }, 0)) }} ml</td>
+                            <!-- KAYU -->
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_load)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_damaged)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <!-- <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_reject)
+                                }, 0))
+                            }, 0)) }}</td> -->
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_received)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.KAYU.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_missing)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <!-- MPTS -->
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_load)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_damaged)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <!-- <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_reject)
+                                }, 0))
+                            }, 0)) }}</td> -->
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_received)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.filter(v => table.MPTS.includes(v.tree_code)).reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_missing)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <!-- TOTAL -->
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_load)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_damaged)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <!-- <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_reject)
+                                }, 0))
+                            }, 0)) }}</td> -->
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_received)
+                                }, 0))
+                            }, 0)) }}</td>
+                            <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
+                                return acc + parseInt(val.detail_seed_farmers.reduce((acc2,val2)=> {
+                                    return acc2+parseInt(val2.total_missing)
+                                }, 0))
+                            }, 0)) }}</td>
+                        </tr>
                     </table>
                 
             </v-card-text>
@@ -288,6 +366,8 @@
     
             table: {
                 trees: [],
+                KAYU: [],
+                MPTS: [],
                 headers: [
                     {text: 'No', value: 'index', width: 75},
                     {text: 'Management Unit', value: 'mu_name'},
@@ -346,7 +426,7 @@
             var doc = new jsPDF({
                 orientation: 'landscape',
                 unit: 'px',
-                format: [4500, 700]
+                format: [1280, 700]
             });
             doc.autoTable({ 
                 html: '#tabelForExportReportDistribusi',
@@ -415,6 +495,8 @@
                     this.table.loading.show = true
                     this.table.headersTree = []
                     this.table.trees=[]
+                    this.table.MPTS = []
+                    this.table.KAYU = []
                     this.statusTree=[]
                     // const params = {
                     //     limit: 100,
@@ -454,10 +536,12 @@
                         {text: 'Hilang', value: 'total_missing'}]
                         subheader.map( v => {
                             this.statusTree.push({
-                            text: v.text,
-                            value: findKey.tree_code+'-'+v.value
+                                text: v.text,
+                                value: findKey.tree_code+'-'+v.value
+                            })
                         })
-                        })
+                        if (findKey.category == 'MPTS') this.table.MPTS.push(findKey.tree_code)
+                        if (findKey.category == 'KAYU') this.table.KAYU.push(findKey.tree_code)
                         return val
                     })
 
@@ -465,8 +549,8 @@
                     
                     // this.table.trees = treeData
                     this.table.items = this.data
-                    console.log(this.data)
-                    this.table.items_raw = data
+                    // console.log(this.data)
+                    this.table.items_raw = this.data
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
                 }
