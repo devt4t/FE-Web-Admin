@@ -48,13 +48,16 @@
                         </td>
                     </tr>
                     <tr><td :colspan="table.headers.length + (4 * 3)"></td></tr>
-                    <tr style="border: 2px solid black;border-collapse: collapse;">
-                        <th v-for="(header, headerIndex) in table.headers" :key="`tabelForExportReportDistribusi${headerIndex}`" class="green darken-2 white--text justify-center align-center" rowspan="2">
+                    <tr style="border: 2px solid black;border-collapse: collapse;" class="green darken-2 white--text">
+                        <th  style="border: 1px solid black;border-collapse: collapse;" 
+                            v-for="(header, headerIndex) in table.headers" :key="`tabelForExportReportDistribusi${headerIndex}`" class="justify-center align-center" rowspan="2">
                             {{ header.text }}
                         </th>
                         <th v-for="totalTHeader in ['KAYU', 'MPTS', 'KAYU + MPTS']" 
                             :key="`${totalTHeader}-header-tree-total`"
-                        class="green darken-2 white--text justify-center align-center" colspan="4">
+                        class="justify-center align-center" colspan="4"
+                        style="border: 1px solid black;border-collapse: collapse;" 
+                        >
                             {{ totalTHeader }}
                         </th>
                         
@@ -432,7 +435,7 @@
                 html: '#tabelForExportReportDistribusi',
                 useCss: true,
                 tableLineWidth: 0,
-                theme: 'striped'
+                theme: 'grid'
              })
             //  console.log(doc)
             doc.save(`DataReportDistribusi-${this.program_year}_FF-${this.ff_no}_FC-${this.fc_no}.pdf`);
