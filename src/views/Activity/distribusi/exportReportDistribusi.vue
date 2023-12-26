@@ -133,6 +133,9 @@
                                 <span v-else-if="itemTable.value == 'total_pupuk'">
                                     {{new Intl.NumberFormat().format(tableData.total_pupuk)}} ml
                                 </span>
+                                <span v-else-if="itemTable.value == 'status'">
+                                    {{ getStatusCondition(tableData.verified_by) }}
+                                </span>
                                 <span v-else-if="table.trees.find(v => itemTable.value == v.tree_code)">
                                     
                                     <!-- {{ tableData.detail_seed_farmers.find(v=> v.tree_code == itemTable.value) }} -->
@@ -377,6 +380,7 @@
                     {text: 'Nama FF', value: 'ff_name'},
                     {text: 'Nama Petani', value: 'farmer_name'},
                     {text: 'Jumlah Pupuk Diterima', value: 'total_pupuk'},
+                    {text: 'Status Verifikasi', value: 'status'}
                     // {text: 'Total Bibit', value:'seed_total'}
                 ],
                 headersTree: [],
@@ -448,6 +452,13 @@
                 return tree_seed[total_column[1]] || 0
             }
             else return 0
+        },
+        getStatusCondition(item){
+            if(item == null || item == ''){
+                return 'Belum Terverifikasi'
+            }else{
+                return 'Terverifikasi'
+            }
         },
         getSeedColor(n, tableData){
             const total = this.getSeedAmount(n, tableData)
@@ -552,7 +563,7 @@
                     
                     // this.table.trees = treeData
                     this.table.items = this.data
-                    // console.log(this.data)
+                    console.log(this.data)
                     this.table.items_raw = this.data
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
