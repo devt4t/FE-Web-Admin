@@ -2989,6 +2989,7 @@
                                     :options.sync="distributionReport.table.options"
                                     :page="distributionReport.table.page"
                                     :server-items-length="distributionReport.table.totalDatas"
+                                    :expanded.sync="distributionReport.table.expanded"
                                     :show-expand="true"
                                     single-expand
                                     @item-expanded="expandTableReport"
@@ -3172,6 +3173,7 @@
                                                 :headers="distributionReport.table.headersReportFarmer"
                                                 :items="distributionReport.table.NurseryFarmerItems.detail_farmers"
                                                 :loading="distributionReport.table.loading"
+                                                :key="`PetaniPerFF-${distributionReport.table.loading}`"
                                                 >
 
                                                 <!-- SubToolBar -->
@@ -3388,6 +3390,7 @@ export default {
                 show: false,
             },
             dialogs: {
+
                 exportFilter:{
                     show: false,
                     user_ff_list: '',
@@ -3492,6 +3495,7 @@ export default {
                     {text: 'Diverifikasi Oleh', value: 'verified_by', align: 'center'},
                     {text: 'Actions', value: 'actions', align: 'right', sortable: false},
                 ],
+                expanded: [],
                 items: [],
                 NurseryItems: [],
                 NurseryFFItems: [],
@@ -3916,7 +3920,7 @@ export default {
             this.distributionReport.table.NurseryFFItems = []
             this.distributionReport.table.totalDatas = 0
             this.distributionReport.table.total_page = 0
-            this.distributionReport.table.loading
+            // this.distributionReport.table.loading = true
 
             if (this.accessModul.calendar) {
                 this.distributionReport.table.loading = true
@@ -4108,19 +4112,20 @@ export default {
                     },
                     })
                     //  reset form create value
-                    const notif = await Swal.fire({
+                    Swal.fire({
                     title: 'Berhasil Unverifikasi Data Penerimaan Bibit Petani!',
                     icon: 'success',
                     confirmButtonColor: '#2e7d32',
                     confirmButtonText: 'OK',
                     })
-                    if(notif.isConfirmed){
-                        await this.reportNurseryFF()
-                    }
+                    await this.reportNurseryFF()
+                    this.distributionReport.table.expanded = []
+                    // if(notif.isConfirmed){
+                    // }
                     }catch (error) {
                     console.error(error.response);
                     }
-                    await this.reportNurseryFF()
+                    // await this.reportNurseryFF()
             }
         },
         async updateVerifikasiReportNursery(){
@@ -4148,15 +4153,16 @@ export default {
                     },
                     })
                     //  reset form create value
-                    const notif = await Swal.fire({
+                    Swal.fire({
                     title: 'Berhasil Verifikasi Data Penerimaan Bibit Petani!',
                     icon: 'success',
                     confirmButtonColor: '#2e7d32',
                     confirmButtonText: 'OK',
-                    })
-                    if(notif.isConfirmed){
-                        await this.reportNurseryFF()
-                    }
+                })
+                await this.reportNurseryFF()
+                this.distributionReport.table.expanded = []
+                    // if(notif.isConfirmed){
+                    // }
                     }catch (error) {
                     console.error(error.response);
                     }
