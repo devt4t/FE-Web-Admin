@@ -230,7 +230,7 @@
                             </td> -->
                         </tr>
                         <tr>
-                            <td colspan="4" style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">JUMLAH</td>
+                            <td colspan="5" style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">JUMLAH</td>
                             <td style="border: 1px solid black;border-collapse: collapse;text-align: center;background-color: rgb(210, 210, 210);">{{ new Intl.NumberFormat().format(table.items.reduce((acc, val) => {
                                 return acc + parseInt(val.total_pupuk)
                             }, 0)) }} ml</td>
@@ -379,8 +379,8 @@
                     {text: 'Management Unit', value: 'mu_name'},
                     {text: 'Nama FF', value: 'ff_name'},
                     {text: 'Nama Petani', value: 'farmer_name'},
+                    {text: 'Status Verifikasi', value: 'status'},
                     {text: 'Jumlah Pupuk Diterima', value: 'total_pupuk'},
-                    {text: 'Status Verifikasi', value: 'status'}
                     // {text: 'Total Bibit', value:'seed_total'}
                 ],
                 headersTree: [],
