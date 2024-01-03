@@ -2168,6 +2168,21 @@
               class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
               style="max-width: 200px"
           ></v-select>
+          <v-select
+              v-if="User.role_group == 'IT'"
+              color="success"
+              item-color="success"
+              v-model="pagination.current_page"
+              :items="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80]"
+              outlined
+              dense
+              hide-details
+              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+              rounded
+              label="Page"
+              class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+              style="max-width: 200px"
+          ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <!-- Select Search Field -->
           <v-select
@@ -2426,6 +2441,7 @@ export default {
           label: 'Program Lahan',
           model: 'Petani',
         },
+
     },
     pagination: {
       current_page: 1,
