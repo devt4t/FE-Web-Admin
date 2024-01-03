@@ -233,7 +233,7 @@
             },
             program_year: {
                 type: String,
-                default: '2022',
+                default: '',
             },
         },
         data: () => ({
@@ -293,7 +293,7 @@
             const wb = XLSX.utils.table_to_book(table);
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `ExportRealisasiTanam(DistribusiBAST&Monitoring)-${this.program_year}.pdf`);
+            XLSX.writeFile(wb, `ExportRealisasiTanam(DistribusiBAST&Monitoring)-${this.program_year}.xlsx`);
         },
         downloadPDF() {
             window.jsPDF = window.jspdf.jsPDF;

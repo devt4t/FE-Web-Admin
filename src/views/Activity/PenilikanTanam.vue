@@ -21,6 +21,7 @@
       <ExportPenilikanTanam
       :show="exportSimpleDistribution.show"
       :data="exportSimpleDistribution.data"
+      :program_year="generalSettings.programYear"
       @close="exportSimpleDistribution.show = false"
       >
       </ExportPenilikanTanam>
