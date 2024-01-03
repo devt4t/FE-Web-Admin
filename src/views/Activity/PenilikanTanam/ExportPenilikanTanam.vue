@@ -8,7 +8,7 @@
         >
         <v-card>
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Monitoring 1 + Distribution Report
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Export Realisasi Tanam(Distribusi, BAST & Monitoring)
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
@@ -34,7 +34,7 @@
                 >
                     <tr>
                         <th :colspan="table.headers.length + (4 * 3)" align="center" style="text-align: center;font-size: 15px;">
-                            Export Realisasi Tanam Tahun Program: {{ this.program_year }}</th>
+                            Export Realisasi Tanam(Distribusi, BAST & Monitoring) Tahun Program: {{ this.program_year }}</th>
                     </tr>
                     <tr>
                         <td :colspan="table.headers.length + (4 * 3)" style="text-align: center;">
