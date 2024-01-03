@@ -17,6 +17,13 @@
 
     <!-- MODAL -->
     
+      <!-- Export Distribusi Simple -->
+      <ExportPenilikanTanam
+      :show="exportSimpleDistribution.show"
+      :data="exportSimpleDistribution.data"
+      @close="exportSimpleDistribution.show = false"
+      >
+      </ExportPenilikanTanam>
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl">
         <v-card>
@@ -2056,6 +2063,15 @@
               <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export</v-btn>
             </v-hover>
             <v-hover v-slot="{hover}">
+              <v-btn v-if="User.role_group == 'IT'"
+              rounded 
+              :color="`green ${hover ? 'white--text' : ''}`" 
+              :outlined="!hover" 
+              @click="exportSimpleDistribution.show = true" 
+              >
+              <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export + Distribution</v-btn>
+            </v-hover>
+            <v-hover v-slot="{hover}">
               <v-btn v-if="User.role_group == 'IT' && switchExportFilter == true"
                 rounded 
                 :color="`green ${hover ? 'white--text' : ''}`" 
@@ -2085,7 +2101,7 @@
       multi-sort
       :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
-        itemsPerPageOptions: [10, 20, 30, 40, -1],
+        itemsPerPageOptions: [10, 20, 30, 40, 100, 200, 250, 300, -1],
         showCurrentPage: true,
         showFirstLastPage: true,
       }"
@@ -2388,14 +2404,16 @@
 <script>
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
-import moment from 'moment'
+import moment from 'moment';
+import ExportPenilikanTanam from '@/views/Activity/PenilikanTanam/ExportPenilikanTanam'
 // import BaseUrl from "../../services/BaseUrl.js";
 
 import DetailLahanMap from '@/views/Lahan/components/DetailLahanMap'
 
 export default {
   components: {
-      DetailLahanMap
+      DetailLahanMap,
+      ExportPenilikanTanam
   },
   name: "PenilikanTanam",
   authtoken: "",
@@ -2451,6 +2469,11 @@ export default {
         value: ''
       },
       total: 0,
+    },
+    exportSimpleDistribution: {
+      show: false,
+      data: [],
+
     },
     dialogFormLahanUmum: {
       confirm: false,
@@ -2600,7 +2623,6 @@ export default {
       { text: "Bibit", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
-     
       { text: "Awal Waktu Tanam", value: "start_monitoring_period", align: 'center', search: true },
       { text: "Akhir Waktu Tanam", value: "end_monitoring_period", align: 'center', search: true },
       { text: "Status", value: "is_validate", align: 'center', search: true },
@@ -3210,7 +3232,8 @@ export default {
           ff: this.valueFFcode
         }
         if (this.generalSettings.landProgram.model == 'Petani') {
-          url += "GetMonitoringAdmin?" + new URLSearchParams(params)
+          // url += "GetMonitoringAdmin?" + new URLSearchParams(params)
+          url += "GetExportMonitoringAllAdmin?" + new URLSearchParams(params)
         } else if (this.generalSettings.landProgram.model == 'Umum') {
           delete params.ff
           delete params.ta
@@ -3226,6 +3249,7 @@ export default {
             const total = res.data.data.result.total
             const current_page = res.data.data.result.current_page
             const last_page = res.data.data.result.last_page
+            this.exportSimpleDistribution.data = items
             resolve({
               items,
               total,
@@ -5186,6 +5210,10 @@ export default {
       })
       url += params.toString()
       window.open(url, "blank")
+    },
+
+    exportSimpleData(){
+
     },
 
     async exportDataByMU() {
