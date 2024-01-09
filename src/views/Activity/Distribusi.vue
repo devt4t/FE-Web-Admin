@@ -791,7 +791,7 @@
                     </v-card-text>
                 </v-card>
             </v-dialog>
-            <!-- Distribution Report Detail -->
+            <!-- Distribution Report Detail Petani -->
             <v-dialog 
                 content-class="rounded-xl elevation-0 mx-1" 
                 top
@@ -1004,7 +1004,7 @@
                                                         {text: 'No', value: 'no', align: 'center', sortable: false},
                                                         {text: 'Bag Number', value: 'label_code', sortable: false},
                                                         {text: 'Seedling', value: 'rel_tree_id', sortable: false},
-                                                        {text: 'PIC Distribute', value: 'implementor_distribute_id', sortable: false},
+                                                        // {text: 'PIC Distribute', value: 'implementor_distribute_id', sortable: false},
                                                     ]"
                                                     :items="distributionReport.dialogs.detail.labels.distributed"
                                                     :items-per-page="-1"
@@ -1229,7 +1229,508 @@
                         <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn> -->
                     </v-card-actions>
                 </v-card>
-            </v-dialog> 
+            </v-dialog>
+
+
+            <!-- Distribution Report Detail Umum -->
+            <v-dialog 
+                content-class="rounded-xl elevation-0 mx-1" 
+                top
+                persistent
+                max-width="1000px" 
+                scrollable 
+                v-model="distributionReport.dialogs.detailUmum.show" 
+            >
+                <v-card class="elevation-5 rounded-xl">
+                    <v-card-title class="mb-1 headermodalstyle rounded-xl d-flex align-center">
+                        <span class="d-flex align-center">
+                            <v-icon color="white" class="mr-1">
+                                mdi-text-box-check
+                            </v-icon>
+                            Distribution Report
+                        </span>
+                        <v-divider class="mx-2" dark></v-divider>
+                        <v-icon color="white" @click="distributionReport.dialogs.detailUmum.show = false">
+                            mdi-close-circle
+                        </v-icon>
+                    </v-card-title>
+                    <v-card-text>
+                        <!-- loading -->
+                        <div v-if="distributionReport.dialogs.detailUmum.loading" class="d-flex flex-column align-center justify-center">
+                            <v-progress-circular
+                                indeterminate
+                                color="green"
+                                size="72"
+                                width="7"
+                                class="mt-10"
+                            ></v-progress-circular>
+                            <p class="mt-2">{{ distributionReport.dialogs.detailUmum.loadingText }}</p>
+                        </div>
+                        <!-- DETAIL CONTENT -->
+                        <div v-if="distributionReport.dialogs.detailUmum.data">
+                            <!-- General Data -->
+                            <v-simple-table>
+                                <tbody>
+                                    <!-- <tr>
+                                        <td>Distribution No</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detail.data.distribution_no }}</strong></td>
+                                    </tr> -->
+                                    <tr>
+                                        <td>Management Unit</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detailUmum.data.mu_name || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
+                                        <td>Field Facilitator</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detailUmum.data.ff_name || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                        <td>PIC T4T</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detailUmum.data.pic_t4t || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
+                                        <td>Petani</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detailUmum.data.farmer_name || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-if="generalSettings.type.model == 'Petani'">
+                                        <td>Tanggal Distribusi</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detailUmum.data.distribution_date || '-' }}</strong></td>
+                                    </tr>
+                                    <tr v-else-if="generalSettings.type.model == 'Umum'">
+                                        <td>PIC Lahan</td>
+                                        <td>:</td>
+                                        <td><strong>{{ distributionReport.dialogs.detailUmum.data.pic_lahan || '-' }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Penerimaan Pupuk</td>
+                                        <td>:</td>
+                                        <td>
+                                            <v-chip v-if="distributionReport.dialogs.detailUmum.data.is_pupuk_distributed == 0" color="orange white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak Menerima</v-chip>
+                                            <v-chip v-if="distributionReport.dialogs.detailUmum.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.total_pupuk )}} ML</v-chip>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Persentase Penerimaan Petani</td>
+                                        <td>:</td>
+                                        <td><div>
+                                            <v-progress-linear
+                                                :value="percentageFormat(distributionReport.dialogs.detailUmum.totalSeedArrival, distributionReport.dialogs.detailUmum.labels.loaded.length)"
+                                                color="orange"
+                                                height="25"
+                                                >
+                                                <strong>{{ Math.ceil(percentageFormat(distributionReport.dialogs.detailUmum.totalSeedArrival, distributionReport.dialogs.detailUmum.labels.loaded.length)) }}%</strong>
+                                                </v-progress-linear>
+                                        </div></td>
+                                    </tr>
+                                </tbody>
+                            </v-simple-table>
+                            <!-- Total Activities Bags -->
+                            <v-row>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-printer</v-icon> Printed Labels <v-divider class="ml-2"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card class="rounded-xl" max-width="150px" color="info" v-bind="attrs" v-on="on">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detailUmum.labels.printed.length }}</h1>Labels
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-printer</v-icon> Printed Labels <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detailUmum.labels.printed"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-truck-check</v-icon> Loaded Bags <v-divider class="ml-2"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="warning">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detailUmum.labels.loaded.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-truck-check</v-icon> Loaded Bags <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                        {text: 'PIC Load', value: 'rel_implementor_load_id', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detailUmum.labels.loaded"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2 d-none d-md-inline-block"></v-divider>
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="green">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detailUmum.labels.distributed.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detailUmum.data.status > 0">
+                                                    <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
+                                                    SCAN
+                                                </v-btn>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                        // {text: 'PIC Distribute', value: 'implementor_distribute_id', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detailUmum.labels.distributed"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="6" md="3" lg="3">
+                                    <v-row class="align-center my-2 ml-2">
+                                        <v-icon class="mr-1">mdi-basket-remove</v-icon> Lost Bags
+                                    </v-row>
+                                    <v-menu content-class="rounded-xl white">
+                                        <template v-slot:activator="{attrs, on}">
+                                            <v-card v-bind="attrs" v-on="on" class="rounded-xl" max-width="150px" color="red">
+                                                <v-card-text class="text-center white--text">
+                                                    <h1>{{ distributionReport.dialogs.detailUmum.labels.lost.length }}</h1>bags
+                                                </v-card-text>
+                                            </v-card>
+                                        </template>
+                                        <v-card max-height="400px" elevation="0">
+                                            <v-card-title>
+                                                <v-icon class="mr-1">mdi-basket-remove</v-icon> Lost Bags <v-divider class="ml-2"></v-divider>
+                                            </v-card-title>
+                                            <v-card-text>
+                                                <v-data-table
+                                                    dense
+                                                    :headers="[
+                                                        {text: 'No', value: 'no', align: 'center', sortable: false},
+                                                        {text: 'Bag Number', value: 'label_code', sortable: false},
+                                                        {text: 'Seedling', value: 'rel_tree_id', sortable: false},
+                                                        // {text: 'PIC Load', value: 'loaded_by', sortable: false},
+                                                    ]"
+                                                    :items="distributionReport.dialogs.detailUmum.labels.lost"
+                                                    :items-per-page="-1"
+                                                    hide-default-footer
+                                                >
+                                                    <!-- No Column -->
+                                                    <template v-slot:item.no="{index}">
+                                                        {{ index + 1 }}
+                                                    </template>
+                                                    <!-- Seedling Column -->
+                                                    <template v-slot:item.tree_list="{item}">
+                                                        <p class="mb-0" v-for="tree in item.tree_list" :key="tree.tree_name">
+                                                            {{ tree.tree_name }} <strong>{{ tree.tree_amount }}</strong>
+                                                        </p>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-menu>
+                                    
+                                </v-col>
+                                <v-col cols="12" class="d-flex align-center" v-if="distributionReport.dialogs.detailUmum.totalSeedArrival < distributionReport.dialogs.detailUmum.labels.loaded.length">
+                                    <h3>Adjust Penerimaan Kantung: </h3>
+                                    <v-col cols="4" sm="4" md="4">
+                                        <v-select
+                                        rounded
+                                        v-model="distributionReport.dialogs.inputAdjustDetailLables.distributedBag"
+                                        :items="distributionReport.dialogs.inputAdjustDetailLables.menuItem"
+                                        :item-text="item => item.bag_tree_name + '-' + item.amount_in_bag"
+                                        item-value="bag_id"
+                                        label="Terdistribusi"
+                                        outlined
+                                        clearable
+                                        multiple
+                                        :rules="[(v) => !!v || 'Field is required']"
+                                        ></v-select>
+                                    </v-col>
+                                    <v-col cols="4" sm="4" md="4">
+                                        <v-text-field
+                                        rounded
+                                        v-model="distributionReport.dialogs.inputAdjustDetailLables.user_accepted"
+                                        label="Nama Penerima"
+                                        outlined
+                                        clearable
+                                        :rules="[(v) => !!v || 'Field is required']"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-col>
+                                <v-col cols="3" sm="3" md="3" v-if="distributionReport.dialogs.detailUmum.totalSeedArrival < distributionReport.dialogs.detailUmum.labels.loaded.length">
+                                    <v-switch
+                                    v-model="distributionReport.dialogs.inputAdjustDetailLables.is_pupuk_distributed"
+                                    label="Menerima Pupuk?"
+                                    inset
+                                    color="orange"
+                                    true-value="1"
+                                    false-value="0"
+                                    hide-details
+                                    ></v-switch>
+                                </v-col>
+                            </v-row>
+                            <!-- Seedling Adjustment -->
+                            <v-row class="ma-0 mt-4">
+                                <v-col cols="12" class="d-flex align-center">
+                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Jumlah Penerimaan Bibit</h3><v-divider class="mx-2"></v-divider>
+                                    <h3 class="red--text" v-if="distributionReport.dialogs.detailUmum.totalSeedArrival < distributionReport.dialogs.detailUmum.labels.loaded.length"><strong>*Klik Angka Pada Kolom Untuk Mengubah Jumlah!</strong></h3>
+                                </v-col>
+                                <v-col cols="12" md="12">
+                                <!-- <v-col cols="12" md="12" v-for="(adjustmentData, adjIndex) in distributionReport.dialogs.detail.adjustment" :key="adjustmentData.lahan_no">
+                                    <v-row class="align-center ma-0">
+                                        Lahan {{ adjIndex + 1 }} : <strong class="ml-1">{{ adjustmentData.lahan_no }}</strong> <v-divider class="ml-2"></v-divider>
+                                    </v-row> -->
+                                    <v-data-table
+                                        :headers="[
+                                            // {text: 'No', value: 'no', align: 'center'},
+                                            {text: 'Kode', value: 'tree_code'},
+                                            {text: 'Nama', value: 'rel_tree_id', align: 'center'},
+                                            {text: 'Jumlah Load', value: 'total_load', align: 'center', sortable: false},
+                                            {text: 'Jumlah Rusak', value: 'total_damaged', align: 'center', sortable: false},
+                                            {text: 'Jumlah Hilang', value: 'total_missing', align: 'center', sortable: false},
+                                            {text: 'Jumlah Diterima', value: 'total_received', align: 'center', sortable: false},
+                                        ]"
+                                        :items="distributionReport.dialogs.detailUmum.adjustment"
+                                        :items-per-page="-1"
+                                        hide-default-footer
+                                        class="rounded-xl elevation-5 overflow-hidden mt-2"
+                                    >
+                                        <!-- <template v-slot:item.no="{index}">
+                                            {{ index + 1 }}
+                                        </template> -->
+                                        <template v-slot:body="{ items, headers }" v-if="distributionReport.dialogs.detailUmum.totalSeedArrival < distributionReport.dialogs.detailUmum.labels.loaded.length">
+                                            <tbody>
+                                                <tr v-for="(item,idx,k) in items" :key="idx">
+                                                    <td v-for="(header,key) in headers" :key="key">
+                                                        <v-edit-dialog
+                                                        :return-value.sync="item[header.value]"
+                                                        @save="simpanJumlah"
+                                                        large
+                                                        > {{item[header.value]}}
+                                                        <template 
+                                                        v-if="header.value == 'total_damaged' || header.value == 'total_missing' || header.value == 'total_received'"
+                                                        v-slot:input>
+                                                        <v-text-field
+                                                            v-model="item[header.value]"
+                                                            label="Edit"
+                                                            single-line
+                                                            type="number"
+                                                            
+                                                            ></v-text-field>
+                                                            <!-- Amount Limitation -->
+                                                            <!-- @change="$v=>$v > item.maxAmount? item[header.value]=item.maxAmount:''"
+                                                            :rules="[
+                                                                v => (!!v && v <= item.maxAmount)|| 'Jumlah Tidak Bisa Lebih!'
+                                                            ]" -->
+                                                        </template>
+                                                        </v-edit-dialog>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                    </v-data-table>
+                                </v-col>
+                            </v-row>
+                            <!-- Photos -->
+                            <v-row class="ma-0 mt-4">
+                                <v-col cols="12" class="d-flex align-center">
+                                    <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Foto Penerimaan Bibit Lahan Umum</h3><v-divider class="mx-2"></v-divider>
+                                </v-col>
+                                <v-btn 
+                                    :disabled="distributionReport.dialogs.detailUmum.distribution_photo != null || distributionReport.dialogs.detailUmum.distribution_photo != null"
+                                    color="green white--text" 
+                                    rounded class="px-5" 
+                                    @click="distributionReport.dialogs.addPhoto.show = true"
+                                    >
+                                        <v-icon small class="mr-1">mdi-camera</v-icon>
+                                        Upload Foto Penerimaan Bibit
+                                </v-btn>
+                                <v-file-input
+                                    v-if="distributionReport.dialogs.addPhoto.show == true"
+                                    accept="image/png, image/jpeg, image/bmp"
+                                    @change="val => {distributionReport.dialogs.addPhoto.modal_receiver_photo = val}"
+                                    placeholder="Pilih Foto Penerima Bibit"
+                                    prepend-icon="mdi-camera"
+                                    show-size
+                                    label="Pilih Foto Penerima Bibit"
+                                ></v-file-input>
+                                <v-file-input
+                                    v-if="distributionReport.dialogs.addPhoto.show == true"
+                                    accept="image/png, image/jpeg, image/bmp"
+                                    @change="val => {distributionReport.dialogs.addPhoto.modal_signature_photo = val}"
+                                    placeholder="Pilih Foto Tanda Tangan Penerima"
+                                    prepend-icon="mdi-camera"
+                                    show-size
+                                    label="Pilih Foto Tanda Tangan Penerima"
+                                ></v-file-input>
+                                <!-- <v-btn 
+                                    v-if="distributionReport.dialogs.addPhoto.show == true"
+                                    color="green white--text" 
+                                    rounded class="px-5" 
+                                    @click="distributionReport.dialogs.addPhoto.show = false"
+                                    >
+                                        <v-icon small class="mr-1">mdi-content-save-alert</v-icon>
+                                        Simpan Foto
+                                </v-btn> -->
+                                <v-col cols="12" class="d-flex align-center">
+                                    <v-divider class="mx-2"></v-divider>
+                                </v-col>
+                                <v-col cols="12" lg="6">
+                                    <h4 v-if="generalSettings.type.model == 'Petani'" class="text-center">Penerima: {{ distributionReport.dialogs.detailUmum.data.user_accepted || '-' }}</h4>
+                                    <h4 v-else-if="generalSettings.type.model == 'Umum'" class="text-center">Foto</h4>
+                                    <v-card v-if="distributionReport.dialogs.detailUmum.distribution_photo" elevation="2" class="rounded-xl" height="300">
+                                        <v-img
+                                            height="300"
+                                            v-bind:src="`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detailUmum.distribution_photo}`"
+                                            class="my-2 mb-4 rounded-xl cursor-pointer"
+                                            id="Distribution Photo"
+                                            @click="showLightbox(`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detailUmum.distribution_photo}`)"
+                                        ></v-img
+                                    ></v-card>
+                                </v-col>
+                                <v-col cols="12" lg="6" v-if="generalSettings.type.model == 'Petani'">
+                                    <h4 class="text-center">Tanda Tangan Penerima</h4>
+                                    <v-card v-if="distributionReport.dialogs.detailUmum.farmer_signature_photo" elevation="2" class="rounded-xl" height="300">
+                                        <v-img
+                                            height="300"
+                                            v-bind:src="`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detailUmum.farmer_signature_photo}`"
+                                            class="my-2 mb-4 rounded-xl cursor-pointer"
+                                            id="Farmer Signature"
+                                            @click="showLightbox(`${apiConfig.nurseryImageUrl}${distributionReport.dialogs.detailUmum.farmer_signature_photo}`)"
+                                        ></v-img
+                                    ></v-card>
+                                </v-col>
+                            </v-row>
+                        </div>
+                    </v-card-text>
+                    <v-card-actions class="" v-if="distributionReport.dialogs.detailUmum.data">
+                        <v-btn color="red white--text" rounded @click="distributionReport.dialogs.detail.show = false">
+                            <v-icon color="white">
+                                mdi-close-circle
+                            </v-icon>   
+                            Close
+                        </v-btn>
+                        <v-divider class="mx-2"></v-divider>
+
+                        <v-btn v-if="(distributionReport.dialogs.detailUmum.data.verified_by == null || distributionReport.dialogs.detailUmum.data.verified_by == '') && distributionReport.dialogs.detailUmum.labels.printed.length > 0 && distributionReport.dialogs.detailUmum.labels.loaded.length > 0 && distributionReport.dialogs.detailUmum.totalSeedArrival == distributionReport.dialogs.detailUmum.labels.loaded.length" 
+                            @click="updateVerifikasiReportNursery()" 
+                            :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
+                            rounded 
+                            color="green white--text" 
+                            class="px-4">
+                            <v-icon 
+                            class="mr-1">mdi-check-bold
+                            </v-icon> Verifikasi FC
+                        </v-btn>
+                        <v-btn 
+                            v-if="distributionReport.dialogs.inputAdjustDetailLables.distributedBag.length > 0 && distributionReport.dialogs.addPhoto.modal_signature_photo != '' && distributionReport.dialogs.addPhoto.modal_receiver_photo != ''" 
+                            @click="saveDataReportAdjustment()" 
+                            :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
+                            rounded 
+                            color="green white--text" 
+                            class="px-4">
+                            <v-icon 
+                            class="mr-1">mdi-check-bold
+                            </v-icon> Simpan Perubahan Data
+                        </v-btn>
+                        <v-btn v-if="(distributionReport.dialogs.detailUmum.data.verified_by != '' && distributionReport.dialogs.detailUmum.data.verified_by != null)" 
+                            @click="updateUnverifikasiReportNursery()"
+                            :disabled="User.role_group != 'IT'" 
+                            rounded 
+                            color="red white--text" 
+                            class="px-4">
+                            <v-icon 
+                            class="mr-1">mdi-lock-open-remove
+                            </v-icon> Unverifikasi
+                        </v-btn>
+                        <!-- <v-btn v-if="generalSettings.type.model == 'Petani' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave || (User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR')" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Verifikasi FC</v-btn> -->
+                        <!-- <v-btn v-else-if="generalSettings.type.model == 'Umum' && distributionReport.dialogs.detail.data.status == 0" @click="confirmationShow('Save & Verif')" :disabled="distributionReport.dialogs.detail.disabledSave" rounded color="green white--text" class="px-4"><v-icon class="mr-1">mdi-content-save-check</v-icon> Save & Verification</v-btn>
+                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Petani'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified UM')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by UM</v-btn>
+                        <v-btn v-else-if="distributionReport.dialogs.detail.data.status > 0 && generalSettings.type.model == 'Umum'" rounded color="green white--text" class="px-4" @click="confirmationShow('Verified Pak Pandu')" :disabled="distributionReport.dialogs.detail.data.status == 2 || (User.role_group != 'IT' && User.role_name != 'PROGRAM MANAGER' && User.role_name != 'REGIONAL MANAGER')"><v-icon class="mr-1">mdi-check-circle</v-icon> Verification by PM</v-btn> -->
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <!-- SCAN Distribution Lahan Umum -->
             <v-dialog 
                 content-class="rounded-xl elevation-0 mx-1" 
@@ -2957,7 +3458,6 @@
                         </v-row>
                     </v-expansion-panel-content>
                 </v-expansion-panel> -->
-                <!-- INI TESTING UNTUK DEV -->
                  <!-- Distribution Report Section -->
                  <v-expansion-panel v-if="accessModul.distributionReport" class="rounded-xl">
                     <v-expansion-panel-header>
@@ -3417,6 +3917,39 @@ export default {
                     loading: false,
                     loadingText: null,
                     show: false,
+                },
+                detailUmum: {
+                    distribution_photo: "",
+                    farmer_signature_photo: "",
+                    farmerNo: "",
+                    adjustment: [],
+                    totalSeedArrival: 0,
+                    data: null,
+                    disabledSave: true,
+                    labels: {
+                        printed: [],
+                        loaded: [],
+                        distributed: [],
+                        lost: []
+                    },
+                    loading: false,
+                    loadingText: null,
+                    show: false,
+                },
+                inputAdjustDetailLables:{
+                    menuItem: [],
+                    distributedBag: [],
+                    is_pupuk_distributed: 0,
+                    distribution_time: '',
+                    user_accepted: '',
+                    id: ''
+
+                },
+                addPhoto: {
+                    button: true,
+                    show: false,
+                    modal_signature_photo: '',
+                    modal_receiver_photo: '',
                 },
                 scanLahanUmum: {
                     camera: false,
@@ -4128,6 +4661,66 @@ export default {
                     // await this.reportNurseryFF()
             }
         },
+        simpanJumlah(){
+            // console.log(this.distributionReport.dialogs.detailUmum.adjustment)
+        },
+        async saveDataReportAdjustment(){
+            const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin Untuk Menyimpan Penerimaan Bibit?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+                const params = {
+                    farmer_no: this.distributionReport.dialogs.detailUmum.farmerNo,
+                    detail: this.distributionReport.dialogs.detailUmum.adjustment,
+                    bag: this.distributionReport.dialogs.inputAdjustDetailLables.distributedBag,
+                    is_pupuk_distributed: this.distributionReport.dialogs.inputAdjustDetailLables.is_pupuk_distributed,
+                    id: this.distributionReport.dialogs.inputAdjustDetailLables.id,
+                    distribution_time: this.distributionReport.dialogs.inputAdjustDetailLables.distribution_date,
+                    user_accepted: this.distributionReport.dialogs.inputAdjustDetailLables.user_accepted,
+                    file_accept: {},
+                    file_signature: {},
+                }
+                if(this.distributionReport.dialogs.addPhoto.modal_receiver_photo){
+                    params.file_accept = await this.uploadPhotosNursery(this.distributionReport.dialogs.addPhoto.modal_receiver_photo)
+                }
+                if(this.distributionReport.dialogs.addPhoto.modal_signature_photo){
+                    params.file_signature = await this.uploadPhotosNursery(this.distributionReport.dialogs.addPhoto.modal_signature_photo)
+                }
+                console.log(params)
+                try{
+                    const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-mobile-distribution', params,
+                    {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                    },
+                    })
+                    //  reset form create value
+                    Swal.fire({
+                    title: 'Berhasil Adjustment Data Penerimaan Bibit!',
+                    icon: 'success',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'OK',
+                })
+                await this.reportNurseryFF()
+                this.distributionReport.table.expanded = []
+                    // if(notif.isConfirmed){
+                    // }
+                    }catch (error) {
+                    console.error(error.response);
+                }
+                this.distributionReport.dialogs.addPhoto.show = false
+                this.distributionReport.dialogs.detailUmum.show = false
+                this.distributionReport.dialogs.inputAdjustDetailLables.distributedBag = []
+                this.distributionReport.dialogs.inputAdjustDetailLables.user_accepted = ''
+
+            }
+        },
         async updateVerifikasiReportNursery(){
             const confirm = await Swal.fire({
               title: 'Konfirmasi',
@@ -4165,7 +4758,7 @@ export default {
                     // }
                     }catch (error) {
                     console.error(error.response);
-                    }
+                }
             }
         },
         async calendarUpdateDetailLahanUmumPeriod() {
@@ -4925,25 +5518,64 @@ export default {
         // },
         async DetailDistributionReportFarmer(item){
             console.log(item)
-            this.distributionReport.dialogs.detail  = {
+            this.distributionReport.dialogs.detailUmum.farmer_signature_photo = null
+            this.distributionReport.dialogs.detailUmum.distribution_photo = null
+            if(item.farmer_no.includes('F')){
+                this.distributionReport.dialogs.detail  = {
                     farmer_signature_photo: item.file_signature.url,
                     distribution_photo: item.file_accept.url,
-                    farmerNo: item.farmer_no,
-                    adjustment: item.detail_seed_farmers,
-                    data: item,
-                    disabledSave: true,
-                    labels: {
-                        printed: item.detail_labels,
-                        loaded: item.detail_labels.filter(v => v.is_loaded == 1),
-                        distributed: item.detail_labels.filter(v => v.is_distributed == 1),
-                        lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
-                    },
-                    loading: false,
-                    loadingText: null,
-                    show: true,
-                    // totalSeedArrival: this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+                        farmerNo: item.farmer_no,
+                        adjustment: item.detail_seed_farmers,
+                        data: item,
+                        disabledSave: true,
+                        labels: {
+                            printed: item.detail_labels,
+                            loaded: item.detail_labels.filter(v => v.is_loaded == 1),
+                            distributed: item.detail_labels.filter(v => v.is_distributed == 1),
+                            lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
+                        },
+                        loading: false,
+                        loadingText: null,
+                        show: true,
+                    }
+                this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+        
+            }else{
+                this.distributionReport.dialogs.detailUmum  = {
+                        farmerNo: item.farmer_no,
+                        adjustment: item.detail_seed_farmers,
+                        data: item,
+                        disabledSave: true,
+                        labels: {
+                            printed: item.detail_labels,
+                            loaded: item.detail_labels.filter(v => v.is_loaded == 1),
+                            distributed: item.detail_labels.filter(v => v.is_distributed == 1),
+                            lost: item.detail_labels.filter(v => v.is_loaded == 1 && v.is_distributed == 0),
+                        },
+                        loading: false,
+                        loadingText: null,
+                        show: true,
+                    }
+                this.distributionReport.dialogs.detailUmum.totalSeedArrival = this.distributionReport.dialogs.detailUmum.labels.distributed.length + this.distributionReport.dialogs.detailUmum.labels.lost.length
+                if(item.file_signature == null && item.file_accept == null){
+                    this.distributionReport.dialogs.detailUmum.farmer_signature_photo = null
+                    this.distributionReport.dialogs.detailUmum.distribution_photo = null
+                }else{
+                    this.distributionReport.dialogs.detailUmum.farmer_signature_photo = item.file_signature.url
+                    this.distributionReport.dialogs.detailUmum.distribution_photo = item.file_accept.url
                 }
-            this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
+                this.distributionReport.dialogs.inputAdjustDetailLables.menuItem = this.distributionReport.dialogs.detailUmum.labels.loaded.map((val) => {
+                        return {
+                            bag_id: val.id, 
+                            bag_tree_name: val.rel_tree_id,
+                            amount_in_bag: val.amount,
+                        }
+                });
+                this.distributionReport.dialogs.inputAdjustDetailLables.distribution_date = item.distribution_date
+                this.distributionReport.dialogs.inputAdjustDetailLables.id = item.id
+                console.log(this.distributionReport.dialogs.inputAdjustDetailLables.menuItem)
+
+            }
         },
         async getDistributionReportDetail(distribution_no) {
             let url = `${this.apiConfig.baseUrl}`
@@ -5864,6 +6496,26 @@ export default {
                 console.error(err)
             })
             return 'general-lands/'+responseName
+        },
+        async uploadPhotosNursery(itemFile) {
+            this.$store.state.loadingOverlayText = `Saving photo...`
+            const url = `https://api-nursery.t4t-api.org/api/upload`
+            const data = this.generateFormData({
+                file: itemFile
+            })
+            let responseName = null
+            console.log(data)
+            await axios.post(url,data, {
+                headers: {
+                        Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                    },
+            }
+                ).then(res => {
+                responseName = res.data
+            }).catch(err => {
+                console.error(err)
+            })
+            return responseName
         }
     }
 }
