@@ -1694,7 +1694,7 @@
                         <v-divider class="mx-2"></v-divider>
 
                         <v-btn v-if="(distributionReport.dialogs.detailUmum.data.verified_by == null || distributionReport.dialogs.detailUmum.data.verified_by == '') && distributionReport.dialogs.detailUmum.labels.printed.length > 0 && distributionReport.dialogs.detailUmum.labels.loaded.length > 0 && distributionReport.dialogs.detailUmum.totalSeedArrival == distributionReport.dialogs.detailUmum.labels.loaded.length" 
-                            @click="updateVerifikasiReportNursery()" 
+                            @click="updateVerifikasiReportNurseryUmum()" 
                             :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
                             rounded 
                             color="green white--text" 
@@ -4737,6 +4737,46 @@ export default {
             })
             if(confirm.isConfirmed){
                 this.distributionReport.dialogs.detail.show = false;
+                const params = {
+                    farmer_no: this.distributionReport.dialogs.detail.farmerNo,
+                    verified_by: this.User.email, 
+                }
+                console.log(params)
+                try{
+                    const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-verification-geko', params,
+                    {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.nurseryToken
+                    },
+                    })
+                    //  reset form create value
+                    Swal.fire({
+                    title: 'Berhasil Verifikasi Data Penerimaan Bibit Petani!',
+                    icon: 'success',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'OK',
+                })
+                await this.reportNurseryFF()
+                this.distributionReport.table.expanded = []
+                    // if(notif.isConfirmed){
+                    // }
+                    }catch (error) {
+                    console.error(error.response);
+                }
+            }
+        },
+        async updateVerifikasiReportNurseryUmum(){
+            const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Apakah Anda Yakin Untuk Verifikasi Penerimaan Bibit Oleh Petani?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+                this.distributionReport.dialogs.detailUmum.show = false;
                 const params = {
                     farmer_no: this.distributionReport.dialogs.detailUmum.farmerNo,
                     verified_by: this.User.email, 
