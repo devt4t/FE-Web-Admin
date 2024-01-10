@@ -227,8 +227,8 @@
                 type: Boolean,
                 default: false,
             },
-            data: {
-                type: Object,
+            ItemData: {
+                type: Array,
                 default: null,
             },
             program_year: {
@@ -411,8 +411,8 @@
                     // const totalData = call.data.totalData
                     // this.totalLahan = totalData
     
-                    this.table.items = this.data
-                    this.table.items_raw = this.data
+                    this.table.items = this.ItemData
+                    this.table.items_raw = this.ItemData
                 } catch (err) {this.errorResponse(err)} finally {
                     this.table.loading.show = false
                 }

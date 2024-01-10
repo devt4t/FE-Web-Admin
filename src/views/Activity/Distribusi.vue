@@ -994,10 +994,10 @@
                                                 <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2"></v-divider>
                                             </v-card-title>
                                             <v-card-text>
-                                                <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detail.data.status > 0">
+                                                <!-- <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detail.data.status > 0">
                                                     <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
                                                     SCAN
-                                                </v-btn>
+                                                </v-btn> -->
                                                 <v-data-table
                                                     dense
                                                     :headers="[
@@ -1250,7 +1250,7 @@
                             Distribution Report
                         </span>
                         <v-divider class="mx-2" dark></v-divider>
-                        <v-icon color="white" @click="distributionReport.dialogs.detailUmum.show = false">
+                        <v-icon color="white" @click="closeDetailUmum()">
                             mdi-close-circle
                         </v-icon>
                     </v-card-title>
@@ -1435,10 +1435,10 @@
                                                 <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed Bags <v-divider class="ml-2"></v-divider>
                                             </v-card-title>
                                             <v-card-text>
-                                                <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detailUmum.data.status > 0">
+                                                <!-- <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detailUmum.data.status > 0">
                                                     <v-icon class="mr-1">mdi-qrcode-scan</v-icon>
                                                     SCAN
-                                                </v-btn>
+                                                </v-btn> -->
                                                 <v-data-table
                                                     dense
                                                     :headers="[
@@ -1685,7 +1685,7 @@
                         </div>
                     </v-card-text>
                     <v-card-actions class="" v-if="distributionReport.dialogs.detailUmum.data">
-                        <v-btn color="red white--text" rounded @click="distributionReport.dialogs.detail.show = false">
+                        <v-btn color="red white--text" rounded @click="closeDetailUmum()">
                             <v-icon color="white">
                                 mdi-close-circle
                             </v-icon>   
@@ -1978,7 +1978,7 @@
                     :disabled="generalSettings.nursery.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
                 ></v-select>
                 <!-- Tipe -->
-                <v-select
+                <!-- <v-select
                     color="success"
                     item-color="success"
                     v-model="generalSettings.type.model"
@@ -1992,7 +1992,7 @@
                     class="mx-auto mx-lg-2 ml-lg-1 mb-2 mb-lg-0"
                     style="max-width: 200px"
                     :disabled="generalSettings.type.disabled || calendar.loading || packingLabel.tables.byLahan.loading || packingLabel.loading || loadingLine.loading || loadingLine.table.loading"
-                ></v-select>
+                ></v-select> -->
                 <v-divider class="mx-2"></v-divider>
                 <v-btn rounded class="mr-2" color="red white--text" @click="$router.push('SeedlingChangeRequest')"><v-icon class="mr-1">mdi-stack-exchange</v-icon> Seedling Change Request</v-btn>
             </v-card>
@@ -4661,6 +4661,10 @@ export default {
                     // await this.reportNurseryFF()
             }
         },
+        closeDetailUmum(){
+            this.distributionReport.dialogs.addPhoto.show = false
+            this.distributionReport.dialogs.detailUmum.show = false
+        },
         simpanJumlah(){
             // console.log(this.distributionReport.dialogs.detailUmum.adjustment)
         },
@@ -4734,7 +4738,7 @@ export default {
             if(confirm.isConfirmed){
                 this.distributionReport.dialogs.detail.show = false;
                 const params = {
-                    farmer_no: this.distributionReport.dialogs.detail.farmerNo,
+                    farmer_no: this.distributionReport.dialogs.detailUmum.farmerNo,
                     verified_by: this.User.email, 
                 }
                 console.log(params)

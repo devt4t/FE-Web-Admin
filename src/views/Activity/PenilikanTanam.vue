@@ -20,7 +20,7 @@
       <!-- Export Distribusi Simple -->
       <ExportPenilikanTanam
       :show="exportSimpleDistribution.show"
-      :data="exportSimpleDistribution.data"
+      :ItemData="exportSimpleDistribution.data"
       :program_year="generalSettings.programYear"
       @close="exportSimpleDistribution.show = false"
       >
