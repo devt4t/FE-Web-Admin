@@ -17,7 +17,7 @@
       large
     ></v-breadcrumbs>
     <!-- trees preview component -->
-    <trees-preview></trees-preview>
+    <!-- <TreesPreview></TreesPreview> -->
 
     <v-data-table
       data-aos="fade-up"

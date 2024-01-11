@@ -55,6 +55,17 @@
             style="max-width: 350px;"
           ></v-text-field>
           <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
+            <v-btn
+              v-if="$store.state.User.role_group=='IT'"
+              rounded
+              dark
+              class="px-9"
+              color="green"
+            >
+            <strong>Tambah Data Project
+              <v-icon class="mx-2">mdi-plus</v-icon> 
+            </strong>
+            </v-btn>
           <!-- <v-select
               color="success"
               item-color="success"
@@ -165,9 +176,16 @@ export default {
     tableLoading: false,
     headers: [
       {text: 'No', value: 'index'},
-      {text: 'Nama', value: 'farmer_name'},
-      {text: 'Negara', value: 'lahan_no'},
-      {text: 'No Partisipan', value: 'nama_mu'},
+      {text: 'Nomor Project', value: 'project_no'},
+      {text: 'Kategori Project', value: 'project_category'},
+      {text: 'Nama Project', value: 'project_name'},
+      {text: 'Tanggal Mulai Project', value: 'project_date'},
+      {text: 'Tanggal Selasai Project', value: 'end_project'},
+      {text: 'Deskripsi Project', value: 'project_description'},
+      {text: 'Lokasi Project', value: 'project_name'},
+      {text: 'Total Pohon', value: 'project_date'},
+      {text: 'CO2', value: 'co2_captures'},
+      {text: 'Donatur', value: 'donors'},
       {text: 'Actions', value: 'actions', align: 'right'},
     ],
     dataobject: [],
@@ -208,17 +226,9 @@ export default {
           this.$store.state.loadingOverlayText = 'Memuat Data...'
           const User = this.$store.state.User
           const created_by = []
-          let url = this.$store.getters.getApiUrl(`GetLahanBarcodeRequestAdmin?user_id=`)
+          let url = this.$store.getters.getApiUrl(`GetProjectAllAdmin`)
           const res = await axios.get(url, this.$store.state.apiConfig)
-          if(this.dataSwitch == "Donor"){
-            this.dataobject = res.data.data.result
-          }
-          else if(this.dataSwitch == "Participant"){
-            this.dataobject = res.data.data.result1
-          }
-          else if(this.dataSwitch == "else"){
-            this.dataobject = res.data.data.result
-          }
+          this.dataobject = res.data.Project
           } catch (err) {
           this.dataobject = []
             this.$store.state.loadingOverlay = false

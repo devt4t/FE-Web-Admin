@@ -70,6 +70,16 @@
                 style="max-width: 200px"
                 v-on:change="SelectedDataSwitch"
             ></v-select>
+            <v-btn
+              v-if="$store.state.User.role_group=='IT'"
+              rounded
+              dark
+              class="px-9"
+              color="green"
+            >
+            <strong>Tambah Data Donor</strong>
+            <v-icon class="mx-2">mdi-plus</v-icon> 
+            </v-btn>
           </v-toolbar>
         </template>
         <template v-slot:item.index="{ index }">

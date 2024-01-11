@@ -2332,7 +2332,8 @@
               <strong>{{ item.kayu_mati }}</strong>
           </v-col>
           <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
-              <small class="">HILANG</small>
+              <small v-if="item.kayu_hilang < -1">LAHAN LAIN</small>
+              <small v-else-if="item.kayu_hilang >= 0">HILANG</small>
               <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
               <strong>{{ item.kayu_hilang }}</strong>
           </v-col>
@@ -2640,8 +2641,8 @@ export default {
       { text: "Bibit", value: "qty_std", align: 'center', sortable: false },
       { text: "KAYU", value: "kayu_hidup", align: 'center', sortable: false },
       { text: "MPTS", value: "mpts_hidup", align: 'center', sortable: false },
-      { text: "Awal Waktu Tanam", value: "start_monitoring_period", align: 'center', search: true },
-      { text: "Akhir Waktu Tanam", value: "end_monitoring_period", align: 'center', search: true },
+      { text: "Awal Waktu Monitoring", value: "start_monitoring_period", align: 'center', search: true },
+      { text: "Akhir Waktu Monitoring", value: "end_monitoring_period", align: 'center', search: true },
       { text: "Status", value: "is_validate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
