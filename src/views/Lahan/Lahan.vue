@@ -860,6 +860,13 @@
       </v-card>
     </v-dialog>
 
+    <!-- Modal Tambah Project Lahan -->
+    <DialogAddProjectForLahan
+    :show="addProjectLahan.show"
+    :lahan_no="addProjectLahan.lahan_no"
+    @close="addProjectLahan.show = false"
+    >
+    </DialogAddProjectForLahan>
     <!-- Modal Detail -->
     <v-dialog
         v-model="dialogDetail"
@@ -1772,9 +1779,9 @@
     </v-dialog>
 
     <!-- Modal Add Data Lahan For CSR -->
-    <tambahDataLahan
+    <!-- <tambahDataLahan
     :show="showAddLahan" @close="showAddLahan=false">
-    </tambahDataLahan>
+    </tambahDataLahan> -->
     <!-- Modal Mass Insert Lahan -->
     <v-dialog
         v-model="insertDataLahan.show"
@@ -2311,6 +2318,24 @@
               Detail
             </v-btn>
             <v-btn
+                v-if="User.role_group == 'IT'"
+                class="w-100"
+                rounded
+                @click="ShowDialogAddProject(item)"
+                color="orange white--text"
+                block
+                small
+            >
+              <v-icon
+                  class="mr-1"
+                  small
+                  color="white"
+              >
+                mdi-pencil-plus
+              </v-icon>
+              Project Lahan!
+            </v-btn>
+            <v-btn
                 v-if="
                 (RoleAccesCRUDShow == true &&
                   item.approve != 1) ||
@@ -2440,6 +2465,8 @@ import Swal from 'sweetalert2'
 import DetailLahanMap from "@/views/Lahan/components/DetailLahanMap";
 import data from "bootstrap/js/src/dom/data";
 import VueBarcode from 'vue-barcode';
+
+import DialogAddProjectForLahan from "@/views/Lahan/components/DialogAddProjectForLahan";
 // import VueQrcode from 'vue-qrcode'
 import VueQRCodeComponent from 'vue-qrcode-component'
 import tambahDataLahan from "@/views/Lahan/components/tambahDataLahan.vue";
@@ -2447,6 +2474,7 @@ import tambahDataLahan from "@/views/Lahan/components/tambahDataLahan.vue";
 export default {
   components: {
     DetailLahanMap,
+    DialogAddProjectForLahan,
     tambahDataLahan,
     'barcode': VueBarcode,
     // VueQrcode,
@@ -2459,6 +2487,12 @@ export default {
     showTesterData: false,
     raw_data: [],
     filtered_status: 'Semua', 
+
+    addProjectLahan:{
+      show: false,
+      lahan_no: ''
+    },
+
     unverifDialog: {
       show: false,
       show2: false,
@@ -4338,6 +4372,10 @@ export default {
       // await this.getDetail(item);
       console.log(this.itemTemp);
       this.dialogShowEdit = true;
+    },
+    async ShowDialogAddProject(item){
+      this.addProjectLahan.show = true
+      this.addProjectLahan.lahan_no = item.lahan_no
     },
     async showTutupanLahanModal(item){
       this.itemInTutupanLahan.loading.show =true;

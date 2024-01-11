@@ -2354,7 +2354,8 @@
               <strong>{{ item.mpts_mati }}</strong>
           </v-col>
           <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
-              <small class="">HILANG</small>
+              <small v-if="item.mpts_hilang < -1">LAHAN LAIN</small>
+              <small v-else-if="item.mpts_hilang < -1">HILANG</small>
               <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
               <strong>{{ item.mpts_hilang }}</strong>
           </v-col>
