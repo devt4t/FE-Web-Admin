@@ -45,6 +45,8 @@
                     dense
                     color="success"
                     v-model="plantDescription"
+                    :min="1"
+                    :rules="[(v) => v && v.length < 1|| 'Kolom Harus Terisi']"
                     label="Edit Deskripsi?"
                     placeholder="Masukan Deskripsi Baru..."
                   >
@@ -56,7 +58,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn dark color="blue" rounded class="px-5" @click="refreshPlantPhotoBtn()">
+            <v-btn dark color="blue" :disabled="plantDescription < 1" rounded class="px-5" @click="refreshPlantPhotoBtn()">
               <v-icon small class="mr-1">mdi-camera-flip</v-icon>
               Refresh Foto
             </v-btn
@@ -4506,7 +4508,11 @@ export default {
     openDialogPhotoDetailJenis(item, itemPhoto, itemDesc, condition){
       this.plantPhotoDialog = true
       this.plantPhotoRoute = this.BaseUrl + itemPhoto
-      this.plantDescription = itemDesc
+      if(itemDesc == '' ||itemDesc == null){
+        this.plantDescription = '-'
+      }else{
+        this.plantDescription = itemDesc
+      }
       this.plantTreeCode = item.tree_code
       this.plantCondition = condition
       this.mo_no = item.monitoring_no

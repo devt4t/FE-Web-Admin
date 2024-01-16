@@ -235,11 +235,13 @@
                             hide-details
                             rounded
                             dense
+                            type="number"
                             color="success"
                             v-model="contact.phoneNumber"
                             label="Nomor Telepon"
                             placeholder="Masukan Nomor Telepon..."
-                            max="12"
+                            maxlength="12"
+                            counter="12"
                             hint="Contoh: 0812--------"
                         >
                         </v-text-field>
@@ -251,7 +253,7 @@
                             rounded
                             dense
                             color="success"
-                            v-model="contact.phoneNumber"
+                            v-model="contact.Website"
                             label="Website"
                             placeholder="Masukan Website (Opsional)..."
                             hint="Contoh: https://geko.t4t-api.org"
