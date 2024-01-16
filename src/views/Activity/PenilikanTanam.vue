@@ -16,7 +16,7 @@
     </div>
 
     <!-- MODAL -->
-    
+      
       <!-- Export Distribusi Simple -->
       <ExportPenilikanTanam
       :show="exportSimpleDistribution.show"
@@ -25,6 +25,50 @@
       @close="exportSimpleDistribution.show = false"
       >
       </ExportPenilikanTanam>
+      <!-- modal dialog foto tanaman -->
+      <v-dialog v-model="plantPhotoDialog" max-width="500px" content-class="rounded-xl">
+        <v-card rounded="xl">
+          <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text"
+            >Foto & Deskripsi Tanaman
+            <v-icon color="white" class="ml-auto" @click="plantPhotoDialog = false">mdi-close-circle</v-icon>
+            </v-card-title
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <p class="text-center"> Deskripsi: {{ this.plantDescription }}</p>
+                  <v-text-field
+                    outlined
+                    hide-details
+                    rounded
+                    dense
+                    color="success"
+                    v-model="plantDescription"
+                    label="Edit Deskripsi?"
+                    placeholder="Masukan Deskripsi Baru..."
+                  >
+                  </v-text-field>
+                </v-col>
+                
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="blue" rounded class="px-5" @click="refreshPlantPhotoBtn()">
+              <v-icon small class="mr-1">mdi-camera-flip</v-icon>
+              Refresh Foto
+            </v-btn
+            >
+            <v-btn color="green white--text" rounded class="px-5" @click="openPlantPhoto()">
+              <v-icon small class="mr-1">mdi-magnify</v-icon>
+              Buka Foto
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- Modal Filter Area -->
       <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl">
         <v-card>
@@ -1658,7 +1702,8 @@
                                 outlined
                                 hide-details
                                 dense
-                                @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam.fotoHidup)"
+                                :disabled="defaultItem.list_detail[seedIndex].seedling.ditanam.hidup <= 0"
+                                @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam, defaultItem.list_detail[seedIndex].seedling.ditanam.fotoHidup, '-', 'hidup')"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.ditanam.hidup }}
@@ -1670,14 +1715,15 @@
                                 outlined
                                 hide-details
                                 dense
-                                @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam.fotoMati)"
+                                :disabled="defaultItem.list_detail[seedIndex].seedling.ditanam.mati <= 0"
+                                @click="openDialogPhotoDetailJenis(defaultItem.list_detail[seedIndex].seedling.ditanam, defaultItem.list_detail[seedIndex].seedling.ditanam.fotoMati, defaultItem.list_detail[seedIndex].seedling.ditanam.keterangan, 'mati')"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
                                 {{ defaultItem.list_detail[seedIndex].seedling.ditanam.mati }} 
                                 <v-tooltip
                                   activator="parent"
                                   location="end"
-                                >Tooltip</v-tooltip>
+                                ><span>Klik untuk memunculkan</span></v-tooltip>
                               </v-btn>
                             </td>
                             <td class="text-center">
@@ -2102,7 +2148,7 @@
       multi-sort
       :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
-        itemsPerPageOptions: [10, 20, 30, 40, 100, 200, 250, 300, -1],
+        itemsPerPageOptions: [10, 20, 30, 40, 100, 200],
         showCurrentPage: true,
         showFirstLastPage: true,
       }"
@@ -2355,7 +2401,7 @@
           </v-col>
           <v-col cols="4" class="pa-0 ma-0 d-flex flex-column align-center justify-center">
               <small v-if="item.mpts_hilang < -1">LAHAN LAIN</small>
-              <small v-else-if="item.mpts_hilang < -1">HILANG</small>
+              <small v-else-if="item.mpts_hilang >= 0">HILANG</small>
               <!-- <v-icon class="mr-1">mdi-sprout</v-icon> -->
               <strong>{{ item.mpts_hilang }}</strong>
           </v-col>
@@ -2423,7 +2469,8 @@
 // import ModalFarmer from "./ModalFarmer";
 import axios from "axios";
 import moment from 'moment';
-import ExportPenilikanTanam from '@/views/Activity/PenilikanTanam/ExportPenilikanTanam'
+import ExportPenilikanTanam from '@/views/Activity/PenilikanTanam/ExportPenilikanTanam';
+import Swal from 'sweetalert2';
 // import BaseUrl from "../../services/BaseUrl.js";
 
 import DetailLahanMap from '@/views/Lahan/components/DetailLahanMap'
@@ -2614,6 +2661,16 @@ export default {
     dialogUnverif: false,
     dialogDetail: false,
     dialogFilterArea: false,
+
+    plantPhotoDialog: false,
+    plantPhotoRoute: '',
+    plantDescription: '',
+    refreshPlantPhotoRoute: '',
+    plantTreeCode: '',
+    plantCondition: '',
+    mo_no: '',
+    plantCondition: '',
+
     dialogFilterEmp: false,
     dialogShowEdit: false,
     dialogDetailPohon: false,
@@ -3622,6 +3679,8 @@ export default {
               status: 'sudah_ditanam',
               condition: 'hidup',
               planting_date: this.defaultItem.planting_date,
+              tree_photo: tree.seedling.ditanam.fotoHidup,
+              tree_description: '-'
             })
           }
           if (parseInt(tree.seedling.ditanam.mati) > 0) {
@@ -3632,6 +3691,8 @@ export default {
               status: 'sudah_ditanam',
               condition: 'mati',
               planting_date: this.defaultItem.planting_date,
+              tree_photo: tree.seedling.ditanam.fotoMati,
+              tree_description: tree.seedling.ditanam.keterangan
             })
           }
           if (parseInt(tree.seedling.blm_ditanam.hidup) > 0) {
@@ -3642,6 +3703,8 @@ export default {
               status: 'belum_ditanam',
               condition: 'hidup',
               planting_date: this.defaultItem.planting_date,
+              tree_photo: tree.seedling.blm_ditanam.fotoHidup,
+              tree_description: '-'
             })
           }
           if (parseInt(tree.seedling.blm_ditanam.mati) > 0) {
@@ -3652,6 +3715,8 @@ export default {
               status: 'belum_ditanam',
               condition: 'mati',
               planting_date: this.defaultItem.planting_date,
+              tree_photo: tree.seedling.blm_ditanam.fotoMati,
+              tree_description: '-'
             })
           }
           if (parseInt(tree.seedling.hilang) > 0) {
@@ -3662,6 +3727,8 @@ export default {
               status: 'hilang',
               condition: 'hilang',
               planting_date: this.defaultItem.planting_date,
+              tree_photo: '-',
+              tree_description: '-'
             })
           }
         })
@@ -4436,9 +4503,50 @@ export default {
       await this.resetFilter();
       await this.initialize();
     },
-    openDialogPhotoDetailJenis(item){
-      this.showLightbox(this.BaseUrl+item)
-      console.log(item)
+    openDialogPhotoDetailJenis(item, itemPhoto, itemDesc, condition){
+      this.plantPhotoDialog = true
+      this.plantPhotoRoute = this.BaseUrl + itemPhoto
+      this.plantDescription = itemDesc
+      this.plantTreeCode = item.tree_code
+      this.plantCondition = condition
+      this.mo_no = item.monitoring_no
+      this.refreshPlantPhotoRoute = 'Uploads/' + item.monitoring_no.replaceAll('-','_')+ '_'+ item.tree_code+'_'+condition+'.jpg'
+      console.log(condition)
+    },
+    openPlantPhoto(){
+      this.showLightbox(this.plantPhotoRoute)
+    },
+    async refreshPlantPhotoBtn(){
+      const confirmation = await Swal.fire({
+          title: 'Refresh Data Foto dan Deskripsi?',
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+        const pushParams={
+          monitoring_no: this.mo_no,
+          tree_code: this.plantTreeCode,
+          tree_condition: this.plantCondition,
+          newPhotoRoute: this.refreshPlantPhotoRoute,
+          newDetailDesc: this.plantDescription
+        }
+        const response = await axios.post(
+          this.BaseUrlGet + "RefreshMonitoringPhotoAndDesc",
+          pushParams,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        this.plantPhotoDialog = false
+        this.dialogDetail = false
+        this.initialize()
+        console.log(pushParams)
+      }
     },
 
     resetvalue() {
@@ -4737,6 +4845,8 @@ export default {
               status: 'sudah_ditanam',
               condition: 'hidup',
               planting_date: data.planting_date,
+              tree_photo: tree.seedling.ditanam.fotoHidup,
+              tree_description: '-'
             }
             listTrees.push(pushData)
           }
@@ -4747,6 +4857,8 @@ export default {
               status: 'sudah_ditanam',
               condition: 'mati',
               planting_date: data.planting_date,
+              tree_photo: tree.seedling.ditanam.fotoMati,
+              tree_description: tree.seedling.ditanam.keterangan
             }
             listTrees.push(pushData)
           }
@@ -4757,6 +4869,8 @@ export default {
               status: 'belum_ditanam',
               condition: 'hidup',
               planting_date: data.planting_date,
+              tree_photo: tree.seedling.blm_ditanam.fotoHidup,
+              tree_description: '-'
             }
             listTrees.push(pushData)
           }
@@ -4767,6 +4881,8 @@ export default {
               status: 'belum_ditanam',
               condition: 'mati',
               planting_date: data.planting_date,
+              tree_photo: tree.seedling.blm_ditanam.fotoMati,
+              tree_description: '-'
             }
             listTrees.push(pushData)
           }
@@ -4777,6 +4893,8 @@ export default {
               status: 'hilang',
               condition: 'hilang',
               planting_date: data.planting_date,
+              tree_photo: '-',
+              tree_description: '-'
             }
             listTrees.push(pushData)
           }
@@ -5039,9 +5157,14 @@ export default {
             ditanam: {
               hidup: 0,
               fotoHidup: '',
+              HidupPhotoRefreshRoute: '',
+
               mati: 0,
               fotoMati: '',
-              keterangan: ''
+              keterangan: '',
+              newMatiPhotoRoute: '',
+              monitoring_no: '',
+              tree_code: ''
             },
             blm_ditanam: {
               hidup: 0,
@@ -5057,10 +5180,16 @@ export default {
           if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
             grouping[checkExistsID].seedling.ditanam.hidup += parseInt(data.amount)
             grouping[checkExistsID].seedling.ditanam.fotoHidup = data.tree_photo
+            grouping[checkExistsID].seedling.ditanam.HidupPhotoRefreshRoute = "Uploads/" + data.monitoring_no.replaceAll("-", "_")+'_'+data.tree_code+'_'+data.condition+".jpg"
+            grouping[checkExistsID].seedling.ditanam.monitoring_no = data.monitoring_no
+            grouping[checkExistsID].seedling.ditanam.tree_code = data.tree_code
           } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
             grouping[checkExistsID].seedling.ditanam.mati += parseInt(data.amount)
             grouping[checkExistsID].seedling.ditanam.fotoMati = data.tree_photo
             grouping[checkExistsID].seedling.ditanam.keterangan = data.tree_description
+            grouping[checkExistsID].seedling.ditanam.newMatiPhotoRoute = "Uploads/" + data.monitoring_no.replaceAll("-", "_")+'_'+data.tree_code+'_'+data.condition+".jpg"
+            grouping[checkExistsID].seedling.ditanam.monitoring_no = data.monitoring_no
+            grouping[checkExistsID].seedling.ditanam.tree_code = data.tree_code
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             grouping[checkExistsID].seedling.blm_ditanam.hidup += parseInt(data.amount)
             grouping[checkExistsID].seedling.blm_ditanam.fotoHidup = data.tree_photo
@@ -5074,10 +5203,16 @@ export default {
           if (data.status == 'sudah_ditanam' && data.condition == 'hidup') {
             pushData.seedling.ditanam.hidup += parseInt(data.amount)
             pushData.seedling.ditanam.fotoHidup = data.tree_photo
+            pushData.seedling.ditanam.HidupPhotoRefreshRoute = "upload/" + data.monitoring_no.replace("-", "_")+'_'+data.tree_code+'_'+data.condition+".jpg"
+            pushData.seedling.ditanam.monitoring_no = data.monitoring_no
+            pushData.seedling.ditanam.tree_code = data.tree_code
           } else if (data.status == 'sudah_ditanam' && data.condition == 'mati') {
             pushData.seedling.ditanam.mati += parseInt(data.amount)
             pushData.seedling.ditanam.fotoMati = data.tree_photo
             pushData.seedling.ditanam.keterangan = data.tree_description
+            pushData.seedling.ditanam.newMatiPhotoRoute = "upload/" + data.monitoring_no.replace("-", "_")+'_'+data.tree_code+'_'+data.condition+".jpg"
+            pushData.seedling.ditanam.monitoring_no = data.monitoring_no
+            pushData.seedling.ditanam.tree_code = data.tree_code
           } else if (data.status == 'belum_ditanam' && data.condition == 'hidup') {
             pushData.seedling.blm_ditanam.hidup += parseInt(data.amount)
             pushData.seedling.blm_ditanam.fotoHidup = data.tree_photo

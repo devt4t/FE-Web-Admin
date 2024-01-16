@@ -172,9 +172,12 @@
                     project: this.projectItem.model
                 }
                 console.log(params)
+                const url = `?${params}`
+                const PostData = await axios.post(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                const data = PostData.data
+                
                 this.showModal = false
             }
-
         }
     }
     

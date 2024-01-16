@@ -9,6 +9,13 @@
       large
     ></v-breadcrumbs>
 
+    <!-- dialogs -->
+    <dialogAddProject
+      :show="openAddDialog"
+      @close="closeAddDialog()"
+    >
+    </dialogAddProject>
+
     <v-data-table
       data-aos="fade-up"
       data-aos-delay="200"
@@ -61,6 +68,7 @@
               dark
               class="px-9"
               color="green"
+              @click="openAddDialog=true"
             >
             <strong>Tambah Data Project
               <v-icon class="mx-2">mdi-plus</v-icon> 
@@ -85,6 +93,9 @@
       </template>
       <template v-slot:item.index="{ index }">
         {{ (itemsPerPage * (page-1)) + index + 1 }}
+      </template>
+      <template v-slot:header.co2_capture="{header}">
+        Proyeksi CO<sup>2</sup>
       </template>
       <!--Status row-->
       <template v-slot:item.status="{item}">
@@ -152,10 +163,16 @@
 
 <script>
 import axios from "axios";
+import dialogAddProject from "@/views/Project/component/dialogAddProject"
 
 export default {
   name: "Donor",
+  components: {
+    dialogAddProject
+  },
   data: () => ({
+    openAddDialog: false,
+
     page: 1,
     itemsPerPage: 10,
     itemsbr: [
@@ -176,15 +193,15 @@ export default {
     tableLoading: false,
     headers: [
       {text: 'No', value: 'index'},
-      {text: 'Nomor Project', value: 'project_no'},
-      {text: 'Kategori Project', value: 'project_category'},
+      {text: 'Nomor', value: 'project_no'},
+      {text: 'Kategori', value: 'project_category'},
       {text: 'Nama Project', value: 'project_name'},
-      {text: 'Tanggal Mulai Project', value: 'project_date'},
-      {text: 'Tanggal Selasai Project', value: 'end_project'},
+      {text: 'Tanggal Mulai', value: 'project_date'},
+      {text: 'Tanggal Selasai', value: 'end_project'},
       {text: 'Deskripsi Project', value: 'project_description'},
-      {text: 'Lokasi Project', value: 'project_name'},
-      {text: 'Total Pohon', value: 'project_date'},
-      {text: 'CO2', value: 'co2_captures'},
+      {text: 'Lokasi', value: 'project_name'},
+      {text: 'Total Pohon', value: 'total_trees'},
+      {text: 'CO2', value: 'co2_capture'},
       {text: 'Donatur', value: 'donors'},
       {text: 'Actions', value: 'actions', align: 'right'},
     ],
@@ -238,6 +255,10 @@ export default {
             this.$store.state.loadingOverlay = false
             this.$store.state.loadingOverlayText = ''
           }
+    },
+    closeAddDialog(){
+      this.openAddDialog=false
+      this.initialize()
     },
     SelectedDataSwitch(){
       console.log(this.dataSwitch)

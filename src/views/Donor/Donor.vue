@@ -8,7 +8,13 @@
         divider=">"
         large
       ></v-breadcrumbs>
-  
+
+      <!-- dialogs -->
+      <dialogAddDonors
+      :show="addModal"
+      @close="closeDialogAdd()"
+      >
+      </dialogAddDonors>
       <v-data-table
         data-aos="fade-up"
         data-aos-delay="200"
@@ -76,6 +82,7 @@
               dark
               class="px-9"
               color="green"
+              @click="addModal = true"
             >
             <strong>Tambah Data Donor</strong>
             <v-icon class="mx-2">mdi-plus</v-icon> 
@@ -151,10 +158,16 @@
   
   <script>
   import axios from "axios";
+  import dialogAddDonors from "@/views/Donor/dialogAddDonors"
   
   export default {
     name: "Donor",
+    components: {
+      dialogAddDonors
+    },
     data: () => ({
+      addModal: false,
+
       page: 1,
       itemsPerPage: 10,
       itemsbr: [
@@ -217,6 +230,11 @@
       
     },
     methods: {
+      closeDialogAdd(){
+        this.addModal = false
+        this.initialize()
+      },
+
       async initialize() {
         try {
             this.$store.state.loadingOverlay = true
