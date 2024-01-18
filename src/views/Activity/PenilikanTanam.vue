@@ -2114,10 +2114,10 @@
                   :loading="dialogs.exportFilter.filters.ta.loading"
                   :items="dialogs.exportFilter.filters.ta.options"
                   v-model="dialogs.exportFilter.filters.ta.model"
-                  v-on:change="getVillage('export')"
+                  v-on:change="getFFbyTA('export')"
                 ></v-autocomplete>
               </v-col>
-              <v-col :cols="12">
+              <!-- <v-col :cols="12">
                 <v-autocomplete
                   rounded
                   outlined
@@ -2134,7 +2134,7 @@
                   v-model="dialogs.exportFilter.filters.village.model"
                   v-on:change="getFFbyVillage('export')"
                 ></v-autocomplete>
-              </v-col>
+              </v-col> -->
               <v-col :cols="12">
                 <v-autocomplete
                   rounded
@@ -2180,7 +2180,7 @@
                 :color="`green ${hover ? 'white--text' : ''}`" 
                 :outlined="!hover" 
                 @click="() => exportDataByMU()" 
-                :disabled="dialogs.exportFilter.filters.village.model < 1||dialogs.exportFilter.filters.ta.model < 1||dialogs.exportFilter.filters.mu.model < 1||dialogs.exportFilter.filters.ff_area.model < 1 ||dialogs.exportFilter.filters.mu.loading">
+                :disabled="dialogs.exportFilter.filters.ta.model < 1||dialogs.exportFilter.filters.mu.model < 1||dialogs.exportFilter.filters.ff_area.model < 1 ||dialogs.exportFilter.filters.mu.loading">
                 <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export By Area</v-btn>
             </v-hover>
             <v-divider class="mx-2"></v-divider>
@@ -3637,6 +3637,48 @@ export default {
         }
       }
     },
+    async getFFbyTA(val) {
+      this.dialogs.exportFilter.filters.ff_area.model = ""
+      this.dialogs.exportFilter.filters.ff_area.options = []
+      var areaParam = "";
+       if (val == "table") {
+        areaParam = '';
+      }else if(val == "export") {
+        areaParam = this.dialogs.exportFilter.filters.ta.model
+      } else {
+        areaParam = '';
+      }
+      try {
+        const response = await axios.get(
+          // this.BaseUrlGet + `GetDesa?program_year=${this.generalSettings.programYear}&kode_ta=${valparam}` ,
+          this.BaseUrlGet + `getFFbyTA?area_code=${areaParam}` ,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          if (val == "table") {
+            this.dialogs.exportFilter.filters.ff_area.options = ''
+          }else if(val == "export") {
+            this.dialogs.exportFilter.filters.ff_area.options = response.data.data.result.data
+          } else {
+            this.dialogs.exportFilter.filters.ff_area.options = response.data.data.result.data;
+          }
+          // this.dataobject = response.data.data.result;
+        }
+        
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+
+
     async getFFbyVillage(val) {
       this.dialogs.exportFilter.filters.ff_area.model = ""
       this.dialogs.exportFilter.filters.ff_area.options = []
@@ -5512,7 +5554,6 @@ export default {
         land_program: this.generalSettings.landProgram.model,
         mu_no: this.dialogs.exportFilter.filters.mu.model,
         ta_no: this.dialogs.exportFilter.filters.ta.model,
-        village_no: this.dialogs.exportFilter.filters.village.model,
         ff: this.dialogs.exportFilter.filters.ff_area.model
       })
       url += params.toString()
