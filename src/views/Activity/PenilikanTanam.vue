@@ -3641,17 +3641,19 @@ export default {
       this.dialogs.exportFilter.filters.ff_area.model = ""
       this.dialogs.exportFilter.filters.ff_area.options = []
       var valparam = "";
-      if (val == "table") {
+      var areaParam = "";
+       if (val == "table") {
         valparam = '';
       }else if(val == "export") {
         valparam = this.dialogs.exportFilter.filters.village.model
+        areaParam = this.dialogs.exportFilter.filters.ta.model
       } else {
         valparam = '';
       }
       try {
         const response = await axios.get(
           // this.BaseUrlGet + `GetDesa?program_year=${this.generalSettings.programYear}&kode_ta=${valparam}` ,
-          this.BaseUrlGet + `getFFbyVillage?village_no=${valparam}` ,
+          this.BaseUrlGet + `getFFbyVillage?village_no=${valparam}&&area_code=${areaParam}` ,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
