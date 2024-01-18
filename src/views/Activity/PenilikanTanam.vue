@@ -2096,6 +2096,60 @@
                   :loading="dialogs.exportFilter.filters.mu.loading"
                   :items="itemsMU"
                   v-model="dialogs.exportFilter.filters.mu.model"
+                  v-on:change="getTA('export')"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Target Area"
+                  item-value="area_code"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.ta.loading"
+                  :items="dialogs.exportFilter.filters.ta.options"
+                  v-model="dialogs.exportFilter.filters.ta.model"
+                  v-on:change="getVillage('export')"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Desa"
+                  item-value="kode_desa"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.village.loading"
+                  :items="dialogs.exportFilter.filters.village.options"
+                  v-model="dialogs.exportFilter.filters.village.model"
+                  v-on:change="getFFbyVillage('export')"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Facilitator"
+                  item-value="ff_no"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.ff_area.loading"
+                  :items="dialogs.exportFilter.filters.ff_area.options"
+                  v-model="dialogs.exportFilter.filters.ff_area.model"
                 ></v-autocomplete>
               </v-col>
             </v-row>
@@ -2126,8 +2180,8 @@
                 :color="`green ${hover ? 'white--text' : ''}`" 
                 :outlined="!hover" 
                 @click="() => exportDataByMU()" 
-                :disabled="dialogs.exportFilter.filters.mu.model < 1 ||dialogs.exportFilter.filters.mu.loading">
-                <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export By UM</v-btn>
+                :disabled="dialogs.exportFilter.filters.village.model < 1||dialogs.exportFilter.filters.ta.model < 1||dialogs.exportFilter.filters.mu.model < 1||dialogs.exportFilter.filters.ff_area.model < 1 ||dialogs.exportFilter.filters.mu.loading">
+                <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export By Area</v-btn>
             </v-hover>
             <v-divider class="mx-2"></v-divider>
           </v-card-actions>
@@ -2624,6 +2678,27 @@ export default {
           },
           mu: {
             itemVal: 'mu_no',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          ta: {
+            itemVal: 'ta_no',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          village: {
+            itemVal: 'village_no',
+            itemText: 'name',
+            loading: false,
+            model: '',
+            options: [],
+          },
+          ff_area: {
+            itemVal: 'village_no',
             itemText: 'name',
             loading: false,
             model: '',
@@ -3481,15 +3556,22 @@ export default {
       }
     },
     async getTA(val) {
+      this.dialogs.exportFilter.filters.ta.options = []
+      this.dialogs.exportFilter.filters.ta.model = ''
       var valparam = "";
+      var valYear = ""
       if (val == "table") {
         valparam = this.valueMU;
-      } else {
+        valYear= this.generalSettings.programYear
+      } else if(val == "export") {
+        valparam = this.dialogs.exportFilter.filters.mu.model
+        valYear = this.dialogs.exportFilter.program_year
+      }else{
         valparam = this.valueMUForm;
       }
       try {
         const response = await axios.get(
-          this.BaseUrlGet + `GetTargetArea?program_year=${this.generalSettings.programYear}&mu_no=${valparam}`,
+          this.BaseUrlGet + `GetTargetArea?program_year=${valYear}&mu_no=${valparam}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -3499,7 +3581,9 @@ export default {
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsTA = response.data.data.result;
-          } else {
+          } else if(val == "export") {
+            this.dialogs.exportFilter.filters.ta.options = response.data.data.result
+          }else{
             this.itemsTAForm = response.data.data.result;
           }
           // this.dataobject = response.data.data.result;
@@ -3514,9 +3598,13 @@ export default {
       }
     },
     async getVillage(val) {
+      this.dialogs.exportFilter.filters.village.model = ""
+      this.dialogs.exportFilter.filters.village.options = []
       var valparam = "";
       if (val == "table") {
         valparam = this.valueTA;
+      }else if(val == "export") {
+        valparam = this.dialogs.exportFilter.filters.ta.model
       } else {
         valparam = this.valueTAForm;
       }
@@ -3533,8 +3621,50 @@ export default {
         if (response.data.length != 0) {
           if (val == "table") {
             this.itemsVillage = response.data.data.result;
+          }else if(val == "export") {
+            this.dialogs.exportFilter.filters.village.options = response.data.data.result
           } else {
             this.itemsVillageForm = response.data.data.result;
+          }
+          // this.dataobject = response.data.data.result;
+        }
+        
+      } catch (error) {
+        console.error(error.response);
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+      }
+    },
+    async getFFbyVillage(val) {
+      this.dialogs.exportFilter.filters.ff_area.model = ""
+      this.dialogs.exportFilter.filters.ff_area.options = []
+      var valparam = "";
+      if (val == "table") {
+        valparam = '';
+      }else if(val == "export") {
+        valparam = this.dialogs.exportFilter.filters.village.model
+      } else {
+        valparam = '';
+      }
+      try {
+        const response = await axios.get(
+          // this.BaseUrlGet + `GetDesa?program_year=${this.generalSettings.programYear}&kode_ta=${valparam}` ,
+          this.BaseUrlGet + `getFFbyVillage?village_no=${valparam}` ,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          if (val == "table") {
+            this.dialogs.exportFilter.filters.ff_area.options = ''
+          }else if(val == "export") {
+            this.dialogs.exportFilter.filters.ff_area.options = response.data.data.result.data
+          } else {
+            this.dialogs.exportFilter.filters.ff_area.options = response.data.data.result.data;
           }
           // this.dataobject = response.data.data.result;
         }
@@ -5378,7 +5508,10 @@ export default {
       const params = new URLSearchParams({
         program_year: this.dialogs.exportFilter.program_year,
         land_program: this.generalSettings.landProgram.model,
-        mu_no: this.dialogs.exportFilter.filters.mu.model
+        mu_no: this.dialogs.exportFilter.filters.mu.model,
+        ta_no: this.dialogs.exportFilter.filters.ta.model,
+        village_no: this.dialogs.exportFilter.filters.village.model,
+        ff: this.dialogs.exportFilter.filters.ff_area.model
       })
       url += params.toString()
       window.open(url, "blank")
