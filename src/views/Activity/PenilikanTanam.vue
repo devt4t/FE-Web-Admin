@@ -3302,7 +3302,6 @@ export default {
 
           search_column: this.pagination.search.field || '',
           search_value: this.pagination.search.value || '',
-          
           mu: this.valueMU,
           ta: this.valueTA,
           village: this.valueVillage,
@@ -5370,10 +5369,6 @@ export default {
       })
       url += params.toString()
       window.open(url, "blank")
-    },
-
-    exportSimpleData(){
-
     },
 
     async exportDataByMU() {

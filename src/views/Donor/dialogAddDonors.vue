@@ -143,40 +143,8 @@
                                 v-model="address.address2"
                                 label="Alamat Kedua (Opsional)"
                                 placeholder="Masukan Alamat Kedua (Opsional)..."
-                            >
+                                >
                             </v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                            <v-select
-                                outlined
-                                hide-details
-                                rounded
-                                dense
-                                color="success"
-                                item-color="success"
-                                v-model="address.city.model"
-                                :items="address.city.itemList"
-                                item-text="text"
-                                item-value="value"
-                                label="Kota"
-                            >
-                            </v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                            <v-select
-                                outlined
-                                hide-details
-                                rounded
-                                dense
-                                color="success"
-                                item-color="success"
-                                v-model="address.state.model"
-                                :items="address.state.itemList"
-                                item-text="text"
-                                item-value="value"
-                                label="Provinsi"
-                            >
-                            </v-select>
                         </v-col>
                         <v-col cols="12" sm="6" md="6">
                             <v-text-field
@@ -205,6 +173,41 @@
                                 item-text="text"
                                 item-value="value"
                                 label="Country"
+                            >
+                            </v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                            <v-select
+                                outlined
+                                hide-details
+                                rounded
+                                dense
+                                color="success"
+                                item-color="success"
+                                v-model="address.state.model"
+                                :items="address.state.itemList"
+                                :disabled="address.country.model == 'foreign' || address.country.model == ''"
+                                v-on:change="getCityByStates()"
+                                item-text="name"
+                                item-value="province_code"
+                                label="Provinsi"
+                            >
+                            </v-select>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="6">
+                            <v-select
+                                outlined
+                                hide-details
+                                rounded
+                                dense
+                                color="success"
+                                item-color="success"
+                                v-model="address.city.model"
+                                :items="address.city.itemList"
+                                :disabled="address.state.model == '' || address.city.itemList == []"
+                                item-text="namaKabupaten"
+                                item-value="kabupaten_no"
+                                label="Kota"
                             >
                             </v-select>
                         </v-col>
@@ -253,10 +256,9 @@
                             rounded
                             dense
                             color="success"
-                            v-model="contact.Website"
+                            v-model="contact.website"
                             label="Website"
                             placeholder="Masukan Website (Opsional)..."
-                            hint="Contoh: https://geko.t4t-api.org"
                         >
                         </v-text-field>
                     </v-col>
@@ -285,7 +287,7 @@
                             dense
                             color="success"
                             item-color="success"
-                            v-model="donorsPhoto.model"
+                            v-model="active_status.model"
                             :items="active_status.itemList"
                             item-text="text"
                             item-value="value"
@@ -374,16 +376,21 @@
                 address1: '',
                 address2: '',
                 city: {
-                    itemList: '',
-                    model: ''
+                    itemList: [],
+                    model: '',
+                    loading: false
                 },
                 state: {
-                    itemList: '',
-                    model: ''
+                    itemList: [],
+                    model: '',
+                    loading: false
                 },
                 postal_code: '',
                 country: {
-                    itemList: '',
+                    itemList: [
+                        {text: 'Indonesia', value: 'Indonesia'},
+                        {text: 'Foreign', value: 'Foreign'}    
+                    ],
                     model: ''
                 },
             },
@@ -403,6 +410,7 @@
             },
 
             BaseUrlGet: '',
+            BaseUrl: '',
             authtoken: ''
 
         }),
@@ -411,8 +419,10 @@
                 get: function () {
                     if(this.show){
                         this.BaseUrlGet= localStorage.getItem("BaseUrlGet");
+                        this.BaseUrl = localStorage.getItem("BaseUrl");
                         this.authtoken= localStorage.getItem("token");
                         this.resetData()
+                        this.getProvinceList()
                         // this.getMUList()
                         // this.getDonorsList()
                         // this.getTableData({
@@ -473,10 +483,10 @@
                 this.address.address1= ''
                 this.address.address2= ''
                 this.company= ''
-                this.address.city= ''
-                this.address.state= ''
+                this.address.city.model= ''
+                this.address.state.model= ''
                 this.address.postal_code= ''
-                this.address.country= ''
+                this.address.country.model= ''
                 this.contact.email= ''
                 this.contact.website= ''
                 this.contact.phoneNumber= ''
@@ -485,8 +495,44 @@
                 this.donorsPhoto= ''
             },
             saveButtonCondition(){
-                if(this.donorsCategory.model != '' && this.donors_name.first_name != '' && this.donors_name.last_name != '' && this.address.address1 != '' && this.address.address2 != '' && this.address.city != '' && this.address.country != '' && this.address.postal_code != 0 && this.address.state != 0 && this.contact.email !='' && this.contact.phoneNumber!='' && this.date_joined.model!='' && this.active_status.model!='' && this.donorsPhoto!='' ) return true
+                if(this.donorsCategory.model != '' && this.donors_name.first_name != '' && this.donors_name.last_name != '' && this.address.address1 != '' && this.address.address2 != '' && this.address.country.model != '' && this.contact.email !='' && this.contact.phoneNumber!='' && this.date_joined.model!='' && this.active_status.model!='' && this.donorsPhoto !='') return true
                 return false
+            },
+            async getCityByStates(){
+                this.address.city.itemList = []
+                const params = this.address.state.model
+
+                this.address.state.loading = true
+                const response = await axios.get(
+                    this.BaseUrlGet + `GetKabupatenByProvince?province_code=${params}`,
+                    {
+                    headers: {
+                        Authorization: `Bearer ` + this.authtoken,
+                    },
+                    }
+                );
+                const data = response.data.data.result || []
+                this.address.city.itemList = data
+                this.address.city.loading = false
+            },
+
+            async getProvinceList(){
+                try {
+                    this.address.state.loading = true
+                    const response = await axios.get(this.$store.getters.getApiUrl("GetProvinceAdmin"), this.$store.state.apiConfig)
+                    const data = response.data.data.result || []
+                    this.address.state.itemList = data
+                    console.log(this.address.state.itemList)
+                } catch (error) {
+                    if (error.response) {
+                        if (error.response.status == 401) {
+                            localStorage.removeItem("token")
+                            this.$router.push("/")
+                        }
+                    } else console.error(error)
+                } finally {
+                    this.address.state.loading = false
+                }
             },
  
 
@@ -507,22 +553,33 @@
                     address1: this.address.address1,
                     address2: this.address.address2,
                     company: this.company,
-                    city: this.address.city,
-                    state: this.address.state,
+                    city: this.address.city.model,
+                    state: this.address.state.model,
                     postal_code: this.address.postal_code,
-                    country: this.address.country,
+                    country: this.address.country.model,
                     email: this.contact.email,
                     website: this.contact.website,
                     phone: this.contact.phoneNumber,
                     join_date: this.date_joined.model,
                     active: this.active_status.model,
-                    photo: this.donorsPhoto,
+                    photo: '',
 
                 }
+                if(this.donorsPhoto){
+                    const namafile = this.donors_name.first_name + "_" + this.company + this.contact.phoneNumber + "_donors";
+                    const response = await axios.post(
+                        this.BaseUrl + "donor/upload.php",
+                        this._utils.generateFormData({
+                            nama: namafile,
+                            dir: 'donor-photo/',
+                            image: this.donorsPhoto
+                        }),
+                    );
+                    params.photo = response.data.data.new_name
+                }
                 console.log(params)
-                // const url = `AddNewProject?${params}`
                 const PostData = await axios.post(
-                    this.BaseUrlGet + "",
+                    this.BaseUrlGet + "AddNewDonor",
                         params,
                         {
                         headers: {
@@ -531,8 +588,9 @@
                         }
                 );
                 const data = PostData.data
+
+                // const url = `AddNewProject?${params}`
                 
-                this.$router.push('Project')
             }
         }
     }
