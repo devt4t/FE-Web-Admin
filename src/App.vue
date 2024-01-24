@@ -361,6 +361,7 @@ export default {
           'LihatTanggalDistribusi',
           'ReportData',
           'AdjustmentDataSostam',
+          'populateDataMonitoring1',
         ]
         const checkExceptionPage = exceptionPage.includes(this.$route.name)
         // console.log(this.$route.name);

@@ -72,11 +72,12 @@
         </v-card>
       </v-dialog>
       <!-- Modal Filter Area -->
-      <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl">
+      <v-dialog v-model="dialogFilterArea" max-width="500px" content-class="rounded-xl mx-1" persistent>
         <v-card>
-          <v-card-title class="justify-center"
-            >Filter Pencarian Area</v-card-title
-          >
+          <v-card-title class="mb-1 green darken-3 rounded-xl ma-1 py-2">
+              <span class="white--text">Filter Area</span>
+              <v-icon color="white" class="ml-auto" @click="resetFilter()">mdi-close-circle</v-icon>
+          </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
@@ -133,7 +134,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
+            <v-btn dark color="red" rounded class="px-5" @click="resetFilter()">
               <v-icon small class="mr-1">mdi-close-circle</v-icon>
               Cancel
             </v-btn
@@ -2198,6 +2199,8 @@
       :loading="loadtable"
       :options.sync="pagination.options"
       :server-items-length="pagination.total"
+      v-model="listMonitoring1Checked" 
+      show-select
       :page="pagination.current_page"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
@@ -2209,6 +2212,10 @@
         showFirstLastPage: true,
       }"
     >
+    <template v-slot:item.data-table-select="{ isSelected, select }">
+      <v-simple-checkbox color="success" v-ripple :value="isSelected"
+        @input="select($event)"></v-simple-checkbox>
+    </template>
       <template v-slot:top>
         <v-row class="ma-0 mt-2 mr-2 align-center">
           <v-menu offset-y content-class="rounded-xl" v-if="generalSettings.landProgram.model == 'Petani' && (User.role_group == 'IT' || User.role_name == 'PROGRAM MANAGER' || User.role_name == 'REGIONAL MANAGER' || User.role_name == 'UNIT MANAGER' || User.role_name == 'PLANNING MANAGER')">
@@ -2275,7 +2282,7 @@
               color="success"
               item-color="success"
               v-model="pagination.current_page"
-              :items="[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80]"
+              :items="pagination.page_options"
               outlined
               dense
               hide-details
@@ -2336,7 +2343,7 @@
             style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
           ></v-select>
           <v-btn
-            v-if="generalSettings.landProgram.model == 'Petani'"
+            v-if="User.role_group == 'IT' && generalSettings.landProgram.model == 'Petani'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="() => {openExportFilter()}"
@@ -2346,7 +2353,7 @@
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <v-btn
-            v-else
+            v-if="User.role_group == 'IT' && generalSettings.landProgram.model == 'Umum'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="() => {exportLahanUmum()}"
@@ -2362,8 +2369,27 @@
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="showAddModal()"
             color="green"
+            disabled
           >
             <v-icon small>mdi-plus</v-icon> Add
+          </v-btn>
+        </v-row>
+        <v-row class="pb-4 px-2" v-if="!valueTA == '' && User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+          <v-col cols="12" lg="4">
+            <h4>Jumlah Lahan Terpilih Untuk Monitoring 2: {{ listMonitoring1Checked.length }} / {{ totalDatas }}</h4>
+          </v-col>
+          <v-col cols="12" lg="4">
+            <h4>Persentase Lahan Terpilih Untuk Monitoring 2: {{ percentageFormat(listMonitoring1Checked.length, totalDatas) }}%</h4>
+          </v-col>
+          <v-btn
+            v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'"
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1"
+            @click="pushPopulateData()"
+            :disabled="listMonitoring1Checked.length <= 0 || monitoringCheckedPercentages < 12.0 || monitoringCheckedPercentages > 13.0"
+            color="green white--text"
+          >
+            <v-icon class="mr-1">mdi-arrow-collapse-right</v-icon> Populate Data Monitoring 2
           </v-btn>
         </v-row>
       </template>
@@ -2814,6 +2840,9 @@ export default {
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
+    listMonitoring1Checked: [],
+    totalDatas: 0,
+    monitoringCheckedPercentages: 0,
     editedItem: {
       name: "",
     },
@@ -3097,7 +3126,8 @@ export default {
     }
   },
   async mounted() {
-
+    
+    
     await this.firstAccessPage();
 
     const taskForceEmails = this.$store.state.taskForceTeam.emails || []
@@ -3197,6 +3227,7 @@ export default {
       this.getUMAll();
       this.getTrees();
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
+
     },
     checkRoleAccess() {
       if (this.User.role_group == "IT") {
@@ -3245,9 +3276,35 @@ export default {
         }
       }
     },
+    percentageFormat(partial, total){
+      this.monitoringCheckedPercentages = ((partial * 100)/ total).toFixed(1)
+      return ((partial * 100)/ total).toFixed(1)
+    },
     getColorStatus(status) {
       if (status == "Belum Verifikasi") return "red";
       else return "green";
+    },
+    async pushPopulateData(){
+      const confirmation = await Swal.fire({
+          title: 'Apa Anda Yakin Untuk Melakukan Populasi Data Ke Monitoring 2?',
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+        const pushParams = {
+          list_monitoring1ID: this.listMonitoring1Checked.map(val => {
+            return val.monitoring_no
+          }),
+          list_monitoring1: this.listMonitoring1Checked 
+        }
+        console.log(pushParams)
+        this.listMonitoring1Checked = []
+        this.totalDatas = 0
+        this.initialize()
+      }
     },
     async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
       if (mou_no) {
@@ -3332,6 +3389,7 @@ export default {
         this.loadtable = true;
         this.$store.state.loadingOverlayText = 'Getting monitoring datas...'
         this.$store.state.loadingOverlay = true
+        this.dataobject = [];
 
         // get search column
         await this.getSearchColumn()
@@ -3339,12 +3397,17 @@ export default {
         await this.getTableData().then(data => {
           this.dataobject = data.items
           this.pagination.total = data.total
+          
           this.pagination.current_page = data.current_page
           this.pagination.length_page = data.last_page
+          if(this.totalDatas == 0 && this.pagination.search.value == '' && !this.valueTA == ''){
+            this.totalDatas = data.total
+          }
           const pageOptions = []
           for (let index = 1; index <= data.last_page; index++) {
             pageOptions.push(index)          
           }
+
           this.pagination.page_options = pageOptions
           // console.log(this.pagination)
         })
@@ -4647,11 +4710,21 @@ export default {
     async showFilterArea() {
       // console.log(localStorage.getItem("token"));
       this.dialogFilterArea = true;
+      this.valueMU = "";
+      this.valueTA = "";
+      this.valueVillage = "";
+      this.selectMU = "";
+      this.selectTA = "";
+      this.selectVillage = "";
+      this.listMonitoring1Checked= []
+      this.totalDatas = 0
     },
     async showFilterEmployee() {
       this.dialogFilterEmp = true;
     },
     resetFilter() {
+      this.dialogFilterArea = false
+      this.valueTA = ''
       if (this.dialogFilterArea == true) {
         this.valueUM = "";
         this.valueFC = "";
@@ -4659,7 +4732,7 @@ export default {
         this.selectFC = "";
       } else if (this.dialogFilterEmp == true) {
         this.valueMU = "";
-        this.valueFC = "";
+        this.valueTA = "";
         this.valueVillage = "";
         this.selectMU = "";
         this.selectTA = "";
@@ -4670,7 +4743,6 @@ export default {
     },
     async searchbyarea() {
       this.dialogFilterArea = false;
-      await this.resetFilter();
       await this.initialize();
     },
     async searchbyemp() {

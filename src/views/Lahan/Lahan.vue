@@ -3351,6 +3351,7 @@ export default {
       this.loadtable = true;
       this.$store.state.loadingOverlayText = 'Mengambil data lahan...'
       this.$store.state.loadingOverlay = true
+      this.dataobject = []
       await this.getTableData().then(data => {
         this.dataobject = data.items
         this.table.datas.total = data.total

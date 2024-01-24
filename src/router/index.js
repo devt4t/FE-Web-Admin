@@ -125,6 +125,11 @@ const routes = [
     component: lazyLoad('Activity/components/sostam/AdjustmentDataSostam')
   },
   {
+    path: '/populateDataMonitoring1',
+    name: 'populateDataMonitoring1',
+    component: lazyLoad('Activity/monitoring2AddIn/populateDataMonitoring1')
+  },
+  {
     path: '/PelatihanPetani',
     name: 'PelatihanPetani',
     component: lazyLoad('Activity/PelatihanPetani')

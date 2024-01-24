@@ -403,13 +403,13 @@
             async getTableData() {
                 try {
                     this.table.loading.show = true
-                    // const params = new URLSearchParams(getparams)
-                    // const url = `ExportSostamAllSuperAdmin?${params}`
-                    // const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
-                    // const data = call.data.listData
+                    const params = new URLSearchParams(getparams)
+                    const url = `ExportSostamAllSuperAdmin?${params}`
+                    const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
+                    const data = call.data.listData
                     
-                    // const totalData = call.data.totalData
-                    // this.totalLahan = totalData
+                    const totalData = call.data.totalData
+                    this.totalLahan = totalData
     
                     this.table.items = this.ItemData
                     this.table.items_raw = this.ItemData

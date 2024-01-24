@@ -15,6 +15,13 @@
       @close="closeDialogAdd()"
       >
       </dialogAddDonors>
+      <dialogEditDonors
+      :show="editDonors.show"
+      :itemData="editDonors.data"
+      @close="closeDialogEdit()"
+      >
+      </dialogEditDonors>
+      
       <v-data-table
         data-aos="fade-up"
         data-aos-delay="200"
@@ -119,26 +126,14 @@
                 Detail
               </v-btn>
               <v-btn
-                  v-if="item.is_verified == 0"
-                  color="green white--text"
+                  color="orange white--text"
                      rounded
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                     @click="">
+                     :disabled="!$store.state.User.role_group=='IT'"
+                     @click="openEditDonor(item)">
                 <v-icon class="mr-1">mdi-check-bold</v-icon>
-                Verifikasi
-              </v-btn>
-              <v-btn
-                  v-if="item.is_verified != 0"
-                  color="red white--text"
-                     rounded
-                     small
-                     class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                     @click="">
-                <v-icon class="mr-1">mdi-check-bold</v-icon>
-                Unverifikasi
+                Edit Data Donatur
               </v-btn>
                 <!--{showModal('form', item)}-->
             </v-card>
@@ -159,14 +154,21 @@
   <script>
   import axios from "axios";
   import dialogAddDonors from "@/views/Donor/dialogAddDonors"
+  import dialogEditDonors from "@/views/Donor/dialogEditDonors"
   
   export default {
     name: "Donor",
     components: {
-      dialogAddDonors
+      dialogAddDonors,
+      dialogEditDonors
     },
     data: () => ({
       addModal: false,
+
+      editDonors: {
+        show: false,
+        data: {}
+      },
 
       page: 1,
       itemsPerPage: 10,
@@ -234,6 +236,11 @@
         this.addModal = false
         this.initialize()
       },
+      closeDialogEdit(){
+        this.editDonors.show = false
+        this.editDonors.data = {}
+        this.initialize()
+      },
 
       async initialize() {
         try {
@@ -261,6 +268,10 @@
               this.$store.state.loadingOverlay = false
               this.$store.state.loadingOverlayText = ''
             }
+      },
+      openEditDonor(item){
+        this.editDonors.show = true
+        this.editDonors.data = item
       },
       SelectedDataSwitch(){
         console.log(this.dataSwitch)
