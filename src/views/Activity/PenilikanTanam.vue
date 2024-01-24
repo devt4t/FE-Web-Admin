@@ -2200,7 +2200,7 @@
       :options.sync="pagination.options"
       :server-items-length="pagination.total"
       v-model="listMonitoring1Checked" 
-      show-select
+      :show-select="populateDataSwitch"
       :page="pagination.current_page"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
@@ -2245,6 +2245,14 @@
               >
                 <v-icon class="mx-2" small>mdi-image-filter-none</v-icon> Filter Berdasarkan Karyawan
               </v-btn>
+              <v-switch
+                v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'"
+                v-model="populateDataSwitch"
+                label="Melakukan Populate Data Ke Monitoring 2?"
+                inset
+                color="orange"
+                hide-details
+              ></v-switch>
             </v-card>
           </v-menu>
           <!-- Program Year -->
@@ -2840,6 +2848,7 @@ export default {
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
+    populateDataSwitch: false,
     listMonitoring1Checked: [],
     totalDatas: 0,
     monitoringCheckedPercentages: 0,
