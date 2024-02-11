@@ -3623,6 +3623,12 @@
                                         <v-chip v-else-if="item.verified_by != null || item.verified_by != ''" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Verified</v-chip>
                                         
                                     </template>
+                                    <template v-slot:item.sts_bast="{item}">
+                                        <v-chip v-if="item.status_bast == 0" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Belum Di-Cek</v-chip>
+                                        <v-chip v-else-if="item.status_bast == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Kurang Lengkap</v-chip>
+                                        <v-chip v-else-if="item.status_bast == 2" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Kelebihan</v-chip>
+                                        <v-chip v-else-if="item.status_bast == 3" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Lengkap / Selesai</v-chip>
+                                    </template>
                                     <!-- Status Column -->
                                     <!-- <template v-slot:item.status="{item}">
                                         
@@ -3658,6 +3664,52 @@
                                                     mdi-download-box
                                                 </v-icon>
                                                     Export
+                                                </v-btn>
+                                            </v-list-item>
+                                            <v-list-item v-if="item.status_bast == 0 || item.status_bast == null">
+                                                <v-btn
+                                                    dark
+                                                    class="px-7"
+                                                    rounded
+                                                    @click="cekReportStatusBAST(item)"
+                                                    color="blue"
+                                                    block
+                                                    
+                                                >
+                                                <v-icon class="mr-1" small color="white">
+                                                    mdi-folder-search
+                                                </v-icon>
+                                                    CEk Status BAST
+                                                </v-btn>
+                                            </v-list-item>
+                                            <v-list-item v-if="item.status_bast == 1">
+                                                <v-btn
+                                                    dark
+                                                    class="px-7"
+                                                    rounded
+                                                    @click="lackOfSeedForm(item)"
+                                                    color="red"
+                                                    block
+                                                >
+                                                <v-icon class="mr-1" small color="white">
+                                                    mdi-magnify-minus
+                                                </v-icon>
+                                                    Lapor Bibit Kurang
+                                                </v-btn>
+                                            </v-list-item>
+                                            <v-list-item v-if="item.status_bast == 2">
+                                                <v-btn
+                                                    dark
+                                                    class="px-7"
+                                                    rounded
+                                                    @click="excessOfSeedForm(item)"
+                                                    color="orange"
+                                                    block
+                                                >
+                                                <v-icon class="mr-1" small color="white">
+                                                    mdi-magnify-plus
+                                                </v-icon>
+                                                    Lapor Bibit Lebih
                                                 </v-btn>
                                             </v-list-item>
                                         </v-list>
@@ -4010,6 +4062,7 @@ export default {
                     {text: 'Managemgent Unit', value: 'mu_name', sortable: false},
                     {text: 'Nama FF', value: 'ff_no'},
                     {text: 'Nama FF', value: 'ff_name'},
+                    {text: 'Status BAST', value: 'sts_bast'},
                     {text: 'Menu Lainnya', value: 'actions'}, 
                     {text: 'Detail Petani', value: 'data-table-expand', align: 'right', sortable: false},
                 ],
@@ -4411,7 +4464,6 @@ export default {
         },
         expandTableReport(item){
             this.distributionReport.table.NurseryFarmerItems = item.item
-            console.log(item)
         },
         // async reportNursery(){
         //     // await this.getUserException()
@@ -4956,6 +5008,49 @@ export default {
             // console.log(this.distributionReport.dialogs.exportFilter.fc_name)
             // return FC.data.data.result[0].name
         },
+        lackOfSeedForm(){
+            window.open('https://nursery.geninelabs.live/#/forms/request-distribution-addendum')
+        },
+        excessOfSeedForm(){
+            window.open('https://nursery.geninelabs.live/#/forms/request-distribution-addendum')
+        },
+        async cekReportStatusBAST(item){
+            console.log(item)
+            const confirm = await Swal.fire({
+              title: 'Konfirmasi',
+              text: "Cek Data Status BAST?",
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Ya!',
+              showCancelButton: true,
+              cancelButtonColor: '#d33',
+            })
+            if(confirm.isConfirmed){
+                // const params = { 
+                //     loading_line_id: item.loading_line[0].id
+                // }
+                // console.log(params)
+                try{
+                    const sendData = await axios.get(this.apiConfig.baseUrl + 'NurseryCheckDistributionBAST?loading_line_id=' + item.loading_line[0].id,
+                    {
+                    headers: {
+                        Authorization: `Bearer ` + this.apiConfig.token
+                    },
+                    })
+                    Swal.fire({
+                    title: 'Berhasil Update Data Status BAST!',
+                    icon: 'success',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'OK',
+                    })
+                    await this.reportNurseryFF()
+                    this.distributionReport.table.expanded = []
+                    }catch (error) {
+                    console.error(error.response);
+                    }
+            }
+        },
+
         exportReportFromDetail(item){
             this.distributionReport.dialogs.exportFilter.ff_model = item.ff_no
             this.distributionReport.dialogExportDistributionReport.show = true

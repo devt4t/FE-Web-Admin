@@ -127,6 +127,7 @@ export default {
       {text: 'Nomor Project', value: 'project_no'},
       {text: 'Nomor Lahan', value: 'lahan_no'},
     ],
+    tableLoading: false,
     dataobject: [],
     // snackbar
     snackbar: {
@@ -142,12 +143,12 @@ export default {
     this.User = this.$store.state.User
     // const taskForceEmails = this.$store.state.taskForceTeam.emails || []
 
-    if (this.User.role_group != 'IT') {
-      this.$store.state.maintenanceOverlay = true
-    }
+    // if (this.User.role_group != 'IT') {
+    //   this.$store.state.maintenanceOverlay = true
+    // }
   },
   destroyed() {
-    this.$store.state.maintenanceOverlay = false
+    // this.$store.state.maintenanceOverlay = false
 
     this.$store.state.loadingOverlay = false
     this.$store.state.loadingOverlayText = null
@@ -159,6 +160,42 @@ export default {
       //   console.log(array);
       return array;
     },
+    async getPopulateTableData(area_code){
+        try {
+          this.tableLoading = true
+          this.dataobject = [];
+          // const response = await axios.get(
+          //   this.BaseUrlGet +
+          //   "GetMonitoring1PopulateByTA?program_year="+ 
+          //   this.localConfig.programYear +
+          //   "&ta=" +
+          //   area_code,
+          //   {
+          //     headers: {
+          //       Authorization: `Bearer ` + this.authtoken,
+          //     },
+          //   }
+          // );
+          if (response.data.length != 0) {
+            this.dataobject = response.data.data.result
+            this.tableLoading = false
+          } else {
+            this.dataobject = [];
+            this.tableLoading = false
+            // this.loadtable = false;
+          }
+        } catch (error) {
+          console.error(error);
+          if (error.response.status == 401) {
+            this.sessionEnd(error)
+            this.tableLoading = false
+          } else {
+            this.dataobject = [];
+            this.tableLoading = false
+            // this.loadtable = false;
+          }
+        }
+      }
   },
 };
 </script>

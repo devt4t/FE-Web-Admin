@@ -2171,7 +2171,7 @@
               rounded 
               :color="`green ${hover ? 'white--text' : ''}`" 
               :outlined="!hover" 
-              @click="exportSimpleDistribution.show = true" 
+              @click="exportSimpleDistribution.show = true"  exportDataByMU()
               >
               <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export + Distribution</v-btn>
             </v-hover>
@@ -2382,15 +2382,15 @@
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn>
         </v-row>
-        <v-row class="pb-4 px-2" v-if="!valueTA == '' && User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
+        <v-row class="pb-4 px-2" v-if="populateDataSwitch == true &&!valueTA == '' && User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
           <v-col cols="12" lg="4">
-            <h4>Jumlah Lahan Terpilih Untuk Monitoring 2: {{ listMonitoring1Checked.length }} / {{ totalDatas }}</h4>
+            <h4>Jumlah Lahan Terpilih Untuk Monitoring 2: {{ listMonitoring1Checked.length + total_populated}} / {{ totalDatas }}</h4>
           </v-col>
           <v-col cols="12" lg="4">
-            <h4>Persentase Lahan Terpilih Untuk Monitoring 2: {{ percentageFormat(listMonitoring1Checked.length, totalDatas) }}%</h4>
+            <h4>Persentase Lahan Terpilih Untuk Monitoring 2: {{ percentageFormat(listMonitoring1Checked.length + total_populated, totalDatas) }}%</h4>
           </v-col>
           <v-btn
-            v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'"
+            v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' && generalSettings.programYear == '2023'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1"
             @click="pushPopulateData()"
@@ -2503,6 +2503,13 @@
         <v-chip :color="item.is_validate > 0 ? `${ item.is_validate == 1 ? 'warning' : 'green' }` : 'red'" class="white--text pl-1">
           <v-icon class="mr-1">mdi-{{ item.is_validate > 0 ? `${ item.is_validate == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
           {{ item.is_validate > 0 ? `Terverifikasi ${item.is_validate == 1 ? (generalSettings.landProgram.model == 'Petani' ? 'FC' : 'PIC') : (generalSettings.landProgram.model == 'Petani' ? 'UM' : 'RM / PM')}` : 'Belum Terverifikasi' }}
+        </v-chip>
+      </template>
+      <!-- Status Populasi Column -->
+      <template v-slot:item.is_populate="{ item }">
+        <v-chip :color="item.is_populated > 0 ? 'green' : 'red'" class="white--text pl-1">
+          <v-icon class="mr-1">mdi-{{ item.is_populated > 0 ? `${ item.is_populated == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
+          {{ item.is_populated > 0 ? `Terpopulasi` : 'Belum / Tidak Terpopulasi' }}
         </v-chip>
       </template>
       
@@ -2813,6 +2820,7 @@ export default {
       { text: "Awal Waktu Monitoring", value: "start_monitoring_period", align: 'center', search: true },
       { text: "Akhir Waktu Monitoring", value: "end_monitoring_period", align: 'center', search: true },
       { text: "Status", value: "is_validate", align: 'center', search: true },
+      { text: "Status Populasi", value: "is_populate", align: 'center', search: true },
       { text: "Actions", value: "actions", align: 'right', sortable: false },
     ],
     headers2: [
@@ -2851,6 +2859,7 @@ export default {
     populateDataSwitch: false,
     listMonitoring1Checked: [],
     totalDatas: 0,
+    total_populated: 0,
     monitoringCheckedPercentages: 0,
     editedItem: {
       name: "",
@@ -3304,15 +3313,43 @@ export default {
       })
       if(confirmation.isConfirmed){
         const pushParams = {
-          list_monitoring1ID: this.listMonitoring1Checked.map(val => {
-            return val.monitoring_no
-          }),
+          // list_monitoring1ID: this.listMonitoring1Checked.map(val => {
+          //   return val.monitoring_no
+          // }),
           list_monitoring1: this.listMonitoring1Checked 
         }
         console.log(pushParams)
+
+        try {
+          const response = await axios.post(
+            this.BaseUrlGet + "AddMonitoring1Populate",
+            pushParams,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          console.log(response.data.data.result);
+          if (response.data.data.result == "success") {
+            this.listMonitoring1Checked = []
+            this.totalDatas = 0
+            this.$router.push('populateDataMonitoring1')
+            this.initialize();
+          } else {
+            this.listMonitoring1Checked = []
+            this.totalDatas = 0
+            this.loadtable = false;
+          }
+        } catch (error) {
+          console.error(error.response);
+          this.loadtable = false;
+        }
+
         this.listMonitoring1Checked = []
         this.totalDatas = 0
         this.initialize()
+        this.loadtable = false;
       }
     },
     async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
@@ -3399,6 +3436,7 @@ export default {
         this.$store.state.loadingOverlayText = 'Getting monitoring datas...'
         this.$store.state.loadingOverlay = true
         this.dataobject = [];
+        this.total_populated = 0;
 
         // get search column
         await this.getSearchColumn()
@@ -3406,11 +3444,13 @@ export default {
         await this.getTableData().then(data => {
           this.dataobject = data.items
           this.pagination.total = data.total
+          this.total_populated = data.total_populated
+          console.log(this.total_populated)
           
           this.pagination.current_page = data.current_page
           this.pagination.length_page = data.last_page
-          if(this.totalDatas == 0 && this.pagination.search.value == '' && !this.valueTA == ''){
-            this.totalDatas = data.total
+          if(this.populateDataSwitch == true && this.totalDatas == 0 && this.pagination.search.value == '' && !this.valueTA == ''){
+            this.totalDatas = data.total + data.total_populated
           }
           const pageOptions = []
           for (let index = 1; index <= data.last_page; index++) {
@@ -3457,7 +3497,7 @@ export default {
         }
         if (this.generalSettings.landProgram.model == 'Petani') {
           // url += "GetMonitoringAdmin?" + new URLSearchParams(params)
-          url += "GetExportMonitoringAllAdmin?" + new URLSearchParams(params)
+          url += "GetMonitorings1AllAdmin?" + new URLSearchParams(params)
         } else if (this.generalSettings.landProgram.model == 'Umum') {
           delete params.ff
           delete params.ta
@@ -3469,14 +3509,16 @@ export default {
         // get data response
         axios.get(url, this.$store.state.apiConfig).then(res => {
           if (typeof res.data.data.result !== 'undefined') {
-            let items = res.data.data.result.data
-            const total = res.data.data.result.total
-            const current_page = res.data.data.result.current_page
-            const last_page = res.data.data.result.last_page
+            let items = res.data.data.result.datas.data
+            const total = res.data.data.result.datas.total
+            const total_populated = res.data.data.result.populated
+            const current_page = res.data.data.result.datas.current_page
+            const last_page = res.data.data.result.datas.last_page
             this.exportSimpleDistribution.data = items
             resolve({
               items,
               total,
+              total_populated,
               current_page,
               last_page
             })

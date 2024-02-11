@@ -2275,8 +2275,8 @@
       </template>
 
       <!-- Tahun Program -->
-      <template v-slot:item.created_at="{ item }">
-        {{ item.created_at.slice(0, 4) }}
+      <template v-slot:item.created_time="{ item }">
+        {{ item.created_time.slice(0, 4) }}
       </template>
 
       <!-- Action table -->
@@ -2600,7 +2600,7 @@ export default {
       { text: "NIK Petani", value: "farmer_nik", searchable: true, sortable: false},
       { text: "No Lahan", align: "start", value: "lahan_no", searchable: true},
       { text: "Dokumen Lahan", align: "start", value: "document_no", searchable: false, sortable: false},
-      { text: "Tahun Bergabung", value: "created_at", searchable: false},
+      { text: "Tahun Bergabung", value: "created_time", searchable: false},
       { text: "Luas Lahan", value: "land_area", searchable: false},
       { text: "Pola Tanam", value: "opsi_pola_tanam", searchable: true},
       { text: "Tutupan", value: "tutupan_lahan", searchable: false},
@@ -4393,7 +4393,7 @@ export default {
       this.itemInTutupanLahan.mu_no_tl = item.mu_no;
       this.itemInTutupanLahan.target_area_tl = item.target_area;
 
-      this.itemInTutupanLahan.year_active_tl = item.created_at.slice(0, 4);
+      this.itemInTutupanLahan.year_active_tl = item.created_time.slice(0, 4);
 
       console.log(this.defaultItem.ff_no)
       this.itemInTutupanLahan.loading.show = false;
