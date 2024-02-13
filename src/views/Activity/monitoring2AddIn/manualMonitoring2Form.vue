@@ -380,7 +380,7 @@
         data: () => ({
             generalData: {
                 mo2_no: '',
-                program_year: '2023',
+                program_year: '',
                 project: '',
                 village: '',
                 land_coordinates: '',
@@ -388,7 +388,6 @@
                 planting_area: '',
                 land_closing_area: '',
                 lahan_no: '10_0000034421',
-
                 assign_to: '',
                 planting_method: '',
                 farmer_name: 'Sumarni',
@@ -396,7 +395,6 @@
                 mu_name: '',
                 ta_name: '',
                 id_from_geko: '',
-
                 prev_monitoring_data: '',
                 activity_name: '',
                 activity_date: '',

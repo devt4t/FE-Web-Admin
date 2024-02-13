@@ -1417,7 +1417,7 @@
       <div class="d-flex flex-column align-center justify-center py-4" id="app">
         <h3>Code QR: {{ this.barcodeValue }}</h3>
         <qr-code v-bind:text="barcodeValue">
-          Show this if the rendering fails.
+          Kode Tidak Valid!.
         </qr-code>
       </div>
 
