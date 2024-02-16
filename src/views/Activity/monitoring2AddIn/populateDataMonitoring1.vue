@@ -295,6 +295,7 @@
   <script>
   import axios from "axios";
   import manualForm from "@/views/Activity/monitoring2AddIn/manualMonitoring2Form";
+  import Swal from 'sweetalert2';
 
   
   export default {
@@ -416,6 +417,8 @@
       },
       async initialize() {
         try {
+          this.$store.state.loadingOverlay = true
+          this.$store.state.loadingOverlayText = "Memuat Data Populasi..."
           this.dataobject = [];
           const response = await axios.get(
             this.BaseUrlGet +
@@ -435,12 +438,16 @@
             this.dataobject = [];
             // this.loadtable = false;
           }
+          this.$store.state.loadingOverlay = false
+          this.$store.state.loadingOverlayText = ""
         } catch (error) {
           console.error(error);
           if (error.response.status == 401) {
             this.sessionEnd(error)
           } else {
             this.dataobject = [];
+            this.$store.state.loadingOverlay = false
+            this.$store.state.loadingOverlayText = ""
             // this.loadtable = false;
           }
         }
@@ -457,7 +464,36 @@
         // this.getVillage(item)
       },
       async pushGenerateMonitoring2(item){
-        console.log(item)
+        const confirmation = await Swal.fire({
+          title: 'Apa Anda Yakin Untuk Melakukan Generate Data Populasi Ke Monitoring 2?',
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+          console.log(item)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + "AddMonitoring2" , item,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            this.subTable.expanded = []
+            console.log(response)
+          } catch (error) {
+            console.error(error.response);
+            this.subTable.expanded = []
+            if (error.response.status == 401) {
+              localStorage.removeItem("token");
+              this.$router.push("/");
+            }
+          }
+        }
       },
       async pushUpdateData() {
         var params = {

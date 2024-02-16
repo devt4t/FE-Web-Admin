@@ -634,7 +634,7 @@
                                                 <v-date-picker
                                                     v-model="inputs.dateDistribution.model"
                                                     min="2023-12-01"
-                                                    max="2024-01-31"
+                                                    max="2024-02-29"
                                                     @input="inputs.dateDistribution.datepicker.show = false"
                                                     color="green"
                                                     class="rounded-xl"
@@ -2377,7 +2377,7 @@ export default {
             // coordinates
             this.inputs.latitude.model = '-7.026434'
             this.inputs.longitude.model = '110.424260'
-            this.inputs.dateDistribution.model = '2022-01-31'
+            this.inputs.dateDistribution.model = '2022-02-29'
             // forward step
             this.dialogs.createData.step = 4
         },
