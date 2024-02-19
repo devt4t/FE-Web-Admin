@@ -87,10 +87,7 @@
 
       </v-dialog>
 
-      <manualForm
-      :show="formModal"
-      @close="formModal = false">
-      </manualForm>
+      
 
       <!-- Main Table -->
       <v-data-table
@@ -294,14 +291,14 @@
   
   <script>
   import axios from "axios";
-  import manualForm from "@/views/Activity/monitoring2AddIn/manualMonitoring2Form";
+  
   import Swal from 'sweetalert2';
 
   
   export default {
     name: "Donor",
     components: {
-      manualForm
+      
     },
     data: () => ({
       formModal: false,

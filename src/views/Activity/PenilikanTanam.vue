@@ -2384,10 +2384,16 @@
         </v-row>
         <v-row class="pb-4 px-2" v-if="populateDataSwitch == true &&!valueTA == '' && User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'">
           <v-col cols="12" lg="4">
-            <h4>Jumlah Lahan Terpilih Untuk Monitoring 2: {{ listMonitoring1Checked.length + total_populated}} / {{ totalDatas }}</h4>
+            <h4>Jumlah Lahan Terpilih Untuk Monitoring 2: {{ listMonitoring1Checked.reduce((acc, val) => {
+                                return acc + parseInt(val.kayu_hidup + val.mpts_hidup)
+                            }, 0)}} 
+                            / {{ totalDatas }}
+                            </h4>
           </v-col>
           <v-col cols="12" lg="4">
-            <h4>Persentase Lahan Terpilih Untuk Monitoring 2: {{ percentageFormat(listMonitoring1Checked.length + total_populated, totalDatas) }}%</h4>
+            <h4>Persentase Lahan Terpilih Untuk Monitoring 2: {{ percentageFormat(listMonitoring1Checked.reduce((acc, val) => {
+                                return acc + parseInt(val.kayu_hidup + val.mpts_hidup)
+                            }, 0) + total_populated, totalDatas) }}%</h4>
           </v-col>
           <v-btn
             v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' && generalSettings.programYear == '2023'"
@@ -2860,6 +2866,7 @@ export default {
     listMonitoring1Checked: [],
     totalDatas: 0,
     total_populated: 0,
+    livingTreeTotal: 0,
     monitoringCheckedPercentages: 0,
     editedItem: {
       name: "",
@@ -3437,7 +3444,7 @@ export default {
         this.$store.state.loadingOverlay = true
         this.dataobject = [];
         this.total_populated = 0;
-
+        this.livingTreeTotal = 0;
         // get search column
         await this.getSearchColumn()
         
@@ -3445,12 +3452,13 @@ export default {
           this.dataobject = data.items
           this.pagination.total = data.total
           this.total_populated = data.total_populated
+          this.livingTreeTotal = data.total_living_tree
           console.log(this.total_populated)
           
           this.pagination.current_page = data.current_page
           this.pagination.length_page = data.last_page
           if(this.populateDataSwitch == true && this.totalDatas == 0 && this.pagination.search.value == '' && !this.valueTA == ''){
-            this.totalDatas = data.total + data.total_populated
+            this.totalDatas = data.total_living_tree + data.total_populated
           }
           const pageOptions = []
           for (let index = 1; index <= data.last_page; index++) {
@@ -3497,7 +3505,7 @@ export default {
         }
         if (this.generalSettings.landProgram.model == 'Petani') {
           // url += "GetMonitoringAdmin?" + new URLSearchParams(params)
-          url += "GetMonitorings1AllAdmin?" + new URLSearchParams(params)
+          url += "GetExportMonitoringAllAdmin?" + new URLSearchParams(params)
         } else if (this.generalSettings.landProgram.model == 'Umum') {
           delete params.ff
           delete params.ta
@@ -3511,7 +3519,8 @@ export default {
           if (typeof res.data.data.result !== 'undefined') {
             let items = res.data.data.result.datas.data
             const total = res.data.data.result.datas.total
-            const total_populated = res.data.data.result.populated
+            const total_populated = res.data.data.result.total_terpopulasi
+            const total_living_tree = res.data.data.result.total_pohon_hidup
             const current_page = res.data.data.result.datas.current_page
             const last_page = res.data.data.result.datas.last_page
             this.exportSimpleDistribution.data = items
@@ -3519,6 +3528,7 @@ export default {
               items,
               total,
               total_populated,
+              total_living_tree,
               current_page,
               last_page
             })

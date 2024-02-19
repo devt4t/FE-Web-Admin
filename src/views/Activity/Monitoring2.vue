@@ -18,6 +18,14 @@
     ></v-breadcrumbs>
     <!-- trees preview component -->
     <!-- <TreesPreview></TreesPreview> -->
+    <manualForm
+      :show="details.manualFormDialog"
+      :itemDataMO1="details.monitoring1Details"
+      :itemDataMO2="details.monitoring2Details"
+      :generalDatas="details.generalData"
+      @close="details.manualFormDialog = false">
+    </manualForm>
+
     <ExportExcelForLablejoy
     :show="dialogExportDataToExcel.show"
     :dataObject="dialogDigitalBarcode.cardData"
@@ -341,7 +349,7 @@
                   
                   dark
                   rounded
-                  @click="openManualMonitoring2(item)"
+                  @click="getDetailData(item)"
                   color="orange"
                   :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR'"
                   class="px-5"
@@ -423,6 +431,7 @@ import axios from "axios";
 import VueHtml2pdf from 'vue-html2pdf';
 import VueQRCodeComponent from 'vue-qrcode-component';
 import ExportExcelForLablejoy from '@/views/Activity/monitoring2AddIn/ExportExcelForLablejoy';
+import manualForm from "@/views/Activity/monitoring2AddIn/manualMonitoring2Form";
 
 export default {
   name: "Monitoring2",
@@ -430,7 +439,8 @@ export default {
     // TreesPreview
     'qr-code': VueQRCodeComponent,
     VueHtml2pdf,
-    ExportExcelForLablejoy
+    ExportExcelForLablejoy,
+    manualForm
 },
   data: () => ({
     // general setting
@@ -491,6 +501,11 @@ export default {
       monitoring1Details: [],
       monitoring2Details: [],
       monitoring2TreeDetails: [],
+
+      generalData: {},
+
+      detailDialog: false,
+      manualFormDialog: false,
     },
 
     localConfig: {
@@ -538,11 +553,10 @@ export default {
       console.log(item)
       this.getDataMonitoring2Main(item.item.area_code)
     },
-    async getDetailData(mo1, mo2){
-      console.log(mo1, mo2)
+    async getDetailData(item){
       var params = new URLSearchParams({
-        monitoring_no: mo1,
-        monitoring2_no: mo2
+        monitoring_no: item.monitoring_no,
+        monitoring2_no: item.monitoring2_no
       })
       try {
         this.details.monitoring1Details= []
@@ -562,10 +576,15 @@ export default {
           this.details.monitoring1Details= response.data.data.result.mo1Details
           this.details.monitoring2Details= response.data.data.result.mo2Details
           this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
+
+          this.details.generalData = item
+
+          this.details.manualFormDialog = true
         } else {
           this.details.monitoring1Details= []
           this.details.monitoring2Details= []
           this.details.monitoring2TreeDetails= []
+          this.details.manualFormDialog = false
         }
         
       } catch (error) {
@@ -578,6 +597,7 @@ export default {
         this.details.monitoring1Details= []
         this.details.monitoring2Details= []
         this.details.monitoring2TreeDetails= []
+        this.details.manualFormDialog = false
       }
     },
     openDetailMonitoring2(item){
@@ -585,11 +605,13 @@ export default {
 
       this.getDetailData(item.monitoring_no, item.monitoring2_no)
     },
-    openManualMonitoring2(item){
-      console.log(item)
+    // openManualMonitoring2(item){
+    //   // this.details.generalData = item
+    //   this.getDetailData(item.monitoring_no, item.monitoring2_no)
+    //   console.log(this.details.monitoring1Details)
+
       
-      this.getDetailData(item.monitoring_no, item.monitoring2_no)
-    },
+    // },
     async getDataMonitoring2Main(item){
       try {
         this.subTable.tableLoading = true

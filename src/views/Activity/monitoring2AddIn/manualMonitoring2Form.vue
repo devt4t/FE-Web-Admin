@@ -86,15 +86,15 @@
                         <td></td>
                         <td>Waktu Mulai Monitoring </td>
                         <td>:_______________________________ </td>
-                        <td colspan="3"></td>
-                        <td>Luas Tutupan</td>
+                        <td colspan="2"></td>
+                        <td>Tutupan</td>
                         <td>: {{ generalData.land_closing_area }}</td>
                     </tr>
                     <tr style="text-align: left; margin-left: 2em;font-size: 13px;">
                         <td></td>
                         <td>Waktu Selesai Monitoring</td>
                         <td>:_______________________________ </td>
-                        <td colspan="3"></td>
+                        <td colspan="2"></td>
                         <td>Area Tanam</td>
                         <td>: {{ generalData.planting_area }}</td>
                     </tr>
@@ -187,8 +187,8 @@
                         <tr>
                             <td style="border: 1px solid black;border-collapse: collapse;"></td>
                             <td style="border: 1px solid black;border-collapse: collapse; text-align: center;">Total</td>
-                            <td style="border: 1px solid black;border-collapse: collapse; text-align: center;">{{generalData.totalTreeQty = table.treeItem.reduce((acc, val) => {
-                                return acc + parseInt(val.tree_qty)
+                            <td style="border: 1px solid black;border-collapse: collapse; text-align: center;">{{table.treeItem.reduce((acc, val) => {
+                                return acc + parseInt(val.qty)
                             }, 0) }}</td>
                         </tr>
 
@@ -376,6 +376,18 @@
                 type: Boolean,
                 default: false,
             },
+            itemDataMO1: {
+                type: Array,
+                default: []
+            },
+            itemDataMO2: {
+                type: Array,
+                default: []
+            },
+            generalDatas: {
+                type: Object,
+                default: {}
+            }
         },
         data: () => ({
             generalData: {
@@ -387,10 +399,10 @@
                 land_area: '',
                 planting_area: '',
                 land_closing_area: '',
-                lahan_no: '10_0000034421',
+                lahan_no: '',
                 assign_to: '',
                 planting_method: '',
-                farmer_name: 'Sumarni',
+                farmer_name: '',
                 farmer_code: '',
                 mu_name: '',
                 ta_name: '',
@@ -404,21 +416,14 @@
             table: {
                 treeHeaders: [
                     { text: "No", value: "index", align: 'center', width: '2%'},
-                    { text: "Jenis Pohon", value: "tree_name"},
-                    { text: "Jumlah Hidup", value: "tree_qty"},
+                    { text: "Jenis Pohon", value: "tree_code", width: '20%'},
+                    { text: "Jumlah Hidup", value: "qty"},
                 ],
-                treeItem: [
-                    {tree_name: 'Alpukat', tree_qty: '21'}, 
-                    {tree_name: 'Durian', tree_qty: '19'},
-                    {tree_name: 'Indigofera', tree_qty: '20'}, 
-                    {tree_name: 'Petai', tree_qty: '22'},
-                    {tree_name: 'Sengon', tree_qty: '134'},
-                    // {tree_name: '', tree_qty: ''},
-                ],
+                treeItem: [],
                 headers: [
-                    { text: "No", value: "index", align: 'center', width: '2%', sortable: false },
-                    { text: "Id Pohon", value: "idTree"},
-                    { text: "Jenis Pohon", value: "tree_type"},
+                    { text: "No", value: "index", align: 'center', width: '2%'},
+                    { text: "Id Pohon", value: "tree_no", paddingRight: '40px'},
+                    { text: "Jenis Pohon", value: "tree_name"},
                 ],
                 headers2: [
                     { text: "Pohon Hidup ***", value: "tree_status"},
@@ -427,9 +432,7 @@
                     { text: "Diameter Pohon *", value: "tree_diameter"},
                     { text: "Kondisi Sekitar Pohon **", value: "tree_environment_condition"},
                 ],
-                items: [
-                    {idTree: '', tree_type: '', tree_status: '' },
-                ],
+                items: [],
                 items_raw: [],
                 loading: {
                     show: false,
@@ -442,7 +445,7 @@
             showModal: {
                 get: function () {
                     if(this.show){
-                     
+                        
                         this.getTableData(
                         //     {
                         //     ff_no: this.data.ff_no,
@@ -495,7 +498,7 @@
                 tableLineWidth: 0,
                 theme: 'striped'
              })
-            doc.save(`ExportRealisasiTanam(DistribusiBAST&Monitoring).pdf`);
+            doc.save(`FormMonitoringManual_${this.generalDatas.assignToFF}_${this.generalDatas.monitoring2_no}.pdf`);
         },
     statusRowColor(outputColor, itemKey){
             if(itemKey == 'status'){
@@ -538,9 +541,28 @@
             }
         },
         async getTableData() {
-            
-            this.table.items = new Array(this.generalData.totalTreeQty)
-            this.table.items.fill({idTree: '', tree_type: '', tree_status: ''})
+            this.table.treeItem = this.itemDataMO1
+            this.table.items = this.itemDataMO2
+
+            this.generalData.mo2_no= this.generalDatas.monitoring2_no
+            this.generalData.program_year= this.generalDatas.program_year
+            this.generalData.project= this.generalDatas.project_no ?? '-'
+            this.generalData.village= this.generalDatas.village
+            this.generalData.land_coordinates= this.generalDatas.longitude +', ' + this.generalDatas.latitude
+            this.generalData.land_area= this.generalDatas.land_area
+            this.generalData.planting_area= this.generalDatas.planting_area
+            this.generalData.land_closing_area= this.generalDatas.tutupan
+            this.generalData.lahan_no= this.generalDatas.lahan_no
+            this.generalData.assign_to= this.generalDatas.assignToFF
+            this.generalData.planting_method= this.generalDatas.opsi_pola_tanam
+            this.generalData.farmer_name= this.generalDatas.farmer_name
+            this.generalData.farmer_code= this.generalDatas.farmer_no
+            this.generalData.mu_name= this.generalDatas.mu_name
+            this.generalData.ta_name= this.generalDatas.ta_name
+            this.generalData.id_from_geko= this.generalDatas.monitoring2_no
+            this.generalData.prev_monitoring_data= this.generalDatas.monitoring_no
+            this.generalData.activity_name= 'Monitoring 2'
+            this.generalData.activity_date= ''
         }
     }
     
