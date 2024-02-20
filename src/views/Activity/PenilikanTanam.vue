@@ -16,6 +16,12 @@
     </div>
 
     <!-- MODAL -->
+
+      <!-- <pushPopulatePreview
+      :show="false"
+      :listData="listMonitoring1Checked"
+      >
+      </pushPopulatePreview> -->
       
       <!-- Export Distribusi Simple -->
       <ExportPenilikanTanam
@@ -2400,7 +2406,7 @@
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1"
             @click="pushPopulateData()"
-            :disabled="listMonitoring1Checked.length <= 0 || monitoringCheckedPercentages < 12.0 || monitoringCheckedPercentages > 13.0"
+            :disabled="listMonitoring1Checked.length <= 0 || monitoringCheckedPercentages < 24.0 || monitoringCheckedPercentages > 26.0"
             color="green white--text"
           >
             <v-icon class="mr-1">mdi-arrow-collapse-right</v-icon> Populate Data Monitoring 2
@@ -2573,6 +2579,7 @@
 import axios from "axios";
 import moment from 'moment';
 import ExportPenilikanTanam from '@/views/Activity/PenilikanTanam/ExportPenilikanTanam';
+import pushPopulatePreview from "@/views/Activity/monitoring2AddIn/populate_preview";
 import Swal from 'sweetalert2';
 // import BaseUrl from "../../services/BaseUrl.js";
 
@@ -2580,8 +2587,9 @@ import DetailLahanMap from '@/views/Lahan/components/DetailLahanMap'
 
 export default {
   components: {
-      DetailLahanMap,
-      ExportPenilikanTanam
+    DetailLahanMap,
+    ExportPenilikanTanam,
+    pushPopulatePreview
   },
   name: "PenilikanTanam",
   authtoken: "",
@@ -3323,39 +3331,40 @@ export default {
           // list_monitoring1ID: this.listMonitoring1Checked.map(val => {
           //   return val.monitoring_no
           // }),
+          
           list_monitoring1: this.listMonitoring1Checked 
         }
         console.log(pushParams)
 
-        try {
-          const response = await axios.post(
-            this.BaseUrlGet + "AddMonitoring1Populate",
-            pushParams,
-            {
-              headers: {
-                Authorization: `Bearer ` + this.authtoken,
-              },
-            }
-          );
-          console.log(response.data.data.result);
-          if (response.data.data.result == "success") {
-            this.listMonitoring1Checked = []
-            this.totalDatas = 0
-            this.$router.push('populateDataMonitoring1')
-            this.initialize();
-          } else {
-            this.listMonitoring1Checked = []
-            this.totalDatas = 0
-            this.loadtable = false;
-          }
-        } catch (error) {
-          console.error(error.response);
-          this.loadtable = false;
-        }
+        // try {
+        //   const response = await axios.post(
+        //     this.BaseUrlGet + "AddMonitoring1Populate",
+        //     pushParams,
+        //     {
+        //       headers: {
+        //         Authorization: `Bearer ` + this.authtoken,
+        //       },
+        //     }
+        //   );
+        //   console.log(response.data.data.result);
+        //   if (response.data.data.result == "success") {
+        //     this.listMonitoring1Checked = []
+        //     this.totalDatas = 0
+        //     this.$router.push('populateDataMonitoring1')
+        //     this.initialize();
+        //   } else {
+        //     this.listMonitoring1Checked = []
+        //     this.totalDatas = 0
+        //     this.loadtable = false;
+        //   }
+        // } catch (error) {
+        //   console.error(error.response);
+        //   this.loadtable = false;
+        // }
 
-        this.listMonitoring1Checked = []
-        this.totalDatas = 0
-        this.initialize()
+        // this.listMonitoring1Checked = []
+        // this.totalDatas = 0
+        // this.initialize()
         this.loadtable = false;
       }
     },
