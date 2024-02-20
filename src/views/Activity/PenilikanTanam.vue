@@ -3336,35 +3336,35 @@ export default {
         }
         console.log(pushParams)
 
-        // try {
-        //   const response = await axios.post(
-        //     this.BaseUrlGet + "AddMonitoring1Populate",
-        //     pushParams,
-        //     {
-        //       headers: {
-        //         Authorization: `Bearer ` + this.authtoken,
-        //       },
-        //     }
-        //   );
-        //   console.log(response.data.data.result);
-        //   if (response.data.data.result == "success") {
-        //     this.listMonitoring1Checked = []
-        //     this.totalDatas = 0
-        //     this.$router.push('populateDataMonitoring1')
-        //     this.initialize();
-        //   } else {
-        //     this.listMonitoring1Checked = []
-        //     this.totalDatas = 0
-        //     this.loadtable = false;
-        //   }
-        // } catch (error) {
-        //   console.error(error.response);
-        //   this.loadtable = false;
-        // }
+        try {
+          const response = await axios.post(
+            this.BaseUrlGet + "AddMonitoring1Populate",
+            pushParams,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          console.log(response.data.data.result);
+          if (response.data.data.result == "success") {
+            this.listMonitoring1Checked = []
+            this.totalDatas = 0
+            this.$router.push('populateDataMonitoring1')
+            this.initialize();
+          } else {
+            this.listMonitoring1Checked = []
+            this.totalDatas = 0
+            this.loadtable = false;
+          }
+        } catch (error) {
+          console.error(error.response);
+          this.loadtable = false;
+        }
 
-        // this.listMonitoring1Checked = []
-        // this.totalDatas = 0
-        // this.initialize()
+        this.listMonitoring1Checked = []
+        this.totalDatas = 0
+        this.initialize()
         this.loadtable = false;
       }
     },
