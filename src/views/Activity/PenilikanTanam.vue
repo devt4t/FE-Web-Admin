@@ -2406,7 +2406,7 @@
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1"
             @click="pushPopulateData()"
-            :disabled="listMonitoring1Checked.length <= 0 || monitoringCheckedPercentages < 24.0 || monitoringCheckedPercentages > 26.0"
+            :disabled="listMonitoring1Checked.length <= 0"
             color="green white--text"
           >
             <v-icon class="mr-1">mdi-arrow-collapse-right</v-icon> Populate Data Monitoring 2
