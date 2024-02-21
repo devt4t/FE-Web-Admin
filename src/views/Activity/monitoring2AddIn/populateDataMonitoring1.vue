@@ -219,7 +219,7 @@
               <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
             </v-col>
           </v-row>
-      </template>
+          </template>
 
 
           <!-- Status -->

@@ -308,6 +308,31 @@
             >
             </v-progress-circular>
           </template>
+
+
+          <template v-slot:top>
+            <v-row class="pt-3 px-2">
+              <v-col cols="12" lg="6" class="d-flex align-center">
+              <v-col cols="12" lg="6" class="d-flex">
+                  <v-text-field
+                      color="success"
+                      item-color="success"
+                      v-model="searchByFarmer"
+                      placeholder="Pencarian Nama Petani..."
+                      append-icon="mdi-magnify"
+                      outlined
+                      dense
+                      rounded
+                      label="Pencarian Nama Petani"
+                      hide-details
+                      
+                  ></v-text-field>
+                </v-col>
+              <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
+            </v-col>
+          </v-row>
+          </template>
+
           <!-- Status -->
           <template v-slot:item.status="{ item }">
             <v-chip :color="item.is_verified > 0 ? 'green' : 'red'" class="white--text pl-1">
@@ -361,7 +386,7 @@
                 Cetak Form Monitoring Manual
               </v-btn>
             </v-list-item> 
-            <v-list-item>
+            <v-list-item v-if="User.role_group == 'IT' || User.role_name == 'UNIT MANAGER'">
               <v-btn
                   dark
                   rounded
@@ -497,6 +522,8 @@ export default {
       expand_key: '',
 
     },
+    itemTA: '',
+    searchByFarmer: '',
     details:{
       monitoring1Details: [],
       monitoring2Details: [],
@@ -529,6 +556,11 @@ export default {
         handler(val) {
           this.initializeParentTable()
         }
+      },
+      'searchByFarmer': {
+        handler(val){
+          this.getDataMonitoring2Main()
+        }
       }
     },
 
@@ -551,7 +583,9 @@ export default {
   methods: {
     checkExpandenItem(item){
       console.log(item)
-      this.getDataMonitoring2Main(item.item.area_code)
+      this.itemTA = ''
+      this.itemTA = item.item.area_code
+      this.getDataMonitoring2Main()
     },
     async getDetailData(item){
       var params = new URLSearchParams({
@@ -662,16 +696,16 @@ export default {
 
       
     // },
-    async getDataMonitoring2Main(item){
+    async getDataMonitoring2Main(){
       try {
+        
         this.subTable.tableLoading = true
         this.subTable.dataobject = [];
         const response = await axios.get(
           this.BaseUrlGet +
           "GetMonitoring2ByTA?program_year="+ 
           this.localConfig.programYear +
-          "&ta=" +
-          item,
+          "&ta=" + this.itemTA + "&search_value=" + this.searchByFarmer,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
