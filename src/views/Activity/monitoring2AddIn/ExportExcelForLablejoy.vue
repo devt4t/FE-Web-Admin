@@ -123,10 +123,10 @@
                 trees: [],
                 headers: [
                     // {text: 'No', value: 'index', width: 75},
-                    {text: 'Kode Pohon dan Qr-Code', value: 'barcodeValue'},
-                    {text: 'Jenis Pohon', value: 'treeType'},
+                    {text: 'Kode Pohon dan Qr-Code', value: 'tree_no'},
+                    {text: 'Jenis Pohon', value: 'tree_name'},
                     {text: 'Tahun Tanam', value: 'planting_year'},
-                    {text: 'Petani', value: 'farmerName'},
+                    {text: 'Petani', value: 'farmer_name'},
 
                     {text: 'Nomor Lahan', value: 'lahan_no'},
                     {text: 'Desa', value: 'village'},
@@ -272,7 +272,7 @@
             async getTableData() {
                 try {
                     this.table.loading.show = true
-                    console.log(this.dataObject)
+                    console.log(this.lahan_no)
                     this.table.items = this.dataObject
                     this.table.items_raw = this.dataObject
                 } catch (err) {this.errorResponse(err)} finally {

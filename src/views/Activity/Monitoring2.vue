@@ -28,8 +28,8 @@
 
     <ExportExcelForLablejoy
     :show="dialogExportDataToExcel.show"
-    :dataObject="dialogDigitalBarcode.cardData"
-    :lahan_no="'testExport_Lahan_no'"
+    :dataObject="details.monitoring2Details"
+    :lahan_no="dialogDigitalBarcode.lahan_no"
     :program_year="localConfig.programYear"
     @close="dialogExportDataToExcel.show = false"
     >
@@ -55,7 +55,8 @@
             <p class="mb-0 text-center mt-4">{{ dialogDigitalBarcode.loading.text || 'Loading...' }}</p>
           </div>
         </v-overlay>
-        <div class="d-flex flex-column py-4" id="app">
+        <H2>Unduh Data Excel Untuk LabelJoy!</H2>
+        <!-- <div class="d-flex flex-column py-4" id="app">
           <v-row no-gutters v-for="n in details.monitoring2Details" :key="`frontCard-${n.tree_no}-${n.planting_year}`">
               <v-col cols="4">
                 <v-sheet class="pa-2 ma-2">
@@ -110,7 +111,7 @@
                 </v-sheet>
               </v-col>
             </v-row>
-        <!-- vue pdf downloader -->
+
           <vue-html2pdf 
             :show-layout="false"
             :float-layout="true" 
@@ -151,7 +152,7 @@
                         <h6 style="font-size: 10px;">{{ n.planting_year }}</h6>
                       </v-col>
                     </v-row>
-                    <!-- <v-row no-gutters style="height: 15px;">
+                    <v-row no-gutters style="height: 15px;">
                       <v-col cols="5">
                         <h6>Nomor Lahan</h6>
                       </v-col>
@@ -166,23 +167,23 @@
                       <v-col cols="5">
                         <h6>: {{ n.village }}</h6>
                       </v-col>
-                    </v-row> -->
+                    </v-row>
                   </v-sheet>
                 </v-col>
               </v-row>
             </section>
           </vue-html2pdf>
-        </div>
+        </div> -->
       </v-card>
       <v-card-actions style="position: relative">
         <v-row>
-          <v-col v-if="User.role_group=='IT'">
+          <v-col v-if="false">
             <v-btn dark color="blue lighten-1" @click="generateExportDetail" rounded
               class="d-none d-lg-block">
               <v-icon class="mr-1" small>mdi-printer</v-icon> Export PDF
             </v-btn>
           </v-col>
-          <v-col align="center" v-if="User.role_group=='IT' || User.role_name=='UNIT MANAGER'">
+          <v-col v-if="User.role_group=='IT' || User.role_name=='UNIT MANAGER'">
             <v-btn dark color="green lighten-1" @click="dialogExportDataToExcel.show = true" rounded
               class="d-none d-lg-block">
               <v-icon class="mr-1" small>mdi-printer</v-icon> Open Export Excel
@@ -454,9 +455,8 @@ export default {
         show: false,
         text: 'Sedang Memuat Data Barcode!'
       },
-      cardData:[
-        { barcodeValue: 'No Data', treeType: 'No Data',planting_year: 'No Data',farmerName: 'No Data',lahan_no: 'No Data',village: 'No Data'},
-      ]
+      cardData:[],
+      lahan_no: ''
     },
 
     authtoken: "",
@@ -576,8 +576,9 @@ export default {
           this.details.monitoring1Details= response.data.data.result.mo1Details
           this.details.monitoring2Details= response.data.data.result.mo2Details
           this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
-
+          // this.dialogDigitalBarcode.cardData = this.details.monitoring2Details
           this.details.generalData = item
+          
 
           this.details.manualFormDialog = true
         } else {
@@ -629,6 +630,8 @@ export default {
           this.details.monitoring2Details= response.data.data.result.mo2Details
           this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
 
+          this.dialogDigitalBarcode.lahan_no= item.assignToFF
+          console.log(item)
           this.details.generalData = item
 
           this.dialogDigitalBarcode.show = true

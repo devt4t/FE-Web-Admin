@@ -416,7 +416,7 @@
             table: {
                 treeHeaders: [
                     { text: "No", value: "index", align: 'center', width: '2%'},
-                    { text: "Jenis Pohon", value: "tree_code", width: '20%'},
+                    { text: "Jenis Pohon", value: "tree_name", width: '20%'},
                     { text: "Jumlah Hidup", value: "qty"},
                 ],
                 treeItem: [],
@@ -547,13 +547,13 @@
             this.generalData.mo2_no= this.generalDatas.monitoring2_no
             this.generalData.program_year= this.generalDatas.program_year
             this.generalData.project= this.generalDatas.project_no ?? '-'
-            this.generalData.village= this.generalDatas.village
+            this.generalData.village= this.generalDatas.desa_name
             this.generalData.land_coordinates= this.generalDatas.longitude +', ' + this.generalDatas.latitude
             this.generalData.land_area= this.generalDatas.land_area
             this.generalData.planting_area= this.generalDatas.planting_area
             this.generalData.land_closing_area= this.generalDatas.tutupan
             this.generalData.lahan_no= this.generalDatas.lahan_no
-            this.generalData.assign_to= this.generalDatas.assignToFF
+            this.generalData.assign_to= this.generalDatas.ff_name
             this.generalData.planting_method= this.generalDatas.opsi_pola_tanam
             this.generalData.farmer_name= this.generalDatas.farmer_name
             this.generalData.farmer_code= this.generalDatas.farmer_no
