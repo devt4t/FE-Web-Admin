@@ -3624,10 +3624,11 @@
                                         
                                     </template>
                                     <template v-slot:item.sts_bast="{item}">
-                                        <v-chip v-if="item.status_bast == 0" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Belum Di-Cek</v-chip>
-                                        <v-chip v-else-if="item.status_bast == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Kurang Lengkap</v-chip>
-                                        <v-chip v-else-if="item.status_bast == 2" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Kelebihan</v-chip>
-                                        <v-chip v-else-if="item.status_bast == 3" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Lengkap / Selesai</v-chip>
+                                        <!-- {{item.loading_line[0].status_bast}} -->
+                                        <v-chip v-if="!item.loading_line[0].status_bast" color="orange white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Belum Di-Cek</v-chip>
+                                        <v-chip v-else-if="item.loading_line[0].status_bast == 1" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-minus-circle-outline</v-icon> Kurang Lengkap</v-chip>
+                                        <v-chip v-else-if="item.loading_line[0].status_bast == 2" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-plus-circle-outline</v-icon> Kelebihan</v-chip>
+                                        <v-chip v-else-if="item.loading_line[0].status_bast == 3" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Lengkap / Selesai</v-chip>
                                     </template>
                                     <!-- Status Column -->
                                     <!-- <template v-slot:item.status="{item}">
@@ -3666,7 +3667,7 @@
                                                     Export
                                                 </v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="item.status_bast == 0 || item.status_bast == null">
+                                            <v-list-item v-if="item.loading_line[0].status_bast == 0 || item.loading_line[0].status_bast == null">
                                                 <v-btn
                                                     dark
                                                     class="px-7"
@@ -3682,7 +3683,7 @@
                                                     CEk Status BAST
                                                 </v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="item.status_bast == 1">
+                                            <v-list-item v-if="item.loading_line[0].status_bast == 1">
                                                 <v-btn
                                                     dark
                                                     class="px-7"
@@ -3697,7 +3698,7 @@
                                                     Lapor Bibit Kurang
                                                 </v-btn>
                                             </v-list-item>
-                                            <v-list-item v-if="item.status_bast == 2">
+                                            <v-list-item v-if="item.loading_line[0].status_bast == 2">
                                                 <v-btn
                                                     dark
                                                     class="px-7"
@@ -5008,11 +5009,11 @@ export default {
             // console.log(this.distributionReport.dialogs.exportFilter.fc_name)
             // return FC.data.data.result[0].name
         },
-        lackOfSeedForm(){
-            window.open('https://nursery.geninelabs.live/#/forms/request-distribution-addendum')
+        lackOfSeedForm(item){
+            window.open(`https://nursery.trees4trees.org/#/forms/request-distribution-addendum?loading_line_id=${item.loading_line[0].id}&request_by=${this.User.name}`)
         },
-        excessOfSeedForm(){
-            window.open('https://nursery.geninelabs.live/#/forms/request-distribution-addendum')
+        excessOfSeedForm(item){
+            window.open(`https://nursery.trees4trees.org/#/forms/request-distribution-addendum?loading_line_id=${item.loading_line[0].id}&request_by=${this.User.name}`)
         },
         async cekReportStatusBAST(item){
             console.log(item)
