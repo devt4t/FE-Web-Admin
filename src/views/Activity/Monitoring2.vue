@@ -56,13 +56,13 @@
           </div>
         </v-overlay>
         <div class="d-flex flex-column py-4" id="app">
-          <v-row no-gutters v-for="n in dialogDigitalBarcode.cardData" :key="`frontCard-${n.barcodeValue}-${n.planting_year}`">
+          <v-row no-gutters v-for="n in details.monitoring2Details" :key="`frontCard-${n.tree_no}-${n.planting_year}`">
               <v-col cols="4">
                 <v-sheet class="pa-2 ma-2">
-                  <qr-code v-bind:text="n.barcodeValue">
+                  <qr-code v-bind:text="n.tree_no">
                     Kode Tidak Valid!.
                   </qr-code>
-                  <h4 class="mb-0 text-center mt-4">{{ n.barcodeValue }}</h4>
+                  <h4 class="mb-0 text-center mt-4">{{ n.tree_no }}</h4>
                 </v-sheet>
               </v-col>
               <v-col>
@@ -72,7 +72,7 @@
                       <h4>Jenis Pohon</h4>
                     </v-col>
                     <v-col>
-                      <h4>: {{ n.treeType }}</h4>
+                      <h4>: {{ n.tree_name }}</h4>
                     </v-col>
                   </v-row>
                   <v-row no-gutters style="height: 35px;">
@@ -88,10 +88,10 @@
                       <h4>Nama Petani</h4>
                     </v-col>
                     <v-col>
-                      <h4>: {{ n.farmerName }}</h4>
+                      <h4>: {{ n.farmer_name }}</h4>
                     </v-col>
                   </v-row>
-                  <!-- <v-row no-gutters style="height: 35px;">
+                  <v-row no-gutters style="height: 35px;">
                     <v-col cols="4">
                       <h4>Nomor Lahan</h4>
                     </v-col>
@@ -106,7 +106,7 @@
                     <v-col>
                       <h4>: {{ n.village }}</h4>
                     </v-col>
-                  </v-row> -->
+                  </v-row>
                 </v-sheet>
               </v-col>
             </v-row>
@@ -125,10 +125,10 @@
             pdf-content-width="315px"
             ref="html2Pdf">
             <section slot="pdf-content">
-              <v-row v-for="n in dialogDigitalBarcode.cardData" :key="`exportCard-${n.barcodeValue}-${n.planting_year}`" no-gutters style="padding-top: 162px; padding-bottom: 43px;">
+              <v-row v-for="n in dialogDigitalBarcode.cardData" :key="`exportCard-${n.tree_no}`" no-gutters style="padding-top: 162px; padding-bottom: 43px;">
                <v-col cols="3" style="padding-left: 2%;">
                   <v-sheet>
-                      <qr-code v-bind:text="n.barcodeValue" :size="75" align="center">
+                      <qr-code v-bind:text="n.tree_no" :size="75" align="center">
                         Kode Tidak Valid!.
                       </qr-code>
                       
@@ -138,12 +138,12 @@
                   <v-sheet class="pa-2 ma-2">
                     <v-row no-gutters style="height: 30px;">
                       <v-col cols="5">
-                        <h6 class="mb-0 text-center mt-4" style="font-size: 10px;">{{ n.barcodeValue }}</h6>
+                        <h6 class="mb-0 text-center mt-4" style="font-size: 10px;">{{ n.tree_no }}</h6>
                       </v-col>
                     </v-row>
                     <v-row no-gutters style="height: 15px;">
                       <v-col cols="5">
-                        <h6 style="font-size: 10px;">{{ n.treeType }}</h6>
+                        <h6 style="font-size: 10px;">{{ n.tree_name }}</h6>
                       </v-col>
                     </v-row>
                     <v-row no-gutters style="height: 15px;">
@@ -248,7 +248,7 @@
           
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <v-btn
-            v-if="User.role_group=='IT'"
+            v-if="User.role_group=='IT' || User.role_name=='UNIT MANAGER' || User.role_name=='FIELD COORDINATOR'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="$router.push('populateDataMonitoring1')"
@@ -364,7 +364,7 @@
               <v-btn
                   dark
                   rounded
-                  @click="openDetailMonitoring2(item)"
+                  @click="openBarcodeDigital(item)"
                   color="green"
                   :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR'"
                   class="px-5"
@@ -604,6 +604,53 @@ export default {
       console.log(item)
 
       this.getDetailData(item.monitoring_no, item.monitoring2_no)
+    },
+    async openBarcodeDigital(item){
+      var params = new URLSearchParams({
+        monitoring_no: item.monitoring_no,
+        monitoring2_no: item.monitoring2_no
+      })
+      try {
+        this.details.monitoring1Details= []
+        this.details.monitoring2Details= []
+        this.details.monitoring2TreeDetails= []
+        const response = await axios.get(
+          this.BaseUrlGet +
+          "GetNewMonitoring2Detail?"+ 
+          params,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.details.monitoring1Details= response.data.data.result.mo1Details
+          this.details.monitoring2Details= response.data.data.result.mo2Details
+          this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
+
+          this.details.generalData = item
+
+          this.dialogDigitalBarcode.show = true
+        } else {
+          this.details.monitoring1Details= []
+          this.details.monitoring2Details= []
+          this.details.monitoring2TreeDetails= []
+          this.details.manualFormDialog = false
+        }
+        
+      } catch (error) {
+        console.error(error);
+        if (error.response.status == 401) {
+          this.sessionEnd(error)
+        } else {
+          
+        }
+        this.details.monitoring1Details= []
+        this.details.monitoring2Details= []
+        this.details.monitoring2TreeDetails= []
+        this.details.manualFormDialog = false
+      }
     },
     // openManualMonitoring2(item){
     //   // this.details.generalData = item

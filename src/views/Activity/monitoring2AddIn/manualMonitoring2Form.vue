@@ -216,7 +216,7 @@
                         <tbody v-for="(tableData, tableDataIndex) in table.items" :key="`itemtableForExportLahanPetaniDashboard${tableDataIndex}`">
                             <tr :class="`${tableDataIndex % 2 == 0 ? 'white' : 'grey'} justify-center align-center lighten-4 `" style="text-align: center; " >
                                     <td v-for="(itemTable, itemTableIndex) in table.headers" :key="`tableItemForBAMonitoring2Format${itemTableIndex}-${tableDataIndex}`" 
-                                    style="border: 1px solid black;border-collapse: collapse;" rowspan="2" 
+                                    style="border: 1px solid black;border-collapse: collapse; max-width: 20px;" rowspan="2" 
                                     >
                                         <span v-if="itemTable.value == 'index'">
                                                 {{ tableDataIndex + 1 }}

@@ -27,7 +27,7 @@
                   <v-col cols="12" sm="12" md="12">
                     <v-select
                       v-model="updateItem.sampling"
-                      :items="['Exact', 'Random']"
+                      :items="['Tetap', 'Random']"
                       label="Pilih Metode Sampling"
                       outlined
                       clearable
@@ -35,19 +35,19 @@
                       :rules="[(v) => !!v || 'Field is required']"
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" sm="6" md="6">
+                  <!-- <v-col cols="12" sm="6" md="6">
                     <v-select
                       v-model="village"
                       :items="itemDesa"
                       item-text="namaDesa"
                       item-value="kode_desa"
-                      label="Pilih Desa Penugasan"
+                      label="Pilih Desa Penugasan (Sekarang)"
                       outlined
                       clearable
                       type="string"
                       v-on:change="getFFbyVillage"
                     ></v-select>
-                  </v-col>
+                  </v-col> -->
                   <v-col cols="12" sm="6" md="6">
                     <v-select 
                       v-model="updateItem.assign_to"
@@ -75,7 +75,7 @@
             <v-btn
                 @click="pushUpdateData()" 
                 rounded 
-                :disabled="updateItem.sampling == '' || village == ''|| updateItem.assign_to == ''"
+                :disabled="updateItem.sampling == '' || updateItem.assign_to == ''"
                 color="green white--text" 
                 class="px-4">
                 <v-icon 
@@ -140,7 +140,7 @@
                 style="max-width: 200px"
               ></v-select>
               <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
-              <v-btn
+              <!-- <v-btn
                 v-if="User.role_group=='IT'"
                 rounded
                 dark
@@ -150,7 +150,7 @@
               >
               <strong>Print Form Monitoring 2 Manual</strong>
               <v-icon class="mx-2">mdi-</v-icon> 
-              </v-btn>
+              </v-btn> -->
               <!-- Refresh Button -->
             </v-col>
           </v-row>
@@ -181,6 +181,8 @@
           }"
           >
 
+
+
           <!-- index column -->
           <template v-slot:item.index="{item, index}">
             <span v-if="subTable.tableLoading == false">
@@ -194,7 +196,38 @@
             >
             </v-progress-circular>
           </template>
+          <!-- top bar -->
+          <template v-slot:top>
+            <v-row class="pt-3 px-2">
+              <v-col cols="12" lg="6" class="d-flex align-center">
+              <!-- Program Year -->
+              <v-col cols="12" lg="6" class="d-flex">
+                  <v-text-field
+                      color="success"
+                      item-color="success"
+                      v-model="populateSearchFarmer"
+                      placeholder="Pencarian Nama Petani..."
+                      append-icon="mdi-magnify"
+                      outlined
+                      dense
+                      rounded
+                      label="Pencarian Nama Petani"
+                      hide-details
+                      
+                  ></v-text-field>
+                </v-col>
+              <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
+            </v-col>
+          </v-row>
+      </template>
+
+
           <!-- Status -->
+          <template v-slot:item.sts="{item}">
+            <v-chip v-if="item.assigned_to == '-' || item.sampling == '-' && item.is_monitoring == 0" color="red white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-close-circle</v-icon> Data Belum Lengkap</v-chip>
+            <v-chip v-else-if="item.assigned_to != '-' && item.sampling != '-' && item.is_monitoring == 0" color="orange white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-plus-circle-outline</v-icon> Data Sudah Siap</v-chip>
+            <v-chip v-else-if="item.is_monitoring == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle-outline</v-icon> Data Sudah Masuk</v-chip>
+          </template>
           <!-- Action table -->
         <template v-slot:item.actions="{ item }">
           <v-menu
@@ -217,7 +250,7 @@
                   rounded
                   @click="openUpdateModal(item)"
                   color="green"
-                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
@@ -226,13 +259,13 @@
                 Lengkapi Data!
               </v-btn>
             </v-list-item>  
-            <v-list-item v-if="item.sampling != '-' && item.assigned_to != '-'">
+            <v-list-item v-if="item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">
               <v-btn
                   dark
                   rounded
                   @click="pushGenerateMonitoring2(item)"
                   color="green"
-                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER'"
+                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
@@ -333,6 +366,7 @@
       authtoken: "",
       BaseUrlGet: "",
       tableLoading: false,
+      populateSearchFarmer: '',
       headers: [
         {text: 'No', value: 'index'},
         {text: 'Kode Area', value: 'area_code'},
@@ -370,6 +404,7 @@
           {text: 'Nama FF', value: 'ff_name'},
           {text: 'Sampling', value: 'sampling'},
           {text: 'Ditugaskan Pada', value: 'assigned_to'},
+          {text: 'Status Data', value: 'sts'},
           {text: 'Action', value: 'actions'}
         ],
         populateDataObject: [],
@@ -383,6 +418,8 @@
       targetAreaModel: '',
       itemFFPerDesa: [],
       itemDesa: [],
+      progra_year_now: '',
+      ta: '',
       village: '',
 
       User: ''
@@ -392,15 +429,21 @@
       this.authtoken = localStorage.getItem("token");
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.User = JSON.parse(localStorage.getItem("User"));
+      this.getFFData(this.User.ff.ff)
       this.localConfig.programYear = this.$store.state.programYear.model
       this.initialize();
     },
     watch: {
+      'populateSearchFarmer': {
+        handler(val){
+          this.getPopulateTableData()
+        }
+      },
       'localConfig.programYear': {
         handler(val) {
           this.initialize()
         }
-      }
+      },
     },
   
     computed: {
@@ -409,7 +452,8 @@
     methods: {
       checkExpandenItem(item){ 
         this.expand_key=item.item.area_code
-        this.getPopulateTableData(item.item.area_code)
+
+        this.getPopulateTableData()
 
       },
       async initialize() {
@@ -482,6 +526,12 @@
             );
             this.subTable.expanded = []
             console.log(response)
+            await Swal.fire({
+                title: 'Berhasil Melakukan Generate Data Populasi Ke Monitoring 2?',
+                icon: 'success',
+                confirmButtonColor: '#2e7d32',
+                confirmButtonText: 'Okay',
+            })
           } catch (error) {
             console.error(error.response);
             this.subTable.expanded = []
@@ -519,6 +569,35 @@
             localStorage.removeItem("token");
             this.$router.push("/");
           }
+        }
+      },
+      async getFFData(item) {
+        this.itemFFPerDesa = []
+        this.updateItem.assign_to = ''
+        try {
+          const response = await axios.get(
+          
+            this.BaseUrlGet + `GetFFNow?ff_no=${item}` ,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          if (response.data.length != 0) {
+            this.itemFFPerDesa = response.data.data.result
+            console.log(this.itemFFPerDesa)
+          }
+          
+        } catch (error) {
+          console.error(error.response);
+          this.itemDesa = [];
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+          this.itemFFPerDesa = []
+          this.updateItem.assign_to = ''
         }
       },
       async getVillage() {
@@ -576,7 +655,7 @@
           }
         }
       },
-      async getPopulateTableData(area_code){
+      async getPopulateTableData(){
         try {
           this.subTable.tableLoading = true
           this.subTable.populateDataObject = [];
@@ -585,7 +664,7 @@
             "GetMonitoring1PopulateByTA?program_year="+ 
             this.localConfig.programYear +
             "&ta=" +
-            area_code,
+            this.expand_key + "&search_value=" + this.populateSearchFarmer,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
