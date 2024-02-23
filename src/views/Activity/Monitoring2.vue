@@ -18,6 +18,13 @@
     ></v-breadcrumbs>
     <!-- trees preview component -->
     <!-- <TreesPreview></TreesPreview> -->
+    <detailModal
+      :show="details.detailModalMO2"
+      :dataDetail="details.monitoring2Details"
+      :generalDatas="details.generalData"
+      @close="details.detailModalMO2 = false">
+    ></detailModal>
+
     <manualForm
       :show="details.manualFormDialog"
       :itemDataMO1="details.monitoring1Details"
@@ -337,7 +344,7 @@
           <template v-slot:item.status="{ item }">
             <v-chip :color="item.is_verified > 0 ? 'green' : 'red'" class="white--text pl-1">
               <v-icon class="mr-1">mdi-{{ item.is_verified > 0 ? `${ item.is_verified == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
-              {{ item.is_verified > 0 ? `Terverifikasi ` : 'Belum Terverifikasi' }}
+              {{ item.is_verified > 0 ? item.verified_by : 'Belum Terverifikasi' }}
             </v-chip>
           </template>
           <!-- Action table -->
@@ -360,7 +367,7 @@
               <v-btn
                   dark
                   rounded
-                  @click="openDetailMonitoring2(item)"
+                  @click="openDetailMonitoring2Modal(item)"
                   color="blue"
                   class="px-5"
                   >
@@ -370,14 +377,12 @@
                 Detail Monitoring2
               </v-btn>
             </v-list-item>  
-            <v-list-item>
+            <v-list-item v-if="User.role_group === 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'FIELD FACILITATOR'">
               <v-btn
-                  
                   dark
                   rounded
-                  @click="getDetailData(item)"
+                  @click="openManualMonitoring2(item)"
                   color="orange"
-                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR'"
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
@@ -392,7 +397,6 @@
                   rounded
                   @click="openBarcodeDigital(item)"
                   color="green"
-                  :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR'"
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
@@ -401,6 +405,35 @@
                 Label Monitoring Digital dan Cetak Label
               </v-btn>
             </v-list-item> 
+            <!-- v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null" -->
+            <v-list-item v-if="false">
+              <v-btn
+                  dark
+                  rounded
+                  @click="verifuMO2(item)"
+                  color="green"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  <mdi-check></mdi-check>
+                </v-icon>
+                Verifikasi Monitoring 2
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(User.role_group == 'IT')  && item.is_verified == 1">
+              <v-btn
+                  dark
+                  rounded
+                  @click="verifuMO2(item)"
+                  color="red"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  <mdi-check></mdi-check>
+                </v-icon>
+                Unverifikasi Monitoring 2
+              </v-btn>
+            </v-list-item>  
             </v-list>
           </v-menu>
         </template>
@@ -453,20 +486,23 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2';
 // import TreesPreview from "./components/monitoring2/TreesPreview.vue";
 import VueHtml2pdf from 'vue-html2pdf';
 import VueQRCodeComponent from 'vue-qrcode-component';
 import ExportExcelForLablejoy from '@/views/Activity/monitoring2AddIn/ExportExcelForLablejoy';
 import manualForm from "@/views/Activity/monitoring2AddIn/manualMonitoring2Form";
+import detailModal from '@/views/Activity/monitoring2AddIn/detailMonitoring2';
 
 export default {
   name: "Monitoring2",
   components: {
     // TreesPreview
     'qr-code': VueQRCodeComponent,
-    VueHtml2pdf,
-    ExportExcelForLablejoy,
-    manualForm
+    'VueHtml2pdf': VueHtml2pdf,
+    'ExportExcelForLablejoy': ExportExcelForLablejoy,
+    'manualForm': manualForm,
+    'detailModal': detailModal
 },
   data: () => ({
     // general setting
@@ -533,6 +569,8 @@ export default {
 
       detailDialog: false,
       manualFormDialog: false,
+
+      detailModalMO2: false,
     },
 
     localConfig: {
@@ -587,6 +625,16 @@ export default {
       this.itemTA = item.item.area_code
       this.getDataMonitoring2Main()
     },
+    openDetailMonitoring2Modal(item){
+
+      this.getDetailData(item)
+
+      this.details.detailModalMO2 = true
+    },
+    openManualMonitoring2(item){
+      this.getDetailData(item)
+      this.details.manualFormDialog = true
+    },
     async getDetailData(item){
       var params = new URLSearchParams({
         monitoring_no: item.monitoring_no,
@@ -614,12 +662,13 @@ export default {
           this.details.generalData = item
           
 
-          this.details.manualFormDialog = true
+          
         } else {
           this.details.monitoring1Details= []
           this.details.monitoring2Details= []
           this.details.monitoring2TreeDetails= []
           this.details.manualFormDialog = false
+          this.details.detailModalMO2 = false
         }
         
       } catch (error) {
@@ -639,6 +688,48 @@ export default {
       console.log(item)
 
       this.getDetailData(item.monitoring_no, item.monitoring2_no)
+    },
+    async verifuMO2(item){
+      var params = {
+        monitoring2_no: item.monitoring2_no,
+        verified_by: this.User.name,
+
+      }
+      const confirmation = await Swal.fire({
+          title: 'Apa Anda Yakin Untuk Melakukan Verifikasi Monitoring 2?',
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+          console.log(params)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + "ValidateMonitoring2" , params,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            this.subTable.expanded = []
+            console.log(response)
+            await Swal.fire({
+                title: 'Berhasil Melakukan Verifikasi Monitoring 2!',
+                icon: 'success',
+                confirmButtonColor: '#2e7d32',
+                confirmButtonText: 'Okay',
+            })
+          } catch (error) {
+            console.error(error.response);
+            this.subTable.expanded = []
+            if (error.response.status == 401) {
+              localStorage.removeItem("token");
+              this.$router.push("/");
+            }
+          }
+        }
     },
     async openBarcodeDigital(item){
       var params = new URLSearchParams({
@@ -689,10 +780,6 @@ export default {
         this.details.manualFormDialog = false
       }
     },
-    // openManualMonitoring2(item){
-    //   // this.details.generalData = item
-    //   this.getDetailData(item.monitoring_no, item.monitoring2_no)
-    //   console.log(this.details.monitoring1Details)
 
       
     // },

@@ -5277,7 +5277,6 @@ export default {
         gambar3: this.defaultItem.gambar3,
         list_pohon: this.defaultItem.list_detail,
       };
-
       console.log(datapost);
 
       //   if (this.defaultItem.id) {

@@ -527,7 +527,7 @@
             this.subTable.expanded = []
             console.log(response)
             await Swal.fire({
-                title: 'Berhasil Melakukan Generate Data Populasi Ke Monitoring 2?',
+                title: 'Berhasil Melakukan Generate Data Populasi Ke Monitoring 2!',
                 icon: 'success',
                 confirmButtonColor: '#2e7d32',
                 confirmButtonText: 'Okay',
