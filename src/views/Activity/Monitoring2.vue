@@ -21,6 +21,7 @@
     <detailModal
       :show="details.detailModalMO2"
       :dataDetail="details.monitoring2Details"
+      :treeDetail="details.monitoring2TreeDetails"
       :generalDatas="details.generalData"
       @close="details.detailModalMO2 = false">
     ></detailModal>
@@ -264,7 +265,7 @@
           >
             <v-icon class="mr-1">mdi-zip-box</v-icon> Populate Data Lahan
           </v-btn>
-          <v-btn
+          <!-- <v-btn
             v-if="User.role_group=='IT'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
@@ -272,7 +273,7 @@
             color="green white--text"
           >
             <v-icon class="mr-1">mdi-zip-box</v-icon> Barcode Pohon Monitoring
-          </v-btn>
+          </v-btn> -->
           <!-- <v-btn
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
@@ -371,9 +372,9 @@
                   color="blue"
                   class="px-5"
                   >
-                <v-icon class="mr-1" small color="white">
+                <!-- <v-icon class="mr-1" small color="white">
                   mdi-info
-                </v-icon>
+                </v-icon> -->
                 Detail Monitoring2
               </v-btn>
             </v-list-item>  
@@ -385,9 +386,9 @@
                   color="orange"
                   class="px-5"
                   >
-                <v-icon class="mr-1" small color="white">
+                <!-- <v-icon class="mr-1" small color="white">
                   mdi-print
-                </v-icon>
+                </v-icon> -->
                 Cetak Form Monitoring Manual
               </v-btn>
             </v-list-item> 
@@ -399,14 +400,14 @@
                   color="green"
                   class="px-5"
                   >
-                <v-icon class="mr-1" small color="white">
+                <!-- <v-icon class="mr-1" small color="white">
                   mdi-lable
-                </v-icon>
+                </v-icon> -->
                 Label Monitoring Digital dan Cetak Label
               </v-btn>
             </v-list-item> 
             <!-- v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null" -->
-            <v-list-item v-if="false">
+            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null">
               <v-btn
                   dark
                   rounded
@@ -414,9 +415,9 @@
                   color="green"
                   class="px-5"
                   >
-                <v-icon class="mr-1" small color="white">
-                  <mdi-check></mdi-check>
-                </v-icon>
+                <!-- <v-icon class="mr-1" small color="white">
+                  
+                </v-icon> -->
                 Verifikasi Monitoring 2
               </v-btn>
             </v-list-item>
@@ -658,6 +659,7 @@ export default {
           this.details.monitoring1Details= response.data.data.result.mo1Details
           this.details.monitoring2Details= response.data.data.result.mo2Details
           this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
+          console.log(this.details.monitoring2TreeDetails)
           // this.dialogDigitalBarcode.cardData = this.details.monitoring2Details
           this.details.generalData = item
           

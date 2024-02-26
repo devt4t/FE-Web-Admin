@@ -160,28 +160,91 @@
                         </tbody>
                     </v-simple-table>
                     <!-- List Detail Table -->
-                    <v-data-table 
-                        :headers="table.headers" 
-                        :items="table.items"
-                        class="elevation-3 rounded-xl" 
-                        item-key="kode" 
-                        :loading="table.loading.show"
-                        loading-text="Loading... Please wait"  
-                        :items-per-page="20" 
-                        :footer-props="{
-                          itemsPerPageText: 'Jumlah Data Per Halaman',
-                          itemsPerPageOptions: [20, 50, 100, 200]
-                        }">
+                        <v-data-table 
+                            :headers="table.headers" 
+                            :items="table.items"
+                            class="elevation-3 rounded-xl" 
+                            item-key="kode" 
+                            :loading="table.loading.show"
+                            loading-text="Loading... Please wait"  
+                            :items-per-page="20" 
+                            :footer-props="{
+                            itemsPerPageText: 'Jumlah Data Per Halaman',
+                            itemsPerPageOptions: [20, 50, 100, 200]
+                            }">
                         </v-data-table>
-                    <v-simple-table>
+                    <v-col cols="12" class="d-flex align-center">
+                        <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-image-multiple</v-icon></v-btn> <h3>Foto Kegiatan Monitoring 2 </h3><v-divider class="mx-2"></v-divider>
+                    </v-col>
+                    <v-row class="justify-center align-center">
+                        <v-col cols="12" lg="4" sm="6" md="6">
+                          <v-img
+                            height="250"
+                            v-bind:src="generalData.photo1"
+                            @click="showLightbox(generalData.photo1)"
+                            class="my-1 mb-4 rounded-xl cursor-pointer"
+                          ></v-img>
+                        </v-col>
+                        <v-col cols="12" lg="4" sm="6" md="6">
+                          <v-img
+                            height="250"
+                            v-bind:src="generalData.photo2"
+                            @click="showLightbox(generalData.photo2)"
+                            class="my-1 mb-4 rounded-xl cursor-pointer"
+                          ></v-img>
+                        </v-col>
+                    </v-row>
+                    <v-col cols="12" class="d-flex align-center">
+                        <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-list-box</v-icon></v-btn> <h3>Foto Pohon Per Jenis </h3><v-divider class="mx-2"></v-divider>
+                    </v-col>
+                    <h3 class="ml-1">
+                      <v-simple-table dense class="rounded-xl overflow-hidden" style="border: 1px solid #e2e2e2;border-collapse: collapse;">
+                        <thead>
+                          <tr>
+                            <th class="text-center">No</th>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th class="text-center">Foto Hidup</th>
+                            <th class="text-center">Foto Mati</th>
+                          </tr>
+                        </thead>
                         <tbody>
+                          <tr v-for="(tree, treeIndex) in items_tree" :key="treeIndex">
+                            <td class="text-center">{{ treeIndex + 1 }}</td>
+                            <td>{{ tree.tree_code }}</td>
+                            <td>{{ tree.tree_name }}</td>
+                            <td class="text-center">
+                              <v-btn 
+                                color="green white--text"
+                                outlined
+                                hide-details
+                                dense
+                                :disabled="items_tree[treeIndex].photo_life == '-'"
+                                @click="openPlantPhoto(items_tree[treeIndex].photo_life)"
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                              </v-btn>
+                            </td>
+                            <td class="text-center">
+                              <v-btn 
+                                color="red white--text"
+                                outlined
+                                hide-details
+                                dense
+                                :disabled="items_tree[treeIndex].photo_dead == '-'"
+                                @click="openPlantPhoto(items_tree[treeIndex].photo_dead)"
+                                rounded>
+                                <v-icon class="mr-1">mdi-image</v-icon>
+                                <v-tooltip
+                                  activator="parent"
+                                  location="end"
+                                ><span>Klik untuk memunculkan</span></v-tooltip>
+                              </v-btn>
+                            </td>
+                          </tr>
                         </tbody>
-                    </v-simple-table>
-                    
-                    <v-simple-table>
-                        <tbody>
-                        </tbody>
-                    </v-simple-table>
+                      </v-simple-table>
+                    </h3>
                 </v-container>
             </v-card-text>
             
@@ -208,7 +271,11 @@
             },
             dataDetail: {
                 type: Array,
-                default: ''
+                default: []
+            },
+            treeDetail:  {
+                type: Array,
+                default: []
             },
             generalDatas: {
                 type: Object,
@@ -267,18 +334,20 @@
                 ],
                 items: [],
                 items_raw: [],
+                items_tree: [],
                 loading: {
                     show: false,
                     text: 'Loading...'
                 },
                 search: ''
-            }
+            },
+            BaseUrl: ''
         }),
         computed: {
             showModal: {
                 get: function () {
                     if(this.show){
-                     
+                        this.BaseUrl = localStorage.getItem("BaseUrl");
                         this.getTableData({})   
                     }
                     return this.show
@@ -286,6 +355,7 @@
                 set: function(newVal) {
                     if (!newVal) {
                         setTimeout(() => {
+                            this.items_tree = []
                             this.table.items = []
                             this.table.items_raw = []
                         }, 200);
@@ -327,9 +397,21 @@
                     }
                 }
             },
+            openPlantPhoto(photoRoute){
+                this.showLightbox(this.BaseUrl +photoRoute)
+            },
+            showLightbox(imgs, index) {
+                if (imgs) this.$store.state.lightbox.imgs = imgs
+                
+                if (index) this.$store.state.lightbox.index = index
+                else this.$store.state.lightbox.index = 0
+
+                this.$store.state.lightbox.show = true
+            },
             async getTableData() {
+                this.items_tree = this.treeDetail ?? []
                 this.table.items = this.dataDetail
-                console.log(this.table.items)
+                console.log(this.treeDetail)
                 this.table.items_raw = this.dataDetail
 
                 this.generalData.mo2_no= this.generalDatas.monitoring2_no
@@ -352,10 +434,23 @@
                 this.generalData.activity_name= 'Monitoring 2'
                 this.generalData.activity_date= ''
 
-                this.generalData.monitoring2_start= this.generalDatas.monitoring2_start
-                this.generalData.monitoring2_end= this.generalDatas.monitoring2_end
-                this.generalData.monitoring2_time= this.generalDatas.monitoring2_time
+                this.generalData.monitoring2_start= this.generalDatas.monitoring_start
+                this.generalData.monitoring2_end= this.generalDatas.monitoring_end
+                this.generalData.monitoring2_time= this.generalDatas.monitoring_time
                 this.generalData.sampling= this.generalDatas.sampling
+
+                if (this.generalDatas.photo1) {
+                    this.generalData.photo1 = this.BaseUrl + this.generalDatas.photo1
+                }else{
+                    this.generalData.photo1 = "/images/noimage.png"
+                }
+
+                if (this.generalDatas.photo2) {
+                    this.generalData.photo2 = this.BaseUrl + this.generalDatas.photo2
+                }else{
+                    this.generalData.photo2 = "/images/noimage.png"
+                }
+                // this.generalData.photo2= this.generalDatas.photo2
             }
     }
     
