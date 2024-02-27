@@ -24,7 +24,30 @@
             <v-card-text>
               <v-container class="mb-2">
                 <v-row>
-                  <v-col cols="12" sm="12" md="12">
+                  <v-col cols="12" sm="6" md="6">
+                    Nama Petani: <strong>{{ itemDetailForUpdate.farmer_name }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Tahun Program: <strong>{{ itemDetailForUpdate.program_year }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    FF Tahun 2022: <strong>{{ itemDetailForUpdate.ff_name }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Nomor Lahan: <strong>{{ itemDetailForUpdate.lahan_no }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Management Unit (2022): <strong>{{ itemDetailForUpdate.mu_name }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Jumlah Pohon Hidup (2022): <strong>{{ itemDetailForUpdate.total_hidup }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Target Area (2022): <strong>{{ itemDetailForUpdate.target_area_name }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
                     <v-select
                       v-model="updateItem.sampling"
                       :items="['Tetap', 'Random']"
@@ -296,6 +319,20 @@
                 Generate Monitoring 2!
               </v-btn>
             </v-list-item> 
+            <v-list-item v-if="User.role_group == 'IT' && item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">
+              <v-btn
+                  dark
+                  rounded
+                  @click="resetDataPopulate(item)"
+                  color="red"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  mdi-refresh
+                </v-icon>
+                Reset Data Populasi!
+              </v-btn>
+            </v-list-item> 
             </v-list>
           </v-menu>
         </template>
@@ -426,13 +463,14 @@
           {text: 'Nama FF', value: 'ff_name'},
           {text: 'Total Pohon Hidup', value: 'total_hidup'},
           {text: 'Sampling', value: 'sampling'},
-          {text: 'Ditugaskan Pada', value: 'assigned_to'},
+          {text: 'Ditugaskan Pada', value: 'assigned_to_name'},
           {text: 'Status Data', value: 'sts'},
           {text: 'Action', value: 'actions'}
         ],
         populateDataObject: [],
         expanded: []
       },
+      itemDetailForUpdate: {},
       updateItem:{
         populate_no: '',
         sampling: 'Random',
@@ -520,7 +558,8 @@
         }
       },
       openUpdateModal(item){
-        console.log(item)
+        this.itemDetailForUpdate = item
+        console.log(this.itemDetailForUpdate)
         this.updateItem.assign_to = ''
         this.updateItem.populate_no = ''
         this.updateItem.populate_no = item.populate_no
@@ -529,6 +568,54 @@
         this.getVillage()
         this.showUpdateModal = true
         // this.getVillage(item)
+      },
+      async resetDataPopulate(item){
+        const confirmation = await Swal.fire({
+          title: 'Apa Anda Yakin Untuk Melakukan RESET Data Populasi?',
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+         var params = {
+          populate_no: item.populate_no
+         }
+          // console.log(item.populate_no)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + "resetDataPopulated" , params,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            this.subTable.expanded = []
+            console.log(response)
+            await Swal.fire({
+                title: 'Berhasil Melakukan RESET Data Populasi!',
+                icon: 'success',
+                confirmButtonColor: '#2e7d32',
+                confirmButtonText: 'Okay',
+            })
+          } catch (error) {
+            await Swal.fire({
+              title: 'Gagal Melakukan Reset Data Populasi',
+              text: "error:" + error.response,
+              icon: 'error',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+            })
+            console.error(error.response);
+            this.subTable.expanded = []
+            if (error.response.status == 401) {
+              localStorage.removeItem("token");
+              this.$router.push("/");
+            }
+          }
+        }
       },
       async pushGenerateMonitoring2(item){
         const confirmation = await Swal.fire({

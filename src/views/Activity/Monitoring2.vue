@@ -434,7 +434,21 @@
                 </v-icon>
                 Unverifikasi Monitoring 2
               </v-btn>
-            </v-list-item>  
+            </v-list-item>
+            <v-list-item v-if="User.role_group == 'IT'">
+              <v-btn
+                  dark
+                  rounded
+                  @click="deleteData(item)"
+                  color="red"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  <mdi-check></mdi-check>
+                </v-icon>
+                Hapus Data Monitoring 2
+              </v-btn>
+            </v-list-item>    
             </v-list>
           </v-menu>
         </template>
@@ -690,6 +704,54 @@ export default {
       console.log(item)
 
       this.getDetailData(item.monitoring_no, item.monitoring2_no)
+    },
+    async deleteData(item){
+      var params = {
+        monitoring2_no: item.monitoring2_no,
+        populate_no: item.populate_no
+      }
+      const confirmation = await Swal.fire({
+          title: 'Apa Anda Yakin Untuk Menghapus Data Monitoring 2?',
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+        console.log(params)
+        try {
+          const response = await axios.post(
+            this.BaseUrlGet + "deleteMonitoring2Datas" , params,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          this.subTable.expanded = []
+          console.log(response)
+          await Swal.fire({
+              title: 'Berhasil Melakukan Hapus Data Monitoring 2!',
+              icon: 'success',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+          })
+        } catch (error) {
+          await Swal.fire({
+              title: 'Gagal Melakukan Hapus Data Monitoring 2!',
+              text: 'Error: ' + error.response,
+              icon: 'error',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+          })
+          console.error(error.response);
+          this.subTable.expanded = []
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        }
+      }
     },
     async verifuMO2(item){
       var params = {
