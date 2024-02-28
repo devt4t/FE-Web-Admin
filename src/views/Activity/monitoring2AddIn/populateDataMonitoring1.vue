@@ -579,6 +579,8 @@
           showCancelButton: true
       })
       if(confirmation.isConfirmed){
+        this.$store.state.loadingOverlay = true
+        this.$store.state.loadingOverlayText = "Loading... Sedang Melakukan Update Data"
          var params = {
           populate_no: item.populate_no
          }
@@ -618,6 +620,7 @@
         }
       },
       async pushGenerateMonitoring2(item){
+        
         const confirmation = await Swal.fire({
           title: 'Apa Anda Yakin Untuk Melakukan Generate Data Populasi Ke Monitoring 2?',
           text: "Proses Tidak Dapat Dikembalikan!",
@@ -627,7 +630,8 @@
           showCancelButton: true
       })
       if(confirmation.isConfirmed){
-          console.log(item)
+          this.$store.state.loadingOverlay = true
+          this.$store.state.loadingOverlayText = "Memuat Data Populasi..."
           try {
             const response = await axios.post(
               this.BaseUrlGet + "AddMonitoring2" , item,
@@ -646,6 +650,13 @@
                 confirmButtonText: 'Okay',
             })
           } catch (error) {
+            await Swal.fire({
+                title: 'Gagal Melakukan Generate Data Populasi Ke Monitoring 2!',
+                text: 'error: ' + error.response,
+                icon: 'error',
+                confirmButtonColor: '#2e7d32',
+                confirmButtonText: 'Okay',
+            })
             console.error(error.response);
             this.subTable.expanded = []
             if (error.response.status == 401) {
@@ -653,6 +664,8 @@
               this.$router.push("/");
             }
           }
+          this.$store.state.loadingOverlay = false
+          this.$store.state.loadingOverlayText = ""
         }
       },
       async pushUpdateData() {
@@ -662,6 +675,8 @@
           assign_to: this.updateItem.assign_to
         }
         console.log(params)
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = "Loading... Sedang Melakukan Update Data!"
         try {
           const response = await axios.post(
             this.BaseUrlGet + "UpdateDataPopulate" , params,
@@ -674,7 +689,20 @@
           this.showUpdateModal = false
           this.subTable.expanded = []
           console.log(response)
+          await Swal.fire({
+            title: 'Berhasil Melakukan Update Data Populasi!',
+            icon: 'success',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Okay',
+          })
         } catch (error) {
+          await Swal.fire({
+            title: 'Gagal Melakukan Update Data Populasi!',
+            text: 'error: '+error.response,
+            icon: 'error',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Okay',
+          })
           console.error(error.response);
           this.subTable.expanded = []
           this.showUpdateModal = false
@@ -683,6 +711,8 @@
             this.$router.push("/");
           }
         }
+        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlayText = ""
       },
       async getFFData(item) {
         this.itemFFPerDesa = []
