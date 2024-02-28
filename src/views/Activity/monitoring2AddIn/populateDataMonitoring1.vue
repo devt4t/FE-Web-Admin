@@ -617,6 +617,8 @@
               this.$router.push("/");
             }
           }
+          this.$store.state.loadingOverlay = false
+          this.$store.state.loadingOverlayText = ""
         }
       },
       async pushGenerateMonitoring2(item){
