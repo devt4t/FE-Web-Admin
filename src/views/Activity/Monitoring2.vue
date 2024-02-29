@@ -317,6 +317,30 @@
             </v-progress-circular>
           </template>
 
+          <template v-slot:item.lahan_no="{item}">
+            <v-chip v-if="lahanNoFormat(item.lahan_no).length < 2" class="green white--text ma-1">
+              {{ lahanNoFormat(item.lahan_no)[0] }}
+            </v-chip>
+            <v-menu v-else open-on-hover offset-x :close-on-content-click="false" content-class="rounded-xl" >
+              <template v-slot:activator="{attrs, on}">
+                <v-btn rounded small v-bind="attrs" v-on="on" :color="`green darken-${(lahanNoFormat(item.lahan_no).length - 1) < 5 ? (lahanNoFormat(item.lahan_no).length - 1) : 4} white--text`">
+                  {{ lahanNoFormat(item.lahan_no).length }} Lahan
+                </v-btn>
+              </template>
+              <v-card class="pa-2 pb-1 d-flex flex-column">
+                <v-chip 
+                  v-for="(lahan, lahanIndex) in lahanNoFormat(item.lahan_no)" 
+                  :key="lahanIndex"
+                  color="green white--text"
+                  class="mb-1"
+                  style="cursor: auto"
+                >
+                  {{ lahan }}
+                </v-chip>
+              </v-card>
+            </v-menu>
+          </template>
+
 
           <template v-slot:top>
             <v-row class="pt-3 px-2">
@@ -639,6 +663,9 @@ export default {
       this.itemTA = ''
       this.itemTA = item.item.area_code
       this.getDataMonitoring2Main()
+    },
+    lahanNoFormat(lahan_no) {
+      return lahan_no.replace('[', '').replace(']', '').split(',')
     },
     openDetailMonitoring2Modal(item){
 
