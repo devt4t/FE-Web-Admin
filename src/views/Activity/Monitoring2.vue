@@ -583,7 +583,7 @@ export default {
         {text: 'Desa', value: 'village'},
         {text: 'Nomor Lahan', value: 'lahan_no'},
         {text: 'Kondisi Lahan', value: 'land_condition'},
-        {text: 'Jumlah Total Pohon', value: 'qty_trees'},
+        {text: 'Jumlah Total Pohon', value: 'total_hidup'},
         {text: 'Waktu Monitoring', value: 'monitoring_time'},
         {text: 'Waktu Awal Monitoring', value: 'monitoring_start'},
         {text: 'Waktu Akhir Monitoring', value: 'monitoring_end'},
