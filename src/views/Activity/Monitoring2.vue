@@ -435,7 +435,7 @@
                 Unverifikasi Monitoring 2
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="User.role_group == 'IT'">
+            <v-list-item v-if="item.total_tree_monitoring != item.total_hidup">
               <v-btn
                   dark
                   rounded
