@@ -209,7 +209,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr v-for="(tree, treeIndex) in items_tree" :key="treeIndex">
+                          <tr v-for="(tree, treeIndex) in treeDetail" :key="treeIndex">
                             <td class="text-center">{{ treeIndex + 1 }}</td>
                             <td>{{ tree.tree_code }}</td>
                             <td>{{ tree.tree_name }}</td>
@@ -219,8 +219,8 @@
                                 outlined
                                 hide-details
                                 dense
-                                :disabled="items_tree[treeIndex].photo_life == '-'"
-                                @click="openPlantPhoto(items_tree[treeIndex].photo_life)"
+                                :disabled="treeDetail[treeIndex].photo_life == '-'"
+                                @click="openPlantPhoto(treeDetail[treeIndex].photo_life)"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
                               </v-btn>
@@ -231,8 +231,8 @@
                                 outlined
                                 hide-details
                                 dense
-                                :disabled="items_tree[treeIndex].photo_dead == '-'"
-                                @click="openPlantPhoto(items_tree[treeIndex].photo_dead)"
+                                :disabled="treeDetail[treeIndex].photo_dead == '-'"
+                                @click="openPlantPhoto(treeDetail[treeIndex].photo_dead)"
                                 rounded>
                                 <v-icon class="mr-1">mdi-image</v-icon>
                                 <v-tooltip
@@ -409,7 +409,7 @@
                 this.$store.state.lightbox.show = true
             },
             async getTableData() {
-                this.items_tree = this.treeDetail ?? []
+                this.items_tree = this.treeDetail
                 this.table.items = this.dataDetail
                 console.log(this.treeDetail)
                 this.table.items_raw = this.dataDetail

@@ -103,7 +103,11 @@
                 type: Array,
                 default: ''
             },
-            lahan_no: {
+            ff_no: {
+                type: String,
+                default: ''
+            },
+            farmer_name: {
                 type: String,
                 default: ''
             },
@@ -165,27 +169,28 @@
     
     methods: {
         downloadExcel() {
+            console.log(this.farmer_name)
             const table = document.getElementById("tabelForExportSostam");
             const wb = XLSX.utils.table_to_book(table);
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataMO2-${this.program_year}_${this.lahan_no}.xlsx`);
+            XLSX.writeFile(wb, `DataMO2-${this.program_year}_${this.ff_no}_${this.farmer_name}.xlsx`);
         },
-        downloadPDF() {
-            window.jsPDF = window.jspdf.jsPDF;
-            var doc = new jsPDF({
-                orientation: 'landscape',
-                unit: 'px',
-                format: [1400, 700]
-            });
-            doc.autoTable({ 
-                html: '#tabelForExportSostam',
-                useCss: true,
-                tableLineWidth: 0,
-                theme: 'striped'
-             })
-            doc.save(`DataMO2-${this.program_year}_${this.lahan_no}.pdf`);
-        },
+        // downloadPDF() {
+        //     window.jsPDF = window.jspdf.jsPDF;
+        //     var doc = new jsPDF({
+        //         orientation: 'landscape',
+        //         unit: 'px',
+        //         format: [1400, 700]
+        //     });
+        //     doc.autoTable({ 
+        //         html: '#tabelForExportSostam',
+        //         useCss: true,
+        //         tableLineWidth: 0,
+        //         theme: 'striped'
+        //      })
+        //     doc.save(`DataMO2-${this.program_year}_${this.lahan_no}.pdf`);
+        // },
         // statusRowColor(outputColor, itemKey){
         //     if(itemKey == 'status'){
                 
@@ -272,7 +277,7 @@
             async getTableData() {
                 try {
                     this.table.loading.show = true
-                    console.log(this.lahan_no)
+                    console.log(this.farmer_name)
                     this.table.items = this.dataObject
                     this.table.items_raw = this.dataObject
                 } catch (err) {this.errorResponse(err)} finally {

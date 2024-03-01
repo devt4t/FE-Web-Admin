@@ -37,7 +37,8 @@
     <ExportExcelForLablejoy
     :show="dialogExportDataToExcel.show"
     :dataObject="details.monitoring2Details"
-    :lahan_no="dialogDigitalBarcode.lahan_no"
+    :ff_no="dialogDigitalBarcode.ff_no"
+    :farmer_name="dialogDigitalBarcode.farmer_name"
     :program_year="localConfig.programYear"
     @close="dialogExportDataToExcel.show = false"
     >
@@ -427,7 +428,7 @@
                 <!-- <v-icon class="mr-1" small color="white">
                   mdi-lable
                 </v-icon> -->
-                Label Monitoring Digital dan Cetak Label
+                Excel untuk Cetak Label
               </v-btn>
             </v-list-item> 
             <!-- v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null" -->
@@ -556,7 +557,8 @@ export default {
         text: 'Sedang Memuat Data Barcode!'
       },
       cardData:[],
-      lahan_no: ''
+      ff_no: '',
+      farmer_name: ''
     },
 
     authtoken: "",
@@ -846,9 +848,10 @@ export default {
           this.details.monitoring2Details= response.data.data.result.mo2Details
           this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
 
-          this.dialogDigitalBarcode.lahan_no= item.assignToFF
           console.log(item)
           this.details.generalData = item
+          this.dialogDigitalBarcode.ff_no= item.assignToFF
+          this.dialogDigitalBarcode.farmer_name= item.farmer_name
 
           this.dialogDigitalBarcode.show = true
         } else {
