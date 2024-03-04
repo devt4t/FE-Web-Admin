@@ -18,6 +18,12 @@
     ></v-breadcrumbs>
     <!-- trees preview component -->
     <!-- <TreesPreview></TreesPreview> -->
+    <exportMonitoring2Main
+    :show="exportMO2Modals"
+    @close="exportMO2Modals = false"
+    :generalDatas="generalDataMain">
+    </exportMonitoring2Main>
+
     <detailModal
       :show="details.detailModalMO2"
       :dataDetail="details.monitoring2Details"
@@ -286,6 +292,8 @@
 
         </v-row>
       </template>
+
+      
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length" class="py-6">
           <v-data-table
@@ -492,24 +500,36 @@
       
       
       <!-- Action Column -->
-      <template v-slot:item.actions="{ item }">
-        <v-menu content-class="rounded-xl">
-          <template v-slot:activator="{attrs, on}">
-            <v-btn v-bind="attrs" v-on="on" small fab icon>
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
+      <template v-slot:item.actions_main="{ item }">
+        <v-menu
+          rounded="xl"
+          bottom
+          left
+          offset-y
+          transition="slide-y-transition"
+          :close-on-content-click="false"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon v-bind="attrs" v-on="on" color="dark">
+              mdi-arrow-down-drop-circle
+            </v-icon>
           </template>
-          <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-            <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center" @click="">
-              <v-icon class="mr-1">mdi-information</v-icon> Detail
+          <v-list class="d-flex flex-column align-center">
+          <v-list-item>
+            <v-btn
+                dark
+                rounded
+                @click="openExportMO2(item)"
+                color="blue"
+                class="px-5"
+                >
+              <v-icon class="mr-1" small color="white">
+                mdi-export
+              </v-icon>
+              Export Monitoring2
             </v-btn>
-            <v-btn v-if="User.role" color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center" @click="() => {showEditUmumModal(item.monitoring_no)}">
-              <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
-            </v-btn>
-            <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
-              <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
-            </v-btn>
-          </v-card>
+          </v-list-item>    
+          </v-list>
         </v-menu>
       </template>
     </v-data-table>
@@ -533,11 +553,13 @@ import VueQRCodeComponent from 'vue-qrcode-component';
 import ExportExcelForLablejoy from '@/views/Activity/monitoring2AddIn/ExportExcelForLablejoy';
 import manualForm from "@/views/Activity/monitoring2AddIn/manualMonitoring2Form";
 import detailModal from '@/views/Activity/monitoring2AddIn/detailMonitoring2';
+import exportMonitoring2Main from '@/views/Activity/monitoring2AddIn/exportMonitoring2Main';
 
 export default {
   name: "Monitoring2",
   components: {
     // TreesPreview
+    'exportMonitoring2Main': exportMonitoring2Main,
     'qr-code': VueQRCodeComponent,
     'VueHtml2pdf': VueHtml2pdf,
     'ExportExcelForLablejoy': ExportExcelForLablejoy,
@@ -569,6 +591,7 @@ export default {
       {text: 'Target Area', value: 'name'},
       {text: 'Management Unit', value: 'mu_name'},
       {text: 'Tahun Program', value: 'program_year'},
+      {text: 'Action', value: 'actions_main'},
       {text: 'Detail Data Monitoring 2', value: 'data-table-expand', align: 'right'}
     ],
     tableLoading: false,
@@ -613,6 +636,8 @@ export default {
 
       detailModalMO2: false,
     },
+    generalDataMain: {},
+    exportMO2Modals: false,
 
     localConfig: {
       programYear: '',
@@ -823,6 +848,11 @@ export default {
             }
           }
         }
+    },
+    openExportMO2(item){
+      this.generalDataMain = item
+      console.log(this.generalDataMain)
+      this.exportMO2Modals = true
     },
     async openBarcodeDigital(item){
       var params = new URLSearchParams({
