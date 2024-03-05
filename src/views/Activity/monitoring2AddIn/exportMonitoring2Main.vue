@@ -117,14 +117,11 @@
                     // {text: 'No', value: 'index', width: 75},
                     {text: 'No', value: 'index', width: 75},
                     {text: 'No Monitoring', value: 'monitoring2_no'},
-                    
                     {text: 'Tahun Program', value: 'program_year'},
                     {text: 'Tanggal Monitoring', value: 'monitoring_time'},
                     {text: 'Waktu Mulai Monitoring', value: 'monitoring_start'},
-                    
                     {text: 'Waktu Selesai Monitoring', value: 'monitoring_end'},
                     {text: 'Total Pohon Monitoring', value: 'total_hidup'},
-                    
                     {text: 'Management Unit', value: 'mu_name'},
                     {text: 'Target Area', value: 'ta_name'},
                     {text: 'Desa', value: 'desa_name'},

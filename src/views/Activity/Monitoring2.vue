@@ -303,7 +303,7 @@
           :headers="subTable.headers"
           :items="subTable.dataobject"
           :loading="subTable.tableLoading"
-          loading-text="Loading... Please wait"
+          loading-text="Please Wait... Take a Sip of Coffee"
           :footer-props="{
             itemsPerPageText: 'Jumlah Data Per Halaman',
             itemsPerPageOptions: [10, 25, 40, -1],
@@ -353,24 +353,39 @@
 
           <template v-slot:top>
             <v-row class="pt-3 px-2">
-              <v-col cols="12" lg="6" class="d-flex align-center">
+              
               <v-col cols="12" lg="6" class="d-flex">
                   <v-text-field
-                      color="success"
-                      item-color="success"
-                      v-model="searchByFarmer"
-                      placeholder="Pencarian Nama Petani..."
-                      append-icon="mdi-magnify"
-                      outlined
-                      dense
-                      rounded
-                      label="Pencarian Nama Petani"
-                      hide-details
-                      
+                    color="success"
+                    item-color="success"
+                    v-model="searchByFarmer"
+                    placeholder="Pencarian Nama Petani..."
+                    append-icon="mdi-magnify"
+                    outlined
+                    dense
+                    rounded
+                    label="Pencarian Nama Petani"
+                    hide-details      
                   ></v-text-field>
+                <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
+                  <v-select
+                    color="success"
+                    item-color="success"
+                    v-model="samplingFilter"
+                    :items="samplingFilterItem"
+                    item-text="text"
+                    item-value="value"
+                    outlined
+                    dense
+                    hide-details
+                    :disabled="subTable.tableLoading"
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    rounded
+                    label="Sampling"
+                    class="mx-auto mx-lg-3"
+                    style="max-width: 200px"
+                  ></v-select>        
                 </v-col>
-              <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
-            </v-col>
           </v-row>
           </template>
 
@@ -613,6 +628,7 @@ export default {
         {text: 'Waktu Awal Monitoring', value: 'monitoring_start'},
         {text: 'Waktu Akhir Monitoring', value: 'monitoring_end'},
         {text: 'Tahun Program', value: 'program_year'},
+        {text: 'Sampling', value: 'sampling'},
         {text: 'Status', value: 'status'},
         {text: 'Action', value: 'actions'}
       ],
@@ -624,6 +640,12 @@ export default {
     },
     itemTA: '',
     searchByFarmer: '',
+    samplingFilter: '',
+    samplingFilterItem:[
+      {text: 'Semua', value: ''},
+      {text: 'Tetap', value: 'Tetap'},
+      {text: 'Random', value: 'Random'},
+    ],
     details:{
       monitoring1Details: [],
       monitoring2Details: [],
@@ -662,6 +684,11 @@ export default {
         }
       },
       'searchByFarmer': {
+        handler(val){
+          this.getDataMonitoring2Main()
+        }
+      },
+      'samplingFilter': {
         handler(val){
           this.getDataMonitoring2Main()
         }
@@ -916,7 +943,7 @@ export default {
           this.BaseUrlGet +
           "GetMonitoring2ByTA?program_year="+ 
           this.localConfig.programYear +
-          "&ta=" + this.itemTA + "&search_value=" + this.searchByFarmer,
+          "&ta=" + this.itemTA + "&search_value=" + this.searchByFarmer + "&sampling_filter=" + this.samplingFilter,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
