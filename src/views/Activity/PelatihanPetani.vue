@@ -708,8 +708,12 @@
           <span class="headline">Detail Pelatihan Petani</span>
         </v-card-title>
         <v-card-text class="pa-0 fontall">
-          <vue-html2pdf :show-layout="false" :float-layout="true" :enable-download="false" :preview-modal="true"
-            :paginate-elements-by-height="1400"
+          <vue-html2pdf 
+            :show-layout="false" 
+            :float-layout="true" 
+          :enable-download="false" 
+          :preview-modal="true"
+          :paginate-elements-by-height="1400"
             :filename="`Pelatihan petani - ${dialogDetailData ? dialogDetailData.training_no : ''}`" :pdf-quality="2"
             :manual-pagination="false" pdf-format="a4" pdf-orientation="portrait" pdf-content-width="800px"
             ref="html2Pdf">
@@ -3489,7 +3493,9 @@ export default {
 
     },
     generateExportDetail() {
-      this.$refs.html2Pdf.generatePdf()
+      this.$refs.html2Pdf.generatePdf(v => {
+        console.log(v)
+      })
     },
     generateExportDetailExcel(){
       this.dialogExportExcel.modal = true

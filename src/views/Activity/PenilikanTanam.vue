@@ -2177,7 +2177,7 @@
               rounded 
               :color="`green ${hover ? 'white--text' : ''}`" 
               :outlined="!hover" 
-              @click="exportSimpleDistribution.show = true"  exportDataByMU()
+              @click="exportSimpleDistribution.show = true"
               >
               <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export + Distribution</v-btn>
             </v-hover>

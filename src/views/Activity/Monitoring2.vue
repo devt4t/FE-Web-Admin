@@ -18,6 +18,12 @@
     ></v-breadcrumbs>
     <!-- trees preview component -->
     <!-- <TreesPreview></TreesPreview> -->
+    <exportDetailDataMo2
+      :show="details.exportDetail"
+      :generalData="details.generalData"
+      :detailData="details.monitoring2Details"
+      @close="details.exportDetail = false">
+    </exportDetailDataMo2>
     <exportMonitoring2Main
     :show="exportMO2Modals"
     @close="exportMO2Modals = false"
@@ -425,7 +431,21 @@
                 </v-icon> -->
                 Detail Monitoring2
               </v-btn>
-            </v-list-item>  
+            </v-list-item>
+            <v-list-item>
+              <v-btn
+                  dark
+                  rounded
+                  @click="openExportDetailMo2(item)"
+                  color="blue"
+                  class="px-5"
+                  >
+                <!-- <v-icon class="mr-1" small color="white">
+                  mdi-download-box
+                </v-icon> -->
+                Export Detail Monitoring2
+              </v-btn>
+            </v-list-item>    
             <v-list-item v-if="User.role_group === 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'FIELD FACILITATOR'">
               <v-btn
                   dark
@@ -530,7 +550,7 @@
             </v-icon>
           </template>
           <v-list class="d-flex flex-column align-center">
-          <v-list-item>
+          <v-list-item v-if="User.role_group == 'IT' || User.role_name == 'UNIT MANAGER'">
             <v-btn
                 dark
                 rounded
@@ -569,11 +589,13 @@ import ExportExcelForLablejoy from '@/views/Activity/monitoring2AddIn/ExportExce
 import manualForm from "@/views/Activity/monitoring2AddIn/manualMonitoring2Form";
 import detailModal from '@/views/Activity/monitoring2AddIn/detailMonitoring2';
 import exportMonitoring2Main from '@/views/Activity/monitoring2AddIn/exportMonitoring2Main';
+import exportDetailDataMo2 from '@/views/Activity/monitoring2AddIn/exportDetailDataMo2'
 
 export default {
   name: "Monitoring2",
   components: {
     // TreesPreview
+    'exportDetailDataMo2': exportDetailDataMo2,
     'exportMonitoring2Main': exportMonitoring2Main,
     'qr-code': VueQRCodeComponent,
     'VueHtml2pdf': VueHtml2pdf,
@@ -657,6 +679,8 @@ export default {
       manualFormDialog: false,
 
       detailModalMO2: false,
+
+      exportDetail: false
     },
     generalDataMain: {},
     exportMO2Modals: false,
@@ -726,6 +750,10 @@ export default {
       this.getDetailData(item)
 
       this.details.detailModalMO2 = true
+    },
+    openExportDetailMo2(item){
+      this.getDetailData(item)
+      this.details.exportDetail = true
     },
     openManualMonitoring2(item){
       this.getDetailData(item)

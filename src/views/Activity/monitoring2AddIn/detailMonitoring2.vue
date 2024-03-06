@@ -74,6 +74,11 @@
                                 <td>:</td>
                                 <td><strong>{{ this.generalData.farmer_name || '-' }}</strong></td>
                             </tr>
+                            <tr>
+                                <td>Hasil Interview Petani</td>
+                                <td>:</td>
+                                <td><strong>{{ this.generalData.interview || '-' }}</strong></td>
+                            </tr>
                             
                             <v-col cols="12" class="d-flex align-center">
                                 <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-land-plots-marker</v-icon></v-btn> <h3>Data Lahan</h3><v-divider class="mx-2"></v-divider>
@@ -92,6 +97,11 @@
                                 <td>Luas Lahan</td>
                                 <td>:</td>
                                 <td><strong>{{ this.generalData.land_area || '-' }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Kondisi Lahan</td>
+                                <td>:</td>
+                                <td><strong>{{ this.generalData.land_condition || '-' }}</strong></td>
                             </tr>
                             <tr>
                                 <td>Luas Tutupan Lahan</td>
@@ -249,8 +259,7 @@
             </v-card-text>
             
             <v-card-actions class="justify-center align-center">
-                    <!-- <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="downloadExcel()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Unduh Excel</v-btn> -->
-                    <!-- <v-btn :disabled="table.loading.show" color="orange darken-2 white--text" rounded @click="downloadPDF()"><v-icon class="mr-1">mdi-file-pdf-box</v-icon> Unduh PDF</v-btn> -->
+                    <!-- <v-btn :disabled="table.loading.show" color="green white--text" rounded @click="ExportData()"><v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export Data</v-btn> -->
                 </v-card-actions>
         </v-card>
     </v-dialog>
@@ -262,8 +271,8 @@
     import axios from 'axios'
     import moment from 'moment'
     import Swal from 'sweetalert2'
+    
     export default {
-        
         props: {
             show: {
                 type: Boolean,
@@ -283,6 +292,8 @@
             }
         },
         data: () => ({
+            exportModal: false,
+
             totalData : 0,
             totalBibitKayu : 0,
             data_um_name: '',
@@ -293,6 +304,7 @@
                 project: '',
                 village: '',
                 land_coordinates: '',
+                land_condition: '',
                 land_area: '',
                 planting_area: '',
                 land_closing_area: '',
@@ -307,6 +319,7 @@
                 prev_monitoring_data: '',
                 activity_name: '',
                 activity_date: '',
+                interview: '',
 
                 monitoring2_start: '',
                 monitoring2_end: '',
@@ -419,6 +432,7 @@
                 this.generalData.project= this.generalDatas.project_no ?? '-'
                 this.generalData.village= this.generalDatas.desa_name
                 this.generalData.land_coordinates= this.generalDatas.longitude +', ' + this.generalDatas.latitude
+                this.generalData.land_condition= this.generalDatas.land_condition
                 this.generalData.land_area= this.generalDatas.land_area
                 this.generalData.planting_area= this.generalDatas.planting_area
                 this.generalData.land_closing_area= this.generalDatas.tutupan
@@ -427,6 +441,7 @@
                 this.generalData.planting_method= this.generalDatas.opsi_pola_tanam
                 this.generalData.farmer_name= this.generalDatas.farmer_name
                 this.generalData.farmer_code= this.generalDatas.farmer_no
+                this.generalData.interview = this.generalDatas.interview
                 this.generalData.mu_name= this.generalDatas.mu_name
                 this.generalData.ta_name= this.generalDatas.ta_name
                 this.generalData.id_from_geko= this.generalDatas.monitoring2_no
