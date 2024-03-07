@@ -162,6 +162,22 @@
                                             v-model="inputs.picKtp.model"
                                         ></v-text-field>
                                     </v-col>
+
+                                    <v-col cols="12" sm="12" md="6" lg="3">
+                                        <v-autocomplete
+                                            color="success"
+                                            hide-details
+                                            item-color="success"
+                                            item-text="text"
+                                            item-value="value"
+                                            :items="inputs.goals.items"
+                                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                                            :no-data-text="inputs.landCoverage.loading ? 'Loading...' : 'No Data'"
+                                            outlined
+                                            rounded
+                                            v-model="inputs.goals.model"
+                                        ></v-autocomplete>
+                                    </v-col>
                                 </v-row>
                                 <div class="pb-2 d-flex align-center">
                                     <p class="mb-0"><v-icon class="mr-2">mdi-island</v-icon>Lahan</p>
@@ -1540,6 +1556,16 @@ export default {
                 model: '',
                 loading: false
             },
+            goals: {
+                label: 'Tujuan Penanaman',
+                model: 'planting',
+                items: [
+                    {text: 'Penanaman Biasa', value: 'planting'},
+                    {text: 'Penanaman Ulang', value: 're-planting'},
+                    {text: 'Optimalisasi', value: 'optimalization'},
+                ],
+                loading: false
+            },
             picKtp: {
                 label: 'NIK / No KTP PIC',
                 model: '',
@@ -1810,6 +1836,7 @@ export default {
                 mou_no: this.inputs.mou.model,
                 employee_no: this.inputs.employee.model,
                 pic_lahan: this.inputs.pic.model,
+                goals: this.inputs.goals.model,
                 ktp_no: this.inputs.picKtp.model,
                 luas_lahan: this.inputs.landArea.model,
                 tutupan_lahan: this.inputs.landCoverage.model,
@@ -2232,6 +2259,7 @@ export default {
             this.inputs.mou.exist = false
             this.inputs.employee.model = ''
             this.inputs.pic.model = ''
+            this.inputs.goals.model = 'planting'
             this.inputs.picKtp.model = ''
             this.inputs.landArea.model = 0
             this.inputs.landCoverage.model = 0
@@ -2296,6 +2324,7 @@ export default {
             this.dialogs.createData.lahan_no = data.lahan_no
             this.inputs.employee.model = data.employee_no
             this.inputs.pic.model = data.pic_lahan
+            this.inputs.goals.model = data.goals
             this.inputs.picKtp.model = data.ktp_no
             this.inputs.landArea.model = data.luas_lahan
             this.inputs.croppingPattern.model = data.pattern_planting

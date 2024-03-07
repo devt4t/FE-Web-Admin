@@ -2073,7 +2073,94 @@
                 ></v-autocomplete>
               </v-col>
             </v-row>
-            <v-row v-if="switchExportFilter == true" class="mt-0">
+            <v-row v-if="switchExportFilter == true && User.role_group == 'IT'" class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Tahun Program"
+                  :items="[2021,2022,2023]"
+                  v-model="dialogs.exportFilter.program_year"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Management Unit"
+                  item-value="mu_no"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.mu.loading"
+                  :items="itemsMU"
+                  v-model="dialogs.exportFilter.filters.mu.model"
+                  v-on:change="getTA('export')"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Target Area"
+                  item-value="area_code"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.ta.loading"
+                  :items="dialogs.exportFilter.filters.ta.options"
+                  v-model="dialogs.exportFilter.filters.ta.model"
+                  v-on:change="getFFbyTA('export')"
+                ></v-autocomplete>
+              </v-col>
+              <!-- <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Desa"
+                  item-value="kode_desa"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.village.loading"
+                  :items="dialogs.exportFilter.filters.village.options"
+                  v-model="dialogs.exportFilter.filters.village.model"
+                  v-on:change="getFFbyVillage('export')"
+                ></v-autocomplete>
+              </v-col> -->
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Facilitator"
+                  item-value="ff_no"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.ff_area.loading"
+                  :items="dialogs.exportFilter.filters.ff_area.options"
+                  v-model="dialogs.exportFilter.filters.ff_area.model"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+            <v-row v-if="switchExportFilter == true && User.role_name == 'UNIT MANAGER'" class="mt-0">
               <v-col :cols="12">
                 <v-autocomplete
                   rounded
@@ -2189,6 +2276,53 @@
                 @click="() => exportDataByMU()" 
                 :disabled="dialogs.exportFilter.filters.ta.model < 1||dialogs.exportFilter.filters.mu.model < 1||dialogs.exportFilter.filters.ff_area.model < 1 ||dialogs.exportFilter.filters.mu.loading">
                 <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export By Area</v-btn>
+            </v-hover>
+            <v-divider class="mx-2"></v-divider>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      
+
+
+      <!-- Modal Export Filter -->
+      <v-dialog v-model="dialogs.exportFF.model" content-class="rounded-xl" max-width="500">
+        <v-card>
+          <v-card-title>
+            Export per FF
+            <v-divider class="mx-2"></v-divider>
+            <v-icon color="red" @click="() => dialogs.exportFF.model = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <v-row class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Facilitator"
+                  item-value="ff_no"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.ff_area.loading"
+                  :items="ff_user"
+                  v-model="dialogs.exportFilter.filters.ff_area.model"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-divider class="mx-2"></v-divider>
+            <v-hover v-slot="{hover}">
+              <v-btn
+                rounded 
+                :color="`green ${hover ? 'white--text' : ''}`" 
+                :outlined="!hover" 
+                @click="exportDataByMU()" 
+                :disabled="dialogs.exportFilter.filters.ff_area.model < 1">
+                <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export Data FF</v-btn>
             </v-hover>
             <v-divider class="mx-2"></v-divider>
           </v-card-actions>
@@ -2365,6 +2499,16 @@
             color="info white--text"
           >
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
+          </v-btn>
+          <v-btn
+            v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER') && generalSettings.landProgram.model == 'Petani'"
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
+            @click="dialogs.exportFF.model = true"
+            :disabled="loadtable"
+            color="info white--text"
+          >
+            <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export Per-FF
           </v-btn>
           <v-btn
             v-if="User.role_group == 'IT' && generalSettings.landProgram.model == 'Umum'"
@@ -2702,6 +2846,9 @@ export default {
       loading: false
     },
     dialogs: {
+      exportFF: {
+        model: false
+      },
       exportFilter: {
         program_year: '2021',
         model: false,
@@ -3107,6 +3254,7 @@ export default {
 
     ph_form_no_temp: "",
     dialogDelete: false,
+    ff_user: [],
   }),
   computed: {
     disabledEditSeedInDetailModal() {
@@ -3259,6 +3407,7 @@ export default {
       this.getFF();
       this.getUMAll();
       this.getTrees();
+      this.openExportPerFF(this.User.ff.ff);
       this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
 
     },
@@ -5633,6 +5782,35 @@ export default {
     lahanNoFormat(lahan_no) {
         return lahan_no.replace('[', '').replace(']', '').split(',')
     },
+    
+    async openExportPerFF(item){
+      this.ff_user = []
+      try {
+        const response = await axios.get(
+        
+          this.BaseUrlGet + `GetFFNow?ff_no=${item}` ,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
+        if (response.data.length != 0) {
+          this.ff_user = response.data.data.result
+          console.log(this.ff_user)
+        }
+        
+      } catch (error) {
+        console.error(error.response);
+        this.itemDesa = [];
+        if (error.response.status == 401) {
+          localStorage.removeItem("token");
+          this.$router.push("/");
+        }
+        this.ff_user = []
+      }
+
+    },
     async openExportFilter() {
       const dialog = this.dialogs.exportFilter
       const filters = dialog.filters
@@ -5685,6 +5863,7 @@ export default {
       url += params.toString()
       window.open(url, "blank")
     },
+
 
     async exportDataByMU() {
       const dialog = this.dialogs.exportFilter
