@@ -937,6 +937,11 @@
                                                 <td><strong>{{ dialogs.detail.data.ktp_no }}</strong></td>
                                             </tr>
                                             <tr>
+                                                <td>Tujuan Tanam</td>
+                                                <td>:</td>
+                                                <td><strong>{{ dialogs.detail.data.goals }}</strong></td>
+                                            </tr>
+                                            <tr>
                                                 <th colspan="3" class="text-center"><v-icon>mdi-island</v-icon> Detail Lahan</th>
                                             </tr>
                                             <tr>
