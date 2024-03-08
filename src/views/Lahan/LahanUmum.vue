@@ -461,7 +461,7 @@
                                         class="mr-0 mr-lg-2"
                                         hide-details
                                         item-color="success"
-                                        :items="['KAYU', 'MPTS', 'CROPS']"
+                                        :items="['KAYU', 'MPTS', 'CROPS', 'MANGROVE']"
                                         :label="'Kategori'"
                                         :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
                                         outlined
@@ -650,7 +650,7 @@
                                                 <v-date-picker
                                                     v-model="inputs.dateDistribution.model"
                                                     min="2023-12-01"
-                                                    max="2024-02-29"
+                                                    max="2024-03-31"
                                                     @input="inputs.dateDistribution.datepicker.show = false"
                                                     color="green"
                                                     class="rounded-xl"
