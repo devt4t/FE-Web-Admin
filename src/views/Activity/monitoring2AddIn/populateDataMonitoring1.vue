@@ -159,9 +159,28 @@
                 :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
                 rounded
                 label="Tahun Program"
+                :disabled="subTable.expanded.length > 0"
                 class="mx-auto mx-lg-3"
                 style="max-width: 200px"
               ></v-select>
+              <v-select
+                v-if="false"
+                color="success"
+                item-color="success"
+                v-model="populateModuls.model"
+                :items="populateModuls.items"
+                item-text="text"
+                item-value="value"
+                outlined
+                dense
+                hide-details
+                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                rounded
+                :disabled="subTable.expanded.length > 0"
+                label="Modul Populasi Data"
+                class="mx-auto mx-lg-3"
+                style="max-width: 400px"
+                ></v-select>
               <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
               <!-- <v-btn
                 v-if="User.role_group=='IT'"
@@ -308,7 +327,7 @@
               <v-btn
                   dark
                   rounded
-                  @click="pushGenerateMonitoring2(item)"
+                  @click="pushGenerateMonitoring(item)"
                   color="green"
                   :disabled="User.role_group != 'IT' && User.role_name != 'PLANNING MANAGER' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
                   class="px-5"
@@ -411,12 +430,12 @@
           href: "breadcrumbs_dashboard",
         },
         {
-          text: "Monitoring 2",
+          text: "Monitoring",
           disabled: true,
           href: "breadcrumbs_link_1",
         },
         {
-          text: "Populate Data Monitoring 1",
+          text: "Data Populasi",
           disabled: true,
           href: "breadcrumbs_link_1",
         },
@@ -446,6 +465,14 @@
       colorsnackbar: null,
       localConfig: {
         programYear: '',
+      },
+      populateModuls: {
+        model: 'pmo1',
+        items: [
+          {text: 'Populate Monitoring 1', value: 'pmo1'},
+          {text: 'Populate Monitoring 2', value: 'pmo2'},
+          {text: 'Populate Monitoring 3', value: 'pmo3'},
+        ]
       },
       subTable: {
         tableLoading: false,
@@ -495,6 +522,11 @@
       this.initialize();
     },
     watch: {
+      'populateModuls.model':{
+        handler(val){
+          this.getPopulateTableData()
+        }
+      },
       'populateSearchFarmer': {
         handler(val){
           this.getPopulateTableData()
@@ -581,13 +613,17 @@
       if(confirmation.isConfirmed){
         this.$store.state.loadingOverlay = true
         this.$store.state.loadingOverlayText = "Loading... Sedang Melakukan Update Data"
+        var url = ''
+        if(this.populateModuls.model=='pmo1'){url='resetDataPopulated'}
+        else if(this.populateModuls.model=='pmo2'){url='resetDataPopulated2'}
+        else if(this.populateModuls.model=='pmo3'){url='resetDataPopulated3'}
          var params = {
           populate_no: item.populate_no
          }
           // console.log(item.populate_no)
           try {
             const response = await axios.post(
-              this.BaseUrlGet + "resetDataPopulated" , params,
+              this.BaseUrlGet + url , params,
               {
                 headers: {
                   Authorization: `Bearer ` + this.authtoken,
@@ -621,8 +657,11 @@
           this.$store.state.loadingOverlayText = ""
         }
       },
-      async pushGenerateMonitoring2(item){
-        
+      async pushGenerateMonitoring(item){
+        var url = ''
+        if(this.populateModuls.model=='pmo1'){url='AddMonitoring2'}
+        else if(this.populateModuls.model=='pmo1'){url='AddMonitoring3'}
+        else if(this.populateModuls.model=='pmo1'){url='AddMonitoring4'}
         const confirmation = await Swal.fire({
           title: 'Apa Anda Yakin Untuk Melakukan Generate Data Populasi Ke Monitoring 2?',
           text: "Proses Tidak Dapat Dikembalikan!",
@@ -636,7 +675,7 @@
           this.$store.state.loadingOverlayText = "Memuat Data Populasi..."
           try {
             const response = await axios.post(
-              this.BaseUrlGet + "AddMonitoring2" , item,
+              this.BaseUrlGet + url , item,
               {
                 headers: {
                   Authorization: `Bearer ` + this.authtoken,
@@ -676,12 +715,16 @@
           sampling: this.updateItem.sampling,
           assign_to: this.updateItem.assign_to
         }
+        var url = ''
+        if(this.populateModuls.model=='pmo1'){url='UpdateDataPopulate1'}
+        else if(this.populateModuls.model=='pmo2'){url='UpdateDataPopulate2'}
+        else if(this.populateModuls.model=='pmo3'){url='UpdateDataPopulate3'}
         console.log(params)
         this.$store.state.loadingOverlay = false
         this.$store.state.loadingOverlayText = "Loading... Sedang Melakukan Update Data!"
         try {
           const response = await axios.post(
-            this.BaseUrlGet + "UpdateDataPopulate" , params,
+            this.BaseUrlGet + url , params,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
@@ -804,9 +847,13 @@
         try {
           this.subTable.tableLoading = true
           this.subTable.populateDataObject = [];
+          var url = ''
+          if(this.populateModuls.model=='pmo1') {url= 'GetMonitoring1PopulateByTA?'}
+          else if(this.populateModuls.model=='pmo2') {url= 'GetMonitoring2PopulateByTA?'}
+          else if(this.populateModuls.model=='pmo3') {url= 'GetMonitoring3PopulateByTA?'}
           const response = await axios.get(
             this.BaseUrlGet +
-            "GetMonitoring1PopulateByTA?program_year="+ 
+            url+"program_year="+ 
             this.localConfig.programYear +
             "&ta=" +
             this.expand_key + "&search_value=" + this.populateSearchFarmer,

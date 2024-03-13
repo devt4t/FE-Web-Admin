@@ -334,6 +334,7 @@
                     { text: "Jenis Pohon", value: "tree_name"},
                     { text: "Tahun Penanaman", value: "planting_year"},
                     { text: "Tinggi", value: "height"},
+                    { text: "Diameter", value: "diameter"},
                     { text: "Kondisi Pohon", value: "tree_condition"},
                     { text: "Hama/Penyakit", value: "pest"},
                     { text: "Keterangan Hama/Penyakit", value: "pest_description"}, 

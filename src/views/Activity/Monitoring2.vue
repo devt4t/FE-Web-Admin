@@ -9,7 +9,7 @@
         disabled: true,
         href: 'breadcrumbs_dashboard',
       },{
-        text: 'Monitoring 2',
+        text: 'Monitoring',
         disabled: true,
         href: 'breadcrumbs_link_1',
       }]"
@@ -61,7 +61,7 @@
       max-width="800px"
       content-class="rounded-xl">
       <v-card-title class="mb-1 headermodalstyle">
-          <span class="headline">Barcode Pohon Monitoring 2 Digital</span>
+          <span class="headline">Barcode Pohon {{ monitoringModuls.model }} Digital</span>
       </v-card-title>
       <v-card style="position: relative">
         <v-overlay v-if="dialogDigitalBarcode.loading.show" absolute justify-center align-center>
@@ -261,9 +261,29 @@
             outlined
             dense
             hide-details
+            :disabled="subTable.expanded.length > 0"
             :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
             rounded
             label="Tahun Program"
+            class="mx-auto mx-lg-3"
+            style="max-width: 200px"
+          ></v-select>
+
+          <v-select
+            v-if="false"
+            color="success"
+            item-color="success"
+            v-model="monitoringModuls.model"
+            :items="monitoringModuls.items"
+            item-text="text"
+            item-value="value"
+            outlined
+            dense
+            hide-details
+            :disabled="subTable.expanded.length > 0"
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            label="Modul Monitoring"
             class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
@@ -426,9 +446,9 @@
                   color="blue"
                   class="px-5"
                   >
-                <!-- <v-icon class="mr-1" small color="white">
+                <v-icon class="mr-1" small color="white">
                   mdi-info
-                </v-icon> -->
+                </v-icon>
                 Detail Monitoring2
               </v-btn>
             </v-list-item>
@@ -440,9 +460,9 @@
                   color="blue"
                   class="px-5"
                   >
-                <!-- <v-icon class="mr-1" small color="white">
+                <v-icon class="mr-1" small color="white">
                   mdi-download-box
-                </v-icon> -->
+                </v-icon>
                 Export Detail Monitoring2
               </v-btn>
             </v-list-item>    
@@ -454,9 +474,9 @@
                   color="orange"
                   class="px-5"
                   >
-                <!-- <v-icon class="mr-1" small color="white">
+                <v-icon class="mr-1" small color="white">
                   mdi-print
-                </v-icon> -->
+                </v-icon>
                 Cetak Form Monitoring Manual
               </v-btn>
             </v-list-item> 
@@ -468,9 +488,9 @@
                   color="green"
                   class="px-5"
                   >
-                <!-- <v-icon class="mr-1" small color="white">
+                <v-icon class="mr-1" small color="white">
                   mdi-lable
-                </v-icon> -->
+                </v-icon>
                 Excel untuk Cetak Label
               </v-btn>
             </v-list-item> 
@@ -483,10 +503,10 @@
                   color="green"
                   class="px-5"
                   >
-                <!-- <v-icon class="mr-1" small color="white">
-                  
-                </v-icon> -->
-                Verifikasi Monitoring 2
+                <v-icon class="mr-1" small color="white">
+                  mdi-check
+                </v-icon>
+                Verifikasi {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>
             <v-list-item v-if="(User.role_group == 'IT')  && item.is_verified == 1">
@@ -498,12 +518,12 @@
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
-                  <mdi-check></mdi-check>
+                  mdi-key-remove
                 </v-icon>
-                Unverifikasi Monitoring 2
+                Unverifikasi {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>
-            <v-list-item v-if="item.total_tree_monitoring != item.total_hidup">
+            <v-list-item>
               <v-btn
                   dark
                   rounded
@@ -512,9 +532,9 @@
                   class="px-5"
                   >
                 <v-icon class="mr-1" small color="white">
-                  <mdi-check></mdi-check>
+                  mdi-close-thick
                 </v-icon>
-                Hapus Data Monitoring 2
+                Hapus Data {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>    
             </v-list>
@@ -629,7 +649,7 @@ export default {
       {text: 'Management Unit', value: 'mu_name'},
       {text: 'Tahun Program', value: 'program_year'},
       {text: 'Action', value: 'actions_main'},
-      {text: 'Detail Data Monitoring 2', value: 'data-table-expand', align: 'right'}
+      {text: 'Detail Data Monitoring', value: 'data-table-expand', align: 'right'}
     ],
     tableLoading: false,
     dataobject: [],
@@ -685,6 +705,15 @@ export default {
     generalDataMain: {},
     exportMO2Modals: false,
 
+
+    monitoringModuls:{
+      model: 'mo2',
+      items: [
+        {text: 'Monitoring 2', value: 'mo2'},
+        {text: 'Monitoring 3', value: 'mo3'},
+        {text: 'Monitoring 4', value: 'mo4'},
+      ]
+    },
     localConfig: {
       programYear: '',
     },
@@ -702,6 +731,11 @@ export default {
 
     }),
   watch: {
+      'monitoringModuls.model': {
+        handler(val) {
+          this.getDataMonitoring2Main()
+        }
+      },
       'localConfig.programYear': {
         handler(val) {
           this.initializeParentTable()
@@ -764,13 +798,17 @@ export default {
         monitoring_no: item.monitoring_no,
         monitoring2_no: item.monitoring2_no
       })
+      var url = ''
+      if(this.monitoringModuls.model == 'mo2'){ url = "GetNewMonitoring2Detail?"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "GetNewMonitoring2Detail?"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "GetNewMonitoring2Detail?"}
       try {
         this.details.monitoring1Details= []
         this.details.monitoring2Details= []
         this.details.monitoring2TreeDetails= []
         const response = await axios.get(
           this.BaseUrlGet +
-          "GetNewMonitoring2Detail?"+ 
+          url + 
           params,
           {
             headers: {
@@ -819,8 +857,12 @@ export default {
         monitoring2_no: item.monitoring2_no,
         populate_no: item.populate_no
       }
+      var url = ''
+      if(this.monitoringModuls.model == 'mo2'){ url = "deleteMonitoring2Datas"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "deleteMonitoring2Datas"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "deleteMonitoring2Datas"}
       const confirmation = await Swal.fire({
-          title: 'Apa Anda Yakin Untuk Menghapus Data Monitoring 2?',
+          title: `Apa Anda Yakin Untuk Menghapus Data ${this.monitoringModuls.model}?`,
           icon: 'warning',
           confirmButtonColor: '#2e7d32',
           confirmButtonText: 'Okay',
@@ -830,7 +872,7 @@ export default {
         console.log(params)
         try {
           const response = await axios.post(
-            this.BaseUrlGet + "deleteMonitoring2Datas" , params,
+            this.BaseUrlGet + url , params,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
@@ -840,14 +882,14 @@ export default {
           this.subTable.expanded = []
           console.log(response)
           await Swal.fire({
-              title: 'Berhasil Melakukan Hapus Data Monitoring 2!',
+              title: `Berhasil Melakukan Hapus Data ${this.monitoringModuls.model}!`,
               icon: 'success',
               confirmButtonColor: '#2e7d32',
               confirmButtonText: 'Okay',
           })
         } catch (error) {
           await Swal.fire({
-              title: 'Gagal Melakukan Hapus Data Monitoring 2!',
+              title: `Gagal Melakukan Hapus Data ${this.monitoringModuls.model}!`,
               text: 'Error: ' + error.response,
               icon: 'error',
               confirmButtonColor: '#2e7d32',
@@ -868,8 +910,12 @@ export default {
         verified_by: this.User.name,
 
       }
+      var url = ''
+      if(this.monitoringModuls.model == 'mo2'){ url = "ValidateMonitoring2"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "ValidateMonitoring2"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "ValidateMonitoring2"}
       const confirmation = await Swal.fire({
-          title: 'Apa Anda Yakin Untuk Melakukan Verifikasi Monitoring 2?',
+          title: `Apa Anda Yakin Untuk Melakukan Verifikasi ${this.monitoringModuls.model}?`,
           icon: 'warning',
           confirmButtonColor: '#2e7d32',
           confirmButtonText: 'Okay',
@@ -879,7 +925,7 @@ export default {
           console.log(params)
           try {
             const response = await axios.post(
-              this.BaseUrlGet + "ValidateMonitoring2" , params,
+              this.BaseUrlGet + url , params,
               {
                 headers: {
                   Authorization: `Bearer ` + this.authtoken,
@@ -889,7 +935,7 @@ export default {
             this.subTable.expanded = []
             console.log(response)
             await Swal.fire({
-                title: 'Berhasil Melakukan Verifikasi Monitoring 2!',
+                title: 'Berhasil Melakukan Verifikasi Monitoring!',
                 icon: 'success',
                 confirmButtonColor: '#2e7d32',
                 confirmButtonText: 'Okay',
@@ -914,6 +960,10 @@ export default {
         monitoring_no: item.monitoring_no,
         monitoring2_no: item.monitoring2_no
       })
+      var url = ''
+      if(this.monitoringModuls.model == 'mo2'){ url = "GetNewMonitoring2Detail?"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "GetNewMonitoring2Detail?"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "GetNewMonitoring2Detail?"}
       try {
         this.details.monitoring1Details= []
         this.details.monitoring2Details= []
@@ -967,9 +1017,14 @@ export default {
         
         this.subTable.tableLoading = true
         this.subTable.dataobject = [];
+        var url = ''
+        if(this.monitoringModuls.model == 'mo2'){ url = "GetMonitoring2ByTA?"}
+        else if(this.monitoringModuls.model == 'mo3'){ url = "GetMonitoring2ByTA?"}
+        else if(this.monitoringModuls.model == 'mo4'){ url = "GetMonitoring2ByTA?"}
         const response = await axios.get(
+          
           this.BaseUrlGet +
-          "GetMonitoring2ByTA?program_year="+ 
+          url+"program_year="+ 
           this.localConfig.programYear +
           "&ta=" + this.itemTA + "&search_value=" + this.searchByFarmer + "&sampling_filter=" + this.samplingFilter,
           {
@@ -979,6 +1034,7 @@ export default {
           }
         );
         if (response.data.length != 0) {
+          console.log(this.monitoringModuls.model)
           this.subTable.dataobject = response.data.data.result
         } else {
           this.subTable.dataobject = [];
@@ -1010,7 +1066,7 @@ export default {
     async initializeParentTable(){
       try {
           this.$store.state.loadingOverlay = true
-          this.$store.state.loadingOverlayText = "Memuat TA Monitoring 2..."
+          this.$store.state.loadingOverlayText = `Memuat TA ${this.monitoringModuls.model}...`
           this.dataobject = [];
           const response = await axios.get(
             this.BaseUrlGet +

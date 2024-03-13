@@ -2553,8 +2553,16 @@
             :disabled="listMonitoring1Checked.length <= 0"
             color="green white--text"
           >
-            <v-icon class="mr-1">mdi-arrow-collapse-right</v-icon> Populate Data Monitoring 2
+            <v-icon class="mr-1">mdi-arrow-collapse-right</v-icon> Populate Data
           </v-btn>
+          <v-switch
+            v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'"
+            v-model="populateModalSwitch"
+            label="Langkah Populasi Data Ke Monitoring 3 (Lewati Monitoring 2)?"
+            inset
+            color="red"
+            hide-details
+          ></v-switch>
         </v-row>
       </template>
 
@@ -3017,6 +3025,7 @@ export default {
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
+    populateModalSwitch: false,
     populateDataSwitch: false,
     listMonitoring1Checked: [],
     totalDatas: 0,
@@ -3467,8 +3476,18 @@ export default {
       else return "green";
     },
     async pushPopulateData(){
+      var url = ''
+      var alertText = ''
+      if(this.populateModalSwitch == false){
+        url = 'AddMonitoring1Populate'
+        alertText = 'Untuk Monitoring 2?'
+      }
+      else {
+        url = 'AddMonitoring1PopulateTo2'
+        alertText = 'Untuk Monitoring 3?'
+      }
       const confirmation = await Swal.fire({
-          title: 'Apa Anda Yakin Untuk Melakukan Populasi Data Ke Monitoring 2?',
+          title: `Apa Anda Yakin Untuk Melakukan Populasi Data ${alertText}`,
           text: "Proses Tidak Dapat Dikembalikan!",
           icon: 'warning',
           confirmButtonColor: '#2e7d32',
@@ -3483,11 +3502,11 @@ export default {
           
           list_monitoring1: this.listMonitoring1Checked 
         }
-        console.log(pushParams)
+        console.log(url)
 
         try {
           const response = await axios.post(
-            this.BaseUrlGet + "AddMonitoring1Populate",
+            this.BaseUrlGet + url,
             pushParams,
             {
               headers: {
@@ -3872,7 +3891,10 @@ export default {
         }
         
       } catch (error) {
+        this.itemsTAForm = []
+        this.itemsTA=[]
         console.error(error.response);
+
         if (error.response.status == 401) {
           localStorage.removeItem("token");
           this.$router.push("/");
