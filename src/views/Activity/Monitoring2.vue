@@ -542,7 +542,7 @@
               </v-btn>
             </v-list-item>
             <!-- v-if="item.total_tree_monitoring != item.total_hidup" -->
-            <v-list-item>
+            <v-list-item v-if="item.total_tree_monitoring != item.total_hidup">
               <v-btn
                   dark
                   rounded
