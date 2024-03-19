@@ -18,7 +18,7 @@
         >
         <v-card>
           <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Lengkapi Data Populasi Monitoring1 - Monitoring2
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Lengkapi Data Populasi 
                 <v-icon color="white" class="ml-auto" @click="showUpdateModal = false">mdi-close-circle</v-icon>
             </v-card-title>
             <v-card-text>
@@ -338,7 +338,7 @@
                 Generate Monitoring 2!
               </v-btn>
             </v-list-item> 
-            <v-list-item v-if="User.role_group == 'IT' && item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">
+            <v-list-item v-if="(User.role_group == 'IT' || User.email == 'm.anggy.f_UMCisangkuy@t4t.org' ) && item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">
               <v-btn
                   dark
                   rounded
@@ -659,11 +659,11 @@
       },
       async pushGenerateMonitoring(item){
         var url = ''
-        if(this.populateModuls.model=='pmo1'){url='AddMonitoring2'}
-        else if(this.populateModuls.model=='pmo1'){url='AddMonitoring3'}
-        else if(this.populateModuls.model=='pmo1'){url='AddMonitoring4'}
+        if(this.populateModuls.model=='pmo1'){url='AddMonitoring2New'}
+        else if(this.populateModuls.model=='pmo2'){url='AddMonitoring3'}
+        else if(this.populateModuls.model=='pmo3'){url='AddMonitoring4'}
         const confirmation = await Swal.fire({
-          title: 'Apa Anda Yakin Untuk Melakukan Generate Data Populasi Ke Monitoring 2?',
+          title: 'Apa Anda Yakin Untuk Melakukan Generate Data Populasi Ke Monitoring?',
           text: "Proses Tidak Dapat Dikembalikan!",
           icon: 'warning',
           confirmButtonColor: '#2e7d32',
@@ -672,7 +672,9 @@
       })
       if(confirmation.isConfirmed){
           this.$store.state.loadingOverlay = true
-          this.$store.state.loadingOverlayText = "Memuat Data Populasi..."
+          this.$store.state.loadingOverlayText = "Sedang Melakukan Generate Data..."
+          console.log(item)
+
           try {
             const response = await axios.post(
               this.BaseUrlGet + url , item,

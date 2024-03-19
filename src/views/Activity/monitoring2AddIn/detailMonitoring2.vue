@@ -320,6 +320,8 @@
                 activity_name: '',
                 activity_date: '',
                 interview: '',
+                photo1: '/images/noimage.png',
+                photo2: '/images/noimage.png',
 
                 monitoring2_start: '',
                 monitoring2_end: '',
@@ -427,7 +429,7 @@
                 console.log(this.treeDetail)
                 this.table.items_raw = this.dataDetail
 
-                this.generalData.mo2_no= this.generalDatas.monitoring2_no
+                this.generalData.mo2_no= this.generalDatas.currents_monitoring_no
                 this.generalData.program_year= this.generalDatas.program_year
                 this.generalData.project= this.generalDatas.project_no ?? '-'
                 this.generalData.village= this.generalDatas.desa_name
@@ -444,8 +446,8 @@
                 this.generalData.interview = this.generalDatas.interview
                 this.generalData.mu_name= this.generalDatas.mu_name
                 this.generalData.ta_name= this.generalDatas.ta_name
-                this.generalData.id_from_geko= this.generalDatas.monitoring2_no
-                this.generalData.prev_monitoring_data= this.generalDatas.monitoring_no
+                this.generalData.id_from_geko= this.generalDatas.currents_monitoring_no
+                this.generalData.prev_monitoring_data= this.generalDatas.last_monitoring
                 this.generalData.activity_name= 'Monitoring 2'
                 this.generalData.activity_date= ''
 
@@ -454,18 +456,17 @@
                 this.generalData.monitoring2_time= this.generalDatas.monitoring_time
                 this.generalData.sampling= this.generalDatas.sampling
 
-                if (this.generalDatas.photo1) {
-                    this.generalData.photo1 = this.BaseUrl + this.generalDatas.photo1
-                }else{
-                    this.generalData.photo1 = "/images/noimage.png"
-                }
 
-                if (this.generalDatas.photo2) {
-                    this.generalData.photo2 = this.BaseUrl + this.generalDatas.photo2
-                }else{
-                    this.generalData.photo2 = "/images/noimage.png"
+                if (this.generalDatas.photo1 == null || this.generalDatas.photo1 == '-' ) {
+                    this.generalData.photo1 = "/images/noimage.png"
+                } else{
+                    this.generalData.photo1 = this.BaseUrl + this.generalDatas.photo1
                 }
-                // this.generalData.photo2= this.generalDatas.photo2
+                if (this.generalDatas.photo2== null || this.generalDatas.photo2 == '-') {
+                    this.generalData.photo2 = "/images/noimage.png"
+                }else{
+                    this.generalData.photo2 = this.BaseUrl + this.generalDatas.photo2
+                }
             }
     }
     

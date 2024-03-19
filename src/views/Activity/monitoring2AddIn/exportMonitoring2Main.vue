@@ -102,6 +102,10 @@
             generalDatas: {
                 type: Object,
                 default: {},
+            },
+            url:{
+                type: String,
+                default: 'GetMonitoring2ByTA'
             }
         },
         data: () => ({
@@ -238,7 +242,7 @@
                 try {
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)
-                    const url = `GetMonitoring2ByTA?${params}`
+                    const url = `${url}?${params}`
                     const call = await axios.get(this.$store.getters.getApiUrl(url), this.$store.state.apiConfig)
                     const data = call.data.data.result
                     this.table.items = data

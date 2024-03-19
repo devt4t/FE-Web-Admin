@@ -145,7 +145,7 @@
                     <tr style="text-align: left; margin-left: 2em;font-size: 13px;">
                         <td></td>
                         <td>Nama Kegiatan </td>
-                        <td>: {{ generalData.activity_name }}</td>
+                        <td>: {{ item_activity_name }}</td>
                         <td></td>
                         <td colspan="4"> 
                             
@@ -376,13 +376,17 @@
                 type: Boolean,
                 default: false,
             },
-            itemDataMO1: {
+            itemDataLastMO: {
                 type: Array,
                 default: []
             },
-            itemDataMO2: {
+            itemDataCurrentMO: {
                 type: Array,
                 default: []
+            },
+            item_activity_name:{
+                type: String,
+                default: ''
             },
             generalDatas: {
                 type: Object,
@@ -541,10 +545,10 @@
             }
         },
         async getTableData() {
-            this.table.treeItem = this.itemDataMO1
-            this.table.items = this.itemDataMO2
+            this.table.treeItem = this.itemDataLastMO
+            this.table.items = this.itemDataCurrentMO
 
-            this.generalData.mo2_no= this.generalDatas.monitoring2_no
+            this.generalData.mo2_no= this.generalDatas.currents_monitoring_no
             this.generalData.program_year= this.generalDatas.program_year
             this.generalData.project= this.generalDatas.project_no ?? '-'
             this.generalData.village= this.generalDatas.desa_name
@@ -559,10 +563,10 @@
             this.generalData.farmer_code= this.generalDatas.farmer_no
             this.generalData.mu_name= this.generalDatas.mu_name
             this.generalData.ta_name= this.generalDatas.ta_name
-            this.generalData.id_from_geko= this.generalDatas.monitoring2_no
-            this.generalData.prev_monitoring_data= this.generalDatas.monitoring_no
-            this.generalData.activity_name= 'Monitoring 2'
+            this.generalData.id_from_geko= this.generalDatas.currents_monitoring_no
+            this.generalData.prev_monitoring_data= this.generalDatas.last_monitoring
             this.generalData.activity_date= ''
+
         }
     }
     

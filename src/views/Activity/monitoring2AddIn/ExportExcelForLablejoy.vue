@@ -174,7 +174,7 @@
             const wb = XLSX.utils.table_to_book(table);
     
             /* Export to file (start a download) */
-            XLSX.writeFile(wb, `DataMO2-${this.program_year}_${this.ff_no}_${this.farmer_name}.xlsx`);
+            XLSX.writeFile(wb, `DataMO-${this.program_year}_${this.ff_no}_${this.farmer_name}.xlsx`);
         },
         // downloadPDF() {
         //     window.jsPDF = window.jspdf.jsPDF;

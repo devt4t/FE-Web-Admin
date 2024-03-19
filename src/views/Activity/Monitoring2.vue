@@ -21,34 +21,35 @@
     <exportDetailDataMo2
       :show="details.exportDetail"
       :generalData="details.generalData"
-      :detailData="details.monitoring2Details"
+      :detailData="details.currentMonitoringDetails"
       @close="details.exportDetail = false">
     </exportDetailDataMo2>
     <exportMonitoring2Main
-    :show="exportMO2Modals"
-    @close="exportMO2Modals = false"
-    :generalDatas="generalDataMain">
+      :show="exportMO2Modals"
+      @close="exportMO2Modals = false"
+      :generalDatas="generalDataMain">
     </exportMonitoring2Main>
 
     <detailModal
       :show="details.detailModalMO2"
-      :dataDetail="details.monitoring2Details"
-      :treeDetail="details.monitoring2TreeDetails"
+      :dataDetail="details.currentMonitoringDetails"
+      :treeDetail="details.currentMonitoringTreeDetails"
       :generalDatas="details.generalData"
       @close="details.detailModalMO2 = false">
-    ></detailModal>
-
-    <manualForm
+      ></detailModal>
+      
+      <manualForm
       :show="details.manualFormDialog"
-      :itemDataMO1="details.monitoring1Details"
-      :itemDataMO2="details.monitoring2Details"
+      :itemDataLastMO="details.lastMonitoringDetails"
+      :item_activity_name="details.activity_name"
+      :itemDataCurrentMO="details.currentMonitoringDetails"
       :generalDatas="details.generalData"
       @close="details.manualFormDialog = false">
     </manualForm>
 
     <ExportExcelForLablejoy
     :show="dialogExportDataToExcel.show"
-    :dataObject="details.monitoring2Details"
+    :dataObject="details.currentMonitoringDetails"
     :ff_no="dialogDigitalBarcode.ff_no"
     :farmer_name="dialogDigitalBarcode.farmer_name"
     :program_year="localConfig.programYear"
@@ -78,7 +79,7 @@
         </v-overlay>
         <H2>Unduh Data Excel Untuk LabelJoy!</H2>
         <!-- <div class="d-flex flex-column py-4" id="app">
-          <v-row no-gutters v-for="n in details.monitoring2Details" :key="`frontCard-${n.tree_no}-${n.planting_year}`">
+          <v-row no-gutters v-for="n in details.currentMonitoringDetails" :key="`frontCard-${n.tree_no}-${n.planting_year}`">
               <v-col cols="4">
                 <v-sheet class="pa-2 ma-2">
                   <qr-code v-bind:text="n.tree_no">
@@ -381,18 +382,35 @@
             <v-row class="pt-3 px-2">
               
               <v-col cols="12" lg="6" class="d-flex">
-                  <v-text-field
-                    color="success"
-                    item-color="success"
-                    v-model="searchByFarmer"
-                    placeholder="Pencarian Nama Petani..."
-                    append-icon="mdi-magnify"
-                    outlined
-                    dense
-                    rounded
-                    label="Pencarian Nama Petani"
-                    hide-details      
-                  ></v-text-field>
+                <v-select
+                  color="success"
+                  item-color="success"
+                  v-model="SearchIndex_model"
+                  :items="searchIndex"
+                  item-value="value"
+                  item-text="text"
+                  hide-details
+                  outlined
+                  dense
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  rounded
+                  label="Kolom Pencarian"
+                  class="centered-select"
+                  style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                ></v-select>
+                <v-text-field
+                  color="success"
+                  item-color="success"
+                  v-model="searchValue"
+                  placeholder="Pencarian Nama Petani..."
+                  append-icon="mdi-magnify"
+                  outlined
+                  dense
+                  rounded
+                  style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                  label="Pencarian Nama Petani"
+                  hide-details      
+                ></v-text-field>
                 <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
                   <v-select
                     color="success"
@@ -449,7 +467,7 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-info
                 </v-icon>
-                Detail Monitoring2
+                Detail {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>
             <v-list-item>
@@ -463,7 +481,7 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-download-box
                 </v-icon>
-                Export Detail Monitoring2
+                Export Detail {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>    
             <v-list-item v-if="User.role_group === 'IT' || User.role_name == 'UNIT MANAGER' || User.role_name == 'FIELD FACILITATOR'">
@@ -477,7 +495,7 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-print
                 </v-icon>
-                Cetak Form Monitoring Manual
+                Cetak Form {{ monitoringModuls.model }} Manual
               </v-btn>
             </v-list-item> 
             <v-list-item v-if="User.role_group == 'IT' || User.role_name == 'UNIT MANAGER'">
@@ -491,11 +509,11 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-lable
                 </v-icon>
-                Excel untuk Cetak Label
+                Excel untuk Cetak Label {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item> 
             <!-- v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null" -->
-            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null">
+            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && (item.photo1 != null && item.photo1 != '-') && (item.photo2 != null && item.photo2 != '-')">
               <v-btn
                   dark
                   rounded
@@ -523,6 +541,7 @@
                 Unverifikasi {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>
+            <!-- v-if="item.total_tree_monitoring != item.total_hidup" -->
             <v-list-item>
               <v-btn
                   dark
@@ -577,6 +596,7 @@
                 @click="openExportMO2(item)"
                 color="blue"
                 class="px-5"
+                disabled
                 >
               <v-icon class="mr-1" small color="white">
                 mdi-export
@@ -658,11 +678,11 @@ export default {
     subTable:{
       headers: [
         {text: 'No', value: 'index'},
-        {text: 'Nomor Monitoring', value: 'monitoring2_no'},
-        {text: 'Management Unit', value: 'mu_no'},
-        {text: 'Field Facilitator', value: 'assignToFF'},
+        {text: 'Nomor Monitoring', value: 'currents_monitoring_no'},
+        {text: 'Management Unit', value: 'mu_name'},
+        {text: 'Field Facilitator Monitoring', value: 'ff_name'},
         {text: 'Petani', value: 'farmer_name'},
-        {text: 'Desa', value: 'village'},
+        {text: 'Desa', value: 'desa_name'},
         {text: 'Nomor Lahan', value: 'lahan_no'},
         {text: 'Kondisi Lahan', value: 'land_condition'},
         {text: 'Jumlah Total Pohon', value: 'total_hidup'},
@@ -681,7 +701,14 @@ export default {
 
     },
     itemTA: '',
-    searchByFarmer: '',
+    searchIndex: [
+      {text: 'Nama Petani', value: 'farmer_name'},
+      {text: 'FF Monitoring', value: 'ff_mo_name'},
+      {text: 'Nama Desa', value: 'village_name'},
+      {text: 'Nomor Lahan', value: 'lahan_no'},
+    ],
+    SearchIndex_model: 'farmer_name',
+    searchValue: '',
     samplingFilter: '',
     samplingFilterItem:[
       {text: 'Semua', value: ''},
@@ -689,9 +716,10 @@ export default {
       {text: 'Random', value: 'Random'},
     ],
     details:{
-      monitoring1Details: [],
-      monitoring2Details: [],
-      monitoring2TreeDetails: [],
+      lastMonitoringDetails: [],
+      currentMonitoringDetails: [],
+      currentMonitoringTreeDetails: [],
+      activity_name: '',
 
       generalData: {},
 
@@ -734,6 +762,9 @@ export default {
       'monitoringModuls.model': {
         handler(val) {
           this.getDataMonitoring2Main()
+          if(this.monitoringModuls.model == 'mo2'){ this.details.activity_name = 'Monitoring 2'}
+          else if(this.monitoringModuls.model == 'mo3'){ this.details.activity_name = 'Monitoring 3'}
+          else if(this.monitoringModuls.model == 'mo4'){ this.details.activity_name = 'Monitoring 4'}
         }
       },
       'localConfig.programYear': {
@@ -741,7 +772,12 @@ export default {
           this.initializeParentTable()
         }
       },
-      'searchByFarmer': {
+      'SearchIndex_model': {
+        handler(val){
+          this.getDataMonitoring2Main()
+        }
+      },
+      'searchValue': {
         handler(val){
           this.getDataMonitoring2Main()
         }
@@ -771,7 +807,6 @@ export default {
 
   methods: {
     checkExpandenItem(item){
-      console.log(item)
       this.itemTA = ''
       this.itemTA = item.item.area_code
       this.getDataMonitoring2Main()
@@ -782,7 +817,6 @@ export default {
     openDetailMonitoring2Modal(item){
 
       this.getDetailData(item)
-
       this.details.detailModalMO2 = true
     },
     openExportDetailMo2(item){
@@ -791,21 +825,25 @@ export default {
     },
     openManualMonitoring2(item){
       this.getDetailData(item)
+      if(this.monitoringModuls.model == 'mo2'){ this.details.activity_name = 'Monitoring 2'}
+      else if(this.monitoringModuls.model == 'mo3'){ this.details.activity_name = 'Monitoring 3'}
+      else if(this.monitoringModuls.model == 'mo4'){ this.details.activity_name = 'Monitoring 4'}
       this.details.manualFormDialog = true
     },
     async getDetailData(item){
       var params = new URLSearchParams({
-        monitoring_no: item.monitoring_no,
-        monitoring2_no: item.monitoring2_no
+        last_monitoring: item.last_monitoring,
+        currents_monitoring_no: item.currents_monitoring_no,
+        program_year: item.program_year
       })
       var url = ''
-      if(this.monitoringModuls.model == 'mo2'){ url = "GetNewMonitoring2Detail?"}
-      else if(this.monitoringModuls.model == 'mo3'){ url = "GetNewMonitoring2Detail?"}
-      else if(this.monitoringModuls.model == 'mo4'){ url = "GetNewMonitoring2Detail?"}
+      if(this.monitoringModuls.model == 'mo2'){ url = "GetNewMonitoring2DetailNew?"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "GetNewMonitoring3Detail?"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "GetNewMonitoring4Detail?"}
       try {
-        this.details.monitoring1Details= []
-        this.details.monitoring2Details= []
-        this.details.monitoring2TreeDetails= []
+        this.details.lastMonitoringDetails= []
+        this.details.currentMonitoringDetails= []
+        this.details.currentMonitoringTreeDetails= []
         const response = await axios.get(
           this.BaseUrlGet +
           url + 
@@ -817,19 +855,19 @@ export default {
           }
         );
         if (response.data.length != 0) {
-          this.details.monitoring1Details= response.data.data.result.mo1Details
-          this.details.monitoring2Details= response.data.data.result.mo2Details
-          this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
-          console.log(this.details.monitoring2TreeDetails)
-          // this.dialogDigitalBarcode.cardData = this.details.monitoring2Details
+          this.details.lastMonitoringDetails= response.data.data.result.lastMoDetails
+          this.details.currentMonitoringDetails= response.data.data.result.currentMoDetails
+          this.details.currentMonitoringTreeDetails= response.data.data.result.currentMoDetailTree
+          // console.log(this.details.currentMonitoringTreeDetails)
+          // this.dialogDigitalBarcode.cardData = this.details.currentMonitoringDetails
           this.details.generalData = item
           
 
           
         } else {
-          this.details.monitoring1Details= []
-          this.details.monitoring2Details= []
-          this.details.monitoring2TreeDetails= []
+          this.details.lastMonitoringDetails= []
+          this.details.currentMonitoringDetails= []
+          this.details.currentMonitoringTreeDetails= []
           this.details.manualFormDialog = false
           this.details.detailModalMO2 = false
         }
@@ -841,9 +879,9 @@ export default {
         } else {
           
         }
-        this.details.monitoring1Details= []
-        this.details.monitoring2Details= []
-        this.details.monitoring2TreeDetails= []
+        this.details.lastMonitoringDetails= []
+        this.details.currentMonitoringDetails= []
+        this.details.currentMonitoringTreeDetails= []
         this.details.manualFormDialog = false
       }
     },
@@ -854,13 +892,13 @@ export default {
     },
     async deleteData(item){
       var params = {
-        monitoring2_no: item.monitoring2_no,
+        currents_monitoring_no: item.currents_monitoring_no,
         populate_no: item.populate_no
       }
       var url = ''
-      if(this.monitoringModuls.model == 'mo2'){ url = "deleteMonitoring2Datas"}
-      else if(this.monitoringModuls.model == 'mo3'){ url = "deleteMonitoring2Datas"}
-      else if(this.monitoringModuls.model == 'mo4'){ url = "deleteMonitoring2Datas"}
+      if(this.monitoringModuls.model == 'mo2'){ url = "deleteMonitoring2DatasNew"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "deleteMonitoring3Datas"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "deleteMonitoring4Datas"}
       const confirmation = await Swal.fire({
           title: `Apa Anda Yakin Untuk Menghapus Data ${this.monitoringModuls.model}?`,
           icon: 'warning',
@@ -906,14 +944,14 @@ export default {
     },
     async verifuMO2(item){
       var params = {
-        monitoring2_no: item.monitoring2_no,
+        currents_monitoring_no: item.currents_monitoring_no,
         verified_by: this.User.name,
 
       }
       var url = ''
-      if(this.monitoringModuls.model == 'mo2'){ url = "ValidateMonitoring2"}
-      else if(this.monitoringModuls.model == 'mo3'){ url = "ValidateMonitoring2"}
-      else if(this.monitoringModuls.model == 'mo4'){ url = "ValidateMonitoring2"}
+      if(this.monitoringModuls.model == 'mo2'){ url = "ValidateMonitoring2New"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "ValidateMonitoring3"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "ValidateMonitoring4"}
       const confirmation = await Swal.fire({
           title: `Apa Anda Yakin Untuk Melakukan Verifikasi ${this.monitoringModuls.model}?`,
           icon: 'warning',
@@ -935,12 +973,19 @@ export default {
             this.subTable.expanded = []
             console.log(response)
             await Swal.fire({
-                title: 'Berhasil Melakukan Verifikasi Monitoring!',
+                title: `Berhasil Melakukan Verif/Unverif Monitoring ${this.monitoringModuls.model}!`,
                 icon: 'success',
                 confirmButtonColor: '#2e7d32',
                 confirmButtonText: 'Okay',
             })
           } catch (error) {
+            await Swal.fire({
+              title: `Gagal Melakukan Verif/Unverif Data ${this.monitoringModuls.model}!`,
+              text: 'Error: ' + error.response,
+              icon: 'error',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+          })
             console.error(error.response);
             this.subTable.expanded = []
             if (error.response.status == 401) {
@@ -957,20 +1002,21 @@ export default {
     },
     async openBarcodeDigital(item){
       var params = new URLSearchParams({
-        monitoring_no: item.monitoring_no,
-        monitoring2_no: item.monitoring2_no
+        last_monitoring: item.last_monitoring,
+        currents_monitoring_no: item.currents_monitoring_no,
+        program_year: item.program_year
       })
       var url = ''
-      if(this.monitoringModuls.model == 'mo2'){ url = "GetNewMonitoring2Detail?"}
-      else if(this.monitoringModuls.model == 'mo3'){ url = "GetNewMonitoring2Detail?"}
-      else if(this.monitoringModuls.model == 'mo4'){ url = "GetNewMonitoring2Detail?"}
+      if(this.monitoringModuls.model == 'mo2'){ url = "GetNewMonitoring2DetailNew?"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "GetNewMonitoring3Detail?"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "GetNewMonitoring4Detail?"}
       try {
-        this.details.monitoring1Details= []
-        this.details.monitoring2Details= []
-        this.details.monitoring2TreeDetails= []
+        this.details.lastMonitoringDetails= []
+        this.details.currentMonitoringDetails= []
+        this.details.currentMonitoringTreeDetails= []
         const response = await axios.get(
           this.BaseUrlGet +
-          "GetNewMonitoring2Detail?"+ 
+          url+ 
           params,
           {
             headers: {
@@ -979,9 +1025,9 @@ export default {
           }
         );
         if (response.data.length != 0) {
-          this.details.monitoring1Details= response.data.data.result.mo1Details
-          this.details.monitoring2Details= response.data.data.result.mo2Details
-          this.details.monitoring2TreeDetails= response.data.data.result.mo2DetailTree
+          this.details.lastMonitoringDetails= response.data.data.result.lastMoDetails
+          this.details.currentMonitoringDetails= response.data.data.result.currentMoDetails
+          this.details.currentMonitoringTreeDetails= response.data.data.result.currentMoDetailTree
 
           console.log(item)
           this.details.generalData = item
@@ -990,9 +1036,9 @@ export default {
 
           this.dialogDigitalBarcode.show = true
         } else {
-          this.details.monitoring1Details= []
-          this.details.monitoring2Details= []
-          this.details.monitoring2TreeDetails= []
+          this.details.lastMonitoringDetails= []
+          this.details.currentMonitoringDetails= []
+          this.details.currentMonitoringTreeDetails= []
           this.details.manualFormDialog = false
         }
         
@@ -1003,9 +1049,9 @@ export default {
         } else {
           
         }
-        this.details.monitoring1Details= []
-        this.details.monitoring2Details= []
-        this.details.monitoring2TreeDetails= []
+        this.details.lastMonitoringDetails= []
+        this.details.currentMonitoringDetails= []
+        this.details.currentMonitoringTreeDetails= []
         this.details.manualFormDialog = false
       }
     },
@@ -1018,15 +1064,18 @@ export default {
         this.subTable.tableLoading = true
         this.subTable.dataobject = [];
         var url = ''
-        if(this.monitoringModuls.model == 'mo2'){ url = "GetMonitoring2ByTA?"}
-        else if(this.monitoringModuls.model == 'mo3'){ url = "GetMonitoring2ByTA?"}
-        else if(this.monitoringModuls.model == 'mo4'){ url = "GetMonitoring2ByTA?"}
+        if(this.monitoringModuls.model == 'mo2'){ url = "GetMonitoring2ByTANew?"}
+        else if(this.monitoringModuls.model == 'mo3'){ url = "GetMonitoring3ByTA?"}
+        else if(this.monitoringModuls.model == 'mo4'){ url = "GetMonitoring4ByTA?"}
         const response = await axios.get(
           
           this.BaseUrlGet +
           url+"program_year="+ 
-          this.localConfig.programYear +
-          "&ta=" + this.itemTA + "&search_value=" + this.searchByFarmer + "&sampling_filter=" + this.samplingFilter,
+          this.localConfig.programYear + 
+          "&search_column=" + this.SearchIndex_model+
+          "&ta=" + this.itemTA + 
+          "&search_value=" + this.searchValue + 
+          "&sampling_filter=" + this.samplingFilter,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
