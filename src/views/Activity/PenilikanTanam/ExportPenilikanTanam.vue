@@ -266,10 +266,10 @@
                     if(this.show){
                      
                         this.getTableData(
-                        //     {
-                        //     ff_no: this.data.ff_no,
-                        //     program_year: this.data.program_year
-                        // }
+                            {
+                            // ff_no: this.ItemData.ff_no,
+                            program_year: '2023'
+                        }
                         )   
                     }
                     return this.show
@@ -400,7 +400,7 @@
                     }
                 }
             },
-            async getTableData() {
+            async getTableData(getparams) {
                 try {
                     this.table.loading.show = true
                     const params = new URLSearchParams(getparams)

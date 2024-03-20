@@ -538,7 +538,7 @@
 
         async saveDataProject(){
             const confirmation = await Swal.fire({
-                title: 'Anda Yakin Untuk Menyimpan Data Project Lahan?',
+                title: 'Anda Yakin Untuk Menyimpan Data Donatur?',
                 text: "Proses Tidak Dapat Dikembalikan!",
                 icon: 'warning',
                 confirmButtonColor: '#2e7d32',
@@ -566,7 +566,7 @@
 
                 }
                 if(this.donorsPhoto){
-                    const namafile = this.donors_name.first_name + "_" + this.company + this.contact.phoneNumber + "_donors";
+                    const namafile = this.donors_name.first_name+ '_' + this.contact.phoneNumber + "_donors";
                     const response = await axios.post(
                         this.BaseUrl + "donor/upload.php",
                         this._utils.generateFormData({

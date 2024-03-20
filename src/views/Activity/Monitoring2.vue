@@ -271,7 +271,6 @@
           ></v-select>
 
           <v-select
-            v-if="false"
             color="success"
             item-color="success"
             v-model="monitoringModuls.model"

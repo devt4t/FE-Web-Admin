@@ -559,62 +559,79 @@
                 // this.donorsPhoto = this.itemData.photo
             },
         async editDataDonors(){
-            const confirmation = await Swal.fire({
-                title: 'Anda Yakin Untuk Menyimpan Data Project Lahan?',
-                text: "Proses Tidak Dapat Dikembalikan!",
-                icon: 'warning',
-                confirmButtonColor: '#2e7d32',
-                confirmButtonText: 'Okay',
-                showCancelButton: true
-            })
-            if(confirmation.isConfirmed){
-                const params = {
-                    participant_no: this.participant_no,
-                    participant_category: this.donorsCategory.model,
-                    first_name: this.donors_name.first_name,
-                    last_name: this.donors_name.last_name,
-                    address1: this.address.address1,
-                    address2: this.address.address2,
-                    company: this.company,
-                    city: this.address.city.model,
-                    state: this.address.state.model,
-                    postal_code: this.address.postal_code,
-                    country: this.address.country.model,
-                    email: this.contact.email,
-                    website: this.contact.website,
-                    phone: this.contact.phoneNumber,
-                    join_date: this.date_joined.model,
-                    active: this.active_status.model,
-                    photo: '',
-
-                }
-                if(this.donorsPhoto){
-                    const namafile = this.donors_name.first_name + "_" + this.company + "_" + this.contact.phoneNumber + "_donors";
-                    const response = await axios.post(
-                        this.BaseUrl + "donor/upload.php",
-                        this._utils.generateFormData({
-                            nama: namafile,
-                            dir: 'donor-photo/',
-                            image: this.donorsPhoto
-                        }),
+            try{
+                const confirmation = await Swal.fire({
+                    title: 'Anda Yakin Untuk Menyimpan Data Donor?',
+                    text: "Proses Tidak Dapat Dikembalikan!",
+                    icon: 'warning',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay',
+                    showCancelButton: true
+                })
+                if(confirmation.isConfirmed){
+                    const params = {
+                        participant_no: this.participant_no,
+                        participant_category: this.donorsCategory.model,
+                        first_name: this.donors_name.first_name,
+                        last_name: this.donors_name.last_name,
+                        address1: this.address.address1,
+                        address2: this.address.address2,
+                        company: this.company,
+                        city: this.address.city.model,
+                        state: this.address.state.model,
+                        postal_code: this.address.postal_code,
+                        country: this.address.country.model,
+                        email: this.contact.email,
+                        website: this.contact.website,
+                        phone: this.contact.phoneNumber,
+                        join_date: this.date_joined.model,
+                        active: this.active_status.model,
+                        photo: '',
+    
+                    }
+                    if(this.donorsPhoto){
+                        const namafile = this.this.donors_name.first_name + "_" + this.contact.phoneNumber + "_donors";
+                        const response = await axios.post(
+                            this.BaseUrl + "donor/upload.php",
+                            this._utils.generateFormData({
+                                nama: namafile,
+                                dir: 'donor-photo/',
+                                image: this.donorsPhoto
+                            }),
+                        );
+                        params.photo = response.data.data.new_name
+                    }
+                    console.log(params)
+                    const PostData = await axios.post(
+                        this.BaseUrlGet + "UpdateDonor",
+                            params,
+                            {
+                            headers: {
+                                Authorization: `Bearer ` + this.authtoken,
+                            },
+                            }
                     );
-                    params.photo = response.data.data.new_name
+                    const data = PostData.data
+    
+                    // const url = `AddNewProject?${params}`
+                    
                 }
-                console.log(params)
-                const PostData = await axios.post(
-                    this.BaseUrlGet + "UpdateDonor",
-                        params,
-                        {
-                        headers: {
-                            Authorization: `Bearer ` + this.authtoken,
-                        },
-                        }
-                );
-                const data = PostData.data
-
-                // const url = `AddNewProject?${params}`
-                
+            }catch(error){
+                await Swal.fire({
+                    title: `Gagal Menyimpan Data Donor!`,
+                    text: 'Error: ' + error.response,
+                    icon: 'error',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay',
+                })
+                console.error(error.response);
+                this.subTable.expanded = []
+                if (error.response.status == 401) {
+                localStorage.removeItem("token");
+                this.$router.push("/");
+                }
             }
+            this.show= false;
         }
     }
     
