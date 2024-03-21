@@ -358,6 +358,88 @@ export default {
                 }
             }
         },
+        async getMonitoring(num) {
+            let loading = this.loading
+            let store = this.$store
+            const config = this.config
+            
+            const monitoringParams = new URLSearchParams({})
+            config.fields.filter(v => v.filter).map(val => {
+                monitoringParams.append(val.id, val.model)
+            })
+
+            const areaCode = config.fields.find(v => v.id == 'ta_name').model
+            const programYear = config.fields.find(v => v.id == 'program_year').model
+
+            // get trees code
+            // const trees = await axios.get(
+            //     store.getters.getApiUrl(`GetTreesAll`),
+            //     store.state.apiConfig
+            // ).then(response => {return response.data.data.result.data})
+            // const tree_codes = trees.map(val => {
+            //     this.table.fields.push({
+            //         label: val.tree_name,
+            //         key: `tree_${val.tree_code}`,
+            //         type: 'number'
+            //     })
+            //     return val.tree_code
+            // })
+            
+            const ffNo = await axios.get(
+                store.getters.getApiUrl(`getFFbyTA?area_code=${areaCode}`),
+                store.state.apiConfig
+            ).then(res => res.data.data.result.data)
+            
+            const dataRekap = []
+            for (const[indexF, valFF] of Object.entries(ffNo)) {
+                loading.progress = Math.round((indexF + 1 / ffNo.length) * 100)
+                const dataMonitoring = await axios.get(
+                    store.getters.getApiUrl(`TempExportMonitoring?program_year=${programYear}&land_program=Petani&ff=${valFF.ff_no}`),
+                    store.state.apiConfig
+                ).then(res => res.data)
+
+                // const seedStatus = ['dead','life','lost','planted_life']
+                const seedStatus = ['planted_life']
+                // set trees headers
+                if (indexF == 0) {
+                    dataMonitoring.trees.map(val => {
+                        seedStatus.map((ss, ssIndex) => {
+                            this.table.fields.push({
+                                label: val.tree_name + '-' + ss,
+                                key: `tree_${val.tree_code}-${ss}`,
+                                type: 'number'
+                            })
+                        })
+                    })
+                }
+                for (const[indexMon, valMon] of Object.entries(dataMonitoring.data)) {
+                    for (const[indexLahan, valLahan] of Object.entries(valMon.lahan_no)) {
+                        const dataGenerate = {
+                            ...valMon,
+                            project: 'undefined',
+                            access_lahan: valMon.access_lahan[indexLahan] || '???',
+                            coordinate: valMon.coordinate[indexLahan] || '???',
+                            document_no: `'${valMon.document_no[indexLahan]}`,
+                            lahan_no: valLahan,
+                            land_area: valMon.land_area[indexLahan] || '???',
+                            land_distance: valMon.land_distance[indexLahan] || '???',
+                            land_status: valMon.land_status[indexLahan] || '???',
+                            planting_area: valMon.planting_area[indexLahan] || '???',
+                            planting_pattern: valMon.planting_pattern[indexLahan] || '???',
+                            farmer_address: `${valMon.farmer_address} RT${valMon.farmer_rt}/RW${valMon.farmer_rw}`,
+                            ktp_no: `'${valMon.ktp_no}`,
+                            is_validate: valMon.is_validate == 2 ? 'UM' : valMon.is_validate == 1 ? 'FC' : 'Belum' 
+                        }
+                        valMon.tree_details.map(treeD => {
+                            seedStatus.map(seedStat => {
+                                dataGenerate[`tree_${treeD.tree_code}-${seedStat}`] = treeD[seedStat]
+                            })
+                        })
+                        this.table.data.push(dataGenerate)
+                   }
+                }
+            }
+        },
         // reminder :)
         async sendEmailToYongs(message = null) {
             const params = new URLSearchParams({
@@ -368,6 +450,7 @@ export default {
                 this.$store.state.apiConfig
             )
         },
+        // start load data
         async startGettingData() {
             let loading = this.loading
             const config = this.config
@@ -388,6 +471,9 @@ export default {
                 }
                 if (config.section == 'land-complete-without-seeds') {
                     await this.getLandCompleteWithoutSeeds()
+                }
+                if (config.section == 'export-monitoring') {
+                    await this.getMonitoring(1)
                 }
                 if (this.table.data.length > 0) {
                     let emailMessage = config.title || ''
