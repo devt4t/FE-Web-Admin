@@ -392,7 +392,7 @@ export default {
             
             const dataRekap = []
             for (const[indexF, valFF] of Object.entries(ffNo)) {
-                loading.progress = Math.round((indexF + 1 / ffNo.length) * 100)
+                loading.progress = Math.round(((indexF + 1) / ffNo.length) * 100)
                 const dataMonitoring = await axios.get(
                     store.getters.getApiUrl(`TempExportMonitoring?program_year=${programYear}&land_program=Petani&ff=${valFF.ff_no}`),
                     store.state.apiConfig
