@@ -3955,7 +3955,7 @@ export default {
       try {
         const response = await axios.get(
           // this.BaseUrlGet + `GetDesa?program_year=${this.generalSettings.programYear}&kode_ta=${valparam}` ,
-          this.BaseUrlGet + `getFFbyTA?area_code=${areaParam}` ,
+          this.BaseUrlGet + 'getFFbyTA?area_code=' + this.dialogs.exportFilter.filters.ta.model + '&program_year=' + this.dialogs.exportFilter.program_year,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,

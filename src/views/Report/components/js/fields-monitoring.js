@@ -22,10 +22,11 @@ export default [
         id: 'mu_name',
         icon: 'mdi-calendar',
         label: 'MU',
-        type: 'text',
+        type: 'special-select',
         model: '',
-        filter: false,
+        filter: true,
         list: true,
+        specialCase: true,
         items: []
     },
     {

@@ -39,6 +39,7 @@
                                         v-model="filter.model"
                                         :items="$store.state.programYear.options"
                                         label="Tahun Program"
+                                        v-on:change="getMUbyPy()"
                                         outlined
                                         class="mt-2 mr-1"
                                     ></v-select>
@@ -59,6 +60,23 @@
                                         class="mt-2 mr-1"
                                     ></v-autocomplete>
                                 </div>
+                                <div v-if="filter.type == 'special-select'">
+                                    <v-autocomplete
+                                        dense
+                                        color="success"
+                                        item-color="success"
+                                        :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition'}"
+                                        hide-details
+                                        rounded
+                                        v-model="filter.model"
+                                        :items="filter.items"
+                                        :label="filter.label"
+                                        v-on:change="getTargetArea()"
+                                        outlined
+                                        class="mt-2 mr-1"
+                                    ></v-autocomplete>
+                                </div>
+
                                 <!-- multi-select -->
                                 <div v-if="filter.type == 'multi-select'">
                                     <v-autocomplete
@@ -179,7 +197,8 @@ export default {
                 } 
                 // monitoring
                 if (val == 4) {
-                    await this.getTargetArea(2023)
+                    // await this.getMUbyPy()
+                    // await this.getTargetArea()
                 }
             }
         }
@@ -220,12 +239,38 @@ export default {
             }
             
         },
-        async getTargetArea(py) {
+        async getMUbyPy(){
             try {
                 this.$store.state.loadingOverlay = true
-                this.$store.state.loadingOverlayText = 'Mengambil daftar kolom lahan...'
+                this.$store.state.loadingOverlayText = 'Mengambil daftar Managemet Unit...'
+                var py = this.configs[4].fields.find(v => v.id == 'program_year').model
+                let managementUnits = await axios.get(
+                    this.$store.getters.getApiUrl(`GetManagementUnitAdmin?program_year=${py}`),
+                    this.$store.state.apiConfig
+                ).then(res => res.data.data.result)
+                managementUnits = managementUnits.map(v => {
+                    return {
+                        text: v.name,
+                        value: v.mu_no
+                    }
+                })
+
+                this.configs[4].fields.find(v => v.id == 'mu_name').items = managementUnits
+            } catch (err) {
+                console.log(err)
+            } finally {
+                this.$store.state.loadingOverlay = false
+                this.$store.state.loadingOverlayText = 'Loading...'
+            }
+        },
+        async getTargetArea() {
+            try {
+                this.$store.state.loadingOverlay = true
+                this.$store.state.loadingOverlayText = 'Mengambil daftar Target Area...'
+                var py = this.configs[4].fields.find(v => v.id == 'program_year').model
+                var mu_no = this.configs[4].fields.find(v => v.id == 'mu_name').model
                 let targetAreas = await axios.get(
-                    this.$store.getters.getApiUrl(`GetTargetArea?program_year=${py}&mu_no=027`),
+                    this.$store.getters.getApiUrl(`GetTargetArea?program_year=${py}&mu_no=${mu_no}`),
                     this.$store.state.apiConfig
                 ).then(res => res.data.data.result)
                 targetAreas = targetAreas.map(v => {
@@ -234,7 +279,6 @@ export default {
                         value: v.area_code
                     }
                 })
-                console.log('targetAreas',targetAreas)
 
                 this.configs[4].fields.find(v => v.id == 'ta_name').items = targetAreas
             } catch (err) {
