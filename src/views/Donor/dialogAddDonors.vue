@@ -30,7 +30,7 @@
                             :items="donorsCategory.items"
                             item-text="text"
                             item-value="value"
-                            label="Kategori Project"
+                            label="Kategori Donor *"
                         >
                         </v-select>
                     </v-col>
@@ -55,7 +55,7 @@
                             dense
                             color="success"
                             v-model="donors_name.first_name"
-                            label="Nama Depan"
+                            label="Nama Depan *"
                             placeholder="Masukan Nama Depan..."
                         >
                         </v-text-field>
@@ -68,7 +68,7 @@
                             dense
                             color="success"
                             v-model="donors_name.last_name"
-                            label="Nama Belakang"
+                            label="Nama Belakang *"
                             placeholder="Masukan Nama Belakang..."
                         >
                         </v-text-field>
@@ -91,13 +91,13 @@
                                             color="green"
                                             hide-details
                                             outlined
-                                            label="Tanggal Mulai Project"
+                                            label="Tanggal Mulai Bergabung *"
                                             rounded
                                             v-bind="attrs"
                                             v-on="{...menu, ...tooltip}"
                                             readonly
                                             v-model="date_joined.model"
-                                            style="max-width: 250px"
+                                            style="max-width: 450px"
                                         ></v-text-field>
                                     </template>
                                     <span>Klik untuk memunculkan datepicker</span>
@@ -128,7 +128,7 @@
                                 dense
                                 color="success"
                                 v-model="address.address1"
-                                label="Alamat Utama"
+                                label="Alamat Utama *"
                                 placeholder="Masukan Alamat Utama..."
                             >
                             </v-text-field>
@@ -154,7 +154,7 @@
                                 dense
                                 color="success"
                                 v-model="address.postal_code"
-                                label="Kode Pos"
+                                label="Kode Pos *"
                                 max="8"
                                 placeholder="Masukan Kode Pos..."
                             >
@@ -172,7 +172,7 @@
                                 :items="address.country.itemList"
                                 item-text="text"
                                 item-value="value"
-                                label="Country"
+                                label="Negara *"
                             >
                             </v-select>
                         </v-col>
@@ -225,7 +225,7 @@
                             dense
                             color="success"
                             v-model="contact.email"
-                            label="Email"
+                            label="Email *"
                             placeholder="Masukan Email Anda..."
                             max="50"
                             hint="Contoh: nama@mail.com"
@@ -241,7 +241,7 @@
                             type="number"
                             color="success"
                             v-model="contact.phoneNumber"
-                            label="Nomor Telepon"
+                            label="Nomor Telepon *"
                             placeholder="Masukan Nomor Telepon..."
                             maxlength="12"
                             counter="12"
@@ -272,7 +272,7 @@
                         <v-file-input
                             accept="image/png, image/jpeg, image/bmp"
                             @change="val => {donorsPhoto = val}"
-                            placeholder="Pilih Foto Donatur"
+                            placeholder="Pilih Foto Donatur *"
                             prepend-icon="mdi-camera"
                             show-size
                             label="Pilih Foto Donatur..."
@@ -291,9 +291,13 @@
                             :items="active_status.itemList"
                             item-text="text"
                             item-value="value"
-                            label="Status Aktif"
+                            label="Status Aktif *"
                         >
                         </v-select>
+                    </v-col>
+
+                    <v-col cols="12" sm="12" md="12">
+                        <p style="color:red;"><strong> * Is Required!</strong></p>
                     </v-col>
                 </v-row>
             </v-container>
@@ -357,9 +361,9 @@
 
             donorsCategory: {
                 items: [
-                    {text: "Donatur Umum", value: 'donors_satu_test'},
-                    {text: "Komunitas Donatur", value: 'comunity_satu_test'},
-                    {text: "Perusahaan", value: 'company_dua_test'},
+                    {text: "Donatur Umum", value: 'cat-1'},
+                    {text: "Komunitas Donatur", value: 'cat-2'},
+                    {text: "Perusahaan", value: 'cat-3'},
                 ],
                 model: '',
                 loading: false
@@ -495,7 +499,7 @@
                 this.donorsPhoto= ''
             },
             saveButtonCondition(){
-                if(this.donorsCategory.model != '' && this.donors_name.first_name != '' && this.donors_name.last_name != '' && this.address.address1 != '' && this.address.address2 != '' && this.address.country.model != '' && this.contact.email !='' && this.contact.phoneNumber!='' && this.date_joined.model!='' && this.active_status.model!='' && this.donorsPhoto !='') return true
+                if(this.donorsCategory.model != '' && this.donors_name.first_name != '' && this.donors_name.last_name != '' && this.address.address1 != '' && this.address.country.model != '' && this.contact.email !='' && this.contact.phoneNumber!='' && this.date_joined.model!='' && this.active_status.model!='' && this.donorsPhoto !='') return true
                 return false
             },
             async getCityByStates(){
@@ -515,7 +519,6 @@
                 this.address.city.itemList = data
                 this.address.city.loading = false
             },
-
             async getProvinceList(){
                 try {
                     this.address.state.loading = true
@@ -534,64 +537,82 @@
                     this.address.state.loading = false
                 }
             },
- 
-
         async saveDataProject(){
-            const confirmation = await Swal.fire({
-                title: 'Anda Yakin Untuk Menyimpan Data Donatur?',
-                text: "Proses Tidak Dapat Dikembalikan!",
-                icon: 'warning',
-                confirmButtonColor: '#2e7d32',
-                confirmButtonText: 'Okay',
-                showCancelButton: true
-            })
-            if(confirmation.isConfirmed){
-                const params = {
-                    participant_category: this.donorsCategory.model,
-                    first_name: this.donors_name.first_name,
-                    last_name: this.donors_name.last_name,
-                    address1: this.address.address1,
-                    address2: this.address.address2,
-                    company: this.company,
-                    city: this.address.city.model,
-                    state: this.address.state.model,
-                    postal_code: this.address.postal_code,
-                    country: this.address.country.model,
-                    email: this.contact.email,
-                    website: this.contact.website,
-                    phone: this.contact.phoneNumber,
-                    join_date: this.date_joined.model,
-                    active: this.active_status.model,
-                    photo: '',
-
-                }
-                if(this.donorsPhoto){
-                    const namafile = this.donors_name.first_name+ '_' + this.contact.phoneNumber + "_donors";
-                    const response = await axios.post(
-                        this.BaseUrl + "donor/upload.php",
-                        this._utils.generateFormData({
-                            nama: namafile,
-                            dir: 'donor-photo/',
-                            image: this.donorsPhoto
-                        }),
+            try{
+                const confirmation = await Swal.fire({
+                    title: 'Anda Yakin Untuk Menyimpan Data Donatur?',
+                    text: "Proses Tidak Dapat Dikembalikan!",
+                    icon: 'warning',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay',
+                    showCancelButton: true
+                })
+                if(confirmation.isConfirmed){
+                    const params = {
+                        participant_category: this.donorsCategory.model,
+                        first_name: this.donors_name.first_name,
+                        last_name: this.donors_name.last_name,
+                        address1: this.address.address1,
+                        address2: this.address.address2,
+                        company: this.company,
+                        city: this.address.city.model,
+                        state: this.address.state.model,
+                        postal_code: this.address.postal_code,
+                        country: this.address.country.model,
+                        email: this.contact.email,
+                        website: this.contact.website,
+                        phone: this.contact.phoneNumber,
+                        join_date: this.date_joined.model,
+                        active: this.active_status.model,
+                        photo: '',
+                    }
+                    if(this.donorsPhoto){
+                        const namafile = this.address.country.model + '_' + this.address.postal_code + '_' + this.contact.phoneNumber + "_donors";
+                        const response = await axios.post(
+                            this.BaseUrl + "donor/upload.php",
+                            this._utils.generateFormData({
+                                nama: namafile,
+                                dir: 'donor-photo/',
+                                image: this.donorsPhoto
+                            }),
+                        );
+                        params.photo = response.data.data.new_name
+                    }
+                    console.log(params)
+                    const PostData = await axios.post(
+                        this.BaseUrlGet + "AddNewDonor",
+                            params,
+                            {
+                            headers: {
+                                Authorization: `Bearer ` + this.authtoken,
+                            },
+                            }
                     );
-                    params.photo = response.data.data.new_name
-                }
-                console.log(params)
-                const PostData = await axios.post(
-                    this.BaseUrlGet + "AddNewDonor",
-                        params,
-                        {
-                        headers: {
-                            Authorization: `Bearer ` + this.authtoken,
-                        },
-                        }
-                );
-                const data = PostData.data
+                    const data = PostData.data
+                    await Swal.fire({
+                        title: 'Sukses!',
+                        text: "Berhasil Menyimpan Data Donatur!",
+                        icon: 'success',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay',
+                        // showCancelButton: true
+                    })
 
-                // const url = `AddNewProject?${params}`
-                
+                    // const url = `AddNewProject?${params}`  
+                }
+
+            }catch(error){
+                await Swal.fire({
+                    title: 'Error!',
+                    text: "Gagal Menyimpan Data Donatur!",
+                    icon: 'error',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay',
+                    // showCancelButton: true
+                })
             }
+            this.$router.push('Project')
+            this.showModal = false
         }
     }
     

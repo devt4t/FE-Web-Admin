@@ -404,8 +404,12 @@ export default {
                 if (indexF == 0) {
                     dataMonitoring.trees.map(val => {
                         seedStatus.map((ss, ssIndex) => {
+                            // if(ss == 'planted_life') ss='Ditanam Hidup'
+                            // else if(ss == 'life') ss='Hidup'
+                            // else if(ss == 'dead') ss='Mati'
+                            // else if(ss == 'lost') ss='Hilang'
                             this.table.fields.push({
-                                label: val.tree_name + '-' + ss,
+                                label: val.tree_name + ' - ' + ss,
                                 key: `tree_${val.tree_code}-${ss}`,
                                 type: 'number'
                             })
@@ -428,6 +432,11 @@ export default {
                             planting_pattern: valMon.planting_pattern[indexLahan] || '???',
                             farmer_address: `${valMon.farmer_address} RT${valMon.farmer_rt}/RW${valMon.farmer_rw}`,
                             ktp_no: `'${valMon.ktp_no}`,
+                            // qty_std: valMon.tree_details.map(val => {
+                            //     return val.planted_life
+                            // }).reduce((acc, val)=>{
+                            //     return acc + parseInt(val)
+                            // },0),
                             is_validate: valMon.is_validate == 2 ? 'UM' : valMon.is_validate == 1 ? 'FC' : 'Belum' 
                         }
                         valMon.tree_details.map(treeD => {

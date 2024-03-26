@@ -21,6 +21,11 @@
       @close="closeDialogEdit()"
       >
       </dialogEditDonors>
+      <dialogDetailDonors
+      :show="details.show"
+      :datas="details.object"
+      @close="details.show = false"
+      ></dialogDetailDonors>
       
       <v-data-table
         data-aos="fade-up"
@@ -96,8 +101,13 @@
             </v-btn>
           </v-toolbar>
         </template>
+
         <template v-slot:item.index="{ index }">
           {{ (itemsPerPage * (page-1)) + index + 1 }}
+        </template>
+        <!-- Category -->
+        <template v-slot:item.participant_category="{item}">
+            {{ categoryControl(item.participant_category) }}
         </template>
         <!--Status row-->
         <template v-slot:item.status="{item}">
@@ -121,7 +131,7 @@
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
                      :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                     @click="">
+                     @click="openDetailDonor(item)">
                 <v-icon class="mr-1">information-outline</v-icon>
                 Detail
               </v-btn>
@@ -155,12 +165,14 @@
   import axios from "axios";
   import dialogAddDonors from "@/views/Donor/dialogAddDonors"
   import dialogEditDonors from "@/views/Donor/dialogEditDonors"
+  import dialogDetailDonors from "@/views/Donor/dialogDetailDonors"
   
   export default {
     name: "Donor",
     components: {
       dialogAddDonors,
-      dialogEditDonors
+      dialogEditDonors,
+      dialogDetailDonors
     },
     data: () => ({
       addModal: false,
@@ -191,7 +203,7 @@
       headers: [
         {text: 'No', value: 'index'},
         {text: 'No Partisipan', value: 'participant_no'},
-        {text: 'Kategori', value: 'category'},
+        {text: 'Kategori', value: 'participant_category'},
         {text: 'Nama Depan', value: 'first_name'},
         {text: 'Nama Belakang', value: 'last_name'},
         {text: 'Alamat 1', value: 'address1'},
@@ -203,6 +215,10 @@
       dataobject: [],
       dataSwitch: "Donor",
       dataSwitchItems: ["Donor", "Manufaktur", "Sponsor"],
+      details:{
+        show: false,
+        object: {}
+      },
 
       snackbar: false,
       textsnackbar: "Test",
@@ -269,6 +285,10 @@
               this.$store.state.loadingOverlayText = ''
             }
       },
+      openDetailDonor(item){
+        this.details.object = item
+        this.details.show = true
+      },
       openEditDonor(item){
         this.editDonors.show = true
         this.editDonors.data = item
@@ -276,6 +296,11 @@
       SelectedDataSwitch(){
         console.log(this.dataSwitch)
         this.initialize();
+      },
+      categoryControl(val){
+        if(val == 'cat1') return 'Umum'
+        else if(val == 'cat2') return 'Komunitas'
+        else if(val == 'cat3') return 'Perusahaan'
       },
       getStatusColumn(type, status) {
         if (type == 'bg_color') {

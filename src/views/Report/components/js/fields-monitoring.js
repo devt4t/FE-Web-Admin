@@ -114,7 +114,7 @@ export default [
     {
         id: 'land_area',
         icon: 'mdi-calendar',
-        label: 'land_area',
+        label: 'Area Lahan',
         type: 'text',
         model: '',
         filter: false,
@@ -123,7 +123,7 @@ export default [
     {
         id: 'planting_area',
         icon: 'mdi-calendar',
-        label: 'planting_area',
+        label: 'Area Tanam',
         type: 'text',
         model: '',
         filter: false,
@@ -132,7 +132,7 @@ export default [
     {
         id: 'planting_pattern',
         icon: 'mdi-calendar',
-        label: 'planting_pattern',
+        label: 'Pola Tanam',
         type: 'text',
         model: '',
         filter: false,
@@ -141,7 +141,7 @@ export default [
     {
         id: 'land_distance',
         icon: 'mdi-calendar',
-        label: 'land_distance',
+        label: 'Jarak Lahan',
         type: 'text',
         model: '',
         filter: false,
@@ -150,7 +150,7 @@ export default [
     {
         id: 'access_lahan',
         icon: 'mdi-calendar',
-        label: 'access_lahan',
+        label: 'Akses Lahan',
         type: 'text',
         model: '',
         filter: false,
@@ -159,7 +159,7 @@ export default [
     {
         id: 'coordinate',
         icon: 'mdi-calendar',
-        label: 'coordinate',
+        label: 'Koordinat Lahan',
         type: 'text',
         model: '',
         filter: false,
@@ -168,7 +168,7 @@ export default [
     {
         id: 'land_status',
         icon: 'mdi-calendar',
-        label: 'land_status',
+        label: 'Status Lahan',
         type: 'text',
         model: '',
         filter: false,
@@ -177,7 +177,7 @@ export default [
     {
         id: 'lahan_condition',
         icon: 'mdi-calendar',
-        label: 'lahan_condition',
+        label: 'Kondisi Lahan',
         type: 'text',
         model: '',
         filter: false,
@@ -186,7 +186,7 @@ export default [
     {
         id: 'planting_date',
         icon: 'mdi-calendar',
-        label: 'planting_date',
+        label: 'Tanggal Tanam',
         type: 'text',
         model: '',
         filter: false,
@@ -195,7 +195,7 @@ export default [
     {
         id: 'qty_std',
         icon: 'mdi-calendar',
-        label: 'qty_std',
+        label: 'Kuantitas Standar',
         type: 'text',
         model: '',
         filter: false,
@@ -204,7 +204,7 @@ export default [
     {
         id: 'is_validate',
         icon: 'mdi-calendar',
-        label: 'is_validate',
+        label: 'Status Verifikasi',
         type: 'text',
         model: '',
         filter: false,

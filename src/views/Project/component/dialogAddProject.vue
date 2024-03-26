@@ -227,6 +227,9 @@
                         >
                         </v-select>
                     </v-col>
+                    <v-col cols="12" sm="12" md="12">
+                        <p style="color:red;"><strong> * All Column Is Required!</strong></p>
+                    </v-col>
                 </v-row>
             </v-container>
           </v-card-text>
@@ -290,7 +293,7 @@
 
             projectCategory: {
                 items: [
-                    {text: "Project Satu", value: 'project_satu_test'},
+                    {text: "CSR", value: 'csr'},
                     {text: "Project Dua", value: 'project_dua_test'},
                     {text: "Project Tiga", value: 'project_tiga_test'},
                 ],
@@ -467,43 +470,61 @@
             },
 
         async saveDataProject(){
-            const confirmation = await Swal.fire({
-                title: 'Anda Yakin Untuk Menyimpan Data Project Lahan?',
-                text: "Proses Tidak Dapat Dikembalikan!",
-                icon: 'warning',
-                confirmButtonColor: '#2e7d32',
-                confirmButtonText: 'Okay',
-                showCancelButton: true
-            })
-            if(confirmation.isConfirmed){
-                const params = {
-                    project_category: this.projectCategory.model,
-                    project_name: this.projectName,
-                    start_date: this.project_start_date.model,
-                    end_date: this.project_end_date.model,
-                    description: this.projectDescription,
-                    location: this.projectLocation,
-                    tree_amount: this.total_trees,
-                    co2_capture: this.co2_capture,
-                    donors: this.donors.model,
-                    mu_no: this.mu.model
-
+            try{
+                const confirmation = await Swal.fire({
+                    title: 'Anda Yakin Untuk Menyimpan Data Project Lahan?',
+                    text: "Proses Tidak Dapat Dikembalikan!",
+                    icon: 'warning',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay',
+                    showCancelButton: true
+                })
+                if(confirmation.isConfirmed){
+                    const params = {
+                        project_category: this.projectCategory.model,
+                        project_name: this.projectName,
+                        start_date: this.project_start_date.model,
+                        end_date: this.project_end_date.model,
+                        description: this.projectDescription,
+                        location: this.projectLocation,
+                        tree_amount: this.total_trees,
+                        co2_capture: this.co2_capture,
+                        donors: this.donors.model,
+                        mu_no: this.mu.model
+    
+                    }
+                    console.log(params)
+                    // const url = `AddNewProject?${params}`
+                    const PostData = await axios.post(
+                        this.BaseUrlGet + "AddNewProject",
+                            params,
+                            {
+                            headers: {
+                                Authorization: `Bearer ` + this.authtoken,
+                            },
+                            }
+                    );
+                    const data = PostData.data
+                    await Swal.fire({
+                        title: 'Sukses!',
+                        text: "Berhasil Menyimpan Data Project Lahan!",
+                        icon: 'success',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    
                 }
-                console.log(params)
-                // const url = `AddNewProject?${params}`
-                const PostData = await axios.post(
-                    this.BaseUrlGet + "AddNewProject",
-                        params,
-                        {
-                        headers: {
-                            Authorization: `Bearer ` + this.authtoken,
-                        },
-                        }
-                );
-                const data = PostData.data
-                
-                this.$router.push('Project')
+            }catch(error){
+                await Swal.fire({
+                    title: 'Error!',
+                    text: "Gagal Menyimpan Data Project Lahan!",
+                    icon: 'error',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay'
+                })
             }
+            this.$router.push('Project')
+            this.showModal = false
         }
     }
     
