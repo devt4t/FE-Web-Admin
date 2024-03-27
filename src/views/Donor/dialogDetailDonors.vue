@@ -282,9 +282,9 @@
                 this.donorsPhoto= this.BaseUrl+ 'donor/donor-photo/' + this.datas.photo
             },
             categoryController(val){
-                if(val == 'cat1') return 'Umum'
-                else if(val == 'cat2') return 'Komunitas'
-                else if(val == 'cat3') return 'Perusahaan'
+                if(val == 'cat-1') return 'Umum'
+                else if(val == 'cat-2') return 'Komunitas'
+                else if(val == 'cat-3') return 'Perusahaan'
             },
             resetData(){
                 this.donorsCategory.model = ''

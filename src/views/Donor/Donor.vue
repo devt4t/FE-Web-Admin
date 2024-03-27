@@ -74,6 +74,7 @@
             ></v-text-field>
             <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
             <v-select
+                v-if="false"
                 color="success"
                 item-color="success"
                 v-model="dataSwitch"
@@ -298,9 +299,9 @@
         this.initialize();
       },
       categoryControl(val){
-        if(val == 'cat1') return 'Umum'
-        else if(val == 'cat2') return 'Komunitas'
-        else if(val == 'cat3') return 'Perusahaan'
+        if(val == 'cat-1') return 'Umum'
+        else if(val == 'cat-2') return 'Komunitas'
+        else if(val == 'cat-3') return 'Perusahaan'
       },
       getStatusColumn(type, status) {
         if (type == 'bg_color') {

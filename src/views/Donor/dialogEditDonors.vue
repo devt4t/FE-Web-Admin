@@ -30,7 +30,7 @@
                             :items="donorsCategory.items"
                             item-text="text"
                             item-value="value"
-                            label="Kategori Project"
+                            label="Kategori Donor"
                         >
                         </v-select>
                     </v-col>

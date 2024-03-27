@@ -124,7 +124,17 @@
               Detail
             </v-btn>
             <v-btn
-                v-if="item.is_verified == 0"
+                  color="orange white--text"
+                     rounded
+                     small
+                     class="pl-1 mt-1 d-flex justify-start align-center"
+                     :disabled="!$store.state.User.role_group=='IT'"
+                     @click="">
+                <v-icon class="mr-1">mdi-check-bold</v-icon>
+                Edit Data Project
+              </v-btn>
+            <v-btn
+                v-if="item.active == 0"
                 color="green white--text"
                    rounded
                    small
@@ -135,7 +145,7 @@
               Verifikasi
             </v-btn>
             <v-btn
-                v-if="item.is_verified != 0"
+                v-if="item.active != 0"
                 color="red white--text"
                    rounded
                    small
