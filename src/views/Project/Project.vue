@@ -15,6 +15,16 @@
       @close="closeAddDialog()"
     >
     </dialogAddProject>
+    <dialogEditProject
+      :show="editModul.show"
+      :itemData="editModul.itemData"
+      @close="closeEditDialog()"
+    ></dialogEditProject>
+    <dialogDetailProject
+      :show="detailModul.show"
+      :datas="detailModul.itemData"
+      @close="detailModul.show = false"
+    ></dialogDetailProject>
 
     <v-data-table
       data-aos="fade-up"
@@ -31,6 +41,7 @@
       @update:page="($p) => page = $p"
       @update:items-per-page="($p) => itemsPerPage = $p"
     >
+      
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
         <!-- program years-->
@@ -97,11 +108,12 @@
       <template v-slot:header.co2_capture="{header}">
         Proyeksi CO<sup>2</sup>
       </template>
+
       <!--Status row-->
       <template v-slot:item.status="{item}">
-        <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
-          <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
-          {{ getStatusColumn('text', item.status) }}
+        <v-chip :color="item.active > 0 ? 'green': 'red'" class="white--text">
+          <v-icon class="mr-1">{{ item.active > 0? 'mdi-check-bold': 'mdi-close-thick' }}</v-icon>
+          {{ item.active>0?'Aktif': 'Tidak Aktif'}}
         </v-chip>
       </template>
       <template v-slot:item.actions="{ item }">
@@ -119,8 +131,8 @@
                    small
                    class="pl-1 mt-1 d-flex justify-start align-center"
                    :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                   @click="">
-              <v-icon class="mr-1">information-outline</v-icon>
+                   @click="opensDetailDialog(item)">
+              <v-icon class="mr-1">mdi-information-outline</v-icon>
               Detail
             </v-btn>
             <v-btn
@@ -129,8 +141,8 @@
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
                      :disabled="!$store.state.User.role_group=='IT'"
-                     @click="">
-                <v-icon class="mr-1">mdi-check-bold</v-icon>
+                     @click="opensEditDialog(item)">
+                <v-icon class="mr-1">mdi-refresh</v-icon>
                 Edit Data Project
               </v-btn>
             <v-btn
@@ -140,9 +152,9 @@
                    small
                    class="pl-1 mt-1 d-flex justify-start align-center"
                    :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                   @click="">
+                   @click="ProjectActivation(item)">
               <v-icon class="mr-1">mdi-check-bold</v-icon>
-              Verifikasi
+              Aktifkan
             </v-btn>
             <v-btn
                 v-if="item.active != 0"
@@ -151,9 +163,9 @@
                    small
                    class="pl-1 mt-1 d-flex justify-start align-center"
                    :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                   @click="">
-              <v-icon class="mr-1">mdi-check-bold</v-icon>
-              Unverifikasi
+                   @click="ProjectActivation(item)">
+              <v-icon class="mr-1">mdi-close-thick</v-icon>
+              Non-Aktifkan
             </v-btn>
               <!--{showModal('form', item)}-->
           </v-card>
@@ -173,15 +185,28 @@
 
 <script>
 import axios from "axios";
+import Swal from 'sweetalert2'
 import dialogAddProject from "@/views/Project/component/dialogAddProject"
+import dialogEditProject from "@/views/Project/component/dialogEditProject";
+import dialogDetailProject from "./component/dialogDetailProject.vue";
 
 export default {
   name: "Donor",
   components: {
-    dialogAddProject
+    dialogAddProject,
+    dialogEditProject,
+    dialogDetailProject
   },
   data: () => ({
     openAddDialog: false,
+    editModul: {
+      show: false,
+      itemData: {}
+    },
+    detailModul:{
+      show: false,
+      itemData: {}
+    },
 
     page: 1,
     itemsPerPage: 10,
@@ -206,13 +231,7 @@ export default {
       {text: 'Nomor', value: 'project_no'},
       {text: 'Kategori', value: 'project_category'},
       {text: 'Nama Project', value: 'project_name'},
-      {text: 'Tanggal Mulai', value: 'project_date'},
-      {text: 'Tanggal Selasai', value: 'end_project'},
-      {text: 'Deskripsi Project', value: 'project_description'},
-      {text: 'Lokasi', value: 'project_name'},
-      {text: 'Total Pohon', value: 'total_trees'},
-      {text: 'CO2', value: 'co2_capture'},
-      {text: 'Donatur', value: 'donors'},
+      {test: 'Status', value: 'status'},
       {text: 'Actions', value: 'actions', align: 'right'},
     ],
     dataobject: [],
@@ -266,6 +285,18 @@ export default {
             this.$store.state.loadingOverlayText = ''
           }
     },
+    opensEditDialog(item){
+      this.editModul.show=true
+      this.editModul.itemData = item
+    },
+    opensDetailDialog(item){
+      this.detailModul.show=true
+      this.detailModul.itemData = item
+    },
+    closeEditDialog(){
+      this.editModul.show=false
+      this.initialize()
+    },
     closeAddDialog(){
       this.openAddDialog=false
       this.initialize()
@@ -274,6 +305,52 @@ export default {
       console.log(this.dataSwitch)
       this.initialize();
     },
+    async ProjectActivation(item){
+            try{
+                const confirmation = await Swal.fire({
+                    title: 'Anda Yakin Untuk Aktif/Non-Aktifkan Data Project?',
+                    text: "Proses Tidak Dapat Dikembalikan!",
+                    icon: 'warning',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay',
+                    showCancelButton: true
+                })
+                if(confirmation.isConfirmed){
+                    const params = {
+                        project_no: item.project_no,
+                    }
+                    console.log(params)
+                    // const url = `AddNewProject?${params}`
+                    const PostData = await axios.post(
+                        this.BaseUrlGet + "ProjectActivator",
+                            params,
+                            {
+                            headers: {
+                                Authorization: `Bearer ` + this.authtoken,
+                            },
+                            }
+                    );
+                    const data = PostData.data
+                    await Swal.fire({
+                        title: 'Sukses!',
+                        text: "Berhasil Menyimpan Perubahan Data Project!",
+                        icon: 'success',
+                        confirmButtonColor: '#2e7d32',
+                        confirmButtonText: 'Okay'
+                    })
+                    
+                }
+            }catch(error){
+                await Swal.fire({
+                    title: 'Error!',
+                    text: "Gagal Menyimpan Perubahan Data Project!",
+                    icon: 'error',
+                    confirmButtonColor: '#2e7d32',
+                    confirmButtonText: 'Okay'
+                })
+            }
+            this.initialize()
+          },
     getStatusColumn(type, status) {
       if (type == 'bg_color') {
         if (status == '0') return 'orange'

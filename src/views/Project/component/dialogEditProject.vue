@@ -280,7 +280,7 @@
                 type: Boolean,
                 default: false,
             },
-            datas: {
+            itemData: {
                 type: Object,
                 default : {}
             }
@@ -344,7 +344,7 @@
                         this.resetData()
                         this.getMUList()
                         this.getDonorsList()
-                        this.getDefaultData(this.datas)
+                        this.getDefaultData(this.itemData)
                         // this.getTableData({
                         //     form_no: this.data
                         // })   
@@ -503,7 +503,7 @@
                     console.log(params)
                     // const url = `AddNewProject?${params}`
                     const PostData = await axios.post(
-                        this.BaseUrlGet + "AddNewProject",
+                        this.BaseUrlGet + "UpdateDataProject",
                             params,
                             {
                             headers: {
@@ -514,7 +514,7 @@
                     const data = PostData.data
                     await Swal.fire({
                         title: 'Sukses!',
-                        text: "Berhasil Menyimpan Data Project Lahan!",
+                        text: "Berhasil Menyimpan Perubahan Data Project!",
                         icon: 'success',
                         confirmButtonColor: '#2e7d32',
                         confirmButtonText: 'Okay'
@@ -524,13 +524,12 @@
             }catch(error){
                 await Swal.fire({
                     title: 'Error!',
-                    text: "Gagal Menyimpan Data Project Lahan!",
+                    text: "Gagal Menyimpan Perubahan Data Project!",
                     icon: 'error',
                     confirmButtonColor: '#2e7d32',
                     confirmButtonText: 'Okay'
                 })
             }
-            this.$router.push('Project')
             this.showModal = false
         },
         getDefaultData(Obj){
