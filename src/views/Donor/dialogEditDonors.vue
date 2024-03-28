@@ -7,7 +7,7 @@
         content-class="rounded-xl">
         <v-card rounded="xl">
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-pencil-plus</v-icon> Tambah Data Donatur
+                <v-icon color="white" class="mx-2">mdi-pencil-plus</v-icon> Edit Data Donatur
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
           <v-divider></v-divider>
@@ -360,9 +360,9 @@
             participant_no: '',
             donorsCategory: {
                 items: [
-                    {text: "Donatur Umum", value: 'donors_satu_test'},
-                    {text: "Komunitas Donatur", value: 'comunity_satu_test'},
-                    {text: "Perusahaan", value: 'company_dua_test'},
+                    {text: "Donatur Umum", value: 'cat-1'},
+                    {text: "Komunitas Donatur", value: 'cat-2'},
+                    {text: "Perusahaan", value: 'cat-3'},
                 ],
                 model: '',
                 loading: false
@@ -590,7 +590,7 @@
     
                     }
                     if(this.donorsPhoto){
-                        const namafile = this.this.donors_name.first_name + "_" + this.contact.phoneNumber + "_donors";
+                        const namafile = this.donors_name.first_name + "_" + this.contact.phoneNumber + "_donors";
                         const response = await axios.post(
                             this.BaseUrl + "donor/upload.php",
                             this._utils.generateFormData({
@@ -606,9 +606,9 @@
                         this.BaseUrlGet + "UpdateDonor",
                             params,
                             {
-                            headers: {
-                                Authorization: `Bearer ` + this.authtoken,
-                            },
+                                headers: {
+                                    Authorization: `Bearer ` + this.authtoken,
+                                },
                             }
                     );
                     const data = PostData.data
@@ -625,13 +625,12 @@
                     confirmButtonText: 'Okay',
                 })
                 console.error(error.response);
-                this.subTable.expanded = []
                 if (error.response.status == 401) {
                 localStorage.removeItem("token");
                 this.$router.push("/");
                 }
             }
-            this.show= false;
+            this.showModal = false;
         }
     }
     

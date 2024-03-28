@@ -7,7 +7,7 @@
         content-class="rounded-xl">
         <v-card rounded="xl">
             <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
-                <v-icon color="white" class="mx-2">mdi-pencil-plus</v-icon> Tambah Project
+                <v-icon color="white" class="mx-2">mdi-pencil-plus</v-icon> Edit Project
                 <v-icon color="white" class="ml-auto" @click="showModal = false">mdi-close-circle</v-icon>
             </v-card-title>
           <v-divider></v-divider>

@@ -18,6 +18,99 @@
     ></v-breadcrumbs>
     <!-- trees preview component -->
     <!-- <TreesPreview></TreesPreview> -->
+    <v-dialog v-model="dialogFilter.show" content-class="rounded-xl" max-width="500">
+        <v-card>
+          <v-card-title>
+            Export Filter
+            <v-divider class="mx-2"></v-divider>
+            <v-icon color="red" @click="() => dialogFilter.show = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <v-row v-if="User.role_group == 'IT' || User.role_name == 'FC' || User.role_name == 'UM'" class="mt-0">
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Tahun Program"
+                  :items="$store.state.programYear.options"
+                  v-model="dialogFilter.program_year"
+                ></v-autocomplete>
+              </v-col>
+              <!-- <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Management Unit"
+                  item-value="mu_no"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.mu.loading"
+                  :items="dialogFilter.mu.item"
+                  v-model="dialogFilter.mu.model"
+                ></v-autocomplete>
+              </v-col>
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Target Area"
+                  item-value="area_code"
+                  item-text="name"
+                  :loading="dialogs.exportFilter.filters.ta.loading"
+                  :items="dialogs.exportFilter.filters.ta.options"
+                  v-model="dialogs.exportFilter.filters.ta.model"
+                  v-on:change="getFFbyTA('export')"
+                ></v-autocomplete>
+              </v-col> -->
+              <v-col :cols="12">
+                <v-autocomplete
+                  rounded
+                  outlined
+                  dense
+                  hide-details
+                  color="green"
+                  item-color="green"
+                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                  label="Field Facilitator"
+                  item-value="ff_no"
+                  item-text="name"
+                  :loading="dialogFilter.ff.loading"
+                  :items="dialogFilter.ff.item"
+                  v-model="dialogFilter.ff.model"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-divider class="mx-2"></v-divider>
+            <v-hover v-slot="{hover}">
+              <v-btn v-if="User.role_group == 'IT' || User.role_name == 'FC' || User.role_name == 'UM'"
+                rounded 
+                :color="`green ${hover ? 'white--text' : ''}`" 
+                :outlined="!hover" 
+                @click="() => exportDataPerFF()" 
+                :disabled="dialogFilter.ff.model < 1">
+                <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export Per-FF</v-btn>
+            </v-hover>
+            <v-divider class="mx-2"></v-divider>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     <exportDetailDataMo2
       :show="details.exportDetail"
       :generalData="details.generalData"
@@ -287,8 +380,16 @@
             class="mx-auto mx-lg-3"
             style="max-width: 200px"
           ></v-select>
-          
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
+          <v-btn
+            v-if="(User.role_group=='IT' || User.role_name == 'FC' || User.role_name == 'UM') && monitoringModuls.model == 'mo2'"
+            rounded
+            class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
+            @click="dialogFilter.show = true"
+            color="blue white--text"
+          >
+            <v-icon class="mr-1">mdi-download</v-icon> Export
+          </v-btn>
           <v-btn
             v-if="User.role_group=='IT' || User.role_name=='UNIT MANAGER' || User.role_name=='FIELD COORDINATOR'"
             rounded
@@ -647,7 +748,23 @@ export default {
     dialogExportDataToExcel:{
       show: false,
     },
-
+    dialogFilter:{
+      show: false,
+      program_year: '',
+      mu:{
+        model: '',
+        item: []
+      },
+      ta:{
+        model: '',
+        item: []
+      },
+      ff:{
+        loading: false,
+        model: '',
+        item: []
+      }
+    },
     dialogDigitalBarcode: {
       show: false,
       loading:{
@@ -686,8 +803,9 @@ export default {
         {text: 'Kondisi Lahan', value: 'land_condition'},
         {text: 'Jumlah Total Pohon', value: 'total_hidup'},
         {text: 'Waktu Monitoring', value: 'monitoring_time'},
-        {text: 'Waktu Awal Monitoring', value: 'monitoring_start'},
-        {text: 'Waktu Akhir Monitoring', value: 'monitoring_end'},
+        {text: 'Total Kayu', value: 'kayu_mon2'},
+        {text: 'Total MPTS', value: 'mpts_mon2'},
+        {text: 'Total Pohon Monitoring 2', value: 'total_mon2'},
         {text: 'Tahun Program', value: 'program_year'},
         {text: 'Sampling', value: 'sampling'},
         {text: 'Status', value: 'status'},
@@ -758,6 +876,22 @@ export default {
 
     }),
   watch: {
+      // 'dialogFilter.program_year': {
+      //   handler(val) {
+      //     this.getMU()
+      //   }
+      // },
+      // 'dialogFilter.mu.model': {
+      //   handler(val) {
+      //     this.getTA('export');
+      //   }
+      // },
+      // 'dialogFilter.ta.model': {
+      //   handler(val){
+
+      //   }
+      // },
+
       'monitoringModuls.model': {
         handler(val) {
           this.getDataMonitoring2Main()
@@ -794,6 +928,7 @@ export default {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.localConfig.programYear = this.$store.state.programYear.model
+      this.getFFData(this.User.ff.ff)
       this.initializeParentTable();
     },
 
@@ -805,6 +940,125 @@ export default {
   },
 
   methods: {
+    // export filter
+    // async getMU() {
+    //   try {
+    //     this.dialogFilter.mu.model = ''
+    //     this.dialogFilter.mu.item = []
+    //     this.dialogFilter.ta.model = ''
+    //     this.dialogFilter.ta.item = []
+    //     this.dialogFilter.ff.model = ''
+    //     this.dialogFilter.ff.item = []
+    //     const response = await axios.get(
+    //       this.BaseUrlGet + `GetManagementUnit?program_year=${this.dialogFilter.program_year}`,
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ` + this.authtoken,
+    //         },
+    //       }
+    //     );
+    //     if (response.data.length != 0) {
+    //       this.dialogFilter.mu.item = response.data.data.result.sort((a,b) => a.name.localeCompare(b.name));
+    //       // this.dataobject = response.data.data.result;
+    //     }
+    //   } catch (error) {
+    //     this.dialogFilter.mu.model = ''
+    //     this.dialogFilter.mu.item = []
+    //     this.dialogFilter.ta.model = ''
+    //     this.dialogFilter.ta.item = []
+    //     this.dialogFilter.ff.model = ''
+    //     this.dialogFilter.ff.item = []
+    //     console.error(error.response);
+    //     if (error.response.status == 401) {
+    //       localStorage.removeItem("token");
+    //       this.$router.push("/");
+    //     }
+    //   }
+    // },
+    
+    // async getTA(val) {
+    //   this.dialogFilter.ta.model = ''
+    //   this.dialogFilter.ta.item = []
+    //   this.dialogFilter.ff.model = ''
+    //   this.dialogFilter.ff.item = []
+    //   var valparam = "";
+    //   var valYear = ""
+    //   if(val == "export") {
+    //     valparam = this.dialogFilter.mu.model
+    //     valYear = this.dialogFilter.program_year
+    //   }else{
+    //     valparam = this.dialogFilter.mu.model
+    //     valYear = this.dialogFilter.program_year
+    //   }
+    //   try {
+    //     const response = await axios.get(
+    //       this.BaseUrlGet + `GetTargetArea?program_year=${valYear}&mu_no=${valparam}`,
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ` + this.authtoken,
+    //         },
+    //       }
+    //     );
+    //     if (response.data.length != 0) {
+    //       if(val == "export") {
+    //         this.dialogFilter.ta.item = response.data.data.result
+    //       }else{
+    //         this.dialogFilter.ta.item = []
+    //       }
+    //       // this.dataobject = response.data.data.result;
+    //     }
+        
+    //   } catch (error) {
+    //     this.dialogFilter.ta.model = ''
+    //     this.dialogFilter.ta.item = []
+    //     this.dialogFilter.ff.model = ''
+    //     this.dialogFilter.ff.item = []
+    //     console.error(error.response);
+
+    //     if (error.response.status == 401) {
+    //       localStorage.removeItem("token");
+    //       this.$router.push("/");
+    //     }
+    //   }
+    // },
+    async getFFData(item) {
+        this.dialogFilter.ff.item = []
+        this.dialogFilter.ff.model = ''
+        try {
+          const response = await axios.get(
+          
+            this.BaseUrlGet + `GetFFNow?ff_no=${item}` ,
+            {
+              headers: {
+                Authorization: `Bearer ` + this.authtoken,
+              },
+            }
+          );
+          if (response.data.length != 0) {
+            this.dialogFilter.ff.item = response.data.data.result
+          }
+          
+        } catch (error) {
+          this.dialogFilter.ff.item = []
+          this.dialogFilter.ff.model = ''
+          console.error(error.response);
+          if (error.response.status == 401) {
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        }
+      },
+    async exportDataPerFF() {
+      this.dialogFilter.show = false
+      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportFFMonitoring2?'
+      const params = new URLSearchParams({
+        program_year: this.dialogFilter.program_year,
+        ff_no: this.dialogFilter.ff.model
+      })
+      console.log(params.toString())
+      url += params.toString()
+      window.open(url, "blank")
+    },
     checkExpandenItem(item){
       this.itemTA = ''
       this.itemTA = item.item.area_code
@@ -941,6 +1195,7 @@ export default {
         }
       }
     },
+    
     async verifuMO2(item){
       var params = {
         currents_monitoring_no: item.currents_monitoring_no,
