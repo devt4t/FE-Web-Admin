@@ -26,7 +26,7 @@
             <v-icon color="red" @click="() => dialogFilter.show = false">mdi-close-circle</v-icon>
           </v-card-title>
           <v-card-text>
-            <v-row v-if="User.role_group == 'IT' || User.role_name == 'FC' || User.role_name == 'UM'" class="mt-0">
+            <v-row class="mt-0">
               <v-col :cols="12">
                 <v-autocomplete
                   rounded
@@ -382,7 +382,7 @@
           ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <v-btn
-            v-if="(User.role_group=='IT' || User.role_name == 'FC' || User.role_name == 'UM') && monitoringModuls.model == 'mo2'"
+            v-if="(User.role_group=='IT' || User.role_name=='UNIT MANAGER' || User.role_name=='FIELD COORDINATOR') && monitoringModuls.model == 'mo2'"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="dialogFilter.show = true"
@@ -535,7 +535,7 @@
 
           <!-- Status -->
           <template v-slot:item.status="{ item }">
-            <v-chip :color="item.is_verified > 0 ? 'green' : 'red'" class="white--text pl-1">
+            <v-chip :color="item.is_verified == 1 ? 'orange': item.is_verified == 2 ? 'green' : 'red'" class="white--text pl-1">
               <v-icon class="mr-1">mdi-{{ item.is_verified > 0 ? `${ item.is_verified == 2 ? 'checkbox-multiple-marked' : 'check'}` : 'close' }}-circle</v-icon>
               {{ item.is_verified > 0 ? item.verified_by : 'Belum Terverifikasi' }}
             </v-chip>
@@ -613,7 +613,7 @@
               </v-btn>
             </v-list-item> 
             <!-- v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && item.monitoring_time != null && item.monitoring_start != null && item.monitoring_end != null" -->
-            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 0 && (item.photo1 != null && item.photo1 != '-') && (item.photo2 != null && item.photo2 != '-')">
+            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR')  && item.is_verified == 0 && (item.photo1 != null && item.photo1 != '-') && (item.photo2 != null && item.photo2 != '-')">
               <v-btn
                   dark
                   rounded
@@ -624,7 +624,7 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-check
                 </v-icon>
-                Verifikasi {{ monitoringModuls.model }}
+                Verifikasi FC {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>
             <v-list-item v-if="(User.role_group == 'IT')  && item.is_verified == 1">
@@ -638,9 +638,40 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-key-remove
                 </v-icon>
-                Unverifikasi {{ monitoringModuls.model }}
+                Unverifikasi FC {{ monitoringModuls.model }}
               </v-btn>
             </v-list-item>
+
+            <v-list-item v-if="(User.role_group == 'IT' || User.role_name == 'UNIT MANAGER')  && item.is_verified == 1 && (item.photo1 != null && item.photo1 != '-') && (item.photo2 != null && item.photo2 != '-')">
+              <v-btn
+                  dark
+                  rounded
+                  @click="verifyMO2_UM(item)"
+                  color="green"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  mdi-check
+                </v-icon>
+                Verifikasi UM {{ monitoringModuls.model }}
+              </v-btn>
+            </v-list-item>
+            <v-list-item v-if="(User.role_group == 'IT')  && item.is_verified == 2">
+              <v-btn
+                  dark
+                  rounded
+                  @click="verifyMO2_UM(item)"
+                  color="red"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  mdi-key-remove
+                </v-icon>
+                Unverifikasi UM {{ monitoringModuls.model }}
+              </v-btn>
+            </v-list-item>
+            
+
             <!-- v-if="item.total_tree_monitoring != item.total_hidup" -->
             <v-list-item v-if="User.role_group=='IT'">
               <v-btn
@@ -1194,6 +1225,59 @@ export default {
           }
         }
       }
+    },
+    async verifyMO2_UM(item){
+      var params = {
+        currents_monitoring_no: item.currents_monitoring_no,
+        verified_by: this.User.name,
+
+      }
+      var url = ''
+      if(this.monitoringModuls.model == 'mo2'){ url = "UMValidateMonitoring2"}
+      else if(this.monitoringModuls.model == 'mo3'){ url = "UMValidateMonitoring2"}
+      else if(this.monitoringModuls.model == 'mo4'){ url = "UMValidateMonitoring2"}
+      const confirmation = await Swal.fire({
+          title: `Apa Anda Yakin Untuk Melakukan Verifikasi ${this.monitoringModuls.model}?`,
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+      if(confirmation.isConfirmed){
+          console.log(params)
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + url , params,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            this.subTable.expanded = []
+            console.log(response)
+            await Swal.fire({
+                title: `Berhasil Melakukan Verif/Unverif Monitoring ${this.monitoringModuls.model}!`,
+                icon: 'success',
+                confirmButtonColor: '#2e7d32',
+                confirmButtonText: 'Okay',
+            })
+          } catch (error) {
+            await Swal.fire({
+              title: `Gagal Melakukan Verif/Unverif Data ${this.monitoringModuls.model}!`,
+              text: 'Error: ' + error.response,
+              icon: 'error',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+          })
+            console.error(error.response);
+            this.subTable.expanded = []
+            if (error.response.status == 401) {
+              localStorage.removeItem("token");
+              this.$router.push("/");
+            }
+          }
+        }
     },
     
     async verifuMO2(item){
