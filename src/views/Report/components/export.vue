@@ -358,6 +358,7 @@ export default {
                 }
             }
         },
+        
         async getMonitoring(num) {
             let loading = this.loading
             let store = this.$store
@@ -392,7 +393,8 @@ export default {
             
             const dataRekap = []
             for (const[indexF, valFF] of Object.entries(ffNo)) {
-                loading.progress = Math.round(((indexF + 1) / ffNo.length) * 100)
+                loading.progress = Math.round((indexF / ffNo.length) * 100)
+                
                 const dataMonitoring = await axios.get(
                     store.getters.getApiUrl(`TempExportMonitoring?program_year=${programYear}&land_program=Petani&ff=${valFF.ff_no}`),
                     store.state.apiConfig
@@ -432,12 +434,12 @@ export default {
                             planting_pattern: valMon.planting_pattern[indexLahan] || '???',
                             farmer_address: `${valMon.farmer_address} RT${valMon.farmer_rt}/RW${valMon.farmer_rw}`,
                             ktp_no: `'${valMon.ktp_no}`,
-                            // qty_std: valMon.tree_details.map(val => {
-                            //     return val.planted_life
-                            // }).reduce((acc, val)=>{
-                            //     return acc + parseInt(val)
-                            // },0),
-                            is_validate: valMon.is_validate == 2 ? 'UM' : valMon.is_validate == 1 ? 'FC' : 'Belum' 
+                            is_validate: valMon.is_validate == 2 ? 'UM' : valMon.is_validate == 1 ? 'FC' : 'Belum',
+                            total_detail: valMon.tree_details.map(val1 => {
+                                return val1.planted_life
+                            }).reduce((acc, val)=>{
+                                return acc + parseInt(val)
+                            },0),
                         }
                         valMon.tree_details.map(treeD => {
                             seedStatus.map(seedStat => {

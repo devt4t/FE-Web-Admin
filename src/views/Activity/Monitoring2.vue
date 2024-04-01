@@ -98,7 +98,7 @@
           <v-card-actions>
             <v-divider class="mx-2"></v-divider>
             <v-hover v-slot="{hover}">
-              <v-btn v-if="User.role_group == 'IT' || User.role_name == 'FC' || User.role_name == 'UM'"
+              <v-btn v-if="User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR' || User.role_name == 'UNIT MANAGER'"
                 rounded 
                 :color="`green ${hover ? 'white--text' : ''}`" 
                 :outlined="!hover" 
