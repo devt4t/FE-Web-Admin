@@ -1203,7 +1203,7 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="(distributionReport.dialogs.detail.data.verified_by == null || distributionReport.dialogs.detail.data.verified_by == '') && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival > 0" 
+                        <v-btn v-if="(distributionReport.dialogs.detail.data.verified_by == null || distributionReport.dialogs.detail.data.verified_by == '') && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival == distributionReport.dialogs.detail.labels.loaded.length" 
                             @click="updateVerifikasiReportNursery()" 
                             :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
                             rounded 
