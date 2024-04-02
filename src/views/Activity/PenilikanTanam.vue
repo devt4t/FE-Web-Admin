@@ -2521,13 +2521,12 @@
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <v-btn
-            v-if="generalSettings.landProgram.model == 'Umum' && User.role_name != 'REGIONAL MANAGER' && User.role_name != 'PROGRAM MANAGER'"
+            v-if="generalSettings.landProgram.model == 'Umum' && (User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR' || User.role_name == 'UNIT MANAGER')"
             dark
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="showAddModal()"
             color="green"
-            disabled
           >
             <v-icon small>mdi-plus</v-icon> Add
           </v-btn>
@@ -3628,10 +3627,11 @@ export default {
         await this.getTableData().then(data => {
           this.dataobject = data.items
           this.pagination.total = data.total
-          this.total_populated = data.total_populated
-          this.livingTreeTotal = data.total_living_tree
-          console.log(this.total_populated)
-          
+          if(this.generalSettings.landProgram.model == 'Petani'){
+            this.total_populated = data.total_populated
+            this.livingTreeTotal = data.total_living_tree
+            console.log(this.total_populated)
+          }
           this.pagination.current_page = data.current_page
           this.pagination.length_page = data.last_page
           if(this.populateDataSwitch == true && this.totalDatas == 0 && this.pagination.search.value == '' && !this.valueTA == ''){
@@ -3694,26 +3694,40 @@ export default {
         // get data response
         axios.get(url, this.$store.state.apiConfig).then(res => {
           if (typeof res.data.data.result !== 'undefined') {
-            let items = res.data.data.result.datas.data
-            const total = res.data.data.result.datas.total
-            const total_populated = res.data.data.result.total_terpopulasi
-            const total_living_tree = res.data.data.result.total_pohon_hidup
-            const current_page = res.data.data.result.datas.current_page
-            const last_page = res.data.data.result.datas.last_page
+            if(this.generalSettings.landProgram.model == 'Umum'){
+              let items = res.data.data.result.data
+              const total = res.data.data.result.total
+              const current_page = res.data.data.result.current_page
+              const last_page = res.data.data.result.last_page
+              resolve({
+                items,
+                total,
+                current_page,
+                last_page
+              })
+            }
+            else{
+              let items = res.data.data.result.datas.data
+              const total = res.data.data.result.datas.total
+              const total_populated = res.data.data.result.total_terpopulasi
+              const total_living_tree = res.data.data.result.total_pohon_hidup
+              const current_page = res.data.data.result.datas.current_page
+              const last_page = res.data.data.result.datas.last_page
+              resolve({
+                items,
+                total,
+                total_populated,
+                total_living_tree,
+                current_page,
+                last_page
+              })
+            }
             this.exportSimpleDistribution.data = items
-            resolve({
-              items,
-              total,
-              total_populated,
-              total_living_tree,
-              current_page,
-              last_page
-            })
           } else {
             reject('Error')
           }
         }).catch(err => {
-          if (err.response.status == 401) {
+          if (err.response == 401) {
             localStorage.removeItem("token")
             this.$router.push("/")
             this.loadtable = false
