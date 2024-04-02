@@ -1203,7 +1203,7 @@
                             Close
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
-                        <v-btn v-if="(distributionReport.dialogs.detail.data.verified_by == null || distributionReport.dialogs.detail.data.verified_by == '') && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival == distributionReport.dialogs.detail.labels.loaded.length" 
+                        <v-btn v-if="(distributionReport.dialogs.detail.data.verified_by == null || distributionReport.dialogs.detail.data.verified_by == '') && distributionReport.dialogs.detail.labels.printed.length > 0 && distributionReport.dialogs.detail.labels.loaded.length > 0 && distributionReport.dialogs.detail.totalSeedArrival > 0" 
                             @click="updateVerifikasiReportNursery()" 
                             :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
                             rounded 
@@ -1693,7 +1693,7 @@
                         </v-btn>
                         <v-divider class="mx-2"></v-divider>
 
-                        <v-btn v-if="(distributionReport.dialogs.detailUmum.data.verified_by == null || distributionReport.dialogs.detailUmum.data.verified_by == '') && distributionReport.dialogs.detailUmum.labels.printed.length > 0 && distributionReport.dialogs.detailUmum.labels.loaded.length > 0 && distributionReport.dialogs.detailUmum.totalSeedArrival == distributionReport.dialogs.detailUmum.labels.loaded.length" 
+                        <v-btn v-if="(distributionReport.dialogs.detailUmum.data.verified_by == null || distributionReport.dialogs.detailUmum.data.verified_by == '') && distributionReport.dialogs.detailUmum.labels.printed.length > 0 && distributionReport.dialogs.detailUmum.labels.loaded.length > 0 && distributionReport.dialogs.detailUmum.totalSeedArrival > 0" 
                             @click="updateVerifikasiReportNurseryUmum()" 
                             :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR'" 
                             rounded 
