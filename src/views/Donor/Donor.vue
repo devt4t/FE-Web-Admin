@@ -90,7 +90,6 @@
                 v-on:change="SelectedDataSwitch"
             ></v-select>
             <v-btn
-              v-if="$store.state.User.role_group=='IT'"
               rounded
               dark
               class="px-9"
@@ -131,7 +130,6 @@
                      rounded
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
                      @click="openDetailDonor(item)">
                 <v-icon class="mr-1">information-outline</v-icon>
                 Detail
@@ -141,7 +139,6 @@
                      rounded
                      small
                      class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_group=='IT'"
                      @click="openEditDonor(item)">
                 <v-icon class="mr-1">mdi-check-bold</v-icon>
                 Edit Data Donatur
@@ -265,8 +262,12 @@
             this.$store.state.loadingOverlayText = 'Memuat Data...'
             const User = this.$store.state.User
             const created_by = []
-            let url = this.$store.getters.getApiUrl(`GetDonorAllAdmin`)
-            const res = await axios.get(url, this.$store.state.apiConfig)
+            let url = this.$store.getters.getApiUrl(`GetDonorAllAdmin?`)
+            const param =new URLSearchParams({
+              program_year: this.localConfig.programYear
+            })
+            
+            const res = await axios.get(url + param, this.$store.state.apiConfig)
             if(this.dataSwitch == "Donor"){
               this.dataobject = res.data.donors
             }

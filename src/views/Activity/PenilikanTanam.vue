@@ -2521,7 +2521,7 @@
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <v-btn
-            v-if="generalSettings.landProgram.model == 'Umum' && (User.role_group == 'IT' || User.role_name == 'FIELD COORDINATOR' || User.role_name == 'UNIT MANAGER')"
+            v-if="generalSettings.landProgram.model == 'Umum' && (User.role_group == 'IT')"
             dark
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
@@ -2807,6 +2807,13 @@ export default {
       confirm: false,
       model: false,
       inputs: {
+        //monitoring lahan umum 2023
+        ktp_no: {
+          model: null,
+          options: [],
+          disabled: false,
+        },
+        //
         mou_no: {
           model: null,
           options: [],
@@ -2993,7 +3000,8 @@ export default {
     ],
     headers2: [
       { text: "MU", value: "mu_name", search: true },
-      { text: "MoU No", value: "mou_no", search: true },
+      { text: "KTP No", value: "mou_no", search: true },
+      // { text: "KTP No", value: "ktp_no", search: true }, 2022 and below
       { text: "PIC T4T", value: "pic_t4t_name", search: true },
       { text: "PIC Lahan", value: "pic_lahan_name", search: true },
       { text: "No Lahan", align: "start", value: "lahan_no", sortable: false, search: true },
@@ -3539,7 +3547,12 @@ export default {
       if (mou_no) {
         try {
           this.dialogFormLahanUmum.inputs.adjustment.loading = true
-          const url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
+          const url = ''
+          if(this.generalSettings.programYear == '2023'){
+            url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`  
+          }else{
+            url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
+          }
           const res = await axios.get(url, this.$store.state.apiConfig)
           const datas = res.data.data.result
           let listLahan = []
@@ -3591,6 +3604,9 @@ export default {
     async getLahanUmumDataOptions() {
       try {
         const url = this.BaseUrlGet + 'GetUmumDistributionAdjustment?'
+        if(this.generalSettings.programYear == '2023'){
+          url = this.BaseUrlGet + '?'  
+        }
         const params ={
             program_year: this.generalSettings.programYear,
         }

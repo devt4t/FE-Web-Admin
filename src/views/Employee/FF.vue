@@ -803,7 +803,6 @@ export default {
           this.dataEmail = response.data.data.result.data.map(val => {
             return val.email
           })
-          console.log(this.dataEmail)
           this.loadtable = false;
         } else {
           console.log("Kosong");

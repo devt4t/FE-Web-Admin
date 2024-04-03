@@ -1735,10 +1735,14 @@ export default {
         },
         async getGeneralLandData() {
             this.tables.lahan.loading = true
-
+            var dev_controller = ''
+            if(this.User.role_group == 'IT'){
+                dev_controller = 'IT'
+            }
             const url = this.apiConfig.baseUrl + 'GetLahanUmumAllAdmin?'
             const params ={
-                program_year: this.tables.lahan.programYear.model
+                program_year: this.tables.lahan.programYear.model,
+                dev: dev_controller
             }
             if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
                 params.created_by = this.User.email
