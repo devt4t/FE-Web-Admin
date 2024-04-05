@@ -74,7 +74,6 @@
           ></v-text-field>
           <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
             <v-btn
-              v-if="$store.state.User.role_group=='IT'"
               rounded
               dark
               class="px-9"

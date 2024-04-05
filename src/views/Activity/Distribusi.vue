@@ -4480,7 +4480,7 @@ export default {
         //             limit: this.distributionReport.table.per_page,
         //             search: this.distributionReport.table.search.model
         //         }
-        //         console.log(params)
+
         //         let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
         //         const res = await axios.get(
         //             url,
@@ -4519,7 +4519,7 @@ export default {
                     limit: this.distributionReport.table.per_page,
                     search: this.distributionReport.table.search.model
                 }
-                console.log(params)
+                
                 let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFF?'
                 const res = await axios.get(
                     url,
@@ -4689,7 +4689,7 @@ export default {
                     farmer_no: this.distributionReport.dialogs.detail.farmerNo,
                     verified_by: null, 
                 }
-                console.log(params)
+               
                 try{
                     const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-verification-geko', params,
                     {
@@ -4749,7 +4749,7 @@ export default {
                 if(this.distributionReport.dialogs.addPhoto.modal_signature_photo){
                     params.file_signature = await this.uploadPhotosNursery(this.distributionReport.dialogs.addPhoto.modal_signature_photo)
                 }
-                console.log(params)
+                
                 try{
                     const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-mobile-distribution', params,
                     {
@@ -4794,7 +4794,7 @@ export default {
                     farmer_no: this.distributionReport.dialogs.detail.farmerNo,
                     verified_by: this.User.email, 
                 }
-                console.log(params)
+                
                 try{
                     const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-verification-geko', params,
                     {
@@ -4834,7 +4834,7 @@ export default {
                     farmer_no: this.distributionReport.dialogs.detailUmum.farmerNo,
                     verified_by: this.User.email, 
                 }
-                console.log(params)
+                
                 try{
                     const sendData = await axios.post('https://api-nursery.t4t-api.org/api/custom/received-verification-geko', params,
                     {
@@ -5027,10 +5027,7 @@ export default {
               cancelButtonColor: '#d33',
             })
             if(confirm.isConfirmed){
-                // const params = { 
-                //     loading_line_id: item.loading_line[0].id
-                // }
-                // console.log(params)
+                
                 try{
                     const sendData = await axios.get(this.apiConfig.baseUrl + 'NurseryCheckDistributionBAST?loading_line_id=' + item.loading_line[0].id,
                     {
@@ -6228,7 +6225,7 @@ export default {
             this.loadingLine.loading = true
             this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
             this.distributionReport.loading = true
-            console.log(this.User)
+            
             this.distributionReport.dialogs.exportFilter.user_ff_list= this.User.ff.ff;
             await this.getFFOptions()
 

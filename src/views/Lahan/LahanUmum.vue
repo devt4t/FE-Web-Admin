@@ -1842,7 +1842,7 @@ export default {
             let postData = {
                 // main data
                 program_year: this.inputs.programYear.model,
-                mou_no: this.inputs.mou.model,
+                mou_no: this.inputs.mou.model.replaceAll(' ', ''),
                 employee_no: this.inputs.employee.model,
                 pic_lahan: this.inputs.pic.model,
                 goals: this.inputs.goals.model,

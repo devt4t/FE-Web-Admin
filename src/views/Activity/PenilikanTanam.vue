@@ -904,6 +904,11 @@
         </v-card>
       </v-dialog>
 
+      <!-- Dialog Add Monitoring Lahan Umum Photo -->
+      <v-dialog v-model="dialogAddLahanUmumPlantPhoto.model" max-width="500px" content-class="rounded-xl mx-1" scrollable persistent>
+
+      </v-dialog>
+
       <!-- Modal Add Realisasi Tanam Lahan Umum -->
       <v-dialog v-model="dialogFormLahanUmum.model" max-width="1000px" content-class="rounded-xl mx-1" scrollable persistent>
         <v-card>
@@ -989,7 +994,7 @@
                             <strong class="ml-1">{{ numberFormat(item.total_tree_received) }}</strong>
                           </v-chip>
                       </template>
-                      <template v-slot:item.planted="{index}">
+                      <template v-slot:item.planted="{index, item}">
                           <v-row class="ma-0 align-center justify-end justify-lg-center flex-nowrap">
                               <v-text-field 
                                   color="green"
@@ -1007,6 +1012,8 @@
                                   @keyup="updateSeedlingAdjustment"
                                   @click="updateSeedlingAdjustment"
                               ></v-text-field>
+                              <v-btn fab x-small color="green white--text" class="mr-2" @click="openDialogPhoto(item)"><v-icon>mdi-camera</v-icon>
+                              </v-btn>
                               <v-text-field 
                                   color="green"
                                   class="mr-1 my-1"
@@ -1023,6 +1030,8 @@
                                   @keyup="updateSeedlingAdjustment"
                                   @click="updateSeedlingAdjustment"
                               ></v-text-field>
+                              <v-btn fab x-small color="red white--text" class="mr-2" @click="openDialogPhoto(item)"><v-icon>mdi-camera</v-icon>
+                              </v-btn>
                           </v-row>
                       </template>
                       <template v-slot:item.unplanted="{index}">
@@ -1113,8 +1122,8 @@
                       <div>
                           <v-date-picker
                               v-model="dialogFormLahanUmum.inputs.planting_date.model"
-                              min="2022-11-24"
-                              max="2023-03-31"
+                              min="2023-11-24"
+                              max="2024-03-31"
                               @input="dialogFormLahanUmum.inputs.planting_date.datepicker.show = false"
                               color="green"
                               class="rounded-xl"
@@ -1129,6 +1138,7 @@
               <!-- Photo 1 File -->
               <v-col cols="12" sm="12" md="6" lg="4">
                   <v-file-input
+                  v-if="false"
                   color="success"
                   item-color="success"
                   outlined
@@ -1179,6 +1189,7 @@
               <!-- Photo 3 File -->
               <v-col cols="12" sm="12" md="6" lg="4">
                   <v-file-input
+                  v-if="false"
                   color="success"
                   item-color="success"
                   outlined
@@ -2521,7 +2532,7 @@
             <v-icon class="mr-1">mdi-microsoft-excel</v-icon> Export
           </v-btn>
           <v-btn
-            v-if="generalSettings.landProgram.model == 'Umum' && (User.role_group == 'IT')"
+            v-if="generalSettings.landProgram.model == 'Umum' && (User.role_group == 'IT'|| User.role_name == 'FIELD COORDINATOR'|| User.name == 'UNIT MANAGER')"
             dark
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
@@ -2750,10 +2761,11 @@ export default {
         landProgram: {
           items: ['Petani', 'Umum'],
           label: 'Program Lahan',
-          model: 'Petani',
+          model: 'Umum',
         },
 
     },
+    LahanUmumOptionData: [],
     pagination: {
       current_page: 1,
       length_page: 0,
@@ -2802,6 +2814,9 @@ export default {
       show: false,
       data: [],
 
+    },
+    dialogAddLahanUmumPlantPhoto:{
+      model: false,
     },
     dialogFormLahanUmum: {
       confirm: false,
@@ -3000,7 +3015,8 @@ export default {
     ],
     headers2: [
       { text: "MU", value: "mu_name", search: true },
-      { text: "KTP No", value: "mou_no", search: true },
+      { text: "MoU No", value: "mou_no", search: true },
+      { text: "Monitoring No", value: "monitoring_no"},
       // { text: "KTP No", value: "ktp_no", search: true }, 2022 and below
       { text: "PIC T4T", value: "pic_t4t_name", search: true },
       { text: "PIC Lahan", value: "pic_lahan_name", search: true },
@@ -3543,43 +3559,60 @@ export default {
         this.loadtable = false;
       }
     },
-    async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
+    async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null, lahan_no) {
       if (mou_no) {
         try {
           this.dialogFormLahanUmum.inputs.adjustment.loading = true
-          const url = ''
+          var url = ''
+          var auth = ''
           if(this.generalSettings.programYear == '2023'){
-            url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`  
+            url = `https://backend.geninelabs.live/api/custom/reportGecko?program_year=2023&&ff_no=3309181208820006`  
+            auth = {
+                    headers: {
+                        Authorization: `Bearer ` + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw'
+                    }
+                  } 
           }else{
             url = `${this.BaseUrlGet}GetUmumDistributionDetailReport?distribution_no=D-${this.generalSettings.programYear}-${mou_no}`
+            auth = this.$store.state.apiConfig
           }
-          const res = await axios.get(url, this.$store.state.apiConfig)
-          const datas = res.data.data.result
-          let listLahan = []
-          let listTrees = []
-          await datas.distributionAdjustment.forEach((adj, adjIndex) => {
-              let checkExistLahanNo = listLahan.includes(adj.lahan_no)
-              if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
+          const res = await axios.get(url, auth)
+          var datas = ''
 
+          // push data from nursery
+          if(this.generalSettings.programYear == '2023'){
+            datas = res.data.data.detail_farmers[0].detail_seed_farmers
+            
+            
+            let listLahan = this.LahanUmumOptionData.filter(val => {
+              return val.mou_no.includes(mou_no)
+            })
+            listLahan = listLahan[0].lahanNo
+            let listTrees = []
+
+            await datas.forEach((adj, adjIndex) => {
+              // let checkExistLahanNo = listLahan.includes(adj.lahan_no)
+              // if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
               const pushData = {
                 tree_code: adj.tree_code,
                 tree_category: adj.tree_category,
-                tree_name: adj.tree_name,
-                total_tree_received: parseInt(adj.total_tree_received),
+                tree_name: adj.rel_tree_id,
+                total_tree_received: parseInt(adj.total_received),
                 total_tree_planted_life: 0,
                 total_tree_planted_dead: 0,
                 total_tree_unplanted_life: 0,
                 total_tree_unplanted_dead: 0,
-                lost: parseInt(adj.total_tree_received),
+                lost: parseInt(adj.total_missing),
               }
               const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
               if (indexTreee > -1) {
                 listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
-                listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
+                listTrees[indexTreee].lost += parseInt(adj.total_missing)
               } else listTrees.push(pushData)
           })
           this.dialogFormLahanUmum.inputs.lahan_no = await listLahan
           this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees
+          
           if (existingData) {
             await existingData.map(exData => {
               let adjIndexEx =  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(adjItems => adjItems.tree_code == exData.tree_code)
@@ -3589,10 +3622,49 @@ export default {
               else if (exData.status == 'belum_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_dead += parseInt(exData.amount)
             })
             await this.updateSeedlingAdjustment()
+          }            
+          //push data from geko
+          }else{
+            datas = res.data.data.result
+            let listLahan = []
+            let listTrees = []
+            await datas.distributionAdjustment.forEach((adj, adjIndex) => {
+                let checkExistLahanNo = listLahan.includes(adj.lahan_no)
+                if (!checkExistLahanNo) listLahan.push(adj.lahan_no)
+  
+                const pushData = {
+                  tree_code: adj.tree_code,
+                  tree_category: adj.tree_category,
+                  tree_name: adj.tree_name,
+                  total_tree_received: parseInt(adj.total_tree_received),
+                  total_tree_planted_life: 0,
+                  total_tree_planted_dead: 0,
+                  total_tree_unplanted_life: 0,
+                  total_tree_unplanted_dead: 0,
+                  lost: parseInt(adj.total_tree_received),
+                }
+                const indexTreee = listTrees.findIndex(tr => tr.tree_code === adj.tree_code)
+                if (indexTreee > -1) {
+                  listTrees[indexTreee].total_tree_received += parseInt(adj.total_tree_received)
+                  listTrees[indexTreee].lost += parseInt(adj.total_tree_received)
+                } else listTrees.push(pushData)
+            })
+            this.dialogFormLahanUmum.inputs.lahan_no = await listLahan
+            this.dialogFormLahanUmum.inputs.adjustment.items = await listTrees
+            if (existingData) {
+              await existingData.map(exData => {
+                let adjIndexEx =  this.dialogFormLahanUmum.inputs.adjustment.items.findIndex(adjItems => adjItems.tree_code == exData.tree_code)
+                if (exData.status == 'sudah_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_life += parseInt(exData.amount)
+                else if (exData.status == 'sudah_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_planted_dead += parseInt(exData.amount)
+                else if (exData.status == 'belum_ditanam' && exData.condition == 'hidup') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_life += parseInt(exData.amount)
+                else if (exData.status == 'belum_ditanam' && exData.condition == 'mati') this.dialogFormLahanUmum.inputs.adjustment.items[adjIndexEx].total_tree_unplanted_dead += parseInt(exData.amount)
+              })
+              await this.updateSeedlingAdjustment()
+            }
           }
         } catch (err) {
             this.dialogFormLahanUmum.inputs.adjustment.items = []
-            if (err.response.status == 401) {
+            if (err.response == 401) {
               localStorage.removeItem("token")
               this.$router.push("/")
             }
@@ -3602,19 +3674,54 @@ export default {
       } else this.dialogFormLahanUmum.inputs.adjustment.items = []
     },
     async getLahanUmumDataOptions() {
+      var lahanUmumUrl = ''
+      var resLahanUmum = ''
+      var itemLahanUmum = ''
+      var itemDistributionNursery = ''
+      var url = ''
+      var auth = ''
       try {
-        const url = this.BaseUrlGet + 'GetUmumDistributionAdjustment?'
         if(this.generalSettings.programYear == '2023'){
-          url = this.BaseUrlGet + '?'  
+          // get list report distribusi lahan umum
+          lahanUmumUrl = this.BaseUrlGet + `GetLahanUmumAllAdmin?program_year=${this.generalSettings.programYear}`
+          resLahanUmum = await axios.get(lahanUmumUrl, this.$store.state.apiConfig)
+          this.LahanUmumOptionData = resLahanUmum.data.data.result
+
+          // get list ktp lahan umu
+          url = 'https://api-nursery.t4t-api.org/api/public/list?'  
+          auth = {
+                    headers: {
+                        Authorization: `Bearer ` + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw'
+                    }
+                  } 
+        }else{
+          url = this.BaseUrlGet + 'GetUmumDistributionAdjustment?'
+          auth = this.$store.state.apiConfig
         }
         const params ={
+            limit: 100,
+            model: 'loading_line',
+            status: 2, 
             program_year: this.generalSettings.programYear,
         }
         if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
             params.created_by = this.User.email
         }
-        const res = await axios.get(`${url}${new URLSearchParams(params)}`, this.$store.state.apiConfig)
-        this.dialogFormLahanUmum.inputs.mou_no.options = res.data
+        var res = await axios.get(`${url}${new URLSearchParams(params)}`, auth)
+        
+        itemDistributionNursery = res.data.data.map(val => {
+          return val.ff_no
+        })
+        console.log(itemDistributionNursery)
+        if(this.generalSettings.programYear == '2023'){
+          this.dialogFormLahanUmum.inputs.mou_no.options = this.LahanUmumOptionData.filter(val => {
+            return itemDistributionNursery.includes(val.ktp_no)
+            // .includes(filtered)
+          })
+          console.log(this.dialogFormLahanUmum.inputs.mou_no.options)
+        }else{
+          this.dialogFormLahanUmum.inputs.mou_no.options = res.data
+        }
       } catch (err) {
           this.dialogFormLahanUmum.inputs.mou_no.options = []
           if (err.response != undefined) {
@@ -3646,7 +3753,7 @@ export default {
           if(this.generalSettings.landProgram.model == 'Petani'){
             this.total_populated = data.total_populated
             this.livingTreeTotal = data.total_living_tree
-            console.log(this.total_populated)
+            
           }
           this.pagination.current_page = data.current_page
           this.pagination.length_page = data.last_page
@@ -3657,7 +3764,6 @@ export default {
           for (let index = 1; index <= data.last_page; index++) {
             pageOptions.push(index)          
           }
-
           this.pagination.page_options = pageOptions
           // console.log(this.pagination)
         })
@@ -4102,11 +4208,16 @@ export default {
       }
     },
     async getDetail(item) {
+      
       this.load = true;
       try {
         let urlPrefix = "GetMonitoringDetail?monitoring_no="
         if (this.generalSettings.landProgram.model == 'Umum') {
           urlPrefix = "GetMonitoringDetailLahanUmumAdmin?monitoring_no="
+          if(this.generalSettings.programYear =='2023'){
+            var mo_no = String.raw`${item.monitoring_no}`
+            console.log(mo_no)
+          }
         }
         const response = await axios.get(
           this.BaseUrlGet +
@@ -4168,8 +4279,8 @@ export default {
           this.load = false;
         }
       } catch (error) {
-        console.error(error.response);
-        if (error.response.status == 401) {
+        console.error(error);
+        if (error.response && error.response.status == 401) {
           localStorage.removeItem("token");
           this.$router.push("/");
           this.load = false;
@@ -5126,6 +5237,7 @@ export default {
     },
     async showEditUmumModal(monitoring_no) {
       try {
+        
         this.$store.state.loadingOverlayText = 'Getting monitoring data...'
         this.$store.state.loadingOverlay = true
 
@@ -5270,6 +5382,9 @@ export default {
         this.defaultItem.pic_lahan_name = item.pic_lahan_name;
       }
       this.dialogDelete = true;
+    },
+    openDialogPhoto(item){
+      console.log(item)
     },
 
     async updateSeedlingAdjustment() {
@@ -5849,7 +5964,6 @@ export default {
         );
         if (response.data.length != 0) {
           this.ff_user = response.data.data.result
-          console.log(this.ff_user)
         }
         
       } catch (error) {
