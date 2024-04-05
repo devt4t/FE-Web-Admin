@@ -2761,7 +2761,7 @@ export default {
         landProgram: {
           items: ['Petani', 'Umum'],
           label: 'Program Lahan',
-          model: 'Umum',
+          model: 'Petani',
         },
 
     },
