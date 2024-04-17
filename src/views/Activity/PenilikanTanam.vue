@@ -905,8 +905,66 @@
       </v-dialog>
 
       <!-- Dialog Add Monitoring Lahan Umum Photo -->
-      <v-dialog v-model="dialogAddLahanUmumPlantPhoto.model" max-width="500px" content-class="rounded-xl mx-1" scrollable persistent>
-
+      <v-dialog v-model="dialogAddLahanUmumPlantPhoto.model" max-width="500px" content-class="rounded-xl mx-1" persistent>
+        <v-card>
+          <v-card-title class="mb-1 green darken-3 rounded-xl ma-1 py-2">
+            <span class="white--text">Tambah Foto Per Jenis Bibit</span>
+            <v-icon color="white" class="ml-auto" @click="dialogAddLahanUmumPlantPhoto.model = false">mdi-close-circle</v-icon>
+          </v-card-title>
+          <v-card-text>
+            <v-container
+              fluid
+              fill-height
+              style="background-color: rgba(255, 255, 255, 0.5)"
+              >
+            </v-container>
+            <v-row class="my-0">
+              <v-col cols="12" sm="12" md="12" lg="12">
+                  <v-file-input
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/jpg"
+                  placeholder="Photo Per-Jenis Pohon"
+                  prepend-icon="mdi-camera"
+                  label="Foto per-pohon (*max 6mb & .jpg)"
+                  v-on:change="photoPerjenisFileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photoPerjenis.preview && dialogFormLahanUmum.inputs.photoPerjenis.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photoPerjenis.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photoPerjenis"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photoPerjenis.preview)"
+                      ></v-img>
+                  </v-card>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn dark color="red" rounded class="px-5" @click="dialogAddLahanUmumPlantPhoto.model = false">
+              <v-icon small class="mr-1">mdi-close-circle</v-icon>
+              Cancel
+            </v-btn
+            >
+            <v-btn 
+              color="green white--text" 
+              rounded 
+              :disabled="this.dialogFormLahanUmum.inputs.photoPerjenis.model == null || this.dialogFormLahanUmum.inputs.photoPerjenis.preview == '' "
+              class="px-5" 
+              @click="saveLahanUmumPhotoPerjenis('Perjenis', dialogFormLahanUmum.inputs.photoPerjenis.model)"
+              >
+              <v-icon small class="mr-1">mdi-save</v-icon>
+              Simpan
+            </v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
       </v-dialog>
 
       <!-- Modal Add Realisasi Tanam Lahan Umum -->
@@ -1012,7 +1070,7 @@
                                   @keyup="updateSeedlingAdjustment"
                                   @click="updateSeedlingAdjustment"
                               ></v-text-field>
-                              <v-btn fab x-small color="green white--text" class="mr-2" @click="openDialogPhoto(item)"><v-icon>mdi-camera</v-icon>
+                              <v-btn fab x-small color="green white--text" class="mr-2" @click="openDialogPhoto(item, 'hidup')"><v-icon>mdi-camera</v-icon>
                               </v-btn>
                               <v-text-field 
                                   color="green"
@@ -1030,7 +1088,7 @@
                                   @keyup="updateSeedlingAdjustment"
                                   @click="updateSeedlingAdjustment"
                               ></v-text-field>
-                              <v-btn fab x-small color="red white--text" class="mr-2" @click="openDialogPhoto(item)"><v-icon>mdi-camera</v-icon>
+                              <v-btn fab x-small color="red white--text" class="mr-2" @click="openDialogPhoto(item, 'mati')"><v-icon>mdi-camera</v-icon>
                               </v-btn>
                           </v-row>
                       </template>
@@ -1161,44 +1219,19 @@
                       ></v-img
                   ></v-card>
               </v-col>
-              <!-- Photo 2 File -->
-              <v-col cols="12" sm="12" md="6" lg="4">
-                  <v-file-input
-                  color="success"
-                  item-color="success"
-                  outlined
-                  rounded
-                  hide-details
-                  accept="image/png, image/jpeg, image/bmp"
-                  placeholder="Photo 2"
-                  prepend-icon="mdi-camera"
-                  label="Dead Plant (*max 6mb)"
-                  v-on:change="photo2FileChanged"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  ></v-file-input>
-                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo2.preview && dialogFormLahanUmum.inputs.photo2.preview !== ''">
-                      <v-img
-                          height="300"
-                          v-bind:src="dialogFormLahanUmum.inputs.photo2.preview"
-                          class="my-2 mb-4 rounded-xl cursor-pointer"
-                          id="photo2"
-                          @click="showLightbox(dialogFormLahanUmum.inputs.photo2.preview)"
-                      ></v-img
-                  ></v-card>
-              </v-col>
               <!-- Photo 3 File -->
               <v-col cols="12" sm="12" md="6" lg="4">
                   <v-file-input
-                  v-if="false"
+                  
                   color="success"
                   item-color="success"
                   outlined
                   rounded
                   hide-details
                   accept="image/png, image/jpeg, image/bmp"
-                  placeholder="Photo 3"
+                  placeholder="Foto Bibit Belum Ditanam"
                   prepend-icon="mdi-camera"
-                  label="Seeds haven't planted (*max 6mb)"
+                  label="Bibit Belum Ditantam (*max 6mb)"
                   v-on:change="photo3FileChanged"
                   :rules="[(v) => !!v || 'Field is required']"
                   ></v-file-input>
@@ -1212,6 +1245,33 @@
                       ></v-img
                   ></v-card>
               </v-col>
+              <!-- Photo 2 File -->
+              <v-col cols="12" sm="12" md="6" lg="4">
+                  <v-file-input
+                  v-if="false"
+                  color="success"
+                  item-color="success"
+                  outlined
+                  rounded
+                  hide-details
+                  accept="image/png, image/jpeg, image/bmp"
+                  placeholder="Foto Bibit Belum Ditanam"
+                  prepend-icon="mdi-camera"
+                  label="Bibit Belum Ditantam (*max 6mb)"
+                  v-on:change="photo2FileChanged"
+                  :rules="[(v) => !!v || 'Field is required']"
+                  ></v-file-input>
+                  <v-card elevation="2" class="rounded-xl" height="300" v-if="dialogFormLahanUmum.inputs.photo2.preview && dialogFormLahanUmum.inputs.photo2.preview !== ''">
+                      <v-img
+                          height="300"
+                          v-bind:src="dialogFormLahanUmum.inputs.photo2.preview"
+                          class="my-2 mb-4 rounded-xl cursor-pointer"
+                          id="photo2"
+                          @click="showLightbox(dialogFormLahanUmum.inputs.photo2.preview)"
+                      ></v-img
+                  ></v-card>
+              </v-col>
+              
             </v-row>
           </v-card-text>
 
@@ -1224,7 +1284,7 @@
             <v-btn color="blue white--text" rounded 
               :disabled="
                 dialogFormLahanUmum.inputs.qty_std < 1 ||
-                (dialogFormLahanUmum.inputs.mou_no.disabled == false && !dialogFormLahanUmum.inputs.photo1.model) ||
+                (dialogFormLahanUmum.inputs.mou_no.disabled == false && !dialogFormLahanUmum.inputs.photo3.model) ||
                 !dialogFormLahanUmum.inputs.mou_no.model ||
                 dialogFormLahanUmum.inputs.adjustment.items.length == 0 ||
                 !dialogFormLahanUmum.inputs.planting_date.model
@@ -2816,6 +2876,7 @@ export default {
 
     },
     dialogAddLahanUmumPlantPhoto:{
+      photoNewName: '',
       model: false,
     },
     dialogFormLahanUmum: {
@@ -2823,6 +2884,8 @@ export default {
       model: false,
       inputs: {
         //monitoring lahan umum 2023
+        selectedMouDatas:{},
+        mainDetailDatas:{},
         ktp_no: {
           model: null,
           options: [],
@@ -2849,6 +2912,10 @@ export default {
           items: [],
           loading: false,
           totalAdjustment: 0
+        },
+        photoPerjenis: {
+          model: null,
+          preview: null
         },
         photo1: {
           model: null,
@@ -3559,14 +3626,18 @@ export default {
         this.loadtable = false;
       }
     },
-    async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null, lahan_no) {
+    async getSeedDetailFromDistributionAdjustment(mou_no, existingData = null) {
+      var ktp_fc = this.dialogFormLahanUmum.inputs.mou_no.options.filter(v => {
+        return v.mou_no.includes(mou_no)
+      })
+      this.dialogFormLahanUmum.inputs.selectedMouDatas = ktp_fc[0]
       if (mou_no) {
         try {
           this.dialogFormLahanUmum.inputs.adjustment.loading = true
           var url = ''
           var auth = ''
           if(this.generalSettings.programYear == '2023'){
-            url = `https://backend.geninelabs.live/api/custom/reportGecko?program_year=2023&&ff_no=3309181208820006`  
+            url = `https://backend.geninelabs.live/api/custom/reportGecko?program_year=${this.generalSettings.programYear}&&ff_no=${this.dialogFormLahanUmum.inputs.selectedMouDatas.ktp_no}`  
             auth = {
                     headers: {
                         Authorization: `Bearer ` + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTY5NjMxNzExMiwiZXhwIjoxNzI3NDIxMTEyLCJuYmYiOjE2OTYzMTcxMTIsImp0aSI6IkNzSHRmb0ltOFMzdnNKRUgiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5yw7p18qzA4VLVi6Ea0ToA5NO90vgUOsE46uZrHhdBw'
@@ -3680,6 +3751,9 @@ export default {
       var itemDistributionNursery = ''
       var url = ''
       var auth = ''
+      var existingMonitoringDatas = this.dataobject.map(v => {
+        return v.mou_no
+      })
       try {
         if(this.generalSettings.programYear == '2023'){
           // get list report distribusi lahan umum
@@ -3687,7 +3761,7 @@ export default {
           resLahanUmum = await axios.get(lahanUmumUrl, this.$store.state.apiConfig)
           this.LahanUmumOptionData = resLahanUmum.data.data.result
 
-          // get list ktp lahan umu
+          // get list ktp lahan umum
           url = 'https://api-nursery.t4t-api.org/api/public/list?'  
           auth = {
                     headers: {
@@ -3712,13 +3786,14 @@ export default {
         itemDistributionNursery = res.data.data.map(val => {
           return val.ff_no
         })
-        console.log(itemDistributionNursery)
         if(this.generalSettings.programYear == '2023'){
-          this.dialogFormLahanUmum.inputs.mou_no.options = this.LahanUmumOptionData.filter(val => {
+          var nurseryFilter = this.LahanUmumOptionData.filter(val => {
             return itemDistributionNursery.includes(val.ktp_no)
             // .includes(filtered)
           })
-          console.log(this.dialogFormLahanUmum.inputs.mou_no.options)
+          this.dialogFormLahanUmum.inputs.mou_no.options = nurseryFilter.filter(val => {
+            return !existingMonitoringDatas.includes(val.mou_no)
+          })
         }else{
           this.dialogFormLahanUmum.inputs.mou_no.options = res.data
         }
@@ -3868,6 +3943,42 @@ export default {
       })
       this.pagination.search.options.column = searchOptions
       if (!this.pagination.search.field) this.pagination.search.field = 'mu_name'
+    },
+
+    async saveLahanUmumPhotoPerjenis(type, file){
+      const confirmation = await Swal.fire({
+              title: 'Anda Yakin Untuk Update Foto Per-jenis?',
+              text: 'Proses Tidak Dapat Dikembalikan!',
+              icon: 'warning',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+              showCancelButton: true
+            })
+      if(confirmation.isConfirmed){
+        this.$store.state.loadingOverlayText = `Saving photo "${type}"...`
+          const url = `${this.BaseUrl}general-lands/upload.php`
+          const newName = `${this.dialogAddLahanUmumPlantPhoto.photoNewName.replace(/\s/g, '').replaceAll('/', '_')}_${type}_${this.generalSettings.programYear}`
+          const data = this.generateFormData({
+              dir: 'first-monitorings/per-type-condition',
+              nama: newName,
+              image: file
+          })
+          console.log(newName)
+          let responseName = null
+          await axios.post(url,data).then(res => {
+              responseName = res.data.data.new_name
+          }).catch(err => {
+              console.error(err)
+          })
+          await Swal.fire({
+            title: 'Foto Berhasil Terupdate!',
+            icon: 'success',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Okay',
+            showCancelButton: false
+          })
+          this.dialogAddLahanUmumPlantPhoto.model = false
+      }
     },
 
     async saveLahanUmumMonitoring() {
@@ -4216,7 +4327,6 @@ export default {
           urlPrefix = "GetMonitoringDetailLahanUmumAdmin?monitoring_no="
           if(this.generalSettings.programYear =='2023'){
             var mo_no = String.raw`${item.monitoring_no}`
-            console.log(mo_no)
           }
         }
         const response = await axios.get(
@@ -5005,6 +5115,7 @@ export default {
     showDetail(item) {
       this.type = "Detail";
       this.dialogDetail = true;
+      this.dialogFormLahanUmum.inputs.mainDetailDatas = item
       this.getDetail(item);
     },
 
@@ -5133,8 +5244,15 @@ export default {
       await this.initialize();
     },
     openDialogPhotoDetailJenis(item, itemPhoto, itemDesc, condition){
+      if(this.generalSettings.landProgram.model == 'Umum'){
+        var ktp_no = this.dialogFormLahanUmum.inputs.mainDetailDatas.ktp_no 
+        var path = 'general-lands/first-monitorings/per-type-condition/'
+        this.plantPhotoRoute = this.BaseUrl + path +'upload_'+ktp_no+'_'+item.tree_code+'_'+condition+'_Perjenis_'+this.generalSettings.programYear+'.jpg'
+        console.log(this.plantPhotoRoute)
+      }else{
+        this.plantPhotoRoute = this.BaseUrl + itemPhoto
+      }
       this.plantPhotoDialog = true
-      this.plantPhotoRoute = this.BaseUrl + itemPhoto
       if(itemDesc == '' ||itemDesc == null){
         this.plantDescription = '-'
       }else{
@@ -5144,7 +5262,7 @@ export default {
       this.plantCondition = condition
       this.mo_no = item.monitoring_no
       this.refreshPlantPhotoRoute = 'Uploads/' + item.monitoring_no.replaceAll('-','_')+ '_'+ item.tree_code+'_'+condition+'.jpg'
-      console.log(condition)
+      console.log(item.tree_code)
     },
     openPlantPhoto(){
       this.showLightbox(this.plantPhotoRoute)
@@ -5383,8 +5501,12 @@ export default {
       }
       this.dialogDelete = true;
     },
-    openDialogPhoto(item){
-      console.log(item)
+    openDialogPhoto(item, condition){
+      this.dialogAddLahanUmumPlantPhoto.photoNewName = ''
+      this.dialogAddLahanUmumPlantPhoto.photoNewName = "upload/" + this.dialogFormLahanUmum.inputs.selectedMouDatas.ktp_no + '_' + item.tree_code+ '_' + condition
+      this.dialogFormLahanUmum.inputs.photoPerjenis.preview = ''
+      this.dialogFormLahanUmum.inputs.photoPerjenis.model = null
+      this.dialogAddLahanUmumPlantPhoto.model = true
     },
 
     async updateSeedlingAdjustment() {
@@ -5650,7 +5772,6 @@ export default {
     },
 
     pilihgambar1(event) {
-      console.log(event);
       if (event != null) {
         this.defaultItem.gambarshow1 = URL.createObjectURL(event);
         console.log(this.defaultItem.gambarshow1);
@@ -5866,6 +5987,21 @@ export default {
     },
     numberFormat(num) {
         return new Intl.NumberFormat('id-ID').format(num)
+    },
+    photoPerjenisFileChanged(event){
+      if (event) {
+            let fileSize = event.size / 1000000
+            console.log(event)
+            if (fileSize < 6) {
+                this.dialogFormLahanUmum.inputs.photoPerjenis.model = event
+                this.dialogFormLahanUmum.inputs.photoPerjenis.preview = URL.createObjectURL(event)
+            } else {
+                alert(`Please change your photo file, it's too big. Max 6mb.`)
+            }
+        } else {
+            this.dialogFormLahanUmum.inputs.photoPerjenis.model = null
+            this.dialogFormLahanUmum.inputs.photoPerjenis.preview = ""
+        }
     },
     photo1FileChanged (event) {
         if (event) {
