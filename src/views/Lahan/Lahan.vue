@@ -2238,7 +2238,7 @@
       <!-- Color Status -->
       <template v-slot:item.approve="{ item }">
         <v-chip :color="getColorStatus(item.approve, item.complete_data)" dark>
-          <v-icon v-if="item.approve" class="mr-1">mdi-check-circle</v-icon>{{ item.approve ? 'Terverifikasi' : (item.complete_data ? 'Belum Verifikasi' : 'Belum Lengkap') }}
+          <v-icon v-if="item.approve == 1" class="mr-1">mdi-check-circle</v-icon>{{ getStatusText(item.approve, item.complete_data) }}
         </v-chip>
       </template>
 
@@ -2430,6 +2430,24 @@
               </v-icon>
               Lapor Barcode Rusak
             </v-btn>
+            <v-btn
+
+                class="w-100"
+                rounded
+                @click="updateForceMajeure(item)"
+                color="orange white--text"
+                block
+                small
+            >
+              <v-icon
+                  class="mr-1"
+                  small
+                  color="white"
+              >
+                mdi-landslide
+              </v-icon>
+              Update Status(Force Majeure)
+            </v-btn>
             <!-- <v-btn
               v-if="(RoleAccesCRUDShow == true && crudLahanBasicShow == true && item.status != 'Sudah Verifikasi') || User.role_group == 'IT'"
               class="w-100"
@@ -2609,6 +2627,7 @@ export default {
       { text: "MPTS", value: "pohon_mpts", searchable: false},
       { text: "KAYU + MPTS", value: "pohon_kayu_mpts", searchable: false, sortable: false},
       { text: "Status", value: "approve", sortable: false},
+      // { text: "Kondisi Terakhir", value: "latest_condition"},
       { text: "Actions", value: "actions", sortable: false, align: "right"},
     ],
     headersgis: [
@@ -3242,14 +3261,72 @@ export default {
         this.RoleAccesDownloadAllShow = false;
       }
     },
+    getStatusText(approve, complete){
+      if (!complete) return "Belum Lengkap"
+      if (complete && approve == 0) return "Lengkap, Belum Terverif"
+      if(approve == 3) return "Force Majeure"
+      // if(approve == 2) return "green"
+      if(approve == 1) return "Terverifikasi"
+      if(approve == 0) return "Belum Terverifikasi"
+    },
     getColorStatus(approve, complete) {
       if (!complete) return "red"
       if (complete && !approve) return "orange"
-      return "green";
+      if(approve == 3) return "indigo"
+      // if(approve == 2) return "green"
+      if(approve == 1) return "green"
+      if(approve == 0) return "red"
     },
     getColorStatusGIS(status) {
       if (status == "belum") return "orange";
       else return "green";
+    },
+    async updateForceMajeure(item){
+      const datapost = {
+        lahan_no: item.lahan_no,
+      };
+      
+      const confirm = await Swal.fire({
+        title: 'Anda Yakin Untuk Melakukan Update Data Force Majeure Lahan?',
+        text: "Pastikan Terlebih Dahulu Sebelum Melakukan Konfirmasi!!",
+        icon: 'warning',
+        confirmButtonColor: '#2e7d32',
+        confirmButtonText: 'Ya!',
+        showCancelButton: true,
+        cancelButtonColor: '#d33',
+      })
+      if(confirm.isConfirmed){
+        console.log(item.lahan_no)
+        try {
+          const response = await axios.post(
+              this.BaseUrlGet + "UpdateLahanStatusForceMajeure",
+              datapost,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+          );
+          console.log(response.data.data.result);
+          if (response.data.data.result == "success") {
+            await Swal.fire({
+            title: 'Berhasil Melakukan Update Force Majeure Data Lahan!',
+            icon: 'success',
+            confirmButtonColor: '#2e7d32',
+            confirmButtonText: 'Ya!',
+            })
+            this.initialize();
+          } else {
+            this.alerttoken = true;
+          }
+        } catch (error) {
+          console.error(error.response);
+          if (error.response.status == 401) {
+            this.alerttoken = true;
+          }
+        }
+        
+      }
     },
     async getOpsiPolaTanamOptions() {
       try {

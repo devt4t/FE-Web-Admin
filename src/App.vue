@@ -447,7 +447,7 @@ export default {
               else if (valMenuItem.title === 'Distribusi') activitiesRearrange[8] = valMenuItem
 
               else if (valMenuItem.title === 'Realisasi Tanam') activitiesRearrange[9] = valMenuItem
-              else if (valMenuItem.title === 'Monitoring 2') activitiesRearrange[10] = valMenuItem
+              else if (valMenuItem.title === 'Monitoring') activitiesRearrange[10] = valMenuItem
             }
           })
           this.items[indexMenu].items = activitiesRearrange.filter(Object);
