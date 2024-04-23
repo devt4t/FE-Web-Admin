@@ -139,6 +139,7 @@ import lahanSPPTFields from "./components/js/fields-lahan-sppt"
 import lahanBibitFields from "./components/js/fields-lahan-bibit"
 import lahanFields from "./components/js/fields-lahan"
 import monitoringFields from "./components/js/fields-monitoring"
+import monitoring2Fields from "./components/js/fields-monitoring2"
 
 export default {
     name: 'OldGekoReportData',
@@ -176,6 +177,11 @@ export default {
                 title: 'Export Monitoring 1',
                 section: 'export-monitoring',
                 fields: monitoringFields
+            },
+            {
+                title: 'Export Monitoring 2',
+                section: 'export-monitoring2',
+                fields: monitoring2Fields
             },
         ],
         dialog: {
@@ -243,7 +249,7 @@ export default {
             try {
                 this.$store.state.loadingOverlay = true
                 this.$store.state.loadingOverlayText = 'Mengambil daftar Managemet Unit...'
-                var py = this.configs[4].fields.find(v => v.id == 'program_year').model
+                var py = this.configs[this.expansion.model].fields.find(v => v.id == 'program_year').model
                 let managementUnits = await axios.get(
                     this.$store.getters.getApiUrl(`GetManagementUnitAdmin?program_year=${py}`),
                     this.$store.state.apiConfig
@@ -255,7 +261,7 @@ export default {
                     }
                 })
 
-                this.configs[4].fields.find(v => v.id == 'mu_name').items = managementUnits
+                this.configs[this.expansion.model].fields.find(v => v.id == 'mu_name').items = managementUnits
             } catch (err) {
                 console.log(err)
             } finally {
@@ -267,8 +273,8 @@ export default {
             try {
                 this.$store.state.loadingOverlay = true
                 this.$store.state.loadingOverlayText = 'Mengambil daftar Target Area...'
-                var py = this.configs[4].fields.find(v => v.id == 'program_year').model
-                var mu_no = this.configs[4].fields.find(v => v.id == 'mu_name').model
+                var py = this.configs[this.expansion.model].fields.find(v => v.id == 'program_year').model
+                var mu_no = this.configs[this.expansion.model].fields.find(v => v.id == 'mu_name').model
                 let targetAreas = await axios.get(
                     this.$store.getters.getApiUrl(`GetTargetArea?program_year=${py}&mu_no=${mu_no}`),
                     this.$store.state.apiConfig
@@ -280,7 +286,7 @@ export default {
                     }
                 })
 
-                this.configs[4].fields.find(v => v.id == 'ta_name').items = targetAreas
+                this.configs[this.expansion.model].fields.find(v => v.id == 'ta_name').items = targetAreas
             } catch (err) {
                 console.log(err)
             } finally {

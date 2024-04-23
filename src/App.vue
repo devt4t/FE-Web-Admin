@@ -448,8 +448,8 @@ export default {
 
               else if (valMenuItem.title === 'Realisasi Tanam') activitiesRearrange[9] = valMenuItem
               else if (valMenuItem.title === 'Monitoring') activitiesRearrange[10] = valMenuItem
-            }
-          })
+            } 
+          }) 
           this.items[indexMenu].items = activitiesRearrange.filter(Object);
         }
       })
