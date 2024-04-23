@@ -1257,7 +1257,7 @@
                   accept="image/png, image/jpeg, image/bmp"
                   placeholder="Foto Bibit Belum Ditanam"
                   prepend-icon="mdi-camera"
-                  label="Bibit Belum Ditantam (*max 6mb)"
+                  label="Bibit Belum Ditanam (*max 6mb)"
                   v-on:change="photo2FileChanged"
                   :rules="[(v) => !!v || 'Field is required']"
                   ></v-file-input>
@@ -1284,7 +1284,7 @@
             <v-btn color="blue white--text" rounded 
               :disabled="
                 dialogFormLahanUmum.inputs.qty_std < 1 ||
-                (dialogFormLahanUmum.inputs.mou_no.disabled == false && !dialogFormLahanUmum.inputs.photo3.model) ||
+                (dialogFormLahanUmum.inputs.mou_no.disabled == false) ||
                 !dialogFormLahanUmum.inputs.mou_no.model ||
                 dialogFormLahanUmum.inputs.adjustment.items.length == 0 ||
                 !dialogFormLahanUmum.inputs.planting_date.model

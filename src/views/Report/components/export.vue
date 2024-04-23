@@ -508,11 +508,12 @@ export default {
             console.log(programYear+', '+target_area)
 
             const dataMonitoring = await this.getPaginationMo2(1, 10,programYear, target_area)
-            const totalPageMo2 = dataMonitoring.last_page
-            console.log(totalPageMo2)
+            // const totalPageMo2 = dataMonitoring.last_page
+            // console.log(totalPageMo2)
 
             if(dataMonitoring.last_page > 1){
                 for (let index = 1; index <= dataMonitoring.last_page; index++) {
+                    loading.progress = Math.round((100 / dataMonitoring.last_page) * (index))
                     
                     await this.getPaginationMo2(index+1, 10, programYear, target_area )
                 }
