@@ -406,7 +406,7 @@ export default {
                 if (indexF == 0) {
                     dataMonitoring.trees.map(val => {
                         seedStatus.map((ss, ssIndex) => {
-                            // if(ss == 'planted_life') ss='Ditanam Hidup'
+                            if(ss == 'planted_life') ss='Ditanam Hidup'
                             // else if(ss == 'life') ss='Hidup'
                             // else if(ss == 'dead') ss='Mati'
                             // else if(ss == 'lost') ss='Hilang'

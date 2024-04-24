@@ -382,7 +382,7 @@
           ></v-select>
           <v-divider class="mx-2 d-none d-md-block"></v-divider>
           <v-btn
-            v-if="(User.role_group=='IT' || User.role_name=='UNIT MANAGER' || User.role_name=='FIELD COORDINATOR') && monitoringModuls.model == 'mo2'"
+            v-if="(User.role_group=='IT' || User.role_name=='UNIT MANAGER' || User.role_name=='FIELD COORDINATOR')"
             rounded
             class="mx-auto mx-lg-0 ml-lg-2 mt-1 mt-lg-0"
             @click="dialogFilter.show = true"
@@ -1081,7 +1081,10 @@ export default {
       },
     async exportDataPerFF() {
       this.dialogFilter.show = false
-      let url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportFFMonitoring2?'
+      let url = ''
+      if(this.monitoringModuls.model == 'mo2')url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportFFMonitoring2?'
+      else if(this.monitoringModuls.model == 'mo3') url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportFFMonitoring3?'
+      else if(this.monitoringModuls.model == 'mo4') url = this.$store.state.apiUrl.replace('/api/', '/') + 'ExportFFMonitoring4?'
       const params = new URLSearchParams({
         program_year: this.dialogFilter.program_year,
         ff_no: this.dialogFilter.ff.model

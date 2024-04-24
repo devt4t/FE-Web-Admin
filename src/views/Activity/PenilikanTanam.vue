@@ -1023,6 +1023,7 @@
                   <v-btn fab x-small color="green white--text" class="mr-2"><v-icon>mdi-sprout</v-icon></v-btn> <h3>Adjusting Trees</h3><v-divider class="mx-2"></v-divider>
               </v-col>
               <v-col cols="12" md="12">
+                <p class="red--text"><strong>*Jangan Lupa Mengisi Foto Pohon Per-jenis!</strong></p>
                   <v-data-table
                       :headers="dialogFormLahanUmum.inputs.adjustment.headers"
                       :items="dialogFormLahanUmum.inputs.adjustment.items"
@@ -1284,7 +1285,7 @@
             <v-btn color="blue white--text" rounded 
               :disabled="
                 dialogFormLahanUmum.inputs.qty_std < 1 ||
-                (dialogFormLahanUmum.inputs.mou_no.disabled == false) ||
+                dialogFormLahanUmum.inputs.land_condition < 1 ||
                 !dialogFormLahanUmum.inputs.mou_no.model ||
                 dialogFormLahanUmum.inputs.adjustment.items.length == 0 ||
                 !dialogFormLahanUmum.inputs.planting_date.model
