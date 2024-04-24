@@ -3778,9 +3778,9 @@ export default {
             status: 2, 
             program_year: this.generalSettings.programYear,
         }
-        if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
-            params.created_by = this.User.email
-        }
+        // if (this.User.role_group != 'IT' && this.User.role_name != 'PROGRAM MANAGER' && this.User.role_name != 'REGIONAL MANAGER') {
+        //     params.created_by = this.User.email
+        // }
         var res = await axios.get(`${url}${new URLSearchParams(params)}`, auth)
         
         itemDistributionNursery = res.data.data.map(val => {
