@@ -421,7 +421,7 @@ export default {
                 if (indexF == 0) {
                     dataMonitoring.trees.map(val => {
                         seedStatus.map((ss, ssIndex) => {
-                            if(ss == 'planted_life') ss='Ditanam Hidup'
+                            // if(ss == 'planted_life') ss='Ditanam Hidup'
                             // else if(ss == 'life') ss='Hidup'
                             // else if(ss == 'dead') ss='Mati'
                             // else if(ss == 'lost') ss='Hilang'
@@ -602,7 +602,8 @@ export default {
         // reminder :)
         async sendEmailToYongs(message = null) {
             const params = new URLSearchParams({
-                message: message || ''
+                message: message || '',
+                sender: this.$store.state.User.email || 'eaunggelia.triandi@trees4trees.org'
             })
             await axios.get(
                 this.$store.getters.getApiUrl(`EmailToYongs?${params}`),
