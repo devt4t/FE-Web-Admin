@@ -358,7 +358,22 @@ export default {
                 }
             }
         },
-        
+        // sostam
+        async getSostam(){
+            let loading = this.loading
+            const config = this.config
+            
+            const monitoring3Params = new URLSearchParams({})
+            config.fields.filter(v => v.filter).map(val => {
+                monitoring3Params.append(val.id, val.model)
+            })
+
+            const management_unit = config.fields.find(v => v.id == 'mu_name').model
+            const programYear = config.fields.find(v => v.id == 'program_year').model
+
+            console.log(programYear+', '+management_unit + ' & '+ this.$store.state.User.email) 
+        },
+
         async getMonitoring(num) {
             let loading = this.loading
             let store = this.$store
@@ -451,8 +466,6 @@ export default {
                 }
             }
         },
-
-        
         // monitoring 2
         async getPaginationMo2(page,per_page, py, ta){
             
@@ -520,6 +533,72 @@ export default {
             }
             
         },
+
+        // monitoring 3
+        async getPaginationMo3(page,per_page, py, mu){
+            
+            let store = this.$store
+            const data = await axios.get(
+                store.getters.getApiUrl(`TempExportMonitoring3?program_year=${py}&mu_no=${mu}&page=${page}&per_page=${per_page}`),
+                store.state.apiConfig
+            ).then(res => res.data)
+            console.log(data.data)
+            for (const[indexMon, valMon] of Object.entries(data.data.result.datas.data)) {
+                
+                const dataGenerate = {
+                    ...valMon,
+                    project: 'undefined',
+                    monitorng2_no: valMon.monitoring2_no || '???',
+                    program_year: valMon.program_year || '???',
+                    mu_name: valMon.mu_name || '???',
+                    ta_name: valMon.ta_name || '???',
+                    village_name: valMon.village_name || '???',
+                    ff_name: valMon.ff_name || '???',
+                    farmer_name: valMon.ff_name || '???',
+                    lahan_type: valMon.lahan_type || '???',
+                    lahan_no: valMon.lahan_no || '???',
+                    is_validate: valMon.is_verified == 2 ? 'UM: '+valMon.verified_by : valMon.is_validate == 1 ? 'FC: '+valMon.verified_by : 'Belum Terverifikasi',
+
+                    last_kayu_amount: valMon.last_kayu_amount || '0',
+                    last_mpts_amount: valMon.last_mpts_amount || '0',
+                    last_kayu_mpts_amount: valMon.last_kayu_mpts_amount || '0',
+
+                    total_kayu: valMon.total_kayu || '0',
+                    total_mpts: valMon.total_mpts || '0',
+                    total_kayu_mpts: valMon.total_kayu_mpts || '0',
+
+                }
+                
+                this.table.data.push(dataGenerate)
+                
+            }
+            return data.data.result.datas
+        },
+        async getMonitoring3(){
+            let loading = this.loading
+            const config = this.config
+            
+            const monitoring3Params = new URLSearchParams({})
+            config.fields.filter(v => v.filter).map(val => {
+                monitoring3Params.append(val.id, val.model)
+            })
+
+            const management_unit = config.fields.find(v => v.id == 'mu_name').model
+            const programYear = config.fields.find(v => v.id == 'program_year').model
+
+            console.log(programYear+', '+management_unit)
+
+            const dataMonitoring = await this.getPaginationMo3(1, 10,programYear, management_unit)
+
+            if(dataMonitoring.last_page > 1){
+                for (let index = 1; index <= dataMonitoring.last_page; index++) {
+                    loading.progress = Math.round((100 / dataMonitoring.last_page) * (index))
+                    
+                    await this.getPaginationMo3(index+1, 10, programYear, management_unit )
+                }
+            }
+            
+        },
         // reminder :)
         async sendEmailToYongs(message = null) {
             const params = new URLSearchParams({
@@ -552,11 +631,17 @@ export default {
                 if (config.section == 'land-complete-without-seeds') {
                     await this.getLandCompleteWithoutSeeds()
                 }
+                if (config.section == 'sostam-complete-with-seed') {
+                    await this.getSostam()
+                }
                 if (config.section == 'export-monitoring') {
                     await this.getMonitoring(1)
                 }
                 if (config.section == 'export-monitoring2') {
                     await this.getMonitoring2()
+                }
+                if (config.section == 'export-monitoring3') {
+                    await this.getMonitoring3()
                 }
                 if (this.table.data.length > 0) {
                     let emailMessage = config.title || ''

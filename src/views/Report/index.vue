@@ -138,8 +138,10 @@ import petaniFields from "./components/js/fields-per-petani"
 import lahanSPPTFields from "./components/js/fields-lahan-sppt"
 import lahanBibitFields from "./components/js/fields-lahan-bibit"
 import lahanFields from "./components/js/fields-lahan"
+import sostamFields from "./components/js/fields-sostam-bibit"
 import monitoringFields from "./components/js/fields-monitoring"
 import monitoring2Fields from "./components/js/fields-monitoring2"
+import monitoring3Fields from "./components/js/fields-monitoring3"
 
 export default {
     name: 'OldGekoReportData',
@@ -172,7 +174,13 @@ export default {
                 section: 'land-complete-without-seeds',
                 fields: lahanFields
             },
-            // data lahan lengkap tanpa jumlah bibit
+            // Sostam
+            {
+                title: 'Export Sosialisasi Tanam Dengan Detail Bibit',
+                section: 'sostam-complete-with-seed',
+                fields: sostamFields
+            },
+            // Monitoring 1, 2 & 3
             {
                 title: 'Export Monitoring 1',
                 section: 'export-monitoring',
@@ -182,6 +190,11 @@ export default {
                 title: 'Export Monitoring 2',
                 section: 'export-monitoring2',
                 fields: monitoring2Fields
+            },
+            {
+                title: 'Export Monitoring 3',
+                section: 'export-monitoring3',
+                fields: monitoring3Fields
             },
         ],
         dialog: {

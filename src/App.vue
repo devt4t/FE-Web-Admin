@@ -109,7 +109,7 @@
         </v-list-group>
         <v-list-item color="#71AF34" :to="'/report-data'" link 
           :ripple="false"
-          v-if="$store.state.User.role_group == 'IT' || $store.state.User.role_name == 'GIS STAFF'"
+          v-if="$store.state.User.role_group == 'IT' || $store.state.User.role_name == 'GIS STAFF' || $store.state.User.email == 'anto@trees4trees.org'"
         >
           <v-list-item-icon>
             <v-icon>mdi-table-arrow-right</v-icon>
