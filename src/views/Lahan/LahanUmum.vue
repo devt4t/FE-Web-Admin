@@ -650,7 +650,7 @@
                                                 <v-date-picker
                                                     v-model="inputs.dateDistribution.model"
                                                     min="2023-12-01"
-                                                    max="2024-03-31"
+                                                    max="2024-05-31"
                                                     @input="inputs.dateDistribution.datepicker.show = false"
                                                     color="green"
                                                     class="rounded-xl"

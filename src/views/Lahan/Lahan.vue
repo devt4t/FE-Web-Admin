@@ -867,6 +867,14 @@
     @close="addProjectLahan.show = false"
     >
     </DialogAddProjectForLahan>
+    <LahanSelected
+      :show="showAddProjectModuls.show"
+      :tableData="showAddProjectModuls.listLahanChecked"
+      :program_year="programYear"
+      @close="showAddProjectModuls.show = false"
+      >
+    </LahanSelected>
+
     <!-- Modal Detail -->
     <v-dialog
         v-model="dialogDetail"
@@ -1870,6 +1878,8 @@
         :items="dataobject"
         multi-sort
         :loading="loadtable"
+        v-model="showAddProjectModuls.listLahanChecked" 
+        :show-select="updateModeSwitch"
         loading-text="Loading... Please wait"
         class="rounded-xl elevation-6 mx-3 pa-1"
         :items-per-page="30"
@@ -2123,6 +2133,7 @@
                 class="centered-select"
                 style="width: 50%;max-width: 100px;"
             ></v-select>
+            
           </v-col>
           <v-col cols="12" lg="6" class="d-flex">
             <!-- Select Search Field -->
@@ -2192,6 +2203,29 @@
                 class="centered-select"
                 style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
             ></v-select>
+          </v-col>
+        </v-row>
+        <v-row class="pb-4 px-2">
+          <v-col cols="12" lg="6" class="d-flex">
+            <v-switch
+                v-if="User.role_group == 'IT'"
+                v-model="updateModeSwitch"
+                label="Update Data Project Lahan"
+                inset
+                color="orange"
+                hide-details
+            ></v-switch>
+          </v-col>
+          <v-col v-if="updateModeSwitch" cols="12" lg="6" class="d-flex">
+            <v-btn
+              class="mb-2 mr-1 ml-2 d-none d-md-block"
+              @click="openDialogLahanSelected()"
+              color="green white--text"
+              rounded
+              :disabled="User.role_group != 'IT' && User.role_name != 'FIELD COORDINATOR' && User.role_name != 'UNIT MANAGER'"
+              >
+              <v-icon class="mr-1" small>mdi-land-rows-horizontal</v-icon>Daftar Lahan Terpilih
+            </v-btn>  
           </v-col>
         </v-row>
       </template>
@@ -2486,6 +2520,7 @@ import VueBarcode from 'vue-barcode';
 
 import DialogAddProjectForLahan from "@/views/Lahan/components/DialogAddProjectForLahan";
 // import VueQrcode from 'vue-qrcode'
+import LahanSelected from "@/views/Lahan/components/LahanSelected.vue";
 import VueQRCodeComponent from 'vue-qrcode-component'
 import tambahDataLahan from "@/views/Lahan/components/tambahDataLahan.vue";
 
@@ -2494,12 +2529,18 @@ export default {
     DetailLahanMap,
     DialogAddProjectForLahan,
     tambahDataLahan,
+    LahanSelected,
     'barcode': VueBarcode,
     // VueQrcode,
     'qr-code': VueQRCodeComponent,
   },
   name: "Lahan",
   data: () => ({
+    updateModeSwitch: false,
+    showAddProjectModuls: {
+      listLahanChecked: [],
+      show: false
+    },
     barcodeValue: '',
     showAddLahan: false,
     showTesterData: false,
@@ -3081,6 +3122,11 @@ export default {
       },
       deep: true
     },
+    'updateModeSwitch':{
+      handler() {
+        this.initialize()
+      }
+    },
     'table.search.field': {
       handler(newValue) {
         if (newValue == 'opsi_pola_tanam') {
@@ -3281,6 +3327,10 @@ export default {
       if (status == "belum") return "orange";
       else return "green";
     },
+    async openDialogLahanSelected(){
+      this.showAddProjectModuls.show = true
+      console.log(this.showAddProjectModuls.listLahanChecked)
+    },
     async updateForceMajeure(item){
       const datapost = {
         lahan_no: item.lahan_no,
@@ -3348,6 +3398,9 @@ export default {
       }
     },
     getTableData() {
+      let update_mode = 0
+      if(this.updateModeSwitch == false) update_mode = 0
+      else if (this.updateModeSwitch == true) update_mode = 1
       return new Promise((resolve, reject) => {
         const params = new URLSearchParams({
           program_year: this.programYear,
@@ -3364,6 +3417,7 @@ export default {
           village: this.valueVillage,
           typegetdata: this.typegetdata,
           ff: this.valueFFcode,
+          update_mode: update_mode,
         })
         axios.get(
             this.BaseUrlGet +
