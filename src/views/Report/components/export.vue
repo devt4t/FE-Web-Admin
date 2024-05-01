@@ -326,7 +326,7 @@ export default {
                 }
             }
         },
-        async getLandCompleteWithoutSeeds() {
+        async getLandCompleteWithoutSeeds(py, mu, page, per_page) {
             let loading = this.loading
             let store = this.$store
             const config = this.config
@@ -359,6 +359,39 @@ export default {
             }
         },
         // sostam
+        async getSostamPaginate(py, mu, page, per_page){
+            let store = this.$store
+            const data = await axios.get(
+                store.getters.getApiUrl(`TempExportSostam?program_year=${py}&mu_no=${mu}&page=${page}&per_page=${per_page}`),
+                store.state.apiConfig
+            ).then(res => res.data)
+            for (const[indexSostam, valSostam] of Object.entries(data.listData)){
+                const generateData = {
+                    ...valSostam,
+                    program_year: valSostam.planting_year,
+                    form_no: valSostam.form_no,
+                    ff_name: valSostam.ff,
+                    mu_name: valSostam.nama_mu,
+                    kecamatan_name: valSostam.kecamatan,
+                    desa_name: valSostam.desa,
+                    lahan_no: valSostam.lahanNo,
+                    socialization_date: valSostam.soc_date,
+                    kayu_amount: valSostam.pohon_kayu, 
+                    mpts_amount: valSostam.pohon_mpts,
+                    seed_total: valSostam.max_seed_amount,
+                    penlub_date: valSostam.pembuatan_lubang_tanam,
+                    distribution_time: valSostam.distribution_time,
+                    distribution_coordinate: valSostam.distribution_coordinates,
+                    distribution_location: valSostam.distribution_location,
+                    planting_date: valSostam.planting_time,
+                    is_verified: valSostam.status,
+                }
+                this.table.data.push(generateData)
+            }
+
+            return data
+            // console.log(data)
+        },
         async getSostam(){
             let loading = this.loading
             const config = this.config
@@ -372,6 +405,22 @@ export default {
             const programYear = config.fields.find(v => v.id == 'program_year').model
 
             console.log(programYear+', '+management_unit + ' & '+ this.$store.state.User.email) 
+
+            const dataSostam = await this.getSostamPaginate(programYear, management_unit, 1, 200)
+            dataSostam.trees.map(val => {
+                this.table.fields.push({
+                    label: val.tree_name + ' - ' + val.category,
+                    key: `tree_${val.tree_code}`,
+                    type: 'number'
+                })
+            });
+            if(dataSostam.sourceData.last_page > 1){
+                for (let index = 1; index <= dataSostam.sourceData.last_page; index++){
+                    console.log(index)
+                    loading.progress = Math.round((100 / dataSostam.sourceData.last_page) * (index))
+                    await this.getSostamPaginate(programYear, management_unit, index + 1, 200)
+                }
+            }
         },
 
         async getMonitoring(num) {

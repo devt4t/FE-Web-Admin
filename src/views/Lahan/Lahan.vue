@@ -2216,7 +2216,7 @@
                 hide-details
             ></v-switch>
           </v-col>
-          <v-col v-if="updateModeSwitch" cols="12" lg="6" class="d-flex">
+          <v-col v-if="updateModeSwitch && showAddProjectModuls.listLahanChecked.length >= 1" cols="12" lg="6" class="d-flex">
             <v-btn
               class="mb-2 mr-1 ml-2 d-none d-md-block"
               @click="openDialogLahanSelected()"
@@ -3601,12 +3601,12 @@ export default {
       }
     },
     async getDetail(item) {
-      // console.log()
+      console.log(item)
       this.load = true;
-      this.defaultItem.id = item.id_lahan;
+      this.defaultItem.id = item.id;
       try {
         const response = await axios.get(
-            this.BaseUrlGet + "GetLahanDetail?id=" + item.id_lahan,
+            this.BaseUrlGet + "GetLahanDetail?id=" + item.id,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
@@ -4611,7 +4611,7 @@ export default {
       });
     },
     showDeleteModal(item) {
-      this.defaultItem.id = item.id_lahan;
+      this.defaultItem.id = item.id;
       this.dialogDelete = true;
     },
     showUnverifModal(item) {

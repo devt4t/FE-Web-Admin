@@ -131,7 +131,7 @@
             data_fc_name: '',
             projectToAssign:{
                 model: '',
-                items: ['project 1', 'project 3', 'project 2']
+                items: []
             },
             search: "",
             table: {
@@ -164,13 +164,16 @@
                     text: 'Loading...'
                 },
                 search: ''
-            }
+            },
+            xAppKey_Portal: '',
+            BaseUrlPortal: '',
         }),
         computed: {
             showModal: {
                 get: function () {
                     if(this.show){
-                     
+                        this.BaseUrlPortal = localStorage.getItem("BaseUrlPortal");
+                        this.xAppKey_Portal = localStorage.getItem("xAppKey_Portal");
                         this.getTableData({
                         })   
                     }
@@ -204,14 +207,25 @@
                 let listLahan = this.table.items.map( v => {
                     return v.lahan_no
                 })
-                const params = new URLSearchParams({
+                const params = {
                     project: this.projectToAssign.model,
                     listLahanNo: listLahan 
-                }); 
+                }
+                console.log(params)
             }
         },
-        getProjectPortalDatas(){
-            console.log('get project portal data')
+        async getProjectPortalDatas(){
+            // console.log('Portalurl: '+ this.BaseUrlPortal +', ' + 'AppKey_Portal: '+ this.xAppKey_Portal);
+            const getProjectList = await axios.get(
+              this.BaseUrlPortal + "/project/list",
+              {
+                headers: {
+                    'x-api-key': this.xAppKey_Portal,
+                },
+              }
+            )
+            this.projectToAssign.items = getProjectList.data.data
+
         },
         getStatusText(approve, complete){
             if (!complete) return "Belum Lengkap"

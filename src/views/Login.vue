@@ -130,6 +130,8 @@ export default {
     //BaseUrlGet: "https://api.t4t-api.org/api/",
     BaseUrlUpload: "https://t4tadmin.kolaborasikproject.com/upload.php",
     BaseUrl: "https://t4tadmin.kolaborasikproject.com/",
+    BaseUrlPortal: "https://api-portal.tftdemo.net/api",
+    xAppKey_Portal: "T4T6686e08b2fcee46a47063e177c1c7ea48b1db6ec4e5463aec5fbc9dfe725ee18",
     snackbar: false,
     text: "Test",
     timeout: 2000,
@@ -161,6 +163,16 @@ export default {
       if (BaseUrlUpload) {
         localStorage.removeItem("BaseUrlUpload");
       }
+      // base url portal
+      var BaseUrlPortal = localStorage.getItem("BaseUrlPortal");
+      if(BaseUrlPortal){
+        localStorage.removeItem("BaseUrlPortal")
+      }
+      var xAppKey_Portal = localStorage.getItem("xAppKey_Portal");
+      if(xAppKey_Portal){
+        localStorage.removeItem("xAppKey_Portal")
+      }
+
       this.load = false;
       this.disablevalue = false;
     },
@@ -198,6 +210,8 @@ export default {
             localStorage.setItem("BaseUrlGet", this.BaseUrlGet);
             localStorage.setItem("BaseUrlUpload", this.BaseUrlUpload);
             localStorage.setItem("BaseUrl", this.BaseUrl);
+            localStorage.setItem("BaseUrlPortal", this.BaseUrlPortal);
+            localStorage.setItem("xAppKey_Portal", this.xAppKey_Portal);
             location.reload();
             this.$router.push("/Dashboard");
           } else {
