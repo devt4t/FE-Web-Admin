@@ -365,6 +365,13 @@ export default {
                 store.getters.getApiUrl(`TempExportSostam?program_year=${py}&mu_no=${mu}&page=${page}&per_page=${per_page}`),
                 store.state.apiConfig
             ).then(res => res.data)
+            data.trees.map(val => {
+                this.table.fields.push({
+                    label: val.tree_name + ' - ' + val.category,
+                    key: `tree_${val.tree_code}`,
+                    type: 'number'
+                })
+            });
             for (const[indexSostam, valSostam] of Object.entries(data.listData)){
                 const generateData = {
                     ...valSostam,
@@ -386,6 +393,9 @@ export default {
                     planting_date: valSostam.planting_time,
                     is_verified: valSostam.status,
                 }
+                valSostam.seed_list.map(sl => {
+                    generateData[`tree_${sl.tree_code}`] = sl.amount
+                })
                 this.table.data.push(generateData)
             }
 
@@ -393,27 +403,21 @@ export default {
             // console.log(data)
         },
         async getSostam(){
+
             let loading = this.loading
             const config = this.config
-            
             const monitoring3Params = new URLSearchParams({})
             config.fields.filter(v => v.filter).map(val => {
                 monitoring3Params.append(val.id, val.model)
             })
-
+            
             const management_unit = config.fields.find(v => v.id == 'mu_name').model
             const programYear = config.fields.find(v => v.id == 'program_year').model
-
+            
             console.log(programYear+', '+management_unit + ' & '+ this.$store.state.User.email) 
-
+            
             const dataSostam = await this.getSostamPaginate(programYear, management_unit, 1, 200)
-            dataSostam.trees.map(val => {
-                this.table.fields.push({
-                    label: val.tree_name + ' - ' + val.category,
-                    key: `tree_${val.tree_code}`,
-                    type: 'number'
-                })
-            });
+            
             if(dataSostam.sourceData.last_page > 1){
                 for (let index = 1; index <= dataSostam.sourceData.last_page; index++){
                     console.log(index)
@@ -421,6 +425,7 @@ export default {
                     await this.getSostamPaginate(programYear, management_unit, index + 1, 200)
                 }
             }
+            config.title = `Export Data Sostam dan Detail Bibit Tahun ${programYear} Management Unit ${management_unit}`
         },
 
         async getMonitoring(num) {

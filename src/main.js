@@ -10,6 +10,7 @@ import VueNumber from 'vue-number-animation'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Vue2Editor from "vue2-editor";
+import { mdiAccount } from '@mdi/js'
 import './utils/index'
 
 import L from "leaflet";
@@ -34,6 +35,7 @@ Vue.use(BootstrapVue)
 Vue.use(VueEasyLightbox)
 Vue.use(VueNumber)
 Vue.use(Vue2Editor);
+Vue.use(mdiAccount);
 
 new Vue({
   router,
