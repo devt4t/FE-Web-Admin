@@ -410,6 +410,8 @@ export default {
             config.fields.filter(v => v.filter).map(val => {
                 monitoring3Params.append(val.id, val.model)
             })
+            config.title = `Export Data Sostam dan Detail Bibit Tahun ${programYear} Management Unit ${management_unit}`
+            this.download.title = config.title
             
             const management_unit = config.fields.find(v => v.id == 'mu_name').model
             const programYear = config.fields.find(v => v.id == 'program_year').model
@@ -425,7 +427,6 @@ export default {
                     await this.getSostamPaginate(programYear, management_unit, index + 1, 200)
                 }
             }
-            config.title = `Export Data Sostam dan Detail Bibit Tahun ${programYear} Management Unit ${management_unit}`
         },
 
         async getMonitoring(num) {
@@ -540,7 +541,7 @@ export default {
                     ta_name: valMon.ta_name || '???',
                     village_name: valMon.village_name || '???',
                     ff_name: valMon.ff_name || '???',
-                    farmer_name: valMon.ff_name || '???',
+                    farmer_name: valMon.farmer_name || '???',
                     lahan_type: valMon.lahan_type || '???',
                     lahan_no: valMon.lahan_no || '???',
                     is_validate: valMon.is_verified == 2 ? 'UM: '+valMon.verified_by : valMon.is_validate == 1 ? 'FC: '+valMon.verified_by : 'Belum Terverifikasi',
@@ -560,6 +561,8 @@ export default {
             }
             return data.data.result.datas
         },
+
+
         async getMonitoring2(){
             let loading = this.loading
             const config = this.config
@@ -587,6 +590,117 @@ export default {
             }
             
         },
+        async newGetPaginationMo2(page,per_page, py, ta, mu){
+            
+            let store = this.$store
+            const data = await axios.get(
+                store.getters.getApiUrl(`NewTempExportMonitoring2?program_year=${py}&mu_no=${mu}&ta_no=${ta}&page=${page}&per_page=${per_page}`),
+                store.state.apiConfig
+            ).then(res => res.data)
+            console.log(data.data)
+            if(data.data.result.datas.current_page == 1){
+                const treePhase = ['bibit_mo1','bibit_mo2', 'survival_rate(%)']
+                data.data.result.tree_locations.map(val => {
+                    treePhase.map(tp => {
+                        this.table.fields.push({
+                                label: val.tree_name + ' - ' + tp,
+                                key: `tree_${val.tree_code}-${tp}`,
+                                type: 'number'
+                            })
+                    })
+                })
+            }
+
+            for (const[indexMon, valMon] of Object.entries(data.data.result.datas.data)) {
+                
+                const dataGenerate = {
+                    ...valMon,
+                    project: 'undefined',
+                    monitorng2_no: valMon.monitoring2_no || '???',
+                    program_year: valMon.program_year || '???',
+                    mu_name: valMon.mu_name || '???',
+                    ta_name: valMon.ta_name || '???',
+                    village_name: valMon.village_name || '???',
+                    ff_name: valMon.ff_name || '???',
+                    farmer_name: valMon.farmer_name || '???',
+                    lahan_type: valMon.lahan_type || '???',
+                    lahan_no: valMon.lahan_no || '???',
+                    is_validate: valMon.is_verified == 2 ? 'UM: '+valMon.verified_by : valMon.is_validate == 1 ? 'FC: '+valMon.verified_by : 'Belum Terverifikasi',
+
+                    last_kayu_amount: valMon.last_kayu_amount || '0',
+                    last_mpts_amount: valMon.last_mpts_amount || '0',
+                    last_kayu_mpts_amount: valMon.last_kayu_mpts_amount || '0',
+
+                    total_kayu: valMon.total_kayu || '0',
+                    total_mpts: valMon.total_mpts || '0',
+                    total_kayu_mpts: valMon.total_kayu_mpts || '0',
+
+                    survival_rate_kayu: this.percentages(valMon.total_kayu, valMon.last_kayu_amount)|| '0',
+                    survival_rate_mpts: this.percentages(valMon.total_mpts, valMon.last_mpts_amount)|| '0',
+                    survival_rate_kayu_mpts: this.percentages(valMon.total_kayu_mpts, valMon.last_kayu_mpts_amount)|| '0',
+                }
+                valMon.last_monitoring_details.map(val => {
+                    dataGenerate[`tree_${val.tree_code}-bibit_mo1`] = val.qty
+                })
+                valMon.mo2_details.map(val => {
+                    dataGenerate[`tree_${val.tree_code}-bibit_mo2`] = val.life_after
+                })
+                
+                valMon.mo2_details.map(val => {
+                    valMon.last_monitoring_details.map(lastVal => {
+                        if(val.tree_code == lastVal.tree_code){
+                            dataGenerate[`tree_${val.tree_code}-survival_rate(%)`] = ((100 * val.life_after)/ lastVal.qty).toFixed(2)
+                        }
+                    })
+                }) 
+
+                // dataGenerate[`tree_${val.tree_code}-survival_rate(%)`]
+                this.table.data.push(dataGenerate)
+                
+            }
+            return data.data.result.datas
+        },
+        async newGetMonitoring2(){
+            let loading = this.loading
+            const config = this.config
+            
+            const monitoring2Params = new URLSearchParams({})
+            config.fields.filter(v => v.filter).map(val => {
+                monitoring2Params.append(val.id, val.model)
+            })
+
+            const management_unit = config.fields.find(v => v.id == 'mu_name').model
+            const target_area = config.fields.find(v => v.id == 'ta_name').model
+            const programYear = config.fields.find(v => v.id == 'program_year').model
+
+            const management_unit_name = config.fields.find(v => v.id == 'mu_name').items.filter(fil=>{
+                return fil.value.includes(management_unit)
+            })
+            const target_area_name = config.fields.find(v => v.id == 'ta_name').items.filter(fil=>{
+                return fil.value.includes(target_area)
+            })
+            console.log(programYear+', '+target_area)
+
+            const dataMonitoring = await this.newGetPaginationMo2(1, 10,programYear, target_area, management_unit)
+            // const totalPageMo2 = dataMonitoring.last_page
+            // console.log(totalPageMo2)
+            config.title= `exportMO2_${programYear}_${management_unit_name[0].text}_${target_area_name[0].text}`
+            this.download.title = config.title
+            if(dataMonitoring.last_page > 1){
+                for (let index = 1; index <= dataMonitoring.last_page; index++) {
+                    loading.progress = Math.round((100 / dataMonitoring.last_page) * (index))
+                    
+                    await this.newGetPaginationMo2(index+1, 10, programYear, target_area, management_unit)
+                }
+            }
+        },
+        percentages(val1, val2){
+            if(!val1 == 0 && !val2 == 0 ){
+                return ((100 * val1)/ val2).toFixed(2)
+            }else{
+                return 0 
+            }
+        },
 
         // monitoring 3
         async getPaginationMo3(page,per_page, py, mu){
@@ -608,7 +722,7 @@ export default {
                     ta_name: valMon.ta_name || '???',
                     village_name: valMon.village_name || '???',
                     ff_name: valMon.ff_name || '???',
-                    farmer_name: valMon.ff_name || '???',
+                    farmer_name: valMon.farmer_name || '???',
                     lahan_type: valMon.lahan_type || '???',
                     lahan_no: valMon.lahan_no || '???',
                     is_validate: valMon.is_verified == 2 ? 'UM: '+valMon.verified_by : valMon.is_validate == 1 ? 'FC: '+valMon.verified_by : 'Belum Terverifikasi',
@@ -693,7 +807,8 @@ export default {
                     await this.getMonitoring(1)
                 }
                 if (config.section == 'export-monitoring2') {
-                    await this.getMonitoring2()
+                    // await this.getMonitoring2()
+                    await this.newGetMonitoring2()
                 }
                 if (config.section == 'export-monitoring3') {
                     await this.getMonitoring3()
