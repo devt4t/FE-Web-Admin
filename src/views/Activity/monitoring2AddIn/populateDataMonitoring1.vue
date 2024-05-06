@@ -468,9 +468,9 @@
       populateModuls: {
         model: 'pmo1',
         items: [
-          {text: 'Populate Monitoring 1', value: 'pmo1'},
-          {text: 'Populate Monitoring 2', value: 'pmo2'},
-          {text: 'Populate Monitoring 3', value: 'pmo3'},
+          {text: 'Populate Untuk Monitoring 2', value: 'pmo1'},
+          {text: 'Populate Untuk Monitoring 3', value: 'pmo2'},
+          {text: 'Populate Untuk Monitoring 4', value: 'pmo3'},
         ]
       },
       subTable: {
