@@ -334,7 +334,7 @@
                 <v-icon class="mr-1" small color="white">
                   mdi-check-bold
                 </v-icon>
-                Generate Monitoring 2!
+                Generate Monitoring!
               </v-btn>
             </v-list-item> 
             <v-list-item v-if="(User.role_group == 'IT' || User.email == 'm.anggy.f_UMCisangkuy@t4t.org' ) && item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">

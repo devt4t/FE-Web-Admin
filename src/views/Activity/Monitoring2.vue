@@ -1178,9 +1178,13 @@
         this.getDetailData(item.monitoring_no, item.monitoring2_no)
       },
       async deleteData(item){
+        console.log(item)
+        let currentPopulate_no = ''
+        if(this.monitoringModuls.model == 'mo2') {currentPopulate_no = item.populate_no}
+        else if(this.monitoringModuls.model == 'mo3') {currentPopulate_no = item.populate2_no}
         var params = {
           currents_monitoring_no: item.currents_monitoring_no,
-          populate_no: item.populate_no
+          populate_no: currentPopulate_no
         }
         var url = ''
         if(this.monitoringModuls.model == 'mo2'){ url = "deleteMonitoring2DatasNew"}
