@@ -9,6 +9,58 @@
         large
       ></v-breadcrumbs>
       <!-- dialogs -->
+      <!-- detail dialog -->
+      <v-dialog 
+        v-model="details.show"
+        scrollable
+        max-width="750px"
+        transition="dialog-transition"
+        content-class="rounded-xl"
+        >
+        <v-card>
+          <v-card-title class="rounded-xl green darken-3 ma-1 pa-2 white--text">
+                <v-icon color="white" class="mx-2">mdi-account-details</v-icon> Detail Monitoring Sebelumnya
+                <v-icon color="white" class="ml-auto" @click="details.show = false">mdi-close-circle</v-icon>
+            </v-card-title>
+            <v-card-text>
+              <v-container class="mb-2">
+                <v-row>
+                  <v-col cols="12" sm="6" md="6">
+                    Jumlah Total Kayu: <strong>{{ details.totalKayu }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Jumlah Total MPTS: <strong>{{ details.totalMPTS }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Jumlah Total Crops: <strong>{{ details.totalCrops }}</strong>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    Jumlah Total Pohon: <strong>{{ details.totalPohon }}</strong>
+                  </v-col>
+                  <v-data-table
+                    data-aos="fade-up"
+                    data-aos-delay="200"
+                    class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+                    :headers="details.detailHeaders"
+                    :items="details.detailItemData"
+                  >
+                  </v-data-table>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="red white--text" rounded @click="details.show = false">
+                <v-icon color="white">
+                    mdi-close-circle
+                </v-icon>   
+                Close
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+
+      </v-dialog>
+
+
       <v-dialog 
         v-model="showUpdateModal"
         scrollable
@@ -324,6 +376,20 @@
               </v-icon>
             </template>
             <v-list class="d-flex flex-column align-stretch">
+              <v-list-item>
+                <v-btn
+                    dark
+                    rounded
+                    @click="openDetailData(item)"
+                    color="green"
+                    class="px-5"
+                    >
+                  <v-icon class="mr-1" small color="white">
+                    mdi-magnify
+                  </v-icon>
+                  Detail Monitoring Sebelumnya
+                </v-btn>
+              </v-list-item>
             <v-list-item v-if="item.sampling == '-' && item.assigned_to == '-'">
               <v-btn
                   dark
@@ -468,6 +534,20 @@
       BaseUrlGet: "",
       tableLoading: false,
       searchValues: '',
+      details:{
+        show: false,
+        detailHeaders:[
+          {text: 'Nomor Monitoring Sebelumnya', value: 'monitoring_no'},
+          {text: 'Kode Pohon', value: 'tree_code'},
+          {text: 'Nama Pohon', value: 'tree_name'},
+          {text: 'Jumlah', value: 'qty'},
+        ],
+        detailItemData: [],
+        totalKayu: 0,
+        totalMPTS: 0,
+        totalCrops: 0,
+        totalPohon: 0
+      },
       headers: [
         {text: 'No', value: 'index'},
         {text: 'Kode Area', value: 'area_code'},
@@ -616,6 +696,14 @@
             // this.loadtable = false;
           }
         }
+      },
+      openDetailData(item){
+        this.details.detailItemData = item.lastMonitoringDetails
+        this.details.totalCrops = item.crops_hidup
+        this.details.totalMPTS = item.mpts_hidup
+        this.details.totalKayu = item.kayu_hidup
+        this.details.totalPohon = item.total_hidup
+        this.details.show = true
       },
       openUpdateModal(item){
         this.itemDetailForUpdate = item
