@@ -265,18 +265,35 @@
               <v-col cols="12" lg="6" class="d-flex align-center">
               <!-- Program Year -->
               <v-col cols="12" lg="6" class="d-flex">
+                  <v-select
+                    color="success"
+                    item-color="success"
+                    v-model="SearchIndex_model"
+                    :items="searchIndex"
+                    item-value="value"
+                    item-text="text"
+                    hide-details
+                    outlined
+                    dense
+                    :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                    rounded
+                    label="Kolom Pencarian"
+                    class="centered-select"
+                    style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
+                  ></v-select>
                   <v-text-field
-                      color="success"
-                      item-color="success"
-                      v-model="populateSearchFarmer"
-                      placeholder="Pencarian Nama Petani..."
-                      append-icon="mdi-magnify"
-                      outlined
-                      dense
-                      rounded
-                      label="Pencarian Nama Petani"
-                      hide-details
-                      
+                    color="success"
+                    item-color="success"
+                    v-model="searchValues"
+                    placeholder="Pencarian Nama Petani..."
+                    append-icon="mdi-magnify"
+                    outlined
+                    dense
+                    rounded
+                    label="Pencarian Nama Petani"
+                    hide-details
+                    style="border-top-left-radius: 0px;border-bottom-left-radius: 0px;"
+                    
                   ></v-text-field>
                 </v-col>
               <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
@@ -440,10 +457,17 @@
         },
       ],
       search: "",
+      SearchIndex_model: 'farmer_name',
+      searchIndex:[
+        {text: 'Nama Petani', value: 'farmer_name'},
+        {text: 'Nomor Lahan', value: 'lahan_no'},
+
+      ], 
+      
       authtoken: "",
       BaseUrlGet: "",
       tableLoading: false,
-      populateSearchFarmer: '',
+      searchValues: '',
       headers: [
         {text: 'No', value: 'index'},
         {text: 'Kode Area', value: 'area_code'},
@@ -526,7 +550,12 @@
           this.getPopulateTableData()
         }
       },
-      'populateSearchFarmer': {
+      'SearchIndex_model': {
+        handler(val){
+          this.getPopulateTableData()
+        }
+      },
+      'searchValues': {
         handler(val){
           this.getPopulateTableData()
         }
@@ -857,7 +886,7 @@
             url+"program_year="+ 
             this.localConfig.programYear +
             "&ta=" +
-            this.expand_key + "&search_value=" + this.populateSearchFarmer,
+            this.expand_key + "&search_column=" + this.SearchIndex_model + "&search_value=" + this.searchValues,
             {
               headers: {
                 Authorization: `Bearer ` + this.authtoken,
