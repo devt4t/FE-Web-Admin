@@ -31,22 +31,22 @@
                     Tahun Program: <strong>{{ itemDetailForUpdate.program_year }}</strong>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
-                    FF Tahun 2022: <strong>{{ itemDetailForUpdate.ff_name }}</strong>
+                    FF Sebelumnya: <strong>{{ itemDetailForUpdate.ff_name }}</strong>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
                     Nomor Lahan: <strong>{{ itemDetailForUpdate.lahan_no }}</strong>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
-                    Management Unit (2022): <strong>{{ itemDetailForUpdate.mu_name }}</strong>
+                    Management Unit Sebelumnya: <strong>{{ itemDetailForUpdate.mu_name }}</strong>
                   </v-col>
-                  <v-col cols="12" sm="6" md="6">
+                  <!-- <v-col cols="12" sm="6" md="6">
                     Jumlah Pohon Hidup (2022): <strong>{{ itemDetailForUpdate.total_hidup }}</strong>
-                  </v-col>
+                  </v-col> -->
                   <v-col cols="12" sm="6" md="6">
-                    Target Area (2022): <strong>{{ itemDetailForUpdate.target_area_name }}</strong>
+                    Target Area Sebelumnya: <strong>{{ itemDetailForUpdate.target_area_name }}</strong>
                   </v-col>
-                  <v-col cols="12" sm="6" md="6">
-                  </v-col>
+                  <!-- <v-col cols="12" sm="6" md="6">
+                  </v-col> -->
                   <v-col cols="12" sm="6" md="6">
                     <v-select
                       v-model="updateItem.sampling"
@@ -487,7 +487,7 @@
           {text: 'Luas Area Tanam', value: 'planting_area'},
           {text: 'Pola Tanam', value: 'planting_option'},
           {text: 'Nama FF', value: 'ff_name'},
-          {text: 'Total Pohon Hidup', value: 'total_hidup'},
+          //{text: 'Total Pohon Hidup', value: 'total_hidup'},
           {text: 'Sampling', value: 'sampling'},
           {text: 'Ditugaskan Pada', value: 'assigned_to_name'},
           {text: 'Status Data', value: 'sts'},

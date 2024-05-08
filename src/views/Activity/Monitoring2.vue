@@ -832,7 +832,7 @@
           {text: 'Desa', value: 'desa_name'},
           {text: 'Nomor Lahan', value: 'lahan_no'},
           {text: 'Kondisi Lahan', value: 'land_condition'},
-          {text: 'Jumlah Total Pohon', value: 'total_hidup'},
+          // {text: 'Jumlah Total Pohon', value: 'total_hidup'},
           {text: 'Waktu Monitoring', value: 'monitoring_time'},
           {text: 'Total Kayu', value: 'kayu_mon2'},
           {text: 'Total MPTS', value: 'mpts_mon2'},
@@ -846,7 +846,6 @@
         tableLoading: false,
         expanded: [],
         expand_key: '',
-  
       },
       itemTA: '',
       searchIndex: [
@@ -1178,7 +1177,6 @@
         this.getDetailData(item.monitoring_no, item.monitoring2_no)
       },
       async deleteData(item){
-        console.log(item)
         let currentPopulate_no = ''
         if(this.monitoringModuls.model == 'mo2') {currentPopulate_no = item.populate_no}
         else if(this.monitoringModuls.model == 'mo3') {currentPopulate_no = item.populate2_no}
