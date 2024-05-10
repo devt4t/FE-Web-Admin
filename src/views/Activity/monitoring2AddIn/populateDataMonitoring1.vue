@@ -749,40 +749,42 @@
           this.$store.state.loadingOverlay = true
           this.$store.state.loadingOverlayText = "Loading... Sedang Melakukan Update Data"
           var params = {
-            populate_no: item.populate_no
+            populate_no: item.populate_no,
+            monitoring_no: item.monitoring_no,
+            lahan_no: item.lahan_no
           }
-          // try {
-          //   const response = await axios.post(
-          //     this.BaseUrlGet + 'deletePopulate1Datas' , params,
-          //     {
-          //       headers: {
-          //         Authorization: `Bearer ` + this.authtoken,
-          //       },
-          //     }
-          //   );
-          //   this.subTable.expanded = []
-          //   console.log(response)
-          //   await Swal.fire({
-          //       title: 'Berhasil MengHAPUS Data Populasi!',
-          //       icon: 'success',
-          //       confirmButtonColor: '#2e7d32',
-          //       confirmButtonText: 'Okay',
-          //   })
-          // } catch (error) {
-          //   await Swal.fire({
-          //     title: 'Gagal MengHAPUS Data Populasi',
-          //     text: "error:" + error.response,
-          //     icon: 'error',
-          //     confirmButtonColor: '#2e7d32',
-          //     confirmButtonText: 'Okay',
-          //   })
-          //   console.error(error.response);
-          //   this.subTable.expanded = []
-          //   if (error.response.status == 401) {
-          //     localStorage.removeItem("token");
-          //     this.$router.push("/");
-          //   }
-          // }
+          try {
+            const response = await axios.post(
+              this.BaseUrlGet + 'deletePopulate1Datas' , params,
+              {
+                headers: {
+                  Authorization: `Bearer ` + this.authtoken,
+                },
+              }
+            );
+            this.subTable.expanded = []
+            console.log(response)
+            await Swal.fire({
+                title: 'Berhasil MengHAPUS Data Populasi!',
+                icon: 'success',
+                confirmButtonColor: '#2e7d32',
+                confirmButtonText: 'Okay',
+            })
+          } catch (error) {
+            await Swal.fire({
+              title: 'Gagal MengHAPUS Data Populasi',
+              text: "error:" + error.response,
+              icon: 'error',
+              confirmButtonColor: '#2e7d32',
+              confirmButtonText: 'Okay',
+            })
+            console.error(error.response);
+            this.subTable.expanded = []
+            if (error.response.status == 401) {
+              localStorage.removeItem("token");
+              this.$router.push("/");
+            }
+          }
           this.$store.state.loadingOverlay = false
           this.$store.state.loadingOverlayText = ""
         }
