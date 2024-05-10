@@ -2472,7 +2472,7 @@
               color="success"
               item-color="success"
               v-model="generalSettings.programYear"
-              :items="['2021','2022','2023']"
+              :items="['2020','2021','2022','2023']"
               outlined
               dense
               hide-details
@@ -2616,6 +2616,21 @@
                                 return acc + parseInt(val.kayu_hidup + val.mpts_hidup)
                             }, 0) + total_populated, totalDatas) }}%</h4>
           </v-col>
+          <v-select
+            v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'"
+            v-model="populateModalSwitch"
+            :items="populateSwitchItem"
+            item-text="text"
+            item-value="value"
+            label="Modul Populate Monitoring"
+            outlined
+            dense
+            hide-details
+            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+            rounded
+            class="mx-auto mx-lg-2 mr-lg-1 mb-2 mb-lg-0"
+            style="max-width: 400px"
+          ></v-select>
           <v-btn
             v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER' && generalSettings.programYear == '2023'"
             rounded
@@ -2626,14 +2641,6 @@
           >
             <v-icon class="mr-1">mdi-arrow-collapse-right</v-icon> Populate Data
           </v-btn>
-          <v-switch
-            v-if="User.role_group == 'IT' || User.role_name == 'PLANNING MANAGER'"
-            v-model="populateModalSwitch"
-            label="Langkah Populasi Data Ke Monitoring 3 (Lewati Monitoring 2)?"
-            inset
-            color="red"
-            hide-details
-          ></v-switch>
         </v-row>
       </template>
 
@@ -3069,6 +3076,7 @@ export default {
     headers: [
       { text: "No", value: "index", align: 'center', width: '2%', sortable: false },
       { text: "MU", value: "mu_name", search: true },
+      { text: "Target Area", value: "ta_name", search: true },
       { text: "FF", value: "nama_ff", search: true },
       { text: "Petani", value: "nama_petani", search: true },
       { text: "Nomor Lahan", align: "start", value: "lahan_no", sortable: false, search: true },
@@ -3116,7 +3124,12 @@ export default {
     ],
     DetailTreesLahanTemp: [],
     dataobject: [],
-    populateModalSwitch: false,
+    populateModalSwitch: 0,
+    populateSwitchItem: [
+      {text: 'Populate Untuk Monitoring 2', value: 0},
+      {text: 'Populate Untuk Monitoring 3', value: 1},
+      {text: 'Populate Untuk Monitoring 4', value: 2},
+    ],
     populateDataSwitch: false,
     listMonitoring1Checked: [],
     totalDatas: 0,
@@ -3569,13 +3582,17 @@ export default {
     async pushPopulateData(){
       var url = ''
       var alertText = ''
-      if(this.populateModalSwitch == false){
+      if(this.populateModalSwitch == 0){
         url = 'AddMonitoring1Populate'
         alertText = 'Untuk Monitoring 2?'
       }
-      else {
+      else if(this.populateModalSwitch == 1){
         url = 'AddMonitoring1PopulateTo2'
         alertText = 'Untuk Monitoring 3?'
+      }
+      else if(this.populateModalSwitch == 2){
+        url = 'AddMonitoring1PopulateTo3'
+        alertText = 'Untuk Monitoring 4?'
       }
       const confirmation = await Swal.fire({
           title: `Apa Anda Yakin Untuk Melakukan Populasi Data ${alertText}`,

@@ -381,7 +381,7 @@
                     dark
                     rounded
                     @click="openDetailData(item)"
-                    color="green"
+                    color="blue"
                     class="px-5"
                     >
                   <v-icon class="mr-1" small color="white">
@@ -420,7 +420,8 @@
                 Generate Monitoring!
               </v-btn>
             </v-list-item> 
-            <v-list-item v-if="(User.role_group == 'IT' || User.email == 'm.anggy.f_UMCisangkuy@t4t.org' ) && item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">
+            
+            <v-list-item v-if="(User.role_group == 'IT') && item.sampling != '-' && item.assigned_to != '-' && item.is_monitoring == 0">
               <v-btn
                   dark
                   rounded
@@ -434,6 +435,23 @@
                 Reset Data Populasi!
               </v-btn>
             </v-list-item> 
+
+            <v-list-item v-if="(User.role_group == 'IT')&& populateModuls.model == 'pmo1' && item.is_monitoring == 0">
+              <v-btn
+                  dark
+                  rounded
+                  @click="deleteDataPopulate(item)"
+                  color="red"
+                  class="px-5"
+                  >
+                <v-icon class="mr-1" small color="white">
+                  mdi-close
+                </v-icon>
+                Hapus Data Populate 1
+              </v-btn>
+            </v-list-item> 
+            
+
             </v-list>
           </v-menu>
         </template>
@@ -716,6 +734,58 @@
         this.getVillage()
         this.showUpdateModal = true
         // this.getVillage(item)
+      },
+      async deleteDataPopulate(item){
+        const confirmation = await Swal.fire({
+          title: 'Apa Anda Yakin Untuk MengHAPUS Data Populasi?',
+          text: "Proses Tidak Dapat Dikembalikan!",
+          icon: 'warning',
+          confirmButtonColor: '#2e7d32',
+          confirmButtonText: 'Okay',
+          showCancelButton: true
+      })
+        if(confirmation.isConfirmed){
+          console.log(item)
+          this.$store.state.loadingOverlay = true
+          this.$store.state.loadingOverlayText = "Loading... Sedang Melakukan Update Data"
+          var params = {
+            populate_no: item.populate_no
+          }
+          // try {
+          //   const response = await axios.post(
+          //     this.BaseUrlGet + 'deletePopulate1Datas' , params,
+          //     {
+          //       headers: {
+          //         Authorization: `Bearer ` + this.authtoken,
+          //       },
+          //     }
+          //   );
+          //   this.subTable.expanded = []
+          //   console.log(response)
+          //   await Swal.fire({
+          //       title: 'Berhasil MengHAPUS Data Populasi!',
+          //       icon: 'success',
+          //       confirmButtonColor: '#2e7d32',
+          //       confirmButtonText: 'Okay',
+          //   })
+          // } catch (error) {
+          //   await Swal.fire({
+          //     title: 'Gagal MengHAPUS Data Populasi',
+          //     text: "error:" + error.response,
+          //     icon: 'error',
+          //     confirmButtonColor: '#2e7d32',
+          //     confirmButtonText: 'Okay',
+          //   })
+          //   console.error(error.response);
+          //   this.subTable.expanded = []
+          //   if (error.response.status == 401) {
+          //     localStorage.removeItem("token");
+          //     this.$router.push("/");
+          //   }
+          // }
+          this.$store.state.loadingOverlay = false
+          this.$store.state.loadingOverlayText = ""
+        }
       },
       async resetDataPopulate(item){
         const confirmation = await Swal.fire({

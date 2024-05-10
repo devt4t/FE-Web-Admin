@@ -30,7 +30,7 @@ export default new Vuex.Store({
     theme: 'dark',
     programYear: {
       model: '2023',
-      options: ['2021', '2022', '2023', '2024']
+      options: ['2020','2021', '2022', '2023', '2024']
     },
     taskForceTeam: {
       emails: TaskForceEmail
