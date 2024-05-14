@@ -4,6 +4,13 @@ import VueRouter from 'vue-router'
 import exportReport from '@/views/Report/index'
 import ViewDistribution from '@/views/Activity/components/distribusi/viewDistribution'
 
+// Area Management
+import RegionalAMS from '@/views/AreasManagement/regional/AMSRegional'
+import ManagementUnitAMS from '@/views/AreasManagement/management_unit/AMSUnitManager'
+import TargetAreaAMS from '@/views/AreasManagement/target_area/AMSFieldCoordinator'
+import DesaAMS from '@/views/AreasManagement/desa/AMSfieldFacilitator'
+
+
 Vue.use(VueRouter)
 function lazyLoad(view){
   return() => import(`@/views/${view}.vue`)
@@ -192,6 +199,11 @@ const routes = [
     component: lazyLoad('Utilities/Vilage')
   },
   {
+    path: '/Regional',
+    name: 'Regional',
+    component: lazyLoad('Utilities/Regional')
+  },
+  {
     path: '/ManagementUnit',
     name: 'ManagementUnit',
     component: lazyLoad('Utilities/MU')
@@ -235,7 +247,27 @@ const routes = [
     path: '/LihatTanggalDistribusi',
     name: 'LihatTanggalDistribusi',
     component: ViewDistribution
-  }
+  },
+  {
+    path: '/AssignManagementAreaRegional',
+    name: 'AssignManagementAreaRegional',
+    component: RegionalAMS
+  },
+  {
+    path: '/AssignManagementAreaMU',
+    name: 'AssignManagementAreaMU',
+    component: ManagementUnitAMS
+  },
+  {
+    path: '/AssignManagementAreaTA',
+    name: 'AssignManagementAreaTA',
+    component: TargetAreaAMS
+  },
+  {
+    path: '/AssignManagementAreaDesa',
+    name: 'AssignManagementAreaDesa',
+    component: DesaAMS
+  },
 ]
 
 const router = new VueRouter({
