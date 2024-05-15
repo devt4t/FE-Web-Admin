@@ -16,6 +16,9 @@ import './utils/index'
 import L from "leaflet";
 import 'leaflet/dist/leaflet.css';
 
+import service from '@/utils/service.js'
+import alert from '@/utils/alert.js'
+
 delete  L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -23,6 +26,11 @@ L.Icon.Default.mergeOptions({
    iconUrl : require('leaflet/dist/images/marker-icon.png'),
    ShadowUrl : require('leaflet/dist/images/marker-shadow.png'),
 })
+
+
+//global function
+Vue.prototype.$_alert = alert
+Vue.prototype.$_api = service
 
 AOS.init({
   duration: 1000

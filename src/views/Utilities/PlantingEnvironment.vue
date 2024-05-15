@@ -126,7 +126,7 @@
 import axios from "axios";
 
 export default {
-  name: "Provinsi",
+  name: "Planting Environment",
   data: () => ({
     page: 1,
     itemsPerPage: 10,
@@ -139,7 +139,7 @@ export default {
         href: "breadcrumbs_dashboard",
       },
       {
-        text: "Provinsi",
+        text: "Planting Environment",
         disabled: true,
         href: "breadcrumbs_link_1",
       },
