@@ -19,6 +19,8 @@ import "./assets/scss/global.scss";
 
 import service from "@/utils/service.js";
 import alert from "@/utils/alert.js";
+import filter from "@/utils/filter.js";
+
 import "@/utils/validation.js";
 import GekoBaseCrud from "@/components/GekoBaseCrud";
 import GekoInput from "@/components/GekoInput";
@@ -59,5 +61,9 @@ new Vue({
   router,
   store,
   vuetify,
+
+  filter: {
+    filter,
+  },
   render: (h) => h(App),
 }).$mount("#app");
