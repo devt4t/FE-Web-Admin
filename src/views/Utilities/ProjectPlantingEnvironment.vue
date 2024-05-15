@@ -10,6 +10,10 @@ export default {
         return {
             config: {
                 title: "Planting Environment",
+                program_year:{
+                    show: false,
+                    model: '2024'
+                },
                 model_api: null,
                 getter: "getAllProjectUtils",
                 setter: "planting-environment",

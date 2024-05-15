@@ -1,33 +1,59 @@
 <template>
     <div class="geko-base-crud">
-        <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" :items="[
+        <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" 
+        :items="[
             {
                 text: 'Utilities',
                 disabled: true,
                 href: 'breadcrumbs_dashboard',
             },
             {
-                text: 'Planting Environment',
+                text: `${config.title}`,
                 disabled: true,
                 href: 'breadcrumbs_link_1',
             },
         ]" divider=">" large data-aos="fade-right"></v-breadcrumbs>
 
+        <!-- Base Table Data -->
         <div class="geko-list" v-if="activeView === 'list'">
-            <v-data-table :headers="header" :items="data" :search="''" class="rounded-xl elevation-6 mx-3 pa-1"
-                data-aos="fade-up" data-aos-delay="200" @update:page="($p) => (page = $p)"
-                @update:items-per-page="($p) => (perPage = $p)" :items-per-page="perPage"
-                :server-items-length="totalRecord" :page="page" :footer-props="{
-                    itemsPerPageText: 'Jumlah Data Per Halaman',
-                    itemsPerPageOptions: [10, 25, 50, 100, 200],
-                    showCurrentPage: true,
-                    showFirstLastPage: true,
-                }">
+            <v-data-table 
+            :headers="header" 
+            :items="data" 
+            :search="''" 
+            class="rounded-xl elevation-6 mx-3 pa-1"
+            data-aos="fade-up" 
+            data-aos-delay="200" 
+            @update:page="($p) => (page = $p)"
+            @update:items-per-page="($p) => (perPage = $p)" 
+            :items-per-page="perPage"
+            :server-items-length="totalRecord" :page="page" :footer-props="{
+                itemsPerPageText: 'Jumlah Data Per Halaman',
+                itemsPerPageOptions: [10, 25, 50, 100, 200],
+                showCurrentPage: true,
+                showFirstLastPage: true,
+            }">
                 <template v-slot:top>
                     <div class="geko-list-header px-5 py-3 mt-1">
                         <div>
                             <h4>{{ config.title }}</h4>
                         </div>
+                        <v-select
+                            v-if="config.program_year.show"
+                            color="success"
+                            item-color="success"
+                            v-model="config.program_year.model"
+                            :items="['All Data',...$store.state.programYear.options]"
+                            :disabled="tableLoading"
+                            outlined
+                            dense
+                            hide-details
+                            :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                            rounded
+                            label="Tahun Program"
+                            class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+                            style="max-width: 200px"
+                        ></v-select>
+                        <!-- i'm, adding a program years, just in case it'll be needed ;),  -->
                         <v-btn variant="success" @click="$router.push({
                             query: {
                                 view: 'create'
