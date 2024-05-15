@@ -8,7 +8,7 @@ import ViewDistribution from '@/views/Activity/components/distribusi/viewDistrib
 import RegionalAMS from '@/views/AreasManagement/regional/AMSRegional'
 import ManagementUnitAMS from '@/views/AreasManagement/management_unit/AMSUnitManager'
 import TargetAreaAMS from '@/views/AreasManagement/target_area/AMSFieldCoordinator'
-import DesaAMS from '@/views/AreasManagement/desa/AMSfieldFacilitator'
+import DesaAMS from '@/views/AreasManagement/desa/AMSFieldFacilitator'
 
 
 Vue.use(VueRouter)
@@ -203,6 +203,7 @@ const routes = [
     name: 'Regional',
     component: lazyLoad('Utilities/Regional')
   },
+  
   {
     path: '/ManagementUnit',
     name: 'ManagementUnit',
@@ -223,6 +224,24 @@ const routes = [
     name: 'Suku',
     component: lazyLoad('Utilities/Suku')
   },
+
+  // project
+  {
+    path: '/ProjectTypes',
+    name: 'ProjectTypes',
+    component: lazyLoad('Utilities/ProjectTypes')
+  },
+  {
+    path: '/ProjectPlantingPurpose',
+    name: 'ProjectPlantingPurpose',
+    component: lazyLoad('Utilities/ProjectPlantingPurpose')
+  },
+  {
+    path: '/ProjectPlantingEnvironment',
+    name: 'ProjectPlantingEnvironment',
+    component: lazyLoad('Utilities/ProjectPlantingEnvironment')
+  },
+
   {
     path: '/Users',
     name: 'Users',
@@ -263,11 +282,11 @@ const routes = [
     name: 'AssignManagementAreaTA',
     component: TargetAreaAMS
   },
-  {
-    path: '/AssignManagementAreaDesa',
-    name: 'AssignManagementAreaDesa',
-    component: DesaAMS
-  },
+  // {
+  //   path: '/AssignManagementAreaDesa',
+  //   name: 'AssignManagementAreaDesa',
+  //   component: DesaAMS
+  // },
 ]
 
 const router = new VueRouter({
