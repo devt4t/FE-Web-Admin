@@ -8,7 +8,7 @@ import ViewDistribution from "@/views/Activity/components/distribusi/viewDistrib
 import RegionalAMS from "@/views/AreasManagement/regional/AMSRegional";
 import ManagementUnitAMS from "@/views/AreasManagement/management_unit/AMSUnitManager";
 import TargetAreaAMS from "@/views/AreasManagement/target_area/AMSFieldCoordinator";
-// import DesaAMS from '@/views/AreasManagement/desa/AMSfieldFacilitator'
+import DesaAMS from "@/views/AreasManagement/desa/AMSFieldFacilitator";
 
 Vue.use(VueRouter);
 function lazyLoad(view) {
@@ -203,6 +203,7 @@ const routes = [
     name: "Regional",
     component: lazyLoad("Utilities/Regional"),
   },
+
   {
     path: "/ManagementUnit",
     name: "ManagementUnit",
@@ -214,15 +215,28 @@ const routes = [
     component: lazyLoad("Utilities/TA"),
   },
   {
-    path: "/PlantingEnvironment",
-    name: "PlantingEnvironment",
-    component: lazyLoad("Utilities/PlantingEnvironment"),
-  },
-  {
     path: "/Pekerjaan",
     name: "Pekerjaan",
     component: lazyLoad("Utilities/Pekerjaan"),
   },
+
+  // project
+  {
+    path: "/ProjectTypes",
+    name: "ProjectTypes",
+    component: lazyLoad("Utilities/ProjectTypes"),
+  },
+  {
+    path: "/ProjectPlantingPurpose",
+    name: "ProjectPlantingPurpose",
+    component: lazyLoad("Utilities/ProjectPlantingPurpose"),
+  },
+  {
+    path: "/ProjectPlantingEnvironment",
+    name: "ProjectPlantingEnvironment",
+    component: lazyLoad("Utilities/ProjectPlantingEnvironment"),
+  },
+
   {
     path: "/Suku",
     name: "Suku",
@@ -263,15 +277,10 @@ const routes = [
     name: "AssignManagementAreaMU",
     component: ManagementUnitAMS,
   },
-  {
-    path: "/AssignManagementAreaTA",
-    name: "AssignManagementAreaTA",
-    component: TargetAreaAMS,
-  },
   // {
-  //   path: "/AssignManagementAreaDesa",
-  //   name: "AssignManagementAreaDesa",
-  //   component: DesaAMS,
+  //   path: '/AssignManagementAreaDesa',
+  //   name: 'AssignManagementAreaDesa',
+  //   component: DesaAMS
   // },
 ];
 

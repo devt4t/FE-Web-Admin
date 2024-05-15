@@ -1,16 +1,30 @@
-import Vue from "vue";
+import Swal from "sweetalert2";
 
 const _alert = {
   error(err, title = null, text = null) {
-    return Vue.swal({
-      position: "center",
+    // return Vue.swal({
+    //   position: "center",
+    //   icon: "error",
+    //   title: title || "Error",
+    //   text: text
+    //     ? text
+    //     : err.response
+    //     ? err.response.data.message
+    //     : err.data.message,
+    //   toast: false,
+    //   timer: 3000,
+    //   showConfirmButton: false,
+    // });
+    let _text = "";
+    try {
+      _text = text ? text : err.data ? err.data.data.result : err.data.result;
+    } catch {
+      _text = "";
+    }
+    return Swal.fire({
+      title: title,
       icon: "error",
-      title: title || "Error",
-      text: text
-        ? text
-        : err.response
-        ? err.response.data.message
-        : err.data.message,
+      text: _text,
       toast: false,
       timer: 3000,
       showConfirmButton: false,
@@ -23,7 +37,7 @@ const _alert = {
     showConfirmButton = false,
     timer = 3000
   ) {
-    return Vue.swal({
+    return Swal.fire({
       position: position,
       icon: "success",
       title: title || text,
@@ -40,7 +54,7 @@ const _alert = {
     disagree = null,
     deletePrompt = false
   ) {
-    return Vue.swal({
+    return Swal.fire({
       title: title,
       text: text,
       icon: "warning",

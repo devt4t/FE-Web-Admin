@@ -1,0 +1,24 @@
+@import "./variables";
+
+button[variant=primary] {
+    background-color: $primary_light !important;
+    color: darken($primary, 10) !important;
+}
+
+button[variant=success] {
+    background-color: $success_light !important;
+    color: $success !important;
+}
+
+.text-danger {
+    color: $danger;
+}
+
+.text-small,
+.text-09-em {
+    font-size: .9em
+}
+.text-xs,
+.text-07-em {
+    font-size: .75em
+}

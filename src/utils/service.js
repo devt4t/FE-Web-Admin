@@ -1,11 +1,11 @@
 import axios from "axios";
 import _alert from "./alert";
 const env = axios.create({
-  baseURL: localStorage.getItem("BaseUrlGet"),
+  baseURL: "https://t4tapi.kolaborasikproject.com/api/",
 });
 env.interceptors.request.use(
   (config) => {
-    let token = JSON.parse(localStorage.getItem("token")) || null;
+    let token = localStorage.getItem("token") || null;
     config.headers["Content-Type"] = "application/json";
 
     if (token) {
@@ -29,10 +29,17 @@ env.interceptors.response.use(
 
       // router.push({ name: "login" });
       _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
-    } else if (error.response.status === 422) {
+    } else if (error.response.status === 422 || error.response.status === 400) {
+      console.log("err", error.response);
       _alert.error(error.response);
     } else if (error.response.status === 500) {
       _alert.error({}, "Error", "Terjadi kesalahan system");
+    } else if (error.response.status === 404) {
+      _alert.error(
+        {},
+        "Error",
+        "Route tidak ditemukan, silahkan hubungi IT Support"
+      );
     }
     return Promise.reject(error);
   }
@@ -50,6 +57,7 @@ const _service = {
       });
   },
   get(endPoint, param) {
+    console.log("SERVICE GET CALLED");
     if (param && param.filters) {
       Object.assign(param, param.filters);
       delete param.filters;
@@ -63,6 +71,7 @@ const _service = {
         return response.data;
       })
       .catch((err) => {
+        console.log("err", err);
         throw err.response;
       });
   },
