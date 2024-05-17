@@ -12,55 +12,59 @@
       <h4 class="mb-0 pb-0">Tambah {{ title }}</h4>
     </v-card-title>
 
-    <ValidationObserver ref="mainForm" v-slot="{ handleSubmit }">
-      <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-        <v-row class="geko-form-wrapper m-4">
-          <v-col
-            v-for="(item, i) in fields.filter((x) => x.input)"
-            :key="title + i"
-            :md="item.col_size"
-          >
-            <geko-input
-              v-model="formData[item.setter]"
-              :item="{
-                label: item.label,
-                type: item.type,
-                validation: item.validation,
-              }"
-            />
-          </v-col>
+    <slot name="create-form">
+      <ValidationObserver ref="mainForm" v-slot="{ handleSubmit }">
+        <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+          <v-row class="geko-form-wrapper">
+            <v-col
+              v-for="(item, i) in fields.filter((x) => x.input)"
+              :key="title + i"
+              :md="item.col_size"
+            >
+              <geko-input
+                v-model="formData[item.setter]"
+                :item="{
+                  label: item.label,
+                  type: item.type,
+                  validation: item.validation,
+                  option: item.option,
+                  api: item.getter,
+                }"
+              />
+            </v-col>
 
-          <v-col md="12">
-            <div class="form-footer">
-              <v-btn variant="light" class="mr-3" @click="$router.go(-1)">
-                Batal
-              </v-btn>
-              <v-btn
-                :variant="isCreate ? 'success' : 'warning'"
-                type="submit"
-                :disabled="loading"
-              >
-                <v-icon v-if="isCreate && !loading">mdi-plus</v-icon>
-                <v-icon v-if="!isCreate && !loading" small class="mr-1"
-                  >mdi-pencil-minus</v-icon
+            <v-col md="12">
+              <div class="form-footer">
+                <v-btn variant="light" class="mr-3" @click="$router.go(-1)">
+                  Batal
+                </v-btn>
+                <v-btn
+                  :variant="isCreate ? 'success' : 'warning'"
+                  type="submit"
+                  :disabled="loading"
                 >
+                  <v-icon v-if="isCreate && !loading">mdi-plus</v-icon>
+                  <v-icon v-if="!isCreate && !loading" small class="mr-1"
+                    >mdi-pencil-minus</v-icon
+                  >
 
-                <v-progress-circular
-                  v-if="loading"
-                  :color="isCreate ? 'green' : 'amber'"
-                  indeterminate
-                  :width="2"
-                  :size="15"
-                  class="mr-1"
-                ></v-progress-circular>
+                  <v-progress-circular
+                    v-if="loading"
+                    :color="isCreate ? 'green' : 'amber'"
+                    indeterminate
+                    :width="2"
+                    :size="15"
+                    class="mr-1"
+                  ></v-progress-circular>
 
-                <span>{{ isCreate ? "Tambah" : "Perbarui" }} Data</span>
-              </v-btn>
-            </div>
-          </v-col>
-        </v-row>
-      </form>
-    </ValidationObserver>
+                  <span>{{ isCreate ? "Tambah" : "Perbarui" }} Data</span>
+                </v-btn>
+              </div>
+            </v-col>
+          </v-row>
+        </form>
+      </ValidationObserver>
+    </slot>
   </v-card>
 </template>
 
@@ -115,7 +119,6 @@ export default {
         return;
       }
       for (const f of this.fields) {
-        console.log(f.setter);
         this.$set(
           this.formData,
           f.setter || f.view_data,

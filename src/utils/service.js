@@ -1,12 +1,15 @@
 import axios from "axios";
 import _alert from "./alert";
+import _util from "./";
 const env = axios.create({
   baseURL: "https://t4tapi.kolaborasikproject.com/api/",
 });
 env.interceptors.request.use(
   (config) => {
     let token = localStorage.getItem("token") || null;
-    config.headers["Content-Type"] = "application/json";
+    if (!config.headers["Content-Type"]) {
+      config.headers["Content-Type"] = "application/json";
+    }
 
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
@@ -23,6 +26,7 @@ env.interceptors.response.use(
     return response;
   },
   function (error) {
+    console.log(error);
     // Do something with response error
     if (error.response.status === 401) {
       // localStorage.clear();
@@ -57,7 +61,6 @@ const _service = {
       });
   },
   get(endPoint, param) {
-    console.log("SERVICE GET CALLED");
     if (param && param.filters) {
       Object.assign(param, param.filters);
       delete param.filters;
@@ -74,6 +77,40 @@ const _service = {
         console.log("err", err);
         throw err.response;
       });
+  },
+
+  upload(endPoint, file) {
+    const data = this.generateFormData(file);
+
+    return axios
+      .post(`https://t4tadmin.kolaborasikproject.com/${endPoint}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        return `${file.dir ? file.dir : ""}${response.data.data.new_name}`;
+      })
+      .catch((err) => {
+        throw err.response;
+      });
+  },
+
+  generateFormData(data) {
+    let formData = new FormData();
+
+    const objectArray = Object.entries(data);
+
+    objectArray.forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.map((item) => {
+          formData.append(key + "[]", item);
+        });
+      } else {
+        formData.append(key, value);
+      }
+    });
+    return formData;
   },
 };
 
