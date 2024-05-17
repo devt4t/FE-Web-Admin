@@ -1,24 +1,32 @@
 @import "./variables";
 
-button[variant=primary] {
-    background-color: $primary_light !important;
-    color: darken($primary, 10) !important;
+button[variant="primary"] {
+  background-color: $primary_light !important;
+  color: darken($primary, 10) !important;
 }
 
-button[variant=success] {
-    background-color: $success_light !important;
-    color: $success !important;
+button[variant="success"] {
+  background-color: $success_light !important;
+  color: $success !important;
+}
+button[variant="warning"] {
+  background-color: $warning_light !important;
+  color: $warning !important;
+}
+
+button.circle {
+  width: 1px !important;
 }
 
 .text-danger {
-    color: $danger;
+  color: $danger;
 }
 
 .text-small,
 .text-09-em {
-    font-size: .9em
+  font-size: 0.9em;
 }
 .text-xs,
 .text-07-em {
-    font-size: .75em
+  font-size: 0.75em;
 }

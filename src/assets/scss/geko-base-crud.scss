@@ -1,104 +1,130 @@
 @import "./variables";
-
+@keyframes frameOpacity {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .geko-base-crud {
-    .geko-list-header {
+  .geko-list,
+  .geko-form-card {
+    opacity: 0;
+    animation-name: frameOpacity;
+    animation-duration: 1.3s;
+    animation-delay: 0s;
+    animation-fill-mode: forwards;
+  }
+  .geko-list-header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    h4 {
+      font-size: 1.2rem;
+    }
+
+    .geko-list-header-action {
+      flex: 1;
+      form {
+        flex: 1;
+      }
+    }
+  }
+  .geko-list-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    button {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 25px;
+      height: 25px;
+      border-radius: 5px;
+      margin-right: 5px;
+
+      &.geko-list-action-view {
+        background-color: $primary_light;
+
+        i {
+          color: darken($primary, 10) !important;
+        }
+      }
+
+      &.geko-list-action-update {
+        background-color: $warning_light;
+
+        i {
+          color: $warning !important;
+        }
+      }
+
+      &.geko-list-action-delete {
+        background-color: $danger_light;
+
+        i {
+          color: $danger !important;
+        }
+      }
+    }
+  }
+
+  .geko-form {
+    .geko-form-card {
+      border-radius: 18px !important;
+    }
+    .v-card__title {
+      border-bottom: 1px solid rgba(128, 128, 128, 0.261);
+
+      h4 {
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+
+      i {
+        color: rgba(128, 128, 128, 0.444) !important;
+      }
+    }
+
+    .geko-form-wrapper {
+      width: 100%;
+      padding: 1.5em;
+
+      .form-footer {
         width: 100%;
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        justify-content: flex-end;
+        margin-top: 0.5em;
+      }
     }
-    .geko-list-actions {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        button {
-    
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 25px;
-            height: 25px;
-            border-radius: 5px;
-            margin-right: 5px;
-    
-            &.geko-list-action-view {
-                background-color: $primary_light;
-            
-                i {
-                    color: darken( $primary, 10) !important;
-                }
-            }
-    
-            &.geko-list-action-update {
-                background-color: $warning_light;
-            
-                i {
-                    color: $warning !important;
-                }
-            }
-    
-            &.geko-list-action-delete {
-                background-color: $danger_light;
-            
-                i {
-                    color: $danger !important;
-                }
-            }
-        }
-       
-    }
-    
-    .geko-form {
-        .v-card__title {
-            border-bottom: 1px solid rgba(128, 128, 128, 0.261);
-
-            h4 {
-                font-size: 1.2rem;
-                font-weight: 500;
-            }
-
-            i {
-                color: rgba(128, 128, 128, 0.444) !important;
-            }
-        }
-
-        .geko-form-wrapper {
-            width: 100%;
-            padding: 1.5em;
-
-            .form-footer {
-                width: 100%;
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-end;
-                margin-top: .5em;
-            }
-        }
-    }
+  }
 }
 
 .geko-input {
-    display: flex;
-    flex-direction: column;
-    label {
-        font-size: .9rem;
-        color: grey;
+  display: flex;
+  flex-direction: column;
+  label {
+    font-size: 0.9rem;
+    color: grey;
 
-        &.required:after {
-            content: ' *';
-            color: red;
-        }
+    &.required:after {
+      content: " *";
+      color: red;
     }
-    input {
-        border: 1px solid rgba(128, 128, 128, 0.478);
-        border-radius: 6px;
-        height: 35px;
-        padding-inline: 15px;
+  }
+  input {
+    border: 1px solid rgba(128, 128, 128, 0.478);
+    border-radius: 6px;
+    height: 45px;
+    padding-inline: 15px;
 
-        &.invalid {
-            border-color: $danger;
-        }
+    &.invalid {
+      border-color: $danger;
     }
+  }
 }
