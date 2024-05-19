@@ -29,26 +29,38 @@
         </v-row>
         <!-- <v-card-title>LOGIN PAGE</v-card-title> -->
         <v-card-text class="pt-1 pb-0 px-3">
-          <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">
-
+          <div
+            data-aos="fade-right"
+            data-aos-duration="500"
+            data-aos-delay="400"
+          >
             <v-select
-                dense
-                color="success"
-                item-color="success"
-                :menu-props="{rounded: 'xl', offsetY: true, transition: 'slide-y-transition', dark: $store.state.theme == 'dark'}"
-                hide-details
-                rounded
-                required
-                v-model="tahunProgram"
-                :items="$store.state.programYear.options"
-                label="Tahun Program"
-                :rules="[(v) => !!v || 'Field is required']"
-                outlined
-                class="mb-4"
+              dense
+              color="success"
+              item-color="success"
+              :menu-props="{
+                rounded: 'xl',
+                offsetY: true,
+                transition: 'slide-y-transition',
+                dark: $store.state.theme == 'dark',
+              }"
+              hide-details
+              rounded
+              required
+              v-model="tahunProgram"
+              :items="$store.state.programYear.options"
+              label="Tahun Program"
+              :rules="[(v) => !!v || 'Field is required']"
+              outlined
+              class="mb-4"
             ></v-select>
           </div>
 
-          <div data-aos="fade-right" data-aos-duration="500" data-aos-delay="400">
+          <div
+            data-aos="fade-right"
+            data-aos-duration="500"
+            data-aos-delay="400"
+          >
             <v-text-field
               label="Email"
               name="email"
@@ -62,7 +74,11 @@
               v-on:keyup="submitLogin"
             ></v-text-field>
           </div>
-          <div data-aos="fade-right"  data-aos-duration="500" data-aos-delay="500">
+          <div
+            data-aos="fade-right"
+            data-aos-duration="500"
+            data-aos-delay="500"
+          >
             <v-text-field
               label="Password"
               v-model="password"
@@ -80,7 +96,11 @@
           </div>
         </v-card-text>
 
-        <v-card-actions class="pt-0 pb-2 px-3 mb-4" data-aos="zoom-in" data-aos-delay="700">
+        <v-card-actions
+          class="pt-0 pb-2 px-3 mb-4"
+          data-aos="zoom-in"
+          data-aos-delay="700"
+        >
           <v-btn
             block
             large
@@ -120,7 +140,7 @@ export default {
   name: "Trees",
   data: () => ({
     showPassword: false,
-    tahunProgram:"",
+    tahunProgram: "",
     email: "",
     password: "",
     authtoken: "",
@@ -131,7 +151,8 @@ export default {
     BaseUrlUpload: "https://t4tadmin.kolaborasikproject.com/upload.php",
     BaseUrl: "https://t4tadmin.kolaborasikproject.com/",
     BaseUrlPortal: "https://api-portal.tftdemo.net/api",
-    xAppKey_Portal: "T4T6686e08b2fcee46a47063e177c1c7ea48b1db6ec4e5463aec5fbc9dfe725ee18",
+    xAppKey_Portal:
+      "T4T6686e08b2fcee46a47063e177c1c7ea48b1db6ec4e5463aec5fbc9dfe725ee18",
     snackbar: false,
     text: "Test",
     timeout: 2000,
@@ -165,12 +186,12 @@ export default {
       }
       // base url portal
       var BaseUrlPortal = localStorage.getItem("BaseUrlPortal");
-      if(BaseUrlPortal){
-        localStorage.removeItem("BaseUrlPortal")
+      if (BaseUrlPortal) {
+        localStorage.removeItem("BaseUrlPortal");
       }
       var xAppKey_Portal = localStorage.getItem("xAppKey_Portal");
-      if(xAppKey_Portal){
-        localStorage.removeItem("xAppKey_Portal")
+      if (xAppKey_Portal) {
+        localStorage.removeItem("xAppKey_Portal");
       }
 
       this.load = false;
@@ -191,10 +212,9 @@ export default {
         const response = await axios.post(
           this.BaseUrlGet + "LoginWeb",
           datapost
-          
         );
-        if(datapost.program_year){
-            console.log(response.data.data.status.code);
+        if (datapost.program_year) {
+          console.log(response.data.data.status.code);
           this.snackbar = true;
           if (response.data.data.status.code == 200) {
             this.load = false;
@@ -202,7 +222,10 @@ export default {
             this.colorsnackbar = "green";
             this.text = "Sukses Login";
             // console.log(response.data.data.result.access_token);
-            localStorage.setItem("token", response.data.data.result.access_token);
+            localStorage.setItem(
+              "token",
+              response.data.data.result.access_token
+            );
             localStorage.setItem(
               "User",
               JSON.stringify(response.data.data.result.User)
@@ -218,25 +241,26 @@ export default {
             this.load = false;
             this.disablevalue = false;
             this.colorsnackbar = "red";
-            this.text = "Gagal Login, email dan/atau password salah atau program year masih kosong!";
+            this.text =
+              "Gagal Login, email dan/atau password salah atau program year masih kosong!";
           }
-        }else{
+        } else {
           this.load = false;
-        this.disablevalue = false;
-        console.error(error.response);
-        this.snackbar = true;
-        this.colorsnackbar = "red";
-        this.text = "Gagal Login, email dan/atau password salah atau program year masih kosong!";
+          this.disablevalue = false;
+          console.error(error.response);
+          this.snackbar = true;
+          this.colorsnackbar = "red";
+          this.text =
+            "Gagal Login, email dan/atau password salah atau program year masih kosong!";
         }
-
-        
       } catch (error) {
         this.load = false;
         this.disablevalue = false;
         console.error(error.response);
         this.snackbar = true;
         this.colorsnackbar = "red";
-        this.text = "Gagal Login, email dan/atau password salah atau program year masih kosong!";
+        this.text =
+          "Gagal Login, email dan/atau password salah atau program year masih kosong!";
       }
     },
 

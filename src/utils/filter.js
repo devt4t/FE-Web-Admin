@@ -12,6 +12,9 @@ Vue.filter("parse", (value, id) => {
     case "date":
       _value = moment(value).format("D MMMM YYYY");
       break;
+    case "active":
+      _value = value == 0 ? "Tidak Aktif" : "Aktif";
+      break;
 
     case "datetime":
       _value = moment(value).format("D MMMM YYY HH:mm:ss");

@@ -7,7 +7,9 @@
     opacity: 1;
   }
 }
+
 .geko-base-crud {
+  font-family: "Poppins", sans-serif !important;
   .geko-list,
   .geko-form-card {
     opacity: 0;
@@ -16,20 +18,116 @@
     animation-delay: 0s;
     animation-fill-mode: forwards;
   }
+
+  .geko-list {
+    padding-left: 0.7rem;
+  }
+  .geko-form-card {
+    margin-left: 0.7rem;
+  }
+
+  .v-data-table__wrapper {
+    tr td.text-start {
+      // display: flex;
+      // flex-direction: column;
+      // justify-content: flex-end;
+      vertical-align: top;
+      padding-block: 10px;
+    }
+
+    tr th {
+      vertical-align: center;
+      background-color: #f3f6f9 !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+
+      height: 38px !important;
+      border-bottom: none !important;
+      span {
+        color: #b5b5c3 !important;
+        font-weight: 600;
+        font-size: 0.9em;
+      }
+    }
+
+    th.sticky-left {
+      background-color: #f3f6f9 !important;
+    }
+    td.sticky-left {
+      background-color: white !important;
+    }
+
+    tbody tr {
+      background-color: white;
+      transition: all 0.2s ease;
+      &:hover {
+        background-color: rgb(238, 238, 238);
+        transition: all 0.2s ease;
+
+        td:first-child {
+          background-color: rgb(238, 238, 238) !important;
+          transition: all 0.2s ease;
+        }
+      }
+    }
+
+    tr td {
+      border-bottom: none !important;
+    }
+
+    tr td:first-child {
+      position: sticky !important;
+      left: 0 !important;
+      z-index: 2;
+      background-color: white !important;
+      padding-left: 10px !important;
+      padding-right: 3px !important;
+      transition: all 0.2s ease;
+    }
+  }
   .geko-list-header {
     width: 100%;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    // justify-content: space-between;
+    // align-items: center;
     h4 {
       font-size: 1.2rem;
     }
 
     .geko-list-header-action {
-      flex: 1;
-      form {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      .geko-list-header-toolbar {
         flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        form {
+          max-width: 70%;
+          min-width: 50%;
+        }
+
+        .toolbar-button {
+          width: 38px;
+          height: 38px;
+          background-color: #c4c4c75d;
+          transition: all 0.2s ease;
+          border-radius: 50%;
+
+          i {
+            font-size: 1.2em !important;
+            color: darken($primary, 40) !important;
+          }
+
+          &:hover {
+            background-color: #aaaaaa5d;
+            transition: all 0.2s ease;
+          }
+        }
       }
     }
   }
@@ -46,6 +144,9 @@
       height: 25px;
       border-radius: 5px;
       margin-right: 5px;
+      i {
+        font-size: 12px !important;
+      }
 
       &.geko-list-action-view {
         background-color: $primary_light;
@@ -94,6 +195,15 @@
       width: 100%;
       padding: 1.5em;
 
+      .form-separator {
+        h4 {
+          font-size: 0.9em;
+          text-transform: uppercase;
+          color: rgb(167, 167, 167);
+          font-weight: 600;
+        }
+      }
+
       .form-footer {
         width: 100%;
         display: flex;
@@ -108,23 +218,145 @@
 .geko-input {
   display: flex;
   flex-direction: column;
-  label {
-    font-size: 0.9rem;
+  position: relative;
+  margin-bottom: 5px;
+  .error-message {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(calc(100% + 3px));
+  }
+  label:not(.file-upload) {
+    font-size: 0.85rem;
     color: grey;
+    margin-bottom: 5px;
 
     &.required:after {
       content: " *";
       color: red;
     }
   }
-  input {
+  input,
+  textarea {
     border: 1px solid rgba(128, 128, 128, 0.478);
     border-radius: 6px;
-    height: 45px;
+    height: 38px;
     padding-inline: 15px;
+    font-size: 0.9em;
+    font-weight: 400;
 
     &.invalid {
-      border-color: $danger;
+      border-color: $danger !important;
     }
+
+    // &:focus {
+    //   border: 1px solid $success !important;
+    // }
+
+    &:disabled {
+      background-color: rgb(249, 249, 249);
+      color: grey;
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .select-radio-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .select-radio-item {
+      padding: 0.5em 1em;
+      background-color: $success_light;
+      color: $success;
+      border-radius: 8px;
+      margin-right: 10px;
+      span {
+        font-size: 0.9em;
+      }
+      &:hover {
+        cursor: pointer;
+      }
+
+      &:not(.active) {
+        .select-radio-radio {
+          color: rgb(179, 179, 179) !important;
+        }
+      }
+
+      &.active {
+        background-color: $success !important;
+        color: white;
+        .select-radio-radio,
+        .select-radio-icon {
+          color: white !important;
+        }
+      }
+
+      .select-radio-radio {
+        font-size: 15px !important;
+        margin-right: 10px;
+      }
+
+      .select-radio-icon {
+        margin-right: 3px;
+        color: $success !important;
+      }
+    }
+  }
+
+  .upload-wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    .upload-label {
+      padding-left: 1em;
+
+      h6 {
+        font-size: 0.9em;
+        font-weight: normal;
+      }
+
+      span {
+        font-size: 0.9em;
+        font-weight: 300;
+      }
+    }
+    .file-upload {
+      display: block;
+      width: 8em;
+      height: 8em;
+      border: 1px dashed rgb(207, 207, 207);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(214, 214, 214, 0.1);
+
+      i {
+        color: rgb(163, 163, 163) !important;
+        font-size: 4rem;
+      }
+      &:hover {
+        cursor: pointer;
+      }
+
+      &.uploaded {
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+    }
+  }
+
+  textarea {
+    height: unset !important;
+    padding-block: 8px;
   }
 }

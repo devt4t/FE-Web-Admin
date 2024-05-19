@@ -9,58 +9,84 @@
       <v-icon large class="mr-2" @click="$router.go(-1)"
         >mdi-arrow-left-circle</v-icon
       >
-      <h4 class="mb-0 pb-0">Tambah {{ title }}</h4>
+      <h4 class="mb-0 pb-0">
+        {{ isCreate ? "Tambah" : "Perbarui" }} {{ title }}
+      </h4>
     </v-card-title>
 
-    <ValidationObserver ref="mainForm" v-slot="{ handleSubmit }">
-      <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-        <v-row class="geko-form-wrapper m-4">
-          <v-col
-            v-for="(item, i) in fields.filter((x) => x.input)"
-            :key="title + i"
-            :md="item.col_size"
-          >
-            <geko-input
-              v-model="formData[item.setter]"
-              :item="{
-                label: item.label,
-                type: item.type,
-                validation: item.validation,
-              }"
-            />
-          </v-col>
+    <slot name="create-form">
+      <ValidationObserver ref="mainForm" v-slot="{ handleSubmit }">
+        <form
+          @submit.prevent="handleSubmit(onSubmit)"
+          autocomplete="off"
+          v-if="ready"
+        >
+          <v-row class="geko-form-wrapper">
+            <template
+              v-for="(item, i) in !sort
+                ? fields.filter((x) => x.input)
+                : fields.filter((x) => x.input).sort(sortForm)"
+              v-if="
+                item.show_if
+                  ? formData[item.show_if.id] == item.show_if.value
+                  : true
+              "
+              :md="item.col_size"
+            >
+              <v-col md="12" v-if="item.separator" class="form-separator">
+                <h4>{{ item.separator }}</h4>
+              </v-col>
+              <v-col :md="item.col_size">
+                <geko-input
+                  v-model="formData[item.setter]"
+                  :item="{
+                    label: item.label,
+                    type: item.type,
+                    validation: item.validation,
+                    option: item.option,
+                    api: item.getter,
+                    param: item.param,
+                    default_label: item.option
+                      ? formData[item.option.default_label]
+                      : '',
+                  }"
+                  :disabled="item.disabled || false"
+                />
+              </v-col>
+            </template>
 
-          <v-col md="12">
-            <div class="form-footer">
-              <v-btn variant="light" class="mr-3" @click="$router.go(-1)">
-                Batal
-              </v-btn>
-              <v-btn
-                :variant="isCreate ? 'success' : 'warning'"
-                type="submit"
-                :disabled="loading"
-              >
-                <v-icon v-if="isCreate && !loading">mdi-plus</v-icon>
-                <v-icon v-if="!isCreate && !loading" small class="mr-1"
-                  >mdi-pencil-minus</v-icon
+            <v-col md="12">
+              <div class="form-footer">
+                <v-btn variant="light" class="mr-3" @click="$router.go(-1)">
+                  Batal
+                </v-btn>
+                <v-btn
+                  :variant="isCreate ? 'success' : 'warning'"
+                  type="submit"
+                  :disabled="loading"
                 >
+                  <v-icon v-if="isCreate && !loading">mdi-plus</v-icon>
+                  <v-icon v-if="!isCreate && !loading" small class="mr-1"
+                    >mdi-pencil-minus</v-icon
+                  >
 
-                <v-progress-circular
-                  v-if="loading"
-                  :color="isCreate ? 'green' : 'amber'"
-                  indeterminate
-                  :width="2"
-                  :size="15"
-                  class="mr-1"
-                ></v-progress-circular>
+                  <v-progress-circular
+                    v-if="loading"
+                    :color="isCreate ? 'green' : 'amber'"
+                    indeterminate
+                    :width="2"
+                    :size="15"
+                    class="mr-1"
+                  ></v-progress-circular>
 
-                <span>{{ isCreate ? "Tambah" : "Perbarui" }} Data</span>
-              </v-btn>
-            </div>
-          </v-col>
-        </v-row>
-      </form>
-    </ValidationObserver>
+                  <span>{{ isCreate ? "Tambah" : "Perbarui" }} Data</span>
+                </v-btn>
+              </div>
+            </v-col>
+          </v-row>
+        </form>
+      </ValidationObserver>
+    </slot>
   </v-card>
 </template>
 
@@ -93,6 +119,10 @@ export default {
       type: Array,
       default: [],
     },
+    sort: {
+      required: false,
+      type: Array,
+    },
   },
 
   data() {
@@ -100,6 +130,7 @@ export default {
       formData: {},
       isCreate: null,
       loading: false,
+      ready: false,
     };
   },
 
@@ -109,19 +140,43 @@ export default {
   },
 
   methods: {
+    sortForm(a, b) {
+      var idxA = this.sort.indexOf(a["view_data"]);
+      var idxB = this.sort.indexOf(b["view_data"]);
+      if (idxA < idxB) {
+        return -1;
+      } else if (idxA > idxB) {
+        return 1;
+      } else {
+        return 0;
+      }
+    },
     buildFields() {
       if (this.$route.query.view === "update" && !this.$route.params) {
         this.$_alert.error(null, "Data not found");
         return;
       }
       for (const f of this.fields) {
-        console.log(f.setter);
-        this.$set(
-          this.formData,
-          f.setter || f.view_data,
-          this.$route.params[f.getter || f.view_data]
-        );
+        let _value =
+          f.option && f.option.default_value
+            ? f.option.default_value
+            : this.$route.params[f.getter || f.view_data];
+
+        if (this.$route.query.view === "update") {
+          _value = this.$route.params[f.option?.getter || f.view_data];
+          if (f.type === "select" && f.option.default_label) {
+            this.$set(
+              this.formData,
+              f.option.default_label,
+              this.$route.params[f.option.default_label]
+            );
+          }
+        }
+        this.$set(this.formData, f.setter || f.view_data, _value);
       }
+      console.log(this.formData);
+
+      this.ready = true;
     },
     onSubmit() {
       if (this.loading) return;
