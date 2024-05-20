@@ -251,6 +251,11 @@ button.circle {
 @media only screen and (min-width: 1264px) {
   .v-main.gradient-animate.logged-in {
     padding-left: 280px !important;
+ 
+  }
+
+  .v-navigation-drawer__content    .v-list-group__items {
+    max-width: 260px !important;
   }
 
   header.v-toolbar.v-app-bar {

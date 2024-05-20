@@ -9,6 +9,7 @@ import RegionalAMS from "@/views/AreasManagement/regional/AMSRegional";
 import ManagementUnitAMS from "@/views/AreasManagement/management_unit/AMSUnitManager";
 import TargetAreaAMS from "@/views/AreasManagement/target_area/AMSFieldCoordinator";
 import DesaAMS from "@/views/AreasManagement/desa/AMSFieldFacilitator";
+import newScoopings from "@/views/ActivityNew/scooping_visit/ScoopingVisit";
 
 Vue.use(VueRouter);
 function lazyLoad(view) {
@@ -276,6 +277,13 @@ const routes = [
     path: "/AssignManagementAreaMU",
     name: "AssignManagementAreaMU",
     component: ManagementUnitAMS,
+  },
+
+  //NEW ACTIVITY
+  {
+    path: "/newScoopingVisit",
+    name: "newScoopingVisit",
+    component: newScoopings,
   },
   // {
   //   path: '/AssignManagementAreaDesa',

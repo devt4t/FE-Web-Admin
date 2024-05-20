@@ -3,6 +3,7 @@
     <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
       <v-row class="geko-form-wrapper" v-if="ready">
         <v-col lg="12">
+          test
           <geko-input
             v-model="formData.participant_category"
             :item="{
@@ -11,6 +12,11 @@
               label: 'Kategori Partisipan',
               validation: [],
               option: {
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
+                },
                 default_options: [
                   {
                     label: 'Personal',
@@ -427,6 +433,7 @@ export default {
       if (!this.isCreate) {
         payload.current_id = this.$route.query.id;
       }
+
       this.$_api
         .post(this.isCreate ? "AddDonor" : "UpdateDonor", payload)
         .then(() => {

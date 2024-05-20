@@ -33,26 +33,38 @@
               "
               :md="item.col_size"
             >
-              <v-col md="12" v-if="item.separator" class="form-separator">
-                <h4>{{ item.separator }}</h4>
-              </v-col>
-              <v-col :md="item.col_size">
-                <geko-input
-                  v-model="formData[item.setter]"
-                  :item="{
-                    label: item.label,
-                    type: item.type,
-                    validation: item.validation,
-                    option: item.option,
-                    api: item.getter,
-                    param: item.param,
-                    default_label: item.option
-                      ? formData[item.option.default_label]
-                      : '',
-                  }"
-                  :disabled="item.disabled || false"
-                />
-              </v-col>
+              <slot
+                :name="
+                  $route.query.view === 'create'
+                    ? 'create'
+                    : 'update' + '-' + item.view_data
+                "
+                v-bind:formData="formData"
+                v-bind:setFormData="setFormData"
+                v-bind:field="item"
+              >
+                <v-col md="12" v-if="item.separator" class="form-separator">
+                  <h4>{{ item.separator }}</h4>
+                </v-col>
+
+                <v-col :md="item.col_size">
+                  <geko-input
+                    v-model="formData[item.setter]"
+                    :item="{
+                      label: item.label,
+                      type: item.type,
+                      validation: item.validation,
+                      option: item.option,
+                      api: item.getter,
+                      param: item.param,
+                      default_label: item.option
+                        ? formData[item.option.default_label]
+                        : '',
+                    }"
+                    :disabled="item.disabled || false"
+                  />
+                </v-col>
+              </slot>
             </template>
 
             <v-col md="12">
@@ -123,6 +135,13 @@ export default {
       required: false,
       type: Array,
     },
+    update_id_getter: {
+      type: String,
+    },
+
+    update_id_setter: {
+      type: String,
+    },
   },
 
   data() {
@@ -140,6 +159,9 @@ export default {
   },
 
   methods: {
+    setFormData(key, value) {
+      this.$set(this.formData, key, value);
+    },
     sortForm(a, b) {
       var idxA = this.sort.indexOf(a["view_data"]);
       var idxB = this.sort.indexOf(b["view_data"]);
@@ -163,7 +185,6 @@ export default {
             : this.$route.params[f.getter || f.view_data];
 
         if (this.$route.query.view === "update") {
-          _value = this.$route.params[f.option?.getter || f.view_data];
           if (f.type === "select" && f.option.default_label) {
             this.$set(
               this.formData,
@@ -171,10 +192,18 @@ export default {
               this.$route.params[f.option.default_label]
             );
           }
+
+          this.$set(
+            this.formData,
+            f.setter || f.view_data,
+            this.$route.params[
+              f.option ? f.option.getter || f.view_data : f.view_data
+            ]
+          );
+        } else {
+          this.$set(this.formData, f.setter || f.view_data, _value);
         }
-        this.$set(this.formData, f.setter || f.view_data, _value);
       }
-      console.log(this.formData);
 
       this.ready = true;
     },
@@ -202,7 +231,8 @@ export default {
       }
 
       if (!this.isCreate) {
-        payload.id = this.$route.query.id;
+        payload[this.update_id_setter] =
+          this.$route.query[this.update_id_getter];
       }
 
       const endpoint = this.isCreate

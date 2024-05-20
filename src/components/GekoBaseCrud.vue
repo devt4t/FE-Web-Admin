@@ -191,10 +191,36 @@
             ? config.formOption.sort
             : null
         "
+        :update_id_getter="config.update_id_getter || 'id'"
+        :update_id_setter="config.update_id_setter || 'id'"
       >
-        <template v-slot:create-form>
-          <slot name="create-form"></slot
-        ></template>
+        <template v-slot:create-form> </template>
+
+        <template
+          v-for="f in fields.create.filter((x) => x.type === 'row-slot')"
+          v-slot:[`create-${f.view_data}`]="{ formData, field, setFormData }"
+        >
+          <slot
+            :name="'create-' + f.view_data"
+            v-bind:formData="formData"
+            v-bind:field="field"
+            v-bind:setFormData="setFormData"
+          >
+          </slot>
+        </template>
+
+        <template
+          v-for="f in fields.update.filter((x) => x.type === 'row-slot')"
+          v-slot:[`update-${f.view_data}`]="{ formData, field, setter }"
+        >
+          <slot
+            :name="'update-' + f.view_data"
+            v-bind:formData="formData"
+            v-bind:field="field"
+            v-bind:setter="setter"
+          >
+          </slot>
+        </template>
       </geko-base-form>
     </div>
   </div>

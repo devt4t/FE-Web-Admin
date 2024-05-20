@@ -8,6 +8,26 @@
         >
       </div>
     </template>
+
+    <template v-slot:list-donors_name="{ item }">
+      <span class="d-block min-w-150px"
+        >{{ item.participants_first_name }}
+        {{ item.participants_last_name || "" }}</span
+      >
+    </template>
+
+    <template v-slot:update-project_name="{ formData, field }">
+      <v-col md="6">
+        <geko-input
+          v-model="formData.project_name"
+          :item="{
+            label: field.label,
+            type: 'text',
+            validation: ['required'],
+          }"
+        />
+      </v-col>
+    </template>
   </geko-base-crud>
 </template>
 
@@ -27,8 +47,9 @@ export default {
         getter: "GetProjectAllAdmin",
         getterDataKey: "data",
         setter: "AddNewProject",
-        update: "ProjectActivator",
+        update: "UpdateDataProject",
         delete: "deleteProject",
+        update_id_setter: "current_id",
         deleteKey: "code",
         pk_field: null,
         permission: {
@@ -50,6 +71,8 @@ export default {
             "total_tree",
             "project_planting_purposes_name",
             "co2_capture",
+            "project_period_type",
+            "year_interval",
             "date",
             "end_project",
             "location",
@@ -79,12 +102,14 @@ export default {
               },
               detail: true,
               create: {
+                type: "text",
                 validation: ["required"],
                 label: "Nama Project",
                 col_size: 6,
                 separator: "INFORMASI PROJECT",
               },
               update: {
+                type: "row-slot",
                 validation: ["required"],
                 label: "Nama Project",
                 col_size: 6,
@@ -119,7 +144,7 @@ export default {
             label: "Donor",
             methods: {
               list: {
-                transform: "no-empty",
+                type: "row-slot",
               },
               detail: true,
               create: {
@@ -151,11 +176,12 @@ export default {
                   per_page: 10,
                 },
                 option: {
-                  getter: "donors",
+                  getter: "participants_id",
+                  default_label: "participants_first_name",
                   list_pointer: {
                     code: "id",
                     label: "first_name",
-                    display: ["name"],
+                    display: ["first_name"],
                   },
                 },
               },
@@ -196,7 +222,6 @@ export default {
                 setter: "planting_type_id",
                 getter: "getAllProjectUtils",
                 separator: "Informasi Planting",
-
                 param: {
                   project_modul: "type",
                 },
@@ -204,7 +229,7 @@ export default {
                   getter: "project_types_id",
                   default_label: "project_types_name",
                   list_pointer: {
-                    code: "id",
+                    code: "code",
                     label: "label",
                     display: ["name"],
                   },
@@ -367,6 +392,106 @@ export default {
           },
 
           {
+            id: "project_period_type",
+            label: "Project Period",
+            methods: {
+              list: true,
+              detail: true,
+              create: {
+                validation: [],
+                type: "select-radio",
+                col_size: 12,
+                setter: "project_period",
+                option: {
+                  default_value: "one-time",
+                  default_options: [
+                    {
+                      label: "One Time",
+                      icon: "mdi-pine-tree-variant-outline",
+                      code: "one-time",
+                    },
+                    {
+                      label: "Annually",
+                      icon: "mdi-forest",
+                      code: "annually",
+                    },
+                  ],
+                  list_pointer: {
+                    label: "label",
+                    code: "code",
+                    display: ["label"],
+                  },
+                },
+
+                separator: "LAINNYA",
+              },
+              update: {
+                validation: [],
+                type: "select-radio",
+                col_size: 12,
+                setter: "project_period",
+                option: {
+                  default_value: "one-time",
+                  default_options: [
+                    {
+                      label: "One Time",
+                      icon: "mdi-pine-tree-variant-outline",
+                      code: "one-time",
+                    },
+                    {
+                      label: "Annually",
+                      icon: "mdi-forest",
+                      code: "annually",
+                    },
+                  ],
+                  list_pointer: {
+                    label: "label",
+                    code: "code",
+                    display: ["label"],
+                  },
+                },
+
+                separator: "LAINNYA",
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "year_interval",
+            label: "Planting Cycle",
+            methods: {
+              list: true,
+              detail: true,
+              create: {
+                label: "Planting Cycle (year)",
+                validation: ["required"],
+                type: "number",
+                col_size: 12,
+                setter: "year_interval",
+                show_if: {
+                  id: "project_period",
+                  type: "equal",
+                  value: "annually",
+                },
+              },
+              update: {
+                label: "Planting Cycle (year)",
+                validation: ["required"],
+                type: "number",
+                col_size: 12,
+                setter: "year_interval",
+                show_if: {
+                  id: "project_period",
+                  type: "equal",
+                  value: "annually",
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
             id: "date",
             label: "Tanggal",
             methods: {
@@ -380,7 +505,6 @@ export default {
                 col_size: 6,
                 type: "date",
                 setter: "start_date",
-                separator: "LAINNYA",
               },
               update: {
                 label: "Tanggal Mulai",
@@ -388,7 +512,6 @@ export default {
                 col_size: 6,
                 type: "date",
                 setter: "start_date",
-                separator: "LAINNYA",
                 option: {
                   getter: "project_date",
                 },
@@ -454,6 +577,10 @@ export default {
                 validation: [],
                 col_size: 12,
                 type: "textarea",
+                option: {
+                  getter: "note",
+                  setter: "description",
+                },
               },
               filter: false,
             },

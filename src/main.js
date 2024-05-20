@@ -16,7 +16,7 @@ import "./utils/index";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./assets/scss/global.scss";
-// import "./assets/scss/geko-theme.scss";
+import "./assets/scss/geko-theme.scss";
 import "vue-select/dist/vue-select.css";
 
 import service from "@/utils/service.js";

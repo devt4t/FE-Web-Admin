@@ -67,9 +67,14 @@
         :disabled="disabled"
         :options="selectOptions"
         @open="selectGetInitData"
-        :reduce="(x) => x.code"
+        :reduce="(x) => x[item.option?.list_pointer.code || 'code']"
         v-model="tmpValue"
         :appendToBody="true"
+        :label="
+          item.option && item.option.list_pointer
+            ? item.option.list_pointer.label
+            : 'label'
+        "
         :searchable="
           typeof item.searchable === 'boolean' ? item.searchable : true
         "
@@ -98,14 +103,22 @@
         <div
           class="select-radio-item"
           :class="{
-            active: tmpValue === data.code,
+            active:
+              tmpValue ===
+              data[
+                item.option && item.option.list_pointer.code
+                  ? item.option.list_pointer.code || 'code'
+                  : 'code'
+              ],
           }"
           v-for="(data, i) in item.option.default_options"
-          :key="item.view_data + i"
+          :key="'i' + item.view_data + i"
           @click="onSelectRadio(data)"
         >
           <v-icon class="select-radio-radio">{{
-            data.code == tmpValue ? "mdi-radiobox-marked" : "mdi-radiobox-blank"
+            data[item.option && item.option.list_pointer ? item.option.list_pointer.code || "code" : 'code'] == tmpValue
+              ? "mdi-radiobox-marked"
+              : "mdi-radiobox-blank"
           }}</v-icon>
           <v-icon class="select-radio-icon" v-if="data.icon">{{
             data.icon
@@ -187,7 +200,7 @@ export default {
   },
 
   mounted() {
-    if (this.value) {
+    if (![undefined, null, ""].includes(this.value)) {
       this.setDefaultValue();
     }
     if (this.item.option && Array.isArray(this.item.option.default_options)) {
@@ -203,14 +216,15 @@ export default {
         this.item.type === "select"
       ) {
         this.tmpValue = this.item.option.default_options.find(
-          (x) => x[this.item.option.list_pointer.code] == this.value
+          (x) => x[this.item.option.list_pointer.code || "code"] == this.value
         );
       } else if (this.item.type === "select-radio") {
         this.tmpValue = this.value;
       } else if (this.item.type === "select") {
         this.tmpValue = {
-          code: this.value,
-          label: this.item.default_label
+          [this.item.option.list_pointer.code || "code"]: this.value,
+          [this.item.option.list_pointer.label || "label"]: this.item
+            .default_label
             ? this.item.default_label
             : this.item.option.default_label,
         };
@@ -251,8 +265,10 @@ export default {
       let processedData = [];
       for (const _data of responseData) {
         processedData.push({
-          label: _data[this.item.option.list_pointer.label],
-          code: _data[this.item.option.list_pointer.code],
+          [this.item.option.list_pointer.label || "label"]:
+            _data[this.item.option.list_pointer.label || "label"],
+          [this.item.option.list_pointer.code || "code"]:
+            _data[this.item.option.list_pointer.code || "code"],
         });
       }
       this.isLoading = false;
@@ -285,15 +301,18 @@ export default {
       this.tmpValue = null;
     },
     onSelectRadio(data) {
-      this.tmpValue = data.code;
-      this.$emit("input", data.code);
+      this.tmpValue = data[this.item.option.list_pointer.code] || "code";
+      this.$emit("input", data[this.item.option.list_pointer.code || "code"]);
     },
   },
 
   watch: {
-    tmpValue(t) {
+    tmpValue() {
       if (typeof this.tmpValue === "object" && !Array.isArray(this.tmpValue)) {
-        this.$emit("input", this.tmpValue[this.item.option.list_pointer.code]);
+        this.$emit(
+          "input",
+          this.tmpValue[this.item.option.list_pointer.code || "code"]
+        );
       } else {
         this.$emit("input", this.tmpValue);
       }
