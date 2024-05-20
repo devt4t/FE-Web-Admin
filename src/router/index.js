@@ -7,6 +7,7 @@ import ViewDistribution from "@/views/Activity/components/distribusi/viewDistrib
 // Area Management
 import RegionalAMS from "@/views/AreasManagement/regional/AMSRegional";
 import ManagementUnitAMS from "@/views/AreasManagement/management_unit/AMSUnitManager";
+import newScoopings from "@/views/Activity_new/scooping_visit/newScoopingVisit";
 import TargetAreaAMS from "@/views/AreasManagement/target_area/AMSFieldCoordinator";
 import DesaAMS from "@/views/AreasManagement/desa/AMSFieldFacilitator";
 
@@ -276,6 +277,11 @@ const routes = [
     path: "/AssignManagementAreaMU",
     name: "AssignManagementAreaMU",
     component: ManagementUnitAMS,
+  },
+  {
+    path: "/newScoopingVisit",
+    name: "newScoopingVisit",
+    component: newScoopings,
   },
   // {
   //   path: '/AssignManagementAreaDesa',
