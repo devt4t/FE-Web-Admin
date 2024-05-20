@@ -16,6 +16,8 @@ import "./utils/index";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./assets/scss/global.scss";
+// import "./assets/scss/geko-theme.scss";
+import "vue-select/dist/vue-select.css";
 
 import service from "@/utils/service.js";
 import alert from "@/utils/alert.js";
@@ -25,6 +27,9 @@ import "@/utils/validation.js";
 import GekoBaseCrud from "@/components/GekoBaseCrud";
 import GekoInput from "@/components/GekoInput";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
+import vSelect from "vue-select";
+import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/index.css";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -52,11 +57,13 @@ Vue.prototype.$_alert = alert;
 Vue.prototype.$_api = service;
 
 //global component
+Vue.component("geko-select", vSelect);
 
 Vue.component("geko-base-crud", GekoBaseCrud);
 Vue.component("geko-input", GekoInput);
 Vue.component("ValidationProvider", ValidationProvider);
 Vue.component("ValidationObserver", ValidationObserver);
+Vue.component("date-picker", DatePicker);
 new Vue({
   router,
   store,

@@ -41,6 +41,7 @@
           showCurrentPage: true,
           showFirstLastPage: true,
         }"
+        :loading="loading"
       >
         <template v-slot:top>
           <div class="geko-list-header px-5 py-3 mt-1">
@@ -69,34 +70,30 @@
               style="max-width: 200px"
             ></v-select>
             <!-- i'm, adding a program years, just in case it'll be needed ;),  -->
-            <div class="d-flex flex-row geko-list-header-action pl-5 ml-5">
-              <form>
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Pencarian"
-                  :placeholder="'Cari data ' + config.title.toLowerCase()"
-                  hide-details
-                  dense
-                  rounded
-                  outlined
-                  color="green"
-                  class="mr-2"
-                ></v-text-field>
-              </form>
-              <v-btn
-                density="default"
-                class="circle mr-2"
-                variant="light"
-                @click="onRefresh"
-              >
-                <v-icon>mdi-refresh</v-icon>
-              </v-btn>
+            <div class="d-flex flex-row geko-list-header-action">
+              <div class="geko-list-header-toolbar">
+                <form v-on:submit.prevent="getListData">
+                  <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Pencarian"
+                    :placeholder="'Cari data ' + config.title.toLowerCase()"
+                    hide-details
+                    dense
+                    rounded
+                    outlined
+                    color="green"
+                    class="mr-2"
+                  ></v-text-field>
+                </form>
+                <button class="toolbar-button mr-2" @click="onRefresh">
+                  <v-icon>mdi-refresh</v-icon>
+                </button>
 
-              <v-btn density="default" class="circle mr-2" variant="light">
-                <v-icon>mdi-microsoft-excel</v-icon>
-              </v-btn>
-
+                <button class="toolbar-button mr-2">
+                  <v-icon>mdi-microsoft-excel</v-icon>
+                </button>
+              </div>
               <v-btn
                 variant="success"
                 class="ml-4"
@@ -114,39 +111,44 @@
             </div>
           </div>
         </template>
+
         <template v-slot:item.index="{ index }">
           {{ index + 1 }}
         </template>
 
         <template
-          v-for="f in fields.list.filter((x) => x.type === 'row-slot')"
-          v-slot:[getSlotName(f.view_data)]="{ item }"
-        >
-          <slot :name="'list-' + f.view_data" v-bind:item="item"></slot>
-        </template>
-
-        <template
           v-for="f in fields.list.filter(
-            (x) => x.transform && x.type !== 'row-slot'
+            (x) => x.type === 'row-slot' || x.transform || x.class
           )"
-          v-slot:[getSlotName(f.view_data)]="{ item }"
+          v-slot:[`item.${f.view_data}`]="{ item }"
         >
-          {{ item[f.view_data] | parse(f.transform) }}
+          <slot
+            v-if="f.type === 'row-slot'"
+            :name="'list-' + f.view_data"
+            v-bind:item="item"
+          ></slot>
+
+          <span
+            v-else
+            :class="{
+              [typeof f.class === 'string' ? `d-block ${f.class}` : '']: true,
+              [typeof f.class === 'object' && f.class !== null
+                ? `d-block ${f.class[item[f.view_data]]}`
+                : '']: true,
+            }"
+            >{{
+              item[f.view_data] | parse(f.transform ? f.transform : "no-empty")
+            }}</span
+          >
         </template>
 
         <template v-slot:item.actions="{ item }">
           <div class="geko-list-actions">
-            <button
-              class="geko-list-action-view"
-              v-b-tooltip.hover
-              title="Detail"
-            >
+            <button class="geko-list-action-view">
               <v-icon small>mdi-eye-outline</v-icon>
             </button>
             <button
               class="geko-list-action-update"
-              v-b-tooltip.hover
-              title="Perbarui"
               @click="
                 $router.push({
                   query: {
@@ -162,8 +164,6 @@
             </button>
             <button
               class="geko-list-action-delete"
-              v-b-tooltip.hover
-              title="Hapus"
               @click="onDelete(item)"
               v-if="config.delete"
             >
@@ -186,7 +186,16 @@
         :update="config.update"
         :updateExtPayload="config.update_ext_payload"
         @success="getListData"
-      />
+        :sort="
+          config.formOption && Array.isArray(config.formOption.sort)
+            ? config.formOption.sort
+            : null
+        "
+      >
+        <template v-slot:create-form>
+          <slot name="create-form"></slot
+        ></template>
+      </geko-base-form>
     </div>
   </div>
 </template>
@@ -244,7 +253,7 @@ export default {
       page: 1,
       perPage: 10,
       search: "",
-      activeView: "list",
+      activeView: null,
       activeID: null,
       permission: {},
       loading: true,
@@ -277,9 +286,10 @@ export default {
       return `item.${value}`;
     },
     async onInit() {
+      if (!this.$route.query.view) return;
       await this.buildModule();
       await this.generateList();
-      this.getListData();
+      this.activeView = this.$route.query.view;
     },
     buildModule() {
       return new Promise(async (resolve) => {
@@ -319,6 +329,7 @@ export default {
         }
 
         this.fields = _fields;
+
         return resolve();
       });
     },
@@ -330,26 +341,28 @@ export default {
         if (this.config.listOption && this.config.listOption.noIndex) {
         } else {
           _header.push({
+            text: "",
+            key: "actions",
+            value: "actions",
+            class: "sticky-left",
+            sortable: false,
+          });
+          _header.push({
             text: "#",
             value: "index",
             key: "index",
+            sortable: false,
           });
         }
         for (const f of this.fields.list) {
           _header.push({
             text: f.label,
             key: f.view_data,
-            class: f.class,
+            class: f.header_class,
             value: f.view_data,
+            sortable: false,
           });
         }
-
-        _header.push({
-          text: "",
-          key: "actions",
-          value: "actions",
-          class: "floating-column",
-        });
 
         this.header = _header;
 
@@ -364,7 +377,11 @@ export default {
     generateConfigField(item, key) {
       let _data = {
         view_data: item.methods[key].view_data || item.id,
-        label: item.label || item.id,
+        label: item.methods[key].label
+          ? item.methods[key].label
+          : item.label
+          ? item.label
+          : item.id,
         header_class: item.methods[key].header_class || null,
         type: item.methods[key].type || "text",
         class: item.methods[key].class || null,
@@ -380,8 +397,16 @@ export default {
       if (["update", "create"].includes(key)) {
         _data.setter = item.methods[key].setter || _data.view_data;
         _data.getter = item.methods[key].getter || _data.view_data;
+        _data.option =
+          typeof item.methods[key].option === "object"
+            ? item.methods[key].option
+            : null;
 
         _data.col_size = item.methods[key].col_size || 12;
+        _data.param = item.methods[key].param || null;
+        _data.show_if = item.methods[key].show_if || null;
+        _data.separator = item.methods[key].separator || null;
+        _data.disabled = item.methods[key].disabled || null;
       }
       if (key === "create" && item.label == "Created By") {
         console.log(item.methods[key].input);
@@ -391,15 +416,42 @@ export default {
     },
 
     async getListData() {
+      this.loading = true;
       let _params = JSON.parse(JSON.stringify(this.params));
       let _filters = JSON.parse(JSON.stringify(this.filters));
+      if (this.search) {
+        _params.search_value = this.search;
+      }
       let reqParams = Object.assign(_filters, _params);
 
       reqParams.page = this.page;
       reqParams.per_page = this.perPage;
-      const responseData = await this.$_api.get(this.config.getter, reqParams);
-      this.data = responseData.data;
+      const responseData = await this.$_api
+        .get(this.config.getter, reqParams)
+        .catch(() => {
+          this.loading = false;
+        });
+
+      this.data = this.processListData(
+        responseData,
+        this.config.getterDataKey || "data"
+      );
       this.totalRecord = responseData.total;
+      this.loading = false;
+    },
+
+    onSearch(e) {
+      if (e.preventDefault instanceof Function) e.preventDefault();
+      this.getListData();
+    },
+
+    processListData(data, _key) {
+      const keys = _key.split(".");
+      let tmpData = data;
+      for (const key of keys) {
+        tmpData = tmpData[key];
+      }
+      return tmpData;
     },
 
     onDelete(item) {
@@ -450,6 +502,9 @@ export default {
       deep: true,
       immediate: true,
       handler(to, from) {
+        if (!from) {
+          return;
+        }
         this.activeView = to.query.view ? to.query.view : "list";
 
         this.activeID = to.query.id
@@ -457,6 +512,12 @@ export default {
             ? to.query.id
             : Number(to.query.id)
           : "";
+
+        if (from.query.view !== to.query.view) {
+          if (this.activeView === "list") {
+            this.getListData();
+          }
+        }
       },
     },
     page(t) {

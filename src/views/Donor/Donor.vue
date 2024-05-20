@@ -1,343 +1,284 @@
 <template>
-    <div>
-      <v-breadcrumbs
-        :dark="$store.state.theme == 'dark'"
-        data-aos="fade-right"
-        class="breadcrumbsmain"
-        :items="itemsbr"
-        divider=">"
-        large
-      ></v-breadcrumbs>
+  <geko-base-crud :config="config">
+    <template v-slot:list-first_name="{ item }">
+      <div class="d-flex flex-column min-w-100px">
+        <div v-if="item.participant_category === 'personal'">
+          <span>{{ item.first_name }}</span>
+          <span v-if="item.last_name">{{ " " + item.last_name }}</span>
+        </div>
 
-      <!-- dialogs -->
-      <dialogAddDonors
-      :show="addModal"
-      @close="closeDialogAdd()"
-      >
-      </dialogAddDonors>
-      <dialogEditDonors
-      :show="editDonors.show"
-      :itemData="editDonors.data"
-      @close="closeDialogEdit()"
-      >
-      </dialogEditDonors>
-      <dialogDetailDonors
-      :show="details.show"
-      :datas="details.object"
-      @close="details.show = false"
-      ></dialogDetailDonors>
-      
-      <v-data-table
-        data-aos="fade-up"
-        data-aos-delay="200"
-        multi-sort
-        :headers="headers"
-        :items="dataobject"
-        :search="search"
-        :loading="tableLoading"
-        :footer-props="{
-          itemsPerPageText: 'Jumlah Data Per Halaman'
-        }"
-        class="rounded-xl elevation-6 mx-3 pa-1"
-        @update:page="($p) => page = $p"
-        @update:items-per-page="($p) => itemsPerPage = $p"
-      >
-        <template v-slot:top>
-          <v-toolbar flat class="rounded-xl">
-          <!-- program years-->
-            <v-select
-                color="success"
-                item-color="success"
-                v-model="localConfig.programYear"
-                :items="['All Data',...$store.state.programYear.options]"
-                :disabled="tableLoading"
-                outlined
-                dense
-                hide-details
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-                rounded
-                label="Tahun Program"
-                class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-                style="max-width: 200px"
-            ></v-select>
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Pencarian"
-              placeholder="Pencarian..."
-              hide-details
-              dense
-              rounded
-              outlined
-              color="green"
-              style="max-width: 350px;"
-            ></v-text-field>
-            <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
-            <v-select
-                v-if="false"
-                color="success"
-                item-color="success"
-                v-model="dataSwitch"
-                :items="dataSwitchItems"
-                outlined
-                dense
-                hide-details
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-                rounded
-                label="Donor-Partisipan"
-                class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-                style="max-width: 200px"
-                v-on:change="SelectedDataSwitch"
-            ></v-select>
-            <v-btn
-              rounded
-              dark
-              class="px-9"
-              color="green"
-              @click="addModal = true"
-            >
-            <strong>Tambah Data Donor</strong>
-            <v-icon class="mx-2">mdi-plus</v-icon> 
-            </v-btn>
-          </v-toolbar>
-        </template>
+        <span v-else>{{ item.first_name }}</span>
+      </div>
+    </template>
 
-        <template v-slot:item.index="{ index }">
-          {{ (itemsPerPage * (page-1)) + index + 1 }}
-        </template>
-        <!-- Category -->
-        <template v-slot:item.participant_category="{item}">
-            {{ categoryControl(item.participant_category) }}
-        </template>
-        <!--Status row-->
-        <template v-slot:item.status="{item}">
-          <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
-            <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
-            {{ getStatusColumn('text', item.status) }}
-          </v-chip>
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-menu content-class="rounded-xl">
-            <template v-slot:activator="{attrs, on}">
-              <v-btn v-bind="attrs" v-on="on" small fab icon>
-                <v-icon>mdi-menu-down</v-icon>
-              </v-btn>
-            </template>
-            <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-            <!--showModal('detail', item)-->
-                <v-btn
-                  color="blue white--text"
-                     rounded
-                     small
-                     class="pl-1 mt-1 d-flex justify-start align-center"
-                     @click="openDetailDonor(item)">
-                <v-icon class="mr-1">information-outline</v-icon>
-                Detail
-              </v-btn>
-              <v-btn
-                  color="orange white--text"
-                     rounded
-                     small
-                     class="pl-1 mt-1 d-flex justify-start align-center"
-                     @click="openEditDonor(item)">
-                <v-icon class="mr-1">mdi-check-bold</v-icon>
-                Edit Data Donatur
-              </v-btn>
-                <!--{showModal('form', item)}-->
-            </v-card>
-          </v-menu>
-        </template>
-      </v-data-table>
-  
-      <v-snackbar
-        v-model="snackbar"
-        :color="colorsnackbar"
-        :timeout="timeoutsnackbar"
-      >
-        {{ textsnackbar }}
-      </v-snackbar>
-    </div>
-  </template>
-  
-  <script>
-  import axios from "axios";
-  import dialogAddDonors from "@/views/Donor/dialogAddDonors"
-  import dialogEditDonors from "@/views/Donor/dialogEditDonors"
-  import dialogDetailDonors from "@/views/Donor/dialogDetailDonors"
-  
-  export default {
-    name: "Donor",
-    components: {
-      dialogAddDonors,
-      dialogEditDonors,
-      dialogDetailDonors
-    },
-    data: () => ({
-      addModal: false,
+    <template v-slot:list-address1="{ item }">
+      <div class="min-w-200px d-flex flex-column">
+        <span>{{ item.address1 }}</span>
+        <span v-if="item.address2" class="font-weight-300 text-small">{{
+          item.address2
+        }}</span>
+      </div>
+    </template>
 
-      editDonors: {
-        show: false,
-        data: {}
-      },
+    <template v-slot:list-province="{ item }">
+      <div class="text-capitalize">
+        {{ parseAddress(item) }}
+      </div>
+    </template>
 
-      page: 1,
-      itemsPerPage: 10,
-      itemsbr: [
-        {
-          text: "Main Data",
-          disabled: true,
-          href: "breadcrumbs_dashboard",
+    <template v-slot:list-company="{ item }">
+      <div class="min-w-200px">
+        <span v-if="!item.company">-</span>
+        <p class="font-weight-bold mb-0" v-else>
+          {{ item.company }}
+        </p>
+        <p class="mb-0 pb-0" v-if="item.website">{{ item.website }}</p>
+      </div>
+    </template>
+
+    <template v-slot:create-form>
+      <donor-form />
+    </template>
+  </geko-base-crud>
+</template>
+
+<script>
+import DonorForm from "./DonorForm.vue";
+export default {
+  name: "crud-donor",
+  watch: {},
+  components: {
+    DonorForm,
+  },
+  data() {
+    return {
+      config: {
+        title: "Donor",
+        program_year: {
+          show: false,
+          model: "2024",
         },
-        {
-          text: "Donor",
-          disabled: true,
-          href: "breadcrumbs_link_1",
+        model_api: null,
+        getter: "GetDonorAllAdmin",
+        getterDataKey: "data",
+        setter: "addProjectUtils",
+        update: "updateProjectUtils",
+        delete: "newDeleteDonor",
+        pk_field: null,
+        permission: {
+          create: "donor-create",
+          read: "donor-list",
+          update: "donor-update",
+          show: "donor-show",
+          lookup: "donor-lookup",
+          delete: "donor-delete",
         },
-      ],
-      search: "",
-      authtoken: "",
-      BaseUrlGet: "",
-      tableLoading: false,
-      headers: [
-        {text: 'No', value: 'index'},
-        {text: 'No Partisipan', value: 'participant_no'},
-        {text: 'Kategori', value: 'participant_category'},
-        {text: 'Nama Depan', value: 'first_name'},
-        {text: 'Nama Belakang', value: 'last_name'},
-        {text: 'Alamat 1', value: 'address1'},
-        {text: 'Alamat 2', value: 'address2'},
-        {text: 'Perusahaan', value: 'company'},
-        {text: 'Kota', value: 'city'},
-        {text: 'Actions', value: 'actions', align: 'right'},
-      ],
-      dataobject: [],
-      dataSwitch: "Donor",
-      dataSwitchItems: ["Donor", "Manufaktur", "Sponsor"],
-      details:{
-        show: false,
-        object: {}
-      },
+        slave: [],
+        fields: [
+          {
+            id: "id",
+            methods: {
+              list: false,
+              detail: false,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
 
-      snackbar: false,
-      textsnackbar: "Test",
-      timeoutsnackbar: 2000,
-      colorsnackbar: null,
-      localConfig: {
-        programYear: '',
+          {
+            id: "first_name",
+            label: "Nama/Perusahaan",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: true,
+              create: {
+                validation: ["required"],
+                label: "Nama Depan",
+                col_size: 6,
+              },
+              update: { validation: ["required"] },
+              filter: false,
+            },
+          },
+
+          {
+            id: "last_name",
+            label: "Nama Belakang",
+            methods: {
+              list: false,
+              detail: true,
+              create: {
+                validation: ["required"],
+                col_size: 6,
+              },
+              update: { validation: ["required"], setter: "new_name" },
+              filter: false,
+            },
+          },
+
+          // {
+          //   id: "phone",
+          //   label: "No. HP",
+          //   methods: {
+          //     list: true,
+          //     detail: true,
+          //     create: { validation: ["required"], col_size: 6 },
+          //     update: { validation: ["required"], setter: "new_name" },
+          //     filter: false,
+          //   },
+          // },
+
+          {
+            id: "participant_category",
+            label: "Kategori Donor",
+            methods: {
+              list: {
+                show: true,
+                class: "text-capitalize",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "email",
+            label: "Email",
+            methods: {
+              list: true,
+              detail: true,
+              create: { validation: ["required", "email"], col_size: 6 },
+              update: { validation: ["required"], setter: "new_name" },
+              filter: false,
+            },
+          },
+
+          // {
+          //   id: "address1",
+          //   label: "Alamat",
+          //   methods: {
+          //     list: {
+          //       type: "row-slot",
+          //     },
+          //     detail: true,
+          //     create: {
+          //       validation: ["required"],
+          //       type: "textarea",
+          //       col_size: 8,
+          //     },
+          //     update: { validation: ["required"], setter: "new_name" },
+          //     filter: false,
+          //   },
+          // },
+
+          // {
+          //   id: "postal_code",
+          //   label: "Kode Pos",
+          //   methods: {
+          //     list: false,
+          //     detail: true,
+          //     create: { validation: ["required"], col_size: 4 },
+          //     update: { validation: ["required"], setter: "new_name" },
+          //     filter: false,
+          //   },
+          // },
+
+          // {
+          //   id: "province",
+          //   label: "Provinsi",
+          //   methods: {
+          //     list: {
+          //       type: "row-slot",
+          //       label: "Provinsi/Kota/Desa",
+          //     },
+          //     detail: true,
+          //     create: {
+          //       getter: "GetProvinceAdmin",
+          //       setter: "province_code",
+          //       type: "select",
+          //       validation: ["required"],
+          //       option: {
+          //         getterKey: "data.result",
+          //         list_pointer: {
+          //           label: "name",
+          //           code: "id",
+          //           display: ["name"],
+          //         },
+          //       },
+          //     },
+          //     update: { validation: ["required"], setter: "new_name" },
+          //     filter: false,
+          //   },
+          // },
+
+          // {
+          //   id: "company",
+          //   label: "Perusahaan",
+          //   methods: {
+          //     list: {
+          //       type: "row-slot",
+          //     },
+          //     detail: true,
+          //     create: { validation: ["required"] },
+          //     update: { validation: ["required"], setter: "new_name" },
+          //     filter: false,
+          //   },
+          // },
+
+          {
+            id: "join_date",
+            label: "Tgl. Bergabung",
+            methods: {
+              list: {
+                transform: "date",
+                class: "text-no-wrap",
+              },
+              detail: true,
+              create: { validation: ["required"], type: "date" },
+              update: { validation: ["required"], setter: "new_name" },
+              filter: false,
+            },
+          },
+
+          {
+            id: "active",
+            label: "Status",
+            methods: {
+              list: {
+                transform: "active",
+                class: {
+                  1: "badge bg-success",
+                  0: "badge bg-danger",
+                },
+              },
+              detail: true,
+              create: { validation: ["required"], type: "date" },
+              update: { validation: ["required"], setter: "new_name" },
+              filter: false,
+            },
+          },
+        ],
       },
-    }),
-  
-    created() {
-      this.authtoken = localStorage.getItem("token");
-      this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
-  
-      this.localConfig.programYear = this.$store.state.programYear.model
-      this.initialize();
-    },
-    watch: {
-      'localConfig.programYear': {
-        handler(val) {
-          this.initialize()
+    };
+  },
+
+  methods: {
+    parseAddress(item) {
+      let locations = [];
+      let keys = ["city", "state", "country"];
+
+      for (const key of keys) {
+        if (item[key]) {
+          locations.push(item[key]);
         }
       }
-    },
-  
-    computed: {
-      
-    },
-    methods: {
-      closeDialogAdd(){
-        this.addModal = false
-        this.initialize()
-      },
-      closeDialogEdit(){
-        this.editDonors.show = false
-        this.editDonors.data = {}
-        this.initialize()
-      },
 
-      async initialize() {
-        try {
-            this.$store.state.loadingOverlay = true
-            this.$store.state.loadingOverlayText = 'Memuat Data...'
-            const User = this.$store.state.User
-            const created_by = []
-            let url = this.$store.getters.getApiUrl(`GetDonorAllAdmin?`)
-            const param =new URLSearchParams({
-              program_year: this.localConfig.programYear
-            })
-            
-            const res = await axios.get(url + param, this.$store.state.apiConfig)
-            if(this.dataSwitch == "Donor"){
-              this.dataobject = res.data.donors
-            }
-            else if(this.dataSwitch == "Manufaktur"){
-              this.dataobject = res.data.manufacturs
-            }
-            else if(this.dataSwitch == "Sponsor"){
-              this.dataobject = res.data.sponsors
-            }
-            } catch (err) {
-            this.dataobject = []
-              this.$store.state.loadingOverlay = false
-              this.$store.state.loadingOverlayText = ''
-            this.errorResponse(err)
-            } finally {
-              this.$store.state.loadingOverlay = false
-              this.$store.state.loadingOverlayText = ''
-            }
-      },
-      openDetailDonor(item){
-        this.details.object = item
-        this.details.show = true
-      },
-      openEditDonor(item){
-        this.editDonors.show = true
-        this.editDonors.data = item
-      },
-      SelectedDataSwitch(){
-        console.log(this.dataSwitch)
-        this.initialize();
-      },
-      categoryControl(val){
-        if(val == 'cat-1') return 'Umum'
-        else if(val == 'cat-2') return 'Komunitas'
-        else if(val == 'cat-3') return 'Perusahaan'
-      },
-      getStatusColumn(type, status) {
-        if (type == 'bg_color') {
-          if (status == '0') return 'orange'
-          if (status == '1') return 'green darken-1'
-          if (status == '2') return 'red'
-        }
-        if (type == 'icon') {
-          if (status == '0') return 'mdi-google-downasaur' //mdi:cancel
-          if (status == '1') return 'mdi-check-circle'
-          if (status == '2') return 'mdi-alert-rhombus-outline'
-        }
-        if (type == 'text') {
-          if (status == '0') return 'Belum Mengikuti RRA'
-          if (status == '1') return 'Potensial'
-          if (status == '2') return 'Tidak Potensial'
-        }
-  
-        return ''
-      },
-      
-  //TEST, Ambil data Rrapra
-      /*async getRrapra_status(){
-      //need table
-        try {
-          this.table.loading.show = true
-          this.table.loading.text = "Sedang ambil data..."
-        }
-        catch (error){
-          this.table.items = []
-          this.errorResponse(err)
-        } finally {
-          this.table.loading.show = false
-        }
-      },*/
+      return locations.join(", ").toLowerCase();
     },
-  };
-  </script>
+  },
+};
+</script>
