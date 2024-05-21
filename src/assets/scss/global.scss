@@ -171,15 +171,31 @@ button.circle {
   font-weight: 400;
 }
 
+.vs-style.vs--multiple {
+  
+  .vs__selected-options {
+    padding-left: 10px !important;
+    .vs__selected {
+      height: 28px !important;
+      margin-top: 4px !important;
+      margin-right: 4px !important;
+      background-color: $success_light !important;
+      color: $success !important
+    }
+  }
+}
+
 .vs__dropdown-menu {
   position: absolute !important;
   padding-left: 0 !important;
 }
-
-.vs__dropdown-toggle,
-.vs__selected {
-  height: 38px !important;
+.vs-style {
+  .vs__dropdown-toggle,
+  .vs__selected {
+    height: 38px !important;
+  }
 }
+
 
 .vs__selected {
   padding-left: 10px !important;
@@ -209,6 +225,11 @@ button.circle {
   font-size: 0.9em;
   padding: 3px 9px;
   text-align: center;
+
+  &.bg-primary {
+    background-color: lighten($primary_light, 5);
+    color: $primary;
+  }
 
   &.bg-success {
     background-color: $success_light;
@@ -247,6 +268,64 @@ button.circle {
 .text-grey {
   color: $grey;
 }
+
+.form-stepper-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .form-stepper-header-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    
+    &.active  {
+      .value {
+
+        background-color: $success;
+        color: white;
+      }
+
+      .label {
+        font-weight: 700;
+      }
+    }
+    .value {
+      width: 1.9em;
+      height: 1.9em;
+      display: block;
+      background-color: $success_light;
+      text-align: center;
+      line-height: 1.9em;
+      font-size: 1.1em;
+      font-weight: 600;
+      border-radius: 8px;
+      color: $success;
+
+    }
+
+    .label {
+      color: $success;
+      padding-left: 7px;
+      font-size: .8em;
+    }
+  }
+
+  .form-stepper-header-splitter {
+    height: 1.9em;
+    width: 4em;
+    padding-inline: 10px;
+    span {
+      
+      height: 50%;
+      position: relative;
+      border-bottom: 1px dashed rgb(197, 197, 197);
+      display: block;
+    }
+  }
+}
+
 
 @media only screen and (min-width: 1264px) {
   .v-main.gradient-animate.logged-in {

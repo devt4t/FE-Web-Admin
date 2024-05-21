@@ -48,8 +48,8 @@
             <div class="pr-5 mr-5">
               <h4>{{ config.title }}</h4>
             </div>
-            <v-select
-              v-if="config.program_year.show"
+            <!-- <v-select
+              v-if="config.program_year.show || false"
               color="success"
               item-color="success"
               v-model="config.program_year.model"
@@ -68,7 +68,7 @@
               label="Tahun Program"
               class="mx-auto mr-lg-2 mb-2 mb-lg-0"
               style="max-width: 200px"
-            ></v-select>
+            ></v-select> -->
             <!-- i'm, adding a program years, just in case it'll be needed ;),  -->
             <div class="d-flex flex-row geko-list-header-action">
               <div class="geko-list-header-toolbar">
@@ -144,7 +144,17 @@
 
         <template v-slot:item.actions="{ item }">
           <div class="geko-list-actions">
-            <button class="geko-list-action-view">
+            <button
+              class="geko-list-action-view"
+              @click="
+                $router.push({
+                  query: {
+                    view: 'detail',
+                    id: item.id,
+                  },
+                })
+              "
+            >
               <v-icon small>mdi-eye-outline</v-icon>
             </button>
             <button
@@ -194,8 +204,6 @@
         :update_id_getter="config.update_id_getter || 'id'"
         :update_id_setter="config.update_id_setter || 'id'"
       >
-        <template v-slot:create-form> </template>
-
         <template
           v-for="f in fields.create.filter((x) => x.type === 'row-slot')"
           v-slot:[`create-${f.view_data}`]="{ formData, field, setFormData }"
@@ -221,7 +229,24 @@
           >
           </slot>
         </template>
+        <template v-slot:create-form>
+          <slot name="create-form"></slot>
+        </template>
       </geko-base-form>
+    </div>
+
+    <div class="geko-base-detail mx-4" v-else-if="activeView === 'detail'">
+      <slot name="detail-row">
+      <geko-base-detail
+        :fields="fields.detail"
+        :api="fields.getter"
+        :title="config.title"
+      >
+        <template v-slot:detail-body>
+          <slot name="detail-body"></slot>
+        </template>
+      </geko-base-detail>
+    </slot>
     </div>
   </div>
 </template>
@@ -229,6 +254,7 @@
 <script>
 import "../assets/scss/geko-base-crud.scss";
 import GekoBaseForm from "./GekoBaseForm.vue";
+import GekoBaseDetail from "./GekoBaseDetail.vue";
 export default {
   name: "geko-base-crud",
   props: {
@@ -268,6 +294,7 @@ export default {
   },
   components: {
     GekoBaseForm,
+    GekoBaseDetail,
   },
   data() {
     return {
@@ -296,6 +323,7 @@ export default {
   },
 
   mounted() {
+    if (!this.config) return;
     if (!this.$route.query.view) {
       this.$router.replace({
         query: {

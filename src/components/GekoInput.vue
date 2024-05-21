@@ -6,6 +6,7 @@
       :rules="item.validation ? item.validation.join('|') : ''"
       v-slot="{ classes, errors }"
       class="geko-input"
+      ref="provider"
     >
       <label
         :for="item.view_data"
@@ -33,13 +34,14 @@
       />
 
       <date-picker
-        v-else-if="['date'].includes(item.type)"
+        v-else-if="['date', 'daterange'].includes(item.type)"
         v-model="tmpValue"
         valueType="format"
         class="w-100"
         :class="{
           invalid: errors.length > 0,
         }"
+        :range="item.type === 'daterange'"
       ></date-picker>
 
       <textarea
@@ -66,6 +68,7 @@
         :placeholder="item.placeholder || null"
         :disabled="disabled"
         :options="selectOptions"
+        @option:selected="$emit('selected', $event)"
         @open="selectGetInitData"
         :reduce="(x) => x[item.option?.list_pointer.code || 'code']"
         v-model="tmpValue"
@@ -78,6 +81,7 @@
         :searchable="
           typeof item.searchable === 'boolean' ? item.searchable : true
         "
+        :multiple="item.option && item.option.multiple ? true : false"
       >
         <template #no-options="{ search, searching, loading }">
           <span v-if="isLoading"
@@ -95,6 +99,16 @@
           <span v-else>{{ `Tidak ada data ${item.label.toLowerCase()}` }}</span>
         </template>
       </geko-select>
+
+      <VueEditor
+        v-else-if="['editor'].includes(item.type)"
+        v-model="tmpValue"
+        :disabled="disabled"
+        :placeholder="item.placeholder || ''"
+        :class="{
+          invalid: errors.length > 0,
+        }"
+      />
 
       <div
         class="select-radio-row"
@@ -116,7 +130,11 @@
           @click="onSelectRadio(data)"
         >
           <v-icon class="select-radio-radio">{{
-            data[item.option && item.option.list_pointer ? item.option.list_pointer.code || "code" : 'code'] == tmpValue
+            data[
+              item.option && item.option.list_pointer
+                ? item.option.list_pointer.code || "code"
+                : "code"
+            ] == tmpValue
               ? "mdi-radiobox-marked"
               : "mdi-radiobox-blank"
           }}</v-icon>
@@ -144,12 +162,40 @@
             'background-image': tmpImage ? 'url(' + tmpImage + ')' : 'unset',
           }"
         >
-          <v-icon v-if="!tmpImage">mdi-image</v-icon>
+          <v-icon v-if="!tmpImage">{{
+            item.option && item.option.icon ? item.option.icon : "mdi-image"
+          }}</v-icon>
         </label>
 
         <div class="upload-label">
-          <h6>Klik gambar untuk memilih berkas yang akan diunggah</h6>
-          <span class="d-block">Ukuran berkas maksimal 2 Mb</span>
+          <h6>
+            {{
+              item.option
+                ? item.option.label_hint
+                : "Klik gambar untuk memilih berkas yang akan diunggah"
+            }}
+          </h6>
+          <span class="d-block" v-if="item.option && item.option.max_size"
+            >Ukuran berkas maksimal {{ item.option.max_size }} Mb
+            <span v-if="item.option && item.option.max"
+              >( Maksimal {{ item.option.max }} foto)</span
+            ></span
+          >
+
+          <div class="preview-image-list">
+            <div
+              class="preview-image"
+              v-for="(image, i) in tmpImages"
+              :key="item.label + i"
+              :style="{
+                'background-image': image ? 'url(' + image + ')' : 'unset',
+              }"
+            >
+              <button @click="removeImage(i)">
+                <v-icon>mdi-close-circle</v-icon>
+              </button>
+            </div>
+          </div>
 
           <v-btn
             v-if="tmpImage"
@@ -194,6 +240,7 @@ export default {
     return {
       tmpValue: null,
       tmpImage: null,
+      tmpImages: [],
       selectOptions: [],
       isLoading: false,
     };
@@ -257,7 +304,6 @@ export default {
       const result = await this.$_api.get(this.item.api, payload).catch(() => {
         this.isLoading = false;
       });
-
       const responseData = this.item.option.getterKey
         ? this.getListDataKey(result, this.item.option.getterKey)
         : result.data;
@@ -269,6 +315,7 @@ export default {
             _data[this.item.option.list_pointer.label || "label"],
           [this.item.option.list_pointer.code || "code"]:
             _data[this.item.option.list_pointer.code || "code"],
+          ...(this.$listeners.selected instanceof Function ? _data : {}),
         });
       }
       this.isLoading = false;
@@ -286,14 +333,27 @@ export default {
     },
 
     async handleFileUpload(data) {
-      this.tmpImage = URL.createObjectURL(data.target.files[0]);
+      if (this.item.option && this.item.option.multiple) {
+        this.tmpImages.push(URL.createObjectURL(data.target.files[0]));
+      } else {
+        this.tmpImage = URL.createObjectURL(data.target.files[0]);
+      }
       const response = await this.$_api.upload("donor/upload.php", {
         nama: Date.now().toString(),
         dir: "donor-photo/",
         image: data.target.files[0],
       });
 
-      this.tmpValue = response;
+      if (this.item.option && this.item.option.multiple) {
+        if (!Array.isArray(this.tmpValue)) {
+          this.tmpValue = [response];
+        } else {
+          this.tmpValue.push(response);
+        }
+      } else {
+        this.tmpValue = response;
+      }
+      await this.$refs.provider.validate(this.tmpValue);
     },
 
     onRemoveImage() {
@@ -303,6 +363,11 @@ export default {
     onSelectRadio(data) {
       this.tmpValue = data[this.item.option.list_pointer.code] || "code";
       this.$emit("input", data[this.item.option.list_pointer.code || "code"]);
+    },
+
+    removeImage(i) {
+      this.tmpImages.splice(i, 1);
+      this.tmpValue.splice(i, 1);
     },
   },
 

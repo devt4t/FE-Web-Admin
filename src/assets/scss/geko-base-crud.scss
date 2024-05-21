@@ -327,6 +327,31 @@
         font-weight: 300;
       }
     }
+
+    .preview-image-list {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-top: 5px;
+      .preview-image {
+        width: 5em;
+        height: 5em;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        border-radius: 8px;
+        margin-right: 7px;
+        position: relative;
+
+        button {
+          position: absolute;
+          z-index: 10;
+          right: -5px;
+          top: -5px;
+          i { color: red !important}
+        }
+      }
+    }
     .file-upload {
       display: block;
       width: 8em;

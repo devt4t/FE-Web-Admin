@@ -1,24 +1,54 @@
 <template>
   <geko-base-crud :config="config">
-    <template v-slot:create-form> </template>
+    <template v-slot:create-form>
+      <scooping-visit-form />
+    </template>
+
+    <template v-slot:list-village_area="{ item }">
+      {{ parseInt(item.land_area) }} Ha
+    </template>
+
+    <template v-slot:list-date="{ item }">
+      <div>
+        <span v-if="item.start_scooping_date">{{
+          item.start_scooping_date | parse("date")
+        }}</span>
+        <span v-if="item.start_scooping_date && item.end_scooping_date">
+          -
+        </span>
+        <span v-if="item.end_scooping_date">{{
+          item.end_scooping_date | parse("date")
+        }}</span>
+      </div>
+    </template>
+
+    <template v-slot:list-potential_dusun="{ item }">
+      {{ item.potential_dusun }} dusun
+    </template>
+
+    <template v-slot:detail-row>
+      <scooping-visit-detail />
+    </template>
   </geko-base-crud>
 </template>
 
 <script>
+import "./scooping-visit.scss";
+import ScoopingVisitForm from "./ScoopingVisitForm.vue";
+import ScoopingVisitDetail from "./ScoopingVisitDetail.vue";
 export default {
   name: "crud-scooping-visit",
+  components: {
+    ScoopingVisitForm,
+    ScoopingVisitDetail,
+  },
   watch: {},
   data() {
     return {
       config: {
         title: "Scooping Visit",
-        program_year: {
-          show: false,
-          model: "2024",
-        },
         model_api: null,
-        getter: "GetScoopingAll",
-        getterDataKey: "data.result",
+        getter: "GetNewScoopingAll",
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "newDeleteDonor",
@@ -43,75 +73,91 @@ export default {
               filter: false,
             },
           },
-
           {
-            id: "province_id",
-            label: "Provinsi",
+            id: "data_no",
+            label: "Form No",
             methods: {
-              list: {
-                type: "row-slot",
-              },
-              create: {
-                validation: ["required"],
-                col_size: 6,
-                type: "select",
-                setter: "province_id",
-                getter: "GetProvince",
-                getter_key: "province_id",
-                separator: "Lokasi & Tanggal Kegiatan Scooping",
-                searchable: false,
-                option: {
-                  list_pointer: {
-                    code: "id",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
+              list: true,
               detail: true,
-              update: false,
-              filter: false,
-            },
-          },
-
-          {
-            id: "province_id",
-            label: "Provinsi",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-              create: {
-                validation: ["required"],
-                col_size: 6,
-                type: "select",
-                setter: "province_id",
-                getter: "GetProvince",
-                getter_key: "province_id",
-                separator: "Lokasi & Tanggal Kegiatan Scooping",
-                searchable: false,
-                option: {
-                  list_pointer: {
-                    code: "id",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
-              detail: true,
-              update: false,
-              filter: false,
-            },
-          },
-          {
-            id: "city_id",
-            label: "Kabupaten / Kota",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
               create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "desa",
+            label: "Desa",
+            methods: {
+              list: {
+                view_data: "desas_name",
+              },
               detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "village_area",
+            label: "Luas Desa",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "date",
+            label: "Tanggal",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "potential_dusun",
+            label: "Potensi",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "pic",
+            label: "PIC",
+            methods: {
+              list: {
+                view_data: "users_name",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "pic_manager",
+            label: "PIC Manager",
+            methods: {
+              list: {
+                view_data: "employees_name",
+              },
+              detail: true,
+              create: false,
               update: false,
               filter: false,
             },
