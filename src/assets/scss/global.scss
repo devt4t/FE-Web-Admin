@@ -49,6 +49,12 @@ button.circle {
 .min-w-150px {
   min-width: 150px !important;
 }
+.min-w-70px {
+  min-width: 70px !important;
+}
+.min-w-50px {
+  min-width: 50px !important;
+}
 .min-w-100px {
   min-width: 100px !important;
 }
@@ -164,6 +170,12 @@ button.circle {
 .vs-style input {
   border: none !important;
   margin-top: 0 !important;
+}
+
+.vs-style.no-clear {
+  .vs__clear {
+    display: none !important;
+  }
 }
 
 .vs-style .vs__selected {

@@ -21,6 +21,7 @@ export default new Vuex.Store({
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     },
+    tmpProjectPurpose: localStorage.getItem("tmpProjectPurpose"),
     apiUrl: localStorage.getItem("BaseUrlGet"),
     apiUrlImage: localStorage.getItem("BaseUrl"),
     lightbox: {

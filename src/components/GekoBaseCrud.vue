@@ -1,26 +1,95 @@
 <template>
   <div class="geko-base-crud">
-    <v-breadcrumbs
-      :dark="$store.state.theme == 'dark'"
-      class="breadcrumbsmain"
-      :items="[
-        {
-          text: 'Utilities',
-          disabled: true,
-          href: 'breadcrumbs_dashboard',
-        },
-        {
-          text: `${config.title}`,
-          disabled: true,
-          href: 'breadcrumbs_link_1',
-        },
-      ]"
-      divider=">"
-      large
-      data-aos="fade-right"
-    ></v-breadcrumbs>
+    <div class="d-flex flex-row geko-base-crud-header">
+      <v-breadcrumbs
+        :dark="$store.state.theme == 'dark'"
+        class="breadcrumbsmain"
+        :items="[
+          {
+            text: 'Utilities',
+            disabled: true,
+            href: 'breadcrumbs_dashboard',
+          },
+          {
+            text: `${config.title}`,
+            disabled: true,
+            href: 'breadcrumbs_link_1',
+          },
+        ]"
+        divider=">"
+        large
+        data-aos="fade-right"
+      ></v-breadcrumbs>
+
+      <div
+        class="global-filters d-flex flex-row"
+        v-if="
+          config.globalFilter &&
+          config.globalFilter.project_purpose &&
+          activeView === 'list'
+        "
+      >
+        <geko-select
+          v-model="globalFilter.project_purpose"
+          @option:selected="
+            setGlobalFilter('project_purpose', $event.code, 'tmpProjectPurpose')
+          "
+          class="vs-style v-select-40 no-clear min-w-150px mr-3"
+          placeholder="Tujuan Project"
+          :reduce="(x) => x.code"
+          :options="[
+            {
+              label: 'Semua',
+              code: '',
+            },
+            {
+              label: 'Carbon',
+              code: 'carbon',
+            },
+
+            {
+              label: 'Non Carbon',
+              code: 'non-carbon',
+            },
+          ]"
+        />
+        <geko-select
+          v-model="globalFilter.tmpProgramYear"
+          class="vs-style v-select-40 no-clear min-w-100px"
+          placeholder="Tahun"
+          :options="[
+            {
+              label: 'Semua',
+              code: '',
+            },
+            {
+              label: '2020',
+              code: '2020',
+            },
+            {
+              label: '2021',
+              code: '2021',
+            },
+            {
+              label: '2022',
+              code: '2022',
+            },
+            {
+              label: '2023',
+              code: '2023',
+            },
+            {
+              label: '2024',
+              code: '2024',
+            },
+          ]"
+        />
+      </div>
+    </div>
 
     <!-- Base Table Data -->
+
+    <!-- :items-per-page="perPage" -->
     <div class="geko-list" v-if="activeView === 'list'">
       <v-data-table
         :headers="header"
@@ -32,8 +101,8 @@
         data-aos-duration="800"
         @update:page="($p) => (page = $p)"
         @update:items-per-page="($p) => (perPage = $p)"
-        :items-per-page="perPage"
         :server-items-length="totalRecord"
+        :items-per-page="perPage"
         :page="page"
         :footer-props="{
           itemsPerPageText: 'Jumlah Data Per Halaman',
@@ -48,28 +117,6 @@
             <div class="pr-5 mr-5">
               <h4>{{ config.title }}</h4>
             </div>
-            <!-- <v-select
-              v-if="config.program_year.show || false"
-              color="success"
-              item-color="success"
-              v-model="config.program_year.model"
-              :items="['All Data', ...$store.state.programYear.options]"
-              :disabled="tableLoading"
-              outlined
-              dense
-              hide-details
-              :menu-props="{
-                bottom: true,
-                offsetY: true,
-                rounded: 'xl',
-                transition: 'slide-y-transition',
-              }"
-              rounded
-              label="Tahun Program"
-              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-              style="max-width: 200px"
-            ></v-select> -->
-            <!-- i'm, adding a program years, just in case it'll be needed ;),  -->
             <div class="d-flex flex-row geko-list-header-action">
               <div class="geko-list-header-toolbar">
                 <form v-on:submit.prevent="getListData">
@@ -109,6 +156,23 @@
                 <span class="ms-2">Tambah Data</span>
               </v-btn>
             </div>
+
+            <div class="statistics" v-if="config.statistic && statistic">
+              <div
+                class="statistic-item"
+                v-if="Array.isArray(statistic)"
+                v-for="(stat, i) in statistic"
+                :class="{
+                  [stat.color]: true,
+                }"
+              >
+                <v-icon>{{ stat.icon }}</v-icon>
+                <div class="statistic-data">
+                  <p class="mb-0 label">{{ stat.label }}</p>
+                  <p class="mb-0 value">{{ stat.value }}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </template>
 
@@ -143,42 +207,48 @@
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <div class="geko-list-actions">
-            <button
-              class="geko-list-action-view"
-              @click="
-                $router.push({
-                  query: {
-                    view: 'detail',
-                    id: item.id,
-                  },
-                })
-              "
-            >
-              <v-icon small>mdi-eye-outline</v-icon>
-            </button>
-            <button
-              class="geko-list-action-update"
-              @click="
-                $router.push({
-                  query: {
-                    view: 'update',
-                    id: item.id,
-                  },
+          <div class="geko-list-actions-wrapper d-flex flex-column">
+            <div class="geko-list-actions">
+              <button
+                class="geko-list-action-view"
+                @click="
+                  $router.push({
+                    query: {
+                      view: 'detail',
+                      id: item.id,
+                    },
+                  })
+                "
+              >
+                <v-icon small>mdi-eye-outline</v-icon>
+              </button>
+              <button
+                class="geko-list-action-update"
+                @click="
+                  $router.push({
+                    query: {
+                      view: 'update',
+                      id: item.id,
+                    },
 
-                  params: item,
-                })
-              "
-            >
-              <v-icon small>mdi-pencil-minus</v-icon>
-            </button>
-            <button
-              class="geko-list-action-delete"
-              @click="onDelete(item)"
-              v-if="config.delete"
-            >
-              <v-icon small>mdi-trash-can-outline</v-icon>
-            </button>
+                    params: item,
+                  })
+                "
+              >
+                <v-icon small>mdi-pencil-minus</v-icon>
+              </button>
+              <button
+                class="geko-list-action-delete"
+                @click="onDelete(item)"
+                v-if="config.delete"
+              >
+                <v-icon small>mdi-trash-can-outline</v-icon>
+              </button>
+            </div>
+
+            <div class="geko-list-actions-bottom">
+              <slot name="list-bottom-action" v-bind:item="item"> </slot>
+            </div>
           </div>
         </template>
       </v-data-table>
@@ -237,16 +307,16 @@
 
     <div class="geko-base-detail mx-4" v-else-if="activeView === 'detail'">
       <slot name="detail-row">
-      <geko-base-detail
-        :fields="fields.detail"
-        :api="fields.getter"
-        :title="config.title"
-      >
-        <template v-slot:detail-body>
-          <slot name="detail-body"></slot>
-        </template>
-      </geko-base-detail>
-    </slot>
+        <geko-base-detail
+          :fields="fields.detail"
+          :api="fields.getter || ''"
+          :title="config.title"
+        >
+          <template v-slot:detail-body>
+            <slot name="detail-body"></slot>
+          </template>
+        </geko-base-detail>
+      </slot>
     </div>
   </div>
 </template>
@@ -309,8 +379,12 @@ export default {
       activeView: null,
       activeID: null,
       permission: {},
+      statistic: null,
       loading: true,
       totalRecord: null,
+      globalFilter: {
+        project_purpose: localStorage.getItem("tmpProjectPurpose"),
+      },
 
       fields: {
         list: [],
@@ -344,6 +418,11 @@ export default {
       await this.buildModule();
       await this.generateList();
       this.activeView = this.$route.query.view;
+    },
+    setGlobalFilter(key, value, localKey) {
+      this.$set(this.globalFilter, key, value);
+      localStorage.setItem(localKey, value);
+      this.getListData();
     },
     buildModule() {
       return new Promise(async (resolve) => {
@@ -476,10 +555,26 @@ export default {
       if (this.search) {
         _params.search_value = this.search;
       }
+
+      if (this.config.globalFilter) {
+        for (const _g of Object.keys(this.globalFilter)) {
+          if (this.globalFilter[_g] && this.config.globalFilter[_g]) {
+            _params[this.config.globalFilter[_g].setter] =
+              this.globalFilter[_g];
+          }
+        }
+      }
+      
+      if (typeof this.config.filter_api === "object") {
+          _params = Object.assign(JSON.parse(JSON.stringify(this.config.filter_api)));
+        }
       let reqParams = Object.assign(_filters, _params);
 
-      reqParams.page = this.page;
-      reqParams.per_page = this.perPage;
+      // reqParams.page = this.page;
+      // reqParams.per_page = this.perPage;
+
+      reqParams.limit = this.perPage;
+      reqParams.offset = (this.page - 1) * this.perPage;
       const responseData = await this.$_api
         .get(this.config.getter, reqParams)
         .catch(() => {
@@ -490,6 +585,22 @@ export default {
         responseData,
         this.config.getterDataKey || "data"
       );
+      if (this.config.statistic) {
+        const statisticKey = "count";
+        const statisticData = responseData[statisticKey];
+        if (statisticData) {
+          let statisticArray = [];
+          for (const _key of Object.keys(statisticData)) {
+            statisticArray.push({
+              label: this.config.statistic.transform_key[_key].label,
+              value: statisticData[_key],
+              icon: this.config.statistic.transform_key[_key].icon,
+              color: this.config.statistic.transform_key[_key].color || "",
+            });
+          }
+          this.statistic = statisticArray;
+        }
+      }
       this.totalRecord = responseData.total;
       this.loading = false;
     },

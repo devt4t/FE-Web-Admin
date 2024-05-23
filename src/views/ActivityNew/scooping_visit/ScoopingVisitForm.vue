@@ -1,5 +1,5 @@
 <template>
-  <div class="geko-form-wrapper scooping-visit-form">
+  <div class="geko-form-wrapper scooping-visit-form" v-if="ready">
     <v-row class="mb-4">
       <v-col md="12">
         <div class="form-stepper-header">
@@ -83,6 +83,7 @@
                 type: 'select',
                 setter: 'province_id',
                 api: 'GetProvince',
+                default_label: formData.province_name,
                 option: {
                   getterKey: 'data.result',
                   list_pointer: {
@@ -109,6 +110,7 @@
                 param: {
                   province_code: formData.province_code,
                 },
+                default_label: formData.city_name,
                 option: {
                   getterKey: 'data.result',
                   list_pointer: {
@@ -136,6 +138,7 @@
                 param: {
                   kabupaten_no: formData.city_code,
                 },
+                default_label: formData.district_name,
                 option: {
                   getterKey: 'data.result',
                   list_pointer: {
@@ -163,6 +166,7 @@
                 param: {
                   kode_kecamatan: formData.district_code,
                 },
+                default_label: formData.village_name,
                 option: {
                   getterKey: 'data.result',
                   list_pointer: {
@@ -214,20 +218,7 @@
                 col_size: 6,
                 type: 'select',
                 option: {
-                  default_options: [
-                    {
-                      text: 'Mudah',
-                      value: 'easy',
-                    },
-                    {
-                      text: 'Sedang',
-                      value: 'medium',
-                    },
-                    {
-                      text: 'Sulit',
-                      value: 'hard',
-                    },
-                  ],
+                  default_options: defaultData.accessibility,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -248,32 +239,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'Sungai',
-                      value: 'river',
-                    },
-                    {
-                      text: 'Waduk',
-                      value: 'reservoir',
-                    },
-                    {
-                      text: 'Danau',
-                      value: 'lake',
-                    },
-                    {
-                      text: 'Pam Desa',
-                      value: 'pam_village',
-                    },
-                    {
-                      text: 'Mata Air',
-                      value: 'water_springs',
-                    },
-                    {
-                      text: 'Sumur',
-                      value: 'well',
-                    },
-                  ],
+                  default_options: defaultData.water_source,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -294,20 +260,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'PLN',
-                      value: 'PLN',
-                    },
-                    {
-                      text: 'Solarcell',
-                      value: 'Solarcell',
-                    },
-                    {
-                      text: 'Genset Desa',
-                      value: 'Genset Desa',
-                    },
-                  ],
+                  default_options: defaultData.electricity_source,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -328,28 +281,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'Kantor Bupati',
-                      value: 'Kantor Bupati',
-                    },
-                    {
-                      text: 'Kantor Camat',
-                      value: 'Kantor Camat',
-                    },
-                    {
-                      text: 'Kantor Lurah',
-                      value: 'Kantor Lurah',
-                    },
-                    {
-                      text: 'Kantor Kepala Desa',
-                      value: 'Kantor Kepala Desa',
-                    },
-                    {
-                      text: 'Kantor Polisi',
-                      value: 'Kantor Polisi',
-                    },
-                  ],
+                  default_options: defaultData.government_place,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -370,32 +302,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'Hutan Rimba',
-                      value: 'Hutan Rimba',
-                    },
-                    {
-                      text: 'Perkebunan/Kebun',
-                      value: 'Perkebunan/Kebun',
-                    },
-                    {
-                      text: 'Pemukiman',
-                      value: 'Pemukiman',
-                    },
-                    {
-                      text: 'Sawah Tadah Hujan',
-                      value: 'Sawah Tadah Hujan',
-                    },
-                    {
-                      text: 'Semak Belukar',
-                      value: 'Semak Belukar',
-                    },
-                    {
-                      text: 'Tegalan/Ladang',
-                      value: 'Tegalan/Ladang',
-                    },
-                  ],
+                  default_options: defaultData.land_coverage,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -416,24 +323,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'Tinggi',
-                      value: 'Tinggi',
-                    },
-                    {
-                      text: 'Sedang',
-                      value: 'Sedang',
-                    },
-                    {
-                      text: 'Rendah',
-                      value: 'Rendah',
-                    },
-                    {
-                      text: 'Terbuka',
-                      value: 'Terbuka',
-                    },
-                  ],
+                  default_options: defaultData.vegetation_density,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -454,20 +344,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'Agroforestry Intensitas Tinggi',
-                      value: 'agroforestry_high_intensive',
-                    },
-                    {
-                      text: 'Agroforestry Intensitas Rendah',
-                      value: 'agroforestry_low_intensive',
-                    },
-                    {
-                      text: 'Konservasi',
-                      value: 'conservation',
-                    },
-                  ],
+                  default_options: defaultData.agroforestry_type,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -590,6 +467,8 @@
                 label: 'Foto Akses Jalan',
                 validation: ['required'],
                 type: 'upload',
+                api: 'scooping_visits/upload.php',
+                directory: 'photos/',
                 setter: 'photo_road_access',
                 view_data: 'photo_road_access',
                 option: {
@@ -612,6 +491,8 @@
                 type: 'upload',
                 setter: 'photo_meeting',
                 view_data: 'photo_meeting',
+                api: 'scooping_visits/upload.php',
+                directory: 'photos/',
                 option: {
                   label_hint:
                     'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -632,6 +513,8 @@
                 type: 'upload',
                 setter: 'photo_dry_land',
                 view_data: 'photo_dry_land',
+                api: 'scooping_visits/upload.php',
+                directory: 'photos/',
                 option: {
                   label_hint:
                     'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -652,6 +535,8 @@
                 type: 'upload',
                 setter: 'village_profile',
                 view_data: 'village_profile',
+                api: 'scooping_visits/upload.php',
+                directory: 'photos/',
                 option: {
                   label_hint:
                     'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -713,80 +598,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: 'Andosol',
-                      value: 'Andosol',
-                    },
-                    {
-                      text: 'Kambisol',
-                      value: 'Kambisol',
-                    },
-                    {
-                      text: 'Arenosol',
-                      value: 'Arenosol',
-                    },
-                    {
-                      text: 'Alvisol',
-                      value: 'Alvisol',
-                    },
-                    {
-                      text: 'Aluvial',
-                      value: 'Aluvial',
-                    },
-                    {
-                      text: 'Entisol',
-                      value: 'Entisol',
-                    },
-                    {
-                      text: 'Gleisol',
-                      value: 'Gleisol',
-                    },
-                    {
-                      text: 'Grumosol',
-                      value: 'Grumosol',
-                    },
-                    {
-                      text: 'Histosol',
-                      value: 'Histosol',
-                    },
-                    {
-                      text: 'Inseptisol',
-                      value: 'Inseptisol',
-                    },
-                    {
-                      text: 'Litosol',
-                      value: 'Litosol',
-                    },
-                    {
-                      text: 'Mediteran',
-                      value: 'Mediteran',
-                    },
-                    {
-                      text: 'Molisol',
-                      value: 'Molisol',
-                    },
-                    {
-                      text: 'Nitosol',
-                      value: 'Nitosol',
-                    },
-                    {
-                      text: 'Organosol',
-                      value: 'Organosol',
-                    },
-                    {
-                      text: 'Oxisol',
-                      value: 'Oxisol',
-                    },
-                    {
-                      text: 'Podsolik',
-                      value: 'Podsolik',
-                    },
-                    {
-                      text: 'Regosol',
-                      value: 'Regosol',
-                    },
-                  ],
+                  default_options: defaultData.land_type,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -806,28 +618,7 @@
                 type: 'select',
                 option: {
                   multiple: false,
-                  default_options: [
-                    {
-                      text: '0 - 8°',
-                      value: '0 - 8°',
-                    },
-                    {
-                      text: '8° - 15°',
-                      value: '8° - 15°',
-                    },
-                    {
-                      text: '15° - 25°',
-                      value: '15° - 25°',
-                    },
-                    {
-                      text: '25° - 45°',
-                      value: '25° - 45°',
-                    },
-                    {
-                      text: '> 45°',
-                      value: '> 45°',
-                    },
-                  ],
+                  default_options: defaultData.slope,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -847,40 +638,7 @@
                 type: 'select',
                 option: {
                   multiple: false,
-                  default_options: [
-                    {
-                      text: '0 - 300',
-                      value: '0 - 300',
-                    },
-                    {
-                      text: '300 - 550',
-                      value: '300 - 550',
-                    },
-                    {
-                      text: '550 - 850',
-                      value: '550 - 850',
-                    },
-                    {
-                      text: '850 - 1050',
-                      value: '850 - 1050',
-                    },
-                    {
-                      text: '1050 -1350',
-                      value: '1050 -1350',
-                    },
-                    {
-                      text: '1350 - 1550',
-                      value: '1350 - 1550',
-                    },
-                    {
-                      text: '1550 - 1900',
-                      value: '1550 - 1900',
-                    },
-                    {
-                      text: '> 1900',
-                      value: '> 1900',
-                    },
-                  ],
+                  default_options: defaultData.altitude,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -900,32 +658,7 @@
                 type: 'select',
                 option: {
                   multiple: true,
-                  default_options: [
-                    {
-                      text: '0 - 500',
-                      value: '0 - 500',
-                    },
-                    {
-                      text: '500 - 1000',
-                      value: '500 - 1000',
-                    },
-                    {
-                      text: '1000 - 1500',
-                      value: '1000 - 1500',
-                    },
-                    {
-                      text: '1500 - 2000',
-                      value: '1500 - 2000',
-                    },
-                    {
-                      text: '2000 - 2500',
-                      value: '2000 - 2500',
-                    },
-                    {
-                      text: '2500 - 3000',
-                      value: '2500 - 3000',
-                    },
-                  ],
+                  default_options: defaultData.rainfall,
                   list_pointer: {
                     code: 'value',
                     label: 'text',
@@ -949,6 +682,8 @@
                 type: 'upload',
                 setter: 'village_polygon',
                 view_data: 'village_polygon',
+                api: 'scooping_visits/upload.php',
+                directory: 'village_polygon/',
                 option: {
                   icon: 'mdi-vector-polygon',
                   label_hint:
@@ -967,6 +702,8 @@
                 type: 'upload',
                 setter: 'dry_land_polygon',
                 view_data: 'dry_land_polygon',
+                api: 'scooping_visits/upload.php',
+                directory: 'village_polygon/',
                 option: {
                   icon: 'mdi-vector-polygon',
                   label_hint:
@@ -1026,7 +763,7 @@
                 </v-col>
                 <v-col md="2">
                   <geko-input
-                    v-model="person.wa"
+                    v-model="person.whatsapp"
                     :item="{
                       label: 'No WA',
                       validation: ['required'],

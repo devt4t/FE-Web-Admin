@@ -11,7 +11,7 @@
           <v-icon large class="mr-2" @click="$router.go(-1)"
             >mdi-arrow-left-circle</v-icon
           >
-          <h5 class="mb-0 pb-0">Detail {{ title }}</h5>
+          <h5 class="mb-0 pb-0">Detail</h5>
         </v-card-title>
         <div class="scooping-visit-wrapper">
           <div
@@ -74,18 +74,104 @@
         data-aos-delay="100"
         data-aos-duration="800"
         class="scooping-visit-detail-card mb-5"
+        v-if="data"
       >
         <v-card-title>
           <h5 class="mb-0 pb-0">Dokumentasi, Map &amp; Lainnya</h5>
         </v-card-title>
+
+        <div class="map-wrapper">
+          <div class="village-preview d-flex flex-row justify-content-between">
+            <div class="village-preview-item light">
+              <p class="label">Desa</p>
+
+              <p class="value text-capitalize">
+                {{ data.desas_name?.toLowerCase() }}
+              </p>
+            </div>
+            <div class="village-preview-item success">
+              <p class="label">Luas Desa</p>
+
+              <p class="value text-capitalize">
+                {{ data.land_area | parse("thousandSep") }} Ha
+              </p>
+            </div>
+            <div class="village-preview-item success">
+              <p class="label">Luas Lahan Kering</p>
+
+              <p class="value text-capitalize">
+                {{ data.dry_land_area | parse("thousandSep") }} Ha
+              </p>
+            </div>
+          </div>
+          <DetailModalMap
+            :data="map.data"
+            :key="map.key + 'DetailModalMapSCopingVisit'"
+          />
+
+          <div class="doc-field-wrapper mt-4">
+            <div
+              class="doc-field-item"
+              v-for="(f, i) in fields_doc"
+              :key="'fd' + i"
+            >
+              <p class="mb-0 label">{{ f.label }}</p>
+              <div class="value d-flex flex-row" v-if="f.type == 'image'">
+                <div
+                  v-for="(image, j) in typeof data[f.key] === 'string'
+                    ? data[f.key].split(',')
+                    : []"
+                  class="doc-photo-wrapper"
+                >
+                  <div
+                    class="doc-photo"
+                    v-bind:style="{
+                      backgroundImage:
+                        'url(' + $store.state.apiUrlImage + image + ')',
+                    }"
+                  ></div>
+                </div>
+              </div>
+
+              <div
+                class="value"
+                v-else-if="f.type == 'html'"
+                v-html="data[f.key]"
+              ></div>
+
+              <p class="mb-0 value" v-else>
+                {{ data[f.key] }} {{ f.append ? f.append : "" }}
+              </p>
+            </div>
+          </div>
+        </div>
       </v-card>
     </v-col>
+
+    <v-dialog v-model="imagePreviewModal" width="auto" v-if="false">
+      <v-card
+        max-width="400"
+        prepend-icon="mdi-update"
+        text="Your application will relaunch automatically after the update is complete."
+        title="Update in progress"
+      >
+        <template v-slot:actions>
+          <v-btn
+            class="ms-auto"
+            text="Ok"
+            @click="imagePreviewModal = false"
+          ></v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
 <script>
+import DetailModalMap from "../../Activity/ScopingVisit/components/DetailModalMap.vue";
 export default {
   name: "scooping-visit-detail",
+  components: { DetailModalMap },
   data() {
     return {
       data: {},
@@ -253,6 +339,57 @@ export default {
           ],
         },
       ],
+      loading: true,
+      imagePreviewModal: true,
+
+      map: {
+        key: 11101203,
+        data: {
+          village_polygon: null,
+          dry_land_polygon: null,
+        },
+      },
+      fields_doc: [
+        {
+          label: "Total Dusun",
+          key: "total_dusun",
+          append: "dusun",
+        },
+        {
+          label: "Dusun Potensial",
+          key: "potential_dusun",
+          append: "dusun",
+        },
+
+        {
+          label: "Deskripsi Potensi",
+          key: "potential_description",
+          type: "html",
+        },
+        {
+          label: "Foto Akses Jalan",
+          key: "photo_road_access",
+          type: "image",
+        },
+
+        {
+          label: "Foto Lahan Kering",
+          key: "photo_dry_land",
+          type: "image",
+        },
+
+        {
+          label: "Foto Pertemuan",
+          key: "photo_meeting",
+          type: "image",
+        },
+
+        {
+          label: "Profil Desa",
+          key: "village_profile",
+          type: "image",
+        },
+      ],
     };
   },
 
@@ -266,6 +403,12 @@ export default {
         .get("GetDetailScoopingVisit_new", { id: this.$route.query.id })
         .then((res) => {
           this.data = res.data;
+          this.$set(this.map.data, "village_polygon", res.data.village_polygon);
+          this.$set(
+            this.map.data,
+            "dry_land_polygon",
+            res.data.dry_land_polygon
+          );
         });
     },
   },

@@ -275,6 +275,9 @@ export default {
             ? this.item.default_label
             : this.item.option.default_label,
         };
+        if (this.item.label === "Provinsi") {
+          console.log(this.tmpValue);
+        }
       } else {
         this.tmpValue = this.value;
       }
@@ -338,9 +341,9 @@ export default {
       } else {
         this.tmpImage = URL.createObjectURL(data.target.files[0]);
       }
-      const response = await this.$_api.upload("donor/upload.php", {
+      const response = await this.$_api.upload(this.item.api, {
         nama: Date.now().toString(),
-        dir: "donor-photo/",
+        dir: this.item.directory,
         image: data.target.files[0],
       });
 

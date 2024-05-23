@@ -12,6 +12,21 @@ Vue.filter("parse", (value, id) => {
     case "date":
       _value = moment(value).format("D MMMM YYYY");
       break;
+
+    case "status-scooping-visit":
+      _value =
+        value === "document_saving"
+          ? "Pending"
+          : value === "ready_to_submit"
+          ? "GIS Review"
+          : value === "submit_review"
+          ? "Terverifikasi"
+          : "Tidak Ada Status";
+      break;
+
+    case "status-potential":
+      _value = value === 0 ? "Tidak Potensial" : "Potensial";
+      break;
     case "active":
       _value = value == 0 ? "Tidak Aktif" : "Aktif";
       break;

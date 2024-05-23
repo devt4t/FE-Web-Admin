@@ -4,12 +4,24 @@
       <scooping-visit-form />
     </template>
 
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn
+        v-if="item.status === 'document_saving'"
+        variant="warning"
+        class="mt-1"
+        small
+        >Verifikasi</v-btn
+      >
+    </template>
+
     <template v-slot:list-village_area="{ item }">
-      {{ parseInt(item.land_area) }} Ha
+      <div class="min-w-70px">
+        <span>{{ parseInt(item.land_area) }} Ha</span>
+      </div>
     </template>
 
     <template v-slot:list-date="{ item }">
-      <div>
+      <div class="min-w-150px">
         <span v-if="item.start_scooping_date">{{
           item.start_scooping_date | parse("date")
         }}</span>
@@ -23,7 +35,7 @@
     </template>
 
     <template v-slot:list-potential_dusun="{ item }">
-      {{ item.potential_dusun }} dusun
+      <div class="text-no-wrap">{{ item.potential_dusun }} dusun</div>
     </template>
 
     <template v-slot:detail-row>
@@ -52,6 +64,32 @@ export default {
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "newDeleteDonor",
+        globalFilter: {
+          project_purpose: {
+            setter: "purpose_code",
+          },
+          program_year: {
+            setter: "program_year",
+          },
+        },
+        statistic: {
+          transform_key: {
+            total_data: {
+              label: "Total Data",
+              icon: "mdi-list-status",
+            },
+            verified: {
+              label: "Terverifikasi",
+              icon: "mdi-check-circle-outline",
+              color: "success",
+            },
+            unverified: {
+              label: "Belum Terverifikasi",
+              icon: "mdi-close-circle-outline",
+              color: "danger",
+            },
+          },
+        },
         pk_field: null,
         permission: {
           create: "scooping-visit-create",
@@ -77,7 +115,9 @@ export default {
             id: "data_no",
             label: "Form No",
             methods: {
-              list: true,
+              list: {
+                class: "min-w-70px",
+              },
               detail: true,
               create: false,
               update: false,
@@ -155,6 +195,69 @@ export default {
             methods: {
               list: {
                 view_data: "employees_name",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+
+          {
+            id: "project_type",
+            label: "Tipe Project",
+            methods: {
+              list: false,
+              detail: false,
+              create: false,
+              update: false,
+              filter: {
+                type: "select",
+                getter: "GetDonorAllAdmin",
+                param: {
+                  project_modul: "type",
+                },
+
+                option: {
+                  list_pointer: {
+                    code: "id",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          {
+            id: "status",
+            label: "Status",
+            methods: {
+              list: {
+                view_data: "status",
+                class: {
+                  document_saving: "badge bg-warning",
+                  ready_to_submit: "badge bg-info",
+                  submit_review: "badge bg-success",
+                },
+                transform: "status-scooping-visit",
+              },
+              detail: true,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "potential_status",
+            label: "Status Potensial",
+            methods: {
+              list: {
+                view_data: "potential_status",
+                class: {
+                  0: "badge bg-danger",
+                  1: "badge bg-success",
+                },
+                transform: "status-potential",
               },
               detail: true,
               create: false,

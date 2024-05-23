@@ -10,6 +10,44 @@
 
 .geko-base-crud {
   font-family: "Poppins", sans-serif !important;
+
+  .geko-base-crud-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 2em;
+    
+    .global-filters {
+      .v-select-40  {
+        .vs__search {
+
+          font-size: .9em !important;
+        }
+        .vs__dropdown-toggle {
+          padding: 0 !important;
+        }
+      }
+    }
+    button {
+      border: 1px solid $info;
+      color: $info;
+      border-radius: 20px;
+      font-size: .8em;
+      font-weight: 500;
+      padding: 3px 15px;
+      margin-left: 5px;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &.active {
+        background-color: $info;
+        color: white;
+      }
+    }
+  }
   .geko-list,
   .geko-form-card {
     opacity: 0;
@@ -85,6 +123,65 @@
       transition: all 0.2s ease;
     }
   }
+
+  .statistics {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    
+    .statistic-item {
+      background-color: #F3F6F9;
+      border-radius: 12px;
+      margin-right: 15px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding-left: 10px;
+      padding-right: 2em;
+      padding-block: 10px;
+
+
+      &.success {
+        background-color: $success_light !important;
+        .value, i {
+          color: $success  !important;
+        }
+      }
+
+
+      &.danger {
+        background-color: $danger_light !important;
+        .value, i {
+          color: $danger  !important;
+        }
+      }
+      i {
+        font-size: 2em;
+      }
+
+      .statistic-data {
+        padding-left: 10px;
+        .label {
+          font-size: .7em;
+          color: grey;
+          font-weight: 300;
+        }
+
+        .value {
+          color: black;
+          font-weight : 700;
+          font-size: 1.3em;
+        }
+      }
+    }
+  }
+
+  .geko-list-header-action {
+    
+    border-bottom: 1px dashed rgba(128, 128, 128, 0.244);
+    padding-bottom: 1em;
+  }
   .geko-list-header {
     width: 100%;
     display: flex;
@@ -94,6 +191,7 @@
     h4 {
       font-size: 1.2rem;
     }
+
 
     .geko-list-header-action {
       display: flex;
