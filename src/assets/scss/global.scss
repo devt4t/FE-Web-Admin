@@ -202,9 +202,16 @@ button.circle {
   padding-left: 0 !important;
 }
 .vs-style {
+
+  .vs__actions {
+    padding-top: 0 !important;
+  }
+  .vs__dropdown-toggle {
+    padding-bottom: 0 !important;
+  }
   .vs__dropdown-toggle,
   .vs__selected {
-    height: 38px !important;
+    height: unset !important;
   }
 }
 
@@ -337,6 +344,54 @@ button.circle {
     }
   }
 }
+
+
+
+.text-link {
+  color: #1F4F94;
+}
+
+
+table tbody tr td:has(.indicator-wrapper) {
+  padding-inline: 0 !important;
+}
+table tbody tr td:has(.indicator-left) {
+  padding-left: 0 !important;
+}
+
+.indicator-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .indicator {
+    width: 13px;
+    height: 13px;
+    background-color: $grey;
+    border-radius: 50%;
+
+    &.success {
+      background-color: $success;
+    }
+
+    &.danger {
+      background-color: $danger;
+    }
+
+    &.warning {
+      background-color: $warning;
+    }
+
+    &.light {
+      background-color: $light;
+    }
+
+    &.info {
+      background-color: $info;
+    }
+  }
+}
+
 
 
 @media only screen and (min-width: 1264px) {

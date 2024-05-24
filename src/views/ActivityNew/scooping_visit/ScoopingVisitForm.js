@@ -7,7 +7,7 @@ export default {
       ready: false,
       isCreate: null,
       loading: false,
-      form: 2,
+      form: 1,
       formData: {
         village_persons: [
           {
@@ -18,6 +18,8 @@ export default {
             dat_no: "",
           },
         ],
+        other_ngo_input: "",
+        other_ngo_data: [],
       },
     };
   },
@@ -30,11 +32,26 @@ export default {
       this.initData();
     }
   },
+
+  watch: {
+    form(t) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    },
+  },
   methods: {
     async initData() {
       const resData = await this.$_api.get("GetDetailScoopingVisit_new", {
         id: this.$route.query.id,
       });
+
+      const figures = await this.$_api.get(
+        "GetDetailScoopingVisitFigures_new",
+        { data_no: resData.data.data_no }
+      );
 
       const keys = [
         ["province", "province_id"],
@@ -55,15 +72,15 @@ export default {
         ["land_area", "village_area"],
         ["land_type", "land_type"],
         ["slope", "slope", "array"],
-        ["altitude", "altitude", "array"],
+        ["altitude", "altitude"],
         ["vegetation_density", "vegetation_density", "array"],
         ["water_source", "water_source", "array"],
         ["rainfall", "rainfall", "array"],
         ["agroforestry_type", "agroforestry_type", "array"],
-        ["goverment_place", "goverment_place", "array"],
+        ["goverment_place", "government_place", "array"],
         ["land_coverage", "land_coverage", "array"],
         ["electricity_source", "electricity_source", "array"],
-        ["dry_land_area", "dry_land_area"],
+        ["dry_land_area", "land_area"],
         ["village_polygon", "village_polygon"],
         ["dry_land_polygon", "dry_land_polygon"],
         ["total_dusun", "total_dusun"],
@@ -72,14 +89,22 @@ export default {
         ["total_male", "total_male"],
         ["total_female", "total_female"],
         ["total_kk", "total_kk"],
-        ["photo_road_access", "photo_road_access"],
-        ["photo_meeting", "photo_meeting"],
-        ["photo_dry_land", "photo_dry_land"],
+        ["photo_road_access", "photo_road_access", "array"],
+        ["photo_meeting", "photo_meeting", "array"],
+        ["photo_dry_land", "photo_dry_land", "array"],
         ["village_profile", "village_profile"],
         ["status", "status"],
         ["complete_data", "complete_data"],
         ["project_id", "project_id"],
+        ["projects_project_no", "project_code"],
         ["data_no", "data_no"],
+        ["other_ngo", "other_ngo"],
+        ["mitigation_program", "mitigation_program"],
+        ["resident_acceptance", "resident_acceptance"],
+        ["general_land_condition", "general_land_condition"],
+        ["next_event_contact_person", "next_event_contact_person"],
+        ["ff_candidate", "ff_candidate"],
+        ["field_companion_potency", "field_companion_potency"],
       ];
 
       for (const key of keys) {
@@ -100,13 +125,15 @@ export default {
           ];
         }
 
-        if (key[0] === "water_source") {
-          this.$set(this.formData, "water_source", _value);
+        if (key[0] === "land_area") {
+          this.$set(this.formData, _key, parseInt(_value));
         } else {
           this.$set(this.formData, _key, _value);
         }
       }
 
+      this.$set(this.formData, "village_persons", figures.data);
+      console.log(figures);
       console.log(this.formData);
       this.ready = true;
     },
@@ -115,6 +142,8 @@ export default {
         this.form = this.form + 1;
         return;
       }
+
+      if (this.loading) return;
 
       this.loading = true;
 
@@ -165,12 +194,23 @@ export default {
       this.$_api
         .post("AddScoopingVisit_new", payload)
         .then((res) => {
+          this.addOtherNgo(res);
           this.addFigure(res);
         })
         .catch((err) => {
           this.$_alert.error(err);
           this.loading = false;
         });
+    },
+
+    addOtherNgo(res) {
+      i = 0;
+      for (const ngo of this.formData.other_ngo_data) {
+        i += 1;
+        ngo.scooping_no = res.kode_scooping;
+
+        this.$_api.post("AddScoopingVisitNGOCompetitor_new", ngo);
+      }
     },
 
     addFigure(res) {
@@ -186,6 +226,24 @@ export default {
           }
         });
       }
+    },
+
+    addOtherNgo() {
+      if (
+        this.formData.other_ngo_data.find(
+          (x) => x.name == this.formData.other_ngo_input
+        )
+      ) {
+        return;
+      }
+      this.formData.other_ngo_data.push({
+        name: this.formData.other_ngo_input,
+      });
+      this.$set(this.formData, "other_ngo_input", "");
+    },
+
+    removeOtherNgo(i) {
+      this.formData.other_ngo_data.splice(i, 1);
     },
     removeVillagePerson(i) {
       this.formData.village_persons.splice(i, 1);

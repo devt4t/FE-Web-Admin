@@ -39,10 +39,22 @@
                   }"
                   :key="f.key + i"
                   v-if="data[f.key]"
-                  >{{
-                    item | parse(f.transform ? f.transform : "no-empty")
-                  }}</span
                 >
+                  <span v-if="data[f.key] && !f.translate">{{
+                    item | parse(f.transform ? f.transform : "no-empty")
+                  }}</span>
+
+                  <span
+                    v-else-if="
+                      data[f.key] &&
+                      f.translate &&
+                      defaultData[f.translate].find((x) => x.value == item)
+                    "
+                    >{{
+                      defaultData[f.translate].find((x) => x.value == item).text
+                    }}</span
+                  >
+                </span>
               </div>
               <div class="value" v-else-if="f.type === 'badge'">
                 <span
@@ -134,6 +146,17 @@
               </div>
 
               <div
+                class="value d-flex flex-row"
+                v-else-if="f.key == 'other_ngo'"
+              ></div>
+              <div
+                class="value d-flex flex-row"
+                v-else-if="f.type === 'boolean'"
+              >
+                {{ data[f.key] == 0 ? "Ada" : "Tidak Ada" }}
+              </div>
+
+              <div
                 class="value"
                 v-else-if="f.type == 'html'"
                 v-html="data[f.key]"
@@ -169,6 +192,7 @@
 
 <script>
 import DetailModalMap from "../../Activity/ScopingVisit/components/DetailModalMap.vue";
+import defaultData from "./ScoopingVisitData";
 export default {
   name: "scooping-visit-detail",
   components: { DetailModalMap },
@@ -227,6 +251,7 @@ export default {
               type: "badge",
               variant: "primary",
               value_type: "array",
+              translate: "water_source",
             },
             {
               key: "electricity_source",
@@ -234,6 +259,7 @@ export default {
               type: "badge",
               variant: "primary",
               value_type: "array",
+              translate: "electricity_source",
             },
             {
               key: "goverment_place",
@@ -328,6 +354,7 @@ export default {
               type: "badge",
               variant: "light",
               value_type: "array",
+              translate: "agroforestry_type",
             },
             {
               key: "rainfall",
@@ -365,6 +392,39 @@ export default {
           label: "Deskripsi Potensi",
           key: "potential_description",
           type: "html",
+        },
+
+        {
+          label: "NGO lain di desa dengan program Jasa Lingkungan",
+          key: "other_ngo",
+          type: "array",
+        },
+
+        {
+          label: "Program Mitigasi Perubahan Iklim di Desa tersebut",
+          key: "mitigation_program",
+          type: "boolean",
+        },
+
+        {
+          label: "Keberterimaan Masyarakat",
+          key: "resident_acceptance",
+        },
+        {
+          label: "Kontak Persons untuk Kegiatan Selanjutnya",
+          key: "next_person_contact_person",
+        },
+        {
+          label: "Kondisi Umum Lahan untuk Program T4T",
+          key: "general_land_condition",
+        },
+        {
+          label: "Potensi Pendamping Lapang",
+          key: "field_companion_potency",
+        },
+        {
+          label: "Identifikasi Kandidat FF",
+          key: "ff_candidate",
         },
         {
           label: "Foto Akses Jalan",
@@ -410,6 +470,12 @@ export default {
             res.data.dry_land_polygon
           );
         });
+    },
+  },
+
+  computed: {
+    defaultData() {
+      return defaultData;
     },
   },
 };

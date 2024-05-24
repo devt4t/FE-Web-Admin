@@ -564,10 +564,12 @@ export default {
           }
         }
       }
-      
+
       if (typeof this.config.filter_api === "object") {
-          _params = Object.assign(JSON.parse(JSON.stringify(this.config.filter_api)));
-        }
+        _params = Object.assign(
+          JSON.parse(JSON.stringify(this.config.filter_api))
+        );
+      }
       let reqParams = Object.assign(_filters, _params);
 
       // reqParams.page = this.page;
@@ -575,6 +577,11 @@ export default {
 
       reqParams.limit = this.perPage;
       reqParams.offset = (this.page - 1) * this.perPage;
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
       const responseData = await this.$_api
         .get(this.config.getter, reqParams)
         .catch(() => {

@@ -1,8 +1,9 @@
 import axios from "axios";
 import _alert from "./alert";
 import _util from "./";
+import _config from "./config";
 const env = axios.create({
-  baseURL: "https://t4tapi.kolaborasikproject.com/api/",
+  baseURL: _config.baseUrl,
 });
 env.interceptors.request.use(
   (config) => {
@@ -83,13 +84,13 @@ const _service = {
     const data = this.generateFormData(file);
 
     return axios
-      .post(`https://t4tadmin.kolaborasikproject.com/${endPoint}`, data, {
+      .post(`${_config.baseUrlUpload}/${endPoint}`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       .then((response) => {
-        return `${file.dir ? file.dir : ""}${response.data.data.new_name}`;
+        return `${response.data.data.new_name}`;
       })
       .catch((err) => {
         throw err.response;

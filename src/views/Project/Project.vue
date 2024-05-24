@@ -39,10 +39,6 @@ export default {
     return {
       config: {
         title: "Project",
-        program_year: {
-          show: false,
-          model: "2024",
-        },
         model_api: null,
         getter: "GetProjectAllAdmin",
         getterDataKey: "data",

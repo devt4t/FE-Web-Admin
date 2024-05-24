@@ -126,20 +126,21 @@
             .label {
                 color: #A6A6B7;
                 font-weight: 300;
-                font-size: .9em;
+                font-size: .8em;
                 width: 30%;
                 position: relative;
                 &::after {
                     content: ':';
                     position: absolute;
                     right: 7px;
+                    top: 3px
                 }
                 
             }
 
             .value {
                 font-weight: 500;
-                font-size: .9em;
+                font-size: .85em;
                 padding-top: 1px;
                 width: 70%;
 

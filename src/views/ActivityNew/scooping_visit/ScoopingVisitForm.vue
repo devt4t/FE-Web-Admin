@@ -62,6 +62,7 @@
                 type: 'select',
                 setter: 'project_id',
                 api: 'GetProjectAllAdmin',
+                default_label: formData.project_code,
                 option: {
                   list_pointer: {
                     code: 'id',
@@ -468,7 +469,8 @@
                 validation: ['required'],
                 type: 'upload',
                 api: 'scooping_visits/upload.php',
-                directory: 'photos/',
+                directory: 'photos',
+                upload_type: 'image/*',
                 setter: 'photo_road_access',
                 view_data: 'photo_road_access',
                 option: {
@@ -609,7 +611,7 @@
             />
           </v-col>
 
-          <v-col md="6">
+          <v-col md="6" v-if="$route.query.view === 'create'">
             <geko-input
               v-model="formData.slope"
               :item="{
@@ -629,7 +631,7 @@
             />
           </v-col>
 
-          <v-col md="6">
+          <v-col md="6" v-if="$route.query.view === 'create'">
             <geko-input
               v-model="formData.altitude"
               :item="{
@@ -683,6 +685,8 @@
                 setter: 'village_polygon',
                 view_data: 'village_polygon',
                 api: 'scooping_visits/upload.php',
+
+                upload_type: '.kml',
                 directory: 'village_polygon/',
                 option: {
                   icon: 'mdi-vector-polygon',
@@ -701,6 +705,7 @@
                 validation: ['required'],
                 type: 'upload',
                 setter: 'dry_land_polygon',
+                upload_type: '.kml',
                 view_data: 'dry_land_polygon',
                 api: 'scooping_visits/upload.php',
                 directory: 'village_polygon/',
@@ -709,6 +714,157 @@
                   label_hint:
                     'Klik polygon untuk memilih file .kml yang akan diunggah',
                 },
+              }"
+            />
+          </v-col>
+
+          <v-col md="12" class="form-separator">
+            <h4>INFORMASI LAINNYA</h4>
+          </v-col>
+
+          <v-row>
+            <v-col md="6" style="padding-left: 1.5em">
+              <geko-input
+                v-model="formData.other_ngo"
+                :item="{
+                  view_data: 'other_ngo',
+                  type: 'select-radio',
+                  label:
+                    'Apakah ada Lembaga lain/NGO lain di desa dengan program Jasa Lingkungan?',
+                  validation: [],
+                  option: {
+                    list_pointer: {
+                      label: 'label',
+                      code: 'code',
+                      display: ['label'],
+                    },
+                    default_options: [
+                      {
+                        label: 'Ada',
+                        code: '1',
+                      },
+                      {
+                        label: 'Tidak Ada',
+                        code: '0',
+                      },
+                    ],
+                  },
+                }"
+              />
+            </v-col>
+
+            <v-col md="6" v-if="formData.other_ngo == '1'">
+              <div
+                class="other-ngo d-flex flex-row align-items-end"
+                style="align-items: flex-end"
+              >
+                <geko-input
+                  v-model="formData.other_ngo_input"
+                  :item="{
+                    label: 'Nama Lembaga',
+                    type: 'text',
+                    validation: [],
+                  }"
+                />
+
+                <v-btn variant="success" class="mb-2 ml-2" @click="addOtherNgo"
+                  >Tambah</v-btn
+                >
+              </div>
+
+              <div class="ngo-list d-flex flex-row" style="flex-wrap: wrap">
+                <div
+                  class="badge bg-info mr-1 mb-1"
+                  v-for="(ngo, i) in formData.other_ngo_data"
+                  @click="removeOtherNgo(i)"
+                >
+                  {{ ngo.name }}
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+          <v-col md="6">
+            <geko-input
+              v-model="formData.mitigation_program"
+              :item="{
+                view_data: 'mitigation_program',
+                type: 'select-radio',
+                label:
+                  'Adakah Program Mitigasi Perubahan Iklim di Desa tersebut?',
+                validation: [],
+                option: {
+                  list_pointer: {
+                    label: 'label',
+                    code: 'code',
+                    display: ['label'],
+                  },
+                  default_options: [
+                    {
+                      label: 'Ada',
+                      code: '1',
+                    },
+                    {
+                      label: 'Tidak Ada',
+                      code: '0',
+                    },
+                  ],
+                },
+              }"
+            />
+          </v-col>
+          <v-col md="6">
+            <geko-input
+              v-model="formData.resident_acceptance"
+              :item="{
+                view_data: 'resident_acceptance',
+                type: 'textarea',
+                label: 'Bagaimana Keberterimaan Masyarakat?',
+                validation: [],
+              }"
+            />
+          </v-col>
+          <v-col md="6">
+            <geko-input
+              v-model="formData.next_event_contact_person"
+              :item="{
+                view_data: 'next_event_contact_person',
+                type: 'textarea',
+                label: 'Siapa Kontak Persons untuk Kegiatan Selanjutnya?',
+                validation: [],
+              }"
+            />
+          </v-col>
+          <v-col md="6">
+            <geko-input
+              v-model="formData.general_land_condition"
+              :item="{
+                view_data: 'general_land_condition',
+                type: 'textarea',
+                label: 'Bagaimana Kondisi Umum Lahan untuk Program T4T?',
+                validation: [],
+              }"
+            />
+          </v-col>
+          <v-col md="6">
+            <geko-input
+              v-model="formData.general_land_condition"
+              :item="{
+                view_data: 'general_land_condition',
+                type: 'textarea',
+                label: 'Potensi pendamping lapang?',
+                validation: [],
+              }"
+            />
+          </v-col>
+
+          <v-col md="6">
+            <geko-input
+              v-model="formData.general_land_condition"
+              :item="{
+                view_data: 'general_land_condition',
+                type: 'textarea',
+                label: 'Identifikasi Kandidat FF',
+                validation: [],
               }"
             />
           </v-col>

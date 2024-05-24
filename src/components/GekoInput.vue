@@ -146,8 +146,9 @@
       </div>
       <input
         v-else-if="['upload'].includes(item.type)"
-        type="file"
+        :type="'file'"
         :id="item.view_data"
+        :accept="item.upload_type"
         @change="handleFileUpload($event)"
       />
 
@@ -256,30 +257,55 @@ export default {
   },
 
   methods: {
-    setDefaultValue() {
+    async setDefaultValue() {
       if (
         this.item.option &&
         Array.isArray(this.item.option.default_options) &&
         this.item.type === "select"
       ) {
-        this.tmpValue = this.item.option.default_options.find(
-          (x) => x[this.item.option.list_pointer.code || "code"] == this.value
-        );
+        if (this.item.option && this.item.option.multiple) {
+          this.tmpValue = this.value;
+        } else {
+          this.tmpValue = this.item.option.default_options.find(
+            (x) => x[this.item.option.list_pointer.code || "code"] == this.value
+          );
+        }
       } else if (this.item.type === "select-radio") {
         this.tmpValue = this.value;
       } else if (this.item.type === "select") {
-        this.tmpValue = {
-          [this.item.option.list_pointer.code || "code"]: this.value,
-          [this.item.option.list_pointer.label || "label"]: this.item
-            .default_label
-            ? this.item.default_label
-            : this.item.option.default_label,
-        };
-        if (this.item.label === "Provinsi") {
-          console.log(this.tmpValue);
+        if (this.item.option && this.item.option.multiple) {
+          this.tmpValue = this.value;
+        } else {
+          this.tmpValue = {
+            [this.item.option.list_pointer.code || "code"]: this.value,
+            [this.item.option.list_pointer.label || "label"]: this.item
+              .default_label
+              ? this.item.default_label
+              : this.item.option.default_label,
+          };
+        }
+      } else if (this.item.type === "upload") {
+        if (this.item.option && this.item.option.multiple) {
+          let _tmpImages = JSON.parse(JSON.stringify(this.value));
+          if (!Array.isArray(this.value)) {
+            _tmpImages = [JSON.parse(JSON.stringify(this.value))];
+          }
+
+          for (let i = 0; i < _tmpImages.length; i++) {
+            _tmpImages[i] = `${this.$_config.baseUrlUpload}/${_tmpImages[i]}`;
+          }
+
+          this.tmpImages = _tmpImages;
+          this.tmpValue = this.value;
+          await this.$refs.provider.validate(this.tmpValue);
+        } else {
+          this.tmpImage = `${this.$_config.baseUrlUpload}/${this.value}`;
+          this.tmpValue = this.value;
+          await this.$refs.provider.validate(this.tmpValue);
         }
       } else {
         this.tmpValue = this.value;
+        await this.$refs.provider.validate(this.tmpValue);
       }
     },
     async selectGetInitData() {
@@ -336,26 +362,36 @@ export default {
     },
 
     async handleFileUpload(data) {
+      let param = {
+        nama: Date.now().toString(),
+        dir: this.item.directory,
+        fileToUpload: data.target.files[0],
+      };
+
+      if (this.item.upload_type) {
+        param.type = this.item.upload_type == ".kml" ? "polygon" : "photo";
+      }
+
+      const response = await this.$_api.upload(this.item.api, param);
+
       if (this.item.option && this.item.option.multiple) {
         this.tmpImages.push(URL.createObjectURL(data.target.files[0]));
       } else {
         this.tmpImage = URL.createObjectURL(data.target.files[0]);
       }
-      const response = await this.$_api.upload(this.item.api, {
-        nama: Date.now().toString(),
-        dir: this.item.directory,
-        image: data.target.files[0],
-      });
 
+      const imageFolder = this.item.api.split("/")[0];
+      const imageUrl = `${imageFolder}/${response}`;
       if (this.item.option && this.item.option.multiple) {
         if (!Array.isArray(this.tmpValue)) {
-          this.tmpValue = [response];
+          this.tmpValue = [imageUrl];
         } else {
-          this.tmpValue.push(response);
+          this.tmpValue.push(imageUrl);
         }
       } else {
-        this.tmpValue = response;
+        this.tmpValue = imageUrl;
       }
+
       await this.$refs.provider.validate(this.tmpValue);
     },
 
@@ -375,7 +411,10 @@ export default {
   },
 
   watch: {
-    tmpValue() {
+    tmpValue(t, f) {
+      if ([null, undefined].includes(t) && [null, undefined].includes(f))
+        return;
+
       if (typeof this.tmpValue === "object" && !Array.isArray(this.tmpValue)) {
         this.$emit(
           "input",
