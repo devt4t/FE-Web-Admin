@@ -6,13 +6,32 @@
 
     <template v-slot:list-bottom-action="{ item }">
       <v-btn
-        v-if="item.status === 'document_saving'"
+        v-if="
+          !updateIds.includes(item.id) &&
+          item.status === 'ready_to_submit' &&
+          ['13', '25', '23'].includes($store.state.User.role)
+        "
         variant="warning"
         class="mt-1"
         small
         @click="onVerification(item)"
         >Verifikasi</v-btn
       >
+
+      <v-btn
+        variant="warning"
+        class="mt-1"
+        small
+        @click="onVerification(item)"
+        v-if="
+          !updateIds.includes(item.id) &&
+          item.status === 'document_saving' &&
+          item.is_verify == 0 &&
+          item.email_to_gis < 3
+        "
+      >
+        Email to GIS
+      </v-btn>
     </template>
 
     <template v-slot:list-village_area="{ item }">
@@ -51,10 +70,39 @@
         <div
           class="indicator"
           :class="{
-            success: item.status === 'submit_review',
-            warning: item.status === 'document_saving',
+            warning: item.status == 'document_saving' && item.is_verify == 0,
+            info: item.status == 'document_saving' && item.is_verify == 1,
+            primary: item.status == 'ready_to_submit',
+            success: item.status == 'submit_review',
           }"
         ></div>
+      </div>
+    </template>
+
+    <template v-slot:list-status="{ item }">
+      <div class="d-flex flex-row">
+        <span
+          class="badge"
+          :class="{
+            'bg-warning':
+              item.status == 'document_saving' && item.is_verify == 0,
+            'bg-info': item.status == 'document_saving' && item.is_verify == 1,
+            'bg-primary': item.status == 'ready_to_submit',
+            'bg-success': item.status == 'submit_review',
+          }"
+        >
+          <span v-if="item.status == 'document_saving' && item.is_verify == 0"
+            >Pending</span
+          >
+          <span
+            v-else-if="item.status == 'document_saving' && item.is_verify == 1"
+            >GIS Review</span
+          >
+          <span v-else-if="item.status == 'ready_to_submit'"
+            >GIS Terverifikasi</span
+          >
+          <span v-else-if="item.status == 'submit_review'">Terverifikasi</span>
+        </span>
       </div>
     </template>
   </geko-base-crud>
@@ -74,6 +122,7 @@ export default {
   data() {
     return {
       componentKey: 1,
+      updateIds: [],
       config: {
         title: "Scooping Visit",
         model_api: null,
@@ -137,7 +186,6 @@ export default {
             methods: {
               list: {
                 type: "row-slot",
-                wc: "testing",
               },
             },
           },
@@ -265,6 +313,7 @@ export default {
             label: "Status",
             methods: {
               list: {
+                type: "row-slot",
                 view_data: "status",
                 class: {
                   document_saving: "badge bg-warning",
@@ -304,24 +353,42 @@ export default {
 
   methods: {
     onVerification(data) {
-      this.$_alert
-        .confirm("Verifikasi Data?", "Apakah anda yakin ingin verifikasi data?")
-        .then((res) => {
-          if (res.isConfirmed) {
-            this.$_api
-              .post("UpdateVerifScoopingVisit_new", {
-                current_id: data.id,
-                verificator_email: this.$store.state.User.email,
-              })
-              .then(() => {
-                this.$_alert.success("Data berhasil diverifikasi");
-                this.componentKey += 1;
-              })
-              .catch((err) => {
-                this.$_alert.error(err);
-              });
-          }
+      if (
+        data.status == "document_saving" &&
+        data.is_verify == 0 &&
+        data.email_to_gis < 3
+      ) {
+        this.$_api.get("MailtoGis", { data_no: data.data_no }).then(() => {
+          this.updateIds.push(data.id);
+          this.$_alert.success("Berhasil mengirim email ke GIS");
         });
+      } else if (
+        data.status === "ready_to_submit" &&
+        ["13", "25", "23"].includes(this.$store.state.User.role)
+      ) {
+        this.$_alert
+          .confirm(
+            "Verifikasi Data?",
+            "Apakah anda yakin ingin verifikasi data?"
+          )
+          .then((res) => {
+            if (res.isConfirmed) {
+              this.$_api
+                .post("UpdateVerifScoopingVisit_new", {
+                  current_id: data.id,
+                  verificator_email: this.$store.state.User.email,
+                })
+                .then(() => {
+                  this.updateIds.push(data.id);
+                  this.$_alert.success("Data berhasil diverifikasi");
+                  // this.componentKey += 1;
+                })
+                .catch((err) => {
+                  this.$_alert.error(err);
+                });
+            }
+          });
+      }
     },
   },
 };

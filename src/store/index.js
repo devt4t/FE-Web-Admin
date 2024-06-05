@@ -83,7 +83,12 @@ export default new Vuex.Store({
       return moment(date).format(format);
     },
   },
-  mutations: {},
+  mutations: {
+    set(state, [variable, value, saveLS = false]) {
+      Vue.set(state, variable, value);
+      if (saveLS) localStorage.setItem(variable, JSON.stringify(value));
+    },
+  },
   actions: {},
   modules: {},
 });

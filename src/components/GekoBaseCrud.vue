@@ -177,7 +177,7 @@
         </template>
 
         <template v-slot:item.index="{ index }">
-          {{ index + 1 }}
+          {{ (page - 1) * perPage + index + 1 }}
         </template>
 
         <template

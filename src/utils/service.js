@@ -27,15 +27,21 @@ env.interceptors.response.use(
     return response;
   },
   function (error) {
-    console.log(error);
     // Do something with response error
+    console.log(error.response.data);
     if (error.response.status === 401) {
       // localStorage.clear();
 
       // router.push({ name: "login" });
       _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
+    } else if (
+      error.response &&
+      error.response.data &&
+      error.response.data.data &&
+      error.response.data.data.result === "doesnt match data"
+    ) {
+      return;
     } else if (error.response.status === 422 || error.response.status === 400) {
-      console.log("err", error.response);
       _alert.error(error.response);
     } else if (error.response.status === 500) {
       _alert.error({}, "Error", "Terjadi kesalahan system");

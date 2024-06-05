@@ -494,7 +494,7 @@
                 setter: 'photo_meeting',
                 view_data: 'photo_meeting',
                 api: 'scooping_visits/upload.php',
-                directory: 'photos/',
+                directory: 'photos',
                 option: {
                   label_hint:
                     'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -516,7 +516,7 @@
                 setter: 'photo_dry_land',
                 view_data: 'photo_dry_land',
                 api: 'scooping_visits/upload.php',
-                directory: 'photos/',
+                directory: 'photos',
                 option: {
                   label_hint:
                     'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -538,7 +538,7 @@
                 setter: 'village_profile',
                 view_data: 'village_profile',
                 api: 'scooping_visits/upload.php',
-                directory: 'photos/',
+                directory: 'photos',
                 option: {
                   label_hint:
                     'Klik gambar untuk memilih berkas yang akan diunggah',
@@ -591,7 +591,7 @@
               }"
             />
           </v-col>
-          <v-col md="6">
+          <!-- <v-col md="6">
             <geko-input
               v-model="formData.land_type"
               :item="{
@@ -609,8 +609,8 @@
                 },
               }"
             />
-          </v-col>
-
+          </v-col> -->
+          <!-- 
           <v-col md="6" v-if="$route.query.view === 'create'">
             <geko-input
               v-model="formData.slope"
@@ -629,8 +629,8 @@
                 },
               }"
             />
-          </v-col>
-
+          </v-col> -->
+          <!-- 
           <v-col md="6" v-if="$route.query.view === 'create'">
             <geko-input
               v-model="formData.altitude"
@@ -649,9 +649,9 @@
                 },
               }"
             />
-          </v-col>
+          </v-col> -->
 
-          <v-col md="6">
+          <!-- <v-col md="6">
             <geko-input
               v-model="formData.rainfall"
               :item="{
@@ -669,9 +669,9 @@
                 },
               }"
             />
-          </v-col>
+          </v-col> -->
 
-          <v-col md="12" class="form-separator">
+          <!-- <v-col md="12" class="form-separator">
             <h4>Upload Polygon File (GIS)</h4>
           </v-col>
 
@@ -687,7 +687,7 @@
                 api: 'scooping_visits/upload.php',
 
                 upload_type: '.kml',
-                directory: 'village_polygon/',
+                directory: 'village_polygon',
                 option: {
                   icon: 'mdi-vector-polygon',
                   label_hint:
@@ -708,7 +708,7 @@
                 upload_type: '.kml',
                 view_data: 'dry_land_polygon',
                 api: 'scooping_visits/upload.php',
-                directory: 'village_polygon/',
+                directory: 'village_polygon',
                 option: {
                   icon: 'mdi-vector-polygon',
                   label_hint:
@@ -716,7 +716,7 @@
                 },
               }"
             />
-          </v-col>
+          </v-col> -->
 
           <v-col md="12" class="form-separator">
             <h4>INFORMASI LAINNYA</h4>
@@ -847,9 +847,9 @@
           </v-col>
           <v-col md="6">
             <geko-input
-              v-model="formData.general_land_condition"
+              v-model="formData.field_companion_potency"
               :item="{
-                view_data: 'general_land_condition',
+                view_data: 'field_companion_potency',
                 type: 'textarea',
                 label: 'Potensi pendamping lapang?',
                 validation: [],
@@ -859,9 +859,9 @@
 
           <v-col md="6">
             <geko-input
-              v-model="formData.general_land_condition"
+              v-model="formData.ff_candidate"
               :item="{
-                view_data: 'general_land_condition',
+                view_data: 'ff_candidate',
                 type: 'textarea',
                 label: 'Identifikasi Kandidat FF',
                 validation: [],

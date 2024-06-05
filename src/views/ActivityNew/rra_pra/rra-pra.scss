@@ -1,0 +1,58 @@
+@import "../../../assets/scss/variables";
+
+.rra-pra-form {
+    .bg-grey {
+        
+        background-color: rgba(128, 128, 128, 0.1);
+        border-radius: 12px;
+        padding: 1.5em;
+    }
+    form {
+        padding: 2em;
+
+        .multiple-row-wrapper {
+            background-color: rgba(128, 128, 128, 0.1);
+            border-radius: 12px;
+            padding-block: 1em;
+            padding-inline: 1.2em;
+
+            table {
+                
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                thead th {
+                    font-weight: 400;
+                    font-size: 1em;
+                }
+
+
+                tbody tr td {
+                    padding-inline: 5px;
+                    &:first-child {
+                        padding-inline: 10px;
+                        .label {
+                            padding-inline: 10px;
+                            padding-block: 3px;
+                            background-color: $primary_light;
+                            color: $primary;
+                            border-radius: 12px;
+                            font-size: .8em;
+                        }
+                    }
+                    
+                }
+            }
+        }
+
+        .landscape-village {
+            background-color: rgba(128, 128, 128, 0.1);
+            padding: 1.5em;
+            border-radius: 12px;
+
+            .note {
+                font-style: italic;
+            }
+        }
+    }
+}

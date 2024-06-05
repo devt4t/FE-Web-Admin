@@ -9,6 +9,7 @@
       ref="provider"
     >
       <label
+        v-if="!item.hide_label"
         :for="item.view_data"
         :class="{
           required:

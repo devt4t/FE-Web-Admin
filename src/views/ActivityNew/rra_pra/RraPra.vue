@@ -10,22 +10,45 @@
     </template>
 
     <template v-slot:list-form_no="{ item }">
-      <div class="d-flex flex-column left-indicator">
-        <p class="mb-0 pb-0 text-link">#{{ item.data_no }}</p>
+      <div class="d-flex flex-column indicator-left">
+        <p class="mb-0 pb-0 text-link">#{{ item.form_no }}</p>
         <div class="min-w-150px">
-          <span>{{ item.rra_pra_date_start | parse("date") }}</span>
-          <span v-if="item.rra_pra_date_end"
+          <span class="text-08-em">{{
+            item.rra_pra_date_start | parse("date")
+          }}</span>
+          <span class="text-08-em" v-if="item.rra_pra_date_end"
             >{{ " - " }} {{ item.rra_pra_date_start | parse("date") }}</span
           >
         </div>
       </div>
     </template>
+
+    <template v-slot:list-indicator="{ item }">
+      <div class="indicator-wrapper pt-1">
+        <div
+          class="indicator"
+          :class="{
+            success: item.status === 'submit_review',
+            warning: item.status === 'document_saving',
+          }"
+        ></div>
+      </div>
+    </template>
+
+    <template v-slot:create-form>
+      <rra-pra-form />
+    </template>
   </geko-base-crud>
 </template>
 
 <script>
+import RraPraForm from "./RraPraForm.vue";
+import "./rra-pra.scss";
 export default {
   name: "rra-pra-module",
+  components: {
+    RraPraForm,
+  },
   data() {
     return {
       config: {
@@ -47,6 +70,24 @@ export default {
           lookup: "project-lookup",
           delete: "project-delete",
         },
+        statistic: {
+          transform_key: {
+            total_data: {
+              label: "Total Data",
+              icon: "mdi-list-status",
+            },
+            verified: {
+              label: "Terverifikasi",
+              icon: "mdi-check-circle-outline",
+              color: "success",
+            },
+            unverified: {
+              label: "Belum Terverifikasi",
+              icon: "mdi-close-circle-outline",
+              color: "danger",
+            },
+          },
+        },
         fields: [
           {
             id: "id",
@@ -56,6 +97,16 @@ export default {
               create: false,
               update: false,
               filter: false,
+            },
+          },
+
+          {
+            id: "indicator",
+            label: " ",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
             },
           },
 
@@ -88,19 +139,19 @@ export default {
             },
           },
 
-          {
-            id: "date",
-            label: "Tanggal",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-              detail: true,
-              create: true,
-              update: true,
-              filter: false,
-            },
-          },
+          // {
+          //   id: "date",
+          //   label: "Tanggal",
+          //   methods: {
+          //     list: {
+          //       type: "row-slot",
+          //     },
+          //     detail: true,
+          //     create: true,
+          //     update: true,
+          //     filter: false,
+          //   },
+          // },
 
           {
             id: "pic_id",

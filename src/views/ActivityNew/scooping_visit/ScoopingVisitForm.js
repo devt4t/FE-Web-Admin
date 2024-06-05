@@ -147,7 +147,7 @@ export default {
 
       this.loading = true;
 
-      const payload = {
+      let payload = {
         province: this.formData.province_code,
         city: this.formData.city_code,
         district: this.formData.district_code,
@@ -162,16 +162,16 @@ export default {
             : null,
         accessibility: this.formData.accessibility,
         land_area: this.formData.land_area,
-        land_type: this.formData.land_type.join(","),
+        // land_type: this.formData.land_type.join(","),
         slope: this.formData.slope,
         altitude: this.formData.altitude,
-        vegetation_density: this.formData.vegetation_density.join(","),
-        water_source: this.formData.water_source.join(","),
-        rainfall: this.formData.rainfall.join(","),
-        agroforestry_type: this.formData.agroforestry_type.join(","),
-        goverment_place: this.formData.government_place.join(","),
-        land_coverage: this.formData.land_coverage.join(","),
-        electricity_source: this.formData.electricity_source.join(","),
+        // vegetation_density: this.formData.vegetation_density.join(","),
+        // water_source: this.formData.water_source.join(","),
+        // rainfall: this.formData.rainfall.join(","),
+        // agroforestry_type: this.formData.agroforestry_type.join(","),
+        // goverment_place: this.formData.government_place.join(","),
+        // land_coverage: this.formData.land_coverage.join(","),
+        // electricity_source: this.formData.electricity_source.join(","),
         dry_land_area: parseInt(this.formData.village_area),
         village_polygon: this.formData.village_polygon,
         dry_land_polygon: this.formData.dry_land_polygon,
@@ -181,15 +181,42 @@ export default {
         total_male: parseInt(this.formData.total_male),
         total_female: parseInt(this.formData.total_female),
         total_kk: parseInt(this.formData.total_kk),
-        photo_road_access: this.formData.photo_road_access.join(","),
-        photo_meeting: this.formData.photo_meeting.join(","),
-        photo_dry_land: this.formData.photo_dry_land.join(","),
+        // photo_road_access: this.formData.photo_road_access.join(","),
+        // photo_meeting: this.formData.photo_meeting.join(","),
+        // photo_dry_land: this.formData.photo_dry_land.join(","),
         village_profile: this.formData.village_profile,
         status: "document_saving",
         complete_data: 0,
         project_id: this.formData.project_id,
         user_email: this.$store.state.User.email,
+        other_ngo: this.formData.other_ngo,
+        mitigation_program: parseInt(this.formData.mitigation_program),
+        resident_acceptance: this.formData.resident_acceptance,
+        next_event_contact_person: this.formData.next_event_contact_person,
+        general_land_condition: this.formData.general_land_condition,
+        field_companion_potency: this.formData.field_companion_potency,
+        ff_candidate: this.formData.ff_candidate,
       };
+
+      const keyJoins = [
+        "land_type",
+        "vegetation_density",
+        "water_source",
+        "rainfall",
+        "agroforestry_type",
+        "government_place",
+        "land_coverage",
+        "electricity_source",
+        "photo_road_access",
+        "photo_meeting",
+        "photo_dry_land",
+      ];
+
+      for (const _key of keyJoins) {
+        if (Array.isArray(this.formData[_key])) {
+          payload[_key] = this.formData[_key].join(",");
+        }
+      }
 
       this.$_api
         .post("AddScoopingVisit_new", payload)

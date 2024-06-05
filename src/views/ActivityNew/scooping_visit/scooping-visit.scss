@@ -74,6 +74,31 @@
                     width: 60%;
                     padding-left: 10px;
                 }
+
+                &.status {
+                    flex-direction: column;
+
+                    .label {
+                        width: 100%;
+
+                        &::after {
+                            
+                            content: '';
+                        }
+
+                    }
+
+                    .value {
+                        width: 100%;
+                        padding-left: 0;
+                        font-weight: 500;
+                        font-size: 1em;
+                        margin-bottom: 10px;
+                        button {
+                            margin-right: 5px;
+                        }
+                    }
+                }
             }
         }
     }
