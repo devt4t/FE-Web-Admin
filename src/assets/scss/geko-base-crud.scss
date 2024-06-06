@@ -311,6 +311,45 @@
       }
     }
   }
+
+  .geko-base-detail {
+    .geko-base-detail-wrapper {
+      padding-inline: 1.5em;
+      padding-block: 1em;
+      padding-bottom: 2em;
+    }
+    .geko-base-detail-list {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      .geko-base-detail-item {
+        display: flex;
+        flex-direction: row;
+        padding-block: 5px;
+        width: 100%;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+        .label {
+          width: 30%;
+
+          color: grey;
+          font-size: .9em;
+          position: relative;
+          &::after {
+            content: ':';
+            top: 0;
+            right: -5px;
+            position: absolute;
+          }
+        }
+        .value {
+          width: 70%;
+          font-size: .9em;
+          padding-left: 15px;
+        }
+      }
+    }
+  }
 }
 
 .geko-input {

@@ -491,29 +491,40 @@
                 <v-col md="6">
                   <geko-input v-model="item.capacity" :item="{
                     label: 'Kapasitas Komoditas (kg)',
-                    validation: ['required'],
+                    validation: [],
                     type: 'text',
                   }" />
                 </v-col>
 
                 <v-col md="1">
-                  <div class="d-flex flex-column" style="height: 100%; justify-content: center">
+                  <div class="d-flex flex-column" style="height: 100%; justify-content: center"
+                    v-if="productionMarketing.length > 1">
                     <button class="text-danger" @click="removeRow('productionMarketing', i)">
                       <v-icon class="text-danger">mdi-close</v-icon>
                     </button>
                   </div>
                 </v-col>
-                <v-col md="11">
-                  <geko-input v-model="item.source" :item="{
-                    label: 'Sumber Pertanian Organik',
+
+                <v-col md="5">
+                  <geko-input v-model="item.method" :item="{
+                    label: 'Metode',
                     validation: ['required'],
                     type: 'text',
                   }" />
                 </v-col>
+
+                <v-col md="6">
+                  <geko-input v-model="item.period" :item="{
+                    label: 'Periode Pemasaran Komoditas',
+                    validation: ['required'],
+                    type: 'text',
+                  }" />
+                </v-col>
+
                 <v-col md="11">
                   <geko-input v-model="item.description" :item="{
                     label: 'Deskripsi',
-                    validation: [],
+                    validation: ['required'],
                     type: 'textarea',
                   }" />
                 </v-col>
@@ -528,6 +539,439 @@
               </v-row>
             </div>
           </v-col>
+
+
+
+
+          <v-col md="12" class="form-separator">
+            <h4>Identifikasi Petani Invoatif</h4>
+          </v-col>
+          <v-col md="12">
+            <div class="bg-grey">
+
+              <v-expansion-panels focusable v-for="(item, i) in innovativeFarmer" :key="'pm' + i + i">
+                <v-expansion-panel class="mb-3">
+                  <v-expansion-panel-header>
+                    {{ item.farmer_name || 'Masukkan Data Petani Baru' }}
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content class="pt-4">
+                    <v-row>
+                      <v-col md="5">
+                        <geko-input v-model="item.farmer_name" :item="{
+                          label: 'Nama Petani',
+                          validation: ['required'],
+                          type: 'text'
+                        }" />
+                      </v-col>
+                      <v-col md="6">
+                        <geko-input v-model="item.specialitation" :item="{
+                          label: 'Spesialisasi Petani',
+                          validation: ['required'],
+                          type: 'text',
+                        }" />
+                      </v-col>
+                      <v-col md="11">
+                        <geko-input v-model="item.potential" :item="{
+                          label: 'Potensial',
+                          validation: ['required'],
+                          type: 'text',
+                        }" />
+                      </v-col>
+                      <v-col md="11">
+                        <geko-input v-model="item.description" :item="{
+                          label: 'Deskripsi',
+                          validation: ['required'],
+                          type: 'textarea',
+                        }" />
+                      </v-col>
+
+                      <v-col md="1">
+                        <div class="d-flex flex-column" style="height: 100%; justify-content: center"
+                          v-if="innovativeFarmer.length > 1">
+                          <button class="text-danger" @click="removeRow('innovativeFarmer', i)">
+                            <v-icon class="text-danger">mdi-close</v-icon>
+                          </button>
+                        </div>
+                      </v-col>
+
+
+
+                    </v-row>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+
+              <v-row>
+
+                <v-col md="12" class="mt-5 pt-3">
+                  <v-btn small variant="success" @click="addRow('innovativeFarmer', 'rra_no')"><v-icon
+                      small>mdi-plus</v-icon>Tambah Data</v-btn>
+                </v-col>
+              </v-row>
+
+            </div>
+          </v-col>
+          <v-col md="12" class="form-separator">
+            <h4>Data Dusun</h4>
+          </v-col>
+          <v-col md="12">
+            <div class="bg-grey">
+
+              <v-expansion-panels focusable v-for="(item, i) in dusuns" :key="'acc' + i + i">
+                <v-expansion-panel class="mb-3">
+                  <v-expansion-panel-header>
+                    {{ item.dusun_name || 'Masukkan Data Dusun' }}
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content class="pt-4 pb-5">
+                    <v-row class="pb-5">
+                      <v-col md="5">
+                        <geko-input v-model="item.dusun_name" :item="{
+                          label: 'Nama Dusun',
+                          validation: ['required'],
+                          type: 'text'
+                        }" />
+                      </v-col>
+
+                      <v-col md="6">
+                        <geko-input v-if="item.potential == 0" v-model="item.total_kk" :item="{
+                          label: 'Jumlah KK',
+                          validation: ['required'],
+                          type: 'number'
+                        }" />
+
+
+                      </v-col>
+
+                      <v-col md="1">
+                        <div class="d-flex flex-column" style="height: 100%; justify-content: center"
+                          v-if="dusuns.length > 1">
+                          <button class="text-danger" @click="removeRow('dusuns', i)">
+                            <v-icon class="text-danger">mdi-close</v-icon>
+                          </button>
+                        </div>
+                      </v-col>
+
+                      <v-col md="12">
+
+                        <geko-input v-model="item.potential" :item="{
+                          view_data: 'potential',
+                          type: 'select-radio',
+                          label:
+                            'Apakah dusun ini berpotensi?',
+                          validation: [],
+                          option: {
+                            list_pointer: {
+                              label: 'label',
+                              code: 'code',
+                              display: ['label'],
+                            },
+                            default_options: [
+                              {
+                                label: 'Berpotensi',
+                                code: '1',
+                              },
+                              {
+                                label: 'Tidak Berpotensi',
+                                code: '0',
+                              },
+                            ],
+                          },
+                        }" />
+                      </v-col>
+                      <v-row class="px-2" v-if="item.potential == 1">
+                        <v-col lg="6">
+                          <geko-input v-model="item.accessibility" :item="{
+                            view_data: 'accessibility',
+                            type: 'select',
+                            label: 'Aksesibilitas',
+                            validation: ['required'],
+                            option: {
+                              default_options: defaultData.accessibility,
+                              list_pointer: {
+                                label: 'name',
+                                code: 'code',
+                                display: ['name']
+                              }
+                            }
+                          }" />
+                        </v-col>
+
+                        <v-col lg="6">
+
+                          <geko-input v-model="item.dusun_access_photo" :item="{
+                            label: 'Foto Akses Jalan',
+                            validation: ['required'],
+                            type: 'upload',
+                            api: 'rra_pra/upload.php',
+                            directory: 'photos',
+                            upload_type: 'image/*',
+                            setter: 'dusun_access_photo',
+                            view_data: 'dusun_access_photo',
+                            option: {
+                              label_hint:
+                                'Klik gambar untuk memilih berkas yang akan diunggah',
+                              max_size: 5,
+                              max: 5,
+                            },
+                          }" />
+                        </v-col>
+
+                        <v-col md="12" class="form-separator">
+                          <h4>Luas Dusun &amp; Lahan Kering</h4>
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.data_land_area_source" :item="{
+                            label: 'Tipe Sumber Data Luas Dusun',
+                            validation: ['required'],
+                            type: 'select',
+                            view_data: item.data_land_area_source,
+                            option: {
+                              default_options: defaultData.data_type_source,
+
+                              list_pointer: {
+                                label: 'name',
+                                code: 'code',
+                                display: ['name']
+                              }
+                            }
+                          }" />
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.land_area" :item="{
+                            label: 'Luas Dusun',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+
+
+                        <v-col lg="6">
+                          <geko-input v-model="item.dry_land_area" :item="{
+                            label: 'Luas Lahan Kering',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.dry_land_area_source" :item="{
+                            label: 'Tipe Sumber Data (Luas Lahan Kering)',
+                            validation: ['required'],
+                            type: 'select',
+                            view_data: item.data_land_area_source,
+                            option: {
+                              default_options: defaultData.data_type_source,
+
+                              list_pointer: {
+                                label: 'name',
+                                code: 'code',
+                                display: ['name']
+                              }
+                            }
+                          }" />
+                        </v-col>
+
+
+                        <v-col md="12" class="form-separator">
+                          <h4>PIC Dusun</h4>
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.pic_dusun" :item="{
+                            label: 'PIC Dusun',
+                            validation: ['required'],
+                            type: 'text'
+                          }" />
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.position" :item="{
+                            label: 'Jabatan',
+                            validation: ['required'],
+                            type: 'text'
+                          }" />
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.phone" :item="{
+                            label: 'No HP',
+                            validation: ['required'],
+                            type: 'text'
+                          }" />
+                        </v-col>
+                        <v-col lg="6">
+                          <geko-input v-model="item.whatsapp" :item="{
+                            label: 'Whatsapp',
+                            validation: [],
+                            type: 'text'
+                          }" />
+                        </v-col>
+
+
+
+                        <v-col md="12" class="form-separator">
+                          <h4>Data Populasi</h4>
+
+                        </v-col>
+                        <v-col lg="2">
+                          <geko-input v-model="item.total_rt" :item="{
+                            label: 'RT',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="2">
+                          <geko-input v-model="item.total_rw" :item="{
+                            label: 'RW',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.total_male" :item="{
+                            label: 'Jumlah Laki-Laki',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.total_female" :item="{
+                            label: 'Jumlah Perempuan',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.total_kk" :item="{
+                            label: 'Jumlah KK',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.total_farmer_family" :item="{
+                            label: 'Jumlah Keluarga Petani (KK)',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.total_non_farmer_family" :item="{
+                            label: 'Jumlah Keluarga Non Petani (KK)',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.average_family_member" :item="{
+                            label: 'Rata-Rata Anggota Keluarga',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.average_farmer_family_member" :item="{
+                            label: 'Rata-Rata Anggota Keluarga Petani',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col lg="4">
+                          <geko-input v-model="item.average_non_farmer_family_member" :item="{
+                            label: 'Rata-Rata Anggota Keluarga Non Petani',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+
+                        <v-col md="12" class="form-separator">
+                          <h4>Data Edukasi</h4>
+                        </v-col>
+                        <v-col md="6">
+                          <geko-input v-model="item.education_elementary_junior_hs" :item="{
+                            label: 'SD - SMP',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col md="6">
+                          <geko-input v-model="item.education_senior_hs" :item="{
+                            label: 'SMA',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+                        <v-col md="6">
+                          <geko-input v-model="item.education_college" :item="{
+                            label: 'Kuliah',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+
+
+                        <v-col md="12" class="form-separator">
+                          <h4>Data Produktifitas</h4>
+                        </v-col>
+                        <v-col md="4">
+                          <geko-input v-model="item.data_productive_source" :item="{
+                            label: 'Tipe Sumber Data',
+                            validation: ['required'],
+                            type: 'select',
+                            view_data: item.data_productive_source,
+                            option: {
+                              default_options: defaultData.data_type_source,
+
+                              list_pointer: {
+                                label: 'name',
+                                code: 'code',
+                                display: ['name']
+                              }
+                            }
+                          }" />
+                        </v-col>
+
+                        <v-col md="4">
+                          <geko-input v-model="item.age_productive" :item="{
+                            label: 'Produktif',
+                            validation: ['required'],
+                            type: 'number'
+                          }" />
+                        </v-col>
+
+                        <v-col md="4">
+                          <geko-input v-model="item.age_non_productive" :item="{
+                            label: 'Non-Produktif',
+                            validation: [],
+                            type: 'number'
+                          }" />
+                        </v-col>
+
+
+                        <v-col md="12" class="form-separator">
+                          <h4>Mata Pencaharian Masyarakat</h4>
+                        </v-col>
+
+
+                        <v-col md="6" v-for="(job, j) in dusunJobs" :key="'dusuns-' + i + j">
+                          <v-switch :label="'Ada ' + job[0]" v-model="item[job[1]]" color="success"></v-switch>
+
+                        </v-col>
+                      </v-row>
+
+
+
+                    </v-row>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+
+              <v-row>
+
+                <v-col md="12" class="mt-5 pt-3">
+                  <v-btn small variant="success" @click="addRow('dusuns', 'potential', 0)"><v-icon
+                      small>mdi-plus</v-icon>Tambah Data</v-btn>
+                </v-col>
+              </v-row>
+
+            </div>
+          </v-col>
         </v-row>
       </form>
     </ValidationObserver>
@@ -535,11 +979,23 @@
 </template>
 
 <script>
-import defaultData from "./RraPraForm.js";
+import defaultData from "./RraPraData.js";
+
 export default {
   name: "rra-pra-form",
   data() {
     return {
+      dusunJobs: [
+        ['Ladies Companion', 'setter'],
+        ['Terapis', 'test'],
+        ['Senior Terapis', 'setter1'],
+        // ['Petani', 'job_farmer'],
+        // ['Buruh Tani', 'job_farm_workers'],
+        // ['Karyawan Swasta', 'job_private_employee'],
+        // ['ASN (Guru, TNI, Polri)', 'job_state_employee'],
+        // ['Wiraswasta', 'job_enterpreneur'],
+        // ['Profesi Lain (Peternakan, Buruh Peternakan, Pensiunan)', 'job_others'],
+      ],
       landscapeVillageConfig: [
         ["tanah_sawah", "Tanah Sawah"],
         ["tegal_ladang", "Tegal / Ladang"],
@@ -563,6 +1019,11 @@ export default {
           rra_no: null
         }
       ],
+      dusuns: [
+        {
+          potential: 0
+        }
+      ],
       landUse: [
         {
           rra_no: null,
@@ -573,6 +1034,7 @@ export default {
           rra_no: null,
         },
       ],
+      innovativeFarmer: [],
       formData: {
         landscape_villages: ["test"],
         borderlines: [
@@ -603,6 +1065,11 @@ export default {
     };
   },
 
+  mounted() {
+    console.log(this.defaultData)
+  },
+
+
   computed: {
     defaultData() {
       return defaultData;
@@ -618,10 +1085,10 @@ export default {
       this.$set(this.formData, "land_area", data.land_area);
     },
 
-    addRow(name, key) {
+    addRow(name, key, value) {
       if (Array.isArray(this[name])) {
         this[name].push({
-          [key]: null,
+          [key]: ![undefined, null].includes(value) ? value : null,
         });
       }
     },

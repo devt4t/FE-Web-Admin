@@ -28,4 +28,30 @@ export default {
       code: "CROPS",
     },
   ],
+
+  accessibility: [
+    {
+      name: "Mudah",
+      code: "easy",
+    },
+    {
+      name: "Medium",
+      code: "medium",
+    },
+    {
+      name: "Sulit",
+      code: "hard",
+    },
+  ],
+
+  data_type_source: [
+    {
+      name: "Perkiraan",
+      code: "estimation",
+    },
+    {
+      name: "Asli",
+      code: "real",
+    },
+  ],
 };

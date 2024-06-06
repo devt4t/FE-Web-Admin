@@ -64,6 +64,7 @@ export default {
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "newDeleteDonor",
+        detail: '',
         pk_field: null,
         permission: {
           create: "donor-create",
