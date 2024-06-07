@@ -69,3 +69,28 @@ svg.wave {
 .v-app-bar.theme--light {
   display: none;
 }
+
+.toggle-button-mobile {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+
+  .toggle-button-mobile {
+    display: flex;
+    position: fixed;
+    z-index: 5;
+    right: 1em;
+    bottom: 1em;
+    background-color: $success;
+    border-radius: 50%;
+    width: 3em;
+    height: 3em;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    i {
+      color: white !important;
+    }
+  }
+}

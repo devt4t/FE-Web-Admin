@@ -168,8 +168,8 @@
                     </td>
 
                     <td style="min-width: 200px">
-                      <geko-input v-if="borderline.borderline_type == 'Kecamatan'" v-model="borderline.district_id"
-                        :item="{
+                      <geko-input v-if="['Kecamatan', 'Desa'].includes(borderline.borderline_type)"
+                        v-model="borderline.district_id" :item="{
                           label: 'Kecamatan',
                           validation: ['required'],
                           type: 'select',
@@ -972,6 +972,12 @@
 
             </div>
           </v-col>
+
+          <v-col md="12">
+            <v-btn variant="success" @click="onSubmit()">
+              Tambahkan Data
+            </v-btn>
+          </v-col>
         </v-row>
       </form>
     </ValidationObserver>
@@ -986,15 +992,15 @@ export default {
   data() {
     return {
       dusunJobs: [
-        ['Ladies Companion', 'setter'],
-        ['Terapis', 'test'],
-        ['Senior Terapis', 'setter1'],
-        // ['Petani', 'job_farmer'],
-        // ['Buruh Tani', 'job_farm_workers'],
-        // ['Karyawan Swasta', 'job_private_employee'],
-        // ['ASN (Guru, TNI, Polri)', 'job_state_employee'],
-        // ['Wiraswasta', 'job_enterpreneur'],
-        // ['Profesi Lain (Peternakan, Buruh Peternakan, Pensiunan)', 'job_others'],
+        // ['Ladies Companion', 'setter'],
+        // ['Terapis', 'test'],
+        // ['Senior Terapis', 'setter1'],
+        ['Petani', 'job_farmer'],
+        ['Buruh Tani', 'job_farm_workers'],
+        ['Karyawan Swasta', 'job_private_employee'],
+        ['ASN (Guru, TNI, Polri)', 'job_state_employee'],
+        ['Wiraswasta', 'job_enterpreneur'],
+        ['Profesi Lain (Peternakan, Buruh Peternakan, Pensiunan)', 'job_others'],
       ],
       landscapeVillageConfig: [
         ["tanah_sawah", "Tanah Sawah"],
@@ -1066,7 +1072,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.defaultData)
   },
 
 
@@ -1077,8 +1082,43 @@ export default {
   },
 
   methods: {
-    onsubmit() {
+    onSubmit() {
       console.log(this.formData);
+      const payload = [
+        ['scooping_form_no', 'scooping_visit_code'],
+        ['date', 'date'],
+        // ['village', 'date'],
+        ['lahan_menurut_masyarakat', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+        ['date', 'date'],
+      ]
+
+      let villageBorderPayload = []
+      for (const item of this.formData.borderlines) {
+        var _data = {
+          rra_no: null,
+          point: item.setter,
+          border_type: item.borderline_type,
+          kabupaten_no: item.city_code,
+        }
+        villageBorderPayload.push(_data)
+
+        if (item.district_code) {
+          _data.kode_kecamatan = item.district_code
+        }
+        if (item.kode_desa) {
+          _data.kode_desa = item.village_code
+        }
+      }
     },
     onSelectScoopingVisit(data) {
       this.$set(this.formData, "scooping_visit_code", data.data_no);
