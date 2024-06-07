@@ -1,24 +1,13 @@
 <template>
   <v-app id="Trees">
     <!-- Sidebar -->
-    <v-navigation-drawer
-      :width="'auto'"
-      v-if="isLogin"
-      v-model="drawer"
-      :dark="$store.state.theme == 'dark'"
-      app
-      :class="`custom-sidebar ${
-        $store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
-      } rounded-xl ml-2 mt-2 elevation-5`"
-      style="height: auto; max-height: 97.5vh"
-    >
+    <v-navigation-drawer :width="'auto'" v-if="isLogin" v-model="drawer" :dark="$store.state.theme == 'dark'" app
+      :class="`custom-sidebar ${$store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
+        } rounded-xl ml-2 mt-2 elevation-5`" style="height: auto; max-height: 97.5vh">
       <template v-slot:prepend>
         <v-list-item>
           <v-list-item-content class="text-center">
-            <v-list-item-title
-              style="font-weight: 550; font-size: 125%"
-              class="fontall green--text--theme"
-            >
+            <v-list-item-title style="font-weight: 550; font-size: 125%" class="fontall green--text--theme">
               GEKO
             </v-list-item-title>
             <v-list-item-subtitle>Green Earth Kontrol</v-list-item-subtitle>
@@ -46,39 +35,18 @@
             </v-badge>
           </v-list-item-title>
         </v-list-item> -->
-        <v-list-group
-          v-for="item in items"
-          :key="item.title"
-          v-model="item.active"
-          :prepend-icon="item.icon"
-          no-action
-          color="#71AF34"
-          class="fontall"
-          :ripple="false"
-        >
+        <v-list-group v-for="item in items" :key="item.title" v-model="item.active" :prepend-icon="item.icon" no-action
+          color="#71AF34" class="fontall" :ripple="false">
           <template v-slot:activator>
             <v-list-item-content>
-              <v-list-item-title
-                class="itemparent"
-                v-text="item.title"
-              ></v-list-item-title>
+              <v-list-item-title class="itemparent" v-text="item.title"></v-list-item-title>
             </v-list-item-content>
           </template>
 
-          <v-list-item
-            v-for="child in item.items"
-            :key="child.title"
-            :to="child.to"
-            link
-            dense
-            :ripple="false"
-          >
+          <v-list-item v-for="child in item.items" :key="child.title" :to="child.to" link dense :ripple="false">
             <template>
               <v-list-item-content>
-                <v-list-item-title
-                  class="itemchild"
-                  v-text="child.title"
-                ></v-list-item-title>
+                <v-list-item-title class="itemchild" v-text="child.title"></v-list-item-title>
               </v-list-item-content>
             </template>
 
@@ -113,17 +81,11 @@
           </v-list-item-content>
         </template> -->
         </v-list-group>
-        <v-list-item
-          color="#71AF34"
-          :to="'/report-data'"
-          link
-          :ripple="false"
-          v-if="
-            $store.state.User.role_group == 'IT' ||
-            $store.state.User.role_name == 'GIS STAFF' ||
-            $store.state.User.email == 'anto@trees4trees.org'
-          "
-        >
+        <v-list-item color="#71AF34" :to="'/report-data'" link :ripple="false" v-if="
+          $store.state.User.role_group == 'IT' ||
+          $store.state.User.role_name == 'GIS STAFF' ||
+          $store.state.User.email == 'anto@trees4trees.org'
+        ">
           <v-list-item-icon>
             <v-icon>mdi-table-arrow-right</v-icon>
           </v-list-item-icon>
@@ -133,31 +95,17 @@
 
       <template v-slot:append>
         <div class="text-center pa-2">
-          <v-btn
-            :color="`${
-              $store.state.theme == 'light'
-                ? 'orange white--text'
-                : 'orange--text white'
-            } darken-2`"
-            fab
-            x-small
-            class="mr-1"
-            @click="$store.state.theme = 'light'"
-          >
+          <v-btn :color="`${$store.state.theme == 'light'
+            ? 'orange white--text'
+            : 'orange--text white'
+            } darken-2`" fab x-small class="mr-1" @click="$store.state.theme = 'light'">
             <v-icon>mdi-weather-sunny</v-icon>
           </v-btn>
           <v-btn color="red white--text" fab small class="" @click="logout()">
             <v-icon>mdi-power</v-icon>
           </v-btn>
-          <v-btn
-            :color="`${
-              $store.state.theme == 'dark' ? 'blue' : 'blue--text'
-            } darken-2`"
-            fab
-            x-small
-            class="ml-1"
-            @click="$store.state.theme = 'dark'"
-          >
+          <v-btn :color="`${$store.state.theme == 'dark' ? 'blue' : 'blue--text'
+            } darken-2`" fab x-small class="ml-1" @click="$store.state.theme = 'dark'">
             <v-icon>mdi-weather-night</v-icon>
           </v-btn>
         </div>
@@ -171,14 +119,12 @@
     </v-navigation-drawer>
 
     <!-- TopBar -->
-    <v-app-bar
-      :class="`${
-        $store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
-      } mx-2 ml-2 ml-lg-5 mt-2 rounded-pill`"
-      :dark="$store.state.theme == 'dark'"
-      v-if="isLogin"
-      app
-    >
+
+    <button class="toggle-button-mobile">
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+    </button>
+    <v-app-bar :class="`${$store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
+      } mx-2 ml-2 ml-lg-5 mt-2 rounded-pill`" :dark="$store.state.theme == 'dark'" v-if="isLogin" app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title class="pl-1 fontall">
@@ -193,13 +139,7 @@
         {{ isFullScreen ? "Close" : "Go" }} FullScreen
         {{ isFullScreen ? "(esc)" : "" }}
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-bind="attrs"
-            v-on="on"
-            icon
-            color="gray darken-1"
-            @click="toggleFullScreen"
-          >
+          <v-btn v-bind="attrs" v-on="on" icon color="gray darken-1" @click="toggleFullScreen">
             <v-icon v-if="isFullScreen">mdi-arrow-collapse-all</v-icon>
             <v-icon v-else>mdi-arrow-expand-all</v-icon>
           </v-btn>
@@ -223,133 +163,59 @@
           </v-btn>
         </template>
         <v-list rounded style="overflow: hidden !important">
-          <v-list-item
-            v-for="(item, index) in itemsprofile"
-            :key="index"
-            @click="selectSection(item)"
-            color="primary"
-          >
-            <v-list-item-title
-              ><v-icon small color="black">{{ item.icon }}</v-icon>
-              {{ item.title }}</v-list-item-title
-            >
+          <v-list-item v-for="(item, index) in itemsprofile" :key="index" @click="selectSection(item)" color="primary">
+            <v-list-item-title><v-icon small color="black">{{ item.icon }}</v-icon>
+              {{ item.title }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
     </v-app-bar>
 
     <!-- footer -->
-    <v-app-bar
-      v-if="isLogin"
-      :class="`${
-        $store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
-      } mx-5 mr-3 mb-2 rounded-xl`"
-      app
-      dense
-      bottom
-      absolute
-      :dark="$store.state.theme == 'dark'"
-    >
-      <v-col
-        :class="`text-center green--text ${
-          $store.state.theme == 'dark' ? 'text--lighten-4' : 'text--darken-1'
-        }`"
-        cols="12"
-      >
+    <v-app-bar v-if="isLogin" :class="`${$store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
+      } mx-5 mr-3 mb-2 rounded-xl`" app dense bottom absolute :dark="$store.state.theme == 'dark'">
+      <v-col :class="`text-center green--text ${$store.state.theme == 'dark' ? 'text--lighten-4' : 'text--darken-1'
+        }`" cols="12">
         GEKOWeb v{{ $store.state.packageVersion }} © Trees4Trees
       </v-col>
     </v-app-bar>
 
     <!-- Main Content -->
-    <v-main
-      :class="`gradient-animate ${$store.state.theme} ${
-        $store.state.User ? 'logged-in' : ''
-      }`"
-    >
-      <svg
-        class="wave"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        width="100%"
-        height="100%"
-        viewBox="0 0 1600 900"
-        preserveAspectRatio="xMidYMax slice"
-        v-if="
+    <v-main :class="`gradient-animate ${$store.state.theme} ${$store.state.User ? 'logged-in' : ''
+      }`">
+      <svg class="wave" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        x="0px" y="0px" width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" v-if="
           $route.name !== 'Distribusi' ||
           $store.state.User.role_name == 'FIELD COORDINATOR'
-        "
-      >
+        ">
         <defs>
           <linearGradient id="bg">
-            <stop
-              offset="0%"
-              style="stop-color: rgba(255, 255, 255, 0.06)"
-            ></stop>
-            <stop
-              offset="50%"
-              style="stop-color: rgba(255, 255, 255, 0.4)"
-            ></stop>
-            <stop
-              offset="100%"
-              style="stop-color: rgba(255, 255, 255, 0.2)"
-            ></stop>
+            <stop offset="0%" style="stop-color: rgba(255, 255, 255, 0.06)"></stop>
+            <stop offset="50%" style="stop-color: rgba(255, 255, 255, 0.4)"></stop>
+            <stop offset="100%" style="stop-color: rgba(255, 255, 255, 0.2)"></stop>
           </linearGradient>
-          <path
-            id="wave"
-            fill="url(#bg)"
-            d="M-363.852,502.589c0,0,236.988-41.997,505.475,0
-      s371.981,38.998,575.971,0s293.985-39.278,505.474,5.859s493.475,48.368,716.963-4.995v560.106H-363.852V502.589z"
-          />
+          <path id="wave" fill="url(#bg)" d="M-363.852,502.589c0,0,236.988-41.997,505.475,0
+      s371.981,38.998,575.971,0s293.985-39.278,505.474,5.859s493.475,48.368,716.963-4.995v560.106H-363.852V502.589z" />
         </defs>
         <g>
           <use xlink:href="#wave" opacity=".3">
-            <animateTransform
-              attributeName="transform"
-              attributeType="XML"
-              type="translate"
-              dur="10s"
-              calcMode="spline"
-              values="270 230; -334 180; 270 230"
-              keyTimes="0; .5; 1"
-              keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0"
-              repeatCount="indefinite"
-            />
+            <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="10s" calcMode="spline"
+              values="270 230; -334 180; 270 230" keyTimes="0; .5; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0"
+              repeatCount="indefinite" />
           </use>
           <use xlink:href="#wave" opacity=".6">
-            <animateTransform
-              attributeName="transform"
-              attributeType="XML"
-              type="translate"
-              dur="8s"
-              calcMode="spline"
-              values="-270 230;243 220;-270 230"
-              keyTimes="0; .6; 1"
-              keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0"
-              repeatCount="indefinite"
-            />
+            <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="8s" calcMode="spline"
+              values="-270 230;243 220;-270 230" keyTimes="0; .6; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0"
+              repeatCount="indefinite" />
           </use>
           <use xlink:href="#wave" opacty=".9">
-            <animateTransform
-              attributeName="transform"
-              attributeType="XML"
-              type="translate"
-              dur="6s"
-              calcMode="spline"
-              values="0 230;-140 200;0 230"
-              keyTimes="0; .4; 1"
-              keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0"
-              repeatCount="indefinite"
-            />
+            <animateTransform attributeName="transform" attributeType="XML" type="translate" dur="6s" calcMode="spline"
+              values="0 230;-140 200;0 230" keyTimes="0; .4; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0"
+              repeatCount="indefinite" />
           </use>
         </g>
       </svg>
-      <router-view
-        class="pb-4 pl-0 pl-lg-3"
-        style="z-index: 1; position: relative"
-      ></router-view>
+      <router-view class="pb-4 pl-0 pl-lg-3" style="z-index: 1; position: relative"></router-view>
     </v-main>
 
     <!-- loading overlay -->
@@ -362,20 +228,9 @@
             data-aos="zoom-in"
             data-aos-duration="1000"
         ></v-progress-circular> -->
-        <LottieAnimation
-          ref="anim"
-          :animationData="lottie.data.loading"
-          :loop="true"
-          style="height: 64px"
-        />
-        <p
-          class="mt-2 mb-0"
-          data-aos="zoom-in"
-          data-aos-delay="200"
-          data-aos-duration="800"
-          v-if="$store.state.loadingOverlayText"
-          v-html="$store.state.loadingOverlayText"
-        ></p>
+        <LottieAnimation ref="anim" :animationData="lottie.data.loading" :loop="true" style="height: 64px" />
+        <p class="mt-2 mb-0" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="800"
+          v-if="$store.state.loadingOverlayText" v-html="$store.state.loadingOverlayText"></p>
       </div>
     </v-overlay>
 
@@ -383,30 +238,19 @@
     <v-overlay :value="$store.state.maintenanceOverlay">
       <div class="d-flex flex-column align-center position-relative">
         <!-- <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="" data-aos="zoom-in"> -->
-        <LottieAnimation
-          ref="anim2"
-          :animationData="lottie.data.maintenance"
-          :loop="true"
-          style="max-width: 550px; max-width: 100%"
-        />
-        <v-btn rounded @click="$router.push('/')"
-          ><v-icon class="mr-1">mdi-view-dashboard</v-icon>Back to
-          Dashboard</v-btn
-        >
+        <LottieAnimation ref="anim2" :animationData="lottie.data.maintenance" :loop="true"
+          style="max-width: 550px; max-width: 100%" />
+        <v-btn rounded @click="$router.push('/')"><v-icon class="mr-1">mdi-view-dashboard</v-icon>Back to
+          Dashboard</v-btn>
       </div>
     </v-overlay>
 
     <!-- lightbox ~ image preview -->
-    <vue-easy-lightbox
-      :visible="$store.state.lightbox.show"
-      :imgs="$store.state.lightbox.imgs"
-      :index="$store.state.lightbox.index"
-      @hide="
-        () => {
-          $store.state.lightbox.show = false;
-        }
-      "
-    ></vue-easy-lightbox>
+    <vue-easy-lightbox :visible="$store.state.lightbox.show" :imgs="$store.state.lightbox.imgs"
+      :index="$store.state.lightbox.index" @hide="() => {
+        $store.state.lightbox.show = false;
+      }
+        "></vue-easy-lightbox>
   </v-app>
 </template>
 
@@ -574,7 +418,7 @@ export default {
       console.log(this.items);
     }
   },
-  mounted() {},
+  mounted() { },
   watch: {
     "document.fullscreenElement": {
       handler(newVal) {

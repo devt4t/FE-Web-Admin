@@ -54,4 +54,49 @@ export default {
       code: "real",
     },
   ],
+
+  production_marketing_method: [
+    {
+      name: "Langsung ( Pasar, Warung, Pinggir Jalan, dll )",
+      code: "direct",
+    },
+    {
+      name: "Tidak Langsung ( Tengkulak, Broker, dll )",
+      code: "indirect",
+    },
+  ],
+
+  production_marketing_method: [
+    {
+      name: "Langsung ( Pasar, Warung, Pinggir Jalan, dll )",
+      code: "direct",
+    },
+    {
+      name: "Tidak Langsung ( Tengkulak, Broker, dll )",
+      code: "indirect",
+    },
+  ],
+
+  production_marketing_period: [
+    {
+      name: "harian",
+      code: "daily",
+    },
+    {
+      name: "Mingguan",
+      code: "weekly",
+    },
+    {
+      name: "Bulanan",
+      code: "monthly",
+    },
+    {
+      name: "Musiman",
+      code: "seasonal",
+    },
+    {
+      name: "Tahunan",
+      code: "yearly",
+    },
+  ],
 };

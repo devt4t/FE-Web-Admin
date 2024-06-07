@@ -8,6 +8,12 @@ button[variant="primary"] {
 button[variant="success"] {
   background-color: $success_light !important;
   color: $success !important;
+
+  &.outline {
+    border: 1px solid $success;
+    background-color: white !important;
+    color: $success !important;
+  }
 }
 button[variant="warning"] {
   background-color: $warning_light !important;

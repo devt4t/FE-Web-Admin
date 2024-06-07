@@ -46,6 +46,9 @@
               type: 'select',
               setter: 'scooping_visit_id',
               api: 'GetNewScoopingAll',
+              param: {
+                data_no: 0
+              },
               default_label: formData.scooping_visit_code,
               option: {
                 list_pointer: {
@@ -288,7 +291,7 @@
                       getterKey: 'data.result.data',
                       multiple: true,
                       list_pointer: {
-                        code: 'id',
+                        code: 'tree_name',
                         label: 'tree_name',
                         display: ['tree_name'],
                       },
@@ -346,7 +349,7 @@
                       getterKey: 'data.result.data',
                       multiple: true,
                       list_pointer: {
-                        code: 'id',
+                        code: 'tree_name',
                         label: 'tree_name',
                         display: ['tree_name'],
                       },
@@ -509,15 +512,33 @@
                   <geko-input v-model="item.method" :item="{
                     label: 'Metode',
                     validation: ['required'],
-                    type: 'text',
+                    type: 'select',
+                    option: {
+                      default_options: defaultData.production_marketing_method,
+                      list_pointer: {
+                        code: 'code',
+                        label: 'name',
+                        display: ['name'],
+                      },
+                    }
                   }" />
                 </v-col>
 
                 <v-col md="6">
-                  <geko-input v-model="item.period" :item="{
+
+
+                  <geko-input v-model="item.method" :item="{
                     label: 'Periode Pemasaran Komoditas',
                     validation: ['required'],
-                    type: 'text',
+                    type: 'select',
+                    option: {
+                      default_options: defaultData.production_marketing_period,
+                      list_pointer: {
+                        code: 'code',
+                        label: 'name',
+                        display: ['name'],
+                      },
+                    }
                   }" />
                 </v-col>
 
@@ -974,9 +995,14 @@
           </v-col>
 
           <v-col md="12">
-            <v-btn variant="success" @click="onSubmit()">
-              Tambahkan Data
-            </v-btn>
+            <div class="d-flex flex-row w-100" style="justify-content: flex-end">
+              <v-btn variant="success" @click="onSubmit(true)" class="mr-2 outline">
+                Tambahkan Data RRA &amp; Isi Data PRA
+              </v-btn>
+              <v-btn variant="success" @click="onSubmit(false)">
+                Tambahkan Data RRA
+              </v-btn>
+            </div>
           </v-col>
         </v-row>
       </form>
@@ -1082,30 +1108,46 @@ export default {
   },
 
   methods: {
-    onSubmit() {
-      console.log(this.formData);
-      const payload = [
+    async onSubmit(addPra = false) {
+
+      if (this.isLoading ) return
+      this.isLoading = true
+      const mainDataConfig = [
         ['scooping_form_no', 'scooping_visit_code'],
         ['date', 'date'],
-        // ['village', 'date'],
-        ['lahan_menurut_masyarakat', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
-        ['date', 'date'],
+        ['village', 'scooping_visit_village'],
+        ['lahan_menurut_masyarakat', 'lahan_menurut_masyarakat'],
+        ['tanah_sawah', 'tanah_sawah', 'number'],
+        ['tegal_ladang', 'tegal_ladang', 'number'],
+        ['pemukiman', 'pemukiman', 'number'],
+        ['pekarangan', 'pekarangan', 'number'],
+        ['tanah_rawa', 'tanah_rawa', 'number'],
+        ['waduk_danau', 'waduk_danau', 'number'],
+        ['tanah_perkebunan_rakyat', 'tanah_perkebunan_rakyat', 'number'],
+        ['tanah_perkebunan_negara', 'tanah_perkebunan_negara', 'number'],
+        ['tanah_perkebunan_swasta', 'tanah_perkebunan_swasta', 'number'],
+        ['hutan_lindung', 'hutan_lindung', 'number'],
+        ['hutan_rakyat', 'hutan_rakyat', 'number'],
+        ['fasilitas_umum', 'fasilitas_umum', 'number'],
       ]
+      let mainDataPayload = {}
+      for (const item of mainDataConfig) {
+        mainDataPayload[item[0]] = this.formData[item[1]]
+      }
+      const mainDataResult = await this.$_api.post('addMainRra_new', mainDataPayload)
+        .catch((err) => {
+          this.$_alert.error(err)
+          this.isLoading = false
+          return
+
+        })
+
+      const rraNumber = mainDataResult.rra_no
 
       let villageBorderPayload = []
       for (const item of this.formData.borderlines) {
         var _data = {
-          rra_no: null,
+          rra_no: rraNumber,
           point: item.setter,
           border_type: item.borderline_type,
           kabupaten_no: item.city_code,
@@ -1119,10 +1161,246 @@ export default {
           _data.kode_desa = item.village_code
         }
       }
+
+      let landUsePayload = []
+      for (const landUse of this.landUse) {
+        landUsePayload.push({
+          rra_no: rraNumber,
+          pattern: landUse.pattern,
+          plant: Array.isArray(landUse.plant) ? landUse.plant.join(',') : ''
+        })
+      }
+
+      let existingPlantPayload = []
+      for (const item of this.existingPlant) {
+        existingPlantPayload.push({
+          rra_no: rraNumber,
+          plant_type: item.plant_type,
+          plant: Array.isArray(item.plant) ? item.plant.join(',') : ''
+        })
+      }
+
+      let communityInstitutionPayload = []
+      for (const item of this.communityInstitution) {
+        communityInstitutionPayload.push({
+          rra_no: rraNumber,
+          institution_name: item.institution_name,
+          role: item.role,
+          description: item.description
+        })
+      }
+
+      let organicPotentialsPayload = []
+      for (const item of this.organicPotentials) {
+        organicPotentialsPayload.push({
+          rra_no: rraNumber,
+          potential_category: item.potential_category,
+          name: item.name,
+          source: item.source,
+          description: item.description
+        })
+      }
+
+      let productionMarketingPayload = []
+      for (const item of this.productionMarketing) {
+        productionMarketingPayload.push({
+          rra_no: rraNumber,
+          commodity_name: item.commodity_name,
+          capacity: item._apacity,
+          method: item.method,
+          period: item.period,
+          description: item.description,
+          capacity_switcher: item.capacity ? 1 : 0,
+          has_customer: 0,
+        })
+      }
+
+      let innovativeFarmerPayload = []
+      for (const item of this.innovativeFarmer) {
+        innovativeFarmerPayload.push({
+          rra_no: rraNumber,
+          farmer_name: item.farmer_name,
+          specialitation: item.specialitation,
+          potential: item.potential,
+          description: item.description,
+        })
+      }
+
+      let dusunPayload = []
+      for (const item of this.dusuns) {
+        item.rra_no = rraNumber
+        if (item.potential == 0) {
+          item.potential = parseInt(item.potential)
+          dusunPayload.push(item)
+          continue;
+        }
+        const keyNumber = ['age_non_productive', 'age-productive', 'average_family_member', 'average_farmer_family_member', 'dry_land_area', 'education_college', 'education_senior_hs', 'land_area', 'potential', 'total_farmer_family', 'total_female', 'total_kk', 'total_male', 'total_non_farmer_family', 'total_rt', 'total_rw']
+
+        const keyBoolean = ['job_enterpreneur', 'job_farm_workers', 'job_farmer', 'job_others', 'job_private_employee', 'job_state_employee']
+        for (const _key of keyNumber) {
+          item[_key] = parseInt(item[_key])
+        }
+
+        for (const _key of keyBoolean) {
+          item[_key] = item[_key] ? 1 : 0
+        }
+        dusunPayload.push(
+          item
+        )
+
+      }
+
+      for (const item of villageBorderPayload) {
+        const isSuccess = await this.$_api.post('addRraVillageBorder_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+
+      for (const item of landUsePayload) {
+        const isSuccess = await this.$_api.post('addRraLandUse_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+
+
+
+      for (const item of existingPlantPayload) {
+        const isSuccess = await this.$_api.post('addRraExistingPlant_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+
+      for (const item of communityInstitutionPayload) {
+        const isSuccess = await this.$_api.post('addRraComunityInstitution_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+
+      for (const item of organicPotentialsPayload) {
+        const isSuccess = await this.$_api.post('addRraOrganicPotentials_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+
+
+      for (const item of productionMarketingPayload) {
+        const isSuccess = await this.$_api.post('addRraProductionMarketing_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+      for (const item of innovativeFarmerPayload) {
+        const isSuccess = await this.$_api.post('addRraInnovativeFarmer_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+      for (const item of dusunPayload) {
+        const isSuccess = await this.$_api.post('addRraDusun_new', item)
+          .then(() => {
+            return true;
+          })
+          .catch((err) => {
+            this.$_alert.error(err)
+            return false
+          })
+
+        if (!isSuccess) {
+          this.isLoading = false
+          return
+        }
+      }
+
+
+      if (addPra) {
+        this.$_alert.success("Data RRA berhasil ditambahkan")
+        this.$router.push({
+          path: '/newPra',
+          query: {
+            view: 'create',
+            id: ''
+          }
+        })
+      }
+      else {
+        this.$_alert.success("Data RRA berhasil ditambahkan")
+        this.$router.go(-1)
+      }
+
+
     },
     onSelectScoopingVisit(data) {
       this.$set(this.formData, "scooping_visit_code", data.data_no);
       this.$set(this.formData, "land_area", data.land_area);
+      this.$set(this.formData, "scooping_visit_village", data.village);
     },
 
     addRow(name, key, value) {
