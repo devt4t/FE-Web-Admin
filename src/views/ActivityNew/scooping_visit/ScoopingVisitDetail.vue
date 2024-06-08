@@ -33,8 +33,13 @@
 
               <div class="label"></div>
               <div class="value">
-                <v-btn v-if="data.status === 'ready_to_submit'" variant="warning" class="mt-1" small
-                  @click="onVerification('verification_um')">Verifikasi</v-btn>
+                <v-alert v-if="data.status === 'ready_to_submit'" type="warning" text="testing"
+                  style="font-size: 0.8em">Pastikan untuk memeriksa data terlebih
+                  dahulu sebelum melakukan
+                  verifikasi</v-alert>
+                <v-btn v-if="data.status === 'ready_to_submit' && ['25', '23', '13'].includes($store.state.User.role)"
+                  variant="warning" class="mt-1" small @click="onVerification('verification_um')">Verifikasi</v-btn>
+
 
                 <v-btn variant="warning" class="mt-1" small @click="onVerification('mail_to_gis')" v-if="
                   data.status === 'document_saving' &&

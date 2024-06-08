@@ -53,7 +53,7 @@ export default {
       value: "Genset Desa",
     },
   ],
-  government_place: [
+  goverment_place: [
     {
       text: "Kantor Bupati",
       value: "Kantor Bupati",

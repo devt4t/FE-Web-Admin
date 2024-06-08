@@ -96,9 +96,9 @@
                   <v-icon>mdi-refresh</v-icon>
                 </button>
 
-                <button class="toolbar-button mr-2">
+                <!-- <button class="toolbar-button mr-2">
                   <v-icon>mdi-microsoft-excel</v-icon>
-                </button>
+                </button> -->
               </div>
               <v-btn variant="success" class="ml-4" @click="
                 $router.push({
@@ -146,6 +146,7 @@
         </template>
 
         <template v-slot:item.actions="{ item }">
+
           <div class="geko-list-actions-wrapper d-flex flex-column">
             <div class="geko-list-actions">
               <button class="geko-list-action-view" @click="
@@ -159,21 +160,26 @@
                 ">
                 <v-icon small>mdi-eye-outline</v-icon>
               </button>
-              <button class="geko-list-action-update" @click="
-                $router.push({
-                  query: {
-                    view: 'update',
-                    id: item.id,
-                  },
+              <slot name="list-action-update" v-bind:item="item">
+                <button class="geko-list-action-update" @click="
+                  $router.push({
+                    query: {
+                      view: 'update',
+                      id: item.id,
+                    },
 
-                  params: item,
-                })
-                ">
-                <v-icon small>mdi-pencil-minus</v-icon>
-              </button>
-              <button class="geko-list-action-delete" @click="onDelete(item)" v-if="config.delete">
-                <v-icon small>mdi-trash-can-outline</v-icon>
-              </button>
+                    params: item,
+                  })
+                  ">
+                  <v-icon small>mdi-pencil-minus</v-icon>
+                </button>
+              </slot>
+
+              <slot name="geko-list-action-delete" v-if="!hideDelete">
+                <button class="geko-list-action-delete" @click="onDelete(item)" v-if="config.delete">
+                  <v-icon small>mdi-trash-can-outline</v-icon>
+                </button>
+              </slot>
             </div>
 
             <div class="geko-list-actions-bottom">

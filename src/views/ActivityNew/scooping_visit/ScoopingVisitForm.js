@@ -61,28 +61,31 @@ export default {
         ["kabupatens_name", "city_name"],
         ["kabupatens_kabupaten_no", "city_code"],
         ["kecamatans_kode_kecamatan", "district_id"],
+        ["data_no", "data_no"],
         ["kecamatans_kode_kecamatan", "district_id"],
+        ["kecamatans_kode_kecamatan", "district_code"],
         ["kecamatans_name", "district_name"],
         ["desas_kode_desa", "village_id"],
         ["desas_name", "village_name"],
+        ["desas_kode_desa", "village_code"],
         ["desas_kode_desa", "village_code"],
         ["date", "date", "daterange"],
         ["end_date", "end_scooping_date"],
         ["accessibility", "accessibility"],
         ["land_area", "village_area"],
-        ["land_type", "land_type"],
-        ["slope", "slope", "array"],
-        ["altitude", "altitude"],
+        // ["land_type", "land_type"],
+        // ["slope", "slope", "array"],
+        // ["altitude", "altitude"],
         ["vegetation_density", "vegetation_density", "array"],
         ["water_source", "water_source", "array"],
-        ["rainfall", "rainfall", "array"],
+        // ["rainfall", "rainfall", "array"],
         ["agroforestry_type", "agroforestry_type", "array"],
-        ["goverment_place", "government_place", "array"],
+        ["goverment_place", "goverment_place", "array"],
         ["land_coverage", "land_coverage", "array"],
         ["electricity_source", "electricity_source", "array"],
         ["dry_land_area", "land_area"],
-        ["village_polygon", "village_polygon"],
-        ["dry_land_polygon", "dry_land_polygon"],
+        // ["village_polygon", "village_polygon"],
+        // ["dry_land_polygon", "dry_land_polygon"],
         ["total_dusun", "total_dusun"],
         ["potential_dusun", "potential_dusun"],
         ["potential_description", "potential_description"],
@@ -115,7 +118,9 @@ export default {
         }
 
         if (key.length > 2 && key[2] === "array") {
-          _value = resData.data[key[0]].split(",");
+          if (typeof resData.data[key[0]] == "string") {
+            _value = resData.data[key[0]].split(",");
+          }
         }
 
         if (key.length > 2 && key[2] === "daterange") {
@@ -148,6 +153,7 @@ export default {
       this.loading = true;
 
       let payload = {
+        program_year: this.$store.state.programYear.model,
         province: this.formData.province_code,
         city: this.formData.city_code,
         district: this.formData.district_code,
@@ -169,7 +175,7 @@ export default {
         // water_source: this.formData.water_source.join(","),
         // rainfall: this.formData.rainfall.join(","),
         // agroforestry_type: this.formData.agroforestry_type.join(","),
-        // goverment_place: this.formData.government_place.join(","),
+        // goverment_place: this.formData.goverment_place.join(","),
         // land_coverage: this.formData.land_coverage.join(","),
         // electricity_source: this.formData.electricity_source.join(","),
         dry_land_area: parseInt(this.formData.village_area),
@@ -204,7 +210,7 @@ export default {
         "water_source",
         "rainfall",
         "agroforestry_type",
-        "government_place",
+        "goverment_place",
         "land_coverage",
         "electricity_source",
         "photo_road_access",
@@ -218,11 +224,19 @@ export default {
         }
       }
 
+      const endpoint = this.isCreate
+        ? "AddScoopingVisit_new"
+        : "UpdateScoopingVisit_new";
+
+      if (!this.isCreate) {
+        payload.current_id = this.$route.query.id;
+        payload.data_no = this.formData.data_no;
+      }
       this.$_api
-        .post("AddScoopingVisit_new", payload)
+        .post(endpoint, payload)
         .then((res) => {
-          this.addOtherNgo(res);
-          this.addFigure(res);
+          // this.addOtherNgo(res);
+          // this.addFigure(res);
         })
         .catch((err) => {
           this.$_alert.error(err);

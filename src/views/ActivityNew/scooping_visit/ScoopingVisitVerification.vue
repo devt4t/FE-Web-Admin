@@ -39,7 +39,7 @@
                                     <v-btn variant="light" @click="isOpen = false" class="mr-2">
                                         Batal
                                     </v-btn>
-                                    <v-btn type="submit" :disabled="loading" variant="success">
+                                    <v-btn type="submit" :disabled="loading || !ready" variant="success">
                                         Verifikasi
                                     </v-btn>
                                 </v-col>
@@ -66,7 +66,8 @@ export default {
         return {
             isOpen: false,
             potential_status: null,
-            loading: false
+            loading: false,
+            ready: false
         }
     },
 
@@ -98,6 +99,10 @@ export default {
         dataKey(t) {
             if (t > 1) {
                 this.isOpen = true;
+
+                setTimeout(() => {
+                    this.ready = true
+                }, 10000)
             }
         },
     },

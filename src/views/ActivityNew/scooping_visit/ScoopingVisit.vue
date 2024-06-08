@@ -1,38 +1,42 @@
 <template>
-  <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey">
+  <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey" :hideDelete="$store.state.User.role != 13">
     <template v-slot:create-form>
       <scooping-visit-form />
     </template>
 
-    <template v-slot:list-bottom-action="{ item }">
-      <v-btn
-        v-if="
-          !updateIds.includes(item.id) &&
-          item.status === 'ready_to_submit' &&
-          ['13', '25', '23'].includes($store.state.User.role)
-        "
-        variant="warning"
-        class="mt-1"
-        small
-        @click="onVerification(item)"
-        >Verifikasi</v-btn
-      >
+    <template v-slot:list-action-update="{ item }">
+      <button v-if="item.status == 'document_saving' || item.is_verify == 0" class="geko-list-action-update" @click="
+        $router.push({
+          query: {
+            view: 'update',
+            id: item.id,
+          },
 
-      <v-btn
-        variant="warning"
-        class="mt-1"
-        small
-        @click="onVerification(item)"
-        v-if="
-          !updateIds.includes(item.id) &&
-          item.status === 'document_saving' &&
-          item.is_verify == 0 &&
-          item.email_to_gis < 3
-        "
-      >
+          params: item,
+        })
+        ">
+        <v-icon small>mdi-pencil-minus</v-icon>
+
+      </button>
+      <div v-else></div>
+    </template>
+
+    <!-- <template v-slot:list-bottom-action="{ item }">
+      <v-btn v-if="
+        !updateIds.includes(item.id) &&
+        item.status === 'ready_to_submit' &&
+        ['13', '25', '23'].includes($store.state.User.role)
+      " variant="warning" class="mt-1" small @click="onVerification(item)">Verifikasi</v-btn>
+
+      <v-btn variant="warning" class="mt-1" small @click="onVerification(item)" v-if="
+        !updateIds.includes(item.id) &&
+        item.status === 'document_saving' &&
+        item.is_verify == 0 &&
+        item.email_to_gis < 3
+      ">
         Email to GIS
       </v-btn>
-    </template>
+    </template> -->
 
     <template v-slot:list-village_area="{ item }">
       <div class="min-w-70px text-right">
@@ -67,40 +71,27 @@
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          class="indicator"
-          :class="{
-            warning: item.status == 'document_saving' && item.is_verify == 0,
-            info: item.status == 'document_saving' && item.is_verify == 1,
-            primary: item.status == 'ready_to_submit',
-            success: item.status == 'submit_review',
-          }"
-        ></div>
+        <div class="indicator" :class="{
+          warning: item.status == 'document_saving' && item.is_verify == 0,
+          info: item.status == 'document_saving' && item.is_verify == 1,
+          primary: item.status == 'ready_to_submit',
+          success: item.status == 'submit_review',
+        }"></div>
       </div>
     </template>
 
     <template v-slot:list-status="{ item }">
       <div class="d-flex flex-row">
-        <span
-          class="badge"
-          :class="{
-            'bg-warning':
-              item.status == 'document_saving' && item.is_verify == 0,
-            'bg-info': item.status == 'document_saving' && item.is_verify == 1,
-            'bg-primary': item.status == 'ready_to_submit',
-            'bg-success': item.status == 'submit_review',
-          }"
-        >
-          <span v-if="item.status == 'document_saving' && item.is_verify == 0"
-            >Pending</span
-          >
-          <span
-            v-else-if="item.status == 'document_saving' && item.is_verify == 1"
-            >GIS Review</span
-          >
-          <span v-else-if="item.status == 'ready_to_submit'"
-            >GIS Terverifikasi</span
-          >
+        <span class="badge" :class="{
+          'bg-warning':
+            item.status == 'document_saving' && item.is_verify == 0,
+          'bg-info': item.status == 'document_saving' && item.is_verify == 1,
+          'bg-primary': item.status == 'ready_to_submit',
+          'bg-success': item.status == 'submit_review',
+        }">
+          <span v-if="item.status == 'document_saving' && item.is_verify == 0">Pending</span>
+          <span v-else-if="item.status == 'document_saving' && item.is_verify == 1">GIS Review</span>
+          <span v-else-if="item.status == 'ready_to_submit'">GIS Terverifikasi</span>
           <span v-else-if="item.status == 'submit_review'">Terverifikasi</span>
         </span>
       </div>
