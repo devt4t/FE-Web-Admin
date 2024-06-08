@@ -1,5 +1,8 @@
 @import "./variables";
 
+.cursor-pointer:hover {
+  cursor: pointer;
+}
 button[variant="primary"] {
   background-color: $primary_light !important;
   color: darken($primary, 10) !important;
@@ -15,6 +18,7 @@ button[variant="success"] {
     color: $success !important;
   }
 }
+
 button[variant="warning"] {
   background-color: $warning_light !important;
   color: $warning !important;

@@ -324,6 +324,7 @@ export default {
       await this.buildModule();
       await this.generateList();
       this.activeView = this.$route.query.view;
+      this.getListData()
     },
     setGlobalFilter(key, value, localKey) {
       this.$set(this.globalFilter, key, value);
