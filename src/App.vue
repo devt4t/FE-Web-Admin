@@ -171,6 +171,10 @@
     </v-navigation-drawer>
 
     <!-- TopBar -->
+
+    <button class="toggle-button-mobile">
+      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+    </button>
     <v-app-bar
       :class="`${
         $store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
@@ -444,9 +448,9 @@ export default {
   computed: {
     isLogin() {
       var itemroutecheck;
+      // console.log(this.User);
       // this.listValMenu;
       itemroutecheck = ["Home", "Dashboard", "Users", "GantiPassword"];
-
       if (this.listValMenu) {
         if (this.listValMenu.length > 0) {
           itemroutecheck = this.listValMenu;
@@ -490,16 +494,16 @@ export default {
             }
           }
         } else {
-          console.log("route false");
+          // console.log("route false");
           this.authtoken = localStorage.getItem("token");
           var authtokenval = this.authtoken;
           if (authtokenval != null) {
             var notspaceauthtoken = authtokenval.trim();
             if (notspaceauthtoken.length > 0) {
-              this.$router.push("/Dashboard");
+              // this.$router.push("/Dashboard");
               return this.$route.name != "Login";
             } else {
-              console.log("auth 0");
+              // console.log("auth 0");
               this.$router.push("/");
               this.$store.state.User = "";
             }
@@ -571,18 +575,26 @@ export default {
       this.nameadmin = name;
       // this.nameadmin = this.User.name;
       this.statusadmin = this.User.role_name;
-      console.log(this.items);
+      // console.log(this.items);
     }
   },
   mounted() {},
   watch: {
     "document.fullscreenElement": {
       handler(newVal) {
-        console.log(newVal);
+        // console.log(newVal);
       },
     },
-    isLogin(val) {
-      if (val != true) this.$store.state.User = "";
+    // isLogin(val) {
+    //   if (val != true) this.$store.state.User = "";
+    // },
+
+    isLogin: {
+      immediate: false,
+      deep: false,
+      handler(val) {
+        if (val != true) this.$store.state.User = "";
+      },
     },
   },
   methods: {
@@ -601,7 +613,7 @@ export default {
             },
           }
         );
-        console.log(response.data.data.status.code);
+        // console.log(response.data.data.status.code);
         if (response.data.data.status.code == 200) {
           localStorage.removeItem("token");
           localStorage.removeItem("User");

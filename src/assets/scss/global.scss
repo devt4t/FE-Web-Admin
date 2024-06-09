@@ -1,5 +1,8 @@
 @import "./variables";
 
+.cursor-pointer:hover {
+  cursor: pointer;
+}
 button[variant="primary"] {
   background-color: $primary_light !important;
   color: darken($primary, 10) !important;
@@ -8,7 +11,14 @@ button[variant="primary"] {
 button[variant="success"] {
   background-color: $success_light !important;
   color: $success !important;
+
+  &.outline {
+    border: 1px solid $success;
+    background-color: white !important;
+    color: $success !important;
+  }
 }
+
 button[variant="warning"] {
   background-color: $warning_light !important;
   color: $warning !important;
@@ -46,6 +56,10 @@ button.circle {
 .text-xs,
 .text-07-em {
   font-size: 0.75em !important;
+}
+
+.text-white {
+  color: white;
 }
 
 // WIDTH
@@ -170,6 +184,13 @@ button.circle {
   color: $info !important;
 }
 
+.vs-style.v-select-40 {
+  .vs__dropdown-toggle {
+    height: 40px !important;
+  }
+  height: 40px;
+}
+
 .vs-style input {
   border: none !important;
   margin-top: 0 !important;
@@ -187,7 +208,6 @@ button.circle {
 }
 
 .vs-style.vs--multiple {
-  
   .vs__selected-options {
     padding-left: 10px !important;
     .vs__selected {
@@ -195,7 +215,7 @@ button.circle {
       margin-top: 4px !important;
       margin-right: 4px !important;
       background-color: $success_light !important;
-      color: $success !important
+      color: $success !important;
     }
   }
 }
@@ -205,7 +225,6 @@ button.circle {
   padding-left: 0 !important;
 }
 .vs-style {
-
   .vs__actions {
     padding-top: 0 !important;
   }
@@ -217,7 +236,6 @@ button.circle {
     height: unset !important;
   }
 }
-
 
 .vs__selected {
   padding-left: 10px !important;
@@ -301,10 +319,8 @@ button.circle {
     flex-direction: row;
     align-items: center;
 
-    
-    &.active  {
+    &.active {
       .value {
-
         background-color: $success;
         color: white;
       }
@@ -324,13 +340,12 @@ button.circle {
       font-weight: 600;
       border-radius: 8px;
       color: $success;
-
     }
 
     .label {
       color: $success;
       padding-left: 7px;
-      font-size: .8em;
+      font-size: 0.8em;
     }
   }
 
@@ -339,7 +354,6 @@ button.circle {
     width: 4em;
     padding-inline: 10px;
     span {
-      
       height: 50%;
       position: relative;
       border-bottom: 1px dashed rgb(197, 197, 197);
@@ -348,12 +362,9 @@ button.circle {
   }
 }
 
-
-
 .text-link {
-  color: #1F4F94;
+  color: #1f4f94;
 }
-
 
 table tbody tr td:has(.indicator-wrapper) {
   padding-inline: 0 !important;
@@ -398,15 +409,21 @@ table tbody tr td:has(.indicator-left) {
   }
 }
 
-
+.map-placeholder {
+  width: 100%;
+  height: 300px;
+  background-image: url("../map-placeholder.png");
+  background-position: center;
+  background-size: cover;
+  border-radius: 12px;
+}
 
 @media only screen and (min-width: 1264px) {
   .v-main.gradient-animate.logged-in {
     padding-left: 280px !important;
- 
   }
 
-  .v-navigation-drawer__content    .v-list-group__items {
+  .v-navigation-drawer__content .v-list-group__items {
     max-width: 260px !important;
   }
 

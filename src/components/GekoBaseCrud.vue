@@ -1,27 +1,39 @@
 <template>
   <div class="geko-base-crud">
     <div class="d-flex flex-row geko-base-crud-header">
-      <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" :items="[
-        {
-          text: 'Utilities',
-          disabled: true,
-          href: 'breadcrumbs_dashboard',
-        },
-        {
-          text: `${config.title}`,
-          disabled: true,
-          href: 'breadcrumbs_link_1',
-        },
-      ]" divider=">" large data-aos="fade-right"></v-breadcrumbs>
+      <v-breadcrumbs
+        :dark="$store.state.theme == 'dark'"
+        class="breadcrumbsmain"
+        :items="[
+          {
+            text: 'Utilities',
+            disabled: true,
+            href: 'breadcrumbs_dashboard',
+          },
+          {
+            text: `${config.title}`,
+            disabled: true,
+            href: 'breadcrumbs_link_1',
+          },
+        ]"
+        divider=">"
+        large
+        data-aos="fade-right"
+      ></v-breadcrumbs>
 
-      <div class="global-filters d-flex flex-row" v-if="
-        config.globalFilter &&
-        config.globalFilter.project_purpose &&
-        activeView === 'list'
-      ">
-        <geko-select v-model="globalFilter.project_purpose" @option:selected="
-          setGlobalFilter('project_purpose', $event.code, 'tmpProjectPurpose')
-          " class="vs-style v-select-40 no-clear min-w-150px mr-3" placeholder="Tujuan Project" :reduce="(x) => x.code"
+      <div
+        class="global-filters d-flex flex-row"
+        v-if="config.globalFilter && activeView === 'list'"
+      >
+        <geko-select
+          v-if="config.globalFilter.project_purpose"
+          v-model="globalFilter.project_purpose"
+          @option:selected="
+            setGlobalFilter('project_purpose', $event.code, 'tmpProjectPurpose')
+          "
+          class="vs-style v-select-40 no-clear min-w-150px mr-3"
+          placeholder="Tujuan Project"
+          :reduce="(x) => x.code"
           :options="[
             {
               label: 'Semua',
@@ -36,9 +48,14 @@
               label: 'Non Carbon',
               code: 'non-carbon',
             },
-          ]" />
-        <geko-select v-model="globalFilter.tmpProgramYear" class="vs-style v-select-40 no-clear min-w-100px"
-          placeholder="Tahun" :options="[
+          ]"
+        />
+        <geko-select
+          v-if="config.globalFilter.program_year"
+          v-model="globalFilter.tmpProgramYear"
+          class="vs-style v-select-40 no-clear min-w-100px"
+          placeholder="Tahun"
+          :options="[
             {
               label: 'Semua',
               code: '',
@@ -63,7 +80,11 @@
               label: '2024',
               code: '2024',
             },
-          ]" />
+          ]"
+          @option:selected="
+            setGlobalFilter('program_year', $event.code, 'tmpProgramYear')
+          "
+        />
       </div>
     </div>
 
@@ -71,15 +92,27 @@
 
     <!-- :items-per-page="perPage" -->
     <div class="geko-list" v-if="activeView === 'list'">
-      <v-data-table :headers="header" :items="data" :search="''" class="rounded-xl elevation-6 mx-3 pa-1"
-        data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" @update:page="($p) => (page = $p)"
-        @update:items-per-page="($p) => (perPage = $p)" :server-items-length="totalRecord" :items-per-page="perPage"
-        :page="page" :footer-props="{
+      <v-data-table
+        :headers="header"
+        :items="data"
+        :search="''"
+        class="rounded-xl elevation-6 mx-3 pa-1"
+        data-aos="fade-up"
+        data-aos-delay="100"
+        data-aos-duration="800"
+        @update:page="($p) => (page = $p)"
+        @update:items-per-page="($p) => (perPage = $p)"
+        :server-items-length="totalRecord"
+        :items-per-page="perPage"
+        :page="page"
+        :footer-props="{
           itemsPerPageText: 'Jumlah Data Per Halaman',
           itemsPerPageOptions: [10, 25, 50, 100, 200],
           showCurrentPage: true,
           showFirstLastPage: true,
-        }" :loading="loading">
+        }"
+        :loading="loading"
+      >
         <template v-slot:top>
           <div class="geko-list-header px-5 py-3 mt-1">
             <div class="pr-5 mr-5">
@@ -88,34 +121,52 @@
             <div class="d-flex flex-row geko-list-header-action">
               <div class="geko-list-header-toolbar">
                 <form v-on:submit.prevent="getListData">
-                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Pencarian"
-                    :placeholder="'Cari data ' + config.title.toLowerCase()" hide-details dense rounded outlined
-                    color="green" class="mr-2"></v-text-field>
+                  <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Pencarian"
+                    :placeholder="'Cari data ' + config.title.toLowerCase()"
+                    hide-details
+                    dense
+                    rounded
+                    outlined
+                    color="green"
+                    class="mr-2"
+                  ></v-text-field>
                 </form>
                 <button class="toolbar-button mr-2" @click="onRefresh">
                   <v-icon>mdi-refresh</v-icon>
                 </button>
 
-                <button class="toolbar-button mr-2">
+                <!-- <button class="toolbar-button mr-2">
                   <v-icon>mdi-microsoft-excel</v-icon>
-                </button>
+                </button> -->
               </div>
-              <v-btn variant="success" class="ml-4" @click="
-                $router.push({
-                  query: {
-                    view: 'create',
-                  },
-                })
-                ">
+              <v-btn
+                variant="success"
+                class="ml-4"
+                @click="
+                  $router.push({
+                    query: {
+                      view: 'create',
+                    },
+                  })
+                "
+              >
                 <v-icon small>mdi-plus</v-icon>
                 <span class="ms-2">Tambah Data</span>
               </v-btn>
             </div>
 
             <div class="statistics" v-if="config.statistic && statistic">
-              <div class="statistic-item" v-if="Array.isArray(statistic)" v-for="(stat, i) in statistic" :class="{
-                [stat.color]: true,
-              }">
+              <div
+                class="statistic-item"
+                v-if="Array.isArray(statistic)"
+                v-for="(stat, i) in statistic"
+                :class="{
+                  [stat.color]: true,
+                }"
+              >
                 <v-icon>{{ stat.icon }}</v-icon>
                 <div class="statistic-data">
                   <p class="mb-0 label">{{ stat.label }}</p>
@@ -130,50 +181,76 @@
           {{ (page - 1) * perPage + index + 1 }}
         </template>
 
-        <template v-for="f in fields.list.filter(
-          (x) => x.type === 'row-slot' || x.transform || x.class
-        )" v-slot:[`item.${f.view_data}`]="{ item }">
-          <slot v-if="f.type === 'row-slot'" :name="'list-' + f.view_data" v-bind:item="item"></slot>
+        <template
+          v-for="f in fields.list.filter(
+            (x) => x.type === 'row-slot' || x.transform || x.class
+          )"
+          v-slot:[`item.${f.view_data}`]="{ item }"
+        >
+          <slot
+            v-if="f.type === 'row-slot'"
+            :name="'list-' + f.view_data"
+            v-bind:item="item"
+          ></slot>
 
-          <span v-else :class="{
-            [typeof f.class === 'string' ? `d-block ${f.class}` : '']: true,
-            [typeof f.class === 'object' && f.class !== null
-              ? `d-block ${f.class[item[f.view_data]]}`
-              : '']: true,
-          }">{{
-            item[f.view_data] | parse(f.transform ? f.transform : "no-empty")
-          }}</span>
+          <span
+            v-else
+            :class="{
+              [typeof f.class === 'string' ? `d-block ${f.class}` : '']: true,
+              [typeof f.class === 'object' && f.class !== null
+                ? `d-block ${f.class[item[f.view_data]]}`
+                : '']: true,
+            }"
+            >{{
+              item[f.view_data] | parse(f.transform ? f.transform : "no-empty")
+            }}</span
+          >
         </template>
 
         <template v-slot:item.actions="{ item }">
           <div class="geko-list-actions-wrapper d-flex flex-column">
             <div class="geko-list-actions">
-              <button class="geko-list-action-view" @click="
-                $router.push({
-                  query: {
-                    view: 'detail',
-                    id: item.id,
-                  },
-                  params: config.detail ? null : item
-                })
-                ">
+              <button
+                class="geko-list-action-view"
+                @click="
+                  $router.push({
+                    query: {
+                      view: 'detail',
+                      id: item.id,
+                    },
+                    params: config.detail ? null : item,
+                  })
+                "
+              >
                 <v-icon small>mdi-eye-outline</v-icon>
               </button>
-              <button class="geko-list-action-update" @click="
-                $router.push({
-                  query: {
-                    view: 'update',
-                    id: item.id,
-                  },
+              <slot name="list-action-update" v-bind:item="item">
+                <button
+                  class="geko-list-action-update"
+                  @click="
+                    $router.push({
+                      query: {
+                        view: 'update',
+                        id: item.id,
+                      },
 
-                  params: item,
-                })
-                ">
-                <v-icon small>mdi-pencil-minus</v-icon>
-              </button>
-              <button class="geko-list-action-delete" @click="onDelete(item)" v-if="config.delete">
-                <v-icon small>mdi-trash-can-outline</v-icon>
-              </button>
+                      params: item,
+                    })
+                  "
+                >
+                  <v-icon small>mdi-pencil-minus</v-icon>
+                </button>
+              </slot>
+
+              <slot name="geko-list-action-delete" v-if="!hideDelete">
+                <button
+                  class="geko-list-action-delete"
+                  @click="onDelete(item)"
+                  v-if="config.delete"
+                >
+                  <v-icon small>mdi-trash-can-outline</v-icon>
+                </button>
+              </slot>
             </div>
 
             <div class="geko-list-actions-bottom">
@@ -184,23 +261,49 @@
       </v-data-table>
     </div>
 
-    <div class="geko-form mx-4" v-if="['create', 'update'].includes(activeView)">
-      <geko-base-form :title="config.title" :fields="activeView === 'create' ? fields.create : fields.update"
-        :setter="config.setter" :setterExtPayload="config.setter_ext_payload" :update="config.update"
-        :updateExtPayload="config.update_ext_payload" @success="getListData" :sort="config.formOption && Array.isArray(config.formOption.sort)
-          ? config.formOption.sort
-          : null
-          " :update_id_getter="config.update_id_getter || 'id'" :update_id_setter="config.update_id_setter || 'id'">
-        <template v-for="f in fields.create.filter((x) => x.type === 'row-slot')"
-          v-slot:[`create-${f.view_data}`]="{ formData, field, setFormData }">
-          <slot :name="'create-' + f.view_data" v-bind:formData="formData" v-bind:field="field"
-            v-bind:setFormData="setFormData">
+    <div
+      class="geko-form mx-4"
+      v-if="['create', 'update'].includes(activeView)"
+    >
+      <geko-base-form
+        :title="config.title"
+        :fields="activeView === 'create' ? fields.create : fields.update"
+        :setter="config.setter"
+        :setterExtPayload="config.setter_ext_payload"
+        :update="config.update"
+        :updateExtPayload="config.update_ext_payload"
+        @success="getListData"
+        :sort="
+          config.formOption && Array.isArray(config.formOption.sort)
+            ? config.formOption.sort
+            : null
+        "
+        :update_id_getter="config.update_id_getter || 'id'"
+        :update_id_setter="config.update_id_setter || 'id'"
+      >
+        <template
+          v-for="f in fields.create.filter((x) => x.type === 'row-slot')"
+          v-slot:[`create-${f.view_data}`]="{ formData, field, setFormData }"
+        >
+          <slot
+            :name="'create-' + f.view_data"
+            v-bind:formData="formData"
+            v-bind:field="field"
+            v-bind:setFormData="setFormData"
+          >
           </slot>
         </template>
 
-        <template v-for="f in fields.update.filter((x) => x.type === 'row-slot')"
-          v-slot:[`update-${f.view_data}`]="{ formData, field, setter }">
-          <slot :name="'update-' + f.view_data" v-bind:formData="formData" v-bind:field="field" v-bind:setter="setter">
+        <template
+          v-for="f in fields.update.filter((x) => x.type === 'row-slot')"
+          v-slot:[`update-${f.view_data}`]="{ formData, field, setter }"
+        >
+          <slot
+            :name="'update-' + f.view_data"
+            v-bind:formData="formData"
+            v-bind:field="field"
+            v-bind:setter="setter"
+          >
           </slot>
         </template>
         <template v-slot:create-form>
@@ -211,9 +314,28 @@
 
     <div class="geko-base-detail mx-4" v-else-if="activeView === 'detail'">
       <slot name="detail-row">
-        <geko-base-detail :fields="fields.detail" :api="config.detail || ''" :title="config.title">
+        <geko-base-detail
+          :fields="fields.detail"
+          :api="config.detail || ''"
+          :title="config.title"
+        >
           <template v-slot:detail-body>
             <slot name="detail-body"></slot>
+          </template>
+
+          <template
+            v-for="(f, i) in fields.detail.filter((x) => x.type === 'row-slot')"
+            v-slot:[`detail-row-${f.view_data}`]="{ item }"
+          >
+            <slot :name="'detail-row-' + f.view_data" v-bind:item="item">
+            </slot>
+          </template>
+
+          <template
+            v-for="(f, i) in fields.detail.filter((x) => x.type === 'slot')"
+            v-slot:[`detail-${f.view_data}`]="{ item }"
+          >
+            <slot :name="`detail-${f.view_data}`" v-bind:item="item"> </slot>
           </template>
         </geko-base-detail>
       </slot>
@@ -318,6 +440,7 @@ export default {
       await this.buildModule();
       await this.generateList();
       this.activeView = this.$route.query.view;
+      this.getListData();
     },
     setGlobalFilter(key, value, localKey) {
       this.$set(this.globalFilter, key, value);
@@ -413,8 +536,8 @@ export default {
         label: item.methods[key].label
           ? item.methods[key].label
           : item.label
-            ? item.label
-            : item.id,
+          ? item.label
+          : item.id,
         header_class: item.methods[key].header_class || null,
         type: item.methods[key].type || "text",
         class: item.methods[key].class || null,

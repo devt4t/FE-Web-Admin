@@ -36,7 +36,7 @@ export default new Vuex.Store({
     packageVersionDateTime: version_date_time || "0",
     theme: "light",
     programYear: {
-      model: "2023",
+      model: "2024",
       options: ["2020", "2021", "2022", "2023", "2024"],
     },
     taskForceTeam: {
@@ -86,7 +86,11 @@ export default new Vuex.Store({
   mutations: {
     set(state, [variable, value, saveLS = false]) {
       Vue.set(state, variable, value);
-      if (saveLS) localStorage.setItem(variable, JSON.stringify(value));
+      if (saveLS)
+        localStorage.setItem(
+          variable,
+          typeof value == "string" ? value : JSON.stringify(value)
+        );
     },
   },
   actions: {},

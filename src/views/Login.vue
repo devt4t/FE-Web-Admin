@@ -135,7 +135,7 @@
 
 <script>
 import axios from "axios";
-
+// import store from "../store/index";
 export default {
   name: "Trees",
   data: () => ({
@@ -205,7 +205,6 @@ export default {
         email: this.email,
         password: this.password,
       };
-      console.log(datapost);
       // console.log(this.BaseUrlGet);
       // this.dialogDetail = false;
       try {
@@ -214,29 +213,63 @@ export default {
           datapost
         );
         if (datapost.program_year) {
-          console.log(response.data.data.status.code);
           this.snackbar = true;
           if (response.data.data.status.code == 200) {
+            // localStorage.setItem(
+            //   "token",
+            //   response.data.data.result.access_token
+            // );
+            // localStorage.setItem(
+            //   "User",
+            //   JSON.stringify(response.data.data.result.User)
+            // );
+            // localStorage.setItem("BaseUrlGet", this.BaseUrlGet);
+            // localStorage.setItem("BaseUrlUpload", this.BaseUrlUpload);
+            // localStorage.setItem("BaseUrl", this.BaseUrl);
+            // localStorage.setItem("BaseUrlPortal", this.BaseUrlPortal);
+            // localStorage.setItem("xAppKey_Portal", this.xAppKey_Portal);
+            this.$store.commit("set", ["BaseUrlGet", this.BaseUrlGet, true]);
+            this.$store.commit("set", [
+              "BaseUrlUpload",
+              this.BaseUrlUpload,
+              true,
+            ]);
+            this.$store.commit("set", ["BaseUrl", this.BaseUrl, true]);
+            this.$store.commit("set", [
+              "BaseUrlPortal",
+              this.BaseUrlPortal,
+              true,
+            ]);
+            this.$store.commit("set", [
+              "xAppKey_Portal",
+              this.xAppKey_Portal,
+              true,
+            ]);
+
+            this.$store.commit("set", [
+              "ApiConfig",
+              {
+                headers: {
+                  Authorization: `Bearer ${response.data.data.result.access_token}`,
+                },
+              },
+              true,
+            ]);
+
+            this.$store.commit("set", [
+              "token",
+              response.data.data.result.access_token,
+              true,
+            ]);
+            this.$store.commit("set", [
+              "User",
+              response.data.data.result.User,
+              true,
+            ]);
             this.load = false;
             this.disablevalue = false;
             this.colorsnackbar = "green";
             this.text = "Sukses Login";
-            // console.log(response.data.data.result.access_token);
-            localStorage.setItem(
-              "token",
-              response.data.data.result.access_token
-            );
-            localStorage.setItem(
-              "User",
-              JSON.stringify(response.data.data.result.User)
-            );
-            localStorage.setItem("BaseUrlGet", this.BaseUrlGet);
-            localStorage.setItem("BaseUrlUpload", this.BaseUrlUpload);
-            localStorage.setItem("BaseUrl", this.BaseUrl);
-            localStorage.setItem("BaseUrlPortal", this.BaseUrlPortal);
-            localStorage.setItem("xAppKey_Portal", this.xAppKey_Portal);
-            location.reload();
-            this.$router.push("/Dashboard");
           } else {
             this.load = false;
             this.disablevalue = false;
@@ -254,6 +287,7 @@ export default {
             "Gagal Login, email dan/atau password salah atau program year masih kosong!";
         }
       } catch (error) {
+        console.log(error);
         this.load = false;
         this.disablevalue = false;
         console.error(error.response);
@@ -277,6 +311,37 @@ export default {
         this.cekLogin();
       }
       // this.log += e.key;
+    },
+  },
+  computed: {
+    // currentUser() {
+    //   return this.$store.state.User;
+    // },
+    // currentToken() {
+    //   return this.$store.state.token;
+    // },
+  },
+
+  watch: {
+    // currentToken(v) {
+    //   if (v && this.$store.state.User && this.$store) {
+    //     this.$router.push("/Dashboard");
+    //   }
+    // },
+
+    "$store.state": {
+      deep: true,
+      handler() {
+        if (
+          this.$store.state.User &&
+          this.$store.state.token &&
+          this.$store.state.BaseUrlGet &&
+          this.$store.state.BaseUrl &&
+          this.$store.state.BaseUrlUpload
+        ) {
+          this.$router.push("/Dashboard");
+        }
+      },
     },
   },
 };

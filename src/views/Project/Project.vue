@@ -8,6 +8,14 @@
         >
       </div>
     </template>
+    <template v-slot:detail-date="{ item }">
+      <div class="min-w-200px">
+        <span>{{ item.project_date | parse("date") }}</span>
+        <span v-if="item.end_project">
+          {{ " - " }} {{ item.end_project | parse("date") }}</span
+        >
+      </div>
+    </template>
 
     <template v-slot:list-donors_name="{ item }">
       <span class="d-block min-w-150px"
@@ -291,7 +299,10 @@ export default {
             label: "Total Pohon",
             methods: {
               list: false,
-              detail: true,
+              detail: {
+                view_data: "total_trees",
+                transform: "ts",
+              },
               create: {
                 type: "number",
                 setter: "tree_amount",
@@ -315,8 +326,13 @@ export default {
             id: "co2_capture",
             label: "Proyeksi CO2",
             methods: {
-              list: true,
-              detail: true,
+              list: {
+                transform: "ts",
+                class: "text-right",
+              },
+              detail: {
+                transform: "ts",
+              },
               create: {
                 type: "number",
                 validation: ["required"],
@@ -391,8 +407,8 @@ export default {
             id: "project_period_type",
             label: "Project Period",
             methods: {
-              list: true,
-              detail: true,
+              list: false,
+              detail: false,
               create: {
                 validation: [],
                 type: "select-radio",
@@ -457,8 +473,8 @@ export default {
             id: "year_interval",
             label: "Planting Cycle",
             methods: {
-              list: true,
-              detail: true,
+              list: false,
+              detail: false,
               create: {
                 label: "Planting Cycle (year)",
                 validation: ["required"],
@@ -494,7 +510,9 @@ export default {
               list: {
                 type: "row-slot",
               },
-              detail: true,
+              detail: {
+                type: "slot",
+              },
               create: {
                 label: "Tanggal Mulai",
                 validation: ["required"],
@@ -563,7 +581,9 @@ export default {
             label: "Deskripsi Project",
             methods: {
               list: false,
-              detail: true,
+              detail: {
+                transform: "no-empty",
+              },
               create: {
                 validation: [],
                 col_size: 12,
@@ -593,7 +613,13 @@ export default {
                   0: "badge bg-danger text-no-wrap",
                 },
               },
-              detail: true,
+              detail: {
+                transform: "active",
+                class: {
+                  1: "badge bg-success text-no-wrap",
+                  0: "badge bg-danger text-no-wrap",
+                },
+              },
               create: {
                 validation: ["required"],
                 type: "date",

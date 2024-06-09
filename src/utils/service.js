@@ -2,6 +2,7 @@ import axios from "axios";
 import _alert from "./alert";
 import _util from "./";
 import _config from "./config";
+import router from "../router/index";
 const env = axios.create({
   baseURL: _config.baseUrl,
 });
@@ -30,10 +31,10 @@ env.interceptors.response.use(
     // Do something with response error
     console.log(error.response.data);
     if (error.response.status === 401) {
-      // localStorage.clear();
-
-      // router.push({ name: "login" });
       _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
+      localStorage.clear();
+
+      router.push({ name: "login" });
     } else if (
       error.response &&
       error.response.data &&

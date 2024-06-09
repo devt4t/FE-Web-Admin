@@ -6,6 +6,13 @@ moment.locale("id");
 Vue.filter("parse", (value, id) => {
   let _value = "";
   switch (id) {
+    case "ts":
+      if (!value) {
+        _value = value;
+        break;
+      }
+      _value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      break;
     case "no-empty":
       _value = [null, undefined, ""].includes(value) ? "-" : value;
       break;

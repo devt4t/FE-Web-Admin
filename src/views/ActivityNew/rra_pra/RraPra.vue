@@ -11,8 +11,11 @@
 
     <template v-slot:list-form_no="{ item }">
       <div class="d-flex flex-column indicator-left">
-        <p class="mb-0 pb-0 text-link">#{{ item.form_no }}</p>
-        <div class="min-w-150px">
+        <p class="mb-0 pb-0 text-link">#{{ item.scooping_visit_code }}</p>
+        <div
+          class="min-w-150px"
+          v-if="item.rra_pra_date_start || item.rra_pra_date_end"
+        >
           <span class="text-08-em">{{
             item.rra_pra_date_start | parse("date")
           }}</span>
@@ -29,38 +32,68 @@
           class="indicator"
           :class="{
             success: item.status === 'submit_review',
-            warning: item.status === 'document_saving',
+            warning: item.status === 'document_saving' && item.rra && item.pra,
+            light: !item.rra || !item.pra,
           }"
         ></div>
       </div>
     </template>
 
+    <template v-slot:list-status_data="{ item }">
+      <div class="d-flex flex-row" style="justify-content: center">
+        <div v-if="item.rra && item.pra" class="badge bg-success">Lengkap</div>
+        <div v-else-if="item.rra" class="badge bg-light">RRA</div>
+        <div v-else-if="item.pra" class="badge bg-light">PRA</div>
+      </div>
+    </template>
+
+    <template v-slot:list-status="{ item }">
+      <div class="d-flex flex-row" style="justify-content: center">
+        <div class="badge bg-light" v-if="!item.rra || !item.pra">Draft</div>
+        <div
+          class="badge bg-warning"
+          v-else-if="item.status == 'document_saving'"
+        >
+          Pending
+        </div>
+        <div
+          class="badge bg-success"
+          v-else-if="item.status == 'submit_review'"
+        >
+          Terverifikasi
+        </div>
+      </div>
+    </template>
+
     <template v-slot:create-form>
-      <rra-pra-form />
+      <pra-form v-if="$route.query.type == 'pra'" />
+      <rra-pra-form v-else />
     </template>
   </geko-base-crud>
 </template>
 
 <script>
 import RraPraForm from "./RraPraForm.vue";
+import PraForm from "./PraForm.vue";
 import "./rra-pra.scss";
 export default {
   name: "rra-pra-module",
   components: {
     RraPraForm,
+    PraForm,
   },
   data() {
     return {
       config: {
         title: "RRA PRA",
         model_api: null,
-        getter: "GetRraAll_new",
+        getter: "rra-pra",
         getterDataKey: "data",
         setter: "AddNewProject",
         update: "UpdateDataProject",
         delete: "deleteProject",
         update_id_setter: "current_id",
-        deleteKey: "code",
+        deleteKey: "id",
         pk_field: null,
         permission: {
           create: "project-create",
@@ -85,6 +118,11 @@ export default {
               label: "Belum Terverifikasi",
               icon: "mdi-close-circle-outline",
               color: "danger",
+            },
+            uncomplete: {
+              label: "Data Belum Lengkap",
+              icon: "mdi-close-circle-outline",
+              color: "info",
             },
           },
         },
@@ -130,7 +168,7 @@ export default {
             label: "Desa",
             methods: {
               list: {
-                view_data: "desas_name",
+                view_data: "village_name",
               },
               detail: true,
               create: true,
@@ -158,7 +196,7 @@ export default {
             label: "PIC",
             methods: {
               list: {
-                view_data: "user_id",
+                view_data: "user_name",
               },
               detail: true,
               create: true,
@@ -171,7 +209,7 @@ export default {
             label: "PIC Manager",
             methods: {
               list: {
-                view_data: "employees_name",
+                view_data: "pic_manager_name",
                 class: "min-w-100px",
               },
               detail: true,
@@ -181,10 +219,24 @@ export default {
             },
           },
           {
+            id: "status_data",
+            label: "Kelengkapan Data",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: false,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
             id: "status",
             label: "Status Dokumen",
             methods: {
               list: {
+                type: "row-slot",
                 view_data: "status",
                 class: {
                   document_saving: "badge bg-warning",

@@ -292,6 +292,11 @@ const routes = [
     name: "newRraPra",
     component: newRraPra,
   },
+  {
+    path: "/newPra",
+    name: "newPra",
+    component: newRraPra,
+  },
   // {
   //   path: '/AssignManagementAreaDesa',
   //   name: 'AssignManagementAreaDesa',
