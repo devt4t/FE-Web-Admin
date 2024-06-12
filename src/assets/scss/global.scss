@@ -201,7 +201,10 @@ button.circle {
     display: none !important;
   }
 }
-
+.vs-style.vs--multiple .vs__selected-options .vs__selected {
+  
+  height: auto !important;
+}
 .vs-style .vs__selected {
   font-size: 0.9em !important;
   font-weight: 400;

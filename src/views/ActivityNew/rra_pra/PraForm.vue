@@ -13,12 +13,9 @@
               <div class="form-stepper-header-splitter">
                 <span></span>
               </div>
-              <div
-                class="form-stepper-header-item"
-                :class="{
-                  active: true,
-                }"
-              >
+              <div class="form-stepper-header-item" :class="{
+                active: true,
+              }">
                 <span class="value">2</span>
                 <span class="label">PRA</span>
               </div>
@@ -29,183 +26,194 @@
         <!-- FORM -->
         <v-row>
           <template v-for="(parent, i) in config">
-            <v-col
-              md="12"
-              class="form-separator d-flex flex-row"
-              style="align-items: center"
-            >
+            <v-col md="12" class="form-separator d-flex flex-row" style="align-items: center">
               <h4>{{ parent.name }}</h4>
-              <v-btn
-                v-if="
-                  (parent.fieldData !== 'farmerIncomes' ||
-                    (parent.fieldData === 'farmerIncomes' &&
-                      formData.collection_type === 'Sampling')) &&
-                  parent.fieldData
-                "
-                small
-                variant="success"
-                class="ml-3"
-                @click="addRow(parent.fieldData)"
-                ><v-icon small>mdi-plus</v-icon></v-btn
-              >
+              <v-btn v-if="
+                (parent.fieldData !== 'farmerIncomes' ||
+                  (parent.fieldData === 'farmerIncomes' &&
+                    formData.collection_type === 'Sampling')) &&
+                parent.fieldData
+              " small variant="success" class="ml-3" @click="addRow(parent.fieldData)"><v-icon
+                  small>mdi-plus</v-icon></v-btn>
             </v-col>
 
-            <v-col
-              md="12"
-              v-if="
-                Array.isArray(formFieldData[parent.fieldData]) ||
-                !parent.fieldData
-              "
-            >
+            <v-col md="12" v-if="
+              (Array.isArray(formFieldData[parent.fieldData]) && formFieldData[parent.fieldData].length > 0 ||
+                !parent.fieldData)
+            ">
               <div class="bg-grey">
-                <v-row
-                  v-if="
-                    (Array.isArray(parent.fields) &&
-                      parent.fields.filter(
-                        (x) => x.main_form && x.pre_main_form
-                      ).length > 0) ||
-                    !parent.fieldData
-                  "
-                >
-                  <v-col
-                    v-for="(input, k) in parent.fields.filter(
+                <v-row v-if="
+                  (Array.isArray(parent.fields) &&
+                    parent.fields.filter(
                       (x) => x.main_form && x.pre_main_form
-                    )"
-                    :key="`f-${i}-${k}`"
-                    :md="input.size"
-                  >
-                    <geko-input
-                      v-model="formData[input.setter]"
-                      :item="{
+                    ).length > 0) ||
+                  !parent.fieldData
+                ">
+                  <v-col v-for="(input, k) in parent.fields.filter(
+                    (x) => x.main_form && x.pre_main_form
+                  )" :key="`f-${i}-${k}`" :md="input.size">
+                    <geko-input v-model="formData[input.setter]" :item="{
+                      label: input.name,
+                      validation: input.validation || [],
+                      type: input.type || 'text',
+                      api: input.api || '',
+                      getterKey: input.getterKey,
+                      option: ['select', 'select-radio'].includes(input.type)
+                        ? {
+                          default_options: input.options || null,
+                          multiple: input.multiple,
+                          list_pointer: {
+                            code: input.code ? input.code : 'code',
+                            label: input.label ? input.label : 'name',
+                            display: [input.label ? input.label : 'name'],
+                          },
+                        }
+                        : null,
+                    }" />
+                  </v-col>
+                </v-row>
+                <v-row v-for="(f, j) in formFieldData[parent.fieldData]"
+                  v-if="parent.fields.filter((x) => !x.main_form).length > 0" :key="`f-${i}-${j}`">
+                  <template v-for="(input, k) in parent.fields.filter(
+                    (x) => !x.main_form
+                  )" v-if="
+                    !input.show_if ||
+                    (input.show_if &&
+                      formData[input.show_if] == input.show_if_equals)
+                  ">
+                    <v-col :md="input.size" :key="`f-${i}-${j}-${k}`">
+                      <div v-if="input.type === 'delete'" class="d-flex flex-column"
+                        style="height: 100%; justify-content: center">
+                        <button v-if="formFieldData[parent.fieldData].length > 1" class="text-danger"
+                          @click="removeRow(parent.fieldData, i)">
+                          <v-icon class="text-danger">mdi-close</v-icon>
+                        </button>
+                      </div>
+                      <geko-input v-else v-model="f[input.setter]" :item="{
                         label: input.name,
                         validation: input.validation || [],
                         type: input.type || 'text',
                         api: input.api || '',
-                        getterKey: input.getterKey,
-                        option: ['select', 'select-radio'].includes(input.type)
+                        option: ['select', 'select-radio'].includes(
+                          input.type
+                        )
                           ? {
-                              default_options: input.options || null,
-                              multiple: input.multiple,
-                              list_pointer: {
-                                code: input.code ? input.code : 'code',
-                                label: input.label ? input.label : 'name',
-                                display: [input.label ? input.label : 'name'],
-                              },
-                            }
+                            default_options: input.options || null,
+                            multiple: input.multiple,
+                            getterKey: input.getterKey,
+                            list_pointer: {
+                              code: input.code ? input.code : 'code',
+                              label: input.label ? input.label : 'name',
+                              display: [input.label ? input.label : 'name'],
+                            },
+                          }
                           : null,
-                      }"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row
-                  v-for="(f, j) in formFieldData[parent.fieldData]"
-                  v-if="parent.fields.filter((x) => !x.main_form).length > 0"
-                  :key="`f-${i}-${j}`"
-                >
-                  <template
-                    v-for="(input, k) in parent.fields.filter(
-                      (x) => !x.main_form
-                    )"
-                    v-if="
-                      !input.show_if ||
-                      (input.show_if &&
-                        formData[input.show_if] == input.show_if_equals)
-                    "
-                  >
-                    <v-col :md="input.size" :key="`f-${i}-${j}-${k}`">
-                      <div
-                        v-if="input.type === 'delete'"
-                        class="d-flex flex-column"
-                        style="height: 100%; justify-content: center"
-                      >
-                        <button
-                          v-if="formFieldData[parent.fieldData].length > 1"
-                          class="text-danger"
-                          @click="removeRow(parent.fieldData, i)"
-                        >
-                          <v-icon class="text-danger">mdi-close</v-icon>
-                        </button>
-                      </div>
-                      <geko-input
-                        v-else
-                        v-model="formData[input.setter]"
-                        :item="{
-                          label: input.name,
-                          validation: input.validation || [],
-                          type: input.type || 'text',
-                          api: input.api || '',
-                          option: ['select', 'select-radio'].includes(
-                            input.type
-                          )
-                            ? {
-                                default_options: input.options || null,
-                                multiple: input.multiple,
-                                getterKey: input.getterKey,
-                                list_pointer: {
-                                  code: input.code ? input.code : 'code',
-                                  label: input.label ? input.label : 'name',
-                                  display: [input.label ? input.label : 'name'],
-                                },
-                              }
-                            : null,
-                        }"
-                      />
+                      }" />
                     </v-col>
                   </template>
                 </v-row>
 
-                <v-row
-                  v-if="
-                    Array.isArray(parent.fields) &&
-                    parent.fields.filter((x) => x.main_form && !x.pre_main_form)
-                      .length > 0
-                  "
-                >
-                  <v-col
-                    v-for="(input, k) in parent.fields.filter(
-                      (x) => x.main_form && !x.pre_main_form
-                    )"
-                    v-if="
-                      !input.show_if ||
-                      (input.show_if &&
-                        formData[input.show_if] == input.show_if_equals)
-                    "
-                    :class="{
-                      'm-0 p-0': input.type === 'group',
-                    }"
-                    :md="input.size"
-                  >
+                <v-row v-if="
+                  Array.isArray(parent.fields) &&
+                  parent.fields.filter((x) => x.main_form && !x.pre_main_form)
+                    .length > 0
+                ">
+                  <v-col v-for="(input, k) in parent.fields.filter(
+                    (x) => x.main_form && !x.pre_main_form
+                  )" v-if="
+                    !input.show_if ||
+                    (input.show_if &&
+                      formData[input.show_if] == input.show_if_equals)
+                  " :class="{
+                    'm-0 p-0': input.type === 'group',
+                  }" :md="input.size">
                     <div v-if="input.type === 'group'">
                       <h5>{{ input.name }}</h5>
                     </div>
-                    <geko-input
-                      v-else
-                      v-model="formData[input.setter]"
-                      :item="{
-                        label: input.name,
-                        validation: input.validation || [],
-                        type: input.type || 'text',
-                        api: input.api || '',
-                        option: ['select', 'select-radio'].includes(input.type)
-                          ? {
-                              default_options: input.options || null,
-                              multiple: input.multiple,
-                              getterKey: input.getterKey,
-                              list_pointer: {
-                                code: input.code ? input.code : 'code',
-                                label: input.label ? input.label : 'name',
-                                display: [input.label ? input.label : 'name'],
-                              },
-                            }
-                          : null,
-                      }"
-                    />
+                    <geko-input v-else v-model="formData[input.setter]" :item="{
+                      label: input.name,
+                      validation: input.validation || [],
+                      type: input.type || 'text',
+                      api: input.api || '',
+                      option: ['select', 'select-radio'].includes(input.type)
+                        ? {
+                          default_options: input.options || null,
+                          multiple: input.multiple,
+                          getterKey: input.getterKey,
+                          list_pointer: {
+                            code: input.code ? input.code : 'code',
+                            label: input.label ? input.label : 'name',
+                            display: [input.label ? input.label : 'name'],
+                          },
+                        }
+                        : null,
+                    }" />
                   </v-col>
                 </v-row>
               </div>
             </v-col>
           </template>
         </v-row>
+
+        <v-col md="12" class="form-separator d-flex flex-column">
+          <h4>Matriks Permasalahan</h4>
+          <p class="text-grey text-09-em">NB: Angka terkecil adalah yang paling bermasalah</p>
+        </v-col>
+
+        <v-col lg="12">
+          <div class="bg-grey">
+            <div class="table-responsive">
+              <table class="problem-matrix">
+                <thead>
+                  <tr>
+                    <th>Nama Masalah</th>
+                    <th>Sering Terjadi</th>
+                    <th>Prioritas</th>
+                    <th>Potensi</th>
+                    <th>Jumlah</th>
+                    <th>Ranking</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr v-for="(item, i) in formFieldData.existingProblems" :key="`index-${i}`">
+                    <td>{{ item.problem_name }}</td>
+                    <td>
+                      <!-- <geko-input @selected="componentKey += 1; item.interval_problem = $event.code.toString()"
+                        :key="componentKey" v-model="item.interval_problem" :item="{
+                          hide_label: true,
+                          type: 'select',
+                          option: {
+                            list_pointer: {
+                              label: 'name',
+                              code: 'code',
+                              display: ['name']
+                            }
+                          }
+                        }" /> -->
+
+                      <v-select dense color="success" clearable
+                        :placeholder="`1 - ${formFieldData.existingProblems.length + 1}`"
+                        :items="formFieldData.existingProblems.map((val, valIndex) => { return { text: valIndex + 1, value: valIndex + 1, disabled: formFieldData.existingProblems.find(val1 => val1.impact_to_people === valIndex + 1) ? true : false } })"
+                        single-line hide-details item-color="success"
+                        :menu-props="{ rounded: 'xl', transition: 'slide-y-transition' }" style="width: 150px" outlined
+                        rounded class="mx-auto" v-model="item.impact_to_people"></v-select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </v-col>
+
+        <v-col lg="12">
+          <div class="d-flex flex-row" style="justify-content: flex-end;">
+
+            <v-btn variant="success" @click="onSubmit">
+              Test
+            </v-btn>
+          </div>
+        </v-col>
       </form>
     </ValidationObserver>
   </div>
@@ -223,6 +231,9 @@ export default {
   },
   methods: {
     addRow(field, key) {
+      if (field == 'existingProblems') {
+        this.componentKey += 1
+      }
       this.formFieldData[field].push({
         pra_no: null,
       });
@@ -230,11 +241,15 @@ export default {
     removeRow(field, i) {
       this.formFieldData[field].splice(i, 1);
     },
-    onSubmit() {},
+    onSubmit() {
+      console.log('form data', this.formData)
+      console.log('form fields', this.formFieldData)
+    },
   },
 
   data() {
     return {
+      componentKey: 1,
       formData: {},
       formFieldData: {
         landOwnerships: [{ rra_no: null }],
@@ -243,6 +258,8 @@ export default {
         farmerIncomes: [{ rra_no: null }],
         fertilizerDetails: [{ rra_no: null }],
         pesticideDetails: [{ rra_no: null }],
+        disasterDetails: [],
+        existingProblems: [{ pra_no: null }],
       },
       config: [
         {
@@ -797,6 +814,93 @@ export default {
               size: 11,
               type: "textarea",
               setter: "pesticide_description",
+            },
+          ],
+        },
+
+        {
+          name: "Bencana",
+          fieldData: "disasterDetails",
+          fields: [
+            {
+              name: "Penyebutan Terhadap Kejadian Bencana",
+              type: "text",
+              setter: "disaster_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Kategori Bencana",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "disaster_categories",
+              options: defaultData.disaster_categories,
+            },
+            {
+              name: "Periode Terjadinya Bencana",
+              validation: ["required"],
+              size: 5,
+              type: "text",
+              setter: "year",
+            },
+            {
+              name: "Korban Jiwa",
+              validation: [],
+              size: 6,
+              type: "number",
+              setter: "fatalities",
+            },
+            {
+              name: "Penjelasan Mengenai Bencana",
+              validation: ["required"],
+              size: 11,
+              type: "textarea",
+              setter: "detail",
+            },
+          ],
+        },
+
+        {
+          name: "Pemasalahan Yang Ada",
+          fieldData: "existingProblems",
+          fields: [
+            {
+              name: "Nama masalah",
+              type: "text",
+              setter: "problem_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Kategori Bencana",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "problem_categories",
+              options: defaultData.problem_categories,
+            },
+            {
+              name: "Periode Masalah",
+              validation: ["required"],
+              placeholder: '3 Bulan Terakhir / 5 Tahun Lalu / Lainnya',
+              size: 5,
+              type: "text",
+              setter: "date",
+            },
+            {
+              name: "Narasumber",
+              validation: ['required'],
+              size: 6,
+              type: "text",
+              setter: "problem_source",
+            },
+            {
+              name: "Saran Solusi",
+              validation: ["required"],
+              size: 11,
+              type: "textarea",
+              setter: "problem_solution",
             },
           ],
         },

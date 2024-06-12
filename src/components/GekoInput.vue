@@ -1,135 +1,67 @@
 <template>
   <div>
-    <ValidationProvider
-      mode="eager"
-      :name="item.label"
-      :rules="item.validation ? item.validation.join('|') : ''"
-      v-slot="{ classes, errors }"
-      class="geko-input"
-      ref="provider"
-    >
-      <label
-        v-if="!item.hide_label"
-        :for="item.view_data"
-        :class="{
-          required:
-            Array.isArray(item.validation) &&
-            item.validation.includes('required'),
-        }"
-        >{{ item.label || "Tolong Gunakan Label Ya..." }}</label
-      >
+    <ValidationProvider mode="eager" :name="item.label" :rules="item.validation ? item.validation.join('|') : ''"
+      v-slot="{ classes, errors }" class="geko-input" ref="provider">
+      <label v-if="!item.hide_label" :for="item.view_data" :class="{
+        required:
+          Array.isArray(item.validation) &&
+          item.validation.includes('required'),
+      }">{{ item.label || "Tolong Gunakan Label Ya..." }}</label>
 
-      <input
-        v-model="tmpValue"
-        v-if="['text', 'number'].includes(item.type)"
-        :id="item.view_data"
-        :type="item.type || 'text'"
-        v-on:input="$emit('input', $event.target.value)"
-        v-on:change="$emit('change', errors[0] ? '' : $event.target.value)"
-        :placeholder="item.placeholder || ''"
-        v-bind:value="value"
-        :class="{
+      <input v-model="tmpValue" v-if="['text', 'number'].includes(item.type)" :id="item.view_data"
+        :type="item.type || 'text'" v-on:input="$emit('input', $event.target.value)"
+        v-on:change="$emit('change', errors[0] ? '' : $event.target.value)" :placeholder="item.placeholder || ''"
+        v-bind:value="value" :class="{
           invalid: errors.length > 0,
-        }"
-        :disabled="disabled"
-      />
+        }" :disabled="disabled" />
 
-      <date-picker
-        v-else-if="['date', 'daterange'].includes(item.type)"
-        v-model="tmpValue"
-        valueType="format"
-        class="w-100"
-        :class="{
+      <date-picker v-else-if="['date', 'daterange'].includes(item.type)" v-model="tmpValue" valueType="format"
+        class="w-100" :class="{
           invalid: errors.length > 0,
-        }"
-        :range="item.type === 'daterange'"
-      ></date-picker>
+        }" :range="item.type === 'daterange'"></date-picker>
 
-      <textarea
-        v-model="tmpValue"
-        v-else-if="['textarea'].includes(item.type)"
-        :id="item.view_data"
-        :type="item.type || 'text'"
-        v-on:input="$emit('input', $event.target.value)"
-        v-on:change="$emit('change', errors[0] ? '' : $event.target.value)"
-        :placeholder="item.placeholder || ''"
-        v-bind:value="value"
-        :class="{
+      <textarea v-model="tmpValue" v-else-if="['textarea'].includes(item.type)" :id="item.view_data"
+        :type="item.type || 'text'" v-on:input="$emit('input', $event.target.value)"
+        v-on:change="$emit('change', errors[0] ? '' : $event.target.value)" :placeholder="item.placeholder || ''"
+        v-bind:value="value" :class="{
           invalid: errors.length > 0,
-        }"
-        :disabled="disabled"
-      ></textarea>
+        }" :disabled="disabled"></textarea>
 
-      <geko-select
-        v-else-if="['select'].includes(item.type)"
-        class="vs-style v-select-40"
-        :class="{
-          invalid: errors.length > 0,
-        }"
-        :placeholder="item.placeholder || null"
-        :disabled="disabled"
-        :options="selectOptions"
-        @option:selected="$emit('selected', $event)"
-        @open="selectGetInitData"
-        :reduce="(x) => x[item.option?.list_pointer.code || 'code']"
-        v-model="tmpValue"
-        :appendToBody="true"
-        :label="
-          item.option && item.option.list_pointer
-            ? item.option.list_pointer.label
-            : 'label'
-        "
-        :searchable="
-          typeof item.searchable === 'boolean' ? item.searchable : true
-        "
-        :multiple="item.option && item.option.multiple ? true : false"
-      >
+      <geko-select v-else-if="['select'].includes(item.type)" class="vs-style" :class="{
+        invalid: errors.length > 0,
+      }" :placeholder="item.placeholder || null" :disabled="disabled" :options="selectOptions"
+        @option:selected="$emit('selected', $event)" @open="selectGetInitData"
+        :reduce="(x) => x[item.option?.list_pointer.code || 'code']" v-model="tmpValue" :appendToBody="true" :label="item.option && item.option.list_pointer
+          ? item.option.list_pointer.label
+          : 'label'
+          " :searchable="typeof item.searchable === 'boolean' ? item.searchable : true
+            " :multiple="item.option && item.option.multiple ? true : false">
         <template #no-options="{ search, searching, loading }">
-          <span v-if="isLoading"
-            ><v-progress-circular
-              color="success"
-              indeterminate
-              :size="17"
-              :width="2"
-              class="mr-2"
-            ></v-progress-circular>
+          <span v-if="isLoading"><v-progress-circular color="success" indeterminate :size="17" :width="2"
+              class="mr-2"></v-progress-circular>
             <span class="text-09-em text-grey">{{
-              `Loading data ${item.label.toLowerCase()}...`
-            }}</span></span
-          >
-          <span v-else>{{ `Tidak ada data ${item.label.toLowerCase()}` }}</span>
+              `Loading data ${item.label ? item.label.toLowerCase() : ''}...`
+            }}</span></span>
+          <span v-else>{{ `Tidak ada data ${item.label ? item.label.toLowerCase() : ''}` }}</span>
         </template>
       </geko-select>
 
-      <VueEditor
-        v-else-if="['editor'].includes(item.type)"
-        v-model="tmpValue"
-        :disabled="disabled"
-        :placeholder="item.placeholder || ''"
-        :class="{
+      <VueEditor v-else-if="['editor'].includes(item.type)" v-model="tmpValue" :disabled="disabled"
+        :placeholder="item.placeholder || ''" :class="{
           invalid: errors.length > 0,
-        }"
-      />
+        }" />
 
-      <div
-        class="select-radio-row"
-        v-else-if="['select-radio'].includes(item.type)"
-      >
-        <div
-          class="select-radio-item"
-          :class="{
-            active:
-              tmpValue ===
-              data[
-                item.option && item.option.list_pointer.code
-                  ? item.option.list_pointer.code || 'code'
-                  : 'code'
-              ],
-          }"
-          v-for="(data, i) in item.option.default_options"
-          :key="'i' + item.view_data + i"
-          @click="onSelectRadio(data)"
-        >
+      <div class="select-radio-row" v-else-if="['select-radio'].includes(item.type)">
+        <div class="select-radio-item" :class="{
+          active:
+            tmpValue ===
+            data[
+            item.option && item.option.list_pointer.code
+              ? item.option.list_pointer.code || 'code'
+              : 'code'
+            ],
+        }" v-for="(data, i) in item.option.default_options" :key="'i' + item.view_data + i"
+          @click="onSelectRadio(data)">
           <v-icon class="select-radio-radio">{{
             data[
               item.option && item.option.list_pointer
@@ -145,25 +77,15 @@
           <span>{{ data.label }}</span>
         </div>
       </div>
-      <input
-        v-else-if="['upload'].includes(item.type)"
-        :type="'file'"
-        :id="item.view_data"
-        :accept="item.upload_type"
-        @change="handleFileUpload($event)"
-      />
+      <input v-else-if="['upload'].includes(item.type)" :type="'file'" :id="item.view_data" :accept="item.upload_type"
+        @change="handleFileUpload($event)" />
 
       <div class="upload-wrapper" v-if="['upload'].includes(item.type)">
-        <label
-          :for="item.view_data"
-          class="file-upload"
-          :class="{
-            uploaded: tmpImage,
-          }"
-          :style="{
-            'background-image': tmpImage ? 'url(' + tmpImage + ')' : 'unset',
-          }"
-        >
+        <label :for="item.view_data" class="file-upload" :class="{
+          uploaded: tmpImage,
+        }" :style="{
+          'background-image': tmpImage ? 'url(' + tmpImage + ')' : 'unset',
+        }">
           <v-icon v-if="!tmpImage">{{
             item.option && item.option.icon ? item.option.icon : "mdi-image"
           }}</v-icon>
@@ -177,45 +99,28 @@
                 : "Klik gambar untuk memilih berkas yang akan diunggah"
             }}
           </h6>
-          <span class="d-block" v-if="item.option && item.option.max_size"
-            >Ukuran berkas maksimal {{ item.option.max_size }} Mb
-            <span v-if="item.option && item.option.max"
-              >( Maksimal {{ item.option.max }} foto)</span
-            ></span
-          >
+          <span class="d-block" v-if="item.option && item.option.max_size">Ukuran berkas maksimal {{
+            item.option.max_size }}
+            Mb
+            <span v-if="item.option && item.option.max">( Maksimal {{ item.option.max }} foto)</span></span>
 
           <div class="preview-image-list">
-            <div
-              class="preview-image"
-              v-for="(image, i) in tmpImages"
-              :key="item.label + i"
-              :style="{
-                'background-image': image ? 'url(' + image + ')' : 'unset',
-              }"
-            >
+            <div class="preview-image" v-for="(image, i) in tmpImages" :key="item.label + i" :style="{
+              'background-image': image ? 'url(' + image + ')' : 'unset',
+            }">
               <button @click="removeImage(i)">
                 <v-icon>mdi-close-circle</v-icon>
               </button>
             </div>
           </div>
 
-          <v-btn
-            v-if="tmpImage"
-            variant="danger"
-            small
-            class="mt-2"
-            @click="onRemoveImage"
-          >
+          <v-btn v-if="tmpImage" variant="danger" small class="mt-2" @click="onRemoveImage">
             Hapus
           </v-btn>
         </div>
       </div>
 
-      <span
-        v-if="errors.length > 0"
-        class="error-message text-danger text-xs mt-1"
-        >{{ errors[0] }}</span
-      >
+      <span v-if="errors.length > 0" class="error-message text-danger text-xs mt-1">{{ errors[0] }}</span>
     </ValidationProvider>
   </div>
 </template>
@@ -227,7 +132,7 @@ export default {
     item: {
       type: Object,
       required: true,
-      default: () => {},
+      default: () => { },
     },
     value: {
       required: false,
@@ -340,9 +245,20 @@ export default {
 
       let processedData = [];
       for (const _data of responseData) {
+
+        const _display = Array.isArray(this.item.option.list_pointer.display) ? this.item.option.list_pointer.display : [this.item.option.list_pointer.label || "label"]
+        const _separator = this.item.option.list_pointer.separator || '-'
+
+        let _label = []
+        for (const _d of _display) {
+          if (_data[_d]) {
+            _label.push(_data[_d])
+          }
+        }
+
         processedData.push({
           [this.item.option.list_pointer.label || "label"]:
-            _data[this.item.option.list_pointer.label || "label"],
+            _label.join(` ${_separator} `),
           [this.item.option.list_pointer.code || "code"]:
             _data[this.item.option.list_pointer.code || "code"],
           ...(this.$listeners.selected instanceof Function ? _data : {}),
@@ -425,6 +341,15 @@ export default {
         this.$emit("input", this.tmpValue);
       }
     },
+    // 'item.option': {
+    //   immediate: false,
+    //   deep: true,
+    //   handler(v) {
+    //     if (v && v.default_options) {
+    //       this.setDefaultValue()
+    //     }
+    //   }
+    // }
   },
 };
 </script>

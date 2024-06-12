@@ -49,13 +49,16 @@
               api: 'GetProjectAllAdmin',
               default_label: formData.project_code,
               option: {
+                multiple: true,
                 list_pointer: {
+                  separator: '-',
                   code: 'id',
                   label: 'project_name',
                   display: ['project_name', 'project_no'],
                 },
               },
             }" />
+
           </v-col>
 
           <v-col md="6">

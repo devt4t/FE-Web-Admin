@@ -54,5 +54,63 @@
                 font-style: italic;
             }
         }
+
+        table.problem-matrix {
+            width: 100%;
+            thead {
+                tr {
+                    th {
+                        font-size: .8em;
+                        font-weight: normal;
+                        color: grey;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.rra-pra-detail {
+    .rra-pra-wrapper {
+        padding: 1em;
+    }
+
+    .rra-pra-list {
+        display: flex;
+        flex-direction: column;
+        .rra-pra-item {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            margin-block: 3px;
+            .label {
+                width: 40%;
+                font-size: .9em;
+                color: rgb(164, 164, 164);
+                padding-right: 5px;
+            }
+            .value {
+                width: 60%;
+                padding-left: 5px;
+                position: relative;
+                font-size: .9em;
+                &::before {
+                    content: ': ';
+                    right: 0;
+                }
+            }
+        }
+    }
+    .rra-pra-detail-card {
+        position: relative;
+    }
+    .segment-menu {
+        position: absolute;
+        transform: translateY(-100%);
+        background-color: magenta;
+        button {
+            padding-inline: 1.5em;
+            padding-block: .5em;
+        }
     }
 }

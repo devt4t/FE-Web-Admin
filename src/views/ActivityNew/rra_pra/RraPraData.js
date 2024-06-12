@@ -373,4 +373,40 @@ export default {
       code: "other",
     },
   ],
+  disaster_categories: [
+    {
+      name: "Geologi ( terjadi di permukaan bumi seperti tsunami, gempa bumi, gunung meletus, dll )",
+      code: "geologi",
+    },
+    {
+      name: "Meteorologi / Hidrometeorologi ( berhubungan dengan iklim seperti banjir dan kekeringan )",
+      code: "meteorologi_hidrometeorologi",
+    },
+    {
+      name: "Ekstrateretial ( datangnya berbagai benda langit seperti asteroid atau gangguan badai matahari )",
+      code: "ekstrateretial",
+    },
+  ],
+  problem_categories: [
+    {
+      name: "Birokrasi",
+      code: "bureaucracy",
+    },
+    {
+      name: "Hewan",
+      code: "animal_related",
+    },
+    {
+      name: "Bencana Alam",
+      code: "force_majeur",
+    },
+    {
+      name: "Berhubungan Dengan Air",
+      code: "water_related",
+    },
+    {
+      name: "Yang Lainnya",
+      code: "other",
+    },
+  ],
 };

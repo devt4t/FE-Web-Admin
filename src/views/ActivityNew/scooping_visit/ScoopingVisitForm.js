@@ -53,6 +53,11 @@ export default {
         { data_no: resData.data.data_no }
       );
 
+      const resProject = await this.$_api.get(
+        "GetDetailScoopingVistiProject_new",
+        { data_no: resData.data.data_no }
+      );
+
       const keys = [
         ["province", "province_id"],
         ["province", "province_code"],
@@ -98,7 +103,7 @@ export default {
         ["village_profile", "village_profile"],
         ["status", "status"],
         ["complete_data", "complete_data"],
-        ["project_id", "project_id"],
+        // ["project_id", "project_id"],
         ["projects_project_no", "project_code"],
         ["data_no", "data_no"],
         ["other_ngo", "other_ngo"],
@@ -137,9 +142,15 @@ export default {
         }
       }
 
+      let existingProject = [];
+      for (const d of resProject.data) {
+        existingProject.push({
+          project_name: `${d.projects_project_name} - ${d.scooping_id}`,
+          code: d.project_id,
+        });
+      }
+      this.$set(this.formData, "project_id", existingProject);
       this.$set(this.formData, "village_persons", figures.data);
-      console.log(figures);
-      console.log(this.formData);
       this.ready = true;
     },
     onSubmit() {
@@ -168,16 +179,8 @@ export default {
             : null,
         accessibility: this.formData.accessibility,
         land_area: this.formData.land_area,
-        // land_type: this.formData.land_type.join(","),
         slope: this.formData.slope,
         altitude: this.formData.altitude,
-        // vegetation_density: this.formData.vegetation_density.join(","),
-        // water_source: this.formData.water_source.join(","),
-        // rainfall: this.formData.rainfall.join(","),
-        // agroforestry_type: this.formData.agroforestry_type.join(","),
-        // goverment_place: this.formData.goverment_place.join(","),
-        // land_coverage: this.formData.land_coverage.join(","),
-        // electricity_source: this.formData.electricity_source.join(","),
         dry_land_area: parseInt(this.formData.village_area),
         village_polygon: this.formData.village_polygon,
         dry_land_polygon: this.formData.dry_land_polygon,
@@ -187,13 +190,9 @@ export default {
         total_male: parseInt(this.formData.total_male),
         total_female: parseInt(this.formData.total_female),
         total_kk: parseInt(this.formData.total_kk),
-        // photo_road_access: this.formData.photo_road_access.join(","),
-        // photo_meeting: this.formData.photo_meeting.join(","),
-        // photo_dry_land: this.formData.photo_dry_land.join(","),
         village_profile: this.formData.village_profile,
         status: "document_saving",
         complete_data: 0,
-        project_id: this.formData.project_id,
         user_email: this.$store.state.User.email,
         other_ngo: this.formData.other_ngo,
         mitigation_program: parseInt(this.formData.mitigation_program),
@@ -235,10 +234,12 @@ export default {
       this.$_api
         .post(endpoint, payload)
         .then((res) => {
-          // this.addOtherNgo(res);
-          // this.addFigure(res);
+          this.addProject(res);
+          this.addOtherNgo(res);
+          this.addFigure(res);
         })
         .catch((err) => {
+          console.log("err", err);
           this.$_alert.error(err);
           this.loading = false;
         });
@@ -246,7 +247,11 @@ export default {
 
     addOtherNgo(res) {
       i = 0;
+
       for (const ngo of this.formData.other_ngo_data) {
+        if (!this.isCreate && typeof ngo == "object" && ngo.id) {
+          continue;
+        }
         i += 1;
         ngo.scooping_no = res.kode_scooping;
 
@@ -254,10 +259,36 @@ export default {
       }
     },
 
+    addProject(res) {
+      var i = 0;
+      for (let _project of this.formData.project_id) {
+        i += 1;
+
+        if (!this.isCreate && typeof _project == "object" && _project.id) {
+          continue;
+        }
+        const projectPayload = {
+          data_no: res.kode_scooping,
+          project_id: parseInt(_project),
+        };
+
+        this.$_api
+          .post("AddScoopingProject_new", projectPayload)
+          .catch((err) => {
+            console.log("err", err);
+          });
+      }
+    },
+
     addFigure(res) {
       var i = 0;
+
       for (const figure of this.formData.village_persons) {
         i += 1;
+
+        if (!this.isCreate && typeof figure == "object" && figure.id) {
+          continue;
+        }
         figure.data_no = res.kode_scooping;
         this.$_api.post("AddScoopingVisitFigures_new", figure).then(() => {
           if (i == this.formData.village_persons.length) {
