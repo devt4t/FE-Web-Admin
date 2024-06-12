@@ -20,6 +20,11 @@
         {{ item.participants_last_name || "" }}</span>
     </template>
 
+    <template v-slot:detail-donors_name="{ item }">
+      <span>{{ item.participants_first_name }} </span>
+      <span v-if="item.participants_last_name">{{ ' ' }}{{ item.participants_last_name }} </span>
+    </template>
+
     <template v-slot:update-project_name="{ formData, field }">
       <v-col md="6">
         <geko-input v-model="formData.project_name" :item="{
@@ -143,7 +148,9 @@ export default {
               list: {
                 type: "row-slot",
               },
-              detail: true,
+              detail: {
+                type: 'slot',
+              },
               create: {
                 validation: ["required"],
                 type: "select",
@@ -577,6 +584,7 @@ export default {
               list: false,
               detail: {
                 transform: "no-empty",
+                view_data: 'note',
               },
               create: {
                 validation: [],

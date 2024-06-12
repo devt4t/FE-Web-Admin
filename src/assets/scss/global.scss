@@ -376,6 +376,9 @@ table tbody tr td:has(.indicator-left) {
   padding-left: 0 !important;
 }
 
+.border-dotted-bottom {
+  border-bottom: 1px dashed rgba(128, 128, 128, 0.2);
+}
 .indicator-wrapper {
   display: flex;
   flex-direction: column;

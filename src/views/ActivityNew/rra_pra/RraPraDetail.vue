@@ -12,7 +12,7 @@
                     <div class="rra-pra-list">
                         <div class="rra-pra-item" v-for="(f, i) in config.main_detail" :key="`main-data-${i}`">
                             <div class="label">{{ f[0] }}</div>
-                            <div class="value">
+                            <div class="value" v-if="data.rra">
                                 <span v-if="f[1] === 'status'" :class="{
                                     'badge bg-light': data.rra.mainRra && !data.pra.mainPra,
                                     'badge bg-warning': data.rra.mainRra && data.rra.mainRra.status == 'document_saving',
@@ -33,21 +33,62 @@
                     </div>
                 </div>
             </v-card>
+
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="rra-pra-detail-menu mb-5">
+
+                <v-card-title class="border-dotted-bottom">
+                    <h5 class="mb-0 pb-0">Informasi RRA</h5>
+                </v-card-title>
+
+
+                <!-- MENUUU -->
+                <div class="menu-list">
+                    <div class="menu-item hover-pointer" v-for="(m, i) in menus" :key="`menu-${i}`" v-if="!m.mainData"
+                        :class="{
+                            active: activeMenu == i
+                        }" @click="activeMenu = i">
+                        <div class="d-flex flex-column">
+                            <h6>{{ m.label }}</h6>
+                            <p class=" mb-0 value">{{ m.description }}</p>
+                        </div>
+                        <v-icon>mdi-chevron-right</v-icon>
+                    </div>
+                </div>
+                <!-- END MENUUU -->
+
+            </v-card>
         </v-col>
 
         <v-col md="8" xl="9">
+
             <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="rra-pra-detail-card mb-5">
                 <div class="segment-menu">
-                    <button>
-                        RRA
-                    </button>
-                    <button class="active">
-                        PRA
+                    <button v-for="(item, i) in tabs" :key="'segment-' + i" :class="{
+                        active: i === activeTab
+                    }">
+                        <v-icon>{{ item.icon }}</v-icon> {{ item.label }}
                     </button>
                 </div>
                 <v-card-title>
                     <h5 class="mb-0 pb-0">RRA</h5>
                 </v-card-title>
+
+                <div class="detail-wrapper">
+                    <rra-pra-detail-rra :data="data ? data.rra : null" :scoopingData="data ? data.mainScooping : null"
+                        :activeMenu="0" />
+                    <!-- <rra-pra-detail-card v-if="data" :data="data" :scoopingData="scoopingData"
+                        :config="configs[activeMenu].fields" /> -->
+                </div>
+            </v-card>
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="rra-pra-detail-card mb-5"
+                :componentKey="`comp-detail-${componentKey}`">
+                <v-card-title>
+                    <h5 class="mb-0 pb-0" v-if="activeMenu">{{ menus[activeMenu].label }}</h5>
+                </v-card-title>
+                <div class="detail-wrapper">
+                    <rra-pra-detail-rra v-if="activeTab == 0" :data="data ? data.rra : null"
+                        :scoopingData="data ? data.mainScooping : null" :activeMenu="activeMenu" />
+                </div>
             </v-card>
 
         </v-col>
@@ -56,13 +97,17 @@
 
 
 <script>
+
+import RraPraDetailRra from './RraPraDetailRra.vue';
 export default {
     name: 'rra-pra-detail',
+    components: {
+        RraPraDetailRra,
 
+    },
     methods: {
         async getData() {
             const result = await this.$_api.get('GetDetailRraPra_new', { id: this.$route.query.id }).catch(() => false)
-            // console.log('result', result)
             if (result) {
                 this.data = result
             }
@@ -85,14 +130,60 @@ export default {
     mounted() {
         this.getData()
     },
+
+    watch: {
+        activeMenu(v) {
+            this.componentKey += 1
+        }
+    },
     data() {
         return {
+            componentKey: 1,
+            activeTab: 0,
+            tabs: [
+                {
+                    label: 'RRA',
+                    icon: 'mdi-home-group',
+                    code: 'rra'
+                },
+                {
+                    label: 'PRA',
+                    icon: 'mdi-home-analytics',
+                    code: 'pra'
+                },
+            ],
+
+            menus: [
+                {
+                    label: 'Landscape Desa',
+                    description: 'Informasi luas desa, tanah, dll',
+                    mainData: true,
+                },
+                {
+                    label: 'Batas Wilayah',
+                    description: 'Informasi Batas Wilayah Desa'
+                },
+                {
+                    label: 'Pola Pemanfaatan Lahan',
+                    description: 'Informasi Pola Pemanfaatan Lahan di Desa Tersebut '
+                },
+                {
+                    label: 'Kelembagaan Masyarakat',
+                    description: 'Daftar kelembagaan masyarakat di desa tersebut '
+                },
+                {
+                    label: 'Periode Pertanian Organik',
+                    description: 'Daftar pertanian organik di desa tersebut '
+                }
+            ],
+            activeMenu: 1,
             data: {},
             ready: false,
             loading: true,
             config: {
                 main_detail: [
                     ['Scooping Visit', 'mainScooping.data_no'],
+                    ['Desa', 'mainScooping.desas_name'],
                     ['Status', 'status'],
                     ['RRA', 'rra.mainRra.rra_no', '', 'badge', 'badge bg-primary'],
                     ['PRA', 'pra.mainPra.pra_no', '', 'badge', 'badge bg-primary'],

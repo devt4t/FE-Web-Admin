@@ -46,6 +46,22 @@ Vue.filter("parse", (value, id) => {
       _value = moment(value).format("D MMMM YYY HH:mm:ss");
       break;
 
+    case "border":
+      if (value == "north") {
+        _value = "Utara";
+      } else if (value === "east") {
+        _value = "Timur";
+      } else if (value === "west") {
+        _value = "Barat";
+      } else if (value === "south") {
+        _value = "Selatan";
+      }
+      break;
+
+    case "lowercase":
+      if (!value) _value = value;
+      _value = value.toLowerCase();
+
     default:
       _value = value;
       break;
