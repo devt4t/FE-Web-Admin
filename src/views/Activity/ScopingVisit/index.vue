@@ -96,28 +96,28 @@
 
             <!-- Action Column -->
             <template v-slot:item.actions="{ item }">
-                <v-menu content-class="rounded-xl">
+                <!-- <v-menu content-class="rounded-xl">
                     <template v-slot:activator="{ attrs, on }">
                         <v-btn v-bind="attrs" v-on="on" small fab icon>
                             <v-icon>mdi-dots-vertical</v-icon>
                         </v-btn>
                     </template>
-                    <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-                        <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center"
-                            @click="showModal('detail', item)">
-                            <v-icon class="mr-1">mdi-information</v-icon> Detail
-                        </v-btn>
-                        <v-btn color="orange white--text" rounded small
-                            class="pl-1 mt-1 d-flex justify-start align-center"
-                            :disabled="(item.status == 'submit_review') && user.role_name != 'GIS STAFF'"
-                            @click="() => { showModal('form', item) }">
-                            <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
-                        </v-btn>
-                        <!-- <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center" @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
-                        <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
-                    </v-btn> -->
-                    </v-card>
-                </v-menu>
+<v-card class="pa-2 d-flex align-stretch flex-column justify-center">
+    <v-btn color="info white--text" rounded small class="pl-1 d-flex justify-start align-center"
+        @click="showModal('detail', item)">
+        <v-icon class="mr-1">mdi-information</v-icon> Detail
+    </v-btn>
+    <v-btn color="orange white--text" rounded small class="pl-1 mt-1 d-flex justify-start align-center"
+        :disabled="(item.status == 'submit_review') && user.role_name != 'GIS STAFF'"
+        @click="() => { showModal('form', item) }">
+        <v-icon class="mr-1">mdi-pencil-circle</v-icon> Edit
+    </v-btn>
+    <v-btn rounded small color="red darken-2 white--text" class="mt-1 pl-1 d-flex justify-start align-center"
+        @click="() => showDeleteModal(item)" :disabled="deleteDisabled(item.is_validate)">
+        <v-icon class="mr-1 pl-2">mdi-delete</v-icon> Delete
+    </v-btn>
+</v-card>
+</v-menu> -->
             </template>
         </v-data-table>
     </div>
@@ -173,7 +173,7 @@ export default {
                 { text: 'PIC', value: 'pic_name' },
                 { text: 'PIC Manager', value: 'pic_manager' },
                 { text: 'Status', value: 'status', align: 'center' },
-                { text: 'Actions', value: 'actions', align: 'right' },
+                //{ text: 'Actions', value: 'actions', align: 'right' },
             ],
             items: [],
             loading: {
