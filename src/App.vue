@@ -450,140 +450,7 @@ export default {
       },
     },
   }),
-  computed: {
-    // isLogin() {
-    //   var itemroutecheck;
-    //   // console.log(this.User);
-    //   // this.listValMenu;
-    //   itemroutecheck = ["Home", "Dashboard", "Users", "GantiPassword"];
-    //   if (this.listValMenu) {
-    //     if (this.listValMenu.length > 0) {
-    //       itemroutecheck = this.listValMenu;
-    //       itemroutecheck.push("Dashboard");
-    //     }
-    //     var rslt = itemroutecheck.includes(this.$route.name);
-    //     var exceptionPage = [
-    //       "SeedlingChangeRequest",
-    //       "GekoManual",
-    //       "ITPlayground",
-    //       "PermintaanTutupanLahan",
-    //       "DaftarQRLahanRusak",
-    //       "LihatTanggalDistribusi",
-    //       "ReportData",
-    //       "AdjustmentDataSostam",
-    //       "populateDataMonitoring1",
-    //     ];
-    //     const checkExceptionPage = exceptionPage.includes(this.$route.name);
-    //     // console.log(this.$route.name);
-    //     // console.log(itemroutecheck);
-    //     if (rslt == true || checkExceptionPage) {
-    //       // console.log("comp=" + localStorage.getItem("token"));
-    //       this.authtoken = localStorage.getItem("token");
-    //       var authtokenval = this.authtoken;
-    //       if (authtokenval != null) {
-    //         var notspaceauthtoken = authtokenval.trim();
-    //         // console.log(notspaceauthtoken.length);
-    //         // console.log(this.authtoken);
-    //         if (notspaceauthtoken.length > 0) {
-    //           return this.$route.name != "Login";
-    //         } else {
-    //           if (this.$route.name != "GekoManual") {
-    //             this.$router.push("/");
-    //           }
-    //         }
-    //       } else {
-    //         // console.log("auth null");
-    //         if (this.$route.name != "GekoManual") {
-    //           this.$router.push("/");
-    //         }
-    //       }
-    //     } else {
-    //       // console.log("route false");
-    //       this.authtoken = localStorage.getItem("token");
-    //       var authtokenval = this.authtoken;
-    //       if (authtokenval != null) {
-    //         var notspaceauthtoken = authtokenval.trim();
-    //         if (notspaceauthtoken.length > 0) {
-    //           // this.$router.push("/Dashboard");
-    //           return this.$route.name != "Login";
-    //         } else {
-    //           // console.log("auth 0");
-    //           this.$router.push("/");
-    //           this.$store.state.User = "";
-    //         }
-    //       } else {
-    //         // console.log("auth null");
-    //         // console.log("logout system");
-    //         if (this.logoutvalue == true) {
-    //           this.logoutvalue = false;
-    //           location.reload();
-    //         } else if (this.$route.name == "Login") {
-    //           // console.log("page " + this.$route.name);
-    //         } else {
-    //           this.$router.push("/");
-    //         }
-    //       }
-    //     }
-    //   } else {
-    //     if (this.$route.name != "GekoManual") {
-    //       localStorage.removeItem("token");
-    //       localStorage.removeItem("User");
-    //       localStorage.removeItem("BaseUrlUpload");
-    //       this.$router.push("/");
-    //     }
-    //   }
-    // },
-  },
-  // created() {
-  //   this.authtoken = localStorage.getItem("token");
-  //   this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
-  //   this.User = JSON.parse(localStorage.getItem("User"));
-  //   if (this.User) {
-  //     this.items = this.User.list_menu;
-  //     this.items.forEach((valMenu, indexMenu) => {
-  //       // rearrange activities list menu
-  //       if (valMenu.title == "Activities") {
-  //         let activitiesRearrange = [];
-  //         valMenu.items.forEach((valMenuItem, indexMenuItem) => {
-  //           if (activitiesRearrange.includes(valMenuItem) == false) {
-  //             if (valMenuItem.title === "Progression")
-  //               activitiesRearrange[0] = valMenuItem;
-  //             else if (valMenuItem.title === "Scooping Visit")
-  //               activitiesRearrange[1] = valMenuItem;
-  //             else if (valMenuItem.title === "RRA & PRA")
-  //               activitiesRearrange[2] = valMenuItem;
-  //             else if (valMenuItem.title === "Sosialisasi Program")
-  //               activitiesRearrange[3] = valMenuItem;
-  //             else if (valMenuItem.title === "Sosialisasi Tanam")
-  //               activitiesRearrange[4] = valMenuItem;
-  //             else if (valMenuItem.title === "Pelatihan Petani")
-  //               activitiesRearrange[5] = valMenuItem;
-  //             else if (valMenuItem.title === "Lubang Tanam")
-  //               activitiesRearrange[6] = valMenuItem;
-  //             else if (valMenuItem.title === "Material Organik")
-  //               activitiesRearrange[7] = valMenuItem;
-  //             else if (valMenuItem.title === "Distribusi")
-  //               activitiesRearrange[8] = valMenuItem;
-  //             else if (valMenuItem.title === "Realisasi Tanam")
-  //               activitiesRearrange[9] = valMenuItem;
-  //             else if (valMenuItem.title === "Monitoring")
-  //               activitiesRearrange[10] = valMenuItem;
-  //           }
-  //         });
-  //         this.items[indexMenu].items = activitiesRearrange.filter(Object);
-  //       }
-  //     });
-  //     this.listValMenu = this.User.list_val_menu;
-  //     var name = this.User.name;
-  //     const arrayname = name.split(" ");
-  //     this.nameadmin = name;
-  //     // this.nameadmin = this.User.name;
-  //     this.statusadmin = this.User.role_name;
-  //     // console.log(this.items);
-  //   }
-  // },
   mounted() {
-    console.log("mounted", this.$store.state);
     if (!this.$store.state.token && !localStorage.getItem("token")) {
       //not authorized
       this.$router.push("/");
@@ -595,14 +462,8 @@ export default {
     }
   },
   watch: {
-    "document.fullscreenElement": {
-      handler(newVal) {
-        // console.log(newVal);
-      },
-    },
     "$store.state.token": {
       handler(v) {
-        console.log("token", v);
         if (v) {
           this.isLoggedIn = true;
           this.buildConfig();
@@ -613,33 +474,34 @@ export default {
         }
       },
     },
-    // isLogin(val) {
-    //   if (val != true) this.$store.state.User = "";
-    // },
-
-    // isLogin: {
-    //   immediate: false,
-    //   deep: false,
-    //   handler(val) {
-    //     if (val != true) this.$store.state.User = "";
-    //   },
-    // },
   },
   methods: {
     async buildConfig() {
-      console.log("menus", menus);
       if (Array.isArray(this.items) && this.items.length > 0) return;
-      let listMenu = [];
-      for (const menu of menus) {
-        const isAllowed = true;
-        if (!isAllowed) continue;
+      //test
+      if (!this.$store.state.User) return;
+      if (!Array.isArray(this.$store.state.User.list_val_menu)) return;
 
+      let listMenu = [];
+
+      for (const menu of menus) {
+        if (
+          menu.permission == "ReportData" &&
+          (this.$store.state.User.role != "13" ||
+            this.$store.state.User.email !== "anto@trees4trees.org")
+        ) {
+          continue;
+        }
         if (!Array.isArray(menu.items)) {
           listMenu.push({
             title: menu.title,
             icon: menu.icon,
             to: menu.to,
           });
+
+          if (this.$router.getRoutes().find((x) => x.name === menu.name)) {
+            continue;
+          }
 
           router.addRoute({
             path: menu.to,
@@ -655,22 +517,34 @@ export default {
           };
 
           for (const submenu of menu.items) {
-            _listMenuItem.items.push({
-              title: submenu.title,
-              to: submenu.to,
-            });
+            const isAllowed = this.$store.state.User.list_val_menu.includes(
+              submenu.permission
+            );
+            if (!isAllowed) continue;
 
+            if (!submenu.hide) {
+              _listMenuItem.items.push({
+                title: submenu.title,
+                to: submenu.to,
+              });
+            }
+
+            if (this.$router.getRoutes().find((x) => x.name === submenu.name)) {
+              continue;
+            }
             router.addRoute({
               path: submenu.to,
               name: submenu.name,
               component: () => import(`@/views/${submenu.component}.vue`),
             });
           }
-          listMenu.push(_listMenuItem);
+
+          if (_listMenuItem.items.length > 0) {
+            listMenu.push(_listMenuItem);
+          }
         }
       }
       this.items = listMenu;
-      console.log("items", this.items);
     },
     async cekLogout() {
       this.$store.commit("set", ["BaseUrlGet", "", true]);
@@ -684,55 +558,18 @@ export default {
       this.$store.commit("set", ["token", "", true]);
       this.$store.commit("set", ["User", "", true]);
       this.$router.push("/");
-      return;
-      const datapost = {};
-      // console.log(this.BaseUrlGet);
-      // console.log(this.authtoken);
-      // this.dialogDetail = false;
-      try {
-        const response = await axios.post(
-          this.BaseUrlGet + "Logout",
-          datapost,
-          {
-            headers: {
-              Authorization: `Bearer ` + this.authtoken,
-            },
-          }
-        );
-        // console.log(response.data.data.status.code);
-        if (response.data.data.status.code == 200) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("User");
-          localStorage.removeItem("BaseUrlUpload");
-          this.$router.push("/");
-        } else {
-          localStorage.removeItem("token");
-          localStorage.removeItem("User");
-          localStorage.removeItem("BaseUrlUpload");
-          this.$router.push("/");
-        }
-      } catch (error) {
-        // console.error(error.response);
-        localStorage.removeItem("token");
-        localStorage.removeItem("User");
-        localStorage.removeItem("BaseUrlUpload");
-        this.$router.push("/");
-      }
     },
 
     logout() {
-      // console.log("test");
       this.cekLogout();
     },
 
     selectSection(item) {
       switch (item.title) {
         case "Ganti Password":
-          console.log("Ganti Password");
           this.$router.push("/GantiPassword");
           break;
         case "Logout":
-          console.log("Logout");
           this.logout();
       }
     },

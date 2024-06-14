@@ -262,11 +262,9 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
-        console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result.data;
         } else {
-          console.log("Kosong");
           this.dataobject = [];
         }
       } catch (error) {
@@ -289,11 +287,9 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
-        console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           this.itemsEmp = response.data.data.result.data;
         } else {
-          console.log("Kosong");
           this.itemsEmp = [];
         }
       } catch (error) {
@@ -314,11 +310,9 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
-        console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           this.itemsFF = response.data.data.result.data;
         } else {
-          console.log("Kosong");
           this.itemsFF = [];
         }
       } catch (error) {
@@ -339,11 +333,9 @@ export default {
             Authorization: `Bearer ` + this.authtoken,
           },
         });
-        console.log(response.data.data.result.data);
         if (response.data.length != 0) {
           this.itemsPositionEmp = response.data.data.result.data;
         } else {
-          console.log("Kosong");
           this.itemsPositionEmp = [];
         }
       } catch (error) {
@@ -358,7 +350,6 @@ export default {
       }
     },
     async addData() {
-      console.log(this.defaultItem.id);
       const datapost = {
         employee_no: this.defaultItem.employee_no,
         name: this.defaultItem.name,
@@ -366,7 +357,6 @@ export default {
         password: '123456',
         role: this.defaultItem.type,
       };
-      console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
@@ -378,7 +368,6 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
         if (response.data.data.result == "success") {
           this.dialog = false;
           this.snackbar = true;
@@ -409,13 +398,11 @@ export default {
       }
     },
     async updateData() {
-      console.log(this.defaultItem.id);
       const datapost = {
         employee_no: this.defaultItem.employee_no,
         name: this.defaultItem.name,
         email: this.defaultItem.email,
       };
-      console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
@@ -427,7 +414,6 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
         if (response.data.data.result == "success") {
           this.dialog = false;
           this.snackbar = true;
@@ -458,12 +444,10 @@ export default {
       }
     },
     async resetItemConfirm() {
-      console.log(this.defaultItem.employee_no);
       const datapost = {
         employee_no: this.defaultItem.employee_no,
         email: this.defaultItem.email,
       };
-      console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
@@ -475,7 +459,6 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
         if (response.data.data.result == "success") {
           this.dialog = false;
           this.snackbar = true;
@@ -509,7 +492,6 @@ export default {
       const datapost = {
         id: this.defaultItem.id,
       };
-      console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
@@ -521,7 +503,6 @@ export default {
             },
           }
         );
-        console.log(response.data.data.result);
         if (response.data.data.result == "success") {
           this.dialogDelete = false;
           this.snackbar = true;
@@ -575,7 +556,6 @@ export default {
       this.dialog = true;
     },
     editItem(item) {
-      console.log(item);
       this.defaultItem.id = item.id;
       this.defaultItem.employee_no = item.employee_no;
       this.defaultItem.name = item.name;
@@ -588,7 +568,6 @@ export default {
       this.dialog = true;
     },
     selectedType(a){
-      console.log(a);
       if(a == 'FF'){this.typeselectedFF = true;this.defaultItem.type = a;}
       else{this.typeselectedFF = false;this.defaultItem.type = a;}
       // this.valueMU = a;

@@ -1,9 +1,16 @@
 <template>
   <v-row class="scooping-visit-detail">
     <v-col md="4" xl="3">
-      <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="scooping-visit-detail-card mb-5">
+      <v-card
+        data-aos="fade-up"
+        data-aos-delay="100"
+        data-aos-duration="800"
+        class="scooping-visit-detail-card mb-5"
+      >
         <v-card-title>
-          <v-icon large class="mr-2" @click="$router.go(-1)">mdi-arrow-left-circle</v-icon>
+          <v-icon large class="mr-2" @click="$router.go(-1)"
+            >mdi-arrow-left-circle</v-icon
+          >
           <h5 class="mb-0 pb-0">Detail</h5>
         </v-card-title>
         <div class="scooping-visit-wrapper">
@@ -12,86 +19,176 @@
             <div class="scooping-visit-item status d-flex flex-column mb-3">
               <div class="label">Form</div>
               <div class="value d-flex flex-row align-items-center">
-                <span class="text-link mr-2">#{{ data.data_no }}</span><span class="badge text-07-em" :class="{
-                  'bg-warning':
-                    data.status == 'document_saving' && data.is_verify == 0,
-                  'bg-info':
-                    data.status == 'document_saving' && data.is_verify == 1,
-                  'bg-primary': data.status == 'ready_to_submit',
-                  'bg-success': data.status == 'submit_review',
-                }">
-                  <span v-if="
-                    data.status == 'document_saving' && data.is_verify == 0
-                  ">Pending</span>
-                  <span v-else-if="
-                    data.status == 'document_saving' && data.is_verify == 1
-                  ">GIS Review</span>
-                  <span v-else-if="data.status == 'ready_to_submit'">GIS Terverifikasi</span>
-                  <span v-else-if="data.status == 'submit_review'">Terverifikasi</span>
+                <span class="text-link mr-2">#{{ data.data_no }}</span
+                ><span
+                  class="badge text-07-em"
+                  :class="{
+                    'bg-warning':
+                      data.status == 'document_saving' && data.is_verify == 0,
+                    'bg-info':
+                      data.status == 'document_saving' && data.is_verify == 1,
+                    'bg-primary': data.status == 'ready_to_submit',
+                    'bg-success': data.status == 'submit_review',
+                  }"
+                >
+                  <span
+                    v-if="
+                      data.status == 'document_saving' && data.is_verify == 0
+                    "
+                    >Pending</span
+                  >
+                  <span
+                    v-else-if="
+                      data.status == 'document_saving' && data.is_verify == 1
+                    "
+                    >GIS Review</span
+                  >
+                  <span v-else-if="data.status == 'ready_to_submit'"
+                    >GIS Terverifikasi</span
+                  >
+                  <span v-else-if="data.status == 'submit_review'"
+                    >Terverifikasi</span
+                  >
                 </span>
               </div>
 
               <div class="label"></div>
               <div class="value">
-                <v-alert v-if="data.status === 'ready_to_submit'" type="warning" style="font-size: 0.8em">Pastikan untuk
-                  memeriksa data terlebih dahulu sebelum
-                  melakukan verifikasi</v-alert>
-                <v-btn v-if="
-                  data.status === 'ready_to_submit' &&
-                  ['25', '23', '13'].includes($store.state.User.role)
-                " variant="warning" class="mt-1" small @click="onVerification('verification_um')">Verifikasi</v-btn>
+                <v-alert
+                  v-if="data.status === 'ready_to_submit'"
+                  type="warning"
+                  style="font-size: 0.8em"
+                  >Pastikan untuk memeriksa data terlebih dahulu sebelum
+                  melakukan verifikasi</v-alert
+                >
+                <v-btn
+                  v-if="
+                    data.status === 'ready_to_submit' &&
+                    ['25', '23', '13'].includes($store.state.User.role)
+                  "
+                  variant="warning"
+                  class="mt-1"
+                  small
+                  @click="onVerification('verification_um')"
+                  >Verifikasi</v-btn
+                >
 
-                <v-btn variant="warning" class="mt-1" small @click="onVerification('mail_to_gis')" v-if="
-                  data.status === 'document_saving' &&
-                  data.is_verify == 0 &&
-                  $store.state.User.role != 14 &&
-                  data.email_to_gis < 3
-                ">
+                <v-btn
+                  variant="warning"
+                  class="mt-1"
+                  small
+                  @click="onVerification('mail_to_gis')"
+                  v-if="
+                    data.status === 'document_saving' &&
+                    data.is_verify == 0 &&
+                    $store.state.User.role != 14 &&
+                    data.email_to_gis < 3
+                  "
+                >
                   Email to GIS
                 </v-btn>
 
-                <v-btn variant="success" class="mt-1" small @click="onVerification('verification_gis')" v-if="
-                  data.status === 'document_saving' &&
-                  data.is_verify == 0 &&
-                  ['13', '14'].includes($store.state.User.role)
-                ">
+                <v-btn
+                  variant="success"
+                  class="mt-1"
+                  small
+                  @click="onVerification('verification_gis')"
+                  v-if="
+                    data.status === 'document_saving' &&
+                    data.is_verify == 0 &&
+                    ['13', '14'].includes($store.state.User.role)
+                  "
+                >
                   Verifikasi GIS
                 </v-btn>
 
                 <span v-if="data.status == 'submit_review'">-</span>
               </div>
             </div>
+
+            <div class="scooping-visit-item status d-flex flex-column mb-3">
+              <div class="label">Project</div>
+
+              <div class="value">
+                <h5
+                  v-for="(item, i) in projects"
+                  :key="`scooping-project-${i}`"
+                >
+                  {{ item.projects_project_name }}
+                  <span
+                    :class="{
+                      'font-weight-400': true,
+                      'badge bg-info':
+                        item.project_planting_purposes_code == 'carbon',
+                      'badge bg-light':
+                        item.project_planting_purposes_code == 'non-carbon' ||
+                        !item.project_planting_purposes_code,
+                    }"
+                    >{{
+                      item.project_planting_purposes_code == "carbon"
+                        ? "Carbon"
+                        : "Non Carbon"
+                    }}</span
+                  >
+                </h5>
+              </div>
+            </div>
           </div>
-          <div class="scooping-visit-list mb-3" v-for="(row, i) in fields" :key="'row-' + i">
+          <div
+            class="scooping-visit-list mb-3"
+            v-for="(row, i) in fields"
+            :key="'row-' + i"
+          >
             <h6>{{ row.name }}</h6>
-            <div class="scooping-visit-item" v-for="(f, j) in row.items" :key="'row-' + i + j">
+            <div
+              class="scooping-visit-item"
+              v-for="(f, j) in row.items"
+              :key="'row-' + i + j"
+            >
               <div class="label">{{ f.label }}</div>
-              <div class="value d-flex flex-row" v-if="f.type === 'badge' && f.value_type == 'array'"
-                style="flex-wrap: wrap">
-                <span class="badge mr-1 mb-1" v-for="(item, i) in typeof data[f.key] === 'string'
-                  ? data[f.key].split(',')
-                  : []" :class="{
+              <div
+                class="value d-flex flex-row"
+                v-if="f.type === 'badge' && f.value_type == 'array'"
+                style="flex-wrap: wrap"
+              >
+                <span
+                  class="badge mr-1 mb-1"
+                  v-for="(item, i) in typeof data[f.key] === 'string'
+                    ? data[f.key].split(',')
+                    : []"
+                  :class="{
                     [`bg-${f.variant ? f.variant : 'light'}`]: true,
-                  }" :key="f.key + i" v-if="data[f.key]">
+                  }"
+                  :key="f.key + i"
+                  v-if="data[f.key]"
+                >
                   <span v-if="data[f.key] && !f.translate">{{
                     item | parse(f.transform ? f.transform : "no-empty")
                   }}</span>
 
-                  <span v-else-if="
-                    data[f.key] &&
-                    f.translate &&
-                    defaultData[f.translate].find((x) => x.value == item)
-                  ">{{
-                    defaultData[f.translate].find((x) => x.value == item).text
-                  }}</span>
+                  <span
+                    v-else-if="
+                      data[f.key] &&
+                      f.translate &&
+                      defaultData[f.translate].find((x) => x.value == item)
+                    "
+                    >{{
+                      defaultData[f.translate].find((x) => x.value == item).text
+                    }}</span
+                  >
                 </span>
               </div>
               <div class="value" v-else-if="f.type === 'badge'">
-                <span class="badge" :class="{
-                  [`bg-${f.variant ? f.variant : 'light'}`]: true,
-                }" v-if="data[f.key]">{{
-                  data[f.key] | parse(f.transform ? f.transform : "no-empty")
-                }}</span>
+                <span
+                  class="badge"
+                  :class="{
+                    [`bg-${f.variant ? f.variant : 'light'}`]: true,
+                  }"
+                  v-if="data[f.key]"
+                  >{{
+                    data[f.key] | parse(f.transform ? f.transform : "no-empty")
+                  }}</span
+                >
               </div>
               <div class="value" v-else>
                 <span>{{
@@ -106,8 +203,13 @@
     </v-col>
 
     <v-col md="8" xl="9">
-      <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="scooping-visit-detail-card mb-5"
-        v-if="data">
+      <v-card
+        data-aos="fade-up"
+        data-aos-delay="100"
+        data-aos-duration="800"
+        class="scooping-visit-detail-card mb-5"
+        v-if="data"
+      >
         <v-card-title>
           <h5 class="mb-0 pb-0">Dokumentasi, Map &amp; Lainnya</h5>
         </v-card-title>
@@ -137,41 +239,69 @@
             </div>
           </div>
 
-          <DetailModalMap v-if="
-            this.openMaps
-          " :data="map.data" :key="map.key + 'DetailModalMapSCopingVisit'" />
+          <DetailModalMap
+            v-if="this.openMaps"
+            :data="map.data"
+            :key="map.key + 'DetailModalMapSCopingVisit'"
+          />
 
-          <div v-else class="map-placeholder d-flex flex-column" style="justify-content: center; align-items: center">
-
-            <v-btn v-if="data.village_polygon || data.dry_land_polygon" @click="openMaps = true" variant="primary">Buka
-              Maps</v-btn>
+          <div
+            v-else
+            class="map-placeholder d-flex flex-column"
+            style="justify-content: center; align-items: center"
+          >
+            <v-btn
+              v-if="data.village_polygon || data.dry_land_polygon"
+              @click="openMaps = true"
+              variant="primary"
+              >Buka Maps</v-btn
+            >
             <p class="text-white mb-0" v-else>
-
               <span v-if="!loading">Belum verifikasi GIS</span>
               <span v-else>Belum verifikasi GIS</span>
             </p>
           </div>
 
           <div class="doc-field-wrapper mt-4">
-            <div class="doc-field-item" v-for="(f, i) in fields_doc" :key="'fd' + i">
+            <div
+              class="doc-field-item"
+              v-for="(f, i) in fields_doc"
+              :key="'fd' + i"
+            >
               <p class="mb-0 label">{{ f.label }}</p>
               <div class="value d-flex flex-row" v-if="f.type == 'image'">
-                <div v-for="(image, j) in typeof data[f.key] === 'string'
-                  ? data[f.key].split(',')
-                  : []" class="doc-photo-wrapper">
-                  <div class="doc-photo" v-bind:style="{
-                    backgroundImage:
-                      'url(' + $store.state.apiUrlImage + image + ')',
-                  }"></div>
+                <div
+                  v-for="(image, j) in typeof data[f.key] === 'string'
+                    ? data[f.key].split(',')
+                    : []"
+                  class="doc-photo-wrapper"
+                >
+                  <div
+                    class="doc-photo"
+                    v-bind:style="{
+                      backgroundImage:
+                        'url(' + $store.state.apiUrlImage + image + ')',
+                    }"
+                  ></div>
                 </div>
               </div>
 
-              <div class="value d-flex flex-row" v-else-if="f.key == 'other_ngo'"></div>
-              <div class="value d-flex flex-row" v-else-if="f.type === 'boolean'">
+              <div
+                class="value d-flex flex-row"
+                v-else-if="f.key == 'other_ngo'"
+              ></div>
+              <div
+                class="value d-flex flex-row"
+                v-else-if="f.type === 'boolean'"
+              >
                 {{ data[f.key] == 0 ? "Ada" : "Tidak Ada" }}
               </div>
 
-              <div class="value" v-else-if="f.type == 'html'" v-html="data[f.key]"></div>
+              <div
+                class="value"
+                v-else-if="f.type == 'html'"
+                v-html="data[f.key]"
+              ></div>
 
               <p class="mb-0 value" v-else>
                 {{ data[f.key] }} {{ f.append ? f.append : "" }}
@@ -183,11 +313,18 @@
     </v-col>
 
     <v-col md="12">
-      <scooping-visit-gis-verification :dataKey="verifGisModal" @success="onSuccessGisVerification"
-        :dryLandArea="data.dry_land_area" v-if="data.dry_land_area" />
+      <scooping-visit-gis-verification
+        :dataKey="verifGisModal"
+        @success="onSuccessGisVerification"
+        :dryLandArea="data.dry_land_area"
+        v-if="data.dry_land_area"
+      />
     </v-col>
     <v-col md="12">
-      <scooping-visit-verification :dataKey="verifModal" @success="onSuccessVerification" />
+      <scooping-visit-verification
+        :dataKey="verifModal"
+        @success="onSuccessVerification"
+      />
     </v-col>
   </v-row>
 </template>
@@ -388,6 +525,7 @@ export default {
 
       otherNgo: [],
       villagePerson: [],
+      projects: [],
 
       map: {
         key: 11101203,
@@ -501,9 +639,12 @@ export default {
           data_no: scoopingData.data.data_no,
         }
       );
-      const scoopingProjects = await this.$_api.get('GetDetailScoopingVistiProject_new', {
-        data_no: scoopingData.data.data_no
-      })
+      const scoopingProjects = await this.$_api.get(
+        "GetDetailScoopingVistiProject_new",
+        {
+          data_no: scoopingData.data.data_no,
+        }
+      );
       this.data = scoopingData.data;
       this.$set(
         this.map.data,
@@ -516,21 +657,25 @@ export default {
         scoopingData.data.dry_land_polygon
       );
 
-      Promise.all([otherNgo, villagePerson, scoopingProjects]).then(([resNgo, resPerson, resProject]) => {
-        this.otherNgo = resNgo.data;
-        this.villagePerson = resPerson.data;
-        // this.$set(this.formData, 'project_id', resProject.data)
-        // this.$set(this.formData, 'project_id', [
-        //   {
-        //     label: 'Test',
-        //     code: 1,
-        //   },
-        //   {
-        //     label: 'Test1',
-        //     code: 2,
-        //   },
-        // ])
-      });
+      Promise.all([otherNgo, villagePerson, scoopingProjects]).then(
+        ([resNgo, resPerson, resProject]) => {
+          this.otherNgo = resNgo.data;
+          this.villagePerson = resPerson.data;
+
+          this.projects = resProject.data;
+          // this.$set(this.formData, 'project_id', resProject.data)
+          // this.$set(this.formData, 'project_id', [
+          //   {
+          //     label: 'Test',
+          //     code: 1,
+          //   },
+          //   {
+          //     label: 'Test1',
+          //     code: 2,
+          //   },
+          // ])
+        }
+      );
     },
 
     async onVerification(type) {

@@ -228,7 +228,13 @@ export default {
             // localStorage.setItem("BaseUrl", this.BaseUrl);
             // localStorage.setItem("BaseUrlPortal", this.BaseUrlPortal);
             // localStorage.setItem("xAppKey_Portal", this.xAppKey_Portal);
+
             this.$store.commit("set", ["BaseUrlGet", this.BaseUrlGet, true]);
+            this.$store.commit("set", [
+              "tmpProgramyear",
+              this.tahunProgram,
+              true,
+            ]);
             this.$store.commit("set", [
               "BaseUrlUpload",
               this.BaseUrlUpload,
