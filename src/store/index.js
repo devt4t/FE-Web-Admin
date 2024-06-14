@@ -57,7 +57,9 @@ export default new Vuex.Store({
         JustLoadingLineModul: JustLoadingLineModul,
       },
     },
-    User: JSON.parse(localStorage.getItem("User")),
+    User: localStorage.getItem("User")
+      ? JSON.parse(localStorage.getItem("User"))
+      : "",
   },
   getters: {
     getApiUrl: (state) => (url) => {

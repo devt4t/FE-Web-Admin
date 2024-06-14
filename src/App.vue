@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <v-navigation-drawer
       :width="'auto'"
-      v-if="isLogin"
+      v-if="$route.name !== 'Login'"
       v-model="drawer"
       :dark="$store.state.theme == 'dark'"
       app
@@ -27,13 +27,13 @@
       </template>
 
       <v-list color="transparent" rounded>
-        <v-list-item color="#71AF34" :to="DashboardLink" link :ripple="false">
+        <!-- <v-list-item color="#71AF34" :to="DashboardLink" link :ripple="false">
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard</v-icon>
           </v-list-item-icon>
 
           <v-list-item-title>Dashboard</v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
         <!-- <v-list-item disabled 
           :ripple="false">
           <v-list-item-icon>
@@ -46,65 +46,66 @@
             </v-badge>
           </v-list-item-title>
         </v-list-item> -->
-        <v-list-group
-          v-for="item in items"
-          :key="item.title"
-          v-model="item.active"
-          :prepend-icon="item.icon"
-          no-action
-          color="#71AF34"
-          class="fontall"
-          :ripple="false"
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title
-                class="itemparent"
-                v-text="item.title"
-              ></v-list-item-title>
-            </v-list-item-content>
-          </template>
 
+        <template v-for="item in items">
           <v-list-item
-            v-for="child in item.items"
-            :key="child.title"
-            :to="child.to"
+            v-if="!Array.isArray(item.items)"
+            :key="item.title"
+            :to="item.to"
+            v-model="item.active"
+            :prepend-icon="item.icon"
             link
-            dense
+          >
+            <!-- <v-list-item-title>{{ item.title }}</v-list-item-title> -->
+            <template>
+              <v-list-item-icon>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title style="font-size: 14px" v-text="item.title">
+                </v-list-item-title>
+              </v-list-item-content>
+            </template>
+          </v-list-item>
+          <v-list-group
+            v-else
+            :key="item.title"
+            v-model="item.active"
+            :prepend-icon="item.icon"
+            no-action
+            color="#71AF34"
+            class="fontall"
             :ripple="false"
           >
-            <template>
+            <template v-slot:activator>
               <v-list-item-content>
                 <v-list-item-title
-                  class="itemchild"
-                  v-text="child.title"
+                  class="itemparent"
+                  v-text="item.title"
                 ></v-list-item-title>
               </v-list-item-content>
             </template>
 
-            <!-- <template v-if="child.title=='Realisasi Tanam'">
             <v-list-item
-              v-for="sub_child in child.items"
-              :key="sub_child.title"
-              v-model="sub_child.active"
-              :prepend-icon="sub_child.icon"
-              no-action
-              color="#71AF34"
-              class="fontall"
+              v-if="Array.isArray(item.items)"
+              v-for="child in item.items"
+              :key="child.title"
+              :to="child.to"
+              link
+              dense
               :ripple="false"
-              dense  
-              >
-              <v-list-item-content>
-                <v-list-item-title
-                  class="itemsubchild"
-                  v-text="sub_child.title"
-                ></v-list-item-title>
-              </v-list-item-content>
+            >
+              <template>
+                <v-list-item-content>
+                  <v-list-item-title
+                    class="itemchild"
+                    v-text="child.title"
+                  ></v-list-item-title>
+                </v-list-item-content>
+              </template>
             </v-list-item>
-          </template> -->
-          </v-list-item>
 
-          <!-- <template v-if="item.title == 'Activities'">
+            <!-- <template v-if="item.title == 'Activities'">
           <v-list-item-content color="#71AF34" 
             :ripple="false"
             v-if="$store.state.User.role_group == 'IT'"
@@ -112,8 +113,9 @@
             <v-list-item-title>Monitoring</v-list-item-title>
           </v-list-item-content>
         </template> -->
-        </v-list-group>
-        <v-list-item
+          </v-list-group>
+        </template>
+        <!-- <v-list-item
           color="#71AF34"
           :to="'/report-data'"
           link
@@ -128,7 +130,7 @@
             <v-icon>mdi-table-arrow-right</v-icon>
           </v-list-item-icon>
           <v-list-item-title>Report Data</v-list-item-title>
-        </v-list-item>
+        </v-list-item> -->
       </v-list>
 
       <template v-slot:append>
@@ -172,7 +174,7 @@
 
     <!-- TopBar -->
 
-    <button class="toggle-button-mobile">
+    <button class="toggle-button-mobile" v-if="$route.name !== 'Login'">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
     </button>
     <v-app-bar
@@ -180,7 +182,7 @@
         $store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
       } mx-2 ml-2 ml-lg-5 mt-2 rounded-pill`"
       :dark="$store.state.theme == 'dark'"
-      v-if="isLogin"
+      v-if="isLoggedIn"
       app
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -244,7 +246,7 @@
 
     <!-- footer -->
     <v-app-bar
-      v-if="isLogin"
+      v-if="isLoggedIn"
       :class="`${
         $store.state.theme == 'dark' ? 'dark-bg-gradient' : 'light-bg-gradient'
       } mx-5 mr-3 mb-2 rounded-xl`"
@@ -267,7 +269,7 @@
     <!-- Main Content -->
     <v-main
       :class="`gradient-animate ${$store.state.theme} ${
-        $store.state.User ? 'logged-in' : ''
+        isLoggedIn ? 'logged-in' : ''
       }`"
     >
       <svg
@@ -419,6 +421,8 @@ import axios from "axios";
 import treeAnimation from "@/assets/lottie/tree.json";
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
+import menus from "@/router/menu";
+import router from "@/router/index";
 
 export default {
   components: {
@@ -432,6 +436,7 @@ export default {
     itemsprofile: [{ title: "Ganti Password" }, { title: "Logout" }],
     User: [],
     items: [],
+    isLoggedIn: null,
     elevations: [6, 12, 18],
     BaseUrlGet: "",
     authtoken: "",
@@ -446,159 +451,240 @@ export default {
     },
   }),
   computed: {
-    isLogin() {
-      var itemroutecheck;
-      // console.log(this.User);
-      // this.listValMenu;
-      itemroutecheck = ["Home", "Dashboard", "Users", "GantiPassword"];
-      if (this.listValMenu) {
-        if (this.listValMenu.length > 0) {
-          itemroutecheck = this.listValMenu;
-          itemroutecheck.push("Dashboard");
-        }
-
-        var rslt = itemroutecheck.includes(this.$route.name);
-        var exceptionPage = [
-          "SeedlingChangeRequest",
-          "GekoManual",
-          "ITPlayground",
-          "PermintaanTutupanLahan",
-          "DaftarQRLahanRusak",
-          "LihatTanggalDistribusi",
-          "ReportData",
-          "AdjustmentDataSostam",
-          "populateDataMonitoring1",
-        ];
-        const checkExceptionPage = exceptionPage.includes(this.$route.name);
-        // console.log(this.$route.name);
-        // console.log(itemroutecheck);
-        if (rslt == true || checkExceptionPage) {
-          // console.log("comp=" + localStorage.getItem("token"));
-          this.authtoken = localStorage.getItem("token");
-          var authtokenval = this.authtoken;
-          if (authtokenval != null) {
-            var notspaceauthtoken = authtokenval.trim();
-            // console.log(notspaceauthtoken.length);
-            // console.log(this.authtoken);
-            if (notspaceauthtoken.length > 0) {
-              return this.$route.name != "Login";
-            } else {
-              if (this.$route.name != "GekoManual") {
-                this.$router.push("/");
-              }
-            }
-          } else {
-            // console.log("auth null");
-            if (this.$route.name != "GekoManual") {
-              this.$router.push("/");
-            }
-          }
-        } else {
-          // console.log("route false");
-          this.authtoken = localStorage.getItem("token");
-          var authtokenval = this.authtoken;
-          if (authtokenval != null) {
-            var notspaceauthtoken = authtokenval.trim();
-            if (notspaceauthtoken.length > 0) {
-              // this.$router.push("/Dashboard");
-              return this.$route.name != "Login";
-            } else {
-              // console.log("auth 0");
-              this.$router.push("/");
-              this.$store.state.User = "";
-            }
-          } else {
-            // console.log("auth null");
-            // console.log("logout system");
-            if (this.logoutvalue == true) {
-              this.logoutvalue = false;
-              location.reload();
-            } else if (this.$route.name == "Login") {
-              // console.log("page " + this.$route.name);
-            } else {
-              this.$router.push("/");
-            }
-          }
-        }
-      } else {
-        if (this.$route.name != "GekoManual") {
-          localStorage.removeItem("token");
-          localStorage.removeItem("User");
-          localStorage.removeItem("BaseUrlUpload");
-          this.$router.push("/");
-        }
-      }
-    },
+    // isLogin() {
+    //   var itemroutecheck;
+    //   // console.log(this.User);
+    //   // this.listValMenu;
+    //   itemroutecheck = ["Home", "Dashboard", "Users", "GantiPassword"];
+    //   if (this.listValMenu) {
+    //     if (this.listValMenu.length > 0) {
+    //       itemroutecheck = this.listValMenu;
+    //       itemroutecheck.push("Dashboard");
+    //     }
+    //     var rslt = itemroutecheck.includes(this.$route.name);
+    //     var exceptionPage = [
+    //       "SeedlingChangeRequest",
+    //       "GekoManual",
+    //       "ITPlayground",
+    //       "PermintaanTutupanLahan",
+    //       "DaftarQRLahanRusak",
+    //       "LihatTanggalDistribusi",
+    //       "ReportData",
+    //       "AdjustmentDataSostam",
+    //       "populateDataMonitoring1",
+    //     ];
+    //     const checkExceptionPage = exceptionPage.includes(this.$route.name);
+    //     // console.log(this.$route.name);
+    //     // console.log(itemroutecheck);
+    //     if (rslt == true || checkExceptionPage) {
+    //       // console.log("comp=" + localStorage.getItem("token"));
+    //       this.authtoken = localStorage.getItem("token");
+    //       var authtokenval = this.authtoken;
+    //       if (authtokenval != null) {
+    //         var notspaceauthtoken = authtokenval.trim();
+    //         // console.log(notspaceauthtoken.length);
+    //         // console.log(this.authtoken);
+    //         if (notspaceauthtoken.length > 0) {
+    //           return this.$route.name != "Login";
+    //         } else {
+    //           if (this.$route.name != "GekoManual") {
+    //             this.$router.push("/");
+    //           }
+    //         }
+    //       } else {
+    //         // console.log("auth null");
+    //         if (this.$route.name != "GekoManual") {
+    //           this.$router.push("/");
+    //         }
+    //       }
+    //     } else {
+    //       // console.log("route false");
+    //       this.authtoken = localStorage.getItem("token");
+    //       var authtokenval = this.authtoken;
+    //       if (authtokenval != null) {
+    //         var notspaceauthtoken = authtokenval.trim();
+    //         if (notspaceauthtoken.length > 0) {
+    //           // this.$router.push("/Dashboard");
+    //           return this.$route.name != "Login";
+    //         } else {
+    //           // console.log("auth 0");
+    //           this.$router.push("/");
+    //           this.$store.state.User = "";
+    //         }
+    //       } else {
+    //         // console.log("auth null");
+    //         // console.log("logout system");
+    //         if (this.logoutvalue == true) {
+    //           this.logoutvalue = false;
+    //           location.reload();
+    //         } else if (this.$route.name == "Login") {
+    //           // console.log("page " + this.$route.name);
+    //         } else {
+    //           this.$router.push("/");
+    //         }
+    //       }
+    //     }
+    //   } else {
+    //     if (this.$route.name != "GekoManual") {
+    //       localStorage.removeItem("token");
+    //       localStorage.removeItem("User");
+    //       localStorage.removeItem("BaseUrlUpload");
+    //       this.$router.push("/");
+    //     }
+    //   }
+    // },
   },
-  created() {
-    this.authtoken = localStorage.getItem("token");
-    this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
-    this.User = JSON.parse(localStorage.getItem("User"));
-    if (this.User) {
-      this.items = this.User.list_menu;
-      this.items.forEach((valMenu, indexMenu) => {
-        // rearrange activities list menu
-        if (valMenu.title == "Activities") {
-          let activitiesRearrange = [];
-          valMenu.items.forEach((valMenuItem, indexMenuItem) => {
-            if (activitiesRearrange.includes(valMenuItem) == false) {
-              if (valMenuItem.title === "Progression")
-                activitiesRearrange[0] = valMenuItem;
-              else if (valMenuItem.title === "Scooping Visit")
-                activitiesRearrange[1] = valMenuItem;
-              else if (valMenuItem.title === "RRA & PRA")
-                activitiesRearrange[2] = valMenuItem;
-              else if (valMenuItem.title === "Sosialisasi Program")
-                activitiesRearrange[3] = valMenuItem;
-              else if (valMenuItem.title === "Sosialisasi Tanam")
-                activitiesRearrange[4] = valMenuItem;
-              else if (valMenuItem.title === "Pelatihan Petani")
-                activitiesRearrange[5] = valMenuItem;
-              else if (valMenuItem.title === "Lubang Tanam")
-                activitiesRearrange[6] = valMenuItem;
-              else if (valMenuItem.title === "Material Organik")
-                activitiesRearrange[7] = valMenuItem;
-              else if (valMenuItem.title === "Distribusi")
-                activitiesRearrange[8] = valMenuItem;
-              else if (valMenuItem.title === "Realisasi Tanam")
-                activitiesRearrange[9] = valMenuItem;
-              else if (valMenuItem.title === "Monitoring")
-                activitiesRearrange[10] = valMenuItem;
-            }
-          });
-          this.items[indexMenu].items = activitiesRearrange.filter(Object);
-        }
-      });
-      this.listValMenu = this.User.list_val_menu;
-      var name = this.User.name;
-      const arrayname = name.split(" ");
-      this.nameadmin = name;
-      // this.nameadmin = this.User.name;
-      this.statusadmin = this.User.role_name;
-      // console.log(this.items);
+  // created() {
+  //   this.authtoken = localStorage.getItem("token");
+  //   this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
+  //   this.User = JSON.parse(localStorage.getItem("User"));
+  //   if (this.User) {
+  //     this.items = this.User.list_menu;
+  //     this.items.forEach((valMenu, indexMenu) => {
+  //       // rearrange activities list menu
+  //       if (valMenu.title == "Activities") {
+  //         let activitiesRearrange = [];
+  //         valMenu.items.forEach((valMenuItem, indexMenuItem) => {
+  //           if (activitiesRearrange.includes(valMenuItem) == false) {
+  //             if (valMenuItem.title === "Progression")
+  //               activitiesRearrange[0] = valMenuItem;
+  //             else if (valMenuItem.title === "Scooping Visit")
+  //               activitiesRearrange[1] = valMenuItem;
+  //             else if (valMenuItem.title === "RRA & PRA")
+  //               activitiesRearrange[2] = valMenuItem;
+  //             else if (valMenuItem.title === "Sosialisasi Program")
+  //               activitiesRearrange[3] = valMenuItem;
+  //             else if (valMenuItem.title === "Sosialisasi Tanam")
+  //               activitiesRearrange[4] = valMenuItem;
+  //             else if (valMenuItem.title === "Pelatihan Petani")
+  //               activitiesRearrange[5] = valMenuItem;
+  //             else if (valMenuItem.title === "Lubang Tanam")
+  //               activitiesRearrange[6] = valMenuItem;
+  //             else if (valMenuItem.title === "Material Organik")
+  //               activitiesRearrange[7] = valMenuItem;
+  //             else if (valMenuItem.title === "Distribusi")
+  //               activitiesRearrange[8] = valMenuItem;
+  //             else if (valMenuItem.title === "Realisasi Tanam")
+  //               activitiesRearrange[9] = valMenuItem;
+  //             else if (valMenuItem.title === "Monitoring")
+  //               activitiesRearrange[10] = valMenuItem;
+  //           }
+  //         });
+  //         this.items[indexMenu].items = activitiesRearrange.filter(Object);
+  //       }
+  //     });
+  //     this.listValMenu = this.User.list_val_menu;
+  //     var name = this.User.name;
+  //     const arrayname = name.split(" ");
+  //     this.nameadmin = name;
+  //     // this.nameadmin = this.User.name;
+  //     this.statusadmin = this.User.role_name;
+  //     // console.log(this.items);
+  //   }
+  // },
+  mounted() {
+    console.log("mounted", this.$store.state);
+    if (!this.$store.state.token && !localStorage.getItem("token")) {
+      //not authorized
+      this.$router.push("/");
+      this.isLoggedIn = false;
+      return;
+    } else {
+      this.buildConfig();
+      this.isLoggedIn = true;
     }
   },
-  mounted() {},
   watch: {
     "document.fullscreenElement": {
       handler(newVal) {
         // console.log(newVal);
       },
     },
+    "$store.state.token": {
+      handler(v) {
+        console.log("token", v);
+        if (v) {
+          this.isLoggedIn = true;
+          this.buildConfig();
+        } else {
+          if (!localStorage.getItem("token")) {
+            this.isLoggedIn = false;
+          }
+        }
+      },
+    },
     // isLogin(val) {
     //   if (val != true) this.$store.state.User = "";
     // },
 
-    isLogin: {
-      immediate: false,
-      deep: false,
-      handler(val) {
-        if (val != true) this.$store.state.User = "";
-      },
-    },
+    // isLogin: {
+    //   immediate: false,
+    //   deep: false,
+    //   handler(val) {
+    //     if (val != true) this.$store.state.User = "";
+    //   },
+    // },
   },
   methods: {
+    async buildConfig() {
+      console.log("menus", menus);
+      if (Array.isArray(this.items) && this.items.length > 0) return;
+      let listMenu = [];
+      for (const menu of menus) {
+        const isAllowed = true;
+        if (!isAllowed) continue;
+
+        if (!Array.isArray(menu.items)) {
+          listMenu.push({
+            title: menu.title,
+            icon: menu.icon,
+            to: menu.to,
+          });
+
+          router.addRoute({
+            path: menu.to,
+            name: menu.name,
+            component: () => import(`@/views/${menu.component}.vue`),
+          });
+        } else {
+          //has submenu
+          let _listMenuItem = {
+            title: menu.title,
+            icon: menu.icon,
+            items: [],
+          };
+
+          for (const submenu of menu.items) {
+            _listMenuItem.items.push({
+              title: submenu.title,
+              to: submenu.to,
+            });
+
+            router.addRoute({
+              path: submenu.to,
+              name: submenu.name,
+              component: () => import(`@/views/${submenu.component}.vue`),
+            });
+          }
+          listMenu.push(_listMenuItem);
+        }
+      }
+      this.items = listMenu;
+      console.log("items", this.items);
+    },
     async cekLogout() {
+      this.$store.commit("set", ["BaseUrlGet", "", true]);
+      this.$store.commit("set", ["BaseUrlUpload", "", true]);
+      this.$store.commit("set", ["BaseUrl", "", true]);
+      this.$store.commit("set", ["BaseUrlPortal", "", true]);
+      this.$store.commit("set", ["xAppKey_Portal", "", true]);
+
+      this.$store.commit("set", ["ApiConfig", "", true]);
+
+      this.$store.commit("set", ["token", "", true]);
+      this.$store.commit("set", ["User", "", true]);
+      this.$router.push("/");
+      return;
       const datapost = {};
       // console.log(this.BaseUrlGet);
       // console.log(this.authtoken);

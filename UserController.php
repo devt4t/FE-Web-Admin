@@ -665,92 +665,6 @@ class UserController extends Controller
         ];
     }
 
-    public function TaskList(Request $request)
-    {
-        $req = $request->all();
-        $searchValue = $request->search_value;
-        $searchable = ['A.name'];
-        $filterable = [];
-
-        $sortable = ['id'];
-        $tableName = "tasks";
-        $tableAlias = "A";
-
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-        $field = [
-            'id',
-            'name',
-            'description',
-        ];
-
-        $relation = [];
-
-
-        $condition = [];
-        $user_id = [
-            "user_id" => []
-        ];
-
-
-        $query = $this->DynamicList([
-            'tableName' => $tableName,
-            'tableAlias' => $tableAlias,
-            'limit' => $limit,
-            'offset' => $offset,
-            'field' => $field,
-            'sortable' => $sortable,
-            'filterable' => $filterable,
-            'relation' => $relation,
-            'searchable' => $searchable,
-            'search' => $searchValue,
-            'condition' => $condition,
-            'req' => $req,
-            'users_id' => $user_id
-        ]);
-        $statistic = $this->DynamicCount([
-            'tableName' => $tableName,
-            'indicator_column' => 'is_verify',
-            'relation' => $relation,
-            'users_id' => $user_id,
-            'condition' => $condition,
-            'filterable' => $filterable,
-        ]);
-
-
-        $result = DB::select($query['sql']);
-
-        $result_record = DB::select($query['sql_record']);
-
-        $rslt = DB::select($statistic);
-
-        return response()->json([
-            'data' => $result,
-            'count' => $rslt[0],
-            'sql' => $query['sql'],
-            'total' => $result_record[0]->total
-        ], 200);
-
-    }
-
-    public function TaskEdit(Request $request)
-    {
-        $request->validate([
-            'id' => ['required', 'integer'],
-            'name' => ['string']
-        ]);
-
-        $isExist = DB::table('tasks')->where('id', $request->id)->first();
-
-        if (!$isExist) {
-            return response()->json([
-                'message' => 'Data tidak ditemukan'
-            ], 422);
-        }
-
-
-    }
-
     public function TaskGroupCreate(Request $request)
     {
         $request->validate([
@@ -775,6 +689,72 @@ class UserController extends Controller
         return [
             'message' => 'task created successfully'
         ];
+    }
+
+
+    public function TaskList(Request $request){
+        
+        $req = $request->all();
+        $searchValue = $request->search_value;
+        $searchable = ['A.name'];
+        $filterable = [];
+
+        $sortable = [];
+        $tableName = "tasks";
+        $tableAlias = "A";
+        
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $field = [
+            'id',
+            'name',
+            'description'
+            ];
+            
+        $relation = [];
+        
+       
+        $condition = [];
+        $user_id = [];
+            
+
+        $query =  $this->DynamicList([
+                    'tableName' => $tableName,
+                    'tableAlias' => $tableAlias,
+                    'limit' => $limit,
+                    'offset' => $offset,
+                    'field' => $field,
+                    'sortable' => $sortable,
+                    'filterable' => $filterable,
+                    'relation' => $relation,
+                    'searchable' => $searchable,
+                    'search' => $searchValue,
+                    'condition' => $condition,
+                    'req' => $req,
+                    'users_id' => $user_id
+                ]);
+        $statistic = $this->DynamicCount([
+                'tableName' => $tableName,
+                'indicator_column' => 'is_verify',
+                'relation' => $relation, 
+                'users_id' => $user_id,
+                'condition' => $condition,
+                'filterable' => $filterable,
+            ]);
+            
+        
+        $result = DB::select($query['sql']);
+        
+        $result_record = DB::select($query['sql_record']);
+        
+        $rslt = DB::select($statistic);
+        
+        return response()->json([
+                'data' => $result,
+                'count'=> $rslt[0],
+                'sql' => $query['sql'],
+                'total' => $result_record[0]->total
+            ], 200);
     }
 
     function RandomPassword()

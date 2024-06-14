@@ -47,11 +47,11 @@ env.interceptors.response.use(
     } else if (error.response.status === 500) {
       _alert.error({}, "Error", "Terjadi kesalahan system");
     } else if (error.response.status === 404) {
-      _alert.error(
-        {},
-        "Error",
-        "Route tidak ditemukan, silahkan hubungi IT Support"
-      );
+      // _alert.error(
+      //   {},
+      //   "Error",
+      //   "Route tidak ditemukan, silahkan hubungi IT Support"
+      // );
     }
     return Promise.reject(error);
   }
