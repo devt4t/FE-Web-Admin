@@ -4,6 +4,7 @@
     :class="{
       [wc]: true,
     }"
+    style="overflow-x: scroll"
   >
     <table>
       <thead>
@@ -25,6 +26,9 @@
           <td
             v-for="(f, j) in [{ id: 1 }, ...config.fields]"
             :key="`body-${f.getter}-${i}-${j}`"
+            :class="{
+              [f.class || '']: true,
+            }"
           >
             <span v-if="j == 0">{{ i + 1 }}</span>
             <span v-else>
@@ -42,11 +46,25 @@
                 v-else
                 >{{ d[f.getter] | parse(f.transform || "no-empty") }}</span
               >
+              <span v-if="f.append">{{ f.append }}</span>
             </span>
           </td>
         </tr>
       </tbody>
     </table>
+
+    <div
+      class="d-flex flex-column detail-table-description mt-3"
+      v-if="description"
+    >
+      <div class="label text-08-em mb-1 text-grey">
+        {{ config.description.label }}
+      </div>
+
+      <div class="value">
+        {{ description }}
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -62,6 +80,10 @@ export default {
       default: () => [],
       required: false,
       type: Array,
+    },
+    description: {
+      required: false,
+      default: "default",
     },
     wc: {
       default: "",

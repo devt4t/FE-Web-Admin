@@ -58,6 +58,17 @@ Vue.filter("parse", (value, id) => {
       }
       break;
 
+    case "idr":
+      if (!["number", "string"].includes(typeof value)) _value = value;
+      _value = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+      })
+        .format(value)
+        .replace(/,/g, ".");
+      break;
+
     case "lowercase":
       if (!value) _value = value;
       _value = value.toLowerCase();

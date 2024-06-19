@@ -74,7 +74,7 @@
         class="rra-pra-detail-menu mb-5"
       >
         <v-card-title class="border-dotted-bottom">
-          <h5 class="mb-0 pb-0">Informasi RRA</h5>
+          <h5 class="mb-0 pb-0">Informasi {{ tabs[activeTab].label }}</h5>
         </v-card-title>
 
         <!-- MENUUU -->
@@ -114,19 +114,24 @@
             :class="{
               active: i === activeTab,
             }"
+            @click="
+              activeMenu = i == 0 ? 1 : 0;
+              activeTab = i;
+            "
           >
             <v-icon>{{ item.icon }}</v-icon> {{ item.label }}
           </button>
         </div>
         <v-card-title>
-          <h5 class="mb-0 pb-0">RRA</h5>
+          <h5 class="mb-0 pb-0">{{ tabs[activeTab].label }}</h5>
         </v-card-title>
 
-        <div class="detail-wrapper">
+        <div class="detail-wrapper" v-if="activeTab == 0">
           <rra-pra-detail-rra
-            :data="data ? data.rra : null"
+            :data="data ? (activeTab == 0 ? data.rra : data.pra) : null"
             :scoopingData="data ? data.mainScooping : null"
             :activeMenu="0"
+            :activeTab="0"
           />
           <!-- <rra-pra-detail-card v-if="data" :data="data" :scoopingData="scoopingData"
                         :config="configs[activeMenu].fields" /> -->
@@ -146,10 +151,10 @@
         </v-card-title>
         <div class="detail-wrapper">
           <rra-pra-detail-rra
-            v-if="activeTab == 0"
-            :data="data ? data.rra : null"
+            :data="data ? (activeTab == 0 ? data.rra : data.pra) : null"
             :scoopingData="data ? data.mainScooping : null"
             :activeMenu="activeMenu"
+            :activeTab="activeTab"
           />
         </div>
       </v-card>
@@ -184,6 +189,8 @@ export default {
         }
       }
 
+      if (typeof values !== "string" && !Array.isArray(values)) return "-";
+
       return values;
     },
   },
@@ -195,6 +202,12 @@ export default {
   watch: {
     activeMenu(v) {
       this.componentKey += 1;
+
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
     },
   },
   data() {
@@ -253,13 +266,42 @@ export default {
         ],
         [
           {
-            label: "Landscape Desa",
-            description: "Informasi luas desa, tanah, dll",
-            mainData: true,
+            label: "Kepemilikan Lahan",
+            description: "Informasi kepemilikan lahan di desa tersebut",
           },
           {
-            label: "Batas Wilayah",
-            description: "Informasi Batas Wilayah Desa",
+            label: "Penyebaran Lokasi Lahan Kering & Kritis",
+            description: "Penyebaran Lokasi Lahan Kering & Kritis",
+          },
+          {
+            label: "Sumber Air",
+            description:
+              "Informasi tentang sumber air, jenis, kondisi dan pemanfaatannya",
+          },
+          {
+            label: "Pendapatan dan Pemasaran Komoditas",
+            description:
+              "Pendapatan dan Pemasaran Komoditas (Ekonomi) di desa tersebut",
+          },
+          {
+            label: "Hasil Ekonomi Pemanfaatan Lahan",
+            description: "Hasil ekonomi pemanfaatan lahan di desa tersebut",
+          },
+          {
+            label: "Pupuk",
+            description: "Pupuk dalam pemanfaatan lahan",
+          },
+          {
+            label: "Pestisida",
+            description: "Pestisida dalam pemanfaatan lahan",
+          },
+          {
+            label: "Permasalahan Yang Ada",
+            description: "Informasi permasalahan nyang ada di desa tersebut",
+          },
+          {
+            label: "Bencana",
+            description: "Informasi bencana, periode bencana, detail, dll",
           },
         ],
       ],

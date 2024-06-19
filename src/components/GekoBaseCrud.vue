@@ -674,7 +674,8 @@ export default {
                 );
                 return;
               }
-              _param[this.config.deleteKey] = item[this.config.deleteKey];
+              _param[this.config.deleteLabel || this.config.deleteKey] =
+                item[this.config.deleteKey];
             } else {
               _param.id = item.id;
             }

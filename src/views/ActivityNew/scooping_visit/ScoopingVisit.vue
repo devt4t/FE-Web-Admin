@@ -163,13 +163,15 @@ export default {
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "DeleteScoopingVisit_new",
+        deleteLabel: "scooping_no",
+        deleteKey: "data_no",
         delete_ext_payload: {
-          delete_type: "soft_delete",
+          delete_type: "hard_delete",
         },
         globalFilter: {
-          project_purpose: {
-            setter: "purpose_code",
-          },
+          // project_purpose: {
+          //   setter: "purpose_code",
+          // },
           program_year: {
             setter: "program_year",
           },
