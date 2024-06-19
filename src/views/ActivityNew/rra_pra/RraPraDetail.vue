@@ -115,7 +115,7 @@
               active: i === activeTab,
             }"
             @click="
-              activeMenu = i == 0 ? 1 : 0;
+              activeMenu = i == 0 ? 1 : 1;
               activeTab = i;
             "
           >
@@ -126,12 +126,12 @@
           <h5 class="mb-0 pb-0">{{ tabs[activeTab].label }}</h5>
         </v-card-title>
 
-        <div class="detail-wrapper" v-if="activeTab == 0">
+        <div class="detail-wrapper">
           <rra-pra-detail-rra
             :data="data ? (activeTab == 0 ? data.rra : data.pra) : null"
             :scoopingData="data ? data.mainScooping : null"
             :activeMenu="0"
-            :activeTab="0"
+            :activeTab="activeTab"
           />
           <!-- <rra-pra-detail-card v-if="data" :data="data" :scoopingData="scoopingData"
                         :config="configs[activeMenu].fields" /> -->
@@ -202,12 +202,6 @@ export default {
   watch: {
     activeMenu(v) {
       this.componentKey += 1;
-
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
     },
   },
   data() {
@@ -266,6 +260,11 @@ export default {
         ],
         [
           {
+            label: "Pendapatan & Pemasaran Komoditas",
+            description: "Pendapatan & Pemasaran Komoditas",
+            mainData: true,
+          },
+          {
             label: "Kepemilikan Lahan",
             description: "Informasi kepemilikan lahan di desa tersebut",
           },
@@ -277,11 +276,6 @@ export default {
             label: "Sumber Air",
             description:
               "Informasi tentang sumber air, jenis, kondisi dan pemanfaatannya",
-          },
-          {
-            label: "Pendapatan dan Pemasaran Komoditas",
-            description:
-              "Pendapatan dan Pemasaran Komoditas (Ekonomi) di desa tersebut",
           },
           {
             label: "Hasil Ekonomi Pemanfaatan Lahan",

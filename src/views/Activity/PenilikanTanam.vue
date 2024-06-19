@@ -3907,7 +3907,11 @@ export default {
           url += 'GetMonitoringLahanUmumAdmin?' + new URLSearchParams(params)
         }
         // get data response
-        axios.get(url, this.$store.state.apiConfig).then(res => {
+        axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.token}`
+          }
+        }).then(res => {
           if (typeof res.data.data.result !== 'undefined') {
             if(this.generalSettings.landProgram.model == 'Umum'){
               let items = res.data.data.result.data
@@ -3950,6 +3954,8 @@ export default {
           reject(err)
         })
       })
+
+      
     },
     async getSearchColumn() {
       let headerItems = []

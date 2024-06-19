@@ -343,6 +343,78 @@ export default {
         ],
         [
           {
+            title: "Pendapatan & Pemasaran Komoditas",
+            mainData: true,
+            getter: "mainPra",
+            class: "md-50",
+            fields: [
+              {
+                getter: "data.man_commodity_name",
+                label: "Nama Komoditas (Laki-laki)",
+              },
+              {
+                getter: "data.woman_commodity_name",
+                label: "Nama Komoditas (Perempuan)",
+              },
+              {
+                getter: "data.man_period",
+                label: "Rata-Rata Periode Pemasaran (Laki-laki)",
+              },
+              {
+                getter: "data.woman_period",
+                label: "Rata-Rata Periode Pemasaran (Perempuan)",
+              },
+              {
+                getter: "data.man_average_capacity",
+                label: "Rata-Rata Kapasitas (Laki-laki)",
+                append: "Kg",
+              },
+              {
+                getter: "data.woman_average_capacity",
+                label: "Rata-Rata Kapasitas (Perempuan)",
+                append: "Kg",
+              },
+              {
+                getter: "data.man_method",
+                label: "Metode Pemasaran (Laki-laki)",
+                translate: "eco_method",
+              },
+              {
+                getter: "data.woman_method",
+                label: "Metode Pemasaran (Perempuan)",
+                translate: "eco_method",
+              },
+              {
+                getter: "data.man_source",
+                label: "Sumber (Laki-laki)",
+              },
+              {
+                getter: "data.woman_source",
+                label: "Sumber (Perempuan)",
+              },
+              {
+                getter: "data.man_min_income",
+                label: "Pendapatan Terendah (Laki-laki)",
+                transform: "idr",
+              },
+              {
+                getter: "data.woman_min_income",
+                label: "Pendapatan Terendah (Perempuan)",
+                transform: "idr",
+              },
+              {
+                getter: "data.man_max_income",
+                label: "Pendapatan Tertinggi (Laki-laki)",
+                transform: "idr",
+              },
+              {
+                getter: "data.woman_max_income",
+                label: "Pendapatan Tertinggi (Perempuan)",
+                transform: "idr",
+              },
+            ],
+          },
+          {
             title: "Kepemilikan Lahan",
             getter: "PraLandOwnershipDetail",
             description: {
@@ -411,78 +483,6 @@ export default {
               {
                 gettter: "watersource_utilization",
                 label: "Pemanfaatan",
-              },
-            ],
-          },
-          {
-            title: "Pendapatan & Pemasukan Komoditas",
-            card: true,
-            getter: "mainPra",
-            class: "md-50",
-            fields: [
-              {
-                getter: "data.man_commodity_name",
-                label: "Nama Komoditas (Laki-laki)",
-              },
-              {
-                getter: "data.woman_commodity_name",
-                label: "Nama Komoditas (Perempuan)",
-              },
-              {
-                getter: "data.man_period",
-                label: "Rata-Rata Periode Pemasaran (Laki-laki)",
-              },
-              {
-                getter: "data.woman_period",
-                label: "Rata-Rata Periode Pemasaran (Perempuan)",
-              },
-              {
-                getter: "data.man_average_capacity",
-                label: "Rata-Rata Kapasitas (Laki-laki)",
-                append: "Kg",
-              },
-              {
-                getter: "data.woman_average_capacity",
-                label: "Rata-Rata Kapasitas (Perempuan)",
-                append: "Kg",
-              },
-              {
-                getter: "data.man_method",
-                label: "Metode Pemasaran (Laki-laki)",
-                translate: "eco_method",
-              },
-              {
-                getter: "data.woman_method",
-                label: "Metode Pemasaran (Perempuan)",
-                translate: "eco_method",
-              },
-              {
-                getter: "data.man_source",
-                label: "Sumber (Laki-laki)",
-              },
-              {
-                getter: "data.woman_source",
-                label: "Sumber (Perempuan)",
-              },
-              {
-                getter: "data.man_min_income",
-                label: "Pendapatan Terendah (Laki-laki)",
-                transform: "idr",
-              },
-              {
-                getter: "data.woman_min_income",
-                label: "Pendapatan Terendah (Perempuan)",
-                transform: "idr",
-              },
-              {
-                getter: "data.man_max_income",
-                label: "Pendapatan Tertinggi (Laki-laki)",
-                transform: "idr",
-              },
-              {
-                getter: "data.woman_max_income",
-                label: "Pendapatan Tertinggi (Perempuan)",
-                transform: "idr",
               },
             ],
           },

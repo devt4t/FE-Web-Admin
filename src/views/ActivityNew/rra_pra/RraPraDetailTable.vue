@@ -27,7 +27,7 @@
             v-for="(f, j) in [{ id: 1 }, ...config.fields]"
             :key="`body-${f.getter}-${i}-${j}`"
             :class="{
-              [f.class || '']: true,
+              [f.wc || '']: true,
             }"
           >
             <span v-if="j == 0">{{ i + 1 }}</span>
