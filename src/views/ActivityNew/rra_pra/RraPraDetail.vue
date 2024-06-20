@@ -132,7 +132,9 @@
             :scoopingData="data ? data.mainScooping : null"
             :activeMenu="0"
             :activeTab="activeTab"
+            :rraCode="data.rra.mainRra.rra_no"
           />
+
           <!-- <rra-pra-detail-card v-if="data" :data="data" :scoopingData="scoopingData"
                         :config="configs[activeMenu].fields" /> -->
         </div>

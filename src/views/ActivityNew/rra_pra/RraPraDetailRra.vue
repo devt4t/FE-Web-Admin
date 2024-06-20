@@ -1,5 +1,29 @@
 <template>
   <div class="rra-detail" v-if="data && Array.isArray(configs)">
+    <!-- ADD PRA -->
+    <div v-if="activeTab == 1 && !data.mainPra">
+      <v-btn
+        variant="success"
+        @click="
+          $router.push({
+            query: {
+              view: 'create',
+              id: '',
+              type: 'pra',
+              scooping_visit_code: scoopingData.data_no,
+              scooping_visit_village: scoopingData.desas_name,
+              rra_code: rraCode,
+              scooping_visit_start: scoopingData.start_scooping_date,
+              scooping_visit_end: scoopingData.end_scooping_date,
+            },
+          })
+        "
+      >
+        <v-icon>mdi-plus</v-icon>
+        <span>Tambah Data Pra</span>
+      </v-btn>
+    </div>
+    <!-- END ADD PRA -->
     <div v-if="mainConfig[activeTab][activeMenu]">
       <rra-pra-detail-card
         v-if="mainConfig[activeTab][activeMenu].mainData"
@@ -54,6 +78,11 @@ export default {
       required: false,
       default: null,
     },
+
+    rraCode: {
+      required: false,
+      default: null,
+    },
     activeMenu: {
       required: false,
       default: 0,
@@ -68,8 +97,6 @@ export default {
 
   mounted() {
     this.configs = this.mainConfig[this.activeMenu];
-
-    console.log("CONFIG", this.configs);
   },
 
   methods: {

@@ -8,9 +8,37 @@
       <scooping-visit-form />
     </template>
 
+    <template v-slot:list-projects="{ item }">
+      <div class="scooping-project-wrapper min-w-200px">
+        <div
+          v-if="item.project_data && item.project_data !== 'No Project Found'"
+        >
+          <ol
+            class="ml-0 pl-0"
+            :style="{
+              'list-style-type':
+                item.project_data.split(',').length > 1 ? 'auto' : 'none',
+            }"
+          >
+            <li class="mb-0" v-for="data in item.project_data.split(',')">
+              {{ data.split(";").length > 1 ? data.split(";")[1] : "-" }}
+            </li>
+          </ol>
+        </div>
+
+        <div v-else>
+          <span class="text-italic text-grey">Project belum ditambahkan</span>
+        </div>
+      </div>
+    </template>
+
     <template v-slot:list-action-update="{ item }">
       <button
-        v-if="item.status == 'document_saving' || item.is_verify == 0"
+        v-if="
+          item.status == 'document_saving' ||
+          item.is_verify == 0 ||
+          item.project_data == 'No Project Found'
+        "
         class="geko-list-action-update"
         @click="
           $router.push({
@@ -27,23 +55,6 @@
       </button>
       <div v-else></div>
     </template>
-
-    <!-- <template v-slot:list-bottom-action="{ item }">
-      <v-btn v-if="
-        !updateIds.includes(item.id) &&
-        item.status === 'ready_to_submit' &&
-        ['13', '25', '23'].includes($store.state.User.role)
-      " variant="warning" class="mt-1" small @click="onVerification(item)">Verifikasi</v-btn>
-
-      <v-btn variant="warning" class="mt-1" small @click="onVerification(item)" v-if="
-        !updateIds.includes(item.id) &&
-        item.status === 'document_saving' &&
-        item.is_verify == 0 &&
-        item.email_to_gis < 3
-      ">
-        Email to GIS
-      </v-btn>
-    </template> -->
 
     <template v-slot:list-village_area="{ item }">
       <div class="min-w-70px text-right">
@@ -103,17 +114,28 @@
         <div
           class="indicator"
           :class="{
-            warning: item.status == 'document_saving' && item.is_verify == 0,
-            info: item.status == 'document_saving' && item.is_verify == 1,
-            primary: item.status == 'ready_to_submit',
-            success: item.status == 'submit_review',
+            danger: item.project_data == 'No Project Found',
+            warning:
+              item.status == 'document_saving' &&
+              item.is_verify == 0 &&
+              item.project_data !== 'No Project Found',
+            info:
+              item.status == 'document_saving' &&
+              item.is_verify == 1 &&
+              item.project_data !== 'No Project Found',
+            primary:
+              item.status == 'ready_to_submit' &&
+              item.project_data !== 'No Project Found',
+            success:
+              item.status == 'submit_review' &&
+              item.project_data !== 'No Project Found',
           }"
         ></div>
       </div>
     </template>
 
     <template v-slot:list-status="{ item }">
-      <div class="d-flex flex-row">
+      <div class="d-flex flex-row min-w-150px" style="justify-content: center">
         <span
           class="badge"
           :class="{
@@ -122,9 +144,14 @@
             'bg-info': item.status == 'document_saving' && item.is_verify == 1,
             'bg-primary': item.status == 'ready_to_submit',
             'bg-success': item.status == 'submit_review',
+            'bg-danger': item.project_data == 'No Project Found',
           }"
         >
-          <span v-if="item.status == 'document_saving' && item.is_verify == 0"
+          <span v-if="item.project_data == 'No Project Found'"
+            >Belum Assign Project</span
+          >
+          <span
+            v-else-if="item.status == 'document_saving' && item.is_verify == 0"
             >Pending</span
           >
           <span
@@ -244,6 +271,19 @@ export default {
             methods: {
               list: {
                 show: false,
+                type: "row-slot",
+              },
+              detail: false,
+              create: false,
+              update: false,
+              filter: false,
+            },
+          },
+          {
+            id: "projects",
+            label: "Project",
+            methods: {
+              list: {
                 type: "row-slot",
               },
               detail: false,

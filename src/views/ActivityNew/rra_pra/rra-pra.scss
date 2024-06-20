@@ -68,6 +68,33 @@
             }
         }
     }
+
+    .problem-matrix-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+
+        button {
+            border: 1px solid grey;
+            width: 2em;
+            height: 2em;
+            margin-right: 5px;
+            border-radius: 50%;
+
+            &.active {
+                background-color: $success_light;
+                color: $success;
+                border: 1px solid $success;
+            }
+
+            &.disabled {
+                color: rgb(171, 171, 171);
+                border: 1px solid rgb(195, 195, 195);
+            }
+        }
+    }
 }
 
 .rra-pra-detail {

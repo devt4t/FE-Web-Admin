@@ -490,6 +490,18 @@ export default {
           (this.$store.state.User.role != "13" ||
             this.$store.state.User.email !== "anto@trees4trees.org")
         ) {
+          listMenu.push({
+            title: menu.title,
+            icon: menu.icon,
+            to: menu.to,
+          });
+
+          router.addRoute({
+            path: menu.to,
+            name: menu.name,
+            component: () => import(`@/views/${menu.component}.vue`),
+          });
+
           continue;
         }
         if (!Array.isArray(menu.items)) {
