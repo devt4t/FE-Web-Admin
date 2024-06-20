@@ -110,6 +110,21 @@ export default {
       code: "non_petani",
     },
   ],
+
+  land_ownership_type: [
+    {
+      name: "Orang Luar Desa (Perorangan)",
+      code: "orang_luar_desa",
+    },
+    {
+      name: "Negara",
+      code: "negara",
+    },
+    {
+      name: "Lahan Desa",
+      code: "lahan_desa",
+    },
+  ],
   watersource_type: [
     {
       name: "Sungai",

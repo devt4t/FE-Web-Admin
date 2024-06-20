@@ -8,7 +8,7 @@
           $router.push({
             query: {
               view: 'create',
-              id: '',
+              id: $route.query.id,
               type: 'pra',
               scooping_visit_code: scoopingData.data_no,
               scooping_visit_village: scoopingData.desas_name,
