@@ -36,7 +36,7 @@ export default new Vuex.Store({
     packageVersionDateTime: version_date_time || "0",
     theme: "light",
     programYear: {
-      model: "2023",
+      model: "2024",
       options: ["2020", "2021", "2022", "2023", "2024"],
     },
     taskForceTeam: {
