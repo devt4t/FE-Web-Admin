@@ -1817,8 +1817,8 @@ export default {
                             else if (val.tree_category == 'Tanaman_Bawah_Empon') category = 'CROPS'
                             if (category) this.inputs[inputs.type][category].push(val)
                         })
+                    console.log(response)
                     } else {
-                        console.log(res.data.data)
                         this.inputs[inputs.type].items = res.data.data.result
                     }
                 }).catch(err => {

@@ -12,46 +12,7 @@
       <h4 class="mb-0 pb-0">Detail {{ title }}</h4>
     </v-card-title>
     <slot name="detail-body">
-      <div class="geko-base-detail-wrapper">
-        <div class="geko-base-detail-list">
-          <template v-for="(item, i) in fields">
-            <slot :name="`detail-row-${item.view_data}`" v-bind:item="data">
-              <div
-                class="geko-base-detail-item"
-                :key="'base-detail' + i"
-                v-if="item.type !== 'row-slot'"
-              >
-                <div class="label">
-                  <p class="mb-0 pb-0">{{ item.label }}</p>
-                </div>
-                <div class="value">
-                  <p class="mb-0 pb-0">
-                    <slot
-                      v-if="item.type === 'slot'"
-                      :name="`detail-${item.view_data}`"
-                      v-bind:item="data"
-                    >
-                    </slot>
-                    <span
-                      v-if="item.type === 'text'"
-                      :class="{
-                        [item.class
-                          ? typeof item.class === 'object'
-                            ? item.class[data[item.view_data]]
-                            : typeof item.class == 'string'
-                            ? data[item.view_data]
-                            : ''
-                          : '']: true,
-                      }"
-                      >{{ data[item.view_data] | parse(item.transform) }}</span
-                    >
-                  </p>
-                </div>
-              </div>
-            </slot>
-          </template>
-        </div>
-      </div>
+      <div class="geko-base-detail-wrapper"></div>
     </slot>
   </v-card>
 </template>
@@ -83,22 +44,6 @@ export default {
       loading: true,
       data: {},
     };
-  },
-  mounted() {
-    console.log(this.fields);
-    if (this.api) {
-      this.getData();
-    } else {
-      this.data = this.$route.params;
-    }
-  },
-
-  methods: {
-    getData() {
-      this.$_api.get(this.api).then((res) => {
-        console.log("res", res);
-      });
-    },
   },
 };
 </script>

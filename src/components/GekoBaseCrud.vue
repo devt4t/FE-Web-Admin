@@ -23,10 +23,13 @@
 
       <div
         class="global-filters d-flex flex-row"
-        v-if="config.globalFilter && activeView === 'list'"
+        v-if="
+          config.globalFilter &&
+          config.globalFilter.project_purpose &&
+          activeView === 'list'
+        "
       >
         <geko-select
-          v-if="config.globalFilter.project_purpose"
           v-model="globalFilter.project_purpose"
           @option:selected="
             setGlobalFilter('project_purpose', $event.code, 'tmpProjectPurpose')
@@ -51,7 +54,6 @@
           ]"
         />
         <geko-select
-          v-if="config.globalFilter.program_year"
           v-model="globalFilter.tmpProgramYear"
           class="vs-style v-select-40 no-clear min-w-100px"
           placeholder="Tahun"
@@ -81,9 +83,6 @@
               code: '2024',
             },
           ]"
-          @option:selected="
-            setGlobalFilter('program_year', $event.code, 'tmpProgramYear')
-          "
         />
       </div>
     </div>
@@ -138,9 +137,9 @@
                   <v-icon>mdi-refresh</v-icon>
                 </button>
 
-                <!-- <button class="toolbar-button mr-2">
+                <button class="toolbar-button mr-2">
                   <v-icon>mdi-microsoft-excel</v-icon>
-                </button> -->
+                </button>
               </div>
               <v-btn
                 variant="success"
@@ -218,39 +217,33 @@
                       view: 'detail',
                       id: item.id,
                     },
-                    params: config.detail ? null : item,
                   })
                 "
               >
                 <v-icon small>mdi-eye-outline</v-icon>
               </button>
-              <slot name="list-action-update" v-bind:item="item">
-                <button
-                  class="geko-list-action-update"
-                  @click="
-                    $router.push({
-                      query: {
-                        view: 'update',
-                        id: item.id,
-                      },
+              <button
+                class="geko-list-action-update"
+                @click="
+                  $router.push({
+                    query: {
+                      view: 'update',
+                      id: item.id,
+                    },
 
-                      params: item,
-                    })
-                  "
-                >
-                  <v-icon small>mdi-pencil-minus</v-icon>
-                </button>
-              </slot>
-
-              <slot name="geko-list-action-delete" v-if="!hideDelete">
-                <button
-                  class="geko-list-action-delete"
-                  @click="onDelete(item)"
-                  v-if="config.delete"
-                >
-                  <v-icon small>mdi-trash-can-outline</v-icon>
-                </button>
-              </slot>
+                    params: item,
+                  })
+                "
+              >
+                <v-icon small>mdi-pencil-minus</v-icon>
+              </button>
+              <button
+                class="geko-list-action-delete"
+                @click="onDelete(item)"
+                v-if="config.delete"
+              >
+                <v-icon small>mdi-trash-can-outline</v-icon>
+              </button>
             </div>
 
             <div class="geko-list-actions-bottom">
@@ -316,26 +309,11 @@
       <slot name="detail-row">
         <geko-base-detail
           :fields="fields.detail"
-          :api="config.detail || ''"
+          :api="fields.getter || ''"
           :title="config.title"
         >
           <template v-slot:detail-body>
             <slot name="detail-body"></slot>
-          </template>
-
-          <template
-            v-for="(f, i) in fields.detail.filter((x) => x.type === 'row-slot')"
-            v-slot:[`detail-row-${f.view_data}`]="{ item }"
-          >
-            <slot :name="'detail-row-' + f.view_data" v-bind:item="item">
-            </slot>
-          </template>
-
-          <template
-            v-for="(f, i) in fields.detail.filter((x) => x.type === 'slot')"
-            v-slot:[`detail-${f.view_data}`]="{ item }"
-          >
-            <slot :name="`detail-${f.view_data}`" v-bind:item="item"> </slot>
           </template>
         </geko-base-detail>
       </slot>
@@ -440,7 +418,6 @@ export default {
       await this.buildModule();
       await this.generateList();
       this.activeView = this.$route.query.view;
-      this.getListData();
     },
     setGlobalFilter(key, value, localKey) {
       this.$set(this.globalFilter, key, value);
@@ -674,8 +651,7 @@ export default {
                 );
                 return;
               }
-              _param[this.config.deleteLabel || this.config.deleteKey] =
-                item[this.config.deleteKey];
+              _param[this.config.deleteKey] = item[this.config.deleteKey];
             } else {
               _param.id = item.id;
             }

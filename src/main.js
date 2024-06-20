@@ -31,6 +31,7 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({

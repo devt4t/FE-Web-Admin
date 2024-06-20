@@ -1,9 +1,5 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :key="'scooping-visit-' + componentKey"
-    :hideDelete="$store.state.User.role != 13"
-  >
+  <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey">
     <template v-slot:create-form>
       <scooping-visit-form />
     </template>
@@ -50,10 +46,10 @@
             params: item,
           })
         "
+        variant="warning"
       >
-        <v-icon small>mdi-pencil-minus</v-icon>
+        Verifikasi
       </button>
-      <div v-else></div>
     </template>
 
     <template v-slot:list-village_area="{ item }">
@@ -81,28 +77,6 @@
 
     <template v-slot:list-potential_dusun="{ item }">
       <div class="text-no-wrap">{{ item.potential_dusun }} dusun</div>
-    </template>
-
-    <template v-slot:list-project="{ item }">
-      <div class="d-flex flex-col align-items-center min-w-300px" v-if="false">
-        <ol>
-          <li>
-            <div
-              class="d-flex flex-row pb-2"
-              :class="{
-                'border-dotted-bottom': true,
-              }"
-            >
-              <h5 class="font-weight-400 mb-0 text-09-em">
-                Project Pembangunan Masjid
-              </h5>
-              <div class="d-flex flex-row" style="align-items: flex-start">
-                <span class="badge bg-info text-08-em ml-2">Carbon</span>
-              </div>
-            </div>
-          </li>
-        </ol>
-      </div>
     </template>
 
     <template v-slot:detail-row>
@@ -190,15 +164,13 @@ export default {
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "DeleteScoopingVisit_new",
-        deleteLabel: "scooping_no",
-        deleteKey: "data_no",
         delete_ext_payload: {
-          delete_type: "hard_delete",
+          delete_type: "soft_delete",
         },
         globalFilter: {
-          // project_purpose: {
-          //   setter: "purpose_code",
-          // },
+          project_purpose: {
+            setter: "purpose_code",
+          },
           program_year: {
             setter: "program_year",
           },

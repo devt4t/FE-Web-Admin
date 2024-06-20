@@ -57,9 +57,7 @@ export default new Vuex.Store({
         JustLoadingLineModul: JustLoadingLineModul,
       },
     },
-    User: localStorage.getItem("User")
-      ? JSON.parse(localStorage.getItem("User"))
-      : "",
+    User: JSON.parse(localStorage.getItem("User")),
   },
   getters: {
     getApiUrl: (state) => (url) => {
@@ -88,11 +86,7 @@ export default new Vuex.Store({
   mutations: {
     set(state, [variable, value, saveLS = false]) {
       Vue.set(state, variable, value);
-      if (saveLS)
-        localStorage.setItem(
-          variable,
-          typeof value == "string" ? value : JSON.stringify(value)
-        );
+      if (saveLS) localStorage.setItem(variable, JSON.stringify(value));
     },
   },
   actions: {},

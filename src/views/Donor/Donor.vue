@@ -36,26 +36,6 @@
       </div>
     </template>
 
-    <template v-slot:detail-row-first_name="{ item }">
-      <div class="geko-base-detail-item">
-        <div class="label">
-          <p class="mb-0 pb-0">
-            {{ item.participant_category == "company" ? "Perusahaan" : "Nama" }}
-          </p>
-        </div>
-
-        <div class="value">
-          <p class="mb-0 pb-0">
-            {{
-              item.participant_category == "company"
-                ? item.first_name
-                : `${item.first_name} ${item.last_name}`
-            }}
-          </p>
-        </div>
-      </div>
-    </template>
-
     <template v-slot:create-form>
       <donor-form />
     </template>
@@ -84,7 +64,6 @@ export default {
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "newDeleteDonor",
-        detail: "",
         pk_field: null,
         permission: {
           create: "donor-create",
@@ -114,9 +93,7 @@ export default {
               list: {
                 type: "row-slot",
               },
-              detail: {
-                type: "row-slot",
-              },
+              detail: true,
               create: {
                 validation: ["required"],
                 label: "Nama Depan",
@@ -128,23 +105,11 @@ export default {
           },
 
           {
-            id: "participant_no",
-            label: "Kode Donor",
-            methods: {
-              list: true,
-              detail: true,
-              create: false,
-              update: false,
-              filter: false,
-            },
-          },
-
-          {
             id: "last_name",
             label: "Nama Belakang",
             methods: {
               list: false,
-              detail: false,
+              detail: true,
               create: {
                 validation: ["required"],
                 col_size: 6,
@@ -185,9 +150,7 @@ export default {
             label: "Email",
             methods: {
               list: true,
-              detail: {
-                type: "text",
-              },
+              detail: true,
               create: { validation: ["required", "email"], col_size: 6 },
               update: { validation: ["required"], setter: "new_name" },
               filter: false,
@@ -266,20 +229,20 @@ export default {
           //   },
           // },
 
-          // {
-          //   id: "join_date",
-          //   label: "Tgl. Bergabung",
-          //   methods: {
-          //     list: {
-          //       transform: "date",
-          //       class: "text-no-wrap",
-          //     },
-          //     detail: true,
-          //     create: { validation: ["required"], type: "date" },
-          //     update: { validation: ["required"], setter: "new_name" },
-          //     filter: false,
-          //   },
-          // },
+          {
+            id: "join_date",
+            label: "Tgl. Bergabung",
+            methods: {
+              list: {
+                transform: "date",
+                class: "text-no-wrap",
+              },
+              detail: true,
+              create: { validation: ["required"], type: "date" },
+              update: { validation: ["required"], setter: "new_name" },
+              filter: false,
+            },
+          },
 
           {
             id: "active",
@@ -292,13 +255,7 @@ export default {
                   0: "badge bg-danger",
                 },
               },
-              detail: {
-                transform: "active",
-                class: {
-                  1: "badge bg-success",
-                  0: "badge bg-danger",
-                },
-              },
+              detail: true,
               create: { validation: ["required"], type: "date" },
               update: { validation: ["required"], setter: "new_name" },
               filter: false,

@@ -6,13 +6,6 @@ moment.locale("id");
 Vue.filter("parse", (value, id) => {
   let _value = "";
   switch (id) {
-    case "ts":
-      if (!value) {
-        _value = value;
-        break;
-      }
-      _value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      break;
     case "no-empty":
       _value = [null, undefined, ""].includes(value) ? "-" : value;
       break;
@@ -45,33 +38,6 @@ Vue.filter("parse", (value, id) => {
     case "datetime":
       _value = moment(value).format("D MMMM YYY HH:mm:ss");
       break;
-
-    case "border":
-      if (value == "north") {
-        _value = "Utara";
-      } else if (value === "east") {
-        _value = "Timur";
-      } else if (value === "west") {
-        _value = "Barat";
-      } else if (value === "south") {
-        _value = "Selatan";
-      }
-      break;
-
-    case "idr":
-      if (!["number", "string"].includes(typeof value)) _value = value;
-      _value = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "IDR",
-        maximumFractionDigits: 0,
-      })
-        .format(value)
-        .replace(/,/g, ".");
-      break;
-
-    case "lowercase":
-      if (!value) _value = value;
-      _value = value.toLowerCase();
 
     default:
       _value = value;

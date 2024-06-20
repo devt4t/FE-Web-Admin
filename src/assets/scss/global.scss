@@ -1,8 +1,5 @@
 @import "./variables";
 
-.cursor-pointer:hover {
-  cursor: pointer;
-}
 button[variant="primary"] {
   background-color: $primary_light !important;
   color: darken($primary, 10) !important;
@@ -11,14 +8,7 @@ button[variant="primary"] {
 button[variant="success"] {
   background-color: $success_light !important;
   color: $success !important;
-
-  &.outline {
-    border: 1px solid $success;
-    background-color: white !important;
-    color: $success !important;
-  }
 }
-
 button[variant="warning"] {
   background-color: $warning_light !important;
   color: $warning !important;
@@ -58,10 +48,6 @@ button.circle {
   font-size: 0.75em !important;
 }
 
-.text-white {
-  color: white;
-}
-
 // WIDTH
 .min-w-150px {
   min-width: 150px !important;
@@ -78,17 +64,11 @@ button.circle {
 .min-w-200px {
   min-width: 200px !important;
 }
-.min-w-300px {
-  min-width: 300px !important;
-}
 
 .font-weight-300 {
   font-weight: 300 !important;
 }
 
-.font-weight-400, .font-weight-normal {
-  font-weight: 400 !important;
-}
 .font-weight-500 {
   font-weight: 500 !important;
 }
@@ -194,13 +174,6 @@ button.circle {
   color: $info !important;
 }
 
-.vs-style.v-select-40 {
-  .vs__dropdown-toggle {
-    height: 40px !important;
-  }
-  height: 40px;
-}
-
 .vs-style input {
   border: none !important;
   margin-top: 0 !important;
@@ -211,16 +184,14 @@ button.circle {
     display: none !important;
   }
 }
-.vs-style.vs--multiple .vs__selected-options .vs__selected {
-  
-  height: auto !important;
-}
+
 .vs-style .vs__selected {
   font-size: 0.9em !important;
   font-weight: 400;
 }
 
 .vs-style.vs--multiple {
+  
   .vs__selected-options {
     padding-left: 10px !important;
     .vs__selected {
@@ -228,7 +199,7 @@ button.circle {
       margin-top: 4px !important;
       margin-right: 4px !important;
       background-color: $success_light !important;
-      color: $success !important;
+      color: $success !important
     }
   }
 }
@@ -238,6 +209,7 @@ button.circle {
   padding-left: 0 !important;
 }
 .vs-style {
+
   .vs__actions {
     padding-top: 0 !important;
   }
@@ -249,6 +221,7 @@ button.circle {
     height: unset !important;
   }
 }
+
 
 .vs__selected {
   padding-left: 10px !important;
@@ -332,8 +305,10 @@ button.circle {
     flex-direction: row;
     align-items: center;
 
-    &.active {
+    
+    &.active  {
       .value {
+
         background-color: $success;
         color: white;
       }
@@ -353,12 +328,13 @@ button.circle {
       font-weight: 600;
       border-radius: 8px;
       color: $success;
+
     }
 
     .label {
       color: $success;
       padding-left: 7px;
-      font-size: 0.8em;
+      font-size: .8em;
     }
   }
 
@@ -367,6 +343,7 @@ button.circle {
     width: 4em;
     padding-inline: 10px;
     span {
+      
       height: 50%;
       position: relative;
       border-bottom: 1px dashed rgb(197, 197, 197);
@@ -375,9 +352,12 @@ button.circle {
   }
 }
 
+
+
 .text-link {
-  color: #1f4f94;
+  color: #1F4F94;
 }
+
 
 table tbody tr td:has(.indicator-wrapper) {
   padding-inline: 0 !important;
@@ -386,9 +366,6 @@ table tbody tr td:has(.indicator-left) {
   padding-left: 0 !important;
 }
 
-.border-dotted-bottom {
-  border-bottom: 1px dashed rgba(128, 128, 128, 0.2);
-}
 .indicator-wrapper {
   display: flex;
   flex-direction: column;
@@ -425,21 +402,15 @@ table tbody tr td:has(.indicator-left) {
   }
 }
 
-.map-placeholder {
-  width: 100%;
-  height: 300px;
-  background-image: url("../map-placeholder.png");
-  background-position: center;
-  background-size: cover;
-  border-radius: 12px;
-}
+
 
 @media only screen and (min-width: 1264px) {
   .v-main.gradient-animate.logged-in {
     padding-left: 280px !important;
+ 
   }
 
-  .v-navigation-drawer__content .v-list-group__items {
+  .v-navigation-drawer__content    .v-list-group__items {
     max-width: 260px !important;
   }
 
