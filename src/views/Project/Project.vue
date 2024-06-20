@@ -4,34 +4,28 @@
       <div class="min-w-200px">
         <span>{{ item.project_date | parse("date") }}</span>
         <span v-if="item.end_project">
-          {{ " - " }} {{ item.end_project | parse("date") }}</span>
-      </div>
-    </template>
-    <template v-slot:detail-date="{ item }">
-      <div class="min-w-200px">
-        <span>{{ item.project_date | parse("date") }}</span>
-        <span v-if="item.end_project">
-          {{ " - " }} {{ item.end_project | parse("date") }}</span>
+          {{ " - " }} {{ item.end_project | parse("date") }}</span
+        >
       </div>
     </template>
 
     <template v-slot:list-donors_name="{ item }">
-      <span class="d-block min-w-150px">{{ item.participants_first_name }}
-        {{ item.participants_last_name || "" }}</span>
-    </template>
-
-    <template v-slot:detail-donors_name="{ item }">
-      <span>{{ item.participants_first_name }} </span>
-      <span v-if="item.participants_last_name">{{ ' ' }}{{ item.participants_last_name }} </span>
+      <span class="d-block min-w-150px"
+        >{{ item.participants_first_name }}
+        {{ item.participants_last_name || "" }}</span
+      >
     </template>
 
     <template v-slot:update-project_name="{ formData, field }">
       <v-col md="6">
-        <geko-input v-model="formData.project_name" :item="{
-          label: field.label,
-          type: 'text',
-          validation: ['required'],
-        }" />
+        <geko-input
+          v-model="formData.project_name"
+          :item="{
+            label: field.label,
+            type: 'text',
+            validation: ['required'],
+          }"
+        />
       </v-col>
     </template>
   </geko-base-crud>
@@ -148,9 +142,7 @@ export default {
               list: {
                 type: "row-slot",
               },
-              detail: {
-                type: 'slot',
-              },
+              detail: true,
               create: {
                 validation: ["required"],
                 type: "select",
@@ -165,8 +157,7 @@ export default {
                   list_pointer: {
                     code: "id",
                     label: "first_name",
-                    separator: ' ',
-                    display: ["first_name", 'last_name'],
+                    display: ["name"],
                   },
                 },
               },
@@ -300,10 +291,7 @@ export default {
             label: "Total Pohon",
             methods: {
               list: false,
-              detail: {
-                view_data: "total_trees",
-                transform: "ts",
-              },
+              detail: true,
               create: {
                 type: "number",
                 setter: "tree_amount",
@@ -327,13 +315,8 @@ export default {
             id: "co2_capture",
             label: "Proyeksi CO2",
             methods: {
-              list: {
-                transform: "ts",
-                class: "text-right",
-              },
-              detail: {
-                transform: "ts",
-              },
+              list: true,
+              detail: true,
               create: {
                 type: "number",
                 validation: ["required"],
@@ -408,8 +391,8 @@ export default {
             id: "project_period_type",
             label: "Project Period",
             methods: {
-              list: false,
-              detail: false,
+              list: true,
+              detail: true,
               create: {
                 validation: [],
                 type: "select-radio",
@@ -474,8 +457,8 @@ export default {
             id: "year_interval",
             label: "Planting Cycle",
             methods: {
-              list: false,
-              detail: false,
+              list: true,
+              detail: true,
               create: {
                 label: "Planting Cycle (year)",
                 validation: ["required"],
@@ -511,9 +494,7 @@ export default {
               list: {
                 type: "row-slot",
               },
-              detail: {
-                type: "slot",
-              },
+              detail: true,
               create: {
                 label: "Tanggal Mulai",
                 validation: ["required"],
@@ -582,10 +563,7 @@ export default {
             label: "Deskripsi Project",
             methods: {
               list: false,
-              detail: {
-                transform: "no-empty",
-                view_data: 'note',
-              },
+              detail: true,
               create: {
                 validation: [],
                 col_size: 12,
@@ -615,13 +593,7 @@ export default {
                   0: "badge bg-danger text-no-wrap",
                 },
               },
-              detail: {
-                transform: "active",
-                class: {
-                  1: "badge bg-success text-no-wrap",
-                  0: "badge bg-danger text-no-wrap",
-                },
-              },
+              detail: true,
               create: {
                 validation: ["required"],
                 type: "date",

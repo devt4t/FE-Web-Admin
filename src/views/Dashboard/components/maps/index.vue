@@ -169,12 +169,12 @@ export default {
                       // console.log(GeoJsonData)
                       if (GeoJsonData.features.length === 0) { 
                           mapOptions.loading.show = await false
-                        //   await Swal.fire({
-                        //       title: 'Error!',
-                        //       text: `Polygon Features is 0.`,
-                        //       icon: 'error',
-                        //       confirmButtonColor: '#f44336',
-                        //   }) 
+                          await Swal.fire({
+                              title: 'Error!',
+                              text: `Polygon Features is 0.`,
+                              icon: 'error',
+                              confirmButtonColor: '#f44336',
+                          }) 
                       } else {
                           mapOptions.loading.text = 'Initialize map...'
                           let map = await new mapboxgl.Map({

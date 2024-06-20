@@ -1,91 +1,66 @@
 <template>
   <geko-base-crud :config="config">
-
-
-    <template v-slot:detail-row>
-      <rra-pra-detail />
-    </template>
     <template v-slot:list-date="{ item }">
       <div class="min-w-150px">
         <span>{{ item.rra_pra_date_start | parse("date") }}</span>
-        <span v-if="item.rra_pra_date_end">{{ " - " }} {{ item.rra_pra_date_start | parse("date") }}</span>
+        <span v-if="item.rra_pra_date_end"
+          >{{ " - " }} {{ item.rra_pra_date_start | parse("date") }}</span
+        >
       </div>
     </template>
 
     <template v-slot:list-form_no="{ item }">
       <div class="d-flex flex-column indicator-left">
-        <p class="mb-0 pb-0 text-link">#{{ item.scooping_visit_code }}</p>
-        <div class="min-w-150px" v-if="item.rra_pra_date_start || item.rra_pra_date_end">
+        <p class="mb-0 pb-0 text-link">#{{ item.form_no }}</p>
+        <div class="min-w-150px">
           <span class="text-08-em">{{
             item.rra_pra_date_start | parse("date")
           }}</span>
-          <span class="text-08-em" v-if="item.rra_pra_date_end">{{ " - " }} {{ item.rra_pra_date_start | parse("date")
-            }}</span>
+          <span class="text-08-em" v-if="item.rra_pra_date_end"
+            >{{ " - " }} {{ item.rra_pra_date_start | parse("date") }}</span
+          >
         </div>
       </div>
     </template>
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div class="indicator" :class="{
-          success: item.status === 'submit_review',
-          warning: item.status === 'document_saving' && item.rra && item.pra,
-          light: !item.rra || !item.pra,
-        }"></div>
-      </div>
-    </template>
-
-    <template v-slot:list-status_data="{ item }">
-      <div class="d-flex flex-row" style="justify-content: center">
-        <div v-if="item.rra && item.pra" class="badge bg-success">Lengkap</div>
-        <div v-else-if="item.rra" class="badge bg-light">RRA</div>
-        <div v-else-if="item.pra" class="badge bg-light">PRA</div>
-      </div>
-    </template>
-
-    <template v-slot:list-status="{ item }">
-      <div class="d-flex flex-row" style="justify-content: center">
-        <div class="badge bg-light" v-if="!item.rra || !item.pra">Draft</div>
-        <div class="badge bg-warning" v-else-if="item.status == 'document_saving'">
-          Pending
-        </div>
-        <div class="badge bg-success" v-else-if="item.status == 'submit_review'">
-          Terverifikasi
-        </div>
+        <div
+          class="indicator"
+          :class="{
+            success: item.status === 'submit_review',
+            warning: item.status === 'document_saving',
+          }"
+        ></div>
       </div>
     </template>
 
     <template v-slot:create-form>
-      <pra-form v-if="$route.query.type == 'pra'" />
-      <rra-pra-form v-else />
+      <rra-pra-form />
     </template>
   </geko-base-crud>
 </template>
 
 <script>
 import RraPraForm from "./RraPraForm.vue";
-import RraPraDetail from './RraPraDetail.vue';
-import PraForm from "./PraForm.vue";
 import "./rra-pra.scss";
 export default {
   name: "rra-pra-module",
   components: {
     RraPraForm,
-    PraForm,
-    RraPraDetail
   },
   data() {
     return {
       config: {
         title: "RRA PRA",
         model_api: null,
-        getter: "rra-pra",
+        getter: "GetRraAll_new",
         getterDataKey: "data",
         setter: "AddNewProject",
         update: "UpdateDataProject",
         delete: "deleteProject",
         update_id_setter: "current_id",
-        deleteKey: "id",
+        deleteKey: "code",
         pk_field: null,
         permission: {
           create: "project-create",
@@ -110,11 +85,6 @@ export default {
               label: "Belum Terverifikasi",
               icon: "mdi-close-circle-outline",
               color: "danger",
-            },
-            uncomplete: {
-              label: "Data Belum Lengkap",
-              icon: "mdi-close-circle-outline",
-              color: "info",
             },
           },
         },
@@ -160,7 +130,7 @@ export default {
             label: "Desa",
             methods: {
               list: {
-                view_data: "village_name",
+                view_data: "desas_name",
               },
               detail: true,
               create: true,
@@ -188,7 +158,7 @@ export default {
             label: "PIC",
             methods: {
               list: {
-                view_data: "user_name",
+                view_data: "user_id",
               },
               detail: true,
               create: true,
@@ -201,7 +171,7 @@ export default {
             label: "PIC Manager",
             methods: {
               list: {
-                view_data: "pic_manager_name",
+                view_data: "employees_name",
                 class: "min-w-100px",
               },
               detail: true,
@@ -211,24 +181,10 @@ export default {
             },
           },
           {
-            id: "status_data",
-            label: "Kelengkapan Data",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-              detail: false,
-              create: false,
-              update: false,
-              filter: false,
-            },
-          },
-          {
             id: "status",
             label: "Status Dokumen",
             methods: {
               list: {
-                type: "row-slot",
                 view_data: "status",
                 class: {
                   document_saving: "badge bg-warning",
@@ -247,16 +203,15 @@ export default {
             id: "is_verify",
             label: "Status Verifikasi",
             methods: {
-              // list: {
-              //   view_data: "is_verify",
-              //   class: {
-              //     0: "badge bg-danger",
-              //     1: "badge bg-success",
-              //   },
-              //   transform: "status-verification",
-              // },
-              list: false,
-              detail: false,
+              list: {
+                view_data: "is_verify",
+                class: {
+                  0: "badge bg-danger",
+                  1: "badge bg-success",
+                },
+                transform: "status-verification",
+              },
+              detail: true,
               create: false,
               update: false,
               filter: false,

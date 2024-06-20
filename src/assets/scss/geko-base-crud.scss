@@ -17,11 +17,12 @@
     justify-content: space-between;
     align-items: center;
     padding-right: 2em;
-
+    
     .global-filters {
-      .v-select-40 {
+      .v-select-40  {
         .vs__search {
-          font-size: 0.9em !important;
+
+          font-size: .9em !important;
         }
         .vs__dropdown-toggle {
           padding: 0 !important;
@@ -32,7 +33,7 @@
       border: 1px solid $info;
       color: $info;
       border-radius: 20px;
-      font-size: 0.8em;
+      font-size: .8em;
       font-weight: 500;
       padding: 3px 15px;
       margin-left: 5px;
@@ -128,9 +129,9 @@
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
-
+    
     .statistic-item {
-      background-color: #f3f6f9;
+      background-color: #F3F6F9;
       border-radius: 12px;
       margin-right: 15px;
       display: flex;
@@ -140,27 +141,19 @@
       padding-right: 2em;
       padding-block: 10px;
 
+
       &.success {
         background-color: $success_light !important;
-        .value,
-        i {
-          color: $success !important;
+        .value, i {
+          color: $success  !important;
         }
       }
+
 
       &.danger {
         background-color: $danger_light !important;
-        .value,
-        i {
-          color: $danger !important;
-        }
-      }
-
-      &.info {
-        background-color: $info_light !important;
-        .value,
-        i {
-          color: $info !important;
+        .value, i {
+          color: $danger  !important;
         }
       }
       i {
@@ -170,14 +163,14 @@
       .statistic-data {
         padding-left: 10px;
         .label {
-          font-size: 0.7em;
+          font-size: .7em;
           color: grey;
           font-weight: 300;
         }
 
         .value {
           color: black;
-          font-weight: 700;
+          font-weight : 700;
           font-size: 1.3em;
         }
       }
@@ -185,6 +178,7 @@
   }
 
   .geko-list-header-action {
+    
     border-bottom: 1px dashed rgba(128, 128, 128, 0.244);
     padding-bottom: 1em;
   }
@@ -197,6 +191,7 @@
     h4 {
       font-size: 1.2rem;
     }
+
 
     .geko-list-header-action {
       display: flex;
@@ -316,48 +311,6 @@
       }
     }
   }
-
-  .geko-base-detail {
-    .geko-base-detail-card {
-      border-radius: 12px;
-    }
-    .geko-base-detail-wrapper {
-      padding-inline: 1.5em;
-      padding-block: 1em;
-      padding-bottom: 2em;
-    }
-    .geko-base-detail-list {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-
-      .geko-base-detail-item {
-        display: flex;
-        flex-direction: row;
-        padding-block: 5px;
-        width: 100%;
-        border-bottom: 1px solid rgba(128, 128, 128, 0.1);
-        .label {
-          width: 30%;
-
-          color: grey;
-          font-size: 0.9em;
-          position: relative;
-          &::after {
-            content: ":";
-            top: 0;
-            right: -5px;
-            position: absolute;
-          }
-        }
-        .value {
-          width: 70%;
-          font-size: 0.9em;
-          padding-left: 15px;
-        }
-      }
-    }
-  }
 }
 
 .geko-input {
@@ -407,8 +360,7 @@
     }
   }
 
-  input[type="file"],
-  input[type="image"] {
+  input[type="file"], input[type="image"] {
     display: none;
   }
 
@@ -495,9 +447,7 @@
           z-index: 10;
           right: -5px;
           top: -5px;
-          i {
-            color: red !important;
-          }
+          i { color: red !important}
         }
       }
     }
@@ -532,22 +482,5 @@
   textarea {
     height: unset !important;
     padding-block: 8px;
-  }
-}
-
-@media only screen and (min-width: 992px) {
-  .geko-base-crud {
-    .geko-base-detail {
-      .geko-base-detail-list {
-        .geko-base-detail-item {
-          .label {
-            width: 20%;
-          }
-          .value {
-            width: 80%;
-          }
-        }
-      }
-    }
   }
 }

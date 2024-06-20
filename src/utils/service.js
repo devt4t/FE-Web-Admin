@@ -2,7 +2,6 @@ import axios from "axios";
 import _alert from "./alert";
 import _util from "./";
 import _config from "./config";
-import router from "../router/index";
 const env = axios.create({
   baseURL: _config.baseUrl,
 });
@@ -31,10 +30,10 @@ env.interceptors.response.use(
     // Do something with response error
     console.log(error.response.data);
     if (error.response.status === 401) {
-      _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
       // localStorage.clear();
 
       // router.push({ name: "login" });
+      _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
     } else if (
       error.response &&
       error.response.data &&
@@ -47,11 +46,11 @@ env.interceptors.response.use(
     } else if (error.response.status === 500) {
       _alert.error({}, "Error", "Terjadi kesalahan system");
     } else if (error.response.status === 404) {
-      // _alert.error(
-      //   {},
-      //   "Error",
-      //   "Route tidak ditemukan, silahkan hubungi IT Support"
-      // );
+      _alert.error(
+        {},
+        "Error",
+        "Route tidak ditemukan, silahkan hubungi IT Support"
+      );
     }
     return Promise.reject(error);
   }

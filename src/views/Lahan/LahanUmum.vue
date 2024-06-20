@@ -1818,7 +1818,6 @@ export default {
                             if (category) this.inputs[inputs.type][category].push(val)
                         })
                     } else {
-                        console.log(res.data.data)
                         this.inputs[inputs.type].items = res.data.data.result
                     }
                 }).catch(err => {

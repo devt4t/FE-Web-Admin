@@ -3,66 +3,83 @@
     <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
       <v-row class="geko-form-wrapper" v-if="ready">
         <v-col lg="12">
-          <geko-input v-model="formData.participant_category" :item="{
-            view_data: 'participant_category',
-            type: 'select-radio',
-            label: 'Kategori Partisipan',
-            validation: [],
-            option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
+          test
+          <geko-input
+            v-model="formData.participant_category"
+            :item="{
+              view_data: 'participant_category',
+              type: 'select-radio',
+              label: 'Kategori Partisipan',
+              validation: [],
+              option: {
+                list_pointer: {
+                  label: 'label',
+                  code: 'code',
+                  display: ['label'],
+                },
+                default_options: [
+                  {
+                    label: 'Personal',
+                    icon: 'mdi-account-heart',
+                    code: 'personal',
+                  },
+                  {
+                    label: 'Perusahaan',
+                    icon: 'mdi-domain',
+                    code: 'company',
+                  },
+                ],
               },
-              default_options: [
-                {
-                  label: 'Personal',
-                  icon: 'mdi-account-heart',
-                  code: 'personal',
-                },
-                {
-                  label: 'Perusahaan',
-                  icon: 'mdi-domain',
-                  code: 'company',
-                },
-              ],
-            },
-          }" />
+            }"
+          />
         </v-col>
 
         <v-col v-if="!isCreate">
-          <geko-input v-model="formData.participant_no" :item="{
-            view_data: 'participant_no',
-            type: 'text',
-            label: 'Kode Partisipan',
-          }" :disabled="true" />
+          <geko-input
+            v-model="formData.participant_no"
+            :item="{
+              view_data: 'participant_no',
+              type: 'text',
+              label: 'Kode Partisipan',
+            }"
+            :disabled="true"
+          />
         </v-col>
         <v-col lg="12">
-          <geko-input v-model="formData.first_name" :item="{
-            view_data: 'first_name',
-            type: 'text',
-            label:
-              formData.participant_category === 'personal'
-                ? 'Nama Depan'
-                : 'Nama Perusahaan',
-            validation: ['required'],
-          }" />
+          <geko-input
+            v-model="formData.first_name"
+            :item="{
+              view_data: 'first_name',
+              type: 'text',
+              label:
+                formData.participant_category === 'personal'
+                  ? 'Nama Depan'
+                  : 'Nama Perusahaan',
+              validation: ['required'],
+            }"
+          />
         </v-col>
         <v-col lg="12" v-if="formData.participant_category == 'personal'">
-          <geko-input v-model="formData.last_name" :item="{
-            view_data: 'last_name',
-            type: 'text',
-            label: 'Nama Belakang',
-            validation: [],
-          }" />
+          <geko-input
+            v-model="formData.last_name"
+            :item="{
+              view_data: 'last_name',
+              type: 'text',
+              label: 'Nama Belakang',
+              validation: [],
+            }"
+          />
         </v-col>
         <v-col lg="12">
-          <geko-input v-model="formData.email" :item="{
-            view_data: 'email',
-            type: 'text',
-            label: 'Email',
-            validation: ['required', 'email'],
-          }" />
+          <geko-input
+            v-model="formData.email"
+            :item="{
+              view_data: 'email',
+              type: 'text',
+              label: 'Email',
+              validation: ['required', 'email'],
+            }"
+          />
         </v-col>
         <!-- <v-col lg="6">
           <geko-input
@@ -259,71 +276,79 @@
         </v-col> -->
 
         <v-col lg="6">
-          <geko-input v-model="formData.join_year" :item="{
-            view_data: 'join_year',
-            label: 'Tahun Bergabung',
-            type: 'select',
-            validation: ['required'],
-            option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
+          <geko-input
+            v-model="formData.join_year"
+            :item="{
+              view_data: 'join_year',
+              label: 'Tahun Bergabung',
+              type: 'select',
+              validation: ['required'],
+              option: {
+                list_pointer: {
+                  label: 'name',
+                  code: 'code',
+                  display: ['name'],
+                },
+                default_options: [
+                  {
+                    label: '2020',
+                    code: 2020,
+                  },
+                  {
+                    label: '2021',
+                    code: 2021,
+                  },
+                  {
+                    label: '2022',
+                    code: 2022,
+                  },
+                  {
+                    label: '2023',
+                    code: 2023,
+                  },
+                  {
+                    label: '2024',
+                    code: 2024,
+                  },
+                ],
               },
-              default_options: [
-                {
-                  label: '2020',
-                  code: 2020,
-                },
-                {
-                  label: '2021',
-                  code: 2021,
-                },
-                {
-                  label: '2022',
-                  code: 2022,
-                },
-                {
-                  label: '2023',
-                  code: 2023,
-                },
-                {
-                  label: '2024',
-                  code: 2024,
-                },
-              ],
-            },
-          }" />
+            }"
+          />
         </v-col>
         <v-col lg="6">
-          <geko-input v-model="formData.active" :item="{
-            view_data: 'active',
-            label: 'Status',
-            type: 'select',
-            validation: ['required'],
-            option: {
-              list_pointer: {
-                label: 'label',
-                code: 'code',
-                display: ['label'],
+          <geko-input
+            v-model="formData.active"
+            :item="{
+              view_data: 'active',
+              label: 'Status',
+              type: 'select',
+              validation: ['required'],
+              option: {
+                list_pointer: {
+                  label: 'name',
+                  code: 'code',
+                  display: ['name'],
+                },
+                default_options: [
+                  {
+                    label: 'Aktif',
+                    code: 1,
+                  },
+                  {
+                    label: 'Tidak Aktif',
+                    code: 0,
+                  },
+                ],
               },
-              default_options: [
-                {
-                  label: 'Aktif',
-                  code: 1,
-                },
-                {
-                  label: 'Tidak Aktif',
-                  code: 0,
-                },
-              ],
-            },
-          }" />
+            }"
+          />
         </v-col>
 
         <v-col lg="12" class="mt-4">
           <div class="d-flex flex-row justify-content-end">
-            <v-btn variant="light" class="mr-2" @click="$router.go(-1)">Batal</v-btn>
+            <v-btn variant="light" class="mr-2" @click="$router.go(-1)"
+              >Batal</v-btn
+            >
             <v-btn variant="success" :disabled="loading" type="submit">
               {{ isCreate ? "Tambah" : "Perbarui" }} Data
             </v-btn>
@@ -414,7 +439,8 @@ export default {
         .then(() => {
           this.loading = false;
           this.$_alert.success(
-            `Data Donatur berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"
+            `Data Donatur berhasil ${
+              this.isCreate ? "ditambahkan" : "diperbarui"
             }`
           );
           this.$router.go(-1);

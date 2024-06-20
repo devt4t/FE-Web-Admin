@@ -62,7 +62,7 @@
 
       <geko-select
         v-else-if="['select'].includes(item.type)"
-        class="vs-style"
+        class="vs-style v-select-40"
         :class="{
           invalid: errors.length > 0,
         }"
@@ -73,7 +73,6 @@
         @open="selectGetInitData"
         :reduce="(x) => x[item.option?.list_pointer.code || 'code']"
         v-model="tmpValue"
-        @search="selectSearchData"
         :appendToBody="true"
         :label="
           item.option && item.option.list_pointer
@@ -95,12 +94,10 @@
               class="mr-2"
             ></v-progress-circular>
             <span class="text-09-em text-grey">{{
-              `Loading data ${item.label ? item.label.toLowerCase() : ""}...`
+              `Loading data ${item.label.toLowerCase()}...`
             }}</span></span
           >
-          <span v-else>{{
-            `Tidak ada data ${item.label ? item.label.toLowerCase() : ""}`
-          }}</span>
+          <span v-else>{{ `Tidak ada data ${item.label.toLowerCase()}` }}</span>
         </template>
       </geko-select>
 
@@ -181,8 +178,7 @@
             }}
           </h6>
           <span class="d-block" v-if="item.option && item.option.max_size"
-            >Ukuran berkas maksimal {{ item.option.max_size }}
-            Mb
+            >Ukuran berkas maksimal {{ item.option.max_size }} Mb
             <span v-if="item.option && item.option.max"
               >( Maksimal {{ item.option.max }} foto)</span
             ></span
@@ -225,7 +221,6 @@
 </template>
 
 <script>
-import _ from "lodash";
 export default {
   name: "geko-input",
   props: {
@@ -263,20 +258,6 @@ export default {
   },
 
   methods: {
-    selectSearchData: _.debounce(function (search, loading, limit = 10) {
-      if (this.item.option && Array.isArray(this.item.option.default_options))
-        return;
-      if (!this.item.api || !search) return;
-
-      if (loading instanceof Function) loading(true);
-
-      let params = {
-        search: search,
-        limit: limit,
-      };
-
-      this.selectGetInitData(params, loading);
-    }),
     async setDefaultValue() {
       if (
         this.item.option &&
@@ -328,8 +309,7 @@ export default {
         await this.$refs.provider.validate(this.tmpValue);
       }
     },
-    async selectGetInitData(extParams = {}, loading) {
-      if (typeof extParams !== "object") return;
+    async selectGetInitData() {
       if (!this.item.api) return;
 
       if (Array.isArray(this.item.option.default_options)) {
@@ -351,9 +331,7 @@ export default {
         payload.offset = 0;
       }
 
-      const _payload = Object.assign(payload, extParams);
-
-      const result = await this.$_api.get(this.item.api, _payload).catch(() => {
+      const result = await this.$_api.get(this.item.api, payload).catch(() => {
         this.isLoading = false;
       });
       const responseData = this.item.option.getterKey
@@ -362,31 +340,15 @@ export default {
 
       let processedData = [];
       for (const _data of responseData) {
-        const _display = Array.isArray(this.item.option.list_pointer.display)
-          ? this.item.option.list_pointer.display
-          : [this.item.option.list_pointer.label || "label"];
-        const _separator = this.item.option.list_pointer.separator || "-";
-
-        let _label = [];
-        for (const _d of _display) {
-          if (_data[_d]) {
-            _label.push(_data[_d]);
-          }
-        }
-
         processedData.push({
-          [this.item.option.list_pointer.label || "label"]: _label.join(
-            ` ${_separator} `
-          ),
+          [this.item.option.list_pointer.label || "label"]:
+            _data[this.item.option.list_pointer.label || "label"],
           [this.item.option.list_pointer.code || "code"]:
             _data[this.item.option.list_pointer.code || "code"],
           ...(this.$listeners.selected instanceof Function ? _data : {}),
         });
       }
       this.isLoading = false;
-      if (loading instanceof Function) {
-        loading(false)
-      }
       this.selectOptions = processedData;
     },
 
@@ -463,15 +425,6 @@ export default {
         this.$emit("input", this.tmpValue);
       }
     },
-    // 'item.option': {
-    //   immediate: false,
-    //   deep: true,
-    //   handler(v) {
-    //     if (v && v.default_options) {
-    //       this.setDefaultValue()
-    //     }
-    //   }
-    // }
   },
 };
 </script>

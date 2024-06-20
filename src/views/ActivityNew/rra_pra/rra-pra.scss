@@ -3,7 +3,7 @@
 .rra-pra-form {
     .bg-grey {
         
-        background-color: rgba(199, 199, 199, 0.1);
+        background-color: rgba(128, 128, 128, 0.1);
         border-radius: 12px;
         padding: 1.5em;
     }
@@ -11,7 +11,7 @@
         padding: 2em;
 
         .multiple-row-wrapper {
-            background-color: rgba(199, 199, 199, 0.1);
+            background-color: rgba(128, 128, 128, 0.1);
             border-radius: 12px;
             padding-block: 1em;
             padding-inline: 1.2em;
@@ -46,199 +46,12 @@
         }
 
         .landscape-village {
-            background-color: rgba(199, 199, 199, 0.1);
+            background-color: rgba(128, 128, 128, 0.1);
             padding: 1.5em;
             border-radius: 12px;
 
             .note {
                 font-style: italic;
-            }
-        }
-
-        table.problem-matrix {
-            width: 100%;
-            thead {
-                tr {
-                    th {
-                        font-size: .8em;
-                        font-weight: normal;
-                        color: grey;
-                    }
-                }
-            }
-        }
-    }
-}
-
-.rra-pra-detail {
-    .rra-pra-wrapper {
-        padding: 1em;
-    }
-
-    .rra-pra-list {
-        display: flex;
-        flex-direction: column;
-        .rra-pra-item {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            margin-block: 3px;
-            .label {
-                width: 40%;
-                font-size: .9em;
-                color: rgb(164, 164, 164);
-                padding-right: 5px;
-            }
-            .value {
-                width: 60%;
-                padding-left: 5px;
-                position: relative;
-                font-size: .9em;
-                &::before {
-                    content: ': ';
-                    right: 0;
-                }
-            }
-        }
-    }
-    .rra-pra-detail-card {
-        position: relative;
-    }
-    .segment-menu {
-        position: absolute;
-        transform: translateY(-100%);
-        button {
-            padding-inline: 2em;
-            padding-block: .5em;
-            background-color: white;
-            &.active {
-                color: $success;
-                background-color: $success_light;
-
-
-                i {
-                    color: $success;
-                }
-            }
-
-            &:first-child {
-                border-top-left-radius: 12px;
-            }
-
-            &:last-child {
-                border-top-right-radius: 12px;
-            }
-        }
-    }
-
-    .detail-wrapper {
-        padding-inline: 1em;
-        padding-bottom: 2em;
-
-        table {
-            width: 100%;
-            border-spacing: 0;
-            thead {
-
-                tr {
-                    background-color: #F3F6F9;
-                    th {
-                        font-weight: 500;
-                        color: #b5b5c3 ; 
-                        padding-block: 5px;
-                        font-size: .9em;
-                        padding-inline: 1em;
-                    }
-                }
-                
-            }
-
-            tbody {
-                tr {
-                    td {
-                        text-align: center;
-                        padding-block: 10px;
-                        padding-inline: 1em;
-                    }
-                }
-            }
-        }
-
-        .detail-card-list {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-
-            .detail-card-item {
-                width: 32%;
-                margin-right: 1%;
-                background-color: #F3F6F9;
-                border-radius: 12px;
-                margin-bottom: 10px;
-                padding: 1em;
-
-                &.md-50 {
-                    width: 48%;
-                }
-
-                &.md-100 {
-                    width: 90%;
-                }
-
-                .label {
-                    font-size: .75em;
-                    font-weight: 300;
-                    margin-bottom: 0;
-                    width: 100%;
-                    line-height: 1.5em;
-                }
-
-                .value {
-                    margin-bottom: 0;
-                    font-weight: bold;
-                }
-            }
-        }
-    }
-
-    .rra-pra-detail-menu {
-        .menu-list {
-            
-            padding: 1em;
-            .menu-item {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                padding-block: 7px;
-                border-bottom: 1px solid rgba(128, 128, 128, 0.1);
-                padding-inline: 10px;
-                background-color: white;
-                transition: background-color 0.2s ease;
-                h6 {
-                    font-weight: 500;
-                    font-size: 1em;
-                }
-
-                p {
-                    font-size: .7em;
-                    font-weight: 300;
-                    color: #79797bb6;
-                }
-
-                &:hover {
-                    cursor: pointer;
-                    background-color: lighten($primary_light, 5);
-                    transition: background-color 0.2s ease;
-                }
-
-
-                &.active {
-                    background-color: $primary_light;
-                    i, h6, p {
-                        color: $success;
-                    }
-                }
             }
         }
     }

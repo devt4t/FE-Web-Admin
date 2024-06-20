@@ -1,6 +1,6 @@
 <template>
   <v-row class="scooping-visit-detail">
-    <v-col md="4" xl="3">
+    <v-col md="4">
       <v-card
         data-aos="fade-up"
         data-aos-delay="100"
@@ -54,18 +54,8 @@
 
               <div class="label"></div>
               <div class="value">
-                <v-alert
-                  v-if="data.status === 'ready_to_submit'"
-                  type="warning"
-                  style="font-size: 0.8em"
-                  >Pastikan untuk memeriksa data terlebih dahulu sebelum
-                  melakukan verifikasi</v-alert
-                >
                 <v-btn
-                  v-if="
-                    data.status === 'ready_to_submit' &&
-                    ['25', '23', '13'].includes($store.state.User.role)
-                  "
+                  v-if="data.status === 'ready_to_submit'"
                   variant="warning"
                   class="mt-1"
                   small
@@ -103,34 +93,6 @@
                 </v-btn>
 
                 <span v-if="data.status == 'submit_review'">-</span>
-              </div>
-            </div>
-
-            <div class="scooping-visit-item status d-flex flex-column mb-3">
-              <div class="label">Project</div>
-
-              <div class="value">
-                <h5
-                  v-for="(item, i) in projects"
-                  :key="`scooping-project-${i}`"
-                >
-                  {{ item.projects_project_name }}
-                  <span
-                    :class="{
-                      'font-weight-400': true,
-                      'badge bg-info':
-                        item.project_planting_purposes_code == 'carbon',
-                      'badge bg-light':
-                        item.project_planting_purposes_code == 'non-carbon' ||
-                        !item.project_planting_purposes_code,
-                    }"
-                    >{{
-                      item.project_planting_purposes_code == "carbon"
-                        ? "Carbon"
-                        : "Non Carbon"
-                    }}</span
-                  >
-                </h5>
               </div>
             </div>
           </div>
@@ -202,7 +164,7 @@
       </v-card>
     </v-col>
 
-    <v-col md="8" xl="9">
+    <v-col md="8">
       <v-card
         data-aos="fade-up"
         data-aos-delay="100"
@@ -238,29 +200,11 @@
               </p>
             </div>
           </div>
-
           <DetailModalMap
-            v-if="this.openMaps"
+            v-if="data.village_polygon || data.dry_land_polygon"
             :data="map.data"
             :key="map.key + 'DetailModalMapSCopingVisit'"
           />
-
-          <div
-            v-else
-            class="map-placeholder d-flex flex-column"
-            style="justify-content: center; align-items: center"
-          >
-            <v-btn
-              v-if="data.village_polygon || data.dry_land_polygon"
-              @click="openMaps = true"
-              variant="primary"
-              >Buka Maps</v-btn
-            >
-            <p class="text-white mb-0" v-else>
-              <span v-if="!loading">Belum verifikasi GIS</span>
-              <span v-else>Belum verifikasi GIS</span>
-            </p>
-          </div>
 
           <div class="doc-field-wrapper mt-4">
             <div
@@ -320,34 +264,20 @@
         v-if="data.dry_land_area"
       />
     </v-col>
-    <v-col md="12">
-      <scooping-visit-verification
-        :dataKey="verifModal"
-        @success="onSuccessVerification"
-      />
-    </v-col>
   </v-row>
 </template>
 
 <script>
 import DetailModalMap from "../../Activity/ScopingVisit/components/DetailModalMap.vue";
 import ScoopingVisitGisVerification from "./ScoopingVisitGisVerification.vue";
-import ScoopingVisitVerification from "./ScoopingVisitVerification.vue";
 import defaultData from "./ScoopingVisitData";
-
 export default {
   name: "scooping-visit-detail",
-  components: {
-    DetailModalMap,
-    ScoopingVisitGisVerification,
-    ScoopingVisitVerification,
-  },
+  components: { DetailModalMap, ScoopingVisitGisVerification },
   data() {
     return {
       verifGisModal: 1,
-      verifModal: 1,
       data: {},
-      openMaps: false,
       updating: false,
       fields: [
         {
@@ -394,10 +324,6 @@ export default {
             {
               key: "accessibility",
               label: "Aksesibilitas",
-              type: "badge",
-              variant: "primary",
-              value_type: "array",
-              translate: "accessibility",
             },
             {
               key: "water_source",
@@ -525,7 +451,6 @@ export default {
 
       otherNgo: [],
       villagePerson: [],
-      projects: [],
 
       map: {
         key: 11101203,
@@ -639,12 +564,6 @@ export default {
           data_no: scoopingData.data.data_no,
         }
       );
-      const scoopingProjects = await this.$_api.get(
-        "GetDetailScoopingVistiProject_new",
-        {
-          data_no: scoopingData.data.data_no,
-        }
-      );
       this.data = scoopingData.data;
       this.$set(
         this.map.data,
@@ -657,28 +576,14 @@ export default {
         scoopingData.data.dry_land_polygon
       );
 
-      Promise.all([otherNgo, villagePerson, scoopingProjects]).then(
-        ([resNgo, resPerson, resProject]) => {
-          this.otherNgo = resNgo.data;
-          this.villagePerson = resPerson.data;
-
-          this.projects = resProject.data;
-          // this.$set(this.formData, 'project_id', resProject.data)
-          // this.$set(this.formData, 'project_id', [
-          //   {
-          //     label: 'Test',
-          //     code: 1,
-          //   },
-          //   {
-          //     label: 'Test1',
-          //     code: 2,
-          //   },
-          // ])
-        }
-      );
+      Promise.all([otherNgo, villagePerson]).then(([resNgo, resPerson]) => {
+        this.otherNgo = resNgo.data;
+        this.villagePerson = resPerson.data;
+      });
     },
 
     async onVerification(type) {
+      console.log("called", type);
       if (this.updating) return;
       this.updating = true;
       if (type == "mail_to_gis") {
@@ -694,11 +599,34 @@ export default {
             this.updating = false;
           });
       } else if (type === "verification_gis") {
-        this.verifGisModal += 1;
+        this.verifGisModal = this.verifGisModal + 1;
         this.updating = false;
       } else if (type === "verification_um") {
-        this.verifModal += 1;
-        this.updating = false;
+        this.$_alert
+          .confirm(
+            "Verifikasi Data?",
+            "Apakah anda yakin ingin verifikasi data?"
+          )
+          .then((res) => {
+            if (res.isConfirmed) {
+              this.$_api
+                .post("UpdateVerifScoopingVisit_new", {
+                  current_id: this.$route.query.id,
+                  verificator_email: this.$store.state.User.email,
+                })
+                .then(() => {
+                  this.$_alert.success("Data berhasil diverifikasi");
+                  this.$set(this.data, "is_verify", 1);
+                  this.$set(this.data, "status", "submit_review");
+                  this.updating = false;
+                  // this.getData()
+                })
+                .catch((err) => {
+                  this.$_alert.error(err);
+                  this.updating = false;
+                });
+            }
+          });
       }
     },
 
@@ -706,12 +634,6 @@ export default {
       this.$set(this.data, "is_verify", 1);
       this.$set(this.data, "status", "ready_to_submit");
 
-      // this.getData();
-    },
-
-    onSuccessVerification() {
-      this.$set(this.data, "is_verify", 1);
-      this.$set(this.data, "status", "ready_to_submit");
       this.getData();
     },
   },

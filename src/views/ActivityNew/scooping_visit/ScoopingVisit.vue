@@ -1,49 +1,38 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :key="'scooping-visit-' + componentKey"
-    :hideDelete="$store.state.User.role != 13"
-  >
+  <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey">
     <template v-slot:create-form>
       <scooping-visit-form />
     </template>
 
-    <template v-slot:list-action-update="{ item }">
-      <button
-        v-if="item.status == 'document_saving' || item.is_verify == 0"
-        class="geko-list-action-update"
-        @click="
-          $router.push({
-            query: {
-              view: 'update',
-              id: item.id,
-            },
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn
+        v-if="
+          !updateIds.includes(item.id) &&
+          item.status === 'ready_to_submit' &&
+          ['13', '25', '23'].includes($store.state.User.role)
+        "
+        variant="warning"
+        class="mt-1"
+        small
+        @click="onVerification(item)"
+        >Verifikasi</v-btn
+      >
 
-            params: item,
-          })
+      <v-btn
+        variant="warning"
+        class="mt-1"
+        small
+        @click="onVerification(item)"
+        v-if="
+          !updateIds.includes(item.id) &&
+          item.status === 'document_saving' &&
+          item.is_verify == 0 &&
+          item.email_to_gis < 3
         "
       >
-        <v-icon small>mdi-pencil-minus</v-icon>
-      </button>
-      <div v-else></div>
-    </template>
-
-    <!-- <template v-slot:list-bottom-action="{ item }">
-      <v-btn v-if="
-        !updateIds.includes(item.id) &&
-        item.status === 'ready_to_submit' &&
-        ['13', '25', '23'].includes($store.state.User.role)
-      " variant="warning" class="mt-1" small @click="onVerification(item)">Verifikasi</v-btn>
-
-      <v-btn variant="warning" class="mt-1" small @click="onVerification(item)" v-if="
-        !updateIds.includes(item.id) &&
-        item.status === 'document_saving' &&
-        item.is_verify == 0 &&
-        item.email_to_gis < 3
-      ">
         Email to GIS
       </v-btn>
-    </template> -->
+    </template>
 
     <template v-slot:list-village_area="{ item }">
       <div class="min-w-70px text-right">
@@ -70,28 +59,6 @@
 
     <template v-slot:list-potential_dusun="{ item }">
       <div class="text-no-wrap">{{ item.potential_dusun }} dusun</div>
-    </template>
-
-    <template v-slot:list-project="{ item }">
-      <div class="d-flex flex-col align-items-center min-w-300px" v-if="false">
-        <ol>
-          <li>
-            <div
-              class="d-flex flex-row pb-2"
-              :class="{
-                'border-dotted-bottom': true,
-              }"
-            >
-              <h5 class="font-weight-400 mb-0 text-09-em">
-                Project Pembangunan Masjid
-              </h5>
-              <div class="d-flex flex-row" style="align-items: flex-start">
-                <span class="badge bg-info text-08-em ml-2">Carbon</span>
-              </div>
-            </div>
-          </li>
-        </ol>
-      </div>
     </template>
 
     <template v-slot:detail-row>
@@ -163,15 +130,13 @@ export default {
         setter: "addProjectUtils",
         update: "updateProjectUtils",
         delete: "DeleteScoopingVisit_new",
-        deleteLabel: "scooping_no",
-        deleteKey: "data_no",
         delete_ext_payload: {
-          delete_type: "hard_delete",
+          delete_type: "soft_delete",
         },
         globalFilter: {
-          // project_purpose: {
-          //   setter: "purpose_code",
-          // },
+          project_purpose: {
+            setter: "purpose_code",
+          },
           program_year: {
             setter: "program_year",
           },
@@ -233,20 +198,6 @@ export default {
                 class: "min-w-70px",
               },
               detail: true,
-              create: false,
-              update: false,
-              filter: false,
-            },
-          },
-          {
-            id: "project",
-            label: "Project",
-            methods: {
-              list: {
-                show: false,
-                type: "row-slot",
-              },
-              detail: false,
               create: false,
               update: false,
               filter: false,
