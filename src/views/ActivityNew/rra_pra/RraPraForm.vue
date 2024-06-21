@@ -45,7 +45,7 @@
                   code: 'id',
                   label: 'data_no',
                   separator: '-',
-                  display: ['desas_name', 'desas_name'],
+                  display: ['data_no', 'desas_name'],
                 },
               },
             }" @selected="onSelectScoopingVisit($event)" />
