@@ -664,7 +664,6 @@ export default {
         await this.submitMasterDetail("addPraLandOwnership_new", item);
       }
 
-      return;
       for (const item of this.formFieldData.disasterDetails) {
         item.pra_no = praCode;
         await this.submitMasterDetail("addPraDisasterDetail_new", item);
@@ -691,6 +690,9 @@ export default {
       }
       for (const item of this.formFieldData.farmerIncomes) {
         item.pra_no = praCode;
+        item.source_income = item.source_income
+          ? item.source_income.join(",")
+          : null;
         await this.submitMasterDetail("addPraFarmerIncome_new", item);
       }
 
@@ -700,19 +702,19 @@ export default {
       }
 
       this.$_alert.success("Data rra berhasil ditambahkan");
-      // this.$router.replace({
-      //   query: {
-      //     view: "detail",
-      //     id: this.$route.query.id,
-      //   },
-      // });
+      this.$router.replace({
+        query: {
+          view: "detail",
+          id: this.$route.query.id,
+        },
+      });
     },
   },
 
   data() {
     return {
       componentKey: 1,
-      tmpPraCode: "PRA-0038",
+      tmpPraCode: null,
       formData: {},
       formFieldData: {
         landOwnerships: [{ pra_no: null }],
@@ -1081,6 +1083,7 @@ export default {
               validation: ["required"],
               size: 6,
               type: "select",
+              setter: "gender",
               options: defaultData.gender,
               show_if: "collection_type",
               show_if_equals: "Sampling",

@@ -240,8 +240,12 @@ export default {
                 this.$store.state.loadingOverlay = true
                 this.$store.state.loadingOverlayText = 'Mengambil daftar kolom lahan...'
                 this.configs[3].fields.find(v => v.id == 'show_fields').items = await axios.get(
-                    this.$store.getters.getApiUrl(`TempGetLahanFields`),
-                    this.$store.state.apiConfig
+                    `TempGetLahanFields`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.$store.state.token}`
+                        }
+                    }
                 ).then(res => {
                     return res.data.map(val => {
                         const existField = this.configs[3].fields.find(v => v.id == val.Field)
