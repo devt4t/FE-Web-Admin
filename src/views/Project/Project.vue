@@ -1,375 +1,697 @@
 <template>
-  <div>
-    <v-breadcrumbs
-      :dark="$store.state.theme == 'dark'"
-      data-aos="fade-right"
-      class="breadcrumbsmain"
-      :items="itemsbr"
-      divider=">"
-      large
-    ></v-breadcrumbs>
+  <geko-base-crud :config="config">
+    <template v-slot:list-date="{ item }">
+      <div class="min-w-200px">
+        <span>{{ item.project_date | parse("date") }}</span>
+        <span v-if="item.end_project">
+          {{ " - " }} {{ item.end_project | parse("date") }}</span>
+      </div>
+    </template>
+    <template v-slot:detail-date="{ item }">
+      <div class="min-w-200px">
+        <span>{{ item.project_date | parse("date") }}</span>
+        <span v-if="item.end_project">
+          {{ " - " }} {{ item.end_project | parse("date") }}</span>
+      </div>
+    </template>
 
-    <!-- dialogs -->
-    <dialogAddProject
-      :show="openAddDialog"
-      @close="closeAddDialog()"
-    >
-    </dialogAddProject>
-    <dialogEditProject
-      :show="editModul.show"
-      :itemData="editModul.itemData"
-      @close="closeEditDialog()"
-    ></dialogEditProject>
-    <dialogDetailProject
-      :show="detailModul.show"
-      :datas="detailModul.itemData"
-      @close="detailModul.show = false"
-    ></dialogDetailProject>
+    <template v-slot:list-donors_name="{ item }">
+      <span class="d-block min-w-150px">{{ item.participants_first_name }}
+        {{ item.participants_last_name || "" }}</span>
+    </template>
 
-    <v-data-table
-      data-aos="fade-up"
-      data-aos-delay="200"
-      multi-sort
-      :headers="headers"
-      :items="dataobject"
-      :search="search"
-      :loading="tableLoading"
-      :footer-props="{
-        itemsPerPageText: 'Jumlah Data Per Halaman'
-      }"
-      class="rounded-xl elevation-6 mx-3 pa-1"
-      @update:page="($p) => page = $p"
-      @update:items-per-page="($p) => itemsPerPage = $p"
-    >
-      
-      <template v-slot:top>
-        <v-toolbar flat class="rounded-xl">
-        <!-- program years-->
-          <v-select
-              color="success"
-              item-color="success"
-              v-model="localConfig.programYear"
-              :items="['All Data',...$store.state.programYear.options]"
-              :disabled="tableLoading"
-              outlined
-              dense
-              hide-details
-              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-              rounded
-              label="Tahun Program"
-              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-              style="max-width: 200px"
-          ></v-select>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Pencarian"
-            placeholder="Pencarian..."
-            hide-details
-            dense
-            rounded
-            outlined
-            color="green"
-            style="max-width: 350px;"
-          ></v-text-field>
-          <v-divider class="mx-2 d-none d-md-block" inset></v-divider>
-            <v-btn
-              rounded
-              dark
-              class="px-9"
-              color="green"
-              @click="openAddDialog=true"
-            >
-            <strong>Tambah Data Project
-              <v-icon class="mx-2">mdi-plus</v-icon> 
-            </strong>
-            </v-btn>
-          <!-- <v-select
-              color="success"
-              item-color="success"
-              v-model="dataSwitch"
-              :items="dataSwitchItems"
-              outlined
-              dense
-              hide-details
-              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-              rounded
-              label="Donor-Partisipan"
-              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-              style="max-width: 200px"
-              v-on:change="SelectedDataSwitch"
-          ></v-select> -->
-        </v-toolbar>
-      </template>
-      <template v-slot:item.index="{ index }">
-        {{ (itemsPerPage * (page-1)) + index + 1 }}
-      </template>
-      <template v-slot:header.co2_capture="{header}">
-        Proyeksi CO<sup>2</sup>
-      </template>
+    <template v-slot:detail-donors_name="{ item }">
+      <span>{{ item.participants_first_name }} </span>
+      <span v-if="item.participants_last_name">{{ ' ' }}{{ item.participants_last_name }} </span>
+    </template>
 
-      <!--Status row-->
-      <template v-slot:item.status="{item}">
-        <v-chip :color="item.active > 0 ? 'green': 'red'" class="white--text">
-          <v-icon class="mr-1">{{ item.active > 0? 'mdi-check-bold': 'mdi-close-thick' }}</v-icon>
-          {{ item.active>0?'Aktif': 'Tidak Aktif'}}
-        </v-chip>
-      </template>
-      <template v-slot:item.actions="{ item }">
-        <v-menu content-class="rounded-xl">
-          <template v-slot:activator="{attrs, on}">
-            <v-btn v-bind="attrs" v-on="on" small fab icon>
-              <v-icon>mdi-menu-down</v-icon>
-            </v-btn>
-          </template>
-          <v-card class="pa-2 d-flex align-stretch flex-column justify-center">
-          <!--showModal('detail', item)-->
-              <v-btn
-                color="blue white--text"
-                   rounded
-                   small
-                   class="pl-1 mt-1 d-flex justify-start align-center"
-                   :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                   @click="opensDetailDialog(item)">
-              <v-icon class="mr-1">mdi-information-outline</v-icon>
-              Detail
-            </v-btn>
-            <v-btn
-                  color="orange white--text"
-                     rounded
-                     small
-                     class="pl-1 mt-1 d-flex justify-start align-center"
-                     :disabled="!$store.state.User.role_group=='IT'"
-                     @click="opensEditDialog(item)">
-                <v-icon class="mr-1">mdi-refresh</v-icon>
-                Edit Data Project
-              </v-btn>
-            <v-btn
-                v-if="item.active == 0"
-                color="green white--text"
-                   rounded
-                   small
-                   class="pl-1 mt-1 d-flex justify-start align-center"
-                   :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                   @click="ProjectActivation(item)">
-              <v-icon class="mr-1">mdi-check-bold</v-icon>
-              Aktifkan
-            </v-btn>
-            <v-btn
-                v-if="item.active != 0"
-                color="red white--text"
-                   rounded
-                   small
-                   class="pl-1 mt-1 d-flex justify-start align-center"
-                   :disabled="!$store.state.User.role_name=='PLANNING MANAGER' && !$store.state.User.role_group=='IT'"
-                   @click="ProjectActivation(item)">
-              <v-icon class="mr-1">mdi-close-thick</v-icon>
-              Non-Aktifkan
-            </v-btn>
-              <!--{showModal('form', item)}-->
-          </v-card>
-        </v-menu>
-      </template>
-    </v-data-table>
-
-    <v-snackbar
-      v-model="snackbar"
-      :color="colorsnackbar"
-      :timeout="timeoutsnackbar"
-    >
-      {{ textsnackbar }}
-    </v-snackbar>
-  </div>
+    <template v-slot:update-project_name="{ formData, field }">
+      <v-col md="6">
+        <geko-input v-model="formData.project_name" :item="{
+          label: field.label,
+          type: 'text',
+          validation: ['required'],
+        }" />
+      </v-col>
+    </template>
+  </geko-base-crud>
 </template>
 
 <script>
-import axios from "axios";
-import Swal from 'sweetalert2'
-import dialogAddProject from "@/views/Project/component/dialogAddProject"
-import dialogEditProject from "@/views/Project/component/dialogEditProject";
-import dialogDetailProject from "./component/dialogDetailProject.vue";
-
 export default {
-  name: "Donor",
-  components: {
-    dialogAddProject,
-    dialogEditProject,
-    dialogDetailProject
-  },
-  data: () => ({
-    openAddDialog: false,
-    editModul: {
-      show: false,
-      itemData: {}
-    },
-    detailModul:{
-      show: false,
-      itemData: {}
-    },
+  name: "crud-donor",
+  watch: {},
+  data() {
+    return {
+      config: {
+        title: "Project",
+        model_api: null,
+        getter: "GetProjectAllAdmin",
+        getterDataKey: "data",
+        setter: "AddNewProject",
+        update: "UpdateDataProject",
+        delete: "deleteProject",
+        update_id_setter: "current_id",
+        deleteKey: "code",
+        pk_field: null,
+        permission: {
+          create: "project-create",
+          read: "project-list",
+          update: "project-update",
+          show: "project-show",
+          lookup: "project-lookup",
+          delete: "project-delete",
+        },
+        formOption: {
+          sort: [
+            "project_name",
+            "project_no",
+            "donors_name",
 
-    page: 1,
-    itemsPerPage: 10,
-    itemsbr: [
-      {
-        text: "Main Data",
-        disabled: true,
-        href: "breadcrumbs_dashboard",
-      },
-      {
-        text: "Data Project",
-        disabled: true,
-        href: "breadcrumbs_link_1",
-      },
-    ],
-    search: "",
-    authtoken: "",
-    BaseUrlGet: "",
-    tableLoading: false,
-    headers: [
-      {text: 'No', value: 'index'},
-      {text: 'Nomor', value: 'project_no'},
-      {text: 'Kategori', value: 'project_category'},
-      {text: 'Nama Project', value: 'project_name'},
-      {test: 'Status', value: 'status'},
-      {text: 'Actions', value: 'actions', align: 'right'},
-    ],
-    dataobject: [],
-    dataSwitch: "Donor",
-    dataSwitchItems: ["Donor", "Participant", "else"],
-
-    snackbar: false,
-    textsnackbar: "Test",
-    timeoutsnackbar: 2000,
-    colorsnackbar: null,
-    localConfig: {
-      programYear: '',
-    },
-  }),
-
-  created() {
-    this.authtoken = localStorage.getItem("token");
-    this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
-
-    this.localConfig.programYear = this.$store.state.programYear.model
-    this.initialize();
-  },
-  watch: {
-    'localConfig.programYear': {
-      handler(val) {
-        this.initialize()
-      }
-    }
-  },
-
-  computed: {
-    
-  },
-  methods: {
-    async initialize() {
-      try {
-          this.$store.state.loadingOverlay = true
-          this.$store.state.loadingOverlayText = 'Memuat Data...'
-          const User = this.$store.state.User
-          const created_by = []
-          let url = this.$store.getters.getApiUrl(`GetProjectAllAdmin`)
-          const res = await axios.get(url, this.$store.state.apiConfig)
-          this.dataobject = res.data.Project
-          } catch (err) {
-          this.dataobject = []
-            this.$store.state.loadingOverlay = false
-            this.$store.state.loadingOverlayText = ''
-          this.errorResponse(err)
-          } finally {
-            this.$store.state.loadingOverlay = false
-            this.$store.state.loadingOverlayText = ''
-          }
-    },
-    opensEditDialog(item){
-      this.editModul.show=true
-      this.editModul.itemData = item
-    },
-    opensDetailDialog(item){
-      this.detailModul.show=true
-      this.detailModul.itemData = item
-    },
-    closeEditDialog(){
-      this.editModul.show=false
-      this.initialize()
-    },
-    closeAddDialog(){
-      this.openAddDialog=false
-      this.initialize()
-    },
-    SelectedDataSwitch(){
-      console.log(this.dataSwitch)
-      this.initialize();
-    },
-    async ProjectActivation(item){
-            try{
-                const confirmation = await Swal.fire({
-                    title: 'Anda Yakin Untuk Aktif/Non-Aktifkan Data Project?',
-                    text: "Proses Tidak Dapat Dikembalikan!",
-                    icon: 'warning',
-                    confirmButtonColor: '#2e7d32',
-                    confirmButtonText: 'Okay',
-                    showCancelButton: true
-                })
-                if(confirmation.isConfirmed){
-                    const params = {
-                        project_no: item.project_no,
-                    }
-                    console.log(params)
-                    // const url = `AddNewProject?${params}`
-                    const PostData = await axios.post(
-                        this.BaseUrlGet + "ProjectActivator",
-                            params,
-                            {
-                            headers: {
-                                Authorization: `Bearer ` + this.authtoken,
-                            },
-                            }
-                    );
-                    const data = PostData.data
-                    await Swal.fire({
-                        title: 'Sukses!',
-                        text: "Berhasil Menyimpan Perubahan Data Project!",
-                        icon: 'success',
-                        confirmButtonColor: '#2e7d32',
-                        confirmButtonText: 'Okay'
-                    })
-                    
-                }
-            }catch(error){
-                await Swal.fire({
-                    title: 'Error!',
-                    text: "Gagal Menyimpan Perubahan Data Project!",
-                    icon: 'error',
-                    confirmButtonColor: '#2e7d32',
-                    confirmButtonText: 'Okay'
-                })
-            }
-            this.initialize()
+            "project_types_name",
+            "project_planting_environments_name",
+            "total_tree",
+            "project_planting_purposes_name",
+            "co2_capture",
+            "project_period_type",
+            "year_interval",
+            "date",
+            "end_project",
+            "location",
+            "description",
+            "active",
+          ],
+        },
+        slave: [],
+        fields: [
+          {
+            id: "id",
+            methods: {
+              list: false,
+              detail: false,
+              create: false,
+              update: false,
+              filter: false,
+            },
           },
-    getStatusColumn(type, status) {
-      if (type == 'bg_color') {
-        if (status == '0') return 'orange'
-        if (status == '1') return 'green darken-1'
-        if (status == '2') return 'red'
-      }
-      if (type == 'icon') {
-        if (status == '0') return 'mdi-google-downasaur' //mdi:cancel
-        if (status == '1') return 'mdi-check-circle'
-        if (status == '2') return 'mdi-alert-rhombus-outline'
-      }
-      if (type == 'text') {
-        if (status == '0') return 'Belum Mengikuti RRA'
-        if (status == '1') return 'Potensial'
-        if (status == '2') return 'Tidak Potensial'
+
+          {
+            id: "project_name",
+            label: "Nama Project",
+            methods: {
+              list: {
+                class: "min-w-200px",
+              },
+              detail: true,
+              create: {
+                type: "text",
+                validation: ["required"],
+                label: "Nama Project",
+                col_size: 6,
+                separator: "INFORMASI PROJECT",
+              },
+              update: {
+                type: "row-slot",
+                validation: ["required"],
+                label: "Nama Project",
+                col_size: 6,
+                separator: "INFORMASI PROJECT",
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "project_no",
+            label: "No. Project",
+            methods: {
+              list: true,
+              detail: true,
+              create: false,
+              update: {
+                validation: [],
+                col_size: 6,
+                type: "text",
+                disabled: true,
+                option: {
+                  getter: "project_no",
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "donors_name",
+            label: "Donor",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: {
+                type: 'slot',
+              },
+              create: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "GetDonorAllAdmin",
+                setter: "donors_id",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  list_pointer: {
+                    code: "id",
+                    label: "first_name",
+                    separator: ' ',
+                    display: ["first_name", 'last_name'],
+                  },
+                },
+              },
+              update: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "GetDonorAllAdmin",
+                setter: "donors_id",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getter: "participants_id",
+                  default_label: "participants_first_name",
+                  list_pointer: {
+                    code: "id",
+                    label: "first_name",
+                    display: ["first_name"],
+                  },
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "project_types_name",
+            label: "Tipe Planting",
+            methods: {
+              list: true,
+              detail: true,
+              create: {
+                validation: ["required"],
+                col_size: 6,
+                type: "select",
+                setter: "planting_type_id",
+                getter: "getAllProjectUtils",
+                getter_key: "project_planting_type_id",
+                separator: "Informasi Planting",
+                searchable: false,
+                param: {
+                  project_modul: "type",
+                },
+                option: {
+                  list_pointer: {
+                    code: "id",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+              update: {
+                validation: ["required"],
+                col_size: 6,
+                type: "select",
+                setter: "planting_type_id",
+                getter: "getAllProjectUtils",
+                separator: "Informasi Planting",
+                param: {
+                  project_modul: "type",
+                },
+                option: {
+                  getter: "project_types_id",
+                  default_label: "project_types_name",
+                  list_pointer: {
+                    code: "code",
+                    label: "label",
+                    display: ["name"],
+                  },
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "project_planting_purposes_name",
+            label: "Tujuan",
+            methods: {
+              list: {
+                class: {
+                  Carbon: "badge bg-info",
+                  "Non Carbon": "badge bg-light",
+                },
+              },
+              detail: true,
+              create: {
+                validation: ["required"],
+                col_size: 6,
+                type: "select",
+                getter: "getAllProjectUtils",
+                setter: "planting_purpose_id",
+                param: {
+                  project_modul: "purpose",
+                },
+                option: {
+                  list_pointer: {
+                    code: "id",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+              update: {
+                validation: ["required"],
+                col_size: 6,
+                type: "select",
+                getter: "getAllProjectUtils",
+                setter: "planting_purpose_id",
+                param: {
+                  project_modul: "purpose",
+                },
+                option: {
+                  getter: "project_planting_purposes_id",
+                  default_label: "project_planting_purposes_name",
+                  list_pointer: {
+                    code: "id",
+                    label: "label",
+                    display: ["name"],
+                  },
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "total_tree",
+            label: "Total Pohon",
+            methods: {
+              list: false,
+              detail: {
+                view_data: "total_trees",
+                transform: "ts",
+              },
+              create: {
+                type: "number",
+                setter: "tree_amount",
+                validation: ["required"],
+                col_size: 6,
+              },
+              update: {
+                type: "number",
+                setter: "tree_amount",
+                validation: ["required"],
+                col_size: 6,
+                option: {
+                  getter: "total_trees",
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "co2_capture",
+            label: "Proyeksi CO2",
+            methods: {
+              list: {
+                transform: "ts",
+                class: "text-right",
+              },
+              detail: {
+                transform: "ts",
+              },
+              create: {
+                type: "number",
+                validation: ["required"],
+                col_size: 6,
+                show_if: {
+                  id: "planting_purpose_id",
+                  type: "equal",
+                  value: 7,
+                },
+              },
+              update: {
+                type: "number",
+                validation: ["required"],
+                col_size: 6,
+                show_if: {
+                  id: "planting_purpose_id",
+                  type: "equal",
+                  value: 7,
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "project_planting_environments_name",
+            label: "Media Tanam",
+            methods: {
+              list: true,
+              detail: true,
+              create: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                setter: "planting_environment_id",
+                getter: "getAllProjectUtils",
+                param: {
+                  project_modul: "environment",
+                },
+                option: {
+                  list_pointer: {
+                    code: "id",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+              update: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                setter: "planting_environment_id",
+                getter: "getAllProjectUtils",
+                param: {
+                  project_modul: "environment",
+                },
+                option: {
+                  getter: "project_planting_environments_id",
+                  default_label: "project_planting_environments_name",
+                  list_pointer: {
+                    code: "id",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "project_period_type",
+            label: "Project Period",
+            methods: {
+              list: false,
+              detail: false,
+              create: {
+                validation: [],
+                type: "select-radio",
+                col_size: 12,
+                setter: "project_period",
+                option: {
+                  default_value: "one-time",
+                  default_options: [
+                    {
+                      label: "One Time",
+                      icon: "mdi-pine-tree-variant-outline",
+                      code: "one-time",
+                    },
+                    {
+                      label: "Annually",
+                      icon: "mdi-forest",
+                      code: "annually",
+                    },
+                  ],
+                  list_pointer: {
+                    label: "label",
+                    code: "code",
+                    display: ["label"],
+                  },
+                },
+
+                separator: "LAINNYA",
+              },
+              update: {
+                validation: [],
+                type: "select-radio",
+                col_size: 12,
+                setter: "project_period",
+                option: {
+                  default_value: "one-time",
+                  default_options: [
+                    {
+                      label: "One Time",
+                      icon: "mdi-pine-tree-variant-outline",
+                      code: "one-time",
+                    },
+                    {
+                      label: "Annually",
+                      icon: "mdi-forest",
+                      code: "annually",
+                    },
+                  ],
+                  list_pointer: {
+                    label: "label",
+                    code: "code",
+                    display: ["label"],
+                  },
+                },
+
+                separator: "LAINNYA",
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "year_interval",
+            label: "Planting Cycle",
+            methods: {
+              list: false,
+              detail: false,
+              create: {
+                label: "Planting Cycle (year)",
+                validation: ["required"],
+                type: "number",
+                col_size: 12,
+                setter: "year_interval",
+                show_if: {
+                  id: "project_period",
+                  type: "equal",
+                  value: "annually",
+                },
+              },
+              update: {
+                label: "Planting Cycle (year)",
+                validation: ["required"],
+                type: "number",
+                col_size: 12,
+                setter: "year_interval",
+                show_if: {
+                  id: "project_period",
+                  type: "equal",
+                  value: "annually",
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "date",
+            label: "Tanggal",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              detail: {
+                type: "slot",
+              },
+              create: {
+                label: "Tanggal Mulai",
+                validation: ["required"],
+                col_size: 6,
+                type: "date",
+                setter: "start_date",
+              },
+              update: {
+                label: "Tanggal Mulai",
+                validation: ["required"],
+                col_size: 6,
+                type: "date",
+                setter: "start_date",
+                option: {
+                  getter: "project_date",
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "end_project",
+            label: "Tanggal Selesai",
+            methods: {
+              list: false,
+              detail: false,
+              create: {
+                validation: ["required"],
+                col_size: 6,
+                type: "date",
+                setter: "end_date",
+              },
+              update: {
+                validation: ["required"],
+                col_size: 6,
+                type: "date",
+                setter: "end_date",
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "location",
+            label: "Lokasi",
+            methods: {
+              list: false,
+              detail: true,
+              create: {
+                validation: ["required"],
+                col_size: 12,
+                type: "textarea",
+              },
+              update: {
+                validation: ["required"],
+                col_size: 12,
+                type: "textarea",
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "description",
+            label: "Deskripsi Project",
+            methods: {
+              list: false,
+              detail: {
+                transform: "no-empty",
+                view_data: 'note',
+              },
+              create: {
+                validation: [],
+                col_size: 12,
+                type: "textarea",
+              },
+              update: {
+                validation: [],
+                col_size: 12,
+                type: "textarea",
+                option: {
+                  getter: "note",
+                  setter: "description",
+                },
+              },
+              filter: false,
+            },
+          },
+
+          {
+            id: "active",
+            label: "Status",
+            methods: {
+              list: {
+                transform: "active",
+                class: {
+                  1: "badge bg-success text-no-wrap",
+                  0: "badge bg-danger text-no-wrap",
+                },
+              },
+              detail: {
+                transform: "active",
+                class: {
+                  1: "badge bg-success text-no-wrap",
+                  0: "badge bg-danger text-no-wrap",
+                },
+              },
+              create: {
+                validation: ["required"],
+                type: "date",
+                col_size: 6,
+                type: "select",
+                option: {
+                  default_options: [
+                    {
+                      code: 0,
+                      label: "Tidak Aktif",
+                    },
+                    {
+                      code: 1,
+                      label: "Aktif",
+                    },
+                  ],
+                  default_value: 1,
+                  list_pointer: {
+                    code: "code",
+                    label: "label",
+                    display: ["name"],
+                  },
+                },
+              },
+              update: {
+                validation: ["required"],
+                type: "date",
+                col_size: 6,
+                type: "select",
+                option: {
+                  getter: "active",
+                  default_options: [
+                    {
+                      code: 0,
+                      label: "Tidak Aktif",
+                    },
+                    {
+                      code: 1,
+                      label: "Aktif",
+                    },
+                  ],
+                  default_value: 1,
+                  list_pointer: {
+                    code: "code",
+                    label: "label",
+                    display: ["name"],
+                  },
+                },
+              },
+              filter: false,
+            },
+          },
+        ],
+      },
+    };
+  },
+
+  methods: {
+    parseAddress(item) {
+      let locations = [];
+      let keys = ["city", "state", "country"];
+
+      for (const key of keys) {
+        if (item[key]) {
+          locations.push(item[key]);
+        }
       }
 
-      return ''
+      return locations.join(", ").toLowerCase();
     },
-    
   },
 };
 </script>

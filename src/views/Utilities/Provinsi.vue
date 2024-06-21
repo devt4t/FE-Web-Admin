@@ -14,13 +14,13 @@
       :items="dataobjectprov"
       :search="search"
       :footer-props="{
-        itemsPerPageText :'Jumlah Data Per Halaman'
+        itemsPerPageText: 'Jumlah Data Per Halaman',
       }"
       class="rounded-xl elevation-6 mx-3 pa-1"
       data-aos="fade-up"
       data-aos-delay="200"
-      @update:page="($p) => page = $p"
-      @update:items-per-page="($p) => itemsPerPage = $p"
+      @update:page="($p) => (page = $p)"
+      @update:items-per-page="($p) => (itemsPerPage = $p)"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
@@ -34,10 +34,16 @@
             outlined
             dense
             rounded
-            style="max-width: 350px;"
+            style="max-width: 350px"
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn rounded dark class="mb-2" @click="showAddModal()" color="green">
+          <v-btn
+            rounded
+            dark
+            class="mb-2"
+            @click="showAddModal()"
+            color="green"
+          >
             <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px">
@@ -96,7 +102,7 @@
         </v-toolbar>
       </template>
       <template v-slot:item.no="{ index }">
-        {{ (itemsPerPage * (page-1)) + index + 1 }}
+        {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon class="mr-2" @click="editItem(item)" color="warning">
@@ -144,7 +150,7 @@ export default {
     authtoken: "",
     BaseUrlGet: "",
     headers: [
-      { text: "No", value: "no", width: '70' },
+      { text: "No", value: "no", width: "70" },
       {
         text: "Kode Provinsi",
         align: "start",
@@ -261,7 +267,6 @@ export default {
         province_code: this.defaultItem.province_code,
         name: this.defaultItem.name,
       };
-      console.log(datapost);
       // this.dialogDetail = false;
       try {
         const response = await axios.post(
