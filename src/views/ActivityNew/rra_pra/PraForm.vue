@@ -701,6 +701,16 @@ export default {
         await this.submitMasterDetail("addPraExistingProblem_new", item);
       }
 
+      for (const item of this.formFieldData.floras) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addSocialImpactFloraDetails_new", item);
+      }
+
+      for (const item of this.formFieldData.faunas) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addSocialImpactFaunaDetails_new", item);
+      }
+
       this.$_alert.success("Data rra berhasil ditambahkan");
       this.$router.replace({
         query: {
@@ -725,6 +735,8 @@ export default {
         pesticideDetails: [{ pra_no: null }],
         disasterDetails: [],
         existingProblems: [{ pra_no: null }],
+        floras: [],
+        faunas: [],
       },
       formatDate(date, format = "DD MMMM YYYY") {
         return moment(date).format(format);
@@ -1360,6 +1372,108 @@ export default {
               size: 11,
               type: "textarea",
               setter: "detail",
+            },
+          ],
+        },
+
+        {
+          name: "Data Flora Endemik",
+          fieldData: "floras",
+          allowEmpty: true,
+          fields: [
+            {
+              name: "Nama",
+              type: "text",
+              setter: "flora_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Jenis",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "flora_categories",
+              options: defaultData.flora_type,
+            },
+
+            {
+              type: "delete",
+              size: 1,
+            },
+            {
+              name: "Populasi",
+              validation: [],
+              size: 5,
+              type: "number",
+              setter: "flora_population",
+            },
+            {
+              name: "Sumber Air",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "flora_foodsource",
+              options: defaultData.watersource_type,
+            },
+            {
+              name: "Status",
+              validation: ["required"],
+              size: 5,
+              type: "select",
+              setter: "flora_status",
+              options: defaultData.flora_status,
+            },
+          ],
+        },
+
+        {
+          name: "Data Fauna Endemik",
+          fieldData: "faunas",
+          allowEmpty: true,
+          fields: [
+            {
+              name: "Nama",
+              type: "text",
+              setter: "fauna_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Jenis",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "fauna_categories",
+              options: defaultData.flora_type,
+            },
+
+            {
+              type: "delete",
+              size: 1,
+            },
+            {
+              name: "Populasi",
+              validation: [],
+              size: 5,
+              type: "number",
+              setter: "fauna_population",
+            },
+            {
+              name: "Sumber Makanan",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "fauna_foodsource",
+              options: defaultData.fauna_source,
+            },
+            {
+              name: "Status",
+              validation: ["required"],
+              size: 5,
+              type: "select",
+              setter: "fauna_status",
+              options: defaultData.flora_status,
             },
           ],
         },

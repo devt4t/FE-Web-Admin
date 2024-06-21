@@ -224,7 +224,11 @@
               >
                 <v-icon small>mdi-eye-outline</v-icon>
               </button>
-              <slot name="list-action-update" v-bind:item="item">
+              <slot
+                name="list-action-update"
+                v-bind:item="item"
+                v-if="!hideUpdate"
+              >
                 <button
                   class="geko-list-action-update"
                   @click="
