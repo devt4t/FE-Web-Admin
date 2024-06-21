@@ -11,7 +11,7 @@ export default [
     {
         id: 'monitoring3_no',
         icon: 'mdi-ticket',
-        label: 'Nomor Monitoring 2',
+        label: 'Nomor Monitoring 3',
         type: 'text',
         model: '',
         filter: false,

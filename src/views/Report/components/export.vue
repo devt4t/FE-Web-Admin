@@ -711,6 +711,18 @@ export default {
                 store.state.apiConfig
             ).then(res => res.data)
             console.log(data.data)
+            if(data.data.result.datas.current_page == 1){
+                const treePhase = ['bibit_mo1','bibit_mo3', 'survival_rate(%)']
+                data.data.result.tree_locations.map(val => {
+                    treePhase.map(tp => {
+                        this.table.fields.push({
+                                label: val.tree_name + ' - ' + tp,
+                                key: `tree_${val.tree_code}-${tp}`,
+                                type: 'number'
+                            })
+                    })
+                })
+            }
             for (const[indexMon, valMon] of Object.entries(data.data.result.datas.data)) {
                 
                 const dataGenerate = {
@@ -736,7 +748,20 @@ export default {
                     total_kayu_mpts: valMon.total_kayu_mpts || '0',
 
                 }
+                valMon.last_monitoring_details.map(val => {
+                    dataGenerate[`tree_${val.tree_code}-bibit_mo1`] = val.qty
+                })
+                valMon.mo3_details.map(val => {
+                    dataGenerate[`tree_${val.tree_code}-bibit_mo3`] = val.life_after
+                })
                 
+                valMon.mo3_details.map(val => {
+                    valMon.last_monitoring_details.map(lastVal => {
+                        if(val.tree_code == lastVal.tree_code){
+                            dataGenerate[`tree_${val.tree_code}-survival_rate(%)`] = ((100 * val.life_after)/ lastVal.qty).toFixed(2)
+                        }
+                    })
+                }) 
                 this.table.data.push(dataGenerate)
                 
             }
@@ -754,7 +779,14 @@ export default {
             const management_unit = config.fields.find(v => v.id == 'mu_name').model
             const programYear = config.fields.find(v => v.id == 'program_year').model
 
+            const management_unit_name = config.fields.find(v => v.id == 'mu_name').items.filter(fil=>{
+                return fil.value.includes(management_unit)
+            })
+
             console.log(programYear+', '+management_unit)
+
+            config.title= `exportMO3_${programYear}_${management_unit_name[0].text}_FromGEKOReportData`
+            this.download.title = config.title
 
             const dataMonitoring = await this.getPaginationMo3(1, 10,programYear, management_unit)
 
@@ -769,9 +801,10 @@ export default {
         },
         // reminder :)
         async sendEmailToYongs(message = null) {
+            console.log(this.$store.state.User.email)
             const params = new URLSearchParams({
                 message: message || '',
-                sender: this.$store.state.User.email || 'eaunggelia.triandi@trees4trees.org'
+                sendTo: this.$store.state.User.email || 'eaunggelia.triandi@trees4trees.org'
             })
             await axios.get(
                 this.$store.getters.getApiUrl(`EmailToYongs?${params}`),
