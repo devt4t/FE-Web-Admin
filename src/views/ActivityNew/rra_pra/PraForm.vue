@@ -664,7 +664,6 @@ export default {
         await this.submitMasterDetail("addPraLandOwnership_new", item);
       }
 
-      return;
       for (const item of this.formFieldData.disasterDetails) {
         item.pra_no = praCode;
         await this.submitMasterDetail("addPraDisasterDetail_new", item);
@@ -691,6 +690,9 @@ export default {
       }
       for (const item of this.formFieldData.farmerIncomes) {
         item.pra_no = praCode;
+        item.source_income = item.source_income
+          ? item.source_income.join(",")
+          : null;
         await this.submitMasterDetail("addPraFarmerIncome_new", item);
       }
 
@@ -699,20 +701,30 @@ export default {
         await this.submitMasterDetail("addPraExistingProblem_new", item);
       }
 
+      for (const item of this.formFieldData.floras) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addSocialImpactFloraDetails_new", item);
+      }
+
+      for (const item of this.formFieldData.faunas) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addSocialImpactFaunaDetails_new", item);
+      }
+
       this.$_alert.success("Data rra berhasil ditambahkan");
-      // this.$router.replace({
-      //   query: {
-      //     view: "detail",
-      //     id: this.$route.query.id,
-      //   },
-      // });
+      this.$router.replace({
+        query: {
+          view: "detail",
+          id: this.$route.query.id,
+        },
+      });
     },
   },
 
   data() {
     return {
       componentKey: 1,
-      tmpPraCode: "PRA-0038",
+      tmpPraCode: null,
       formData: {},
       formFieldData: {
         landOwnerships: [{ pra_no: null }],
@@ -723,6 +735,8 @@ export default {
         pesticideDetails: [{ pra_no: null }],
         disasterDetails: [],
         existingProblems: [{ pra_no: null }],
+        floras: [],
+        faunas: [],
       },
       formatDate(date, format = "DD MMMM YYYY") {
         return moment(date).format(format);
@@ -1081,6 +1095,7 @@ export default {
               validation: ["required"],
               size: 6,
               type: "select",
+              setter: "gender",
               options: defaultData.gender,
               show_if: "collection_type",
               show_if_equals: "Sampling",
@@ -1357,6 +1372,108 @@ export default {
               size: 11,
               type: "textarea",
               setter: "detail",
+            },
+          ],
+        },
+
+        {
+          name: "Data Flora Endemik",
+          fieldData: "floras",
+          allowEmpty: true,
+          fields: [
+            {
+              name: "Nama",
+              type: "text",
+              setter: "flora_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Jenis",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "flora_categories",
+              options: defaultData.flora_type,
+            },
+
+            {
+              type: "delete",
+              size: 1,
+            },
+            {
+              name: "Populasi",
+              validation: [],
+              size: 5,
+              type: "number",
+              setter: "flora_population",
+            },
+            {
+              name: "Sumber Air",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "flora_foodsource",
+              options: defaultData.watersource_type,
+            },
+            {
+              name: "Status",
+              validation: ["required"],
+              size: 5,
+              type: "select",
+              setter: "flora_status",
+              options: defaultData.flora_status,
+            },
+          ],
+        },
+
+        {
+          name: "Data Fauna Endemik",
+          fieldData: "faunas",
+          allowEmpty: true,
+          fields: [
+            {
+              name: "Nama",
+              type: "text",
+              setter: "fauna_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Jenis",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "fauna_categories",
+              options: defaultData.flora_type,
+            },
+
+            {
+              type: "delete",
+              size: 1,
+            },
+            {
+              name: "Populasi",
+              validation: [],
+              size: 5,
+              type: "number",
+              setter: "fauna_population",
+            },
+            {
+              name: "Sumber Makanan",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "fauna_foodsource",
+              options: defaultData.fauna_source,
+            },
+            {
+              name: "Status",
+              validation: ["required"],
+              size: 5,
+              type: "select",
+              setter: "fauna_status",
+              options: defaultData.flora_status,
             },
           ],
         },

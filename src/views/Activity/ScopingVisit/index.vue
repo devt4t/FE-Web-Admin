@@ -34,7 +34,7 @@
           class="cursor-pointer"
           @click="
             $router.push({
-              path: 'newScoopingVisit',
+              path: 'scooping-visit-v2',
               query: {
                 view: 'list',
               },
