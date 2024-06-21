@@ -1,0 +1,206 @@
+@import "@/assets/scss/_variables.scss";
+
+.scooping-visit-form {
+    .village-person-list {
+        .index-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .index {
+
+                display: block;
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                background: $primary_light;
+                border-radius: 50%;
+                color: $primary;
+                font-size: 1.2em;
+                font-weight: bold;
+                text-align: center;
+            }
+            
+        }
+    }
+}
+
+.scooping-visit-detail {
+
+    .v-card__title  {
+        border-bottom: 1px solid grey;
+    }
+
+    .scooping-visit-detail-card {
+        border-radius: 12px;
+    }
+
+    .scooping-visit-wrapper {
+        padding-top: 15px;
+        padding-inline: 15px;
+
+        .scooping-visit-list {
+            h6 {
+                font-size: .8em;
+                text-transform: capitalize;
+                font-weight: 700;
+                color: grey;
+                color: $success;
+            }
+
+            .scooping-visit-item {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                align-items: flex-start;
+                margin-top: 5px;
+                .label {
+                    font-size: .7em;
+                    width: 40%;
+                    color: grey;
+                    position: relative;
+
+                    &::after {
+                        content: ':';
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+
+                    }
+                }
+
+                .value {
+                    font-size: .75em;
+                    width: 60%;
+                    padding-left: 10px;
+                }
+
+                &.status {
+                    flex-direction: column;
+
+                    .label {
+                        width: 100%;
+
+                        &::after {
+                            
+                            content: '';
+                        }
+
+                    }
+
+                    .value {
+                        width: 100%;
+                        padding-left: 0;
+                        font-weight: 500;
+                        font-size: 1em;
+                        margin-bottom: 10px;
+                        button {
+                            margin-right: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .map-wrapper {
+        padding: 1em;
+
+        .village-preview {
+            justify-content: space-between;
+            margin-bottom: 20px;
+
+            .village-preview-item {
+                width: 30%;
+                box-shadow: 0px 0px 20px 0px rgba(56, 71, 109, 0.15);
+                background-color: white !important;
+                border-radius: 8px;
+                padding: .5em;
+                padding-left: .7em;
+
+                &.light {
+                   border-left: 5px solid #F3F6F9;
+                }
+
+                &.success {
+                    border-left: 5px solid #C9F7F5;
+                }
+
+                .label {
+                    font-size: .8em;
+                    color: #A6A6B7;
+                    margin-bottom: 3px;
+                }
+
+                .value {
+                    margin-bottom: 0;
+                    font-weight: 500;
+                    font-size: .95em;
+                }
+
+            }
+        }
+
+        .doc-field-item {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            margin-bottom: 5px;
+            width: 100%;
+            
+            .label {
+                color: #A6A6B7;
+                font-weight: 300;
+                font-size: .8em;
+                width: 30%;
+                position: relative;
+                &::after {
+                    content: ':';
+                    position: absolute;
+                    right: 7px;
+                    top: 3px
+                }
+                
+            }
+
+            .value {
+                font-weight: 500;
+                font-size: .85em;
+                padding-top: 1px;
+                width: 70%;
+
+                .doc-photo-wrapper {
+
+                    width: 5em;
+                    height: 5em;
+                    margin-right: 5px;
+                    position: relative;
+                    
+
+                    // &:hover .doc-photo {
+                    //     background-position: top left;
+                    //     cursor: pointer;
+                    //     width: 10em;
+                    //     height: 10em;
+                    //     z-index: 10;
+                    //     transition: all 0.3s ease;
+                    //     background-size: contain;
+                    // }
+                }
+                .doc-photo {
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 5px;
+                    position: absolute;
+                    transition: all 0.3s ease;
+                }
+            }
+
+        }
+
+    }
+    
+}
