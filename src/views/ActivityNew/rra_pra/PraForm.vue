@@ -519,7 +519,15 @@
 
         <v-col lg="12">
           <div class="d-flex flex-row" style="justify-content: flex-end">
-            <v-btn variant="success" @click="onSubmit"> Test </v-btn>
+            <v-btn
+              type="submit"
+              variant="success"
+              @click="onSubmit"
+              :disabled="loading"
+            >
+              <v-icon>mdi-plus</v-icon>
+              <span>Tambah Data PRA</span>
+            </v-btn>
           </div>
         </v-col>
       </form>
@@ -569,7 +577,7 @@ export default {
     async onSubmit() {
       console.log("form data", this.formData);
       console.log("form fields", this.formFieldData);
-
+      this.loading = true;
       let _existingProblems = [];
       for (const item of this.formFieldData.existingProblems) {
         item.pra_no = null;
@@ -580,12 +588,14 @@ export default {
           !item.potential ||
           !item.ranking
         ) {
-          // this.$_alert.error(
-          //   {},
-          //   "Data belum lengkap",
-          //   "Isi semua form yang ada di dalam matriks permasalahan"
-          // );
-          // return;
+          this.$_alert.error(
+            {},
+            "Data belum lengkap",
+            "Isi semua form yang ada di dalam matriks permasalahan"
+          );
+
+          this.loading = false;
+          return;
         }
         item.total_value =
           (item.impact_to_people || 0) +
@@ -655,7 +665,10 @@ export default {
           });
       }
 
-      if (!mainPra) return;
+      if (!mainPra) {
+        this.loading = false;
+        return;
+      }
       this.tmpPraCode = mainPra || this.tmpPraCode;
       const praCode = mainPra ? mainPra : this.tmpPraCode;
 
@@ -710,6 +723,7 @@ export default {
         item.pra_no = praCode;
         await this.submitMasterDetail("addSocialImpactFaunaDetails_new", item);
       }
+      this.loading = false;
 
       this.$_alert.success("Data rra berhasil ditambahkan");
       this.$router.replace({
