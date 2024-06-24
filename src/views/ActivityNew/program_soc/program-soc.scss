@@ -1,2 +1,22 @@
 @import "../../../assets/scss/variables";
 
+.program-soc-form {
+
+    .bg-grey {
+        
+        background-color: rgba(199, 199, 199, 0.1);
+        border-radius: 12px;
+        padding: 1.5em;
+    }
+}
+
+.program-soc-detail-wrapper {
+    .photo img {
+        width: 5em;
+        height: auto;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}

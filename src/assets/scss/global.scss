@@ -285,31 +285,49 @@ button.circle {
   &.bg-primary {
     background-color: lighten($primary_light, 5);
     color: $primary;
+    i{ 
+      color: $primary
+    }
   }
 
   &.bg-success {
     background-color: $success_light;
     color: $success;
+    i{ 
+      color: $success
+    }
   }
 
   &.bg-danger {
     background-color: $danger_light;
     color: $danger;
+    i{ 
+      color: $danger
+    }
   }
 
   &.bg-info {
     background-color: $info_light;
     color: $info;
+    i{ 
+      color: $info
+    }
   }
 
   &.bg-warning {
     background-color: $warning_light;
     color: $warning;
+    i{ 
+      color: $warning
+    }
   }
 
   &.bg-light {
     background-color: $light;
     color: $grey;
+    i{ 
+      color: $grey
+    }
   }
 }
 

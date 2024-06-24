@@ -322,6 +322,8 @@
           :fields="fields.detail"
           :api="config.detail || ''"
           :title="config.title"
+          :idKey="config.detailIdKey || 'id'"
+          :dataKey="config.detailKey || ''"
         >
           <template v-slot:detail-body>
             <slot name="detail-body"></slot>
@@ -340,6 +342,10 @@
             v-slot:[`detail-${f.view_data}`]="{ item }"
           >
             <slot :name="`detail-${f.view_data}`" v-bind:item="item"> </slot>
+          </template>
+
+          <template v-slot:detail-slave-raw="{ data }">
+            <slot name="detail-slave-raw" v-bind:data="data"></slot>
           </template>
         </geko-base-detail>
       </slot>
@@ -529,6 +535,8 @@ export default {
         if (typeof this.config.filter_api === "object") {
           this.filters = JSON.parse(JSON.stringify(this.config.filter_api));
         }
+
+        console.log("head", _header);
 
         return resolve();
       });

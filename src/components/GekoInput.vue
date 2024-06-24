@@ -455,11 +455,20 @@ export default {
       if ([null, undefined].includes(t) && [null, undefined].includes(f))
         return;
 
-      if (typeof this.tmpValue === "object" && !Array.isArray(this.tmpValue)) {
+      if (typeof this.tmpValue === "object" && !Array.isArray(this.tmpValue) && this.tmpValue !== null) {
         this.$emit(
           "input",
           this.tmpValue[this.item.option.list_pointer.code || "code"]
         );
+
+        if (this.item.type === 'upload') {
+          if (this.item.option && this.item.option.multiple) {
+            this.tmpImages  =[]
+          }
+          else {
+            this.tmpImage = null
+          }
+        }
       } else {
         this.$emit("input", this.tmpValue);
       }
