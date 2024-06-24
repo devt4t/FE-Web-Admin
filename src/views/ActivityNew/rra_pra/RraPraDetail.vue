@@ -132,7 +132,7 @@
             :scoopingData="data ? data.mainScooping : null"
             :activeMenu="0"
             :activeTab="activeTab"
-            :rraCode="data.rra.mainRra.rra_no"
+            :rraCode="data.rra && data.rra.mainRra && data.rra.mainRra.rra_no"
           />
 
           <!-- <rra-pra-detail-card v-if="data" :data="data" :scoopingData="scoopingData"
@@ -157,6 +157,9 @@
             :scoopingData="data ? data.mainScooping : null"
             :activeMenu="activeMenu"
             :activeTab="activeTab"
+            v-if="
+              activeTab == 0 || (activeTab == 1 && data.pra && data.pra.mainPra)
+            "
           />
         </div>
       </v-card>

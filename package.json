@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "upload": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/OldWeb"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

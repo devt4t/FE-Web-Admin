@@ -164,9 +164,11 @@
                       (x) => !x.main_form
                     )"
                     v-if="
-                      !input.show_if ||
+                      (!input.show_if && !input.item_show_if) ||
                       (input.show_if &&
-                        formData[input.show_if] == input.show_if_equals)
+                        formData[input.show_if] == input.show_if_equals) ||
+                      (input.item_show_if &&
+                        f[input.item_show_if] == input.item_show_if_equals)
                     "
                   >
                     <v-col :md="input.size" :key="`f-${i}-${j}-${k}`">
@@ -550,77 +552,27 @@ export default {
       console.log("before remove", this.formFieldData[field]);
       this.formFieldData[field].splice(i, 1);
     },
-    onSubmit() {
+
+    async submitMasterDetail(endPoint, data) {
+      return new Promise(async (resolve, reject) => {
+        this.$_api
+          .post(endPoint, data)
+          .then((res) => {
+            return resolve();
+          })
+          .catch((err) => {
+            console.log(`add ${endPoint} error `, err);
+            return reject();
+          });
+      });
+    },
+    async onSubmit() {
       console.log("form data", this.formData);
       console.log("form fields", this.formFieldData);
 
-      const mainRraPayload = {
-        scooping_form_no: null,
-        land_ownership_description: null,
-        distribution_of_critical_land_locations_description: null,
-        collection_type: null,
-        man_min_income: null,
-        man_max_income: null,
-        man_income_source: null,
-        man_commodity_name: null,
-        man_method: null,
-        man_average_capacity: null,
-        man_marketing: null,
-        man_period: null,
-        man_source: null,
-        woman_min_income: null,
-        woman_max_income: null,
-        woman_income_source: null,
-        woman_commodity_name: null,
-        woman_method: null,
-        woman_average_capacity: null,
-        woman_marketing: null,
-        woman_period: null,
-        woman_source: null,
-        income_description: null,
-        land_utilization_source: null,
-        land_utilization_plant_type: null,
-        land_utilization_description: null,
-        pra_watersource_description: null,
-        dry_land_photo: null,
-        dry_land_photo2: null,
-        watersource_photo: null,
-        status_document: null,
-      };
-
-      let _disasters = [];
-      for (const item of this.formFieldData.disasterDetails) {
-        _disasters.push(item);
-      }
-
-      let _fertilizers = [];
-      for (const item of this.formFieldData.fertilizerDetails) {
-        _fertilizers.push(item);
-      }
-
-      let _pesticides = [];
-      for (const item of this.formFieldData.pesticideDetails) {
-        _pesticides.push(item);
-      }
-
-      let _dryLandSpreads = [];
-      for (const item of this.formFieldData.dryLandSpreads) {
-        _dryLandSpreads.push(item);
-      }
-      let _landOwnerships = [];
-      for (const item of this.formFieldData.landOwnerships) {
-        _landOwnerships.push(item);
-      }
-      let _waterSources = [];
-      for (const item of this.formFieldData.waterSourceDetails) {
-        _waterSources.push(item);
-      }
-      let _farmers = [];
-      for (const item of this.formFieldData.farmerIncomes) {
-        _farmers.push(item);
-      }
       let _existingProblems = [];
       for (const item of this.formFieldData.existingProblems) {
+        item.pra_no = null;
         if (
           !item.impact_to_people ||
           !item.interval_problem ||
@@ -628,12 +580,12 @@ export default {
           !item.potential ||
           !item.ranking
         ) {
-          this.$_alert.error(
-            {},
-            "Data belum lengkap",
-            "Isi semua form yang ada di dalam matriks permasalahan"
-          );
-          return;
+          // this.$_alert.error(
+          //   {},
+          //   "Data belum lengkap",
+          //   "Isi semua form yang ada di dalam matriks permasalahan"
+          // );
+          // return;
         }
         item.total_value =
           (item.impact_to_people || 0) +
@@ -642,22 +594,149 @@ export default {
           (item.potential || 0);
         _existingProblems.push(item);
       }
+
+      const mainPraPayload = {
+        scooping_form_no: this.$route.query.scooping_visit_code,
+        land_ownership_description: this.formData.land_ownership_description,
+        distribution_of_critical_land_locations_description:
+          this.formData.distribution_of_critical_land_locations_description,
+        collection_type: this.formData.collection_type,
+        man_min_income: this.formData.man_min_income,
+        man_max_income: this.formData.man_max_income,
+        man_income_source: this.formData.man_income_source,
+        man_commodity_name: this.formData.man_commodity_name,
+        man_method: Array.isArray(this.formData.man_method)
+          ? this.formData.man_method.join(",")
+          : null,
+        man_average_capacity: this.formData.man_average_capacity,
+        man_marketing: Array.isArray(this.formData.man_marketing)
+          ? this.formData.man_marketing.join(",")
+          : null,
+        man_period: this.formData.man_period,
+        man_source: this.formData.man_source,
+        woman_min_income: this.formData.woman_min_income,
+        woman_max_income: this.formData.woman_max_income,
+        woman_income_source: this.formData.woman_income_source,
+        woman_commodity_name: this.formData.woman_commodity_name,
+        woman_method: Array.isArray(this.formData.woman_method)
+          ? this.formData.woman_method.join(",")
+          : null,
+        woman_average_capacity: this.formData.woman_average_capacity,
+        woman_marketing: Array.isArray(this.formData.woman_marketing)
+          ? this.formData.woman_marketing.join(",")
+          : null,
+        woman_period: this.formData.woman_period,
+        woman_source: this.formData.woman_source,
+        income_description: this.formData.income_description,
+        land_utilization_source: this.formData.land_utilization_source,
+        land_utilization_plant_type: Array.isArray(
+          this.formData.land_utilization_plant_type
+        )
+          ? this.formData.land_utilization_plant_type.join(",")
+          : null,
+        land_utilization_description:
+          this.formData.land_utilization_description,
+        pra_watersource_description: this.formData.pra_watersource_description,
+        dry_land_photo: this.formData.dry_land_photo,
+        dry_land_photo2: this.formData.dry_land_photo,
+        watersource_photo: this.formData.watersource_photo,
+        status_document: "document_saving",
+      };
+
+      let mainPra = this.tmpPraCode;
+      if (!mainPra) {
+        mainPra = await this.$_api
+          .post("addMainPra_new", mainPraPayload)
+          .then((res) => {
+            return res.pra_no;
+          })
+          .catch(() => {
+            return false;
+          });
+      }
+
+      if (!mainPra) return;
+      this.tmpPraCode = mainPra || this.tmpPraCode;
+      const praCode = mainPra ? mainPra : this.tmpPraCode;
+
+      for (const item of this.formFieldData.landOwnerships) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraLandOwnership_new", item);
+      }
+
+      for (const item of this.formFieldData.disasterDetails) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraDisasterDetail_new", item);
+      }
+
+      for (const item of this.formFieldData.fertilizerDetails) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraFretilizerDetail_new", item);
+      }
+
+      for (const item of this.formFieldData.pesticideDetails) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraPesticideDetail_new", item);
+      }
+
+      for (const item of this.formFieldData.dryLandSpreads) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraDryLandSpreads_new", item);
+      }
+
+      for (const item of this.formFieldData.waterSourceDetails) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraWaterSource_new", item);
+      }
+      for (const item of this.formFieldData.farmerIncomes) {
+        item.pra_no = praCode;
+        item.source_income = item.source_income
+          ? item.source_income.join(",")
+          : null;
+        await this.submitMasterDetail("addPraFarmerIncome_new", item);
+      }
+
+      for (const item of _existingProblems) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addPraExistingProblem_new", item);
+      }
+
+      for (const item of this.formFieldData.floras) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addSocialImpactFloraDetails_new", item);
+      }
+
+      for (const item of this.formFieldData.faunas) {
+        item.pra_no = praCode;
+        await this.submitMasterDetail("addSocialImpactFaunaDetails_new", item);
+      }
+
+      this.$_alert.success("Data rra berhasil ditambahkan");
+      this.$router.replace({
+        query: {
+          view: "detail",
+          id: this.$route.query.id,
+        },
+      });
     },
   },
 
   data() {
     return {
       componentKey: 1,
+      tmpPraCode: null,
       formData: {},
       formFieldData: {
-        landOwnerships: [{ rra_no: null }],
-        dryLandSpreads: [{ rra_no: null }],
-        waterSourceDetails: [{ rra_no: null }],
-        farmerIncomes: [{ rra_no: null }],
-        fertilizerDetails: [{ rra_no: null }],
-        pesticideDetails: [{ rra_no: null }],
+        landOwnerships: [{ pra_no: null }],
+        dryLandSpreads: [{ pra_no: null }],
+        waterSourceDetails: [{ pra_no: null }],
+        farmerIncomes: [{ pra_no: null }],
+        fertilizerDetails: [{ pra_no: null }],
+        pesticideDetails: [{ pra_no: null }],
         disasterDetails: [],
         existingProblems: [{ pra_no: null }],
+        floras: [],
+        faunas: [],
       },
       formatDate(date, format = "DD MMMM YYYY") {
         return moment(date).format(format);
@@ -678,6 +757,7 @@ export default {
             {
               name: "Percentage",
               setter: "percentage",
+              type: "number",
               validation: ["required"],
               size: 6,
             },
@@ -685,6 +765,18 @@ export default {
             {
               type: "delete",
               size: 1,
+            },
+
+            {
+              name: "Jenis Kepemilikan",
+              type: "select",
+              options: defaultData.land_ownership_type,
+              setter: "land_ownership",
+              validation: ["required"],
+
+              item_show_if: "type_ownership",
+              item_show_if_equals: "non_petani",
+              size: 5,
             },
             {
               name: "Deskripsi Kepemilikan Lahan",
@@ -1003,6 +1095,7 @@ export default {
               validation: ["required"],
               size: 6,
               type: "select",
+              setter: "gender",
               options: defaultData.gender,
               show_if: "collection_type",
               show_if_equals: "Sampling",
@@ -1279,6 +1372,108 @@ export default {
               size: 11,
               type: "textarea",
               setter: "detail",
+            },
+          ],
+        },
+
+        {
+          name: "Data Flora Endemik",
+          fieldData: "floras",
+          allowEmpty: true,
+          fields: [
+            {
+              name: "Nama",
+              type: "text",
+              setter: "flora_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Jenis",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "flora_categories",
+              options: defaultData.flora_type,
+            },
+
+            {
+              type: "delete",
+              size: 1,
+            },
+            {
+              name: "Populasi",
+              validation: [],
+              size: 5,
+              type: "number",
+              setter: "flora_population",
+            },
+            {
+              name: "Sumber Air",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "flora_foodsource",
+              options: defaultData.watersource_type,
+            },
+            {
+              name: "Status",
+              validation: ["required"],
+              size: 5,
+              type: "select",
+              setter: "flora_status",
+              options: defaultData.flora_status,
+            },
+          ],
+        },
+
+        {
+          name: "Data Fauna Endemik",
+          fieldData: "faunas",
+          allowEmpty: true,
+          fields: [
+            {
+              name: "Nama",
+              type: "text",
+              setter: "fauna_name",
+              size: 5,
+              validation: ["required"],
+            },
+            {
+              name: "Jenis",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "fauna_categories",
+              options: defaultData.flora_type,
+            },
+
+            {
+              type: "delete",
+              size: 1,
+            },
+            {
+              name: "Populasi",
+              validation: [],
+              size: 5,
+              type: "number",
+              setter: "fauna_population",
+            },
+            {
+              name: "Sumber Makanan",
+              validation: ["required"],
+              size: 6,
+              type: "select",
+              setter: "fauna_foodsource",
+              options: defaultData.fauna_source,
+            },
+            {
+              name: "Status",
+              validation: ["required"],
+              size: 5,
+              type: "select",
+              setter: "fauna_status",
+              options: defaultData.flora_status,
             },
           ],
         },

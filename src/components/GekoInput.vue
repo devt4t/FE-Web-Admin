@@ -341,14 +341,19 @@ export default {
       let processedData = [];
       for (const _data of responseData) {
         processedData.push({
-          [this.item.option.list_pointer.label || "label"]:
-            _data[this.item.option.list_pointer.label || "label"],
+          ...(this.$listeners.selected instanceof Function ? _data : {}),
+
+          [this.item.option.list_pointer.label || "label"]: _label.join(
+            ` ${_separator} `
+          ),
           [this.item.option.list_pointer.code || "code"]:
             _data[this.item.option.list_pointer.code || "code"],
-          ...(this.$listeners.selected instanceof Function ? _data : {}),
         });
       }
       this.isLoading = false;
+      if (loading instanceof Function) {
+        loading(false);
+      }
       this.selectOptions = processedData;
     },
 

@@ -1,34 +1,46 @@
 <template>
-    <div>
-        <!-- BreadCrumbs -->
-        <v-breadcrumbs
-            :dark="$store.state.theme == 'dark'"
-            data-aos="fade-right"
-            class="breadcrumbsmain"
-            :items="breadcrumbs"
-            divider=">"
-            large
-        ></v-breadcrumbs>
-        <!-- Modals -->
-        <FormModal :show="modals.form.show" :id="modals.form.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.form.key"/>
-        <DetailModal :show="modals.detail.show" :id="modals.detail.data" :programYear="localConfig.programYear" @action="$v => modalActions($v)" @swal="$v => swalActions($v)" :key="modals.detail.key"/>
-        <!-- Main Table -->
-        <v-data-table
-            data-aos="fade-up"
-            data-aos-delay="200"
-            multi-sort
-            :headers="table.headers"
-            :items="table.items"
-            :search="table.search"
-            :loading="table.loading.show"
-            :loading-text="table.loading.text"
-            :class="`${$store.state.theme == 'dark' ? '' : ''} rounded-xl elevation-6 mx-3 pa-1`"
-            :footer-props="{
-            itemsPerPageText: 'Jumlah Data Per Halaman',
-            itemsPerPageOptions: [10, 25, 40, -1],
-            showCurrentPage: true,
-            showFirstLastPage: true,
-          }"
+  <div>
+    <!-- BreadCrumbs -->
+    <v-breadcrumbs
+      :dark="$store.state.theme == 'dark'"
+      data-aos="fade-right"
+      class="breadcrumbsmain"
+      :items="breadcrumbs"
+      divider=">"
+      large
+    ></v-breadcrumbs>
+    <!-- Modals -->
+    <FormModal
+      :show="modals.form.show"
+      :id="modals.form.data"
+      :programYear="localConfig.programYear"
+      @action="($v) => modalActions($v)"
+      @swal="($v) => swalActions($v)"
+      :key="modals.form.key"
+    />
+    <DetailModal
+      :show="modals.detail.show"
+      :id="modals.detail.data"
+      :programYear="localConfig.programYear"
+      @action="($v) => modalActions($v)"
+      @swal="($v) => swalActions($v)"
+      :key="modals.detail.key"
+    />
+    <!-- Main Table -->
+    <div class="px-4">
+      <v-alert type="info"
+        >Geko V2.0<br />Modul Scooping Visit bisa diakses melalui menu
+        <strong
+          class="cursor-pointer"
+          @click="
+            $router.push({
+              path: 'scooping-visit-v2',
+              query: {
+                view: 'list',
+              },
+            })
+          "
+          >New Activities</strong
         >
             <!-- Toolbars -->
             <template v-slot:top>

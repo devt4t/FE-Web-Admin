@@ -222,14 +222,19 @@
               >
                 <v-icon small>mdi-eye-outline</v-icon>
               </button>
-              <button
-                class="geko-list-action-update"
-                @click="
-                  $router.push({
-                    query: {
-                      view: 'update',
-                      id: item.id,
-                    },
+              <slot
+                name="list-action-update"
+                v-bind:item="item"
+                v-if="!hideUpdate"
+              >
+                <button
+                  class="geko-list-action-update"
+                  @click="
+                    $router.push({
+                      query: {
+                        view: 'update',
+                        id: item.id,
+                      },
 
                     params: item,
                   })

@@ -110,6 +110,21 @@ export default {
       code: "non_petani",
     },
   ],
+
+  land_ownership_type: [
+    {
+      name: "Orang Luar Desa (Perorangan)",
+      code: "orang_luar_desa",
+    },
+    {
+      name: "Negara",
+      code: "negara",
+    },
+    {
+      name: "Lahan Desa",
+      code: "lahan_desa",
+    },
+  ],
   watersource_type: [
     {
       name: "Sungai",
@@ -407,6 +422,86 @@ export default {
     {
       name: "Yang Lainnya",
       code: "other",
+    },
+  ],
+  flora_type: [
+    {
+      name: "Flora Asli",
+      code: "Flora Asli",
+    },
+    {
+      name: "Holikultur",
+      code: "Holikultur",
+    },
+    {
+      name: "Gulma",
+      code: "Gulma",
+    },
+    {
+      name: "Berbji",
+      code: "Berbji",
+    },
+    {
+      name: "Tumbuhan Paku",
+      code: "Tumbuhan Paku",
+    },
+    {
+      name: "Yang Lainnya",
+      code: "Yang Lainnya",
+    },
+  ],
+  flora_status: [
+    {
+      text: "Punah",
+      value: "extinct",
+    },
+    {
+      text: "Hampir Punah",
+      value: "almost_extinct",
+    },
+    {
+      text: "Terancam Bahaya",
+      value: "endangered",
+    },
+  ],
+  fauna_type: [
+    {
+      name: "Asiatis",
+      code: "Asiatis",
+    },
+    {
+      name: "Peralihan",
+      code: "Peralihan",
+    },
+    {
+      name: "Australis",
+      code: "Australis",
+    },
+    {
+      name: "Mamalia",
+      code: "Mamalia",
+    },
+    {
+      name: "Unggas",
+      code: "Unggas",
+    },
+    {
+      name: "Reptile",
+      code: "Reptile",
+    },
+    {
+      name: "Yang Lainnya",
+      code: "Yang Lainnya",
+    },
+  ],
+  fauna_source: [
+    {
+      name: "Nabati",
+      code: "nabati",
+    },
+    {
+      name: "Non Nabati",
+      code: "non_nabati",
     },
   ],
 };

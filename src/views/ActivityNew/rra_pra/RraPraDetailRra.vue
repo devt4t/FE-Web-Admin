@@ -8,7 +8,7 @@
           $router.push({
             query: {
               view: 'create',
-              id: '',
+              id: $route.query.id,
               type: 'pra',
               scooping_visit_code: scoopingData.data_no,
               scooping_visit_village: scoopingData.desas_name,
@@ -24,7 +24,12 @@
       </v-btn>
     </div>
     <!-- END ADD PRA -->
-    <div v-if="mainConfig[activeTab][activeMenu]">
+    <div
+      v-if="
+        mainConfig[activeTab][activeMenu] &&
+        (activeTab !== 1 || (activeTab == 1 && data.mainPra))
+      "
+    >
       <rra-pra-detail-card
         v-if="mainConfig[activeTab][activeMenu].mainData"
         :data="data[mainConfig[activeTab][activeMenu].getter]"
@@ -39,11 +44,11 @@
         :config="mainConfig[activeTab][activeMenu].fields"
         :ic="mainConfig[activeTab][activeMenu].class"
       />
-
       <rra-pra-detail-table
         v-else-if="
           !mainConfig[activeTab][activeMenu].mainData &&
-          !mainConfig[activeTab][activeMenu].card
+          !mainConfig[activeTab][activeMenu].card &&
+          ((activeTab == 1 && data.mainPra) || activeTab == 0)
         "
         :config="mainConfig[activeTab][activeMenu]"
         :data="data[mainConfig[activeTab][activeMenu].getter]"
@@ -620,6 +625,7 @@ export default {
                 getter: "problem_solution",
                 label: "Solusi",
                 class: "text-09-em min-w-300px text-left",
+                wc: "min-w-400px text-left",
               },
             ],
           },

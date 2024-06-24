@@ -241,17 +241,24 @@ const menu = [
     items: [
       {
         title: "New Scooping Visit",
-        to: "/newScoopingVisit",
+        to: "/scooping-visit-v2",
         component: "ActivityNew/scooping_visit/ScoopingVisit",
         name: "newScoopingVisit",
-        permission: "newScoopingVisit",
+        permission: "scooping-visit-v2",
       },
       {
         title: "RRA & PRA",
-        to: "/newRraPra",
+        to: "/rra-pra-v2",
         component: "ActivityNew/rra_pra/RraPra",
         name: "newRraPra",
-        permission: "newRraPra",
+        permission: "rra-pra-v2",
+      },
+      {
+        title: "Sosialisasi Program",
+        to: "/sosialisasi-program-v2",
+        component: "ActivityNew/program_soc/ProgramSoc",
+        name: "newSosialisasiProgram",
+        permission: "sosialisasi-program-v2",
       },
     ],
   },

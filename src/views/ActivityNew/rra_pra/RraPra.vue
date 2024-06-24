@@ -1,5 +1,8 @@
 <template>
-  <geko-base-crud :config="config">
+  <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true">
+    <template v-slot:detail-row>
+      <rra-pra-detail />
+    </template>
     <template v-slot:list-date="{ item }">
       <div class="min-w-150px">
         <span>{{ item.rra_pra_date_start | parse("date") }}</span>
@@ -11,8 +14,11 @@
 
     <template v-slot:list-form_no="{ item }">
       <div class="d-flex flex-column indicator-left">
-        <p class="mb-0 pb-0 text-link">#{{ item.form_no }}</p>
-        <div class="min-w-150px">
+        <p class="mb-0 pb-0 text-link">#{{ item.scooping_visit_code }}</p>
+        <div
+          class="min-w-150px"
+          v-if="item.rra_pra_date_start || item.rra_pra_date_end"
+        >
           <span class="text-08-em">{{
             item.rra_pra_date_start | parse("date")
           }}</span>
@@ -29,9 +35,36 @@
           class="indicator"
           :class="{
             success: item.status === 'submit_review',
-            warning: item.status === 'document_saving',
+            warning: item.status === 'document_saving' && item.rra && item.pra,
+            light: !item.rra || !item.pra,
           }"
         ></div>
+      </div>
+    </template>
+
+    <template v-slot:list-status_data="{ item }">
+      <div class="d-flex flex-row" style="justify-content: center">
+        <div v-if="item.rra && item.pra" class="badge bg-success">Lengkap</div>
+        <div v-else-if="item.rra" class="badge bg-light">RRA</div>
+        <div v-else-if="item.pra" class="badge bg-light">PRA</div>
+      </div>
+    </template>
+
+    <template v-slot:list-status="{ item }">
+      <div class="d-flex flex-row" style="justify-content: center">
+        <div class="badge bg-light" v-if="!item.rra || !item.pra">Draft</div>
+        <div
+          class="badge bg-warning"
+          v-else-if="item.status == 'document_saving'"
+        >
+          Pending
+        </div>
+        <div
+          class="badge bg-success"
+          v-else-if="item.status == 'submit_review'"
+        >
+          Terverifikasi
+        </div>
       </div>
     </template>
 
@@ -43,11 +76,15 @@
 
 <script>
 import RraPraForm from "./RraPraForm.vue";
+import RraPraDetail from "./RraPraDetail.vue";
+import PraForm from "./PraForm.vue";
 import "./rra-pra.scss";
 export default {
   name: "rra-pra-module",
   components: {
     RraPraForm,
+    PraForm,
+    RraPraDetail,
   },
   data() {
     return {

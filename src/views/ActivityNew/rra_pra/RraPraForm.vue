@@ -51,7 +51,8 @@
                 list_pointer: {
                   code: 'id',
                   label: 'data_no',
-                  display: ['data_no', 'data_no'],
+                  separator: '-',
+                  display: ['data_no', 'desas_name'],
                 },
               },
             }" @selected="onSelectScoopingVisit($event)" />
