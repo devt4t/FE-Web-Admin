@@ -62,9 +62,17 @@ const menu = [
       {
         title: "Farmer",
         to: "/Farmer",
+        component: "Farmer/Farmer.old",
+        name: "Farmer",
+        permission: "Farmer",
+      },
+      {
+        title: "Farmer V2",
+        to: "/farmer-v2",
         component: "Farmer/Farmer",
         name: "Farmer",
         permission: "Farmer",
+        prevent_route_validation: true,
       },
       {
         title: "Lahan",
@@ -259,6 +267,15 @@ const menu = [
         component: "ActivityNew/program_soc/ProgramSoc",
         name: "newSosialisasiProgram",
         permission: "sosialisasi-program-v2",
+      },
+      {
+        title: "Petani (Sosialisasi Program)",
+        to: "/sosialisasi-program-farmer-v2",
+        component: "ActivityNew/program_soc/ProgramSocFarmer",
+        name: "newSosialisasiProgram",
+        permission: "sosialisasi-program-v2",
+        prevent_route_validation: true,
+        hide: true,
       },
     ],
   },

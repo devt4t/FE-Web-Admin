@@ -292,6 +292,8 @@ export default {
         }
       } else if (this.item.type === "select-radio") {
         this.tmpValue = this.value;
+
+        await this.$refs.provider.validate(this.tmpValue);
       } else if (this.item.type === "select") {
         if (this.item.option && this.item.option.multiple) {
           this.tmpValue = this.value;
@@ -439,9 +441,11 @@ export default {
       this.tmpImage = null;
       this.tmpValue = null;
     },
-    onSelectRadio(data) {
+    async onSelectRadio(data) {
       this.tmpValue = data[this.item.option.list_pointer.code] || "code";
       this.$emit("input", data[this.item.option.list_pointer.code || "code"]);
+
+      await this.$refs.provider.validate(this.tmpValue);
     },
 
     removeImage(i) {
@@ -455,18 +459,21 @@ export default {
       if ([null, undefined].includes(t) && [null, undefined].includes(f))
         return;
 
-      if (typeof this.tmpValue === "object" && !Array.isArray(this.tmpValue) && this.tmpValue !== null) {
+      if (
+        typeof this.tmpValue === "object" &&
+        !Array.isArray(this.tmpValue) &&
+        this.tmpValue !== null
+      ) {
         this.$emit(
           "input",
           this.tmpValue[this.item.option.list_pointer.code || "code"]
         );
 
-        if (this.item.type === 'upload') {
+        if (this.item.type === "upload") {
           if (this.item.option && this.item.option.multiple) {
-            this.tmpImages  =[]
-          }
-          else {
-            this.tmpImage = null
+            this.tmpImages = [];
+          } else {
+            this.tmpImage = null;
           }
         }
       } else {

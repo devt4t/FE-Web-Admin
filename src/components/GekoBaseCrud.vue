@@ -91,12 +91,12 @@
     <!-- Base Table Data -->
 
     <!-- :items-per-page="perPage" -->
-    <div class="geko-list" v-if="activeView === 'list'">
+    <div class="geko-list" v-if="activeView === 'list' && !this.hideList">
       <v-data-table
         :headers="header"
         :items="data"
         :search="''"
-        class="rounded-xl elevation-6 mx-3 pa-1"
+        class="rounded-xl elevation-1 mx-3 pa-1"
         data-aos="fade-up"
         data-aos-delay="100"
         data-aos-duration="800"
@@ -372,6 +372,13 @@ export default {
         return false;
       },
     },
+    hideList: {
+      type: Boolean,
+      required: false,
+      default() {
+        return false;
+      },
+    },
     hideDetail: {
       type: Boolean,
       required: false,
@@ -584,6 +591,9 @@ export default {
     },
 
     async getListData() {
+      if (this.hideList) {
+        return;
+      }
       this.loading = true;
       let _params = JSON.parse(JSON.stringify(this.params));
       let _filters = JSON.parse(JSON.stringify(this.filters));

@@ -541,7 +541,10 @@ export default {
               });
             }
 
-            if (this.$router.getRoutes().find((x) => x.name === submenu.name)) {
+            if (
+              this.$router.getRoutes().find((x) => x.name === submenu.name) &&
+              !submenu.prevent_route_validation
+            ) {
               continue;
             }
             router.addRoute({

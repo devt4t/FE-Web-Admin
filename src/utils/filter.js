@@ -36,7 +36,7 @@ Vue.filter("parse", (value, id) => {
       break;
 
     case "status-verification":
-      _value = value === 0 ? "Tidak Terverifikasi" : "Terverifikasi";
+      _value = value === 0 ? "Belum Diverifikasi" : "Terverifikasi";
       break;
     case "active":
       _value = value == 0 ? "Tidak Aktif" : "Aktif";
