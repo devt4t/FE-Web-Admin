@@ -13,7 +13,7 @@
       style="height: auto; max-height: 97.5vh"
     >
       <template v-slot:prepend>
-        <v-list-item>
+        <!-- <v-list-item>
           <v-list-item-content class="text-center">
             <v-list-item-title
               style="font-weight: 550; font-size: 125%"
@@ -23,30 +23,62 @@
             </v-list-item-title>
             <v-list-item-subtitle>Green Earth Kontrol</v-list-item-subtitle>
           </v-list-item-content>
-        </v-list-item>
+        </v-list-item> -->
+
+        <div class="sidebar-header">
+          <img src="/images/GEKO_short.png" />
+
+          <div class="d-flex flex-row sidebar-profile w-100">
+            <div class="avatar">{{ avatarHelper($store.state.User.name) }}</div>
+            <div class="d-flex flex-column sidebar-profile-name">
+              <h6>{{ $store.state.User ? $store.state.User.name : "" }}</h6>
+              <p class="mb-0 text-08-em">
+                {{ $store.state.User ? $store.state.User.role_name : "" }}
+              </p>
+            </div>
+          </div>
+        </div>
       </template>
 
-      <v-list color="transparent" rounded>
-        <!-- <v-list-item color="#71AF34" :to="DashboardLink" link :ripple="false">
-          <v-list-item-icon>
-            <v-icon>mdi-view-dashboard</v-icon>
-          </v-list-item-icon>
+      <div class="sidebar-menus">
+        <div
+          class="sidebar-menu-item"
+          v-for="(group, i) in items"
+          :key="`group-${i}`"
+        >
+          <button v-if="!Array.isArray(group.items)" class="sidebar-button">
+            <v-icon>{{ group.icon }}</v-icon>
+            <span>{{ group.title }}</span>
+          </button>
 
-          <v-list-item-title>Dashboard</v-list-item-title>
-        </v-list-item> -->
-        <!-- <v-list-item disabled 
-          :ripple="false">
-          <v-list-item-icon>
-            <v-icon color="grey">mdi-comment-question</v-icon>
-          </v-list-item-icon>
+          <p v-else class="sidebar-title mb-0">
+            {{ group.title }}
+          </p>
+          <button
+            v-for="(menu, j) in Array.isArray(group.items) ? group.items : []"
+            class="sidebar-button"
+            :key="`menu-side-${j}-${i}`"
+            :class="{
+              active: $route.path == menu.to,
+            }"
+            @click="
+              $router.push({
+                path: menu.to,
+                query: {
+                  view: 'list',
+                },
+              })
+            "
+          >
+            <v-icon>{{
+              $route.path == menu.to ? menu.icon : `${menu.icon}-outline`
+            }}</v-icon>
+            <span>{{ menu.title }}</span>
+          </button>
+        </div>
+      </div>
 
-          <v-list-item-title>
-            <v-badge content="Dev">
-              FAQ
-            </v-badge>
-          </v-list-item-title>
-        </v-list-item> -->
-
+      <v-list color="transparent" rounded v-if="false">
         <template v-for="item in items">
           <v-list-item
             v-if="!Array.isArray(item.items)"
@@ -133,7 +165,7 @@
         </v-list-item> -->
       </v-list>
 
-      <template v-slot:append>
+      <template v-slot:append v-if="false">
         <div class="text-center pa-2">
           <v-btn
             :color="`${
@@ -476,6 +508,13 @@ export default {
     },
   },
   methods: {
+    avatarHelper(name) {
+      if (name.split(" ").length > 1) {
+        return name.split(" ")[0].charAt(0) + name.split(" ")[1].charAt(0);
+      } else if (name.split(" ").length > 0) {
+        return `${name.charAt(0)}${name.charAt(1)}`;
+      }
+    },
     async buildConfig() {
       if (Array.isArray(this.items) && this.items.length > 0) return;
       //test
@@ -538,6 +577,7 @@ export default {
               _listMenuItem.items.push({
                 title: submenu.title,
                 to: submenu.to,
+                icon: submenu.icon,
               });
             }
 

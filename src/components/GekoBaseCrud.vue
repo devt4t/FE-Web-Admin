@@ -134,6 +134,16 @@
                     class="mr-2"
                   ></v-text-field>
                 </form>
+                <button
+                  class="toolbar-button mr-2"
+                  v-if="fields.filter.length > 0"
+                  @click="filterOpen = !filterOpen"
+                  :class="{
+                    active: filterOpen,
+                  }"
+                >
+                  <v-icon>mdi-filter</v-icon>
+                </button>
                 <button class="toolbar-button mr-2" @click="onRefresh">
                   <v-icon>mdi-refresh</v-icon>
                 </button>
@@ -143,6 +153,7 @@
                 </button> -->
               </div>
               <v-btn
+                v-if="!hideCreate"
                 variant="success"
                 class="ml-4"
                 @click="
@@ -158,6 +169,14 @@
               </v-btn>
             </div>
 
+            <geko-base-filter
+              v-if="fields.filter.length > 0"
+              @close="filterOpen = false"
+              :open="filterOpen"
+              :fields="fields.filter"
+              @filter="onFilter($event)"
+            />
+
             <div class="statistics" v-if="config.statistic && statistic">
               <div
                 class="statistic-item"
@@ -170,7 +189,14 @@
                 <v-icon>{{ stat.icon }}</v-icon>
                 <div class="statistic-data">
                   <p class="mb-0 label">{{ stat.label }}</p>
-                  <p class="mb-0 value">{{ stat.value }}</p>
+                  <p class="mb-0 value">
+                    <slot
+                      :name="'statistic-' + stat.key"
+                      v-bind:item="stat.data"
+                    >
+                      <span>{{ stat.value | parse(stat.transform) }}</span>
+                    </slot>
+                  </p>
                 </div>
               </div>
             </div>
@@ -214,9 +240,12 @@
                 class="geko-list-action-view"
                 @click="
                   $router.push({
+                    path: $route.path,
                     query: {
                       view: 'detail',
                       id: item.id,
+                      [config.detailIdKey ? config.detailIdKey : '']:
+                        item[config.detailIdKey],
                     },
                     params: config.detail ? null : item,
                   })
@@ -347,6 +376,22 @@
           <template v-slot:detail-slave-raw="{ data }">
             <slot name="detail-slave-raw" v-bind:data="data"></slot>
           </template>
+
+          <template v-slot:detail-body-after="{ item, response }">
+            <slot
+              name="detail-body-after"
+              v-bind:item="item"
+              v-bind:response="response"
+            ></slot>
+          </template>
+
+          <template v-slot:detail-header-action="{ item, response }">
+            <slot
+              name="detail-header-action"
+              v-bind:item="item"
+              v-bind:response="response"
+            ></slot>
+          </template>
         </geko-base-detail>
       </slot>
     </div>
@@ -357,6 +402,7 @@
 import "../assets/scss/geko-base-crud.scss";
 import GekoBaseForm from "./GekoBaseForm.vue";
 import GekoBaseDetail from "./GekoBaseDetail.vue";
+import GekoBaseFilter from "./GekoBaseFilter.vue";
 export default {
   name: "geko-base-crud",
   props: {
@@ -404,6 +450,7 @@ export default {
   components: {
     GekoBaseForm,
     GekoBaseDetail,
+    GekoBaseFilter,
   },
   data() {
     return {
@@ -415,6 +462,7 @@ export default {
       page: 1,
       perPage: 10,
       search: "",
+      filterOpen: false,
       activeView: null,
       activeID: null,
       permission: {},
@@ -459,10 +507,28 @@ export default {
       this.activeView = this.$route.query.view;
       this.getListData();
     },
-    setGlobalFilter(key, value, localKey) {
+    setGlobalFilter(key, value, localKey, refresh = true) {
       this.$set(this.globalFilter, key, value);
-      localStorage.setItem(localKey, value);
-      this.getListData();
+      this.$store.commit("set", [localKey, value, true]);
+
+      if (refresh) {
+        if (this.page !== 1) {
+          this.page = 1;
+        } else {
+          this.getListData();
+        }
+      }
+    },
+
+    onFilter(newData) {
+      if (typeof newData !== "object") return;
+      this.filters = Object.assign(newData, this.filters);
+
+      if (this.page !== 1) {
+        this.page = 1;
+      } else {
+        this.getListData();
+      }
     },
     buildModule() {
       return new Promise(async (resolve) => {
@@ -543,10 +609,31 @@ export default {
           this.filters = JSON.parse(JSON.stringify(this.config.filter_api));
         }
 
-        console.log("head", _header);
-
+        this.setDefaultFilter();
         return resolve();
       });
+    },
+
+    setDefaultFilter() {
+      //GLOBAL FILTER DEFAULT VALUE
+      if (this.config.globalFilter) {
+        if (this.config.globalFilter.program_year) {
+          this.$set(
+            this.globalFilter,
+            "program_year",
+            this.$store.state.tmpProgramYear
+              ? this.$store.state.tmpProgramYear
+              : localStorage.getItem("tmpProgramYear")
+              ? localStorage.getItem("tmpProgramYear")
+              : this.$_config.programYear.model,
+            "tmpProgramYear"
+          );
+          this.$set(this.globalFilter, "tmpProgramYear", {
+            label: this.$store.state.tmpProgramYear,
+            code: this.$store.state.tmpProgramYear,
+          });
+        }
+      }
     },
 
     generateConfigField(item, key) {
@@ -569,7 +656,7 @@ export default {
         default: item.methods[key].default || null,
       };
 
-      if (["update", "create"].includes(key)) {
+      if (["update", "create", "filter"].includes(key)) {
         _data.setter = item.methods[key].setter || _data.view_data;
         _data.getter = item.methods[key].getter || _data.view_data;
         _data.option =
@@ -582,9 +669,6 @@ export default {
         _data.show_if = item.methods[key].show_if || null;
         _data.separator = item.methods[key].separator || null;
         _data.disabled = item.methods[key].disabled || null;
-      }
-      if (key === "create" && item.label == "Created By") {
-        console.log(item.methods[key].input);
       }
 
       return _data;
@@ -612,9 +696,11 @@ export default {
 
       if (typeof this.config.filter_api === "object") {
         _params = Object.assign(
-          JSON.parse(JSON.stringify(this.config.filter_api))
+          JSON.parse(JSON.stringify(this.config.filter_api)),
+          _params
         );
       }
+
       let reqParams = Object.assign(_filters, _params);
 
       // reqParams.page = this.page;
@@ -638,17 +724,37 @@ export default {
         this.config.getterDataKey || "data"
       );
       if (this.config.statistic) {
-        const statisticKey = "count";
-        const statisticData = responseData[statisticKey];
+        const statisticKey = this.config.statistic.statistic_key || "count";
+        let statisticData = responseData;
+        for (const _key of statisticKey.split(".")) {
+          statisticData = statisticData[_key];
+        }
         if (statisticData) {
           let statisticArray = [];
-          for (const _key of Object.keys(statisticData)) {
-            statisticArray.push({
+
+          for (const _key of Object.keys(this.config.statistic.transform_key)) {
+            let _processedStat = {
               label: this.config.statistic.transform_key[_key].label,
               value: statisticData[_key],
+              key: _key,
               icon: this.config.statistic.transform_key[_key].icon,
               color: this.config.statistic.transform_key[_key].color || "",
-            });
+              transform:
+                this.config.statistic.transform_key[_key].transform ||
+                "no-null",
+            };
+
+            if (this.config.statistic.transform_key[_key].type == "slot") {
+              _processedStat.data = {};
+              for (const _keys of Array.isArray(
+                this.config.statistic.transform_key[_key].pointer
+              )
+                ? this.config.statistic.transform_key[_key].pointer
+                : []) {
+                _processedStat.data[_keys] = statisticData[_keys];
+              }
+            }
+            statisticArray.push(_processedStat);
           }
           this.statistic = statisticArray;
         }
@@ -733,6 +839,7 @@ export default {
 
         if (from.query.view !== to.query.view) {
           if (this.activeView === "list") {
+            this.setDefaultFilter();
             this.getListData();
           }
         }

@@ -16,8 +16,15 @@ Vue.filter("parse", (value, id) => {
     case "no-empty":
       _value = [null, undefined, ""].includes(value) ? "-" : value;
       break;
+    case "no-null":
+      _value = [null, undefined, ""].includes(value) ? "0" : value;
+      break;
     case "date":
       _value = moment(value).format("D MMMM YYYY");
+      break;
+    case "gender":
+      _value =
+        value === "male" ? "Laki-Laki" : value === "female" ? "Perempuan" : "-";
       break;
 
     case "status-scooping-visit":

@@ -1,6 +1,6 @@
 @import "./variables";
 
-.cursor-pointer:hover {
+.cursor-pointer:hover, .hover-pointer:hover {
   cursor: pointer;
 }
 button[variant="primary"] {
@@ -27,6 +27,10 @@ button[variant="warning"] {
 button[variant="danger"] {
   background-color: $danger_light !important;
   color: $danger !important;
+}
+button[variant="info"] {
+  background-color: $info_light !important;
+  color: $info !important;
 }
 
 button[variant="primary"],
@@ -197,7 +201,35 @@ button.circle {
   color: $info !important;
 }
 
-.vs-style.v-select-40 {
+.vs-style.filter-select {
+  height: 30px !important;
+  border-radius: 20px !important;
+  min-width: 200px;
+  .vs__search {
+    height: unset !important;
+    border-radius: 20px;
+    background-color: #F3F6F9 !important;
+  }
+  .vs__dropdown-toggle {
+    height: 30px !important;
+    background-color: #F3F6F9 !important;
+    border: none;
+  }
+
+  input::placeholder {
+    color: rgba(128, 128, 128, 0.497);
+  }
+
+  input::placeholder, .vs__selected{
+    font-size: .9em;
+  }
+
+  .vs__dropdown-toggle {
+    border-radius: 20px !important;
+  }
+}
+
+.vs-style.v-select-40:not(.filter-select) {
   .vs__dropdown-toggle {
     height: 40px !important;
   }
@@ -214,16 +246,16 @@ button.circle {
     display: none !important;
   }
 }
-.vs-style.vs--multiple .vs__selected-options .vs__selected {
+.vs-style.vs--multiple:not(.filter-select) .vs__selected-options .vs__selected {
   
   height: auto !important;
 }
-.vs-style .vs__selected {
+.vs-style:not(.filter-select) .vs__selected {
   font-size: 0.9em !important;
   font-weight: 400;
 }
 
-.vs-style.vs--multiple {
+.vs-style.vs--multiple:not(.filter-select) {
   .vs__selected-options {
     padding-left: 10px !important;
     .vs__selected {

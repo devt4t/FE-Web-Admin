@@ -17,6 +17,7 @@ const menu = [
         component: "Employee/Employee",
         name: "Employee",
         permission: "Employee",
+        icon: "mdi-account-group",
       },
       {
         title: "Field Coordinator",
@@ -24,6 +25,7 @@ const menu = [
         component: "Employee/FieldCoordinator/index",
         name: "FieldCoordinator",
         permission: "FieldCoordinator",
+        icon: "mdi-account",
       },
       {
         title: "Field Facilitator",
@@ -31,6 +33,7 @@ const menu = [
         component: "Employee/FF",
         name: "FieldFacilitator",
         permission: "FieldFacilitator",
+        icon: "mdi-account",
       },
       {
         title: "Employee Menu",
@@ -38,6 +41,7 @@ const menu = [
         component: "Employee/EmployeeMenu",
         name: "EmployeeMenu",
         permission: "EmployeeMenu",
+        icon: "mdi-account-details",
       },
       {
         title: "Employee Manager",
@@ -45,6 +49,7 @@ const menu = [
         component: "Employee/EmployeeManager",
         name: "EmployeeManager",
         permission: "EmployeeManager",
+        icon: "mdi-account-tie",
       },
       {
         title: "Employee Position",
@@ -52,6 +57,7 @@ const menu = [
         component: "Employee/EmployeePosition",
         name: "EmployeePosition",
         permission: "EmployeePosition",
+        icon: "mdi-account-star",
       },
     ],
   },
@@ -59,20 +65,21 @@ const menu = [
     title: "Main Data",
     icon: "mdi-database",
     items: [
+      // {
+      //   title: "Farmer",
+      //   to: "/Farmer",
+      //   component: "Farmer/Farmer.old",
+      //   name: "Farmer",
+      //   permission: "Farmer",
+      // },
       {
         title: "Farmer",
-        to: "/Farmer",
-        component: "Farmer/Farmer.old",
-        name: "Farmer",
-        permission: "Farmer",
-      },
-      {
-        title: "Farmer V2",
         to: "/farmer-v2",
         component: "Farmer/Farmer",
         name: "Farmer",
         permission: "Farmer",
         prevent_route_validation: true,
+        icon: "mdi-account-cowboy-hat",
       },
       {
         title: "Lahan",
@@ -80,6 +87,7 @@ const menu = [
         component: "Lahan/Lahan",
         name: "Lahan",
         permission: "Lahan",
+        icon: "mdi-square-rounded",
       },
       {
         title: "Lahan Umum",
@@ -87,6 +95,7 @@ const menu = [
         component: "Lahan/LahanUmum",
         name: "LahanUmum",
         permission: "LahanUmum",
+        icon: "mdi-square-rounded-badge",
       },
       {
         title: "Donor",
@@ -94,6 +103,7 @@ const menu = [
         component: "Donor/Donor",
         name: "Donor",
         permission: "Donor",
+        icon: "mdi-account-heart",
       },
       {
         title: "Project",
@@ -101,6 +111,7 @@ const menu = [
         component: "Project/Project",
         name: "Project",
         permission: "Project",
+        icon: "mdi-projector-screen",
       },
       {
         title: "Truck & Driver",
@@ -108,6 +119,46 @@ const menu = [
         component: "TruckDriver/TruckDriver",
         name: "TruckDriver",
         permission: "TruckDriver",
+        icon: "mdi-truck-check",
+      },
+    ],
+  },
+  {
+    title: "New Activities",
+    icon: "mdi-lightbulb-auto-outline",
+    items: [
+      {
+        title: "Scooping Visit",
+        to: "/scooping-visit-v2",
+        component: "ActivityNew/scooping_visit/ScoopingVisit",
+        name: "newScoopingVisit",
+        permission: "scooping-visit-v2",
+        icon: "mdi-home-edit",
+      },
+      {
+        title: "RRA & PRA",
+        to: "/rra-pra-v2",
+        component: "ActivityNew/rra_pra/RraPra",
+        name: "newRraPra",
+        permission: "rra-pra-v2",
+        icon: "mdi-home-search",
+      },
+      {
+        title: "Sosialisasi Program",
+        to: "/sosialisasi-program-v2",
+        component: "ActivityNew/program_soc/ProgramSoc",
+        name: "newSosialisasiProgram",
+        permission: "sosialisasi-program-v2",
+        icon: "mdi-account-card",
+      },
+      {
+        title: "Petani (Sosialisasi Program)",
+        to: "/sosialisasi-program-farmer-v2",
+        component: "ActivityNew/program_soc/ProgramSocFarmer",
+        name: "newSosialisasiProgram",
+        permission: "sosialisasi-program-v2",
+        prevent_route_validation: true,
+        hide: true,
       },
     ],
   },
@@ -121,34 +172,39 @@ const menu = [
         component: "Activity/Progression",
         name: "Progression",
         permission: "Progression",
+        icon: "mdi-book-check",
       },
-      {
-        title: "Scooping Visit",
-        to: "/ScoopingVisit",
-        component: "Activity/ScopingVisit/index",
-        name: "ScoopingVisit",
-        permission: "ScoopingVisit",
-      },
-      {
-        title: "RRA & PRA",
-        to: "/RraPra",
-        component: "Activity/RraPra/index",
-        name: "RraPra",
-        permission: "RraPra",
-      },
-      {
-        title: "Sosialisasi Program",
-        to: "/SosialisasiProgram",
-        component: "Activity/SosialisasiProgram/index",
-        name: "SosialisasiProgram",
-        permission: "SosialisasiProgram",
-      },
+      // {
+      //   title: "Scooping Visit",
+      //   to: "/ScoopingVisit",
+      //   component: "Activity/ScopingVisit/index",
+      //   name: "ScoopingVisit",
+      //   permission: "ScoopingVisit",
+      //   icon: "mdi-home-edit",
+      // },
+      // {
+      //   title: "RRA & PRA",
+      //   to: "/RraPra",
+      //   component: "Activity/RraPra/index",
+      //   name: "RraPra",
+      //   permission: "RraPra",
+      //   icon: "mdi-home-search",
+      // },
+      // {
+      //   title: "Sosialisasi Program",
+      //   to: "/SosialisasiProgram",
+      //   component: "Activity/SosialisasiProgram/index",
+      //   name: "SosialisasiProgram",
+      //   permission: "SosialisasiProgram",
+      //   icon: "mdi-account-card",
+      // },
       {
         title: "Sosialisasi Tanam",
         to: "/SosialisasiTanam",
         component: "Activity/SosialisasiTanam",
         name: "SosialisasiTanam",
         permission: "SosialisasiTanam",
+        icon: "mdi-account-badge",
       },
       {
         title: "AdjustmentDataSostam",
@@ -172,6 +228,7 @@ const menu = [
         component: "Activity/PelatihanPetani",
         name: "PelatihanPetani",
         permission: "PelatihanPetani",
+        icon: "mdi-handshake",
       },
       {
         title: "Lubang Tanam",
@@ -179,6 +236,7 @@ const menu = [
         component: "Activity/LubangTanam",
         name: "LubangTanam",
         permission: "LubangTanam",
+        icon: "mdi-check-underline-circle",
       },
       {
         title: "Material Organik",
@@ -186,6 +244,7 @@ const menu = [
         component: "Activity/MaterialOrganik",
         name: "MaterialOrganik",
         permission: "MaterialOrganik",
+        icon: "mdi-leaf-circle",
       },
       {
         title: "SeedlingChangeRequest",
@@ -201,6 +260,7 @@ const menu = [
         component: "Activity/Distribusi",
         name: "Distribusi",
         permission: "Distribusi",
+        icon: "mdi-truck-fast",
       },
 
       {
@@ -209,6 +269,7 @@ const menu = [
         component: "Activity/PenilikanTanam",
         name: "PenilikanTanam",
         permission: "PenilikanTanam",
+        icon: "mdi-spa",
       },
       {
         title: "Monitoring",
@@ -216,6 +277,7 @@ const menu = [
         component: "Activity/Monitoring2",
         name: "Monitoring2",
         permission: "Monitoring2",
+        icon: "mdi-tree",
       },
       {
         title: "PermintaanTutupanLahan",
@@ -243,42 +305,7 @@ const menu = [
       },
     ],
   },
-  {
-    title: "New Activities",
-    icon: "mdi-lightbulb-auto-outline",
-    items: [
-      {
-        title: "New Scooping Visit",
-        to: "/scooping-visit-v2",
-        component: "ActivityNew/scooping_visit/ScoopingVisit",
-        name: "newScoopingVisit",
-        permission: "scooping-visit-v2",
-      },
-      {
-        title: "RRA & PRA",
-        to: "/rra-pra-v2",
-        component: "ActivityNew/rra_pra/RraPra",
-        name: "newRraPra",
-        permission: "rra-pra-v2",
-      },
-      {
-        title: "Sosialisasi Program",
-        to: "/sosialisasi-program-v2",
-        component: "ActivityNew/program_soc/ProgramSoc",
-        name: "newSosialisasiProgram",
-        permission: "sosialisasi-program-v2",
-      },
-      {
-        title: "Petani (Sosialisasi Program)",
-        to: "/sosialisasi-program-farmer-v2",
-        component: "ActivityNew/program_soc/ProgramSocFarmer",
-        name: "newSosialisasiProgram",
-        permission: "sosialisasi-program-v2",
-        prevent_route_validation: true,
-        hide: true,
-      },
-    ],
-  },
+
   {
     title: "Utilities",
     icon: "mdi-cogs",
@@ -289,6 +316,7 @@ const menu = [
         component: "Utilities/Provinsi",
         name: "Provinsi",
         permission: "Provinsi",
+        icon: "mdi-map-marker",
       },
       {
         title: "Kab/Kota",
@@ -296,6 +324,7 @@ const menu = [
         component: "Utilities/Kab",
         name: "Kabupaten",
         permission: "Kabupaten",
+        icon: "mdi-map-marker",
       },
       {
         title: "Kecamatan",
@@ -303,6 +332,7 @@ const menu = [
         component: "Utilities/Kecamatan",
         name: "Kecamatan",
         permission: "Kecamatan",
+        icon: "mdi-map-marker",
       },
       {
         title: "Village",
@@ -310,6 +340,7 @@ const menu = [
         component: "Utilities/Vilage",
         name: "Vilage",
         permission: "Vilage",
+        icon: "mdi-map-marker",
       },
       {
         title: "Management Unit",
@@ -317,6 +348,7 @@ const menu = [
         component: "Utilities/MU",
         name: "ManagementUnit",
         permission: "ManagementUnit",
+        icon: "mdi-map-marker-radius",
       },
       {
         title: "Target Area",
@@ -324,6 +356,7 @@ const menu = [
         component: "Utilities/TA",
         name: "TargetArea",
         permission: "TargetArea",
+        icon: "mdi-map-marker-radius",
       },
       {
         title: "Pekerjaan",
@@ -331,6 +364,7 @@ const menu = [
         component: "Utilities/Pekerjaan",
         name: "Pekerjaan",
         permission: "Pekerjaan",
+        icon: "mdi-bag-personal",
       },
       {
         title: "Suku",
@@ -338,6 +372,7 @@ const menu = [
         component: "Utilities/Suku",
         name: "Suku",
         permission: "Suku",
+        icon: "mdi-account-multiple",
       },
       {
         title: "Trees",
@@ -345,6 +380,7 @@ const menu = [
         component: "Trees/Trees",
         name: "Trees",
         permission: "Trees",
+        icon: "mdi-tree",
       },
       {
         title: "Regional",
@@ -352,6 +388,7 @@ const menu = [
         component: "Utilities/Regional",
         name: "Regional",
         permission: "Regional",
+        icon: "mdi-map-marker",
       },
     ],
   },
@@ -366,6 +403,7 @@ const menu = [
         component: "Utilities/ProjectTypes",
         name: "ProjectTypes",
         permission: "ProjectTypes",
+        icon: "mdi-database-edit",
       },
       {
         title: "Tujuan Penanaman",
@@ -373,6 +411,7 @@ const menu = [
         component: "Utilities/ProjectPlantingPurpose",
         name: "ProjectPlantingPurpose",
         permission: "ProjectPlantingPurpose",
+        icon: "mdi-database-edit",
       },
       {
         title: "Media Tanam",
@@ -380,6 +419,7 @@ const menu = [
         component: "Utilities/ProjectPlantingEnvironment",
         name: "ProjectPlantingEnvironment",
         permission: "ProjectPlantingEnvironment",
+        icon: "mdi-database-edit",
       },
       {
         title: "Task",
@@ -387,6 +427,7 @@ const menu = [
         component: "MasterData/Tasks",
         name: "Task",
         permission: "Task",
+        icon: "mdi-database-edit",
       },
       {
         title: "Task Group",
@@ -394,6 +435,7 @@ const menu = [
         component: "MasterData/TaskGroups",
         name: "TaskGroup",
         permission: "TaskGroup",
+        icon: "mdi-database-edit",
       },
     ],
   },
@@ -407,6 +449,7 @@ const menu = [
         component: "Users/Users",
         name: "Users",
         permission: "Users",
+        icon: "mdi-account",
       },
     ],
   },

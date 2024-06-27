@@ -6,7 +6,10 @@
         <v-card-text>
           <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-              <v-row class="scooping-visit-gis-verification">
+              <v-row
+                class="scooping-visit-gis-verification"
+                v-if="scoopingVisitCode"
+              >
                 <v-col md="12" class="form-separator">
                   <h4>Data Lahan</h4>
                 </v-col>
@@ -174,6 +177,10 @@ export default {
       type: Number,
       default: 0,
     },
+    scoopingVisitCode: {
+      required: false,
+      type: String,
+    },
   },
   data() {
     return {
@@ -199,9 +206,12 @@ export default {
       payload.rainfall = payload.rainfall.join(",");
       this.$_api
         .post("UpdateVerifScoopingVisitGIS_new", payload)
-        .then(() => {
+        .then(async () => {
           this.loading = false;
           this.isOpen = false;
+          await this.$_api.get("MailToSocialOfficer", {
+            data_no: this.scoopingVisitCode,
+          });
           this.$_alert.success("Data GIS berhasil diperbarui");
           this.$emit("success", true);
         })

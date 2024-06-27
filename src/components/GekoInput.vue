@@ -65,6 +65,7 @@
         class="vs-style"
         :class="{
           invalid: errors.length > 0,
+          [item.ic || '']: true,
         }"
         :placeholder="item.placeholder || null"
         :disabled="disabled"
@@ -225,6 +226,18 @@
 </template>
 
 <script>
+// filter: {
+//   setter: "master_location_nurserys",
+//   getter: "master_location_nurserys",
+//   type: "lookup-radio",
+//   option: {
+//     list_pointer: {
+//       label: "name_location_nursery",
+//       code: "id",
+//       display: ["name_location_nursery"]
+//     }
+//   }
+
 import _ from "lodash";
 export default {
   name: "geko-input",

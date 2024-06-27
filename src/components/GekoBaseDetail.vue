@@ -6,11 +6,22 @@
       data-aos-duration="800"
       class="geko-base-detail-card mb-5"
     >
-      <v-card-title>
-        <v-icon large class="mr-2" @click="$router.go(-1)"
-          >mdi-arrow-left-circle</v-icon
-        >
-        <h4 class="mb-0 pb-0">Detail {{ title }}</h4>
+      <v-card-title
+        class="d-flex flex-row"
+        style="justify-content: space-between"
+      >
+        <div class="d-flex flex-row" style="align-items: center">
+          <v-icon large class="mr-2" @click="$router.go(-1)"
+            >mdi-arrow-left-circle</v-icon
+          >
+          <h4 class="mb-0 pb-0">Detail {{ title }}</h4>
+        </div>
+
+        <slot
+          name="detail-header-action"
+          v-bind:item="data"
+          v-bind:response="response"
+        ></slot>
       </v-card-title>
       <slot name="detail-body">
         <div class="geko-base-detail-wrapper">
@@ -53,6 +64,7 @@
                 </div>
               </slot>
             </template>
+            <slot name="detail-body-after" v-bind:response="response"> </slot>
           </div>
         </div>
       </slot>
@@ -101,7 +113,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.fields);
     if (this.api) {
       this.getData();
     } else {

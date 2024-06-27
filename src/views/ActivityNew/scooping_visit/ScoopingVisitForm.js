@@ -234,7 +234,7 @@ export default {
       this.$_api
         .post(endpoint, payload)
         .then((res) => {
-          this.addProject(res);
+          this.addProject(null);
           this.addOtherNgo(res);
           this.addFigure(res);
         })
@@ -245,11 +245,11 @@ export default {
         });
     },
 
-    addOtherNgo(res) {
+    addOtherNgo(res = {}) {
       i = 0;
 
       for (const ngo of this.formData.other_ngo_data) {
-        if (!this.isCreate && typeof ngo == "object" && ngo.id) {
+        if (typeof ngo == "object") {
           continue;
         }
         i += 1;
@@ -259,34 +259,45 @@ export default {
       }
     },
 
-    addProject(res) {
+    addProject(res = {}) {
       var i = 0;
       for (let _project of this.formData.project_id) {
         i += 1;
 
-        if (!this.isCreate && typeof _project == "object" && _project.id) {
-          continue;
-        }
+        // if (!this.isCreate && typeof _project == "object" && _project.id) {
+        //   continue;
+        // }
+
+        const isCreate = typeof _project !== "object";
+
+        if (!isCreate) continue;
         const projectPayload = {
-          data_no: res.kode_scooping,
+          data_no: isCreate ? res.kode_scooping : this.formData.data_no,
           project_id: parseInt(_project),
         };
-
-        this.$_api
-          .post("AddScoopingProject_new", projectPayload)
-          .catch((err) => {
-            console.log("err", err);
-          });
+        const endpoint =
+          isCreate == "create"
+            ? "AddScoopingProject_new"
+            : "UpdateScoopingVisitProject_new";
+        this.$_api.post(endpoint, projectPayload).catch((err) => {
+          console.log("err", err);
+        });
       }
     },
 
-    addFigure(res) {
+    addFigure(res = {}) {
       var i = 0;
 
       for (const figure of this.formData.village_persons) {
         i += 1;
 
-        if (!this.isCreate && typeof figure == "object" && figure.id) {
+        if (typeof figure == "object") {
+          if (i == this.formData.village_persons.length) {
+            
+            this.$_alert.success(`Data scooping visit berhasil ${this.isCreate ? 'ditambahkan' : 'diperbarui'}`);
+            this.$router.go(-1);
+            this.loading = false;
+          }
           continue;
         }
         figure.data_no = res.kode_scooping;

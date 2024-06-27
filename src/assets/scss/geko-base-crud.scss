@@ -156,6 +156,14 @@
         }
       }
 
+      &.warning {
+        background-color: $warning_light !important;
+        .value,
+        i {
+          color: $warning !important;
+        }
+      }
+
       &.info {
         background-color: $info_light !important;
         .value,
@@ -210,8 +218,10 @@
         flex-direction: row;
         align-items: center;
         form {
-          max-width: 70%;
-          min-width: 50%;
+          max-width: 40%;
+          min-width: 8em;
+          border-right: 1px solid rgba(191, 191, 191, 0.3);
+          margin-right: 8px;
         }
 
         .toolbar-button {
@@ -223,12 +233,20 @@
 
           i {
             font-size: 1.2em !important;
-            color: darken($primary, 40) !important;
+            // color: darken($primary, 40) !important;
+            color: darken($success, 5);
           }
 
           &:hover {
             background-color: #aaaaaa5d;
             transition: all 0.2s ease;
+          }
+
+          &.active {
+            background-color: $success;
+            i {
+              color: white;
+            }
           }
         }
       }
@@ -273,6 +291,27 @@
         i {
           color: $danger !important;
         }
+      }
+    }
+
+  }
+  .filters {
+    padding: 1em;
+    border: 1px solid $success_light;
+    border-radius: 10px;
+    margin-bottom: 1em;
+    display: none !important;
+    transition: all 0.5s ease;
+    &.active {
+      max-height: 100vh;
+      transition: all 0.5s ease;
+      display: flex !important;
+    }
+    .filter-item {
+      margin-right: 10px;
+
+      .geko-input label {
+        font-size: .8em !important;
       }
     }
   }

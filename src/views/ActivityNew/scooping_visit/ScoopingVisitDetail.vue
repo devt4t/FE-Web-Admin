@@ -277,11 +277,12 @@
                   class="doc-photo-wrapper"
                 >
                   <div
-                    class="doc-photo"
+                    class="doc-photo hover-pointer"
                     v-bind:style="{
                       backgroundImage:
                         'url(' + $store.state.apiUrlImage + image + ')',
                     }"
+                    @click="showLightbox($store.state.apiUrlImage + image)"
                   ></div>
                 </div>
               </div>
@@ -317,6 +318,7 @@
         :dataKey="verifGisModal"
         @success="onSuccessGisVerification"
         :dryLandArea="data.dry_land_area"
+        :scoopingVisitCode="data.data_no"
         v-if="data.dry_land_area"
       />
     </v-col>
@@ -676,6 +678,15 @@ export default {
           // ])
         }
       );
+    },
+
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+      if (index) this.$store.state.lightbox.index = index;
+      else this.$store.state.lightbox.index = 0;
+
+      this.$store.state.lightbox.show = true;
     },
 
     async onVerification(type) {
