@@ -28,14 +28,47 @@
         <div class="sidebar-header">
           <img src="/images/GEKO_short.png" />
 
-          <div class="d-flex flex-row sidebar-profile w-100">
-            <div class="avatar">{{ avatarHelper($store.state.User.name) }}</div>
-            <div class="d-flex flex-column sidebar-profile-name">
-              <h6>{{ $store.state.User ? $store.state.User.name : "" }}</h6>
-              <p class="mb-0 text-08-em">
-                {{ $store.state.User ? $store.state.User.role_name : "" }}
-              </p>
+          <div class="d-flex flex-column sidebar-profile w-100">
+            <div
+              class="d-flex flex-row px-2 mb-2 w-100"
+              style="align-items: center; width: 100%"
+            >
+              <div class="avatar">
+                {{ avatarHelper($store.state.User.name) }}
+              </div>
+              <div class="d-flex flex-column sidebar-profile-name">
+                <h6>{{ $store.state.User ? $store.state.User.name : "" }}</h6>
+                <p class="mb-0 text-08-em">
+                  {{ $store.state.User ? $store.state.User.role_name : "" }}
+                </p>
+              </div>
             </div>
+            <div
+              class="sidebar-header-menu"
+              :class="{
+                open: profileOpen,
+              }"
+            >
+              <button>
+                <v-icon>mdi-lock-outline</v-icon>
+                <span>Ganti Password</span>
+              </button>
+              <button>
+                <v-icon>mdi-account</v-icon>
+                <span>Profil Saya</span>
+              </button>
+              <button class="danger" @click="logout">
+                <v-icon>mdi-logout</v-icon>
+                <span>Logout</span>
+              </button>
+            </div>
+            <button
+              class="sidebar-profile-button"
+              @click="profileOpen = !profileOpen"
+            >
+              <v-icon v-if="!profileOpen">mdi-chevron-down</v-icon>
+              <v-icon v-else>mdi-chevron-up</v-icon>
+            </button>
           </div>
         </div>
       </template>
@@ -461,6 +494,7 @@ export default {
     LottieAnimation,
   },
   data: () => ({
+    profileOpen: false,
     drawer: null,
     nameadmin: "admin web",
     statusadmin: "admin web",
@@ -602,6 +636,7 @@ export default {
       this.items = listMenu;
     },
     async cekLogout() {
+      this.profileOpen = false;
       this.$store.commit("set", ["BaseUrlGet", "", true]);
       this.$store.commit("set", ["BaseUrlUpload", "", true]);
       this.$store.commit("set", ["BaseUrl", "", true]);

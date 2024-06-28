@@ -32,9 +32,13 @@ svg.wave {
     .sidebar-profile {
       width: 100%;
       background-color: #f6f7f9;
-      padding: 10px;
+      // padding: 10px;
+      // padding-bottom: 0;
       align-items: center;
       border-radius: 12px;
+      overflow: hidden;
+      padding-top: 10px;
+      border: 1px solid rgba(186, 186, 186, 0.1);
 
       .avatar {
         width: 50px;
@@ -47,21 +51,67 @@ svg.wave {
         align-items: center;
         font-size: 1.4em;
         font-weight: bold;
-        color:#7a7a7a ;
+        color: #7a7a7a;
         text-transform: uppercase;
       }
 
+      .sidebar-profile-button {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        background-color: #cfcfcf;
+        width: 100%;
+        i {
+          color: black;
+        }
+      }
+
+      .sidebar-header-menu {
+        background-color: white;
+        width: 100%;
+        padding-block: 5px;
+        display: none;
+        max-height: 0;
+        transition: all 0.3s ease;
+
+        &.open {
+          display: block;
+          max-height: 500px;
+          transition: max-height 0.3s ease;
+        }
+        button {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          // justify-content: space-between;
+          width: 100%;
+          padding-block: 7px;
+          padding-inline: 10px;
+          color: rgb(80, 80, 80);
+          font-size: 0.9em;
+          i {
+            padding-right: 5px;
+            color: rgb(80, 80, 80) !important;
+          }
+
+          &.danger {
+            color: $danger;
+            i {
+              color: $danger !important;
+            }
+          }
+        }
+      }
       .sidebar-profile-name {
         padding-left: 10px;
         flex: 1;
 
         h6 {
-          font-size: .9em;
+          font-size: 0.9em;
         }
       }
     }
   }
-  
 
   .sidebar-menus {
     color: black !important;
@@ -71,27 +121,26 @@ svg.wave {
     .sidebar-menu-item {
       display: flex;
       flex-direction: column;
-      padding-right: .9em;
+      padding-right: 0.9em;
       .sidebar-title {
         font-weight: 600;
-        font-size: .8em;
+        font-size: 0.8em;
         text-transform: uppercase;
         padding-block: 10px;
         padding-left: 1.5em;
-
       }
       button {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding-block: .7em;
+        padding-block: 0.7em;
         padding-left: 1.3em;
         i {
           color: rgba(88, 88, 88, 0.5) !important;
         }
         span {
           padding-left: 10px;
-          font-size: .8em;
+          font-size: 0.8em;
           color: rgba(88, 88, 88, 0.8) !important;
         }
 
@@ -100,7 +149,8 @@ svg.wave {
           border-top-right-radius: 20px;
           border-bottom-right-radius: 20px;
           transition: all 0.5s ease;
-          i, span {
+          i,
+          span {
             color: $success !important;
             transition: all 0.5s ease;
           }
@@ -109,13 +159,13 @@ svg.wave {
           }
         }
         &:hover {
-          
           background-color: $success_light;
           border-top-right-radius: 20px;
           border-bottom-right-radius: 20px;
           transition: all 0.5s ease;
-          
-          i, span {
+
+          i,
+          span {
             color: $success !important;
             transition: all 0.5s ease;
           }
@@ -186,7 +236,6 @@ svg.wave {
 }
 
 @media only screen and (max-width: 768px) {
-
   .toggle-button-mobile {
     display: flex;
     position: fixed;
