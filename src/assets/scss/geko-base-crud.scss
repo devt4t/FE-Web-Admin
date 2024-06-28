@@ -139,6 +139,7 @@
       padding-left: 10px;
       padding-right: 2em;
       padding-block: 10px;
+      margin-bottom: 10px;
 
       &.success {
         background-color: $success_light !important;
@@ -219,7 +220,7 @@
         align-items: center;
         form {
           max-width: 40%;
-          min-width: 8em;
+          min-width: 400px;
           border-right: 1px solid rgba(191, 191, 191, 0.3);
           margin-right: 8px;
         }

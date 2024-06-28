@@ -4,6 +4,7 @@
     :hideCreate="true"
     :hideDelete="!['13'].includes($store.state.User.role)"
     :hideUpdate="true"
+    :key="`component-farmer-${componentKey}`"
   >
     <template v-slot:list-join_year="{ item }">
       <div
@@ -76,32 +77,120 @@
     </template>
 
     <template v-slot:detail-body-after="{ item, response }">
-      <div class="geko-base-detail-item">
-        <div class="label">Jenis Bibit</div>
-        <div class="value">
-          <div class="d-flex flex-row">
-            <div
-              class="badge bg-success mr-2"
-              v-for="(tree, i) in response ? response.DetailFarmerTree : []"
-              :key="`farmer-${i}`"
-            >
-              <v-icon class="mr-1">mdi-tree</v-icon>
-              <span>{{ tree.trees_tree_name }}</span>
+      <div>
+        <div class="geko-base-detail-item">
+          <div class="label">Jenis Bibit</div>
+          <div class="value">
+            <div class="d-flex flex-row">
+              <div
+                class="badge bg-success mr-2"
+                v-for="(tree, i) in response ? response.DetailFarmerTree : []"
+                :key="`farmer-${i}`"
+              >
+                <v-icon class="mr-1">mdi-tree</v-icon>
+                <span>{{ tree.trees_tree_name }}</span>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div
+          class="mt-5 d-flex flex-row"
+          style="justify-content: space-between"
+        >
+          <div class="d-flex flex-column farmer-detail-photo">
+            <h6>Foto KTP</h6>
+            <div
+              class="img cover"
+              v-bind:style="{
+                'background-image':
+                  'url(' +
+                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.ktp_document}` +
+                  ')',
+              }"
+              @click="
+                showLightbox(
+                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.ktp_document}`
+                )
+              "
+            ></div>
+          </div>
+          <div class="d-flex flex-column farmer-detail-photo">
+            <h6>Profile Petani</h6>
+            <div
+              class="img cover"
+              v-bind:style="{
+                'background-image':
+                  'url(' +
+                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.farmer_profile}` +
+                  ')',
+              }"
+              @click="
+                showLightbox(
+                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.farmer_profile}`
+                )
+              "
+            ></div>
+          </div>
+          <div class="d-flex flex-column farmer-detail-photo">
+            <h6>Tanda Tangan</h6>
+            <div
+              class="img"
+              v-bind:style="{
+                'background-image':
+                  'url(' +
+                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.signature}` +
+                  ')',
+              }"
+              @click="
+                showLightbox(
+                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.signature}`
+                )
+              "
+            ></div>
           </div>
         </div>
       </div>
     </template>
 
-    <!-- <template v-slot:detail-header-action="{ item, response }">
+    <template v-slot:detail-complete_data="{ item }">
+      <div class="d-flex flex-row">
+        <div
+          class="badge"
+          :class="{
+            'bg-success': item.complete_data == 1,
+            'bg-danger': item.complete_data == 0,
+          }"
+        >
+          {{ item.complete_data == 1 ? "Lengkap" : "Belum Lengkap" }}
+        </div>
+      </div>
+    </template>
+
+    <template v-slot:detail-approve="{ item }">
+      <div class="d-flex flex-row">
+        <div
+          class="badge"
+          :class="{
+            'bg-success': item.approve == 1,
+            'bg-danger': item.approve == 0,
+          }"
+        >
+          {{ item.approve == 1 ? "Terverifikasi" : "Belum Diverifikasi" }}
+        </div>
+      </div>
+    </template>
+
+    <template v-slot:detail-header-action="{ item, response }">
       <v-btn
         variant="success"
+        @click="onVerification(item)"
         v-if="
           item.approve == 0 &&
           ['13', '19', '20'].includes($store.state.User.role)
         "
       >
-        <v-icon small>mdi-check</v-icon>
+        <v-icon small class="mr-1">mdi-check</v-icon>
         <span>Verifikasi</span>
       </v-btn>
       <v-btn
@@ -111,25 +200,80 @@
         "
         @click="onVerification(item)"
       >
-        <v-icon small>mdi-close</v-icon><span>Unverifikasi</span></v-btn
+        <v-icon small class="mr-1">mdi-close</v-icon
+        ><span>Unverifikasi</span></v-btn
       >
-    </template> -->
+    </template>
   </geko-base-crud>
 </template>
 
 <script>
 import moment from "moment";
+import "./farmer.scss";
 export default {
   name: "farmer-v2",
 
   methods: {
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+      if (index) this.$store.state.lightbox.index = index;
+      else this.$store.state.lightbox.index = 0;
+
+      this.$store.state.lightbox.show = true;
+    },
     onVerification(data) {
-      if (item.approve == 1) {
+      console.log(data);
+      if (data.approve == 1) {
+        this.$_alert
+          .confirm(
+            "Unverifikasi Petani",
+            "Apakah anda yakin ingin unverifikasi data petani?",
+            "Ya, Delete",
+            "Batal",
+            true
+          )
+          .then((res) => {
+            if (res.isConfirmed) {
+              //unverif
+              this.$_api
+                .post("updateFarmerApproval", {
+                  current_id: this.$route.query.id,
+                })
+                .then(() => {
+                  this.$_alert.success("Data petani berhasil di unverifikasi");
+                  this.componentKey += 1;
+                });
+            }
+          });
+      } else {
+        this.$_alert
+          .confirm(
+            "Verifikasi Petani",
+            "Apakah anda yakin ingin verifikasi data petani?",
+            "Ya, Verifikasi",
+            "Batal",
+            false
+          )
+          .then((res) => {
+            if (res.isConfirmed) {
+              //verif
+              this.$_api
+                .post("updateFarmerApproval", {
+                  current_id: this.$route.query.id,
+                })
+                .then(() => {
+                  this.componentKey += 1;
+                  this.$_alert.success("Data petani berhasil di verifikasi");
+                });
+            }
+          });
       }
     },
   },
   data() {
     return {
+      componentKey: 1,
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);
       },
@@ -145,8 +289,12 @@ export default {
         setter: "AddFormMinatFarmers_new",
         setter_redirect: "back",
         update: "UpdateFormMinatMain_new",
-        delete: "DeleteScoopingVisit_new",
-        deleteLabel: "scooping_no",
+        delete: "DeleteFarmerData_new",
+        deleteLabel: "farmer_no",
+        deleteKey: "farmer_no",
+        delete_ext_payload: {
+          delete_type: "soft_delete",
+        },
         filter_api: {
           typegetdata: "all",
         },
@@ -224,6 +372,24 @@ export default {
               create: { validation: ["required"] },
               update: { validation: ["required"], setter: "new_name" },
               filter: false,
+            },
+          },
+          {
+            id: "approve",
+            label: "Status",
+            methods: {
+              detail: {
+                type: "slot",
+              },
+            },
+          },
+          {
+            id: "complete_data",
+            label: "Kelengkapan Data",
+            methods: {
+              detail: {
+                type: "slot",
+              },
             },
           },
           {

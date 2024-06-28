@@ -229,9 +229,18 @@ export default {
             // localStorage.setItem("BaseUrlPortal", this.BaseUrlPortal);
             // localStorage.setItem("xAppKey_Portal", this.xAppKey_Portal);
 
+            this.$store.commit("set", [
+              "ApiConfig",
+              {
+                headers: {
+                  Authorization: `Bearer ${response.data.data.result.access_token}`,
+                },
+              },
+              true,
+            ]);
             this.$store.commit("set", ["BaseUrlGet", this.BaseUrlGet, true]);
             this.$store.commit("set", [
-              "tmpProgramyear",
+              "tmpProgramYear",
               this.tahunProgram,
               true,
             ]);
@@ -249,16 +258,6 @@ export default {
             this.$store.commit("set", [
               "xAppKey_Portal",
               this.xAppKey_Portal,
-              true,
-            ]);
-
-            this.$store.commit("set", [
-              "ApiConfig",
-              {
-                headers: {
-                  Authorization: `Bearer ${response.data.data.result.access_token}`,
-                },
-              },
               true,
             ]);
 

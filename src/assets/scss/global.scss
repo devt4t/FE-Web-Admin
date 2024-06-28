@@ -371,8 +371,47 @@ button.circle {
   }
 }
 
+.flex-col {
+  flex-direction: column;
+}
+.justify-content-end {
+  justify-content: flex-end;
+}
+.justify-content-center {
+  justify-content: center;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.align-items-center {
+  align-items: center;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
 .text-grey {
   color: $grey;
+}
+
+.text-info {
+  color: $info !important;
+}
+
+.text-success {
+  color: $success;
+}
+
+.text-danger {
+  color: $danger;
+}
+
+.text-warning {
+  color: $warning;
+}
+
+.text-primary {
+  color: $primary;
 }
 
 .form-stepper-header {

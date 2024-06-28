@@ -32,9 +32,9 @@ env.interceptors.response.use(
     console.log(error.response.data);
     if (error.response.status === 401) {
       _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
-      // localStorage.clear();
+      localStorage.clear();
 
-      // router.push({ name: "login" });
+      router.push({ name: "login" });
     } else if (
       error.response &&
       error.response.data &&

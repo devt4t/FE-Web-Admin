@@ -152,6 +152,7 @@
                   <v-icon>mdi-microsoft-excel</v-icon>
                 </button> -->
               </div>
+              <slot name="list-before-create"> </slot>
               <v-btn
                 v-if="!hideCreate"
                 variant="success"
@@ -470,7 +471,7 @@ export default {
       loading: true,
       totalRecord: null,
       globalFilter: {
-        project_purpose: localStorage.getItem("tmpProjectPurpose"),
+        project_purpose: this.$store.state.tmpProjectPurpose,
       },
 
       fields: {
@@ -616,21 +617,23 @@ export default {
 
     setDefaultFilter() {
       //GLOBAL FILTER DEFAULT VALUE
+      console.log("global filter", this.$store.state.tmpProgramYear);
       if (this.config.globalFilter) {
         if (this.config.globalFilter.program_year) {
-          this.$set(
-            this.globalFilter,
-            "program_year",
-            this.$store.state.tmpProgramYear
+          const _programYear = this.$store.state.tmpProgramYear
               ? this.$store.state.tmpProgramYear
               : localStorage.getItem("tmpProgramYear")
               ? localStorage.getItem("tmpProgramYear")
-              : this.$_config.programYear.model,
+              : this.$_config.programYear.model
+          this.$set(
+            this.globalFilter,
+            "program_year",
+            _programYear,
             "tmpProgramYear"
           );
           this.$set(this.globalFilter, "tmpProgramYear", {
-            label: this.$store.state.tmpProgramYear,
-            code: this.$store.state.tmpProgramYear,
+            label: _programYear,
+            code: _programYear,
           });
         }
       }
@@ -724,9 +727,13 @@ export default {
         this.config.getterDataKey || "data"
       );
       if (this.config.statistic) {
-        const statisticKey = this.config.statistic.statistic_key || "count";
+        const statisticKey = ![null, undefined].includes(
+          this.config.statistic.statistic_key
+        )
+          ? this.config.statistic.statistic_key
+          : "count";
         let statisticData = responseData;
-        for (const _key of statisticKey.split(".")) {
+        for (const _key of statisticKey == "" ? [] : statisticKey.split(".")) {
           statisticData = statisticData[_key];
         }
         if (statisticData) {

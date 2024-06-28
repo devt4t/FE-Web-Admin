@@ -49,14 +49,14 @@
                 open: profileOpen,
               }"
             >
-              <button>
+              <button @click="$router.push('/GantiPassword')">
                 <v-icon>mdi-lock-outline</v-icon>
                 <span>Ganti Password</span>
               </button>
-              <button>
+              <!-- <button>
                 <v-icon>mdi-account</v-icon>
                 <span>Profil Saya</span>
-              </button>
+              </button> -->
               <button class="danger" @click="logout">
                 <v-icon>mdi-logout</v-icon>
                 <span>Logout</span>
@@ -79,7 +79,21 @@
           v-for="(group, i) in items"
           :key="`group-${i}`"
         >
-          <button v-if="!Array.isArray(group.items)" class="sidebar-button">
+          <button
+            v-if="!Array.isArray(group.items)"
+            class="sidebar-button"
+            :class="{
+              active: $route.path == group.to,
+            }"
+            @click="
+              $router.push({
+                path: group.to,
+                query: {
+                  view: 'list',
+                },
+              })
+            "
+          >
             <v-icon>{{ group.icon }}</v-icon>
             <span>{{ group.title }}</span>
           </button>
@@ -87,116 +101,27 @@
           <p v-else class="sidebar-title mb-0">
             {{ group.title }}
           </p>
-          <button
+          <a
             v-for="(menu, j) in Array.isArray(group.items) ? group.items : []"
+            :href="`#${menu.to}?view=list`"
             class="sidebar-button"
             :key="`menu-side-${j}-${i}`"
             :class="{
               active: $route.path == menu.to,
             }"
-            @click="
-              $router.push({
-                path: menu.to,
-                query: {
-                  view: 'list',
-                },
-              })
-            "
           >
             <v-icon>{{
               $route.path == menu.to ? menu.icon : `${menu.icon}-outline`
             }}</v-icon>
-            <span>{{ menu.title }}</span>
-          </button>
+            <span
+              >{{ menu.title }}
+              <span class="badge bg-info text-info" v-if="menu.update"
+                >v2</span
+              ></span
+            >
+          </a>
         </div>
       </div>
-
-      <v-list color="transparent" rounded v-if="false">
-        <template v-for="item in items">
-          <v-list-item
-            v-if="!Array.isArray(item.items)"
-            :key="item.title"
-            :to="item.to"
-            v-model="item.active"
-            :prepend-icon="item.icon"
-            link
-          >
-            <!-- <v-list-item-title>{{ item.title }}</v-list-item-title> -->
-            <template>
-              <v-list-item-icon>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title style="font-size: 14px" v-text="item.title">
-                </v-list-item-title>
-              </v-list-item-content>
-            </template>
-          </v-list-item>
-          <v-list-group
-            v-else
-            :key="item.title"
-            v-model="item.active"
-            :prepend-icon="item.icon"
-            no-action
-            color="#71AF34"
-            class="fontall"
-            :ripple="false"
-          >
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title
-                  class="itemparent"
-                  v-text="item.title"
-                ></v-list-item-title>
-              </v-list-item-content>
-            </template>
-
-            <v-list-item
-              v-if="Array.isArray(item.items)"
-              v-for="child in item.items"
-              :key="child.title"
-              :to="child.to"
-              link
-              dense
-              :ripple="false"
-            >
-              <template>
-                <v-list-item-content>
-                  <v-list-item-title
-                    class="itemchild"
-                    v-text="child.title"
-                  ></v-list-item-title>
-                </v-list-item-content>
-              </template>
-            </v-list-item>
-
-            <!-- <template v-if="item.title == 'Activities'">
-          <v-list-item-content color="#71AF34" 
-            :ripple="false"
-            v-if="$store.state.User.role_group == 'IT'"
-          >
-            <v-list-item-title>Monitoring</v-list-item-title>
-          </v-list-item-content>
-        </template> -->
-          </v-list-group>
-        </template>
-        <!-- <v-list-item
-          color="#71AF34"
-          :to="'/report-data'"
-          link
-          :ripple="false"
-          v-if="
-            $store.state.User.role_group == 'IT' ||
-            $store.state.User.role_name == 'GIS STAFF' ||
-            $store.state.User.email == 'anto@trees4trees.org'
-          "
-        >
-          <v-list-item-icon>
-            <v-icon>mdi-table-arrow-right</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Report Data</v-list-item-title>
-        </v-list-item> -->
-      </v-list>
 
       <template v-slot:append v-if="false">
         <div class="text-center pa-2">
@@ -612,6 +537,8 @@ export default {
                 title: submenu.title,
                 to: submenu.to,
                 icon: submenu.icon,
+                update: submenu.update,
+                new: submenu.new,
               });
             }
 

@@ -64,7 +64,7 @@
 
     <template v-slot:list-data_no="{ item }">
       <div class="d-flex flex-column indicator-left">
-        <p class="mb-0 text-info text-link">#{{ item.data_no }}</p>
+        <p class="mb-0o text-link">#{{ item.data_no }}</p>
         <div class="min-w-150px text-09-em">
           <span v-if="item.start_scooping_date">{{
             item.start_scooping_date | parse("date")
