@@ -113,10 +113,12 @@ export default {
     };
   },
   mounted() {
+    console.log("api", this.api);
     if (this.api) {
       this.getData();
     } else {
       this.data = this.$route.params;
+      console.log("data", this.data);
     }
   },
 

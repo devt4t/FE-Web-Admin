@@ -86,7 +86,7 @@ const menu = [
         title: "Lahan",
         to: "/Lahan",
         component: "Lahan/Lahan.old",
-        name: "Lahan",
+        name: "LahanV1",
         permission: "Lahan",
         icon: "mdi-square-rounded",
       },
@@ -266,7 +266,7 @@ const menu = [
         to: "/populateDataMonitoring1",
         component: "Activity/monitoring2AddIn/populateDataMonitoring1",
         name: "populateDataMonitoring1",
-        permission: "populateDataMonitoring1",
+        permission: ["Monitoring2", "PenilikanTanam"],
         hide: true,
       },
       {

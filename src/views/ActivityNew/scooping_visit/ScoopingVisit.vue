@@ -165,6 +165,10 @@
         </span>
       </div>
     </template>
+
+    <!-- <template v-slot:list-bottom-action="{ item }">
+      <v-btn @click="onExport(item)" variant="primary">Export</v-btn>
+    </template> -->
   </geko-base-crud>
 </template>
 
@@ -172,6 +176,7 @@
 import "./scooping-visit.scss";
 import ScoopingVisitForm from "./ScoopingVisitForm.vue";
 import ScoopingVisitDetail from "./ScoopingVisitDetail.vue";
+import axios from "axios";
 export default {
   name: "crud-scooping-visit",
   components: {
@@ -380,21 +385,6 @@ export default {
               detail: false,
               create: false,
               update: false,
-              filter: {
-                type: "select",
-                getter: "GetDonorAllAdmin",
-                param: {
-                  project_modul: "type",
-                },
-
-                option: {
-                  list_pointer: {
-                    code: "id",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
             },
           },
           {
@@ -441,6 +431,9 @@ export default {
   },
 
   methods: {
+    // onExport(data) {
+    //   axios.post("http://localhost:9056/export/scooping-visit/doc", data);
+    // },
     onVerification(data) {
       if (
         data.status == "document_saving" &&

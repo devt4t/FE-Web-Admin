@@ -167,7 +167,7 @@
       </div>
     </template>
 
-    <template v-slot:detail-body>
+    <template v-slot:detail-row>
       <lahan-detail />
     </template>
   </geko-base-crud>
@@ -178,8 +178,11 @@ import moment from "moment";
 import "./lahan.scss";
 import LahanDetail from "./LahanDetail.vue";
 export default {
-  name: "farmer-v2",
+  name: "lahan-v2",
 
+  components: {
+    LahanDetail,
+  },
   methods: {
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
@@ -236,9 +239,6 @@ export default {
           });
       }
     },
-  },
-  component: {
-    LahanDetail,
   },
   data() {
     return {

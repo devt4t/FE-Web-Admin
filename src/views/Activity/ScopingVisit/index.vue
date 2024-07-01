@@ -98,7 +98,6 @@
           <v-divider class="mx-2 d-none d-lg-block"></v-divider>
           <div class="mx-auto">
             <v-btn
-              v-if="false"
               color="green white--text"
               :disabled="table.loading.show || table.items.length == 0"
               rounded

@@ -234,7 +234,7 @@ export default {
       this.$_api
         .post(endpoint, payload)
         .then((res) => {
-          this.addProject(null);
+          this.addProject(res);
           this.addOtherNgo(res);
           this.addFigure(res);
         })
@@ -275,10 +275,9 @@ export default {
           data_no: isCreate ? res.kode_scooping : this.formData.data_no,
           project_id: parseInt(_project),
         };
-        const endpoint =
-          isCreate == "create"
-            ? "AddScoopingProject_new"
-            : "UpdateScoopingVisitProject_new";
+        const endpoint = isCreate
+          ? "AddScoopingProject_new"
+          : "UpdateScoopingVisitProject_new";
         this.$_api.post(endpoint, projectPayload).catch((err) => {
           console.log("err", err);
         });
@@ -293,8 +292,11 @@ export default {
 
         if (typeof figure == "object") {
           if (i == this.formData.village_persons.length) {
-            
-            this.$_alert.success(`Data scooping visit berhasil ${this.isCreate ? 'ditambahkan' : 'diperbarui'}`);
+            this.$_alert.success(
+              `Data scooping visit berhasil ${
+                this.isCreate ? "ditambahkan" : "diperbarui"
+              }`
+            );
             this.$router.go(-1);
             this.loading = false;
           }

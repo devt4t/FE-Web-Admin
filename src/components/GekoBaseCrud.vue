@@ -241,7 +241,7 @@
                 class="geko-list-action-view"
                 @click="
                   $router.push({
-                    path: $route.path,
+                    name: $route.name,
                     query: {
                       view: 'detail',
                       id: item.id,
@@ -621,10 +621,10 @@ export default {
       if (this.config.globalFilter) {
         if (this.config.globalFilter.program_year) {
           const _programYear = this.$store.state.tmpProgramYear
-              ? this.$store.state.tmpProgramYear
-              : localStorage.getItem("tmpProgramYear")
-              ? localStorage.getItem("tmpProgramYear")
-              : this.$_config.programYear.model
+            ? this.$store.state.tmpProgramYear
+            : localStorage.getItem("tmpProgramYear")
+            ? localStorage.getItem("tmpProgramYear")
+            : this.$_config.programYear.model;
           this.$set(
             this.globalFilter,
             "program_year",

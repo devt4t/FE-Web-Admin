@@ -485,8 +485,8 @@ export default {
       for (const menu of menus) {
         if (
           menu.permission == "ReportData" &&
-          (this.$store.state.User.role != "13" ||
-            this.$store.state.User.email !== "anto@trees4trees.org")
+          (["13", "24", "32"].includes(this.$store.state.User.role) ||
+            this.$store.state.User.email == "anto@trees4trees.org")
         ) {
           listMenu.push({
             title: menu.title,
@@ -527,9 +527,15 @@ export default {
           };
 
           for (const submenu of menu.items) {
-            const isAllowed = this.$store.state.User.list_val_menu.includes(
-              submenu.permission
-            );
+            let isAllowed = false;
+            let permissionList = !Array.isArray(submenu.permission)
+              ? [submenu.permission]
+              : submenu.permission;
+
+            for (const _permission of permissionList) {
+              isAllowed =
+                this.$store.state.User.list_val_menu.includes(_permission);
+            }
             if (!isAllowed) continue;
 
             if (!submenu.hide) {
