@@ -308,17 +308,21 @@ export default {
         var py = this.configs[this.expansion.model].fields.find(
           (v) => v.id == "program_year"
         ).model;
-        let managementUnits = await axios
-          .get(
-            // this.$store.getters.getApiUrl(`GetManagementUnitAdmin?program_year=${py}`),
-            this.$_config.baseUrl + `GetManagementUnitAdmin?program_year=${py}`,
-            {
-              headers: {
-                Authorization: `Bearer ${this.$store.state.token}`,
-              },
-            }
-          )
-          .then((res) => res.data.data.result);
+        // let managementUnits = await axios
+        //   .get(
+        //     // this.$store.getters.getApiUrl(`GetManagementUnitAdmin?program_year=${py}`),
+        //     this.$_config.baseUrl + `GetManagementUnitAdmin?program_year=${py}`,
+        //     {
+        //       headers: {
+        //         Authorization: `Bearer ${this.$store.state.token || localStorage.getItem('token')}`,
+        //       },
+        //     }
+        //   )
+        //   .then((res) => res.data.data.result);
+
+        let managementUnits = await this.$_api
+          .get("GetManagementUnitAdmin", { program_year: py })
+          .then((res) => res.data.result);
         managementUnits = managementUnits.map((v) => {
           return {
             text: v.name,
@@ -347,14 +351,25 @@ export default {
         var mu_no = this.configs[this.expansion.model].fields.find(
           (v) => v.id == "mu_name"
         ).model;
-        let targetAreas = await axios
-          .get(
-            this.$store.getters.getApiUrl(
-              `GetTargetArea?program_year=${py}&mu_no=${mu_no}`
-            ),
-            this.$store.state.apiConfig
-          )
-          .then((res) => res.data.data.result);
+        // let targetAreas = await axios
+        //   .get(
+        //     this.$store.getters.getApiUrl(
+        //       `GetTargetArea?program_year=${py}&mu_no=${mu_no}`
+        //     ),
+        //     {
+        //       headers: {
+        //         Authorization: `Bearer ${this.$store.state.token}`,
+        //       },
+        //     }
+        //   )
+        //   .then((res) => res.data.data.result);
+
+        let targetAreas = await this.$_api
+          .get("GetTargetArea", {
+            program_year: py,
+            mu_no: mu_no,
+          })
+          .then((res) => res.data.result);
         targetAreas = targetAreas.map((v) => {
           return {
             text: v.name,

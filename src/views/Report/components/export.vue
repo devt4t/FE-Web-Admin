@@ -758,15 +758,28 @@ export default {
     },
     async newGetPaginationMo2(page, per_page, py, ta, mu) {
       let store = this.$store;
-      const data = await axios
-        .get(
-          store.getters.getApiUrl(
-            `NewTempExportMonitoring2?program_year=${py}&mu_no=${mu}&ta_no=${ta}&page=${page}&per_page=${per_page}`
-          ),
-          store.state.apiConfig
-        )
-        .then((res) => res.data);
-      console.log(data.data);
+      // const data = await axios
+      //   .get(
+      //     store.getters.getApiUrl(
+      //       `NewTempExportMonitoring2?program_year=${py}&mu_no=${mu}&ta_no=${ta}&page=${page}&per_page=${per_page}`
+      //     ),
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${this.$store.state.token}`,
+      //       },
+      //     }
+      //   )
+      //   .then((res) => res.data);
+
+      const data = await this.$_api
+        .get("NewTempExportMonitoring2", {
+          program_year: py,
+          mu_no: mu,
+          ta_no: ta,
+          page: page,
+          per_page: per_page,
+        })
+        .then((res) => res);
       if (data.data.result.datas.current_page == 1) {
         const treePhase = ["bibit_mo1", "bibit_mo2", "survival_rate(%)"];
         data.data.result.tree_locations.map((val) => {

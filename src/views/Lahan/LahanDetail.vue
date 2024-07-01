@@ -153,6 +153,48 @@ export default {
       this.$store.state.lightbox.show = true;
     },
 
+    async loadKml(url) {
+      return new Promise(async (resolve) => {
+        const data = await omnivore.kml(url).on("ready", async function () {
+          const geoJson = await data.toGeoJSON();
+          return resolve(geoJson);
+        });
+      });
+    },
+
+    async addMapLayer(data, id, borderColor, fillColor) {
+      await this.map.addSource(id, {
+        type: "geojson",
+        data: data,
+      });
+      await this.map.addLayer({
+        id: id + "-fill",
+        type: "fill",
+        source: id, // reference the data source
+        layout: {},
+        paint: {
+          "fill-color": fillColor, // blue color fill
+          "fill-opacity": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.1,
+            0.5,
+          ],
+        },
+      });
+
+      await this.map.addLayer({
+        id: id + "-border",
+        type: "line",
+        source: id,
+        layout: {},
+        paint: {
+          "line-color": borderColor,
+          "line-width": 2,
+        },
+      });
+    },
+
     async openMaps() {
       this.$set(this.maps, "center", [
         parseFloat(this.data.main_lahan.longitude),
@@ -163,37 +205,38 @@ export default {
         "data",
         "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_01_24_2004.kml"
       );
-      mapboxgl.accessToken = this.$store.state.maps.accessToken;
+      mapboxgl.accessToken = this.$_config.mapBoxApi;
       const map = await new mapboxgl.Map({
         container: this.$refs.mapContainer,
-        style: this.maps.mapStyle, // Replace with your preferred map style
+        style: this.$_config.mapBoxStyle, // Replace with your preferred map style
         center: this.maps.center,
         zoom: 9,
       });
-      return;
-      const kmlData = await omnivore.kml(
-        "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_01_24_2004.kml"
-      );
-      console.log("kmldata", kmlData);
-      const geoJsonData = await kmlData.toGeoJSON();
-      console.log("geo json data", geoJsonData);
-      console.log("geo jsons", geoJsonData.features);
 
-      // layerStyle.fill.color = this._utils.getRandomColor();
-      await map.addLayer({
-        id: `1234-fills`,
-        type: "fill",
-        source: "1234", // reference the data source
-        layout: {},
-        paint: {
-          "fill-color": "#f44336", // blue color fill
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.1,
-            0.5,
-          ],
-        },
+      await map.addControl(new mapboxgl.NavigationControl());
+      const kmlData = await this.loadKml(
+        "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_09_22_2002.kml"
+      );
+
+      const kmlGisData = await this.loadKml(
+        "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_09_22_2002-dry_land.kml"
+      );
+      // const kmlData = await omnivore
+      //   .kml(
+      //     "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_01_24_2004.kml"
+      //   )
+      //   .on("ready", async function () {
+      //     const testgeo = await kmlData.toGeoJSON();
+      //     console.log("geojson", testgeo);
+      //   });
+      // console.log("kmldata", kmlData);
+      // const geoJsonData = await kmlData.toGeoJSON();
+      // console.log("geo json data", geoJsonData);
+      // console.log("geo jsons", kmlData.features);
+      map.on("load", async () => {
+        // layerStyle.fill.color = this._utils.getRandomColor();
+        this.addMapLayer(kmlData, "Map-Layer2", "#1F6200", "#97F570");
+        this.addMapLayer(kmlGisData, "Map-Layer1", "#A70100", "#FFBAB9");
       });
 
       this.map = map;
@@ -207,8 +250,8 @@ export default {
     return {
       map: null,
       maps: {
-        accessToken: this.$store.state.maps.accessToken,
-        mapStyle: this.$store.state.maps.mapStyle,
+        accessToken: this.$_config.mapBoxApi,
+        mapStyle: this.$_config.mapBoxStyle,
         center: [113.9213, -0.7893],
         zoom: 3,
         geojson: {},
