@@ -1,5 +1,7 @@
 @import "./variables";
-
+.mapboxgl-ctrl.mapboxgl-ctrl-attrib.mapboxgl-compact, .mapboxgl-ctrl-bottom-left {
+  display: none !important;
+}
 .cursor-pointer:hover, .hover-pointer:hover {
   cursor: pointer;
 }
