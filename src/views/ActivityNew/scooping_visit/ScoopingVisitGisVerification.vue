@@ -129,7 +129,7 @@
                     v-model="formData.dry_land_polygon"
                     :item="{
                       label: 'Polygon Lahan Kering / Kritis',
-                      validation: ['required'],
+                      validation: [],
                       type: 'upload',
                       setter: 'dry_land_polygon',
                       upload_type: '.kml',

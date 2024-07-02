@@ -7,6 +7,7 @@ export default {
       ready: false,
       isCreate: null,
       loading: false,
+      existingProjectIds: [],
       form: 1,
       formData: {
         village_persons: [
@@ -43,6 +44,17 @@ export default {
     },
   },
   methods: {
+    onChangeProvince(data) {
+      this.$set(this.formData, "province_code", data.province_code);
+      if (data.province_code === "JB") {
+        this.$set(this.formData, "project_id", [
+          {
+            code: 22,
+            project_name: "AZ Preliminary Project - PJ00008",
+          },
+        ]);
+      }
+    },
     async initData() {
       const resData = await this.$_api.get("GetDetailScoopingVisit_new", {
         id: this.$route.query.id,
@@ -144,9 +156,17 @@ export default {
 
       let existingProject = [];
       for (const d of resProject.data) {
+        this.existingProjectIds.push(d.project_id);
         existingProject.push({
           project_name: `${d.projects_project_name} - ${d.scooping_id}`,
           code: d.project_id,
+        });
+      }
+
+      if (existingProject.length == 0 && this.formData.province_code === "JB") {
+        existingProject.push({
+          code: 22,
+          project_name: "AZ Preliminary Project - PJ00008",
         });
       }
       this.$set(this.formData, "project_id", existingProject);
@@ -234,6 +254,9 @@ export default {
       this.$_api
         .post(endpoint, payload)
         .then((res) => {
+          if (!res.kode_scooping) {
+            res.kode_scooping = this.formData.data_no;
+          }
           this.addProject(res);
           this.addOtherNgo(res);
           this.addFigure(res);
@@ -268,12 +291,15 @@ export default {
         //   continue;
         // }
 
-        const isCreate = typeof _project !== "object";
+        const _projectId =
+          typeof _project === "object" ? _project.code : _project;
+        const isCreate = !this.existingProjectIds.includes(_projectId);
 
         if (!isCreate) continue;
+
         const projectPayload = {
           data_no: isCreate ? res.kode_scooping : this.formData.data_no,
-          project_id: parseInt(_project),
+          project_id: parseInt(_projectId),
         };
         const endpoint = isCreate
           ? "AddScoopingProject_new"

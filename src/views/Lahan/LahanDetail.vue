@@ -65,7 +65,13 @@
         </v-card-title>
         <div class="polygon-wrapper">
           <div class="map-wrapper" style="height: 400px; width: 100%">
-            <div ref="mapContainer" class="map-container"></div>
+            <div ref="mapContainer" class="map-container" v-if="mapOpen"></div>
+            <div class="map-placeholder" v-else>
+              <v-btn variant="success" @click="openMaps">
+                <v-icon>mdi-google-maps</v-icon>
+                <span>Buka Maps</span>
+              </v-btn>
+            </div>
           </div>
 
           <div class="lahan-photo-list d-flex flex-row" v-if="data.main_lahan">
@@ -140,7 +146,6 @@ export default {
       });
 
       this.data = result;
-
       this.openMaps();
     },
 
@@ -167,21 +172,24 @@ export default {
         type: "geojson",
         data: data,
       });
-      await this.map.addLayer({
-        id: id + "-fill",
-        type: "fill",
-        source: id, // reference the data source
-        layout: {},
-        paint: {
-          "fill-color": fillColor, // blue color fill
-          "fill-opacity": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.1,
-            0.5,
-          ],
-        },
-      });
+
+      if (fillColor) {
+        await this.map.addLayer({
+          id: id + "-fill",
+          type: "fill",
+          source: id,
+          layout: {},
+          paint: {
+            "fill-color": fillColor,
+            "fill-opacity": [
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              0.1,
+              0.5,
+            ],
+          },
+        });
+      }
 
       await this.map.addLayer({
         id: id + "-border",
@@ -196,50 +204,42 @@ export default {
     },
 
     async openMaps() {
-      this.$set(this.maps, "center", [
-        parseFloat(this.data.main_lahan.longitude),
-        parseFloat(this.data.main_lahan.latitude),
-      ]);
-      this.$set(
-        this.maps,
-        "data",
-        "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_01_24_2004.kml"
-      );
-      mapboxgl.accessToken = this.$_config.mapBoxApi;
-      const map = await new mapboxgl.Map({
-        container: this.$refs.mapContainer,
-        style: this.$_config.mapBoxStyle, // Replace with your preferred map style
-        center: this.maps.center,
-        zoom: 9,
-      });
+      this.mapOpen = true;
+      setTimeout(async () => {
+        this.$set(this.maps, "center", [
+          parseFloat(this.data.main_lahan.longitude),
+          parseFloat(this.data.main_lahan.latitude),
+        ]);
+        mapboxgl.accessToken = this.$_config.mapBoxApi;
+        this.map = await new mapboxgl.Map({
+          container: this.$refs.mapContainer,
+          style: this.$_config.mapBoxStyle,
+          zoom: 17,
+          projection: "globe",
+        });
 
-      await map.addControl(new mapboxgl.NavigationControl());
-      const kmlData = await this.loadKml(
-        "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_09_22_2002.kml"
-      );
+        await this.map.dragRotate.disable();
 
-      const kmlGisData = await this.loadKml(
-        "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_09_22_2002-dry_land.kml"
-      );
-      // const kmlData = await omnivore
-      //   .kml(
-      //     "https://t4tadmin.kolaborasikproject.com/scooping_visits/village_polygon/33_01_24_2004.kml"
-      //   )
-      //   .on("ready", async function () {
-      //     const testgeo = await kmlData.toGeoJSON();
-      //     console.log("geojson", testgeo);
-      //   });
-      // console.log("kmldata", kmlData);
-      // const geoJsonData = await kmlData.toGeoJSON();
-      // console.log("geo json data", geoJsonData);
-      // console.log("geo jsons", kmlData.features);
-      map.on("load", async () => {
-        // layerStyle.fill.color = this._utils.getRandomColor();
-        this.addMapLayer(kmlData, "Map-Layer2", "#1F6200", "#97F570");
-        this.addMapLayer(kmlGisData, "Map-Layer1", "#A70100", "#FFBAB9");
-      });
+        await this.map.touchZoomRotate.disableRotation();
+        await this.map.addControl(new mapboxgl.FullscreenControl());
+        await this.map.addControl(new mapboxgl.NavigationControl());
 
-      this.map = map;
+        const kmlGisData = await this.loadKml(
+          "https://t4tadmin.kolaborasikproject.com/lahans/polygon-gis/example-giss.kml"
+        );
+        const kmlData = await this.loadKml(
+          "https://t4tadmin.kolaborasikproject.com/lahans/polygon-ff/example-ff.kml"
+        );
+        this.map.on("load", async () => {
+          this.addMapLayer(kmlGisData, "Map-Layer2", "#1F6200", "#97F570");
+          this.addMapLayer(kmlData, "Map-Layer1", "#FF7B7B", null);
+
+          const centerCoordinate = turf.center(kmlGisData);
+          const mapCenter = centerCoordinate.geometry.coordinates;
+          this.map.setCenter(mapCenter);
+          this.mapReady = true;
+        });
+      }, 1000);
     },
   },
 
@@ -249,6 +249,8 @@ export default {
   data() {
     return {
       map: null,
+      mapReady: false,
+      mapOpen: true,
       maps: {
         accessToken: this.$_config.mapBoxApi,
         mapStyle: this.$_config.mapBoxStyle,
