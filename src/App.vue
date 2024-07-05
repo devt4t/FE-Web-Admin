@@ -13,18 +13,6 @@
       style="height: auto; max-height: 97.5vh"
     >
       <template v-slot:prepend>
-        <!-- <v-list-item>
-          <v-list-item-content class="text-center">
-            <v-list-item-title
-              style="font-weight: 550; font-size: 125%"
-              class="fontall green--text--theme"
-            >
-              GEKO
-            </v-list-item-title>
-            <v-list-item-subtitle>Green Earth Kontrol</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item> -->
-
         <div class="sidebar-header">
           <img src="/images/GEKO_short.png" />
 
@@ -53,10 +41,6 @@
                 <v-icon>mdi-lock-outline</v-icon>
                 <span>Ganti Password</span>
               </button>
-              <!-- <button>
-                <v-icon>mdi-account</v-icon>
-                <span>Profil Saya</span>
-              </button> -->
               <button class="danger" @click="logout">
                 <v-icon>mdi-logout</v-icon>
                 <span>Logout</span>
@@ -449,6 +433,9 @@ export default {
       return;
     } else {
       this.buildConfig();
+      if (this.$route.path == "/") {
+        this.$router.push("/Dashboard");
+      }
       this.isLoggedIn = true;
     }
   },
@@ -458,9 +445,20 @@ export default {
         if (v) {
           this.isLoggedIn = true;
           this.buildConfig();
+
+          if (this.$route.path == "/") {
+            this.$router.push("/Dashboard");
+          }
         } else {
           if (!localStorage.getItem("token")) {
             this.isLoggedIn = false;
+          } else {
+            this.isLoggedIn = true;
+            this.buildConfig();
+
+            if (this.$route.path == "/") {
+              this.$router.push("/Dashboard");
+            }
           }
         }
       },

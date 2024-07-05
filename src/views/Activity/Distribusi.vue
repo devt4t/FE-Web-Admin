@@ -7823,18 +7823,15 @@ export default {
                 ? `GetDetailDriver?nik=${id}`
                 : null;
             if (url) {
-              const res = await axios.get(
-                `${this.$store.getters.getApiUrl(url)}`,
-                this.$store.state.apiConfig
-              );
+              const res = await this.$_api.get('url')
               if (type == "truck")
                 this.loadingLine.detailDialog.transportations[
                   transIndex
-                ].truck_detail = res.data.data.result;
+                ].truck_detail = res.data.result;
               else if (type == "driver")
                 this.loadingLine.detailDialog.transportations[
                   transIndex
-                ].driver_detail = res.data.data.result;
+                ].driver_detail = res.data.result;
               this.loadingLine.detailDialog.snackbar.color = "green";
               this.loadingLine.detailDialog.snackbar.text = `${type.toUpperCase()} data selected`;
             } else {
@@ -7931,8 +7928,8 @@ export default {
         dataToPost.mou_no = id;
       }
 
-      await axios
-        .post(url, dataToPost, this.$store.state.apiConfig)
+      await this.$_api
+        .post(url, dataToPost)
         .then((res) => {
           this.snackbar.color = "green";
           this.snackbar.text = "Updating labels loaded succeed!";

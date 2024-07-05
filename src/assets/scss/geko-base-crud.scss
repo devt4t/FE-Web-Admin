@@ -293,6 +293,14 @@
           color: $danger !important;
         }
       }
+
+      &.geko-list-action-soft-delete {
+        background-color: $light;
+
+        i {
+          color: grey !important;
+        }
+      }
     }
 
   }

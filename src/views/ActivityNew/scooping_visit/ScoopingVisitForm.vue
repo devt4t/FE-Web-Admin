@@ -834,9 +834,22 @@
               v-model="formData.next_event_contact_person"
               :item="{
                 view_data: 'next_event_contact_person',
-                type: 'textarea',
-                label: 'Siapa Kontak Persons untuk Kegiatan Selanjutnya?',
+                type: 'text',
+                label: 'Nama PIC Event Selanjutnya',
                 validation: [],
+              }"
+            />
+          </v-col>
+          <v-col md="6">
+            <geko-input
+              v-model="formData.next_event_contact_person_number"
+              :item="{
+                view_data: 'next_event_contact_person_number',
+                type: 'text',
+                label: 'No HP PIC Event Selanjutnya',
+                validation: formData.next_event_contact_person
+                  ? ['required', 'phone']
+                  : ['phone'],
               }"
             />
           </v-col>
@@ -863,7 +876,7 @@
             />
           </v-col>
 
-          <v-col md="6">
+          <!-- <v-col md="6">
             <geko-input
               v-model="formData.ff_candidate"
               :item="{
@@ -873,6 +886,79 @@
                 validation: [],
               }"
             />
+          </v-col> -->
+
+          <v-col md="12" class="form-separator">
+            <h4>Kandidat FF</h4>
+          </v-col>
+
+          <v-col md="12">
+            <div class="village-person-list">
+              <v-row
+                v-for="(person, i) in formData.ff_candidates"
+                :key="'ff-' + i"
+              >
+                <v-col md="1" class="index-wrapper">
+                  <!-- <div class="index-wrapper"> -->
+                  <div class="index">{{ i + 1 }}</div>
+                  <!-- </div> -->
+                </v-col>
+
+                <v-col md="4">
+                  <geko-input
+                    v-model="person.name"
+                    :item="{
+                      label: 'Nama',
+                      validation: ['required'],
+                      type: 'text',
+                    }"
+                  />
+                </v-col>
+
+                <v-col md="3">
+                  <geko-input
+                    v-model="person.whatsapp"
+                    :item="{
+                      label: 'No Whatsapp',
+                      validation: ['required', 'phone'],
+                      type: 'text',
+                    }"
+                  />
+                </v-col>
+                <v-col md="3">
+                  <geko-input
+                    v-model="person.phone"
+                    :item="{
+                      label: 'No HP',
+                      validation: ['required', 'phone'],
+                      type: 'text',
+                    }"
+                  />
+                </v-col>
+
+                <v-col
+                  md="1"
+                  class="d-flex flex-column justify-content-center"
+                  style="justify-content: center; align-items: flex-start"
+                >
+                  <button
+                    @click="removeFfCandidate(i)"
+                    v-if="formData.ff_candidates.length > 0"
+                  >
+                    <v-icon color="red">mdi-close</v-icon>
+                  </button>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col md="12">
+                  <v-btn variant="primary" @click="addFfCandidate">
+                    <v-icon>mdi-plus</v-icon>
+                    <span>Tambah Kandidat FF</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </div>
           </v-col>
 
           <v-col md="12" class="form-separator">
@@ -918,7 +1004,7 @@
                     v-model="person.phone"
                     :item="{
                       label: 'No HP',
-                      validation: ['required'],
+                      validation: ['required', 'phone'],
                       type: 'text',
                     }"
                   />
@@ -928,7 +1014,7 @@
                     v-model="person.whatsapp"
                     :item="{
                       label: 'No WA',
-                      validation: ['required'],
+                      validation: ['required', 'phone'],
                       type: 'text',
                     }"
                   />

@@ -8,6 +8,7 @@ export default {
       isCreate: null,
       loading: false,
       existingProjectIds: [],
+      existingFfIds: [],
       form: 1,
       formData: {
         village_persons: [
@@ -21,6 +22,7 @@ export default {
         ],
         other_ngo_input: "",
         other_ngo_data: [],
+        ff_candidates: [],
       },
     };
   },
@@ -70,6 +72,10 @@ export default {
         { data_no: resData.data.data_no }
       );
 
+      const resFf = await this.$_api.get(
+        "GetDetailScoopingVisitFFCandidate_new",
+        { data_no: resData.data.data_no }
+      );
       const keys = [
         ["province", "province_id"],
         ["province", "province_code"],
@@ -171,6 +177,7 @@ export default {
       }
       this.$set(this.formData, "project_id", existingProject);
       this.$set(this.formData, "village_persons", figures.data);
+      this.$set(this.formData, "ff_candidates", resFf.data);
       this.ready = true;
     },
     onSubmit() {
@@ -198,10 +205,10 @@ export default {
             ? this.formData.date[1]
             : null,
         accessibility: this.formData.accessibility,
-        land_area: this.formData.land_area,
+        land_area: this.formData.village_area,
         slope: this.formData.slope,
         altitude: this.formData.altitude,
-        dry_land_area: parseInt(this.formData.village_area),
+        dry_land_area: parseInt(this.formData.land_area),
         village_polygon: this.formData.village_polygon,
         dry_land_polygon: this.formData.dry_land_polygon,
         total_dusun: this.formData.total_dusun,
@@ -257,9 +264,10 @@ export default {
           if (!res.kode_scooping) {
             res.kode_scooping = this.formData.data_no;
           }
-          this.addProject(res);
-          this.addOtherNgo(res);
-          this.addFigure(res);
+          this.submitProject(res);
+          this.submitOtherNgo(res);
+          this.submitFfCandidate(res);
+          this.submitFigure(res);
         })
         .catch((err) => {
           console.log("err", err);
@@ -268,29 +276,19 @@ export default {
         });
     },
 
-    addOtherNgo(res = {}) {
-      i = 0;
-
+    submitOtherNgo(res = {}) {
       for (const ngo of this.formData.other_ngo_data) {
         if (typeof ngo == "object") {
           continue;
         }
-        i += 1;
         ngo.scooping_no = res.kode_scooping;
 
         this.$_api.post("AddScoopingVisitNGOCompetitor_new", ngo);
       }
     },
 
-    addProject(res = {}) {
-      var i = 0;
+    submitProject(res = {}) {
       for (let _project of this.formData.project_id) {
-        i += 1;
-
-        // if (!this.isCreate && typeof _project == "object" && _project.id) {
-        //   continue;
-        // }
-
         const _projectId =
           typeof _project === "object" ? _project.code : _project;
         const isCreate = !this.existingProjectIds.includes(_projectId);
@@ -310,32 +308,67 @@ export default {
       }
     },
 
-    addFigure(res = {}) {
+    submitFigure(res = {}) {
       var i = 0;
+
+      if (this.formData.village_persons.length == 0) {
+        this.$_alert.success(
+          `Data scooping visit berhasil ${
+            this.isCreate ? "ditambahkan" : "diperbarui"
+          }`
+        );
+        this.$router.replace({
+          path: $route.path,
+          query: {
+            view: "list",
+          },
+        });
+        this.loading = false;
+      }
 
       for (const figure of this.formData.village_persons) {
         i += 1;
 
-        if (typeof figure == "object") {
-          if (i == this.formData.village_persons.length) {
-            this.$_alert.success(
-              `Data scooping visit berhasil ${
-                this.isCreate ? "ditambahkan" : "diperbarui"
-              }`
-            );
-            this.$router.go(-1);
-            this.loading = false;
-          }
-          continue;
-        }
         figure.data_no = res.kode_scooping;
-        this.$_api.post("AddScoopingVisitFigures_new", figure).then(() => {
-          if (i == this.formData.village_persons.length) {
-            this.$_alert.success("Data scooping visit berhasil ditambahkan");
-            this.$router.go(-1);
-            this.loading = false;
-          }
-        });
+        const isCreate = !figure.id;
+        figure.current_id = figure.id;
+        this.$_api
+          .post(
+            isCreate
+              ? "AddScoopingVisitFigures_new"
+              : "UpdateScoopingVisitFigures_new",
+            figure
+          )
+          .then(() => {
+            if (i == this.formData.village_persons.length) {
+              this.$_alert.success(
+                `Data scooping visit berhasil ${
+                  this.isCreate ? "ditambahkan" : "diperbarui"
+                }`
+              );
+              this.$router.replace({
+                path: this.$route.path,
+                query: {
+                  view: "list",
+                },
+              });
+              this.loading = false;
+            }
+          });
+      }
+    },
+
+    submitFfCandidate(res = {}) {
+      for (const ff of this.formData.ff_candidates) {
+        ff.data_no = res.kode_scooping;
+        const isCreate = !ff.id;
+        ff.current_id = ff.id;
+        this.$_api.post(
+          isCreate
+            ? "AddScoopingVisitFFCandidate_new"
+            : "UpdateScoopingVisitFFCandidate_new",
+          ff
+        );
       }
     },
 
@@ -353,11 +386,21 @@ export default {
       this.$set(this.formData, "other_ngo_input", "");
     },
 
+    addFfCandidate() {
+      this.formData.ff_candidates.push({
+        name: "",
+        phone: "",
+      });
+    },
+
     removeOtherNgo(i) {
       this.formData.other_ngo_data.splice(i, 1);
     },
     removeVillagePerson(i) {
       this.formData.village_persons.splice(i, 1);
+    },
+    removeFfCandidate(i) {
+      this.formData.ff_candidates.splice(i, 1);
     },
 
     addVillagePerson() {

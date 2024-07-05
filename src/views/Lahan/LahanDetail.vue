@@ -1,5 +1,5 @@
 <template>
-  <v-row class="lahan-detail">
+  <v-row class="lahan-detail" :key="'lahan-detail' + componentKey">
     <v-col md="4" xl="3">
       <v-card
         data-aos="fade-up"
@@ -14,6 +14,15 @@
           <h5 class="mb-0 pb-0">Detail Lahan</h5>
         </v-card-title>
         <div class="lahan-side-wrapper">
+          <lahan-gis-verification
+            v-if="
+              data.main_lahan &&
+              ['13', '14'].includes(this.$store.state.User.role)
+            "
+            :data="data.main_lahan"
+            @success="componentKey += 1"
+            @polygon_change="onChangePolygon"
+          />
           <div
             v-if="data.main_lahan"
             class="lahan-side-list"
@@ -63,6 +72,35 @@
         <v-card-title>
           <h5 class="mb-0 pb-0">Polygon, Pohon &amp; Lainnya</h5>
         </v-card-title>
+
+        <div class="lahan-stat-list">
+          <div class="lahan-stat-item">
+            <p class="mb-0 label">Project</p>
+            <p class="mb-0 value">
+              <span
+                v-if="
+                  Array.isArray(data.lahan_project) &&
+                  data.lahan_project.length > 0
+                "
+              >
+                {{ data.lahan_project[0].project_no }}
+              </span>
+              <span v-else>-</span>
+            </p>
+          </div>
+          <div class="lahan-stat-item">
+            <p class="mb-0 label">Luas Lahan</p>
+            <p class="mb-0 value" v-if="data.main_lahan">
+              <span>{{ data.main_lahan.land_area | parse("ts") }} Ha</span>
+            </p>
+          </div>
+          <div class="lahan-stat-item">
+            <p class="mb-0 label">Luas Tanam</p>
+            <p class="mb-0 value" v-if="data.main_lahan">
+              <span>{{ data.main_lahan.planting_area | parse("ts") }} Ha</span>
+            </p>
+          </div>
+        </div>
         <div class="polygon-wrapper">
           <div class="map-wrapper" style="height: 400px; width: 100%">
             <div ref="mapContainer" class="map-container" v-if="mapOpen"></div>
@@ -76,6 +114,12 @@
 
           <div class="lahan-photo-list d-flex flex-row" v-if="data.main_lahan">
             <div
+              v-if="
+                data.main_lahan.photo1 !== '-' ||
+                data.main_lahan.photo2 !== '-' ||
+                data.main_lahan.photo3 !== '-' ||
+                data.main_lahan.photo4 !== '-'
+              "
               class="lahan-photo-item"
               v-for="(item, i) in [1, 2, 3, 4]"
               :key="'lahan-photo' + i"
@@ -123,13 +167,18 @@
 
 <script>
 import VueQRCodeComponent from "vue-qrcode-component";
+import LahanGisVerification from "./LahanGisVerification.vue";
 
 export default {
   name: "land-detail",
   components: {
     "qr-code": VueQRCodeComponent,
+    LahanGisVerification,
   },
   methods: {
+    onChangePolygon(newPath) {
+      
+    },
     getValue(data) {
       var _value = this.data;
       for (const key of data.split(".")) {
@@ -137,6 +186,8 @@ export default {
           _value = _value[key];
         }
       }
+
+      if (typeof _value === "object") return "-";
 
       return _value;
     },
@@ -162,6 +213,36 @@ export default {
       return new Promise(async (resolve) => {
         const data = await omnivore.kml(url).on("ready", async function () {
           const geoJson = await data.toGeoJSON();
+          if (geoJson.features.length > 1) {
+            let _coordinates = [];
+
+            for (const _c of geoJson.features) {
+              _coordinates.push(_c.geometry.coordinates);
+            }
+
+            _coordinates.push(geoJson.features[0].geometry.coordinates);
+
+            let _model = {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "Polygon",
+                    coordinates: [_coordinates],
+                  },
+                  properties: {
+                    name: "Area 1",
+                    styleUrl: "#style1",
+                    styleHash: "-3bc05740",
+                  },
+                },
+              ],
+            };
+
+            return resolve(_model);
+          }
+
           return resolve(geoJson);
         });
       });
@@ -224,17 +305,20 @@ export default {
         await this.map.addControl(new mapboxgl.FullscreenControl());
         await this.map.addControl(new mapboxgl.NavigationControl());
 
-        const kmlGisData = await this.loadKml(
-          "https://t4tadmin.kolaborasikproject.com/lahans/polygon-gis/example-giss.kml"
-        );
+        // const kmlGisData = await this.loadKml(
+        //   "https://t4tadmin.kolaborasikproject.com/lahans/polygon-ff/example-giss_revisi.kml"
+        // );
+
+        //
         const kmlData = await this.loadKml(
-          "https://t4tadmin.kolaborasikproject.com/lahans/polygon-ff/example-ff.kml"
+          `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
         );
+
         this.map.on("load", async () => {
-          this.addMapLayer(kmlGisData, "Map-Layer2", "#1F6200", "#97F570");
+          // this.addMapLayer(kmlGisData, "Map-Layer2", "#1F6200", "#97F570");
           this.addMapLayer(kmlData, "Map-Layer1", "#FF7B7B", null);
 
-          const centerCoordinate = turf.center(kmlGisData);
+          const centerCoordinate = turf.center(kmlData);
           const mapCenter = centerCoordinate.geometry.coordinates;
           this.map.setCenter(mapCenter);
           this.mapReady = true;
@@ -251,6 +335,7 @@ export default {
       map: null,
       mapReady: false,
       mapOpen: true,
+      componentKey: 0,
       maps: {
         accessToken: this.$_config.mapBoxApi,
         mapStyle: this.$_config.mapBoxStyle,

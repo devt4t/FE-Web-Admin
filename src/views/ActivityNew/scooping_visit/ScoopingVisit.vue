@@ -3,6 +3,7 @@
     :config="config"
     :key="'scooping-visit-' + componentKey"
     :hideDelete="$store.state.User.role != 13"
+    :hideDeleteSoft="$store.state.User.role != 13"
   >
     <template v-slot:create-form>
       <scooping-visit-form />
@@ -140,10 +141,19 @@
           class="badge"
           :class="{
             'bg-warning':
-              item.status == 'document_saving' && item.is_verify == 0,
-            'bg-info': item.status == 'document_saving' && item.is_verify == 1,
-            'bg-primary': item.status == 'ready_to_submit',
-            'bg-success': item.status == 'submit_review',
+              item.status == 'document_saving' &&
+              item.is_verify == 0 &&
+              item.project_data != 'No Project Found',
+            'bg-info':
+              item.status == 'document_saving' &&
+              item.is_verify == 1 &&
+              item.project_data != 'No Project Found',
+            'bg-primary':
+              item.status == 'ready_to_submit' &&
+              item.project_data != 'No Project Found',
+            'bg-success':
+              item.status == 'submit_review' &&
+              item.project_data != 'No Project Found',
             'bg-danger': item.project_data == 'No Project Found',
           }"
         >
@@ -166,9 +176,28 @@
       </div>
     </template>
 
-    <!-- <template v-slot:list-bottom-action="{ item }">
-      <v-btn @click="onExport(item)" variant="primary">Export</v-btn>
-    </template> -->
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn
+        small
+        @click="onExport(item)"
+        variant="primary"
+        class="mt-1"
+        v-if="item.status == 'submit_review'"
+      >
+        <v-icon small v-if="!exportIds.includes(item.id)"
+          >mdi-microsoft-word</v-icon
+        >
+
+        <v-progress-circular
+          v-else
+          color="primary"
+          :size="15"
+          :width="2"
+          indeterminate
+        ></v-progress-circular>
+        <span class="text-09-em ml-2">Export</span>
+      </v-btn>
+    </template>
   </geko-base-crud>
 </template>
 
@@ -176,6 +205,7 @@
 import "./scooping-visit.scss";
 import ScoopingVisitForm from "./ScoopingVisitForm.vue";
 import ScoopingVisitDetail from "./ScoopingVisitDetail.vue";
+import ScoopingVisitData from "./ScoopingVisitData.js";
 import axios from "axios";
 export default {
   name: "crud-scooping-visit",
@@ -188,6 +218,7 @@ export default {
     return {
       componentKey: 1,
       updateIds: [],
+      exportIds: [],
       config: {
         title: "Scooping Visit",
         model_api: null,
@@ -199,6 +230,11 @@ export default {
         deleteKey: "data_no",
         delete_ext_payload: {
           delete_type: "hard_delete",
+        },
+        deleteSoft: {
+          payload: {
+            delete_type: "soft_delete",
+          },
         },
         globalFilter: {
           // project_purpose: {
@@ -431,9 +467,128 @@ export default {
   },
 
   methods: {
-    // onExport(data) {
-    //   axios.post("http://localhost:9056/export/scooping-visit/doc", data);
-    // },
+    async onExport(data) {
+      if (this.exportIds.includes(data.id)) return;
+      this.exportIds.push(data.id);
+      const scoopingData = this.$_api.get("GetDetailScoopingVisit_new", {
+        id: data.id,
+      });
+
+      const scoopingFigures = this.$_api.get(
+        "GetDetailScoopingVisitFigures_new",
+        { data_no: data.data_no }
+      );
+      const scoopingProject = this.$_api.get(
+        "GetDetailScoopingVistiProject_new",
+        { data_no: data.data_no }
+      );
+      const scoopingNgos = this.$_api.get(
+        "GetDetailScoopingVisitNGOCompetitor_new",
+        { data_no: data.data_no }
+      );
+      const scoopingFf = this.$_api.get(
+        "GetDetailScoopingVisitFFCandidate_new",
+        { data_no: data.data_no }
+      );
+
+      Promise.all([
+        scoopingData,
+        scoopingFigures,
+        scoopingProject,
+        scoopingNgos,
+        scoopingFf,
+      ])
+        .then(async ([main, figures, projects, ngos, ff]) => {
+          let exportPayload = main.data;
+          exportPayload.village_figures = figures.data;
+          exportPayload.projects = figures.data;
+          exportPayload.ff_candidates = ff.data;
+
+          exportPayload.accessibility = this.getDataLabel(
+            exportPayload.accessibility,
+            "accessibility"
+          );
+
+          let waterSources = [];
+          for (const item of exportPayload.water_source
+            ? exportPayload.water_source.split(",")
+            : []) {
+            waterSources.push(this.getDataLabel(item, "water_source"));
+          }
+
+          exportPayload.water_source = waterSources.join(",");
+          exportPayload.agroforestry_type = this.getDataLabel(
+            exportPayload.agroforestry_type,
+            "agroforestry_type"
+          );
+
+          exportPayload.projects = [];
+          for (const _project of projects.data) {
+            exportPayload.projects.push({
+              name: _project.projects_project_name,
+              code: _project.projects_project_no,
+              purpose: _project.project_planting_purposes_name,
+            });
+          }
+
+          exportPayload.other_ngo =
+            exportPayload.other_ngo == 0 ? "Tidak Ada" : "Ada";
+          exportPayload.mitigation_program =
+            exportPayload.mitigation_program == 0 ? "Tidak Ada" : "Ada";
+
+          let otherNgo = [];
+          if (Array.isArray(ngos.data)) {
+            for (const item of ngos.data) {
+              otherNgo.push({
+                name: item.name,
+              });
+            }
+          }
+          if (otherNgo.length > 0) {
+            exportPayload.other_ngos = otherNgo.join(",");
+          }
+
+          const exportData = await axios
+            .post(
+              `${this.$_config.baseUrlExport}export/scooping-visit/doc`,
+              exportPayload
+            )
+            .catch(() => false);
+          if (!exportData) return;
+
+          const url = URL.createObjectURL(
+            new Blob([exportData.data], {
+              type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            })
+          );
+          const link = document.createElement("a");
+          link.href = url;
+          const filename = `scooping-visit-${data.data_no}-${data.desas_name}.doc`;
+          link.setAttribute("download", filename);
+          document.body.appendChild(link);
+          link.click();
+
+          var idx = this.exportIds.findIndex((x) => x == data.id);
+          if (idx > -1) {
+            this.exportIds.splice(idx, 1);
+          }
+        })
+        .catch(() => {
+          this.$_alert.error({}, "Export Gagal");
+          var idx = this.exportIds.findIndex((x) => x == data.id);
+          if (idx > -1) {
+            this.exportIds.splice(idx, 1);
+          }
+        });
+    },
+
+    getDataLabel(value, dataKey) {
+      if (ScoopingVisitData[dataKey].find((x) => x.value == value)) {
+        return ScoopingVisitData[dataKey].find((x) => x.value == value).text;
+      } else {
+        return value;
+      }
+    },
     onVerification(data) {
       if (
         data.status == "document_saving" &&

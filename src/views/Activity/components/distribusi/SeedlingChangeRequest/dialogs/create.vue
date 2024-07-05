@@ -805,8 +805,8 @@ export default {
                     nursery: this.inputs.nursery.model,
                     distribution_date: this.inputs.distributionDate.model
                 })
-                const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetMU?${params}`)
-                const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
+                const urlName =`${this.settings.prefixUrl}GetMU?${params}`
+                const data = await this.$_api.get(urlName).then(res => {return res})
                 this.inputs.mu.items = data.list
             } catch (err) {
                 this.sessionEnd(err)
@@ -839,8 +839,8 @@ export default {
                         mu_no: mu_no,
                         distribution_date: this.inputs.distributionDate.model
                     })
-                    const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetFF?${params}`)
-                    const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
+                    const urlName = `${this.settings.prefixUrl}GetFF?${params}`
+                    const data = await this.$_api.get(urlName).then(res => {return res})
                     if (lp == 'Petani') this.inputs.ff.items = data.list
                     else if (lp == 'Umum') this.inputs.pic_t4t.items = data.list
                 }
@@ -875,8 +875,8 @@ export default {
                         await params.delete('ff_no')
                         await params.set('employee_no', this.inputs.pic_t4t.model)
                     }
-                    const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetFarmer?${params}`)
-                    const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
+                    const urlName = `${this.settings.prefixUrl}GetFarmer?${params}`
+                    const data = await this.$_api.get(urlName).then(res => {return res})
                     if (lp == 'Petani') this.inputs.farmer.items = data.list
                     else if (lp == 'Umum') this.inputs.mou.items = data.list
                 }
@@ -908,8 +908,8 @@ export default {
                         await params.delete('farmer_no')
                         await params.set('mou_no', this.inputs.mou.model)
                     }
-                    const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetLand?${params}`)
-                    const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
+                    const urlName = `${this.settings.prefixUrl}GetLand?${params}`
+                    const data = await this.$_api.get(urlName).then(res => {return res})
                     if (data.activities.includes('Pendataan Lahan')) this.inputs.activitiesStep.model = 1
                     if (data.activities.includes('Sosialisasi Tanam')) this.inputs.activitiesStep.model = 2
                     if (data.activities.includes('Penilikan Lubang')) this.inputs.activitiesStep.model = 3
@@ -934,8 +934,8 @@ export default {
                     land_program: this.inputs.landProgram.model,
                     program_year: this.inputs.programYear.model
                 })
-                const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetLandDetail?${params}`)
-                const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
+                const urlName = `${this.settings.prefixUrl}GetLandDetail?${params}`
+                const data = await this.$_api.get(urlName).then(res => {return res})
                 return data.penlub_bibit
             } catch (err) {
                 this.sessionEnd(err)
@@ -948,8 +948,8 @@ export default {
                 const params = new URLSearchParams({
                     mu_no: mu_no,
                 })
-                const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetTreesPerMU?${params}`)
-                const data = await axios.get(urlName, this.$store.state.apiConfig).then(res => {return res.data})
+                const urlName = `${this.settings.prefixUrl}GetTreesPerMU?${params}`
+                const data = await this.$_api.get(urlName).then(res => {return res})
                 return data
             } catch (err) {
                 this.sessionEnd(err)
@@ -1047,7 +1047,7 @@ export default {
                 this.loading.show = true
                 this.loading.text = 'Sending request...'
                 const inputs = this.inputs
-                let urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}AddRequest`)
+                let urlName = `${this.settings.prefixUrl}AddRequest`
                 let apiConfig = this.$store.state.apiConfig
                 let mainData = {
                     program_year: inputs.programYear.model,
@@ -1062,7 +1062,7 @@ export default {
                 }
                 if (mainData.land_program == 'Petani') mainData.farmer_no = inputs.farmer.model
                 else if (mainData.land_program == 'Umum') mainData.mou_no = inputs.mou.model
-                const send = await axios.post(urlName, mainData, apiConfig)
+                const send = await this.$_api.post(urlName, mainData)
                 // console.log(send.data)
                 if (send) {
                     this.resetData()

@@ -29,7 +29,7 @@
         </v-row>
         <!-- <v-card-title>LOGIN PAGE</v-card-title> -->
         <v-card-text class="pt-1 pb-0 px-3">
-          <div
+          <!-- <div
             data-aos="fade-right"
             data-aos-duration="500"
             data-aos-delay="400"
@@ -54,6 +54,21 @@
               outlined
               class="mb-4"
             ></v-select>
+          </div> -->
+          <span class="d-block text-center mb-1">Tahun Program</span>
+          <div
+            class="d-flex flex-row w-100 mb-3"
+            style="flex-wrap: wrap; justify-content: center"
+          >
+            <v-btn
+              small
+              :variant="tahunProgram == item ? 'success' : 'light'"
+              @click="tahunProgram = item"
+              class="mb-2 mr-2"
+              v-for="(item, i) in $_config.programYear.options"
+              :key="`model-${i}`"
+              >{{ item }}</v-btn
+            >
           </div>
 
           <div
@@ -135,12 +150,13 @@
 
 <script>
 import axios from "axios";
+import config from "../utils/config";
 // import store from "../store/index";
 export default {
   name: "Trees",
   data: () => ({
     showPassword: false,
-    tahunProgram: "",
+    tahunProgram: config.programYear.model || "2024",
     email: "",
     password: "",
     authtoken: "",

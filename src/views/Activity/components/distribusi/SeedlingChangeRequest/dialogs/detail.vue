@@ -212,7 +212,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import confirmation from './createConfirmation.vue'
 
 export default {
@@ -356,9 +355,9 @@ export default {
                 const params = new URLSearchParams({
                     request_no: reqNo
                 })
-                const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}DetailRequest?${params}`)
+                const urlName = `${this.settings.prefixUrl}DetailRequest?${params}`
                 const apiConfig = this.settings.apiConfig
-                const data = await axios.get(urlName, apiConfig).then(res => {return res.data})
+                const data = await this.$_api.get(urlName).then(res => {return res})
                 this.data.main = data.main
                 this.data.main.created_at = this.$store.getters.dateFormat(data.main.created_at, 'HH:mm - DD MMMM Y')
                 this.data.main.distribution_date = this.$store.getters.dateFormat(data.main.distribution_date, 'DD MMMM Y')
@@ -392,12 +391,12 @@ export default {
                 this.loading.show = true
                 const dialogConfirm = this.dialogs.confirmation
                 dialogConfirm.model = false
-                let urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}`)
+                let urlName = `${this.settings.prefixUrl}`
                 const apiConfig = this.settings.apiConfig
                 if (dialogConfirm.type == 'verification' || dialogConfirm.type == 'last_verification') {
                     this.loading.text = 'Verifying data...'
                     urlName += 'Verification'
-                    const verif = await axios.post(urlName, {request_no: this.id}, apiConfig).then(res => {return res.data})
+                    const verif = await this.$_api.post(urlName, {request_no: this.id}, apiConfig).then(res => {return res})
                     if (verif) {
                         this.snackbar.text = verif
                         this.snackbar.color = 'green'
@@ -410,7 +409,7 @@ export default {
                 } else if (dialogConfirm.type == 'reject') {
                     this.loading.text = 'Rejecting data...'
                     urlName += 'Reject'
-                    const reject = await axios.post(urlName, {request_no: this.id}, apiConfig).then(res => {return res.data})
+                    const reject = await this.$_api.post(urlName, {request_no: this.id}).then(res => {return res})
                     if (reject) {
                         this.snackbar.text = reject
                         this.snackbar.color = 'green'
@@ -423,7 +422,7 @@ export default {
                 } else if (dialogConfirm.type == 'cancel') {
                     this.loading.text = 'Canceling data...'
                     urlName += 'Cancel'
-                    const cancel = await axios.post(urlName, {request_no: this.id}, apiConfig).then(res => {return res.data})
+                    const cancel = await this.$_api.post(urlName, {request_no: this.id}).then(res => {return res})
                     if (cancel) {
                         this.snackbar.text = cancel
                         this.snackbar.color = 'green'

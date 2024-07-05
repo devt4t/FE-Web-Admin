@@ -27,12 +27,17 @@ import config from "@/utils/config.js";
 import "@/utils/validation.js";
 import GekoBaseCrud from "@/components/GekoBaseCrud";
 import GekoInput from "@/components/GekoInput";
-import { ValidationProvider, ValidationObserver } from "vee-validate";
+import { extend, ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
 delete L.Icon.Default.prototype._getIconUrl;
 
+extend("phone", {
+  validate: (value) => {
+    return new RegExp(/^(\+62|62|0)8[1-9][0-9]{6,9}$/).test(value);
+  },
+});
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
   iconUrl: require("leaflet/dist/images/marker-icon.png"),

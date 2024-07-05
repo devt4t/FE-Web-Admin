@@ -329,9 +329,9 @@ export default {
 						params.set('created_by', user.email)
 					}
 				}
-				const urlName = this.$store.getters.getApiUrl(`${this.settings.prefixUrl}GetRequests?${params}`)
+				const urlName = `${this.settings.prefixUrl}GetRequests?${params}`
 				const urlConfig = this.$store.state.apiConfig
-				const data = await axios.get(urlName, urlConfig).then(res => {return res.data})
+				const data = await this.$_api.get.get(urlName).then(res => {return res})
 				this.table.items = data.list
 				// console.log(data)
 			} catch (err) {

@@ -285,6 +285,18 @@
                   <v-icon small>mdi-trash-can-outline</v-icon>
                 </button>
               </slot>
+
+              <button
+                class="geko-list-action-soft-delete"
+                @click="onDelete(item, config.deleteSoft.payload)"
+                v-if="
+                  ['4', '13'].includes($store.state.User.role) &&
+                  config.deleteSoft &&
+                  config.deleteSoft.payload
+                "
+              >
+                <v-icon small>mdi-eye-off-outline</v-icon>
+              </button>
             </div>
 
             <div class="geko-list-actions-bottom">
@@ -434,6 +446,13 @@ export default {
       },
     },
     hideDelete: {
+      type: Boolean,
+      required: false,
+      default() {
+        return false;
+      },
+    },
+    hideDeleteSoft: {
       type: Boolean,
       required: false,
       default() {
@@ -784,7 +803,7 @@ export default {
       return tmpData;
     },
 
-    onDelete(item) {
+    onDelete(item, extPayload = null) {
       if (!this.config.delete) return;
       this.$_alert
         .confirm(
@@ -798,7 +817,9 @@ export default {
           if (response.isConfirmed) {
             let _param = {};
             if (this.config.delete_ext_payload) {
-              _param = this.config.delete_ext_payload;
+              _param = JSON.parse(
+                JSON.stringify(this.config.delete_ext_payload)
+              );
             }
             if (this.config.deleteKey) {
               if (!item[this.config.deleteKey]) {
@@ -814,6 +835,8 @@ export default {
             } else {
               _param.id = item.id;
             }
+
+            if (extPayload) _param = Object.assign(_param, extPayload);
             this.$_api.post(this.config.delete, _param).then(() => {
               this.$_alert.success("Data berhasil dihapus");
               this.getListData();

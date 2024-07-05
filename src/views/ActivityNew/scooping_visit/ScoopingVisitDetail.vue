@@ -308,6 +308,34 @@
                 {{ data[f.key] }} {{ f.append ? f.append : "" }}
               </p>
             </div>
+
+            <div class="doc-field-item">
+              <p class="mb-0 label">Tokoh Desa</p>
+              <div class="value">
+                <ol>
+                  <li v-for="(figure, i) in villagePerson" :key="'figure-' + i">
+                    Nama : {{ figure.name }}
+                    <span v-if="figure.position">({{ figure.position }})</span>
+                    <span class="d-block">No HP : {{ figure.phone }}</span>
+                    <span class="d-block">No WA : {{ figure.whatsapp }}</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="doc-field-item">
+              <p class="mb-0 label">Kandidat FF</p>
+              <div class="value">
+                <span v-if="ffCandidates.length == 0">-</span>
+                <ol v-else>
+                  <li v-for="(ff, i) in ffCandidates" :key="'ff-' + i">
+                    Nama : {{ ff.name }}
+                    <span class="d-block">No HP : {{ ff.phone }}</span>
+                    <span class="d-block">No WA : {{ ff.whatsapp }}</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
           </div>
         </div>
       </v-card>
@@ -528,6 +556,7 @@ export default {
       otherNgo: [],
       villagePerson: [],
       projects: [],
+      ffCandidates: [],
 
       map: {
         key: 11101203,
@@ -605,10 +634,10 @@ export default {
           label: "Potensi Pendamping Lapang",
           key: "field_companion_potency",
         },
-        {
-          label: "Identifikasi Kandidat FF",
-          key: "ff_candidate",
-        },
+        // {
+        //   label: "Identifikasi Kandidat FF",
+        //   key: "ff_candidate",
+        // },
       ],
     };
   },
@@ -647,6 +676,12 @@ export default {
           data_no: scoopingData.data.data_no,
         }
       );
+      const ffCandidates = await this.$_api.get(
+        "GetDetailScoopingVisitFFCandidate_new",
+        {
+          data_no: scoopingData.data.data_no,
+        }
+      );
       this.data = scoopingData.data;
       this.$set(
         this.map.data,
@@ -659,25 +694,29 @@ export default {
         scoopingData.data.dry_land_polygon
       );
 
-      Promise.all([otherNgo, villagePerson, scoopingProjects]).then(
-        ([resNgo, resPerson, resProject]) => {
-          this.otherNgo = resNgo.data;
-          this.villagePerson = resPerson.data;
+      Promise.all([
+        otherNgo,
+        villagePerson,
+        scoopingProjects,
+        ffCandidates,
+      ]).then(([resNgo, resPerson, resProject]) => {
+        this.otherNgo = resNgo.data;
+        this.villagePerson = resPerson.data;
 
-          this.projects = resProject.data;
-          // this.$set(this.formData, 'project_id', resProject.data)
-          // this.$set(this.formData, 'project_id', [
-          //   {
-          //     label: 'Test',
-          //     code: 1,
-          //   },
-          //   {
-          //     label: 'Test1',
-          //     code: 2,
-          //   },
-          // ])
-        }
-      );
+        this.projects = resProject.data;
+        this.ffCandidates = ffCandidates.data;
+        // this.$set(this.formData, 'project_id', resProject.data)
+        // this.$set(this.formData, 'project_id', [
+        //   {
+        //     label: 'Test',
+        //     code: 1,
+        //   },
+        //   {
+        //     label: 'Test1',
+        //     code: 2,
+        //   },
+        // ])
+      });
     },
 
     showLightbox(imgs, index) {

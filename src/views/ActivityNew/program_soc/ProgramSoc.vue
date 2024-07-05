@@ -159,24 +159,30 @@ export default {
           lookup: "program-soc-lookup",
           delete: "program-soc-delete",
         },
-        //   statistic: {
-        //     transform_key: {
-        //       total_data: {
-        //         label: "Total Data",
-        //         icon: "mdi-list-status",
-        //       },
-        //       verified: {
-        //         label: "Terverifikasi",
-        //         icon: "mdi-check-circle-outline",
-        //         color: "success",
-        //       },
-        //       unverified: {
-        //         label: "Belum Terverifikasi",
-        //         icon: "mdi-close-circle-outline",
-        //         color: "danger",
-        //       },
-        //     },
-        //   },
+        statistic: {
+          statistic_key: "counter",
+          transform_key: {
+            total_data: {
+              label: "Total Petani Yang Hadir",
+              icon: "mdi-list-status",
+            },
+            berminat: {
+              label: "Berminat",
+              icon: "mdi-check-circle-outline",
+              color: "success",
+            },
+            tidak_berminat: {
+              label: "Belum Berminat",
+              icon: "mdi-close-circle-outline",
+              color: "danger",
+            },
+            masih_ragu: {
+              label: "Ragu - Ragu",
+              icon: "mdi-close-circle-outline",
+              color: "info",
+            },
+          },
+        },
         fields: [
           {
             id: "id",

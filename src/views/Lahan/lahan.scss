@@ -1,6 +1,6 @@
 @import "../../assets/scss/variables";
 .lahan-detail {
-
+    
 }
 
 .lahan-detail .lahan-side-wrapper {
@@ -142,6 +142,51 @@
                 font-weight: bold;
                 font-size: 1.7em;
             }
+        }
+    }
+}
+
+.lahan-detail .lahan-gis-verification {
+    background-color: rgba(221, 221, 221, 0.2);
+    border-radius: 8px;
+    padding: 1em;
+    max-height: 75vh;
+    overflow-y: scroll;
+    border:1px solid rgba(221, 221, 221, 0.2);
+    .file-upload {
+        width: unset !important;
+        height: unset !important;
+        padding: 1em !important;
+    }
+    .upload-label {
+        h6 {
+            font-size: .8em !important;
+        }
+        span {
+            font-size: .7em !important;
+        }
+    }
+}
+
+.lahan-detail .lahan-stat-list {
+    display: flex;
+    flex-direction: row;
+    padding-inline: 1em;
+    .lahan-stat-item {
+        width: 30%;
+        border-left: 7px solid $success;
+        box-shadow: 0 0 20px 0 rgba(56, 71, 109, .15);
+        background-color: #fff !important;
+        border-radius: 8px;
+        padding: .5em;
+        padding-left: .7em;
+        margin-right: 3%;
+        .label {
+            color: rgba(165, 165, 165, 0.76);
+            font-size: .9em;
+        }
+        .value {
+            font-weight: bold;
         }
     }
 }

@@ -258,7 +258,7 @@ const menu = [
         to: "/AdjustmentDataSostam",
         component: "Activity/components/sostam/AdjustmentDataSostam",
         name: "AdjustmentDataSostam",
-        permission: "AdjustmentDataSostam",
+        permission: "SosialisasiTanam",
         hide: true,
       },
       {
