@@ -1,192 +1,337 @@
 @import "../../assets/scss/variables";
 .lahan-detail {
-    
 }
 
 .lahan-detail .lahan-side-wrapper {
-    padding-inline: 1.2em;
+  padding-inline: 1.2em;
 
-    .lahan-side-list {
-        h4 {
-            font-weight: 600;
-            font-size: .9em;
-            color: $success;
-            margin-bottom: 5px;
-            margin-top: 15px;
-        }
-        .lahan-side-item-wrapper {
-            display: flex;
-            flex-direction: column;
-            .lahan-side-item {
-                display: flex;
-                flex-direction: row;
-                align-items: flex-start;
-                padding-block: 3px;
-                .label {
-                    width: 40%;
-                    font-size: .9em;
-                    color: rgb(159, 159, 159);
-                }
-                .value {
-                    width: 60%;
-                    font-size: .95em;
-                }
-                .qrcode img  {
-                    width: 80%;
-                    margin-bottom: 10px;
-                }
-            }
-        }
-    }
-}
-
-.lahan-detail .polygon-wrapper {
+  .log-data {
     padding: 1em;
-    .map-placeholder {
-        height: 100%;
+    padding-left: 0;
+    .log-data-item {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+
+      &.active {
+        .dot-wrapper::before {
+          background-color: $success;
+        }
+        .dot-wrapper .dot {
+          background-color: $success;
+        }
+      }
+      &:last-child {
+        .log-value {
+          padding-bottom: 0;
+        }
+      }
+
+      &:last-child .dot-wrapper::before {
+        display: none;
+      }
+      .dot-wrapper {
+        padding-right: 10px;
+        position: relative;
+
+        &::before {
+          content: "";
+          position: absolute;
+          width: 3px;
+          height: 100%;
+          background-color: rgb(240, 240, 240);
+          left: 5px;
+          top: 5px;
+          z-index: 10;
+        }
+        .dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          background-color: rgb(206, 206, 206);
+          top: 5px;
+          z-index: 11;
+          position: relative;
+        }
+      }
+
+      .log-value {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    .map-wrapper {
-        position: relative;
-        border-radius: 12px;
-        overflow: hidden;
-        .map-container {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            flex: 1;
-            width: 100%;
-            height: 100%;
-        }
-    }
-
-    .lahan-photo-list {
-        justify-content: space-between;
-        padding-top: 1em;
         width: 100%;
-        border-bottom: 1px dashed rgba(128, 128, 128, 0.473);
-        padding-bottom: 1em;
-
-        .lahan-photo-item {
-            width: 24%;
-            height: 6em;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 0 0 transparent;
-            bottom: 0;
-            transition: all 0.3s ease;
-
-            h6 {
-                position: absolute;
-                background-color: rgba(0, 0, 0, 0.434);
-                width: 100%;
-                color: white;
-                bottom: 0;
-                padding-block: 4px;
-                padding-inline: 10px;
-                font-weight: normal;
-                font-size: .9em;
-            }
-
-            &:hover {
-                cursor: pointer;
-                box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-                bottom: 5px;
-                transition: all 0.3s ease;
-            }
+        padding-bottom: 2em;
+        span {
+          width: 100% !important;
         }
+
+        .time {
+          font-size: 0.8em;
+          color: grey;
+        }
+
+        .label {
+          font-weight: bold;
+          color: black !important;
+        }
+
+        .user {
+          font-size: 0.8em;
+          color: $success;
+        }
+      }
+    }
+  }
+
+  .lahan-side-list {
+    h4 {
+      font-weight: 600;
+      font-size: 0.9em;
+      color: $success;
+      margin-bottom: 5px;
+      margin-top: 15px;
+    }
+    .lahan-side-item-wrapper {
+      display: flex;
+      flex-direction: column;
+      .lahan-side-item {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        padding-block: 3px;
+        .label {
+          width: 40%;
+          font-size: 0.9em;
+          color: rgb(159, 159, 159);
+        }
+        .value {
+          width: 60%;
+          font-size: 0.95em;
+        }
+        .qrcode img {
+          width: 80%;
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+}
+
+.map-legends {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(128, 128, 128, 0.5);
+  padding-inline: 1em;
+
+  .map-legend-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 5px;
+    padding-block: 5px;
+    padding-inline: 5px;
+    span.shape {
+      width: 17px;
+      height: 17px;
+      border: 3px solid rgb(202, 202, 202);
+      margin-right: 5px;
     }
 
-    .trees {
-        margin-top: 1em;
+    .icon {
+      color: rgb(202, 202, 202);
+    }
+
+    &.disabled:hover {
+      cursor: not-allowed;
+    }
+
+    &:not(.disabled):hover {
+      cursor: pointer;
+    }
+
+    &.active {
+      span {
+        color: white;
+      }
+      .icon {
+        color: #3fb1ce;
+      }
+      span.ff {
+        border-color: #ff7b7b;
+      }
+
+      span.gis {
+        border-color: #1f6200;
+        background-color: #97f570;
+      }
+    }
+
+    &.disabled {
+      span {
+        color: rgb(159, 159, 159);
+      }
+      .icon {
+        color: rgb(159, 159, 159);
+      }
+    }
+
+    span {
+      font-size: 0.85em;
+      color: rgb(181, 181, 181);
+    }
+  }
+}
+.lahan-detail .polygon-wrapper {
+  padding: 1em;
+
+  .map-placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .map-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    .map-container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .lahan-photo-list {
+    justify-content: space-between;
+    padding-top: 1em;
+    width: 100%;
+    border-bottom: 1px dashed rgba(128, 128, 128, 0.473);
+    padding-bottom: 1em;
+
+    .lahan-photo-item {
+      width: 24%;
+      height: 6em;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 0 0 transparent;
+      bottom: 0;
+      transition: all 0.3s ease;
+
+      h6 {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.434);
+        width: 100%;
+        color: white;
+        bottom: 0;
+        padding-block: 4px;
+        padding-inline: 10px;
+        font-weight: normal;
+        font-size: 0.9em;
+      }
+
+      &:hover {
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        bottom: 5px;
+        transition: all 0.3s ease;
+      }
+    }
+  }
+
+  .trees {
+    margin-top: 1em;
+    color: $success;
+    .tree-list {
+      display: flex;
+      flex-direction: row;
+      margin-top: 10px;
+    }
+    .tree-item {
+      margin-right: 10px;
+      background-color: $success_light;
+      border-left: 8px solid $success;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding-left: 5px;
+      padding-right: 20px;
+      padding-block: 7px;
+      min-width: 10em;
+      i {
+        font-size: 3em;
         color: $success;
-        .tree-list {
-            display: flex;
-            flex-direction: row;
-            margin-top: 10px;
-        }
-        .tree-item {
-            margin-right: 10px;
-            background-color: $success_light;
-            border-left: 8px solid $success;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            padding-left: 5px;
-            padding-right: 20px;
-            padding-block: 7px;
-            min-width: 10em;
-            i {
-                font-size: 3em;
-                color: $success;
-                padding-right: 5px;
-            }
+        padding-right: 5px;
+      }
 
-            .label {
-                color: #A6A6B7;
-            }
+      .label {
+        color: #a6a6b7;
+      }
 
-            .value {
-                display: block;
-                font-weight: bold;
-                font-size: 1.7em;
-            }
-        }
+      .value {
+        display: block;
+        font-weight: bold;
+        font-size: 1.7em;
+      }
     }
+  }
 }
 
 .lahan-detail .lahan-gis-verification {
-    background-color: rgba(221, 221, 221, 0.2);
-    border-radius: 8px;
-    padding: 1em;
-    max-height: 75vh;
-    overflow-y: scroll;
-    border:1px solid rgba(221, 221, 221, 0.2);
-    .file-upload {
-        width: unset !important;
-        height: unset !important;
-        padding: 1em !important;
+  margin-top: 1em;
+  background-color: rgba(221, 221, 221, 0.2);
+  border-radius: 8px;
+  padding: 1em;
+  max-height: 75vh;
+  overflow-y: scroll;
+  border: 1px solid rgba(221, 221, 221, 0.2);
+  .file-upload {
+    width: 200px !important;
+    height: 100px !important;
+    // padding: 1em !important;
+  }
+  .upload-label {
+    h6 {
+      font-size: 0.8em !important;
     }
-    .upload-label {
-        h6 {
-            font-size: .8em !important;
-        }
-        span {
-            font-size: .7em !important;
-        }
+    span {
+      font-size: 0.7em !important;
     }
+  }
 }
 
 .lahan-detail .lahan-stat-list {
-    display: flex;
-    flex-direction: row;
-    padding-inline: 1em;
-    .lahan-stat-item {
-        width: 30%;
-        border-left: 7px solid $success;
-        box-shadow: 0 0 20px 0 rgba(56, 71, 109, .15);
-        background-color: #fff !important;
-        border-radius: 8px;
-        padding: .5em;
-        padding-left: .7em;
-        margin-right: 3%;
-        .label {
-            color: rgba(165, 165, 165, 0.76);
-            font-size: .9em;
-        }
-        .value {
-            font-weight: bold;
-        }
+  display: flex;
+  flex-direction: row;
+  padding-inline: 1em;
+  .lahan-stat-item {
+    width: 30%;
+    border-left: 7px solid $success;
+    box-shadow: 0 0 20px 0 rgba(56, 71, 109, 0.15);
+    background-color: #fff !important;
+    border-radius: 8px;
+    padding: 0.5em;
+    padding-left: 0.7em;
+    margin-right: 3%;
+    .label {
+      color: rgba(165, 165, 165, 0.76);
+      font-size: 0.9em;
     }
+    .value {
+      font-weight: bold;
+    }
+  }
 }

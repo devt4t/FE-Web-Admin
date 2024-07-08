@@ -430,6 +430,15 @@ const menu = [
         icon: "mdi-tree",
       },
       {
+        title: "Tree Model",
+        to: "/tree-model",
+        component: "Trees/TreeModel",
+        name: "TreeModel",
+        permission: "Trees",
+        icon: "mdi-tree",
+        update: true,
+      },
+      {
         title: "Regional",
         to: "/Regional",
         component: "Utilities/Regional",

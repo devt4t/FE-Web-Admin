@@ -14,15 +14,203 @@
           <h5 class="mb-0 pb-0">Detail Lahan</h5>
         </v-card-title>
         <div class="lahan-side-wrapper">
+          <div class="lahan-side-list">
+            <h4>Action</h4>
+
+            <div class="lahan-side-item-wrapper" v-if="data.main_lahan">
+              <div class="lahan-side-item">
+                <v-btn
+                  v-if="
+                    (!openGisEdit &&
+                      ['13', '14'].includes($store.state.User.role) &&
+                      data.main_lahan.approve < 1) ||
+                    true
+                  "
+                  variant="success"
+                  @click="
+                    openGisEdit = true;
+                    verifRole = 'gis';
+                  "
+                  >Verifikasi GIS</v-btn
+                >
+                <v-btn
+                  v-if="
+                    (!openGisEdit &&
+                      ['13', '14', '19', '20'].includes(
+                        $store.state.User.role
+                      ) &&
+                      data.main_lahan.approve < 2) ||
+                    true
+                  "
+                  variant="success"
+                  @click="
+                    openGisEdit = true;
+                    verifRole = 'fc';
+                  "
+                  >Verifikasi FC</v-btn
+                >
+              </div>
+            </div>
+          </div>
           <lahan-gis-verification
             v-if="
               data.main_lahan &&
-              ['13', '14'].includes(this.$store.state.User.role)
+              ['13', '14'].includes(this.$store.state.User.role) &&
+              openGisEdit
             "
             :data="data.main_lahan"
+            :questions="
+              data.lahan_term_question_list.filter((x) => {
+                if (verifRole == 'gis') return x.role_id == 14;
+                else if (verifRole == 'um') return x.role_id == 20;
+                else if (verifRole == 'fc') return x.role_id == 19;
+              })
+            "
+            :answers="data.lahan_term_answer_list"
+            :role="verifRole"
             @success="componentKey += 1"
             @polygon_change="onChangePolygon"
+            @close="
+              openGisEdit = false;
+              verifRole = null;
+            "
           />
+
+          <div class="lahan-side-list">
+            <h4>Status &amp; Log</h4>
+
+            <div class="lahan-side-item-wrapper" v-if="data.main_lahan">
+              <div class="lahan-side-item">
+                <p class="mb-0 label">Status</p>
+                <div class="d-flex flex-row value">
+                  <span
+                    :class="{
+                      'badge bg-warning': data.main_lahan.approve == 0,
+                      'badge bg-info': data.main_lahan.approve == 1,
+                      'badge bg-success': data.main_lahan.approve == 2,
+                    }"
+                  >
+                    <span v-if="data.main_lahan.approve == 0"
+                      >Belum Diverifikasi</span
+                    >
+                    <span v-else-if="data.main_lahan.approve == 1"
+                      >Diverifikasi FC</span
+                    >
+                    <span v-else-if="data.main_lahan.approve == 2"
+                      >Diverifikasi UM</span
+                    >
+                  </span>
+                </div>
+              </div>
+              <div class="lahan-side-item">
+                <p class="mb-0 label">Eligible Status</p>
+                <div class="d-flex flex-row value">
+                  <span
+                    :class="{
+                      'text-danger': data.main_lahan.eligible_status == 0,
+                      'text-warning': data.main_lahan.eligible_status == 1,
+                      'text-success': data.main_lahan.eligible_status == 2,
+                    }"
+                  >
+                    <span v-if="data.main_lahan.eligible_status == 0"
+                      >Tidak Bisa Ikut</span
+                    >
+                    <span v-else-if="data.main_lahan.eligible_status == 1"
+                      >Bisa Ikut Dengan Tindakan Tambahan</span
+                    >
+                    <span v-else-if="data.main_lahan.eligible_status == 2"
+                      >Bisa Ikut</span
+                    >
+                    <span v-else>-</span>
+                  </span>
+                </div>
+              </div>
+
+              <div
+                class="lahan-side-item d-flex flex-col"
+                style="flex-direction: column !important"
+              >
+                <p class="mb-0 label">Log Data</p>
+                <div class="d-flex flex-col log-data" v-if="data.main_lahan">
+                  <div class="log-data-item active">
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span class="time">{{
+                        formatDate(
+                          data.main_lahan.created_at,
+                          "D MMMM YYYY HH:mm"
+                        )
+                      }}</span>
+                      <span class="label">FF Menambahkan Data Lahan</span>
+                      <span class="user"
+                        >FF: {{ data.main_lahan.field_facilitators_name }}</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="log-data-item"
+                    :class="{
+                      active: data.main_lahan.gis_updated_at,
+                    }"
+                  >
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span
+                        class="time"
+                        v-if="data.main_lahan.gis_updated_at"
+                        >{{
+                          formatDate(
+                            data.main_lahan.gis_updated_at,
+                            "D MMMM YYYY HH:mm"
+                          )
+                        }}</span
+                      >
+                      <span class="label"
+                        >GIS Verifikasi Polygon & Data Lahan</span
+                      >
+                      <span
+                        class="user"
+                        v-if="data.main_lahan.gis_updated_at"
+                        >{{ data.main_lahan.gis_officer }}</span
+                      >
+                    </div>
+                  </div>
+                  <div class="log-data-item">
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span class="time" v-if="data.main_lahan.approve_at">{{
+                        formatDate(
+                          data.main_lahan.approve_at,
+                          "D MMMM YYYY HH:mm"
+                        )
+                      }}</span>
+                      <span class="label">UM Verifikasi Data Lahan</span>
+                      <span
+                        v-if="data.main_lahan.approve_at"
+                        class="user"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="log-data-item">
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span class="label"
+                        >RM Memutuskan Eligibilitas Lahan</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div
             v-if="data.main_lahan"
             class="lahan-side-list"
@@ -42,7 +230,19 @@
                   <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
                     <qr-code :text="data.main_lahan.barcode" />
                   </p>
-                  <p class="mb-0 value" v-else>
+                  <span class="mb-0 value" v-if="v.key === 'project'">
+                    <p
+                      v-if="v.key === 'project'"
+                      v-for="(project, j) in data.lahan_project"
+                      :key="`project-${j}`"
+                    >
+                      {{ project.projects_project_name }}
+                    </p>
+                  </span>
+                  <p
+                    class="mb-0 value"
+                    v-if="v.type !== 'qrcode' && v.key !== 'project'"
+                  >
                     <span v-if="v.prepend">{{ v.prepend }}</span>
                     <span
                       :class="{
@@ -103,6 +303,29 @@
         </div>
         <div class="polygon-wrapper">
           <div class="map-wrapper" style="height: 400px; width: 100%">
+            <div class="map-legends">
+              <div
+                class="map-legend-item"
+                v-for="(item, i) in legends"
+                :key="item.id"
+                :class="{
+                  active: item.show,
+                  disabled: item.disabled,
+                }"
+                @click="toggleLayer(item, i)"
+              >
+                <span
+                  v-if="item.id !== 'map-coordinate'"
+                  class="shape"
+                  :class="item.shape"
+                >
+                </span>
+                <span v-else-if="item.id == 'map-coordinate'"
+                  ><v-icon class="icon">mdi-map-marker</v-icon></span
+                >
+                <span>{{ item.label }}</span>
+              </div>
+            </div>
             <div ref="mapContainer" class="map-container" v-if="mapOpen"></div>
             <div class="map-placeholder" v-else>
               <v-btn variant="success" @click="openMaps">
@@ -168,7 +391,7 @@
 <script>
 import VueQRCodeComponent from "vue-qrcode-component";
 import LahanGisVerification from "./LahanGisVerification.vue";
-
+import moment from "moment";
 export default {
   name: "land-detail",
   components: {
@@ -176,8 +399,50 @@ export default {
     LahanGisVerification,
   },
   methods: {
-    onChangePolygon(newPath) {
-      
+    toggleLayer(item, i) {
+      var isLayerFillExist = this.map.getLayer(`${item.id}-fill`);
+      if (isLayerFillExist) {
+        this.map.setLayoutProperty(
+          `${item.id}-fill`,
+          "visibility",
+          item.show ? "none" : "visible"
+        );
+      }
+
+      var isLayerBorderExist = this.map.getLayer(`${item.id}-border`);
+      if (isLayerBorderExist) {
+        this.map.setLayoutProperty(
+          `${item.id}-border`,
+          "visibility",
+          item.show ? "none" : "visible"
+        );
+      }
+
+      if (item.id == "map-coordinate") {
+        if (item.show) {
+          for (const _marker of this.markers) {
+            _marker.remove();
+          }
+          this.markers = [];
+        } else {
+          for (const coord of Array.isArray(this.data.lahan_polygon)
+            ? this.data.lahan_polygon
+            : []) {
+            const marker = new mapboxgl.Marker()
+              .setLngLat([coord.longitude, coord.latitude])
+              .addTo(this.map);
+
+            this.markers.push(marker);
+          }
+        }
+      }
+      if (
+        !isLayerBorderExist &&
+        !isLayerFillExist &&
+        item.id !== "map-coordinate"
+      )
+        return;
+      this.legends[i].show = !item.show;
     },
     getValue(data) {
       var _value = this.data;
@@ -207,6 +472,23 @@ export default {
       else this.$store.state.lightbox.index = 0;
 
       this.$store.state.lightbox.show = true;
+    },
+    async onChangePolygon(newPath) {
+      const kmlGisData = await this.loadKml(
+        `https://t4tadmin.kolaborasikproject.com/${newPath}`
+      );
+      this.addMapLayer(kmlGisData, "map-layer-2", "#1F6200", "#97F570");
+      const centerCoordinate = turf.center(kmlGisData);
+      const mapCenter = centerCoordinate.geometry.coordinates;
+      this.$set(this.legends, 1, {
+        ...this.legends[1],
+        disabled: false,
+        show: true,
+      });
+
+      if (this.map && this.map.setCenter instanceof Function) {
+        this.map.setCenter(mapCenter);
+      }
     },
 
     async loadKml(url) {
@@ -249,6 +531,7 @@ export default {
     },
 
     async addMapLayer(data, id, borderColor, fillColor) {
+      if (!this.map) return;
       await this.map.addSource(id, {
         type: "geojson",
         data: data,
@@ -259,7 +542,9 @@ export default {
           id: id + "-fill",
           type: "fill",
           source: id,
-          layout: {},
+          layout: {
+            visibility: "visible",
+          },
           paint: {
             "fill-color": fillColor,
             "fill-opacity": [
@@ -276,7 +561,9 @@ export default {
         id: id + "-border",
         type: "line",
         source: id,
-        layout: {},
+        layout: {
+          visibility: "visible",
+        },
         paint: {
           "line-color": borderColor,
           "line-width": 2,
@@ -305,23 +592,64 @@ export default {
         await this.map.addControl(new mapboxgl.FullscreenControl());
         await this.map.addControl(new mapboxgl.NavigationControl());
 
-        // const kmlGisData = await this.loadKml(
-        //   "https://t4tadmin.kolaborasikproject.com/lahans/polygon-ff/example-giss_revisi.kml"
-        // );
-
-        //
-        const kmlData = await this.loadKml(
-          `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
-        );
-
         this.map.on("load", async () => {
           // this.addMapLayer(kmlGisData, "Map-Layer2", "#1F6200", "#97F570");
-          this.addMapLayer(kmlData, "Map-Layer1", "#FF7B7B", null);
+          if (this.data.main_lahan.polygon_from_ff) {
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
+            );
+            this.addMapLayer(kmlData, "map-layer-1", "#FF7B7B", null);
+            this.$set(this.legends, 0, {
+              ...this.legends[0],
+              show: true,
+            });
 
-          const centerCoordinate = turf.center(kmlData);
-          const mapCenter = centerCoordinate.geometry.coordinates;
-          this.map.setCenter(mapCenter);
+            const centerCoordinate = turf.center(kmlData);
+            const mapCenter = centerCoordinate.geometry.coordinates;
+            if (this.map && this.map.setCenter instanceof Function) {
+              this.map.setCenter(mapCenter);
+            }
+          }
+
+          if (this.data.main_lahan.polygon_from_gis) {
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
+            );
+            this.addMapLayer(kmlData, "map-layer-2", "#1F6200", "#97F570");
+            this.$set(this.legends, 1, {
+              ...this.legends[1],
+              show: true,
+            });
+
+            const centerCoordinate = turf.center(kmlData);
+            const mapCenter = centerCoordinate.geometry.coordinates;
+            if (this.map && this.map.setCenter instanceof Function) {
+              this.map.setCenter(mapCenter);
+            }
+          }
+
+          if (Array.isArray(this.data.lahan_polygon)) {
+            for (const coord of this.data.lahan_polygon) {
+              const marker = new mapboxgl.Marker()
+                .setLngLat([coord.longitude, coord.latitude])
+                .addTo(this.map);
+
+              this.markers.push(marker);
+            }
+
+            if (this.data.lahan_polygon.length > 0) {
+              this.$set(this.legends, 2, {
+                ...this.legends[2],
+                show: true,
+              });
+            }
+          }
+
           this.mapReady = true;
+        });
+
+        this.map.on("click", (e) => {
+          console.log(e);
         });
       }, 1000);
     },
@@ -332,10 +660,36 @@ export default {
   },
   data() {
     return {
+      formatDate(date, format) {
+        return moment(date).format(format);
+      },
       map: null,
       mapReady: false,
       mapOpen: true,
+      openGisEdit: false,
       componentKey: 0,
+      markers: [],
+      verifRole: null,
+      legends: [
+        {
+          id: "map-layer-1",
+          label: "FF Polygon",
+          show: false,
+          shape: "ff",
+        },
+        {
+          id: "map-layer-2",
+          label: "GIS Polygon",
+          show: false,
+          shape: "gis",
+        },
+        {
+          id: "map-coordinate",
+          label: "Coordindate",
+          show: false,
+          shape: "coordinate",
+        },
+      ],
       maps: {
         accessToken: this.$_config.mapBoxApi,
         mapStyle: this.$_config.mapBoxStyle,
@@ -381,19 +735,23 @@ export default {
               class: "font-weight-300",
             },
             {
-              label: "Luas",
-              key: "main_lahan.land_area",
-              class: "font-weight-bold",
-              append: " Ha",
-              transform: "ts",
+              label: "Project",
+              key: "project",
             },
-            {
-              label: "Luas Tanam",
-              key: "main_lahan.planting_area",
-              class: "font-weight-bold",
-              append: " Ha",
-              transform: "ts",
-            },
+            // {
+            //   label: "Luas",
+            //   key: "main_lahan.land_area",
+            //   class: "font-weight-bold",
+            //   append: " Ha",
+            //   transform: "ts",
+            // },
+            // {
+            //   label: "Luas Tanam",
+            //   key: "main_lahan.planting_area",
+            //   class: "font-weight-bold",
+            //   append: " Ha",
+            //   transform: "ts",
+            // },
           ],
         },
         {

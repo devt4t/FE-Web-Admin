@@ -2,23 +2,23 @@ export default {
   slope: [
     {
       name: "Datar (0-8 %)",
-      code: "datar (0-8 %)",
+      code: "datar",
     },
     {
       name: "Landai (8-15 %)",
-      code: "landai (8-15 %)",
+      code: "landai",
     },
     {
       name: "Agak Curam (15-25 %)",
-      code: "agak curam (15-25 %)",
+      code: "agak_curam",
     },
     {
       name: "Curam (25-45 %)",
-      code: "curam (25-45 %)",
+      code: "curam",
     },
     {
       name: "Sangat Curam (>45 %)",
-      code: "sangat curam (>45 %)",
+      code: "sangat_curam",
     },
   ],
   access_to_lahan: [
@@ -102,6 +102,16 @@ export default {
     },
     {
       label: "Ada",
+      code: "1",
+    },
+  ],
+  question_option: [
+    {
+      label: "Tidak",
+      code: "0",
+    },
+    {
+      label: "Ya",
       code: "1",
     },
   ],
