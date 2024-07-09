@@ -17,16 +17,23 @@
           <div class="lahan-side-list">
             <h4>Action</h4>
 
-            <div class="lahan-side-item-wrapper" v-if="data.main_lahan">
-              <div class="lahan-side-item">
+            <div
+              class="lahan-side-item-wrapper"
+              style="flex-wrap: wrap; width: 100%"
+              v-if="data.main_lahan"
+            >
+              <div
+                class="lahan-side-item d-flex flex-col"
+                style="flex-wrap: wrap"
+              >
                 <v-btn
                   v-if="
-                    (!openGisEdit &&
-                      ['13', '14'].includes($store.state.User.role) &&
-                      data.main_lahan.approve < 1) ||
-                    true
+                    !openGisEdit &&
+                    ['13', '14'].includes($store.state.User.role) &&
+                    data.main_lahan.approve == 0
                   "
                   variant="success"
+                  class="mr-1 mb-1"
                   @click="
                     openGisEdit = true;
                     verifRole = 'gis';
@@ -35,19 +42,32 @@
                 >
                 <v-btn
                   v-if="
-                    (!openGisEdit &&
-                      ['13', '14', '19', '20'].includes(
-                        $store.state.User.role
-                      ) &&
-                      data.main_lahan.approve < 2) ||
-                    true
+                    !openGisEdit &&
+                    ['13', '19'].includes($store.state.User.role)
                   "
                   variant="success"
+                  class="mr-1 mb-2"
                   @click="
                     openGisEdit = true;
-                    verifRole = 'fc';
+                    verifRole =
+                      data.main_lahan.fc_complete_data == null
+                        ? 'fc-verif-data'
+                        : 'fc';
                   "
                   >Verifikasi FC</v-btn
+                >
+                <v-btn
+                  v-if="
+                    !openGisEdit &&
+                    ['13', '20'].includes($store.state.User.role)
+                  "
+                  variant="success"
+                  class="mr-1 mb-2"
+                  @click="
+                    openGisEdit = true;
+                    verifRole = 'um';
+                  "
+                  >Verifikasi UM</v-btn
                 >
               </div>
             </div>
@@ -68,7 +88,11 @@
             "
             :answers="data.lahan_term_answer_list"
             :role="verifRole"
-            @success="componentKey += 1"
+            @success="
+              componentKey += 1;
+              openGisEdit = false;
+              getData();
+            "
             @polygon_change="onChangePolygon"
             @close="
               openGisEdit = false;
@@ -149,6 +173,35 @@
                       >
                     </div>
                   </div>
+
+                  <div
+                    class="log-data-item"
+                    :class="{
+                      active: data.main_lahan.fc_complete_data == 1,
+                    }"
+                  >
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span
+                        class="time"
+                        v-if="data.main_lahan.fc_complete_data_at"
+                        >{{
+                          formatDate(
+                            data.main_lahan.fc_complete_data_at,
+                            "D MMMM YYYY HH:mm"
+                          )
+                        }}</span
+                      >
+                      <span class="label">FC Verifikasi Kelengkapan Data</span>
+                      <span
+                        class="user"
+                        v-if="data.main_lahan.fc_complete_data_by"
+                        >{{ data.main_lahan.fc_complete_data_by }}</span
+                      >
+                    </div>
+                  </div>
                   <div
                     class="log-data-item"
                     :class="{
@@ -179,31 +232,55 @@
                       >
                     </div>
                   </div>
-                  <div class="log-data-item">
+                  <div
+                    class="log-data-item"
+                    :class="{
+                      active: data.main_lahan.approved_at,
+                    }"
+                  >
                     <div class="dot-wrapper">
                       <div class="dot"></div>
                     </div>
                     <div class="log-value">
-                      <span class="time" v-if="data.main_lahan.approve_at">{{
+                      <span class="time" v-if="data.main_lahan.approved_at">{{
                         formatDate(
-                          data.main_lahan.approve_at,
+                          data.main_lahan.approved_at,
                           "D MMMM YYYY HH:mm"
                         )
                       }}</span>
-                      <span class="label">UM Verifikasi Data Lahan</span>
-                      <span
-                        v-if="data.main_lahan.approve_at"
-                        class="user"
-                      ></span>
+                      <span class="label">FC Verifikasi Data Lahan</span>
+                      <span v-if="data.main_lahan.approved_by" class="user">{{
+                        data.main_lahan.approved_by
+                      }}</span>
                     </div>
                   </div>
-                  <div class="log-data-item">
+                  <div
+                    class="log-data-item"
+                    :class="{
+                      active: data.main_lahan.update_eligible_at,
+                    }"
+                  >
                     <div class="dot-wrapper">
                       <div class="dot"></div>
                     </div>
                     <div class="log-value">
+                      <span
+                        class="time"
+                        v-if="data.main_lahan.update_eligible_at"
+                        >{{
+                          formatDate(
+                            data.main_lahan.update_eligible_at,
+                            "D MMMM YYYY HH:mm"
+                          )
+                        }}</span
+                      >
                       <span class="label"
-                        >RM Memutuskan Eligibilitas Lahan</span
+                        >UM Menentukan Eligibilitas Lahan</span
+                      >
+                      <span
+                        v-if="data.main_lahan.update_eligible_by"
+                        class="user"
+                        >{{ data.main_lahan.update_eligible_by }}</span
                       >
                     </div>
                   </div>
@@ -291,13 +368,13 @@
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Lahan</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span>{{ data.main_lahan.land_area | parse("ts") }} Ha</span>
+              <span>{{ data.main_lahan.land_area | parse("ts") }} m</span>
             </p>
           </div>
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Tanam</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span>{{ data.main_lahan.planting_area | parse("ts") }} Ha</span>
+              <span>{{ data.main_lahan.planting_area | parse("ts") }} m</span>
             </p>
           </div>
         </div>
@@ -380,6 +457,86 @@
                   <span class="value">{{ item.amount | parse("ts") }}</span>
                 </div>
               </div>
+            </div>
+
+            <div class="questions mt-5 pt-5">
+              <h4 class="mb-4">Kelayakan dan Kesesuaian Lahan Project</h4>
+              <table class="eligibility-table geko-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Indikator</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(question, i) in data.lahan_term_question_list"
+                    :key="`question-${i}`"
+                  >
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td>{{ question.question }}</td>
+                    <td>
+                      <div class="center-v text-no-wrap">
+                        <span
+                          class="badge"
+                          :class="{
+                            'bg-danger':
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ) &&
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ).term_answer == 0,
+                            'bg-success':
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ) &&
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ).term_answer == 1,
+                          }"
+                        >
+                          <span
+                            class="center-v text-no-wrap"
+                            v-if="
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ) &&
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ).term_answer == 0
+                            "
+                          >
+                            <v-icon small class="mr-1"
+                              >mdi-close-circle-outline</v-icon
+                            >
+                            <span>Ya</span>
+                          </span>
+                          <span
+                            class="center-v text-no-wrap"
+                            v-else-if="
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ) &&
+                              data.lahan_term_answer_list.find(
+                                (x) => x.term_id === question.id
+                              ).term_answer == 1
+                            "
+                          >
+                            <v-icon small class="mr-1"
+                              >mdi-check-circle-outline</v-icon
+                            >
+                            <span>Ya</span>
+                          </span>
+
+                          <span v-else>-</span>
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -738,29 +895,11 @@ export default {
               label: "Project",
               key: "project",
             },
-            // {
-            //   label: "Luas",
-            //   key: "main_lahan.land_area",
-            //   class: "font-weight-bold",
-            //   append: " Ha",
-            //   transform: "ts",
-            // },
-            // {
-            //   label: "Luas Tanam",
-            //   key: "main_lahan.planting_area",
-            //   class: "font-weight-bold",
-            //   append: " Ha",
-            //   transform: "ts",
-            // },
           ],
         },
         {
           name: "Kondisi Lahan",
           items: [
-            {
-              label: "Status",
-              key: "main_lahan.approve",
-            },
             {
               label: "Jenis Lahan",
               key: "main_lahan.lahan_type",

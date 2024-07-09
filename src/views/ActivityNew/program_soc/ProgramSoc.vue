@@ -160,7 +160,7 @@ export default {
           delete: "program-soc-delete",
         },
         statistic: {
-          statistic_key: "counter",
+          statistic_key: "farmer_counter",
           transform_key: {
             total_data: {
               label: "Total Petani Yang Hadir",
@@ -269,9 +269,7 @@ export default {
             id: "total_farmer",
             label: "Total Peserta",
             methods: {
-              list: {
-                type: "row-slot",
-              },
+              list: false,
               detail: false,
               create: false,
               update: false,

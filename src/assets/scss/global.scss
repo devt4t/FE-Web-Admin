@@ -5,6 +5,10 @@
 .cursor-pointer:hover, .hover-pointer:hover {
   cursor: pointer;
 }
+
+.v-btn--is-elevated {
+  box-shadow: none !important;
+}
 button[variant="primary"] {
   background-color: $primary_light !important;
   color: darken($primary, 10) !important;
@@ -144,6 +148,17 @@ button.circle {
 
 .justify-content-end {
   justify-content: flex-end;
+}
+
+.center-v {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}
+.center-h {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .badge {
@@ -416,6 +431,10 @@ button.circle {
   color: $primary;
 }
 
+.text-black {
+  color: black;
+}
+
 .form-stepper-header {
   display: flex;
   flex-direction: row;
@@ -539,5 +558,24 @@ table tbody tr td:has(.indicator-left) {
 
   header.v-toolbar.v-app-bar {
     left: 280px !important;
+  }
+}
+
+table.geko-table {
+  width: 100%;
+  thead {
+    background-color: #F3F6F9;
+    th {
+      padding: 5px 10px;
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        padding-block: 5px;
+        padding-inline: 10px;
+      }
+    }
   }
 }

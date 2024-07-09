@@ -84,6 +84,10 @@ export default {
       name: "Sumur",
       code: "Sumur",
     },
+    {
+      name: "Irigasi",
+      code: "Irigasi",
+    },
   ],
   access_to_water_sources: [
     {

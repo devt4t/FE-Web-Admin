@@ -51,7 +51,7 @@
                       validation: ['required'],
                       type: 'select',
                       option: {
-                        multiple: false,
+                        multiple: true,
                         default_options: defaultData.slope,
                         list_pointer: {
                           code: 'value',
@@ -70,7 +70,7 @@
                       validation: ['required'],
                       type: 'select',
                       option: {
-                        multiple: false,
+                        multiple: true,
                         default_options: defaultData.altitude,
                         list_pointer: {
                           code: 'value',
@@ -204,6 +204,8 @@ export default {
       let payload = Object.assign(extPayload, this.formData);
       payload.land_type = payload.land_type.join(",");
       payload.rainfall = payload.rainfall.join(",");
+      payload.slope = payload.slope.join(",");
+      payload.altitude = payload.altitude.join(",");
       this.$_api
         .post("UpdateVerifScoopingVisitGIS_new", payload)
         .then(async () => {

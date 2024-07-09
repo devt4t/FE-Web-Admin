@@ -8,8 +8,48 @@
       class="geko-input"
       ref="provider"
     >
+      <!-- <v-tooltip top>
+        <template v-slot:activator="{ on }">
+          <span v-on="on" class="text-09-em d-block font-weight-500">{{
+            "Just a testing"
+          }}</span>
+        </template>
+        <label
+          v-if="!item.hide_label"
+          :for="item.view_data"
+          :class="{
+            required:
+              Array.isArray(item.validation) &&
+              item.validation.includes('required'),
+          }"
+          >{{ item.label || "Tolong Gunakan Label Ya..." }}</label
+        >
+      </v-tooltip> -->
+      <v-tooltip top v-if="item.tooltip">
+        <template v-slot:activator="{ on }">
+          <span v-on="on" class="cursor-pointer tooltip-label">
+            <label
+              v-if="!item.hide_label"
+              :for="item.view_data"
+              :class="{
+                'cursor-pointer': true,
+                required:
+                  Array.isArray(item.validation) &&
+                  item.validation.includes('required'),
+              }"
+              >{{ item.label || "Tolong Gunakan Label Ya..." }}
+              <v-icon :size="18">mdi-help-circle</v-icon></label
+            >
+          </span>
+        </template>
+        <span
+          style="display: block"
+          v-bind:style="{ width: item.tooltip_width || '10em' }"
+          >{{ item.tooltip }}</span
+        >
+      </v-tooltip>
       <label
-        v-if="!item.hide_label"
+        v-if="!item.hide_label && !item.tooltip"
         :for="item.view_data"
         :class="{
           required:

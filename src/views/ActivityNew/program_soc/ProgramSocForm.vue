@@ -111,7 +111,7 @@
           </v-col>
           <v-col lg="6">
             <geko-input
-              :disabled="!formData.target_area"
+              :disabled="!formData.target_area || !formData.program_year"
               v-model="formData.village"
               :item="{
                 label: 'Desa',
@@ -121,7 +121,7 @@
                 setter: 'village',
                 api: 'GetDesa',
                 param: {
-                  program_year: 'Semua',
+                  program_year: formData.program_year,
                   kode_ta: formData.target_area,
                 },
                 option: {

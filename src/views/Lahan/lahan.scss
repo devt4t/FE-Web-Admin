@@ -8,6 +8,10 @@
   .log-data {
     padding: 1em;
     padding-left: 0;
+    border: 1px dashed rgba(187, 187, 187, 0.589);
+    border-radius: 12px;
+    padding-left: 1em;
+    margin-top: .5em;
     .log-data-item {
       position: relative;
       display: flex;
@@ -186,6 +190,10 @@
 .lahan-detail .polygon-wrapper {
   padding: 1em;
 
+  .eligibility-table {
+    color: black;
+  }
+
   .map-placeholder {
     height: 100%;
     display: flex;
@@ -310,6 +318,11 @@
     span {
       font-size: 0.7em !important;
     }
+  }
+
+  .tutupan-wrapper {
+    border: 1.5px dashed $success;
+    border-radius: 12px;
   }
 }
 

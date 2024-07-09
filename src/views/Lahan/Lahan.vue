@@ -10,8 +10,12 @@
         <div
           class="indicator"
           :class="{
-            warning: item.approve == 0,
-            success: item.approve == 1,
+            warning:
+              item.approve == 0 && item.updated_gis.toLowerCase() == 'belum',
+            info:
+              item.approve == 0 && item.updated_gis.toLowerCase() == 'sudah',
+            primary: item.approve == 1,
+            success: item.approve == 2,
             danger: item.approve == 3,
           }"
         ></div>
@@ -75,8 +79,19 @@
 
     <template v-slot:list-lahan_size="{ item }">
       <span class="d-block text-end font-weight-bold text-no-wrap">
-        {{ item.land_area | parse("ts") }} Ha
+        {{ item.land_area | parse("ts") }}m
       </span>
+    </template>
+
+    <template v-slot:list-planting_area="{ item }">
+      <div class="d-flex">
+        <span class="font-weight-bold mr-2">
+          {{ item.planting_area || 0 }}%
+        </span>
+        <span v-if="item.planting_area"
+          >(~{{ (item.planting_area / 100) * item.land_area }}m)</span
+        >
+      </div>
     </template>
 
     <template v-slot:list-cover="{ item }">
@@ -107,19 +122,33 @@
     </template>
 
     <template v-slot:list-status="{ item }">
-      <div class="d-flex flex-row" style="align-items: center">
+      <div class="d-flex flex-row text-no-wrap" style="align-items: center">
         <div
           class="badge"
           :class="{
-            'bg-warning': item.approve == 0,
-            'bg-success': item.approve == 1,
-            // 'bg-danger': item.approve == 2,
+            'bg-warning':
+              item.approve == 0 && item.updated_gis.toLowerCase() == 'belum',
+            'bg-info':
+              item.approve == 0 && item.updated_gis.toLowerCase() == 'sudah',
+            'bg-primary': item.approve == 1,
+            'bg-success': item.approve == 2,
             'bg-danger': item.approve == 3,
           }"
         >
-          <span v-if="item.approve == 0">Belum Diverifikasi</span>
-          <span v-else-if="item.approve == 1">Terverifikasi</span>
-          <!-- <span v-else-if="item.approve == 2">Verifikasi UM</span> -->
+          <span
+            v-if="
+              item.approve == 0 && item.updated_gis.toLowerCase() == 'belum'
+            "
+            >Belum Diverifikasi</span
+          >
+          <span
+            v-if="
+              item.approve == 0 && item.updated_gis.toLowerCase() == 'sudah'
+            "
+            >Diverifikasi GIS</span
+          >
+          <span v-else-if="item.approve == 1">Diverifikasi FC</span>
+          <span v-else-if="item.approve == 2">Terverifikasi</span>
           <span v-else-if="item.approve == 3">Force Majeure</span>
         </div>
       </div>
@@ -356,6 +385,15 @@ export default {
             },
           },
           {
+            id: "planting_area",
+            label: "Luas Area Tanam",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+            },
+          },
+          {
             id: "ff_id",
             label: "Nama FF",
             methods: {
@@ -421,6 +459,7 @@ export default {
             label: "Jenis Bibit",
             methods: {
               list: {
+                show: false,
                 type: "row-slot",
               },
             },

@@ -321,6 +321,7 @@
       .geko-input label {
         font-size: 0.8em !important;
       }
+
     }
   }
 
@@ -425,6 +426,15 @@
     &.required:after {
       content: " *";
       color: red;
+    }
+  }
+  .tooltip-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    i {
+      transform: translateY(-2px);
+      color: rgb(175, 175, 175);
     }
   }
   input,

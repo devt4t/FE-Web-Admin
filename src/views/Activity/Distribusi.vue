@@ -3392,7 +3392,7 @@
           color="success"
           item-color="success"
           v-model="generalSettings.programYear"
-          :items="['2021', '2022', '2023']"
+          :items="$_config.programYear ? $_config.programYear.options :  ['2021', '2022', '2023', '2024']"
           :disabled="
             generalSettings.nursery.disabled ||
             calendar.loading ||
@@ -6381,7 +6381,7 @@ export default {
   async mounted() {
     // set program year
     this.UserLogin = this.User.ff.ff;
-    this.generalSettings.programYear = this.$store.state.programYear.model;
+    this.generalSettings.programYear = this.$_config.programYear.model;
 
     await this.getUserException();
     if (this.User.ff.value_data == "-") this.User.ff.value_data = "all";
@@ -7408,7 +7408,7 @@ export default {
           program_year: this.generalSettings.programYear,
         });
         let url =
-          "https://backend.geninelabs.live/api/custom/data-calendar-distribution?";
+          "https://api-nursery.t4t-api.org/api/custom/data-calendar-distribution?";
         const res = await axios
           .get(url + params, {
             headers: {

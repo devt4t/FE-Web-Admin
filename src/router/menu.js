@@ -82,14 +82,14 @@ const menu = [
         icon: "mdi-account-cowboy-hat",
         update: true,
       },
-      {
-        title: "Lahan",
-        to: "/Lahan",
-        component: "Lahan/Lahan.old",
-        name: "LahanV1",
-        permission: "Lahan",
-        icon: "mdi-square-rounded",
-      },
+      // {
+      //   title: "Lahan",
+      //   to: "/Lahan",
+      //   component: "Lahan/Lahan.old",
+      //   name: "LahanV1",
+      //   permission: "Lahan",
+      //   icon: "mdi-square-rounded",
+      // },
       {
         title: "Lahan",
         to: "/lahan-v2",
