@@ -1,7 +1,7 @@
 <template>
   <geko-base-crud
     :config="config"
-    :hideDelete="true"
+    :hideDelete="!['13'].includes($store.state.User.role)"
     :hideUpdate="true"
     :key="'program-soc-detail' + componentKey"
   >
@@ -136,10 +136,22 @@ export default {
         detailIdKey: "id",
         detailKey: "mainSpr",
         setter: "GetFormMinatAll",
+
+        deleteSoft: {
+          payload: {
+            delete_type: "soft_delete",
+          },
+        },
+
+        delete: "DeleteFormMinatMain_new",
+
+        deleteKey: "form_no",
+        delete_ext_payload: {
+          delete_type: "hard_delete",
+        },
         // update: "UpdateDataProject",
         // delete: "deleteProject",
         // update_id_setter: "current_id",
-        // deleteKey: "code",
         // allow_create: false,
 
         globalFilter: {

@@ -29,8 +29,8 @@
                 <v-btn
                   v-if="
                     !openGisEdit &&
-                    ['13', '14'].includes($store.state.User.role) &&
-                    data.main_lahan.approve == 0
+                    ['2', '13', '14'].includes($store.state.User.role) &&
+                    data.main_lahan.fc_complete_data == 1
                   "
                   variant="success"
                   class="mr-1 mb-1"
@@ -75,7 +75,9 @@
           <lahan-gis-verification
             v-if="
               data.main_lahan &&
-              ['13', '14'].includes(this.$store.state.User.role) &&
+              ['4', '13', '14', '19', '20'].includes(
+                this.$store.state.User.role
+              ) &&
               openGisEdit
             "
             :data="data.main_lahan"
@@ -352,29 +354,27 @@
 
         <div class="lahan-stat-list">
           <div class="lahan-stat-item">
-            <p class="mb-0 label">Project</p>
+            <p class="mb-0 label">Tutupan Lahan</p>
             <p class="mb-0 value">
-              <span
-                v-if="
-                  Array.isArray(data.lahan_project) &&
-                  data.lahan_project.length > 0
-                "
+              <span v-if="data.main_lahan"
+                >{{ data.main_lahan.tutupan_lahan }}%</span
               >
-                {{ data.lahan_project[0].project_no }}
-              </span>
-              <span v-else>-</span>
             </p>
           </div>
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Lahan</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span>{{ data.main_lahan.land_area | parse("ts") }} m</span>
+              <span v-if="data.main_lahan"
+                >{{ data.main_lahan.land_area | parse("ts") }} m&sup2;</span
+              >
             </p>
           </div>
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Tanam</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span>{{ data.main_lahan.planting_area | parse("ts") }} m</span>
+              <span v-if="data.main_lahan"
+                >{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span
+              >
             </p>
           </div>
         </div>
@@ -458,86 +458,176 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="questions mt-5 pt-5">
-              <h4 class="mb-4">Kelayakan dan Kesesuaian Lahan Project</h4>
-              <table class="eligibility-table geko-table">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Indikator</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(question, i) in data.lahan_term_question_list"
-                    :key="`question-${i}`"
+          <div class="other-data mt-5">
+            <h4 class="mb-4 text-success">Data Lahan Lainnya</h4>
+
+            <div class="other-data-list">
+              <div
+                class="other-data-item"
+                v-for="(item, i) in mainData"
+                :key="'key-' + i"
+              >
+                <p class="mb-0 label">{{ item[0] }}</p>
+                <div class="value" v-if="data.main_lahan">
+                  <span
+                    v-if="
+                      item.length > 2 &&
+                      item[2] == 'photo' &&
+                      ![null, undefined, '', '-'].includes(
+                        data.main_lahan[item[1]]
+                      ) &&
+                      data.main_lahan[item[1]] !== '-'
+                    "
                   >
-                    <td class="text-center">{{ i + 1 }}</td>
-                    <td>{{ question.question }}</td>
-                    <td>
-                      <div class="center-v text-no-wrap">
-                        <span
-                          class="badge"
-                          :class="{
-                            'bg-danger':
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ) &&
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ).term_answer == 0,
-                            'bg-success':
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ) &&
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ).term_answer == 1,
-                          }"
-                        >
-                          <span
-                            class="center-v text-no-wrap"
-                            v-if="
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ) &&
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ).term_answer == 0
-                            "
-                          >
-                            <v-icon small class="mr-1"
-                              >mdi-close-circle-outline</v-icon
-                            >
-                            <span>Ya</span>
-                          </span>
-                          <span
-                            class="center-v text-no-wrap"
-                            v-else-if="
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ) &&
-                              data.lahan_term_answer_list.find(
-                                (x) => x.term_id === question.id
-                              ).term_answer == 1
-                            "
-                          >
-                            <v-icon small class="mr-1"
-                              >mdi-check-circle-outline</v-icon
-                            >
-                            <span>Ya</span>
-                          </span>
+                    <img
+                      :src="
+                        $_config.baseUrlUpload + '/' + data.main_lahan[item[1]]
+                      "
+                      alt=""
+                    />
+                  </span>
+                  <span
+                    v-else-if="
+                      item.length > 2 &&
+                      item[2] == 'boolean' &&
+                      data.main_lahan[item[1]] !== '-' &&
+                      ![null, undefined, '', '-'].includes(
+                        data.main_lahan[item[1]]
+                      )
+                    "
+                  >
+                    <span
+                      class="badge"
+                      :class="{
+                        'bg-success': data.main_lahan[item[1]] == 1,
+                        'bg-danger': data.main_lahan[item[1]] == 0,
+                      }"
+                    >
+                      <v-icon v-if="data.main_lahan[item[1]] == 1"
+                        >mdi-circle-fill</v-icon
+                      >
+                      <v-icon v-else-if="data.main_lahan[item[1]] == 0"
+                        >mdi-close-circle-fill</v-icon
+                      >
+                      <span
+                        >{{
+                          data.main_lahan[item[1]] == 1
+                            ? "Ya"
+                            : data.main_lahan[item[1]] == 0
+                            ? "Tidak"
+                            : "-"
+                        }}
+                      </span>
+                    </span>
+                  </span>
 
-                          <span v-else>-</span>
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                  <span
+                    v-else-if="
+                      ![null, undefined, '', '-'].includes(
+                        data.main_lahan[item[1]]
+                      )
+                    "
+                  >
+                    <span>{{ data.main_lahan[item[1]] }}</span>
+                    <span
+                      v-if="
+                        item.length > 4 &&
+                        item[4] &&
+                        ![null, undefined, '', '-'].includes(
+                          data.main_lahan[item[1]]
+                        )
+                      "
+                      >{{ item[4] }}</span
+                    ></span
+                  >
+
+                  <span v-else>-</span>
+                </div>
+              </div>
             </div>
+          </div>
+          <div class="questions mt-5 pt-5">
+            <h4 class="mb-4 text-success">
+              Kelayakan dan Kesesuaian Lahan Project
+            </h4>
+            <table class="eligibility-table geko-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Indikator</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(question, i) in data.lahan_term_question_list"
+                  :key="`question-${i}`"
+                >
+                  <td class="text-center">{{ i + 1 }}</td>
+                  <td>{{ question.question }}</td>
+                  <td>
+                    <div class="center-v text-no-wrap">
+                      <span
+                        class="badge"
+                        :class="{
+                          'bg-danger':
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ) &&
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ).term_answer == 0,
+                          'bg-success':
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ) &&
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ).term_answer == 1,
+                        }"
+                      >
+                        <span
+                          class="center-v text-no-wrap"
+                          v-if="
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ) &&
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ).term_answer == 0
+                          "
+                        >
+                          <v-icon small class="mr-1"
+                            >mdi-close-circle-outline</v-icon
+                          >
+                          <span>Ya</span>
+                        </span>
+                        <span
+                          class="center-v text-no-wrap"
+                          v-else-if="
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ) &&
+                            data.lahan_term_answer_list.find(
+                              (x) => x.term_id === question.id
+                            ).term_answer == 1
+                          "
+                        >
+                          <v-icon small class="mr-1"
+                            >mdi-check-circle-outline</v-icon
+                          >
+                          <span>Ya</span>
+                        </span>
+
+                        <span v-else>-</span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </v-card>
@@ -634,6 +724,7 @@ export default {
       const kmlGisData = await this.loadKml(
         `https://t4tadmin.kolaborasikproject.com/${newPath}`
       );
+      console.log("new kml", kmlGisData);
       this.addMapLayer(kmlGisData, "map-layer-2", "#1F6200", "#97F570");
       const centerCoordinate = turf.center(kmlGisData);
       const mapCenter = centerCoordinate.geometry.coordinates;
@@ -751,7 +842,11 @@ export default {
 
         this.map.on("load", async () => {
           // this.addMapLayer(kmlGisData, "Map-Layer2", "#1F6200", "#97F570");
-          if (this.data.main_lahan.polygon_from_ff) {
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.polygon_from_ff
+            )
+          ) {
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
             );
@@ -761,6 +856,7 @@ export default {
               show: true,
             });
 
+            console.log("kml data", kmlData);
             const centerCoordinate = turf.center(kmlData);
             const mapCenter = centerCoordinate.geometry.coordinates;
             if (this.map && this.map.setCenter instanceof Function) {
@@ -788,12 +884,19 @@ export default {
           if (Array.isArray(this.data.lahan_polygon)) {
             for (const coord of this.data.lahan_polygon) {
               const marker = new mapboxgl.Marker()
-                .setLngLat([coord.longitude, coord.latitude])
+                .setLngLat([
+                  parseFloat(coord.longitude),
+                  parseFloat(coord.latitude),
+                ])
                 .addTo(this.map);
 
               this.markers.push(marker);
             }
 
+            this.map.setCenter([
+              this.data.main_lahan.longitude,
+              this.data.main_lahan.latitude,
+            ]);
             if (this.data.lahan_polygon.length > 0) {
               this.$set(this.legends, 2, {
                 ...this.legends[2],
@@ -982,6 +1085,60 @@ export default {
             },
           ],
         },
+      ],
+      mainData: [
+        [
+          "Ada Habitat Satwa/Kawasan Dilindungi Terdekat",
+          "animal_protected_habitat",
+          "boolean",
+        ],
+        [
+          "Jarak Ke Habitat Satwa/Kawasan Dilindungi Terdekat",
+          "animal_protected_habitat_distance",
+          "",
+          "",
+          "m",
+        ],
+        ["Koordinat", "coordinate"],
+        ["Current Crops", "current_crops"],
+        ["Deskripsi", "description"],
+        ["Pupuk", "fertilizer"],
+        ["Elevation", "elevation"],
+        ["Drought", "drought", "boolean"],
+        ["floods", "floods", "boolean"],
+        ["landslide", "landslide", "boolean"],
+        ["Akurasi GPS", "gps_accuration"],
+        ["Kode Internal", "internal_code"],
+        ["Exposure", "exposure"],
+        ["Desa Terdekat", "nearby_village", "boolean"],
+        ["Jarak ke Desa Terdekat", "nearby_village_distance", "boolean"],
+        ["Potensi", "potency"],
+        ["Jenis Tanah", "soil_type"],
+        ["Foto Tanah", "soil_photo", "photo"],
+        ["SPPT", "sppt", "photo"],
+        ["Tutupan Lahan", "tutupan_lahan", "", "", "%"],
+        ["Foto Tutupan Lahan", "tutupan_lahan_photo", "photo"],
+        [
+          "Tutupan Bangunan / Lainnya",
+          "tutupan_lain_bangunan_percentage",
+          "",
+          "",
+          "%",
+        ],
+        [
+          "Foto Tutupan Bangunan / Lainnya",
+          "tutupan_lain_bangunan_photo",
+          "photo",
+        ],
+
+        [
+          "Tutupan Tanaman Bawah",
+          "tutupan_tanaman_bawah_percentage",
+          "",
+          "",
+          "%",
+        ],
+        ["Foto Tutupan Tanaman Bawah", "tutupan_tanaman_bawah_photo", "photo"],
       ],
       data: {
         main_lahan: null,

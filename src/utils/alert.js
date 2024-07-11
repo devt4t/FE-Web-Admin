@@ -2,19 +2,6 @@ import Swal from "sweetalert2";
 
 const _alert = {
   error(err, title = null, text = null) {
-    // return Vue.swal({
-    //   position: "center",
-    //   icon: "error",
-    //   title: title || "Error",
-    //   text: text
-    //     ? text
-    //     : err.response
-    //     ? err.response.data.message
-    //     : err.data.message,
-    //   toast: false,
-    //   timer: 3000,
-    //   showConfirmButton: false,
-    // });
     let _text = "";
     try {
       _text = text ? text : err.data ? err.data.data.result : err.data.result;

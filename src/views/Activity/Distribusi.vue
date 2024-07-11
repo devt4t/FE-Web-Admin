@@ -3388,19 +3388,20 @@
       >
         <v-divider class="mx-2"></v-divider>
         <!-- Program Year -->
-        <v-select
-          color="success"
-          item-color="success"
-          v-model="generalSettings.programYear"
-          :items="$_config.programYear ? $_config.programYear.options :  ['2021', '2022', '2023', '2024']"
-          :disabled="
+        <!-- :disabled="
             generalSettings.nursery.disabled ||
             calendar.loading ||
             packingLabel.tables.byLahan.loading ||
             packingLabel.loading ||
             loadingLine.loading ||
             loadingLine.table.loading
-          "
+          " -->
+        <v-select
+          color="success"
+          item-color="success"
+          v-model="generalSettings.programYear"
+          :items="$_config.programYear ? $_config.programYear.options :  ['2021', '2022', '2023', '2024']"
+         
           outlined
           dense
           hide-details

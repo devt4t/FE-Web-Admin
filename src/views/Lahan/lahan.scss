@@ -348,3 +348,27 @@
     }
   }
 }
+.lahan-detail .other-data {
+  .other-data-list {
+    display: flex;
+    flex-direction: column;
+    .other-data-item {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      margin-block:3px;
+      .label  {
+        width: 35%;
+        color: rgb(141, 141, 141);
+      }
+      .value {
+        width: 65%;
+
+        img {
+          width: 5em;
+          height: 5em;
+        }
+      }
+    }
+  }
+}

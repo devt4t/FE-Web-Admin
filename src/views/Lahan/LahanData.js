@@ -98,6 +98,10 @@ export default {
       name: "> 200m",
       code: "> 200m",
     },
+    {
+      name: "Tidak Ada",
+      code: "Tidak Ada",
+    },
   ],
   yes_no_option: [
     {

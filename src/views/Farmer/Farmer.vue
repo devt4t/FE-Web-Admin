@@ -187,7 +187,7 @@
         @click="onVerification(item)"
         v-if="
           item.approve == 0 &&
-          ['13', '19', '20'].includes($store.state.User.role)
+          ['4', '13', '19', '20'].includes($store.state.User.role)
         "
       >
         <v-icon small class="mr-1">mdi-check</v-icon>
@@ -196,7 +196,8 @@
       <v-btn
         variant="danger"
         v-else-if="
-          item.approve == 1 && ['13', '20'].includes($store.state.User.role)
+          item.approve == 1 &&
+          ['4', '13', '20'].includes($store.state.User.role)
         "
         @click="onVerification(item)"
       >

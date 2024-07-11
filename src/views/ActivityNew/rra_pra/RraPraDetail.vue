@@ -11,10 +11,47 @@
           <v-icon large class="mr-2" @click="$router.go(-1)"
             >mdi-arrow-left-circle</v-icon
           >
-          <h5 class="mb-0 pb-0">Detail RRA-PRA</h5>
+          <div
+            class="d-flex flex row justify-content-between align-items-center pr-2"
+          >
+            <h5 class="mb-0 pb-0 pl-3">Detail RRA-PRA</h5>
+          </div>
         </v-card-title>
         <div class="rra-pra-wrapper">
           <div class="rra-pra-list">
+            <div class="rra-pra-item d-flex flex-column mb-3">
+              <div class="label">Action</div>
+              <div class="values">
+                <v-btn
+                  class="mr-2 mb-2"
+                  small
+                  variant="danger"
+                  @click="onDelete()"
+                  v-if="['4', '13'].includes($store.state.User.role)"
+                  ><v-icon>mdi-delete-empty</v-icon><span>Hapus</span></v-btn
+                >
+
+                <v-btn
+                  class="mr-2 mb-2"
+                  small
+                  variant="success"
+                  @click="onVerification('verification')"
+                >
+                  <v-icon>mdi-file-check-outline</v-icon>
+                  <span>Verifikasi</span>
+                </v-btn>
+
+                <v-btn
+                  @click="onVerification('unverification')"
+                  class="mr-2 mb-2"
+                  small
+                  variant="danger"
+                >
+                  <v-icon>mdi-undo-variant</v-icon>
+                  <span>Unverifikasi</span>
+                </v-btn>
+              </div>
+            </div>
             <div
               class="rra-pra-item"
               v-for="(f, i) in config.main_detail"
@@ -175,6 +212,87 @@ export default {
     RraPraDetailRra,
   },
   methods: {
+    async onVerification(type) {
+      const alertTitle = type == "verification" ? "Verifikasi" : "Unverifikasi";
+      const isConfirmed = await this.$_alert
+        .confirm(
+          `${alertTitle} Data?`,
+          `Apakah anda yakin ingin ${alertTitle.toLowerCase()} data RRA-PRA?`,
+          `Ya, ${alertTitle}`,
+          "Batal",
+          true
+        )
+        .then((res) => {
+          return res.isConfirmed;
+        })
+        .catch(() => false);
+
+      if (!isConfirmed) return;
+
+      const endpoint =
+        type == "verification" ? "VerificationRraPra" : "UnverificationRraPra";
+      console.log(this.data);
+      const formNo = this.data.mainScooping.data_no;
+      this.$_api
+        .post(endpoint, {
+          form_no: formNo,
+        })
+        .then((res) => {
+          this.$_alert.success(
+            `Data RRA-PRA berhasil di${alertTitle.toLowerCase()}`
+          );
+          this.getData();
+        })
+        .catch((err) => {
+          this.$_alert.error(err);
+        });
+    },
+    onDelete() {
+      let payload = {};
+      if (
+        this.data.rra &&
+        this.data.rra.mainRra &&
+        this.data.rra.mainRra.rra_no
+      ) {
+        payload.rra_no = this.data.rra.mainRra.rra_no;
+      }
+      if (
+        this.data.pra &&
+        this.data.pra.mainPra &&
+        this.data.pra.mainPra.pra_no
+      ) {
+        payload.pra_no = this.data.pra.mainPra.pra_no;
+      }
+      this.$_alert
+        .confirm(
+          "Hapus data RRA PRA?",
+          `Apakah anda yakin ingin menghapus data ${payload.rra_no}  ${
+            payload.pra_no ? `dan ${payload.pra_no}` : ""
+          }? Data yang sudah terhapus tidak dapat dikembalikan`,
+          "Ya, Hapus",
+          "Batal",
+          true
+        )
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("deleteRraPra_new", {
+                delete_type: "hard_delete",
+                ...payload,
+              })
+              .then(() => {
+                this.$_alert.success("Data RRA-PRA berhasil dihapus");
+                this.$router.replace({
+                  path: this.$route.path,
+                  query: {
+                    view: "list",
+                    id: "",
+                  },
+                });
+              });
+          }
+        });
+    },
     async getData() {
       const result = await this.$_api
         .get("GetDetailRraPra_new", { id: this.$route.query.id })

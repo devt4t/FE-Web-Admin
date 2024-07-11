@@ -64,7 +64,7 @@
                 <v-btn
                   v-if="
                     data.status === 'ready_to_submit' &&
-                    ['25', '23', '13'].includes($store.state.User.role)
+                    ['4', '25', '23', '13'].includes($store.state.User.role)
                   "
                   variant="warning"
                   class="mt-1"
@@ -96,13 +96,29 @@
                   v-if="
                     data.status === 'document_saving' &&
                     data.is_verify == 0 &&
-                    ['13', '14'].includes($store.state.User.role)
+                    ['4', '13', '14'].includes($store.state.User.role)
                   "
                 >
                   Verifikasi GIS
                 </v-btn>
 
-                <span v-if="data.status == 'submit_review'">-</span>
+                <v-btn
+                  variant="danger"
+                  v-if="
+                    ['13', '4'].includes($store.state.User.role) &&
+                    data.status === 'submit_review'
+                  "
+                  @click="onUnverification()"
+                >
+                  <span>Unverifikasi</span>
+                </v-btn>
+                <span
+                  v-if="
+                    data.status == 'submit_review' &&
+                    !['13', '4'].includes($store.state.User.role)
+                  "
+                  >-</span
+                >
               </div>
             </div>
 
@@ -372,6 +388,162 @@ export default {
     ScoopingVisitGisVerification,
     ScoopingVisitVerification,
   },
+
+  mounted() {
+    this.getData();
+  },
+
+  methods: {
+    async getData() {
+      // this.$_api
+      //   .get("GetDetailScoopingVisit_new", { id: this.$route.query.id })
+      //   .then((res) => {
+      //     this.data = res.data;
+      //     this.$set(this.map.data, "village_polygon", res.data.village_polygon);
+
+      //   });
+
+      const scoopingData = await this.$_api.get("GetDetailScoopingVisit_new", {
+        id: this.$route.query.id,
+      });
+
+      const otherNgo = await this.$_api.get(
+        "GetDetailScoopingVisitNGOCompetitor_new",
+        { data_no: scoopingData.data.data_no }
+      );
+      const villagePerson = await this.$_api.get(
+        "GetDetailScoopingVisitFigures_new",
+        {
+          data_no: scoopingData.data.data_no,
+        }
+      );
+      const scoopingProjects = await this.$_api.get(
+        "GetDetailScoopingVistiProject_new",
+        {
+          data_no: scoopingData.data.data_no,
+        }
+      );
+      const ffCandidates = await this.$_api.get(
+        "GetDetailScoopingVisitFFCandidate_new",
+        {
+          data_no: scoopingData.data.data_no,
+        }
+      );
+      this.data = scoopingData.data;
+      this.$set(
+        this.map.data,
+        "village_polygon",
+        scoopingData.data.village_polygon
+      );
+      this.$set(
+        this.map.data,
+        "dry_land_polygon",
+        scoopingData.data.dry_land_polygon
+      );
+
+      Promise.all([
+        otherNgo,
+        villagePerson,
+        scoopingProjects,
+        ffCandidates,
+      ]).then(([resNgo, resPerson, resProject]) => {
+        this.otherNgo = resNgo.data;
+        this.villagePerson = resPerson.data;
+
+        this.projects = resProject.data;
+        this.ffCandidates = ffCandidates.data;
+        // this.$set(this.formData, 'project_id', resProject.data)
+        // this.$set(this.formData, 'project_id', [
+        //   {
+        //     label: 'Test',
+        //     code: 1,
+        //   },
+        //   {
+        //     label: 'Test1',
+        //     code: 2,
+        //   },
+        // ])
+      });
+    },
+
+    showLightbox(imgs, index) {
+      if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+      if (index) this.$store.state.lightbox.index = index;
+      else this.$store.state.lightbox.index = 0;
+
+      this.$store.state.lightbox.show = true;
+    },
+
+    onUnverification() {
+      this.$_alert
+        .confirm(
+          "Unverifikasi Data",
+          `Apakah anda yakin ingin unverifikasi data scooping visit ${this.data.data_no}?`,
+          "Ya, Unverifikasi",
+          "Batal",
+          true
+        )
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("UpdateVerifScoopingVisit_new", {
+                current_id: this.$route.query.id,
+                verificator_email: this.$store.state.User.email,
+                potential_status: 0,
+              })
+              .then(() => {
+                this.$_alert.success("Data berhasil diunverifikasi");
+                this.getData();
+              });
+          }
+        });
+    },
+
+    async onVerification(type) {
+      if (this.updating) return;
+      this.updating = true;
+      if (type == "mail_to_gis") {
+        this.$_api
+          .get("MailtoGis", { data_no: this.data.data_no })
+          .then(() => {
+            this.$_alert.success("Berhasil mengirimkan email ke GIS");
+            this.$set(this.data, "email_to_gis", this.data.email_to_gis + 1);
+            this.updating = false;
+          })
+          .catch((err) => {
+            this.$_alert.error(err);
+            this.updating = false;
+          });
+      } else if (type === "verification_gis") {
+        this.verifGisModal += 1;
+        this.updating = false;
+      } else if (type === "verification_um") {
+        this.verifModal += 1;
+        this.updating = false;
+      }
+    },
+
+    onSuccessGisVerification() {
+      this.$set(this.data, "is_verify", 1);
+      this.$set(this.data, "status", "ready_to_submit");
+
+      // this.getData();
+    },
+
+    onSuccessVerification() {
+      this.$set(this.data, "is_verify", 1);
+      this.$set(this.data, "status", "ready_to_submit");
+      this.getData();
+    },
+  },
+
+  computed: {
+    defaultData() {
+      return defaultData;
+    },
+  },
+
   data() {
     return {
       verifGisModal: 1,
@@ -640,136 +812,6 @@ export default {
         // },
       ],
     };
-  },
-
-  mounted() {
-    this.getData();
-  },
-
-  methods: {
-    async getData() {
-      // this.$_api
-      //   .get("GetDetailScoopingVisit_new", { id: this.$route.query.id })
-      //   .then((res) => {
-      //     this.data = res.data;
-      //     this.$set(this.map.data, "village_polygon", res.data.village_polygon);
-
-      //   });
-
-      const scoopingData = await this.$_api.get("GetDetailScoopingVisit_new", {
-        id: this.$route.query.id,
-      });
-
-      const otherNgo = await this.$_api.get(
-        "GetDetailScoopingVisitNGOCompetitor_new",
-        { data_no: scoopingData.data.data_no }
-      );
-      const villagePerson = await this.$_api.get(
-        "GetDetailScoopingVisitFigures_new",
-        {
-          data_no: scoopingData.data.data_no,
-        }
-      );
-      const scoopingProjects = await this.$_api.get(
-        "GetDetailScoopingVistiProject_new",
-        {
-          data_no: scoopingData.data.data_no,
-        }
-      );
-      const ffCandidates = await this.$_api.get(
-        "GetDetailScoopingVisitFFCandidate_new",
-        {
-          data_no: scoopingData.data.data_no,
-        }
-      );
-      this.data = scoopingData.data;
-      this.$set(
-        this.map.data,
-        "village_polygon",
-        scoopingData.data.village_polygon
-      );
-      this.$set(
-        this.map.data,
-        "dry_land_polygon",
-        scoopingData.data.dry_land_polygon
-      );
-
-      Promise.all([
-        otherNgo,
-        villagePerson,
-        scoopingProjects,
-        ffCandidates,
-      ]).then(([resNgo, resPerson, resProject]) => {
-        this.otherNgo = resNgo.data;
-        this.villagePerson = resPerson.data;
-
-        this.projects = resProject.data;
-        this.ffCandidates = ffCandidates.data;
-        // this.$set(this.formData, 'project_id', resProject.data)
-        // this.$set(this.formData, 'project_id', [
-        //   {
-        //     label: 'Test',
-        //     code: 1,
-        //   },
-        //   {
-        //     label: 'Test1',
-        //     code: 2,
-        //   },
-        // ])
-      });
-    },
-
-    showLightbox(imgs, index) {
-      if (imgs) this.$store.state.lightbox.imgs = imgs;
-
-      if (index) this.$store.state.lightbox.index = index;
-      else this.$store.state.lightbox.index = 0;
-
-      this.$store.state.lightbox.show = true;
-    },
-
-    async onVerification(type) {
-      if (this.updating) return;
-      this.updating = true;
-      if (type == "mail_to_gis") {
-        this.$_api
-          .get("MailtoGis", { data_no: this.data.data_no })
-          .then(() => {
-            this.$_alert.success("Berhasil mengirimkan email ke GIS");
-            this.$set(this.data, "email_to_gis", this.data.email_to_gis + 1);
-            this.updating = false;
-          })
-          .catch((err) => {
-            this.$_alert.error(err);
-            this.updating = false;
-          });
-      } else if (type === "verification_gis") {
-        this.verifGisModal += 1;
-        this.updating = false;
-      } else if (type === "verification_um") {
-        this.verifModal += 1;
-        this.updating = false;
-      }
-    },
-
-    onSuccessGisVerification() {
-      this.$set(this.data, "is_verify", 1);
-      this.$set(this.data, "status", "ready_to_submit");
-
-      // this.getData();
-    },
-
-    onSuccessVerification() {
-      this.$set(this.data, "is_verify", 1);
-      this.$set(this.data, "status", "ready_to_submit");
-      this.getData();
-    },
-  },
-
-  computed: {
-    defaultData() {
-      return defaultData;
-    },
   },
 };
 </script>

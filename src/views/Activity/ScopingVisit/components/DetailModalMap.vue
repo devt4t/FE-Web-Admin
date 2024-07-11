@@ -348,7 +348,7 @@ export default {
                     await map.flyTo({
                       center: [centerCoordinates[0], centerCoordinates[1]],
                       zoom: 11,
-                      duration: 7 * 1000,
+                      duration: 4500,
                     });
                     mapOptions.loading.show = await false;
                   });

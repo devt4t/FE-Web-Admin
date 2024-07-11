@@ -30,10 +30,19 @@ const menu = [
       {
         title: "Field Facilitator",
         to: "/FieldFacilitator",
-        component: "Employee/FF",
+        component: "Employee/FF.old",
         name: "FieldFacilitator",
         permission: "FieldFacilitator",
         icon: "mdi-account",
+      },
+      {
+        title: "Field Facilitator",
+        to: "/field-facilitator-v2",
+        component: "Employee/FF",
+        name: "field-facilitator-v2",
+        permission: "FieldFacilitator",
+        icon: "mdi-account",
+        update: true,
       },
       {
         title: "Employee Menu",

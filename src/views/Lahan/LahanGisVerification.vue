@@ -43,7 +43,7 @@
               v-model="formData.elevation"
               :item="{
                 label: 'Elevasi (mdpl)',
-                type: 'number',
+                type: 'text',
                 validation: ['required'],
               }"
             />
@@ -625,8 +625,8 @@ export default {
       for (const question of this.questions) {
         console.log("question", question);
         console.log("answer", this.answers);
-        const isCreate = "updateLahantermAnswer_new";
-        continue;
+        // const isCreate = "updateLahantermAnswer_new";
+        const isCreate = true;
         await this.$_api.post(
           isCreate ? "addLahanTermAnswer_new" : "updateLahantermAnswer_new",
           {
@@ -637,7 +637,6 @@ export default {
           }
         );
       }
-      return;
       if (this.role === "gis") {
         const nullableData = [
           "tutupan_lahan",

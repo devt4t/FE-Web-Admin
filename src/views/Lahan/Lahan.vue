@@ -79,7 +79,7 @@
 
     <template v-slot:list-lahan_size="{ item }">
       <span class="d-block text-end font-weight-bold text-no-wrap">
-        {{ item.land_area | parse("ts") }}m
+        {{ item.land_area | parse("ts") }}m&sup2;
       </span>
     </template>
 
@@ -196,6 +196,23 @@
       </div>
     </template>
 
+    <template v-slot:list-fc_complete_data="{ item }">
+      <div class="d-flex flex-row text-no-wrap justify-content-center">
+        <span
+          class="badge"
+          :class="{
+            'bg-success': item.fc_complete_data == 1,
+            'bg-danger': item.fc_complete_data == 0,
+            'bg-info': item.fc_complete_data == null,
+          }"
+        >
+          <span v-if="item.fc_complete_data == 0">Belum Lengkap</span>
+          <span v-else-if="item.fc_complete_data == 1">Lengkap</span>
+          <span v-else>Menunggu Verifikasi FC</span>
+        </span>
+      </div>
+    </template>
+
     <template v-slot:detail-row>
       <lahan-detail />
     </template>
@@ -289,12 +306,12 @@ export default {
         // update: "UpdateFormMinatMain_new",
         // delete: "DeleteScoopingVisit_new",
         // deleteLabel: "scooping_no",
-        filter_api: {
-          typegetdata: "all",
-          page: 1,
-          per_page: 10,
-          update_mode: 0,
-        },
+        // filter_api: {
+        //   typegetdata: "all",
+        //   page: 1,
+        //   per_page: 10,
+        //   update_mode: 0,
+        // },
 
         statistic: {
           statistic_key: "count",
@@ -384,15 +401,15 @@ export default {
               },
             },
           },
-          {
-            id: "planting_area",
-            label: "Luas Area Tanam",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
+          // {
+          //   id: "planting_area",
+          //   label: "Luas Area Tanam",
+          //   methods: {
+          //     list: {
+          //       type: "row-slot",
+          //     },
+          //   },
+          // },
           {
             id: "ff_id",
             label: "Nama FF",
@@ -489,6 +506,16 @@ export default {
           {
             id: "total",
             label: "Kayu + MPTS",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+            },
+          },
+
+          {
+            id: "fc_complete_data",
+            label: "Kelengkapan Data",
             methods: {
               list: {
                 type: "row-slot",
