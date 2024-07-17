@@ -924,18 +924,23 @@ export default {
 
     // monitoring 3
     async getPaginationMo3(page, per_page, py, mu) {
-      let store = this.$store;
-      const data = await axios
-        .get(
-          store.getters.getApiUrl(
-            `TempExportMonitoring3?program_year=${py}&mu_no=${mu}&page=${page}&per_page=${per_page}`
-          ),
-          store.state.apiConfig
-        )
-        .then((res) => res.data);
+    //   let store = this.$store;
+      const data = await this.$_api.get("TempExportMonitoring3", {
+        program_year: py,
+        mu_no: mu,
+        page: page,
+        per_page: per_page
+      }).then((res) => res);
+    //   const data = await axios
+    //     .get(store.getters.getApiUrl(
+    //         `TempExportMonitoring3?program_year=${py}&mu_no=${mu}&page=${page}&per_page=${per_page}`
+    //       ),
+    //       store.state.apiConfig
+    //     )
+    //     .then((res) => res.data);
       console.log(data.data);
       if (data.data.result.datas.current_page == 1) {
-        const treePhase = ["bibit_mo1", "bibit_mo3", "survival_rate(%)"];
+        const treePhase = ["bibit_mo1", "bibit_mo3", "survival_rate(%)", "average_height(cm)"];
         data.data.result.tree_locations.map((val) => {
           treePhase.map((tp) => {
             this.table.fields.push({
@@ -952,7 +957,7 @@ export default {
         const dataGenerate = {
           ...valMon,
           project: "undefined",
-          monitorng2_no: valMon.monitoring2_no || "???",
+          monitorng3_no: valMon.monitoring3_no || "???",
           program_year: valMon.program_year || "???",
           mu_name: valMon.mu_name || "???",
           ta_name: valMon.ta_name || "???",
@@ -992,6 +997,9 @@ export default {
               ).toFixed(2);
             }
           });
+        });
+        valMon.average_height.map((val) => {
+          dataGenerate[`tree_${val.tree_code}-average_height(cm)`] = val.avg_height;
         });
         this.table.data.push(dataGenerate);
       }

@@ -178,6 +178,7 @@ import sostamFields from "./components/js/fields-sostam-bibit";
 import monitoringFields from "./components/js/fields-monitoring";
 import monitoring2Fields from "./components/js/fields-monitoring2";
 import monitoring3Fields from "./components/js/fields-monitoring3";
+import monitoring4Fields from "./components/js/fields-monitoring4";
 
 export default {
   name: "OldGekoReportData",
@@ -231,6 +232,11 @@ export default {
         title: "Export Monitoring 3",
         section: "export-monitoring3",
         fields: monitoring3Fields,
+      },
+      {
+        title: "Export Monitoring 4",
+        section: "export-monitoring4",
+        fields: monitoring4Fields,
       },
     ],
     dialog: {
