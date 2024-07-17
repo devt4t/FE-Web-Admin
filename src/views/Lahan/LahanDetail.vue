@@ -856,7 +856,6 @@ export default {
               show: true,
             });
 
-            console.log("kml data", kmlData);
             const centerCoordinate = turf.center(kmlData);
             const mapCenter = centerCoordinate.geometry.coordinates;
             if (this.map && this.map.setCenter instanceof Function) {
@@ -864,7 +863,11 @@ export default {
             }
           }
 
-          if (this.data.main_lahan.polygon_from_gis) {
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.polygon_from_gis
+            )
+          ) {
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
             );
@@ -892,11 +895,19 @@ export default {
 
               this.markers.push(marker);
             }
-
-            this.map.setCenter([
-              this.data.main_lahan.longitude,
-              this.data.main_lahan.latitude,
-            ]);
+            if (
+              [undefined, null, "", "-"].includes(
+                this.data.main_lahan.polygon_from_gis
+              ) &&
+              [undefined, null, "", "-"].includes(
+                this.data.main_lahan.polygon_from_ff
+              )
+            ) {
+              this.map.setCenter([
+                parseFloat(this.data.lahan_polygon[0].longitude),
+                parseFloat(this.data.lahan_polygon[0].latitude),
+              ]);
+            }
             if (this.data.lahan_polygon.length > 0) {
               this.$set(this.legends, 2, {
                 ...this.legends[2],

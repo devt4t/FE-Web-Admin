@@ -189,11 +189,12 @@
 
         <v-btn
           v-if="['13', '14'].includes($store.state.User.role)"
-          class="mt-2"
+          class="mt-2 d-flex flex-row align-items-center"
           variant="info"
           @click="uploadKmlModal = uploadKmlModal + 1"
         >
-          Bulk Upload KML
+          <v-icon>mdi-shape-polygon-plus</v-icon>
+          <span>Bulk Upload KML</span>
         </v-btn>
 
         <lahan-kml-upload :dataKey="uploadKmlModal" />
