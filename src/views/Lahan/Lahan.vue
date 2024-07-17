@@ -187,6 +187,17 @@
           <span>Permintaan Pergantian Tutupan Lahan</span>
         </v-btn>
 
+        <v-btn
+          v-if="['13', '14'].includes($store.state.User.role)"
+          class="mt-2"
+          variant="info"
+          @click="uploadKmlModal = uploadKmlModal + 1"
+        >
+          Bulk Upload KML
+        </v-btn>
+
+        <lahan-kml-upload :dataKey="uploadKmlModal" />
+
         <!-- <v-btn variant="danger" class="mt-2">
           <v-icon>
             mdi-information
@@ -223,11 +234,13 @@
 import moment from "moment";
 import "./lahan.scss";
 import LahanDetail from "./LahanDetail.vue";
+import LahanKmlUpload from "./LahanKmlUpload.vue";
 export default {
   name: "lahan-v2",
 
   components: {
     LahanDetail,
+    LahanKmlUpload,
   },
   methods: {
     showLightbox(imgs, index) {
@@ -288,6 +301,7 @@ export default {
   },
   data() {
     return {
+      uploadKmlModal: 2,
       componentKey: 1,
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);

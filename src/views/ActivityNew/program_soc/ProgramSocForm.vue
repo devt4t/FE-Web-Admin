@@ -267,6 +267,75 @@
 
                       <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
                         <geko-input
+                          v-model="item.owned_land_legalization_status"
+                          :item="{
+                            validation: ['required'],
+                            label: 'Status legalitas lahan yang dimiliki',
+                            type: 'select-radio',
+                            option: {
+                              default_options: [
+                                {
+                                  label:
+                                    'Sertifikat lahan atau Letter C atas nama sendiri',
+                                  code: 1,
+                                },
+                                {
+                                  label:
+                                    'Akte Jual Beli ata Letter C masih atas nama Orang Lain',
+                                  code: 2,
+                                },
+                                {
+                                  label:
+                                    'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
+                                  code: 3,
+                                },
+                              ],
+                              list_pointer: {
+                                code: 'code',
+                                name: 'name',
+                                display: ['name'],
+                              },
+                            },
+                          }"
+                        />
+                      </v-col>
+
+                      <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
+                        <geko-input
+                          v-model="item.followed_project_model"
+                          :item="{
+                            validation: ['required'],
+                            label: 'Model project yang akan diikuti',
+                            type: 'select-radio',
+                            option: {
+                              default_options: [
+                                {
+                                  label: 'Model 1 (Pohon Kayu untuk Ditebang)',
+                                  code: 1,
+                                },
+                                {
+                                  label:
+                                    'Model 2 - Pohon Kayu untuk Ditebang + Pohon Buah/MPTS',
+                                  code: 2,
+                                },
+                                {
+                                  label:
+                                    'Model 3 - Pohon Kayu dan Buah/MPTS tidak Ditebang',
+                                  code: 3,
+                                },
+                              ],
+                              list_pointer: {
+                                code: 'code',
+                                name: 'name',
+                                display: ['name'],
+                              },
+                            },
+                          }"
+                        />
+                      </v-col>
+
+                      <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
+                        <geko-input
                           v-model="item.trees"
                           :item="{
                             label: 'Pohon Yang Diminati (maks 3)',
