@@ -36,7 +36,7 @@
               <slot
                 :name="
                   $route.query.view === 'create'
-                    ? 'create'
+                    ? 'create' + '-' + item.view_data
                     : 'update' + '-' + item.view_data
                 "
                 v-bind:formData="formData"

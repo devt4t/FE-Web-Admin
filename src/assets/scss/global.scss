@@ -47,6 +47,7 @@ button[variant="light"],
 button[variant="info"] {
   text-transform: unset !important;
   letter-spacing: unset !important;
+  box-shadow: rgba(119, 119, 119, 0.15) 0px 3px 3px 0px !important;
 }
 button.circle {
   width: 1px !important;
@@ -111,7 +112,7 @@ button.circle {
 }
 
 .text-capitalize {
-  text-transform: capitalize;
+  text-transform: capitalize !important;
 }
 
 .text-no-wrap {

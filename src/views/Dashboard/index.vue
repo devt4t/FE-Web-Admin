@@ -49,18 +49,12 @@
               </v-card>
             </v-col>
             <v-col cols="12" lg="3" class="pa-0">
-              <v-img
-                max-width="170px"
-                :src="require('@/assets/female-investors.gif')"
-              ></v-img>
-
-              <!-- <LottieAnimation
-                ref="anim"
-                :animationData="lottie.planting"
+              <LottieAnimation
+                :animationData="femaleWork"
                 :loop="true"
-                :key="lottie.key"
-                style="height: 175px;padding: 0px;"
-              /> -->
+                :key="'female-work'"
+                style="height: 175px; padding: 0px"
+              />
             </v-col>
           </v-row>
         </v-card-text>
@@ -357,6 +351,7 @@ import plant1 from "@/assets/lottie/plant-1.json";
 import plant2 from "@/assets/lottie/plant-2.json";
 import plant3 from "@/assets/lottie/plant-3.json";
 import plant4 from "@/assets/lottie/plant-4.json";
+import femaleWork from "@/assets/lottie/female-work.json";
 import moneyTree from "@/assets/lottie/money-tree.json";
 import DMap from "./components/maps";
 import tepview from "@/views/Dashboard/components/360view";
@@ -552,6 +547,9 @@ export default {
     this.$store.state.loadingOverlayText = null;
   },
   computed: {
+    femaleWork() {
+      return femaleWork;
+    },
     getDetailSubordinateTitle() {
       const user = this.$store.state.User;
       if (user.role_name == "FIELD COORDINATOR") return "Field Facilitator";

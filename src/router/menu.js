@@ -27,23 +27,23 @@ const menu = [
         permission: "FieldCoordinator",
         icon: "mdi-account",
       },
-      {
-        title: "Field Facilitator",
-        to: "/FieldFacilitator",
-        component: "Employee/FF.old",
-        name: "FieldFacilitator",
-        permission: "FieldFacilitator",
-        icon: "mdi-account",
-      },
       // {
       //   title: "Field Facilitator",
-      //   to: "/field-facilitator-v2",
-      //   component: "Employee/FF",
-      //   name: "field-facilitator-v2",
+      //   to: "/FieldFacilitator",
+      //   component: "Employee/FF.old",
+      //   name: "FieldFacilitator",
       //   permission: "FieldFacilitator",
       //   icon: "mdi-account",
-      //   update: true,
       // },
+      {
+        title: "Field Facilitator",
+        to: "/field-facilitator-v2",
+        component: "Employee/FF",
+        name: "field-facilitator-v2",
+        permission: "FieldFacilitator",
+        icon: "mdi-account",
+        update: true,
+      },
       {
         title: "Employee Menu",
         to: "/EmployeeMenu",
@@ -193,6 +193,7 @@ const menu = [
         name: "Progression",
         permission: "Progression",
         icon: "mdi-book-check",
+        type: ["non-carbon"],
       },
       {
         title: "Scooping Visit",
@@ -202,6 +203,7 @@ const menu = [
         permission: "scooping-visit-v2",
         icon: "mdi-home-edit",
         update: true,
+        type: ["carbon", "non-carbon"],
       },
       {
         title: "RRA & PRA",
@@ -211,6 +213,7 @@ const menu = [
         permission: "rra-pra-v2",
         icon: "mdi-home-search",
         update: true,
+        type: ["carbon", "non-carbon"],
       },
       {
         title: "Sosialisasi Program",
@@ -220,6 +223,7 @@ const menu = [
         permission: "sosialisasi-program-v2",
         icon: "mdi-account-card",
         update: true,
+        type: ["carbon", "non-carbon"],
       },
       {
         title: "Petani (Sosialisasi Program)",
@@ -261,6 +265,7 @@ const menu = [
         name: "SosialisasiTanam",
         permission: "SosialisasiTanam",
         icon: "mdi-account-badge",
+        type: ["carbon", "non-carbon"],
       },
       {
         title: "AdjustmentDataSostam",
@@ -285,6 +290,7 @@ const menu = [
         name: "PelatihanPetani",
         permission: "PelatihanPetani",
         icon: "mdi-handshake",
+        type: ["non-carbon"],
       },
       {
         title: "Lubang Tanam",
@@ -293,6 +299,7 @@ const menu = [
         name: "LubangTanam",
         permission: "LubangTanam",
         icon: "mdi-check-underline-circle",
+        type: ["non-carbon"],
       },
       {
         title: "Material Organik",
@@ -301,6 +308,7 @@ const menu = [
         name: "MaterialOrganik",
         permission: "MaterialOrganik",
         icon: "mdi-leaf-circle",
+        type: ["non-carbon"],
       },
       {
         title: "SeedlingChangeRequest",
@@ -317,6 +325,7 @@ const menu = [
         name: "Distribusi",
         permission: "Distribusi",
         icon: "mdi-truck-fast",
+        type: ["non-carbon"],
       },
 
       {
@@ -326,6 +335,7 @@ const menu = [
         name: "PenilikanTanam",
         permission: "PenilikanTanam",
         icon: "mdi-spa",
+        type: ["non-carbon"],
       },
       {
         title: "Monitoring",
@@ -334,6 +344,7 @@ const menu = [
         name: "Monitoring2",
         permission: "Monitoring2",
         icon: "mdi-tree",
+        type: ["non-carbon"],
       },
       {
         title: "PermintaanTutupanLahan",
@@ -499,6 +510,14 @@ const menu = [
         to: "/task-group",
         component: "MasterData/TaskGroups",
         name: "TaskGroup",
+        permission: "TaskGroup",
+        icon: "mdi-database-edit",
+      },
+      {
+        title: "Roles",
+        to: "/roles",
+        component: "MasterData/Roles",
+        name: "Roles",
         permission: "TaskGroup",
         icon: "mdi-database-edit",
       },

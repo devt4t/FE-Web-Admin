@@ -136,7 +136,7 @@
             />
           </v-col>
 
-          <v-col md="12" class="form-separator">
+          <v-col md="12" class="form-separator" v-if="formData.mu_no">
             <div class="d-flex flex-row" style="align-items: center">
               <h4 class="mb-0 pb-0">Daftar Petani</h4>
               <v-btn
@@ -150,7 +150,7 @@
             </div>
           </v-col>
 
-          <v-col md="12">
+          <v-col md="12" v-if="formData.mu_no">
             <div class="bg-grey">
               <v-expansion-panels
                 focusable
@@ -265,7 +265,15 @@
                         />
                       </v-col>
 
-                      <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
+                      <v-col
+                        lg="6"
+                        v-if="
+                          ['Ya'].includes(item.status_program) &&
+                          !['007', '019', '015', '008', '014', '016'].includes(
+                            formData.mu_no
+                          )
+                        "
+                      >
                         <geko-input
                           v-model="item.owned_land_legalization_status"
                           :item="{
@@ -273,23 +281,8 @@
                             label: 'Status legalitas lahan yang dimiliki',
                             type: 'select-radio',
                             option: {
-                              default_options: [
-                                {
-                                  label:
-                                    'Sertifikat lahan atau Letter C atas nama sendiri',
-                                  code: 1,
-                                },
-                                {
-                                  label:
-                                    'Akte Jual Beli ata Letter C masih atas nama Orang Lain',
-                                  code: 2,
-                                },
-                                {
-                                  label:
-                                    'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
-                                  code: 3,
-                                },
-                              ],
+                              default_options:
+                                defaultData.owned_land_legalization_status,
                               list_pointer: {
                                 code: 'code',
                                 name: 'name',
@@ -300,7 +293,15 @@
                         />
                       </v-col>
 
-                      <v-col lg="6" v-if="['Ya'].includes(item.status_program)">
+                      <v-col
+                        lg="6"
+                        v-if="
+                          ['Ya'].includes(item.status_program) &&
+                          !['007', '019', '015', '008', '014', '016'].includes(
+                            formData.mu_no
+                          )
+                        "
+                      >
                         <geko-input
                           v-model="item.followed_project_model"
                           :item="{
@@ -308,22 +309,8 @@
                             label: 'Model project yang akan diikuti',
                             type: 'select-radio',
                             option: {
-                              default_options: [
-                                {
-                                  label: 'Model 1 (Pohon Kayu untuk Ditebang)',
-                                  code: 1,
-                                },
-                                {
-                                  label:
-                                    'Model 2 - Pohon Kayu untuk Ditebang + Pohon Buah/MPTS',
-                                  code: 2,
-                                },
-                                {
-                                  label:
-                                    'Model 3 - Pohon Kayu dan Buah/MPTS tidak Ditebang',
-                                  code: 3,
-                                },
-                              ],
+                              default_options:
+                                defaultData.followed_project_model,
                               list_pointer: {
                                 code: 'code',
                                 name: 'name',
@@ -517,6 +504,11 @@ export default {
   watch: {
     "formData.mu_no"(v) {
       this.$set(this.formData, "target_area", null);
+      this.$set(this.formData, "village", null);
+    },
+
+    "formData.target_area"() {
+      this.$set(this.formData, "village", null);
     },
   },
 
@@ -528,7 +520,7 @@ export default {
         village: "",
         mu_no: "",
         target_area: "",
-        program_year: "",
+        program_year: "2024",
       },
       participants: [
         {

@@ -408,10 +408,20 @@ export default {
 
       const _payload = Object.assign(payload, extParams);
 
-      const result = await this.$_api.get(this.item.api, _payload).catch(() => {
-        this.isLoading = false;
-      });
-      const responseData = this.item.option.getterKey
+      const result = await this.$_api
+        .get(this.item.api, _payload)
+        .catch((err) => {
+          this.isLoading = false;
+          return {
+            error: true,
+            not_found: err ? err.not_found : false,
+          };
+        });
+
+      if (result.error && !result.not_found) return;
+      const responseData = result.not_found
+        ? []
+        : this.item.option.getterKey
         ? this.getListDataKey(result, this.item.option.getterKey)
         : result.data;
 
@@ -532,6 +542,10 @@ export default {
       } else {
         this.$emit("input", this.tmpValue);
       }
+    },
+
+    value(t, f) {
+      this.tmpValue = t;
     },
     // 'item.option': {
     //   immediate: false,

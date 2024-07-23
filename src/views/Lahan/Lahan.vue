@@ -154,59 +154,7 @@
       </div>
     </template>
 
-    <template v-slot:list-before-create>
-      <div class="d-flex flex-col align-items-end">
-        <v-btn
-          variant="info"
-          class="mb-2"
-          @click="
-            $router.push({
-              path: '/DaftarQRLahanRusak',
-              query: {
-                view: 'list',
-              },
-            })
-          "
-        >
-          <v-icon small class="mr-2">mdi-qrcode-remove</v-icon>
-          <span>Barcode Lahan Rusak</span>
-        </v-btn>
-        <v-btn
-          class="ml-3"
-          variant="success"
-          @click="
-            $router.push({
-              path: '/PermintaanTutupanLahan',
-              query: {
-                view: 'list',
-              },
-            })
-          "
-        >
-          <v-icon small class="mr-2">mdi-file-arrow-left-right-outline</v-icon>
-          <span>Permintaan Pergantian Tutupan Lahan</span>
-        </v-btn>
-
-        <v-btn
-          v-if="['13', '14'].includes($store.state.User.role)"
-          class="mt-2 d-flex flex-row align-items-center"
-          variant="info"
-          @click="uploadKmlModal = uploadKmlModal + 1"
-        >
-          <v-icon>mdi-shape-polygon-plus</v-icon>
-          <span>Bulk Upload KML</span>
-        </v-btn>
-
-        <lahan-kml-upload :dataKey="uploadKmlModal" />
-
-        <!-- <v-btn variant="danger" class="mt-2">
-          <v-icon>
-            mdi-information
-          </v-icon>
-          Tandai Semua Polygon Lahan Salah
-        </v-btn> -->
-      </div>
-    </template>
+    <template v-slot:list-before-create> </template>
 
     <template v-slot:list-fc_complete_data="{ item }">
       <div class="d-flex flex-row text-no-wrap justify-content-center">
@@ -227,6 +175,62 @@
 
     <template v-slot:detail-row>
       <lahan-detail />
+    </template>
+
+    <template v-slot:list-after-filter>
+      <div
+        class="d-flex flex-row justify-content-start align-items-center pb-4"
+      >
+        <v-btn
+          class="mr-3"
+          variant="info"
+          @click="
+            $router.push({
+              path: '/DaftarQRLahanRusak',
+              query: {
+                view: 'list',
+              },
+            })
+          "
+        >
+          <v-icon small class="mr-2">mdi-qrcode-remove</v-icon>
+          <span>Barcode Lahan Rusak</span>
+        </v-btn>
+        <v-btn
+          class="mr-3"
+          variant="success"
+          @click="
+            $router.push({
+              path: '/PermintaanTutupanLahan',
+              query: {
+                view: 'list',
+              },
+            })
+          "
+        >
+          <v-icon small class="mr-2">mdi-file-arrow-left-right-outline</v-icon>
+          <span>Permintaan Pergantian Tutupan Lahan</span>
+        </v-btn>
+
+        <v-btn
+          v-if="['13', '14'].includes($store.state.User.role)"
+          class="mr-2 d-flex flex-row align-items-center"
+          variant="info"
+          @click="uploadKmlModal = uploadKmlModal + 1"
+        >
+          <v-icon>mdi-shape-polygon-plus</v-icon>
+          <span>Bulk Upload KML</span>
+        </v-btn>
+
+        <lahan-kml-upload :dataKey="uploadKmlModal" />
+
+        <!-- <v-btn variant="danger" class="mt-2">
+          <v-icon>
+            mdi-information
+          </v-icon>
+          Tandai Semua Polygon Lahan Salah
+        </v-btn> -->
+      </div>
     </template>
   </geko-base-crud>
 </template>

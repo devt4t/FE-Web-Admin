@@ -1,13 +1,34 @@
 <template>
-  <geko-base-crud :config="config"> </geko-base-crud>
+  <geko-base-crud :config="config" :key="'task-list' + componentKey">
+    <template v-slot:list-before-create>
+      <v-btn variant="info" @click="onGenerate()">Generate Task</v-btn>
+    </template>
+  </geko-base-crud>
 </template>
 
 <script>
 export default {
   name: "crud-tasks",
   watch: {},
+  methods: {
+    async onGenerate() {
+      if (this.loading) return;
+      this.loading = true;
+      const generating = await this.$_api
+        .post("task/generate")
+        .catch(() => false);
+      if (!generating) {
+        this.loading = false;
+        return;
+      }
+      this.$_alert.success("Task successfully generated");
+      this.componentKey += 1;
+    },
+  },
   data() {
     return {
+      loading: false,
+      componentKey: 1,
       config: {
         title: "Tasks",
         model_api: null,

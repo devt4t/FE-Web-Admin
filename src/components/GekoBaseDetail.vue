@@ -51,7 +51,7 @@
                             ? typeof item.class === 'object'
                               ? item.class[data[item.view_data]]
                               : typeof item.class == 'string'
-                              ? data[item.view_data]
+                              ? `${item.class} ${data[item.view_data]}`
                               : ''
                             : '']: true,
                         }"
@@ -113,7 +113,6 @@ export default {
     };
   },
   mounted() {
-    console.log("api", this.api);
     if (this.api) {
       this.getData();
     } else {

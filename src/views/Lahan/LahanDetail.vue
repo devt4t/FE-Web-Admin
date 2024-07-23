@@ -850,16 +850,19 @@ export default {
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
             );
-            this.addMapLayer(kmlData, "map-layer-1", "#FF7B7B", null);
-            this.$set(this.legends, 0, {
-              ...this.legends[0],
-              show: true,
-            });
 
-            const centerCoordinate = turf.center(kmlData);
-            const mapCenter = centerCoordinate.geometry.coordinates;
-            if (this.map && this.map.setCenter instanceof Function) {
-              this.map.setCenter(mapCenter);
+            if (kmlData.features.length > 0) {
+              this.addMapLayer(kmlData, "map-layer-1", "#FF7B7B", null);
+              this.$set(this.legends, 0, {
+                ...this.legends[0],
+                show: true,
+              });
+
+              const centerCoordinate = turf.center(kmlData);
+              const mapCenter = centerCoordinate.geometry.coordinates;
+              if (this.map && this.map.setCenter instanceof Function) {
+                this.map.setCenter(mapCenter);
+              }
             }
           }
 
@@ -904,8 +907,8 @@ export default {
               )
             ) {
               this.map.setCenter([
-                parseFloat(this.data.lahan_polygon[0].longitude),
-                parseFloat(this.data.lahan_polygon[0].latitude),
+                parseFloat(this.data.main_lahan.longitude),
+                parseFloat(this.data.main_lahan.latitude),
               ]);
             }
             if (this.data.lahan_polygon.length > 0) {
@@ -956,7 +959,7 @@ export default {
         },
         {
           id: "map-coordinate",
-          label: "Coordindate",
+          label: "Coordinate",
           show: false,
           shape: "coordinate",
         },

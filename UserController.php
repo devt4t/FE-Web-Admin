@@ -149,6 +149,15 @@ class UserController extends Controller
                         ['ff_no', '=', $getUser->employee_no],
                         ['program_year', 'like', "%$request->program_year%"]
                     ])->first();
+                    if (isset($getff->working_area)) {
+                        $getProjectDesa = DB::table('scooping_visits')->select('scooping_visits.data_no', 'projects.id', 'projects.project_no', 'projects.project_name')
+                            ->where('village', '=', $getff->working_area)
+                            ->leftjoin('scooping_visit_projects', 'scooping_visit_projects.scooping_id', '=', "scooping_visits.data_no")
+                            ->leftjoin('projects', 'projects.id', '=', "scooping_visit_projects.id_project")
+                            ->get();
+                    } else {
+                        $getProjectDesa = [];
+                    }
                     $fc_ff = MainPivot::select('key1 as fc_no', 'key2 as ff_no', 'program_year', 'active', 'employees.name as fc_name')
                         ->join('employees', 'employees.nik', 'main_pivots.key1')
                         ->where(['type' => 'fc_ff', 'key2' => $getUser->employee_no, ['program_year', 'like', "%$request->program_year%"]])->first();
@@ -161,9 +170,12 @@ class UserController extends Controller
                         // var_dump($getff->mu_no);
                         $getDesa = Desa::select('kode_desa', 'name', 'kode_kecamatan')->where('kode_desa', '=', $getff->working_area)->first();
 
+                        $getKecamatan = DB::table('kecamatans')->select('kode_kecamatan', 'name', 'kabupaten_no')->where('kode_kecamatan', '=', $getDesa->kode_kecamatan)->first();
                         $getTA = TargetArea::select('area_code', 'name')->where('area_code', '=', $getff->target_area)->first();
 
+                        $getKabupaten = DB::table('kabupatens')->select('kabupaten_no', 'name', 'province_code')->where('kabupaten_no', '=', $getKecamatan->kabupaten_no)->first();
                         $getMU = ManagementUnit::select('mu_no', 'name')->where('mu_no', '=', $getff->mu_no)->first();
+
                         // var_dump($getMU);
 
                         $objUser = [
@@ -180,11 +192,12 @@ class UserController extends Controller
                             'target_area' => $getff->target_area,
                             'nama_ta' => $getTA->name,
                             'program_year' => $request->program_year,
+                            'province_code' => $getKabupaten->province_code,
                             'fc_ff' => $fc_ff
                         ];
 
                         // var_dump($objUser);
-                        $usernew = ['User' => $objUser, 'access_token' => $token, 'token_type' => 'bearer', 'expires_in' => auth()->factory()->getTTL() * 60];
+                        $usernew = ['User' => $objUser, 'access_token' => $token, 'token_type' => 'bearer', 'village_project' => $getProjectDesa, 'expires_in' => auth()->factory()->getTTL() * 60];
                         $rslt = $this->ResultReturn(200, 'success', $usernew);
                         return response()->json($rslt, 200);
                     } else {
@@ -243,12 +256,15 @@ class UserController extends Controller
             $py = $request->program_year;
 
             // var_dump('test');
+
+            // $credentials = request(['email', 'password'],  ['exp' => Carbon\Carbon::now()->addDays(7)->timestamp]);
             $credentials = request(['email', 'password']);
+
             if (!$token = auth()->attempt($credentials)) {
                 $rslt = $this->ResultReturn(401, 'Incorrect Email & password', 'Unauthorized');
                 return response()->json($rslt, 401);
             } else {
-                $getUser = User::where('email', '=', $request->email)->first();
+                $getUser = User::select()->where('email', '=', $request->email)->first();
                 // var_dump($getUser);
                 $objUser = [
                     'id' => $getUser->id,
@@ -665,6 +681,60 @@ class UserController extends Controller
         ];
     }
 
+    public function TaskGroupList(Request $request)
+    {
+
+        $req = $request->all();
+        $searchValue = $request->search_value;
+        $searchable = ['A.name'];
+        $filterable = [];
+
+        $sortable = [];
+        $tableName = "task_groups";
+        $tableAlias = "A";
+
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $field = [
+            'id',
+            'name',
+            'description'
+        ];
+
+        $relation = [];
+
+
+        $condition = [];
+        $user_id = [];
+
+
+        $query = $this->DynamicList([
+            'tableName' => $tableName,
+            'tableAlias' => $tableAlias,
+            'limit' => $limit,
+            'offset' => $offset,
+            'field' => $field,
+            'sortable' => $sortable,
+            'filterable' => $filterable,
+            'relation' => $relation,
+            'searchable' => $searchable,
+            'search' => $searchValue,
+            'condition' => $condition,
+            'req' => $req,
+        ]);
+
+
+        $result = DB::select($query['sql']);
+
+        $result_record = DB::select($query['sql_record']);
+
+
+        return response()->json([
+            'data' => $result,
+            'sql' => $query['sql'],
+            'total' => $result_record[0]->total
+        ], 200);
+    }
     public function TaskGroupCreate(Request $request)
     {
         $request->validate([
@@ -691,9 +761,105 @@ class UserController extends Controller
         ];
     }
 
+    public function RoleTaskList(Request $request)
+    {
+        // $request->validate([
+        //     'role_id' => ['required', 'integer']
+        // ]);
+        return response()->json([
+            'message' => 'ok'
+        ]);
+        // $validator = Validator::make($request->all(), [
+        //         'role_id' => 'required',
+        //     ]);
+        //     if($validator->fails()){
+        //         $rslt =  $this->ResultReturn(400, $validator->errors(), $validator->errors());
+        //         return response()->json($rslt, 400);
+        //     }else{
 
-    public function TaskList(Request $request){
-        
+        // $sql = "
+        //     SELECT
+        //         A.id,
+        //         A.role_id,
+        //         A.task_id,
+        //         B.code AS task_code
+        //     FROM role_tasks AS A
+        //     JOIN tasks AS B ON B.id = A.task_id
+        //     WHERE A.role_id = " . $request->role_id;
+
+        // $result = DB::select($sql);
+
+        // return response()->json([
+        //     'data' => $result,
+        // ], 200);
+        // }
+
+    }
+    public function RoleTaskDetail(Request $request)
+    {
+        $roleId = $request->route('role_id');
+
+        $sql = "
+            SELECT
+                A.id,
+                A.role_id,
+                A.task_id,
+                B.code AS task_code
+            FROM role_tasks AS A
+            JOIN tasks AS B ON B.id = A.task_id
+            WHERE A.role_id = " . $roleId;
+
+        $result = DB::select($sql);
+
+        return response()->json([
+            'data' => $result,
+        ], 200);
+    }
+
+    public function RoleTaskCreate(Request $request)
+    {
+
+        foreach ($request->permissions as $permission) {
+
+            $isExist = DB::table('tasks')->where([
+                'role_id',
+                $permission->role_id,
+                'task_id',
+                $permission->task_id
+            ])->first();
+            if ($permission->permission == true) {
+
+                if (!$isExist) {
+                    $newRoleTask = array(
+                        'role_id',
+                        $permission->role_id,
+                        'task_id',
+                        $permission->task_id
+                    );
+                    DB::table('role_tasks')->insert($newRoleTask);
+                }
+            } else if ($permission->permission == false) {
+                if ($isExist) {
+                    DB::table('role_tasks')->where([
+                        'role_id',
+                        $permission->role_id,
+                        'task_id',
+                        $permission->task_id
+                    ])->delete();
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => 'ok'
+        ], 200);
+    }
+
+
+
+    public function TaskList(Request $request)
+    {
+
         $req = $request->all();
         $searchValue = $request->search_value;
         $searchable = ['A.name'];
@@ -702,59 +868,179 @@ class UserController extends Controller
         $sortable = [];
         $tableName = "tasks";
         $tableAlias = "A";
-        
+
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
         $field = [
             'id',
+            'code',
             'name',
             'description'
-            ];
-            
+        ];
+
         $relation = [];
-        
-       
+
+
         $condition = [];
         $user_id = [];
-            
 
-        $query =  $this->DynamicList([
-                    'tableName' => $tableName,
-                    'tableAlias' => $tableAlias,
-                    'limit' => $limit,
-                    'offset' => $offset,
-                    'field' => $field,
-                    'sortable' => $sortable,
-                    'filterable' => $filterable,
-                    'relation' => $relation,
-                    'searchable' => $searchable,
-                    'search' => $searchValue,
-                    'condition' => $condition,
-                    'req' => $req,
-                    'users_id' => $user_id
-                ]);
-        $statistic = $this->DynamicCount([
-                'tableName' => $tableName,
-                'indicator_column' => 'is_verify',
-                'relation' => $relation, 
-                'users_id' => $user_id,
-                'condition' => $condition,
-                'filterable' => $filterable,
-            ]);
-            
-        
+
+        $query = $this->DynamicList([
+            'tableName' => $tableName,
+            'tableAlias' => $tableAlias,
+            'limit' => $limit,
+            'offset' => $offset,
+            'field' => $field,
+            'sortable' => $sortable,
+            'filterable' => $filterable,
+            'relation' => $relation,
+            'searchable' => $searchable,
+            'search' => $searchValue,
+            'condition' => $condition,
+            'req' => $req,
+        ]);
+
+
         $result = DB::select($query['sql']);
-        
+
         $result_record = DB::select($query['sql_record']);
-        
-        $rslt = DB::select($statistic);
-        
+
+
         return response()->json([
-                'data' => $result,
-                'count'=> $rslt[0],
-                'sql' => $query['sql'],
-                'total' => $result_record[0]->total
-            ], 200);
+            'data' => $result,
+            'sql' => $query['sql'],
+            'total' => $result_record[0]->total
+        ], 200);
+    }
+
+    public function RoleList(Request $request)
+    {
+
+        $req = $request->all();
+        $searchValue = $request->search_value;
+        $searchable = ['A.name'];
+        $filterable = [];
+
+        $sortable = [];
+        $tableName = "employee_positions";
+        $tableAlias = "A";
+
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $field = [
+            'id',
+            'position_no',
+            'name',
+            'position_group'
+        ];
+
+        $relation = [];
+
+
+        $condition = [];
+        $user_id = [];
+
+
+        $query = $this->DynamicList([
+            'tableName' => $tableName,
+            'tableAlias' => $tableAlias,
+            'limit' => $limit,
+            'offset' => $offset,
+            'field' => $field,
+            'sortable' => $sortable,
+            'filterable' => $filterable,
+            'relation' => $relation,
+            'searchable' => $searchable,
+            'search' => $searchValue,
+            'condition' => $condition,
+            'req' => $req,
+        ]);
+
+
+        $result = DB::select($query['sql']);
+
+        $result_record = DB::select($query['sql_record']);
+
+
+        return response()->json([
+            'data' => $result,
+            'sql' => $query['sql'],
+            'total' => $result_record[0]->total
+        ], 200);
+    }
+
+    public function TaskGenerate(Request $request)
+    {
+        $taskGroupList = DB::table('task_groups')->get();
+        foreach ($taskGroupList as $tg) {
+            $isExist = DB::table('tasks')->where('code', $tg->name . '-list')->first();
+            if (!$isExist) {
+                $taskModel = array(
+                    'name' => $tg->name . '-list',
+                    'code' => $tg->name . '-list',
+                    'task_group_id' => $tg->id,
+                );
+
+                DB::table('tasks')->insert($taskModel);
+            }
+            $isExist = DB::table('tasks')->where('code', $tg->name . '-create')->first();
+            if (!$isExist) {
+                $taskModel = array(
+                    'name' => $tg->name . '-create',
+                    'code' => $tg->name . '-create',
+                    'task_group_id' => $tg->id,
+                );
+
+                DB::table('tasks')->insert($taskModel);
+            }
+
+
+            $isExist = DB::table('tasks')->where('code', $tg->name . '-update')->first();
+            if (!$isExist) {
+                $taskModel = array(
+                    'name' => $tg->name . '-update',
+                    'code' => $tg->name . '-update',
+                    'task_group_id' => $tg->id,
+                );
+
+                DB::table('tasks')->insert($taskModel);
+            }
+
+
+            $isExist = DB::table('tasks')->where('code', $tg->name . '-delete')->first();
+            if (!$isExist) {
+                $taskModel = array(
+                    'name' => $tg->name . '-delete',
+                    'code' => $tg->name . '-delete',
+                    'task_group_id' => $tg->id,
+                );
+
+                DB::table('tasks')->insert($taskModel);
+            }
+
+            $isExist = DB::table('tasks')->where('code', $tg->name . '-lookup')->first();
+            if (!$isExist) {
+                $taskModel = array(
+                    'name' => $tg->name . '-lookup',
+                    'code' => $tg->name . '-lookup',
+                    'task_group_id' => $tg->id,
+                );
+
+                DB::table('tasks')->insert($taskModel);
+            }
+
+            $isExist = DB::table('tasks')->where('code', $tg->name . '-detail')->first();
+            if (!$isExist) {
+                $taskModel = array(
+                    'name' => $tg->name . '-detail',
+                    'code' => $tg->name . '-detail',
+                    'task_group_id' => $tg->id,
+                );
+
+                DB::table('tasks')->insert($taskModel);
+            }
+        }
+        return $taskGroupList;
     }
 
     function RandomPassword()

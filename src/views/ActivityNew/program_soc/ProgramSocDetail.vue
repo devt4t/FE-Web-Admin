@@ -20,7 +20,7 @@
             <v-btn
               v-if="
                 $store.state.User &&
-                ['13', '19'].includes($store.state.User.role) &&
+                ['4', '13', '19'].includes($store.state.User.role) &&
                 data.mainSpr.is_verified == 0
               "
               variant="success"
@@ -31,6 +31,7 @@
                     view: 'create',
                     id: '',
                     form_code: data.mainSpr.form_no,
+                    mu_no: data.mainSpr.mu_no,
                   },
                 })
               "
@@ -114,7 +115,7 @@
             <button
               v-if="
                 $store.state.User &&
-                ['13', '19'].includes($store.state.User.role) &&
+                ['4', '13', '19'].includes($store.state.User.role) &&
                 data.mainSpr.is_verified == 0
               "
               class="geko-list-action-update"
@@ -125,6 +126,7 @@
                     view: 'update',
                     id: item.id,
                     form_code: item.form_no,
+                    mu_no: data.mainSpr.mu_no,
                   },
 
                   params: item,
@@ -137,7 +139,7 @@
             <button
               v-if="
                 $store.state.User &&
-                ['13', '19'].includes($store.state.User.role) &&
+                ['4', '13', '19'].includes($store.state.User.role) &&
                 data.mainSpr.is_verified == 0
               "
               class="geko-list-action-delete"
@@ -203,12 +205,51 @@
           />
         </div>
       </template>
+
+      <template v-slot:item.owned_land_legalization_status="{ item }">
+        <div
+          class="min-w-200px"
+          v-if="item && [1, 2, 3].includes(item.owned_land_legalization_status)"
+        >
+          <span v-if="item.owned_land_legalization_status">
+            {{
+              defaultData.owned_land_legalization_status.find(
+                (x) => x.code == item.owned_land_legalization_status
+              ).label
+            }}
+          </span>
+        </div>
+
+        <div v-else>-</div>
+      </template>
+
+      <template v-slot:item.followed_project_model="{ item }">
+        <div
+          v-if="
+            item &&
+            [1, 2, 3].includes(item.followed_project_model) &&
+            item.status_program == 'Ya'
+          "
+          class="min-w-200px"
+        >
+          <span v-if="item.followed_project_model">
+            {{
+              defaultData.followed_project_model.find(
+                (x) => x.code == item.followed_project_model
+              ).label
+            }}
+          </span>
+        </div>
+
+        <div v-else>-</div>
+      </template>
     </v-data-table>
   </div>
 </template>
 
 <script>
 // 20, 25, 13
+import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-detail",
   props: {
@@ -306,6 +347,11 @@ export default {
       this.$store.state.lightbox.show = true;
     },
   },
+  computed: {
+    defaultData() {
+      return defaultData;
+    },
+  },
   data() {
     return {
       deleteIds: [],
@@ -353,6 +399,18 @@ export default {
             sortable: false,
             text: "Jenis Bibit Yang Diharapkan",
             value: "trees",
+          },
+          {
+            key: "owned_land_legalization_status",
+            sortable: false,
+            text: "Status legalitas lahan yang dimiliki",
+            value: "owned_land_legalization_status",
+          },
+          {
+            key: "followed_project_model",
+            sortable: false,
+            text: "Model project yang akan diikuti",
+            value: "followed_project_model",
           },
           {
             key: "photo",

@@ -29,7 +29,6 @@ env.interceptors.response.use(
   },
   function (error) {
     // Do something with response error
-    console.log(error.response.data);
     if (error.response.status === 401) {
       _alert.error(null, "Sesi Kadaluarsa", "Silahkan login kembali");
       localStorage.clear();
@@ -41,6 +40,11 @@ env.interceptors.response.use(
       error.response.data.data &&
       error.response.data.data.result === "doesnt match data"
     ) {
+      return Promise.reject({
+        response: {
+          not_found: true,
+        },
+      });
       return;
     } else if (error.response.status === 422 || error.response.status === 400) {
       _alert.error(error.response);
@@ -82,7 +86,6 @@ const _service = {
         return response.data;
       })
       .catch((err) => {
-        console.log("err", err);
         throw err.response;
       });
   },

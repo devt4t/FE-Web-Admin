@@ -50,7 +50,7 @@
           v-if="
             item.is_verified == 0 &&
             $store.state.User &&
-            ['13', '20', '25'].includes($store.state.User.role)
+            ['4', '13', '20', '25'].includes($store.state.User.role)
           "
           variant="success"
           @click="onVerify"
@@ -60,13 +60,35 @@
           v-if="
             item.is_verified == 1 &&
             $store.state.User &&
-            ['13', '23'].includes($store.state.User.role)
+            ['4', '13', '23'].includes($store.state.User.role)
           "
           variant="danger"
           @click="onVerify(false)"
           >Unverifikasi</v-btn
         >
       </div>
+    </template>
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn
+        small
+        @click="onExport(item)"
+        variant="danger"
+        class="mt-1"
+        v-if="item.is_verified"
+      >
+        <v-icon small v-if="!exportIds.includes(item.id)"
+          >mdi-file-pdf-box</v-icon
+        >
+
+        <v-progress-circular
+          v-else
+          color="danger"
+          :size="15"
+          :width="2"
+          indeterminate
+        ></v-progress-circular>
+        <span class="text-09-em ml-1">Export</span>
+      </v-btn>
     </template>
 
     <template v-slot:create-form>
@@ -85,6 +107,7 @@ import "./program-soc.scss";
 import moment from "moment";
 import ProgramSocForm from "./ProgramSocForm.vue";
 import ProgramSocDetail from "./ProgramSocDetail.vue";
+import axios from "axios";
 export default {
   name: "pra-module",
   components: {
@@ -93,6 +116,51 @@ export default {
   },
 
   methods: {
+    async onExport(data) {
+      if (this.exportIds.includes(data.id)) return;
+      this.exportIds.push(data.id);
+      const result = await this.$_api
+        .get("GetFormMinatDetailAll_new", {
+          id: data.id,
+        })
+        .catch(() => false);
+      if (!result) {
+        let idx = this.exportIds.findIndex((x) => x == data.id);
+        this.exportIds.splice(idx, 1);
+        return;
+      }
+      const exported = await axios
+        .post(
+          `${this.$_config.baseUrlExport}export/soc-prog/pdf`,
+          {
+            ...result.mainSpr,
+            participants: result.sprFarmer,
+          },
+          {
+            responseType: "arraybuffer",
+          }
+        )
+        .catch(() => false);
+
+      if (!exported) {
+        let idx = this.exportIds.findIndex((x) => x == data.id);
+        this.exportIds.splice(idx, 1);
+        return;
+      }
+      const url = URL.createObjectURL(
+        new Blob([exported.data], {
+          type: "application/pdf",
+        })
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      const filename = `sosialisasi-program-${data.form_no}-${data.desas_name}.pdf`;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      let idx = this.exportIds.findIndex((x) => x == data.id);
+      this.exportIds.splice(idx, 1);
+    },
     onVerify(verif = true) {
       this.$_alert
         .confirm(
@@ -123,6 +191,7 @@ export default {
 
   data() {
     return {
+      exportIds: [],
       componentKey: 1,
       formatDate(date, format = "YYYY-MM-DD", dateFormat = "YYYY-MM-DD") {
         return moment(date, format).format("DD MMMM YYYY");

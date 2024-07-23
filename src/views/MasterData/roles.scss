@@ -1,0 +1,30 @@
+@import "../../assets/scss/variables";
+
+.permission-wrapper {
+    padding-inline: 1.5em;
+    padding-block: 2em;
+    table {
+        tr th {
+            font-weight: normal
+        }
+        tr td:not(:first-child) {
+            text-align: center;
+        }
+
+        tr td .text-center {
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        tr td:first-child {
+            text-transform: capitalize;
+            padding-inline: 1em;
+        }
+
+        tbody tr td {
+            border-bottom: 1px solid rgba(170, 170, 170, 0.137) !important;
+        }
+    }
+}

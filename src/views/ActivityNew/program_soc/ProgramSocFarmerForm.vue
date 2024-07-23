@@ -141,6 +141,86 @@
                     }"
                   />
                 </v-col>
+
+                <v-col
+                  lg="6"
+                  v-if="
+                    ['Ya'].includes(formData.status_program) &&
+                    !['007', '019', '015', '008', '014', '016'].includes(muNo)
+                  "
+                >
+                  <geko-input
+                    v-model="formData.owned_land_legalization_status"
+                    :item="{
+                      validation: ['required'],
+                      label: 'Status legalitas lahan yang dimiliki',
+                      type: 'select-radio',
+                      option: {
+                        default_options: [
+                          {
+                            label:
+                              'Sertifikat lahan atau Letter C atas nama sendiri',
+                            code: 1,
+                          },
+                          {
+                            label:
+                              'Akte Jual Beli ata Letter C masih atas nama Orang Lain',
+                            code: 2,
+                          },
+                          {
+                            label:
+                              'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
+                            code: 3,
+                          },
+                        ],
+                        list_pointer: {
+                          code: 'code',
+                          name: 'name',
+                          display: ['name'],
+                        },
+                      },
+                    }"
+                  />
+                </v-col>
+                <v-col
+                  lg="6"
+                  v-if="
+                    ['Ya'].includes(formData.status_program) &&
+                    !['007', '019', '015', '008', '014', '016'].includes(muNo)
+                  "
+                >
+                  <geko-input
+                    v-model="formData.followed_project_model"
+                    :item="{
+                      validation: ['required'],
+                      label: 'Model project yang akan diikuti',
+                      type: 'select-radio',
+                      option: {
+                        default_options: [
+                          {
+                            label: 'Model 1 (Pohon Kayu untuk Ditebang)',
+                            code: 1,
+                          },
+                          {
+                            label:
+                              'Model 2 - Pohon Kayu untuk Ditebang + Pohon Buah/MPTS',
+                            code: 2,
+                          },
+                          {
+                            label:
+                              'Model 3 - Pohon Kayu dan Buah/MPTS tidak Ditebang',
+                            code: 3,
+                          },
+                        ],
+                        list_pointer: {
+                          code: 'code',
+                          name: 'name',
+                          display: ['name'],
+                        },
+                      },
+                    }"
+                  />
+                </v-col>
               </v-row>
             </div>
           </v-col>
@@ -263,6 +343,7 @@ export default {
       //   tree3: "",
       //   pattern: "",
       this.data = detailData.sprFarmer;
+      this.muNo = this.$route.query.mu_no;
 
       const keys = [
         ["name"],
@@ -271,6 +352,8 @@ export default {
         ["training", "training", "training_materials_material_name"],
         ["photo", "photo"],
         ["trees", "trees"],
+        ["owned_land_legalization_status", "owned_land_legalization_status"],
+        ["followed_project_model", "followed_project_model"],
       ];
       // console.log("thi", detailData);
 
@@ -345,6 +428,7 @@ export default {
     return {
       ready: false,
       loading: false,
+      muNo: null,
       formData: {
         form_no: "",
         name: "",
@@ -357,6 +441,7 @@ export default {
         tree2: "",
         tree3: "",
         pattern: "",
+        owned_land_legalization_status: "",
       },
     };
   },

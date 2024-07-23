@@ -62,6 +62,10 @@
           class="sidebar-menu-item"
           v-for="(group, i) in items"
           :key="`group-${i}`"
+          :class="{
+            activities: group.title == 'Activities',
+            carbon: isCarbon && group.title == 'Activities',
+          }"
         >
           <button
             v-if="!Array.isArray(group.items)"
@@ -82,11 +86,47 @@
             <span>{{ group.title }}</span>
           </button>
 
-          <p v-else class="sidebar-title mb-0">
+          <p
+            v-else-if="group.title !== 'Activities'"
+            class="sidebar-title mb-0"
+          >
             {{ group.title }}
           </p>
+
+          <div
+            v-else-if="group.title === 'Activities'"
+            class="sidebar-title mb-0 activities d-flex flex-row justify-content-between align-items-center"
+          >
+            <p class="mb-0">{{ group.title }}</p>
+            <div class="carbon-switch">
+              <button
+                :class="{
+                  active: isCarbon,
+                }"
+                @click="isCarbon = true"
+              >
+                Carbon
+              </button>
+              <button
+                :class="{
+                  active: !isCarbon,
+                }"
+                @click="isCarbon = false"
+              >
+                Non Carbon
+              </button>
+            </div>
+          </div>
           <a
-            v-for="(menu, j) in Array.isArray(group.items) ? group.items : []"
+            v-for="(menu, j) in Array.isArray(group.items)
+              ? group.title === 'Activities'
+                ? group.items.filter((x) =>
+                    Array.isArray(x.type)
+                      ? x.type.includes(isCarbon ? 'carbon' : 'non-carbon')
+                      : true
+                  )
+                : group.items
+              : []"
             :href="`#${menu.to}?view=list`"
             class="sidebar-button"
             :key="`menu-side-${j}-${i}`"
@@ -362,7 +402,6 @@
     <!-- Maintenance Overlay -->
     <v-overlay :value="$store.state.maintenanceOverlay">
       <div class="d-flex flex-column align-center position-relative">
-        <!-- <img class="rounded-xl" style="max-width: 100%;width: 550px;" :src="require('@/assets/maintenance.gif')" alt="" data-aos="zoom-in"> -->
         <LottieAnimation
           ref="anim2"
           :animationData="lottie.data.maintenance"
@@ -403,6 +442,7 @@ export default {
     LottieAnimation,
   },
   data: () => ({
+    isCarbon: true,
     profileOpen: false,
     drawer: null,
     nameadmin: "admin web",

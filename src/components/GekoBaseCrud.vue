@@ -169,6 +169,7 @@
                 <span class="ms-2">Tambah Data</span>
               </v-btn>
             </div>
+            <slot name="list-after-filter"> </slot>
 
             <geko-base-filter
               v-if="fields.filter.length > 0"
@@ -275,7 +276,6 @@
                   <v-icon small>mdi-pencil-minus</v-icon>
                 </button>
               </slot>
-
               <slot name="geko-list-action-delete" v-if="!hideDelete">
                 <button
                   class="geko-list-action-delete"
@@ -868,6 +868,11 @@ export default {
           : "";
 
         if (from.query.view !== to.query.view) {
+          if (to.query.view !== "list") {
+            window.scrollTo({
+              top: 0,
+            });
+          }
           if (this.activeView === "list") {
             this.setDefaultFilter();
             this.getListData();
