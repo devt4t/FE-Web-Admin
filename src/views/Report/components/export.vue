@@ -1056,6 +1056,139 @@ export default {
         }
       }
     },
+
+    // monitoring 4
+    async getPaginationMo4(page, per_page, py, mu) {
+    //   let store = this.$store;
+      const data = await this.$_api.get("TempExportMonitoring4", {
+        program_year: py,
+        mu_no: mu,
+        page: page,
+        per_page: per_page
+      }).then((res) => res);
+
+      console.log(data.data);
+      if (data.data.result.datas.current_page == 1) {
+        const treePhase = ["bibit_mo1", "bibit_mo4", "survival_rate(%)", "average_height(cm)", "average_diameter(cm)"];
+        data.data.result.tree_locations.map((val) => {
+          treePhase.map((tp) => {
+            this.table.fields.push({
+              label: val.tree_name + " - " + tp,
+              key: `tree_${val.tree_code}-${tp}`,
+              type: "number",
+            });
+          });
+        });
+      }
+      for (const [indexMon, valMon] of Object.entries(
+        data.data.result.datas.data
+      )) {
+        const dataGenerate = {
+          ...valMon,
+          project: "undefined",
+          monitorng3_no: valMon.monitoring3_no || "???",
+          program_year: valMon.program_year || "???",
+          mu_name: valMon.mu_name || "???",
+          ta_name: valMon.ta_name || "???",
+          village_name: valMon.village_name || "???",
+          ff_name: valMon.ff_name || "???",
+          farmer_name: valMon.farmer_name || "???",
+          lahan_type: valMon.lahan_type || "???",
+          lahan_no: valMon.lahan_no || "???",
+          is_validate:
+            valMon.is_verified == 2
+              ? "UM: " + valMon.verified_by
+              : valMon.is_validate == 1
+              ? "FC: " + valMon.verified_by
+              : "Belum Terverifikasi",
+
+          last_kayu_amount: valMon.last_kayu_amount || "0",
+          last_mpts_amount: valMon.last_mpts_amount || "0",
+          last_kayu_mpts_amount: valMon.last_kayu_mpts_amount || "0",
+
+          total_kayu: valMon.total_kayu || "0",
+          total_mpts: valMon.total_mpts || "0",
+          total_kayu_mpts: valMon.total_kayu_mpts || "0",
+        };
+        valMon.last_monitoring_details.map((val) => {
+          dataGenerate[`tree_${val.tree_code}-bibit_mo1`] = val.qty;
+        });
+        valMon.mo3_details.map((val) => {
+          dataGenerate[`tree_${val.tree_code}-bibit_mo3`] = val.life_after;
+        });
+
+        valMon.mo3_details.map((val) => {
+          valMon.last_monitoring_details.map((lastVal) => {
+            if (val.tree_code == lastVal.tree_code) {
+              dataGenerate[`tree_${val.tree_code}-survival_rate(%)`] = (
+                (100 * val.life_after) /
+                lastVal.qty
+              ).toFixed(2);
+            }
+          });
+        });
+        valMon.average_height.map((val) => {
+          dataGenerate[`tree_${val.tree_code}-average_height(cm)`] = val.avg_height;
+        });
+        valMon.average_diameter.map((val) => {
+          dataGenerate[`tree_${val.tree_code}-average_diameter(cm)`] = val.avg_diameter;
+        });
+        this.table.data.push(dataGenerate);
+      }
+      return data.data.result.datas;
+    },
+    async getMonitoring4() {
+      let loading = this.loading;
+      const config = this.config;
+
+      const monitoring4Params = new URLSearchParams({});
+      config.fields
+        .filter((v) => v.filter)
+        .map((val) => {
+          monitoring4Params.append(val.id, val.model);
+        });
+
+      const management_unit = config.fields.find(
+        (v) => v.id == "mu_name"
+      ).model;
+      const programYear = config.fields.find(
+        (v) => v.id == "program_year"
+      ).model;
+
+      const management_unit_name = config.fields
+        .find((v) => v.id == "mu_name")
+        .items.filter((fil) => {
+          return fil.value.includes(management_unit);
+        });
+
+      console.log(programYear + ", " + management_unit);
+
+      config.title = `export_MO4_${programYear}_${management_unit_name[0].text}_From_GEKO_ReportData`;
+      this.download.title = config.title;
+
+      const dataMonitoring = await this.getPaginationMo4(
+        1,
+        10,
+        programYear,
+        management_unit
+      );
+
+      if (dataMonitoring.last_page > 1) {
+        for (let index = 1; index <= dataMonitoring.last_page; index++) {
+          loading.progress = Math.round(
+            (100 / dataMonitoring.last_page) * index
+          );
+
+          await this.getPaginationMo3(
+            index + 1,
+            10,
+            programYear,
+            management_unit
+          );
+        }
+      }
+    },
+
     // reminder :)
     async sendEmailToYongs(message = null) {
       console.log(this.$store.state.User.email);

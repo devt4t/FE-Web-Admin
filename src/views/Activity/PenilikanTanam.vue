@@ -352,7 +352,7 @@
                       <v-col cols="12" sm="6" md="6">
                         <v-select
                           v-model="defaultItem.planting_year"
-                          :items="itemsTahun"
+                          :items="$_config.programYear.options"
                           item-text="text"
                           item-value="value"
                           label="Pilih Tahun Program"
@@ -2467,7 +2467,7 @@
                   transition: 'slide-y-transition',
                 }"
                 label="Tahun Program"
-                :items="[2021, 2022, 2023]"
+                :items="$_config.programYear.options"
                 v-model="dialogs.exportFilter.program_year"
               ></v-autocomplete>
             </v-col>
@@ -2567,7 +2567,7 @@
                   transition: 'slide-y-transition',
                 }"
                 label="Tahun Program"
-                :items="[2021, 2022, 2023]"
+                :items="$_config.programYear.options"
                 v-model="dialogs.exportFilter.program_year"
               ></v-autocomplete>
             </v-col>
@@ -2679,7 +2679,7 @@
                   transition: 'slide-y-transition',
                 }"
                 label="Tahun Program"
-                :items="[2021, 2022, 2023]"
+                :items="$_config.programYear.options"
                 v-model="dialogs.exportFilter.program_year"
               ></v-autocomplete>
             </v-col>
@@ -2983,7 +2983,7 @@
             color="success"
             item-color="success"
             v-model="generalSettings.programYear"
-            :items="['2020', '2021', '2022', '2023']"
+            :items="$_config.programYear.options"
             outlined
             dense
             hide-details
@@ -4322,6 +4322,7 @@ export default {
       return status;
     },
     firstAccessPage() {
+      this.program_year = this.$_config.programYear.options
       this.authtoken = localStorage.getItem("token");
       this.User = JSON.parse(localStorage.getItem("User"));
       this.valueFFcode = this.User.ff.ff;

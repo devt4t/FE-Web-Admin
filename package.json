@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "upload": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/OldWeb"
+    "upload": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/OldWeb",
+    "upload-dev": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/dev/OldWeb/"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
