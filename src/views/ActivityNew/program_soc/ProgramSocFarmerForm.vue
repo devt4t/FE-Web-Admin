@@ -1,12 +1,8 @@
 <template>
   <div class="program-soc-form">
-    <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
-      <form
-        @submit.prevent="handleSubmit(onSubmit)"
-        autocomplete="off"
-        v-if="ready"
-      >
-        <v-row class="px-5 py-5">
+    <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }" v-if="ready">
+      <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+        <v-row class="px-5 py-5" v-if="ready">
           <v-col md="12">
             <div>
               <v-row>
@@ -53,21 +49,30 @@
                     }"
                   />
                 </v-col>
-                <v-col lg="6" v-if="formData.status_program === 'Ya'">
+
+                <v-col
+                  lg="6"
+                  :class="{
+                    'd-none': !['Ya'].includes(formData.status_program),
+                  }"
+                >
                   <geko-input
                     v-model="formData.pattern"
                     :item="{
                       label: 'Pola Tanam Sebelumnya',
-                      validation: ['required'],
+                      validation: ['Ya'].includes(formData.status_program)
+                        ? ['required']
+                        : [],
                       type: 'select',
                       setter: 'pattern',
+                      default_label: formData.planting_pattern_name || '',
                       option: {
+                        default_options: defaultData.planting_pattern,
                         list_pointer: {
                           label: 'text',
                           code: 'value',
                           display: ['text'],
                         },
-                        default_options: defaultData.planting_pattern,
                       },
                     }"
                   />
@@ -96,7 +101,6 @@
                     }"
                   />
                 </v-col>
-
                 <v-col lg="6" v-if="['Ya'].includes(formData.status_program)">
                   <geko-input
                     v-model="formData.trees"
@@ -156,23 +160,8 @@
                       label: 'Status legalitas lahan yang dimiliki',
                       type: 'select-radio',
                       option: {
-                        default_options: [
-                          {
-                            label:
-                              'Sertifikat lahan atau Letter C atas nama sendiri',
-                            code: 1,
-                          },
-                          {
-                            label:
-                              'Akte Jual Beli ata Letter C masih atas nama Orang Lain',
-                            code: 2,
-                          },
-                          {
-                            label:
-                              'Lahan Waris atau Lahan Sewa atau Lahan Garapan',
-                            code: 3,
-                          },
-                        ],
+                        default_options:
+                          defaultData.owned_land_legalization_status,
                         list_pointer: {
                           code: 'code',
                           name: 'name',
@@ -196,22 +185,7 @@
                       label: 'Model project yang akan diikuti',
                       type: 'select-radio',
                       option: {
-                        default_options: [
-                          {
-                            label: 'Model 1 (Pohon Kayu untuk Ditebang)',
-                            code: 1,
-                          },
-                          {
-                            label:
-                              'Model 2 - Pohon Kayu untuk Ditebang + Pohon Buah/MPTS',
-                            code: 2,
-                          },
-                          {
-                            label:
-                              'Model 3 - Pohon Kayu dan Buah/MPTS tidak Ditebang',
-                            code: 3,
-                          },
-                        ],
+                        default_options: defaultData.followed_project_model,
                         list_pointer: {
                           code: 'code',
                           name: 'name',
@@ -412,6 +386,8 @@ export default {
 
   mounted() {
     if (this.$route.query.view === "update") {
+      this.programYear =
+        this.$route.params.program_year || this.$route.query.program_year;
       this.initData();
     } else {
       this.ready = true;
@@ -426,6 +402,7 @@ export default {
 
   data() {
     return {
+      programYear: null,
       ready: false,
       loading: false,
       muNo: null,

@@ -60,7 +60,7 @@
           v-if="
             item.is_verified == 1 &&
             $store.state.User &&
-            ['4', '13', '23'].includes($store.state.User.role)
+            ['4', '13', '23', '25'].includes($store.state.User.role)
           "
           variant="danger"
           @click="onVerify(false)"
@@ -107,6 +107,7 @@ import "./program-soc.scss";
 import moment from "moment";
 import ProgramSocForm from "./ProgramSocForm.vue";
 import ProgramSocDetail from "./ProgramSocDetail.vue";
+import defaultData from "./ProgramSocData.js";
 import axios from "axios";
 export default {
   name: "pra-module",
@@ -128,6 +129,20 @@ export default {
         let idx = this.exportIds.findIndex((x) => x == data.id);
         this.exportIds.splice(idx, 1);
         return;
+      }
+
+      for (const item of result.sprFarmer) {
+        if (item.owned_land_legalization_status) {
+          item.owned_land_legalization_status =
+            defaultData.owned_land_legalization_status.find(
+              (x) => x.code == item.owned_land_legalization_status
+            ).label;
+        }
+        if (item.followed_project_model) {
+          item.followed_project_model = defaultData.followed_project_model.find(
+            (x) => x.code == item.followed_project_model
+          ).label;
+        }
       }
       const exported = await axios
         .post(
@@ -186,6 +201,12 @@ export default {
               });
           }
         });
+    },
+  },
+
+  computed: {
+    defaultData() {
+      return defaultData;
     },
   },
 

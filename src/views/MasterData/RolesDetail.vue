@@ -19,6 +19,7 @@
           <thead>
             <tr>
               <th class="font-weight-bold">Tasks</th>
+              <th class="text-primary">Select<br />All</th>
               <th>Create</th>
               <th>List</th>
               <th>Detail</th>
@@ -33,8 +34,18 @@
               <td>
                 <div class="text-center">
                   <v-checkbox
+                    v-model="item.select_all"
+                    color="primary"
+                    @change="onCheckRow(item, $event, i)"
+                  ></v-checkbox>
+                </div>
+              </td>
+              <td>
+                <div class="text-center">
+                  <v-checkbox
                     v-model="item.create"
                     color="success"
+                    @change="onCheckPermission(item, $event, i)"
                   ></v-checkbox>
                 </div>
               </td>
@@ -48,6 +59,7 @@
                   <v-checkbox
                     v-model="item.detail"
                     color="success"
+                    @change="onCheckPermission(item, $event, i)"
                   ></v-checkbox>
                 </div>
               </td>
@@ -56,6 +68,7 @@
                   <v-checkbox
                     v-model="item.update"
                     color="success"
+                    @change="onCheckPermission(item, $event, i)"
                   ></v-checkbox>
                 </div>
               </td>
@@ -64,6 +77,7 @@
                   <v-checkbox
                     v-model="item.delete"
                     color="success"
+                    @change="onCheckPermission(item, $event, i)"
                   ></v-checkbox>
                 </div>
               </td>
@@ -72,6 +86,7 @@
                   <v-checkbox
                     v-model="item.lookup"
                     color="success"
+                    @change="onCheckPermission(item, $event, i)"
                   ></v-checkbox>
                 </div>
               </td>
@@ -96,7 +111,7 @@ export default {
       const getRoles = this.$_api.get(`role-task/${this.$route.query.id}`);
 
       Promise.all([getTasks, getRoles]).then(([tasks, roles]) => {
-        // console.log(tasks.data, roles.data);
+        console.log("task response", tasks.data);
 
         let processedData = [];
         for (const task of tasks.data) {
@@ -123,24 +138,23 @@ export default {
           const hasDeletePermission = roles.data.find(
             (x) => x.task_code == `${task.task_groups_name}-delete`
           );
-
           const taskList = tasks.data.find(
-            (x) => x.code == `${x.task_groups_name}-list`
+            (x) => x.code == `${task.task_groups_name}-list`
           );
           const taskDetail = tasks.data.find(
-            (x) => x.code == `${x.task_groups_name}-detail`
+            (x) => x.code == `${task.task_groups_name}-detail`
           );
           const taskUpdate = tasks.data.find(
-            (x) => x.code == `${x.task_groups_name}-update`
+            (x) => x.code == `${task.task_groups_name}-update`
           );
           const taskDelete = tasks.data.find(
-            (x) => x.code == `${x.task_groups_name}-delete`
+            (x) => x.code == `${task.task_groups_name}-delete`
           );
           const taskCreate = tasks.data.find(
-            (x) => x.code == `${x.task_groups_name}-create`
+            (x) => x.code == `${task.task_groups_name}-create`
           );
           const taskLookup = tasks.data.find(
-            (x) => x.code == `${x.task_groups_name}-lookup`
+            (x) => x.code == `${task.task_groups_name}-lookup`
           );
 
           processedData.push({
@@ -153,29 +167,57 @@ export default {
             list: hasListPermission ? true : false,
             list_id: hasListPermission ? hasListPermission.id : null,
             list_task_id: taskList.id,
-
             detail: hasDetailPermission ? true : false,
             detail_id: hasDetailPermission ? hasDetailPermission.id : null,
             detail_task_id: taskDetail.id,
-
             create: hasCreatePermission ? true : false,
             create_id: hasCreatePermission ? hasCreatePermission.id : null,
             create_task_id: taskCreate.id,
-
             update: hasUpdatePermission ? true : false,
             update_id: hasUpdatePermission ? hasUpdatePermission.id : null,
             update_task_id: taskUpdate.id,
-
             delete: hasDeletePermission ? true : false,
             delete_id: hasDeletePermission ? hasDeletePermission.id : null,
             delete_task_id: taskDelete.id,
+            select_all:
+              hasListPermission &&
+              hasLookupPermission &&
+              hasCreatePermission &&
+              hasDetailPermission &&
+              hasUpdatePermission &&
+              hasDeletePermission
+                ? true
+                : false,
           });
         }
 
         this.tasks = processedData;
-        console.log(this.tasks);
+        console.log("TASKS", this.tasks);
         this.loading = false;
       });
+    },
+    onCheckRow(item, v, i) {
+      let value = v ? true : false;
+      this.tasks[i].create = value;
+      this.tasks[i].list = value;
+      this.tasks[i].detail = value;
+      this.tasks[i].update = value;
+      this.tasks[i].delete = value;
+      this.tasks[i].lookup = value;
+    },
+
+    onCheckPermission(item, v, i) {
+      const isAllChecked =
+        item.create &&
+        item.list &&
+        item.detail &&
+        item.lookup &&
+        item.update &&
+        item.delete;
+
+      if (isAllChecked !== item.select_all) {
+        this.tasks[i].select_all = isAllChecked;
+      }
     },
 
     onSubmit() {
@@ -186,45 +228,58 @@ export default {
           role_id: parseInt(this.$route.query.id),
           permission: task.list,
           task_id: task.list_task_id,
+          task_code: `${task.task_name}-list`,
         });
         //detail
         payloadPermission.push({
           role_id: parseInt(this.$route.query.id),
           permission: task.detail,
           task_id: task.detail_task_id,
+          task_code: `${task.task_name}-detail`,
         });
         //lookup
         payloadPermission.push({
           role_id: parseInt(this.$route.query.id),
           permission: task.lookup,
           task_id: task.lookup_task_id,
+          task_code: `${task.task_name}-lookup`,
         });
         //update
         payloadPermission.push({
           role_id: parseInt(this.$route.query.id),
           permission: task.update,
           task_id: task.update_task_id,
+          task_code: `${task.task_name}-update`,
         });
         //create
         payloadPermission.push({
           role_id: parseInt(this.$route.query.id),
           permission: task.create,
           task_id: task.create_task_id,
+          task_code: `${task.task_name}-create`,
         });
         //delete
         payloadPermission.push({
           role_id: parseInt(this.$route.query.id),
           permission: task.delete,
           task_id: task.delete_task_id,
+          task_code: `${task.task_name}-delete`,
         });
       }
 
-      console.log("payload", payloadPermission);
+      this.$_api
+        .post("role-task/create", {
+          permissions: payloadPermission,
+        })
+        .then(() => {
+          this.$_alert.success("Mantap Master!", "", "center", true);
+        });
     },
   },
   mounted() {
     this.onInit();
   },
+
   data() {
     return {
       tasks: [],

@@ -117,8 +117,8 @@
               </button>
             </div>
           </div>
-          <a
-            v-for="(menu, j) in Array.isArray(group.items)
+
+          <!-- v-for="(menu, j) in Array.isArray(group.items)
               ? group.title === 'Activities'
                 ? group.items.filter((x) =>
                     Array.isArray(x.type)
@@ -126,7 +126,30 @@
                       : true
                   )
                 : group.items
-              : []"
+              : []" -->
+          <div
+            class="carbon-coming-soon"
+            v-if="isCarbon && group.title == 'Activities'"
+          >
+            <p
+              style="
+                width: 100%;
+                padding-inline: 10%;
+                text-align: center;
+                font-weight: 300;
+                font-size: 0.8em;
+              "
+            >
+              Carbon Activity module is under development
+            </p>
+          </div>
+          <a
+            v-if="Array.isArray(group.items)"
+            v-for="(menu, j) in group.title == 'Activities'
+              ? group.items.filter((x) =>
+                  x.type.includes(isCarbon ? 'carbon' : 'non-carbon')
+                )
+              : group.items"
             :href="`#${menu.to}?view=list`"
             class="sidebar-button"
             :key="`menu-side-${j}-${i}`"
@@ -146,44 +169,18 @@
           </a>
         </div>
       </div>
-
-      <template v-slot:append v-if="false">
-        <div class="text-center pa-2">
-          <v-btn
-            :color="`${
-              $store.state.theme == 'light'
-                ? 'orange white--text'
-                : 'orange--text white'
-            } darken-2`"
-            fab
-            x-small
-            class="mr-1"
-            @click="$store.state.theme = 'light'"
-          >
-            <v-icon>mdi-weather-sunny</v-icon>
-          </v-btn>
-          <v-btn color="red white--text" fab small class="" @click="logout()">
-            <v-icon>mdi-power</v-icon>
-          </v-btn>
-          <v-btn
-            :color="`${
-              $store.state.theme == 'dark' ? 'blue' : 'blue--text'
-            } darken-2`"
-            fab
-            x-small
-            class="ml-1"
-            @click="$store.state.theme = 'dark'"
-          >
-            <v-icon>mdi-weather-night</v-icon>
-          </v-btn>
-        </div>
-      </template>
-      <!-- <h5
-        class="text-center pb-2"
-        style="color: #71AF34; font-weight: 550; font-size: 80%"
+      <h5
+        class="text-center pb-1"
+        style="font-weight: 300; font-size: 70%; color: gray"
       >
-        © Dev Trees4Trees
-      </h5> -->
+        GEKO v{{ $_config.version }}
+      </h5>
+      <h5
+        class="text-center pb-2"
+        style="font-weight: 550; font-size: 80%; color: black"
+      >
+        Trees4Trees &copy; 2024
+      </h5>
     </v-navigation-drawer>
 
     <!-- TopBar -->
@@ -442,7 +439,7 @@ export default {
     LottieAnimation,
   },
   data: () => ({
-    isCarbon: true,
+    isCarbon: false,
     profileOpen: false,
     drawer: null,
     nameadmin: "admin web",
@@ -583,6 +580,7 @@ export default {
                 icon: submenu.icon,
                 update: submenu.update,
                 new: submenu.new,
+                type: Array.isArray(submenu.type) ? submenu.type : [],
               });
             }
 

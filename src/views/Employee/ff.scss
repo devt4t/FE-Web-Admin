@@ -1,0 +1,64 @@
+@import "../../assets/scss/variables";
+
+.assign-ff-wrapper {
+    .bg-grey {
+        background-color: rgba(184, 184, 184, 0.181);
+        border-radius: 12px;
+        margin-top: 1px;
+        padding-inline: 1em;
+        padding-block: .5em;
+    }
+    .current-program-year {
+        margin-bottom: 1em;
+        .value {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+
+            .py {
+                padding-inline: 1em;
+                padding-block: 5px;
+                background-color: $success;
+                color: white;
+                font-weight: 500;
+                margin-right: 5px;
+                border-radius: 12px;
+            }
+        }
+    }
+}
+
+
+.ff-email-wrapper {
+    .alert.info {
+        background-color:$info_light !important;
+        color: $info;
+        border-radius: 8px;
+        padding: 1em 1.5em;
+        i {
+            color: $info !important;
+            margin-right: 5px;
+        }
+    }
+}
+
+.ff-module {
+    .badge.bg-custom {
+        color: white;
+        &.y2020 {
+            background-color: rgb(143,85,252, 0.2);
+        }
+        &.y2021 {
+            background-color: rgb(143,85,252, 0.4);
+        }
+        &.y2022 {
+            background-color: rgb(143,85,252, 0.6);
+        }
+        &.y2023 {
+            background-color: rgb(143,85,252, 0.8);
+        }
+        &.y2024 {
+            background-color: rgb(143,85,252, 1);
+        }
+    }
+}

@@ -1,5 +1,10 @@
 <template>
-  <div class="geko-base-crud">
+  <div
+    class="geko-base-crud"
+    :class="{
+      [config.class || '']: true,
+    }"
+  >
     <div class="d-flex flex-row geko-base-crud-header">
       <v-breadcrumbs
         :dark="$store.state.theme == 'dark'"
@@ -249,7 +254,10 @@
                       [config.detailIdKey ? config.detailIdKey : '']:
                         item[config.detailIdKey],
                     },
-                    params: config.detail ? null : item,
+                    params:
+                      (config.detail && config.detailParams) || !config.detail
+                        ? item
+                        : null,
                   })
                 "
               >
@@ -267,6 +275,8 @@
                       query: {
                         view: 'update',
                         id: item.id,
+                        [config.detailIdKey ? config.detailIdKey : '']:
+                          item[config.detailIdKey],
                       },
 
                       params: item,
@@ -318,12 +328,16 @@
         :setterExtPayload="config.setter_ext_payload"
         :update="config.update"
         :updateExtPayload="config.update_ext_payload"
-        @success="getListData"
+        :detail="config.detail"
+        :detailIdKey="config.detailIdKey"
+        :detailKey="config.detailKey"
+        @success="onCreateSuccess"
         :sort="
           config.formOption && Array.isArray(config.formOption.sort)
             ? config.formOption.sort
             : null
         "
+        :formConfig="config.formConfig || {}"
         :update_id_getter="config.update_id_getter || 'id'"
         :update_id_setter="config.update_id_setter || 'id'"
       >
@@ -352,6 +366,7 @@
           >
           </slot>
         </template>
+
         <template v-slot:create-form>
           <slot name="create-form"></slot>
         </template>
@@ -466,6 +481,11 @@ export default {
         return false;
       },
     },
+    refreshKey: {
+      type: Number,
+      requried: false,
+      defualt: 0,
+    },
   },
   components: {
     GekoBaseForm,
@@ -517,6 +537,12 @@ export default {
   },
 
   methods: {
+    onCreateSuccess(data) {
+      console.log("geko base form", data);
+      this.$emit("create-success", data);
+
+      this.getListData();
+    },
     getSlotName(value) {
       return `item.${value}`;
     },
@@ -691,6 +717,7 @@ export default {
         _data.show_if = item.methods[key].show_if || null;
         _data.separator = item.methods[key].separator || null;
         _data.disabled = item.methods[key].disabled || null;
+        _data.base_type = item.methods[key].base_type || null;
       }
 
       return _data;
@@ -730,11 +757,11 @@ export default {
 
       reqParams.limit = this.perPage;
       reqParams.offset = (this.page - 1) * this.perPage;
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "smooth",
-      });
+      // window.scrollTo({
+      //   top: 0,
+      //   left: 0,
+      //   behavior: "smooth",
+      // });
       const responseData = await this.$_api
         .get(this.config.getter, reqParams)
         .catch(() => {
@@ -886,6 +913,11 @@ export default {
     perPage(t) {
       this.page = 1;
       this.getListData();
+    },
+    refreshKey(t) {
+      if (t > 0) {
+        this.onRefresh();
+      }
     },
   },
 };

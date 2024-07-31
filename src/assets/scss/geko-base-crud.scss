@@ -413,6 +413,37 @@
   flex-direction: column;
   position: relative;
   margin-bottom: 5px;
+
+
+  .input-group-wrapper:has(.select-radio-row), .input-group-wrapper:has(.file-upload) {
+    border: none !important;
+  }
+  .input-group-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid rgba(128, 128, 128, 0.274);
+    border-radius: 8px;
+    overflow: hidden;
+    input, textarea, .vs-style, .vue-editor,.select-radio-row, .upload-wrapper, .date {
+      flex: 1;
+      border: none;
+    }
+    .vs__dropdown-toggle {
+      border: none !important;
+    }
+
+    .input-group-append {
+      padding-inline: 10px;
+      height: 38px;
+      background: #b5b5c362;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+  }
   .error-message {
     position: absolute;
     bottom: 0;

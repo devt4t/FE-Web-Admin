@@ -22,13 +22,15 @@ const _alert = {
     text = null,
     position = "top-right",
     showConfirmButton = false,
-    timer = 3000
+    timer = 3000,
+    html = false
   ) {
     return Swal.fire({
       position: position,
       icon: "success",
       title: title || text,
-      // text: text,
+      text: position !== "top-right" && text && !html ? text : "",
+      html: html && text ? text : "",
       toast: position === "top-right",
       timer: timer,
       showConfirmButton: showConfirmButton,

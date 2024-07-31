@@ -821,30 +821,30 @@ class UserController extends Controller
 
         foreach ($request->permissions as $permission) {
 
-            $isExist = DB::table('tasks')->where([
-                'role_id',
-                $permission->role_id,
-                'task_id',
-                $permission->task_id
+            $isExist = DB::table('role_tasks')->where([
+                'role_id' =>
+                    $permission['role_id'],
+                'task_id' =>
+                    $permission['task_id']
             ])->first();
-            if ($permission->permission == true) {
+            if ($permission['permission'] == true) {
 
                 if (!$isExist) {
                     $newRoleTask = array(
-                        'role_id',
-                        $permission->role_id,
-                        'task_id',
-                        $permission->task_id
+                        'role_id' =>
+                            $permission['role_id'],
+                        'task_id' =>
+                            $permission['task_id']
                     );
                     DB::table('role_tasks')->insert($newRoleTask);
                 }
-            } else if ($permission->permission == false) {
+            } else if ($permission['permission'] == false) {
                 if ($isExist) {
                     DB::table('role_tasks')->where([
-                        'role_id',
-                        $permission->role_id,
-                        'task_id',
-                        $permission->task_id
+                        'role_id' =>
+                            $permission['role_id'],
+                        'task_id' =>
+                            $permission['task_id']
                     ])->delete();
                 }
             }
@@ -878,7 +878,15 @@ class UserController extends Controller
             'description'
         ];
 
-        $relation = [];
+        $relation = [
+
+            "task_group_id" => [
+                "reference_table" => "task_groups",
+                "table_alias" => "B",
+                "reference_column" => "id",
+                "display" => ['name'],
+            ]
+        ];
 
 
         $condition = [];

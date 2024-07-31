@@ -2,7 +2,7 @@
   <geko-base-crud
     :config="config"
     :hideCreate="true"
-    :hideDelete="!['13'].includes($store.state.User.role)"
+    :hideDelete="!['4', '13'].includes($store.state.User.role)"
     :hideUpdate="true"
     :key="`component-farmer-${componentKey}`"
   >

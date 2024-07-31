@@ -49,7 +49,7 @@ export default {
       code: 1,
     },
     {
-      label: "Akte Jual Beli ata Letter C masih atas nama Orang Lain",
+      label: "Akte Jual Beli atau Letter C masih atas nama Orang Lain",
       code: 2,
     },
     {

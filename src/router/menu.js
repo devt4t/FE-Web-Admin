@@ -203,7 +203,7 @@ const menu = [
         permission: "scooping-visit-v2",
         icon: "mdi-home-edit",
         update: true,
-        type: ["carbon", "non-carbon"],
+        type: ["non-carbon"],
       },
       {
         title: "RRA & PRA",
@@ -213,7 +213,7 @@ const menu = [
         permission: "rra-pra-v2",
         icon: "mdi-home-search",
         update: true,
-        type: ["carbon", "non-carbon"],
+        type: ["non-carbon"],
       },
       {
         title: "Sosialisasi Program",
@@ -223,7 +223,7 @@ const menu = [
         permission: "sosialisasi-program-v2",
         icon: "mdi-account-card",
         update: true,
-        type: ["carbon", "non-carbon"],
+        type: ["non-carbon"],
       },
       {
         title: "Petani (Sosialisasi Program)",
@@ -265,7 +265,7 @@ const menu = [
         name: "SosialisasiTanam",
         permission: "SosialisasiTanam",
         icon: "mdi-account-badge",
-        type: ["carbon", "non-carbon"],
+        type: ["non-carbon"],
       },
       {
         title: "AdjustmentDataSostam",

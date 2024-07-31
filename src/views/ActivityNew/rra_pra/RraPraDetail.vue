@@ -36,6 +36,13 @@
                   small
                   variant="success"
                   @click="onVerification('verification')"
+                  v-if="
+                    data.rra.mainRra &&
+                    ['ready_to_submit', 'document_saving'].includes(
+                      data.rra.mainRra.status
+                    ) &&
+                    ['25', '4', '13'].includes($store.state.User.role)
+                  "
                 >
                   <v-icon>mdi-file-check-outline</v-icon>
                   <span>Verifikasi</span>
@@ -46,6 +53,11 @@
                   class="mr-2 mb-2"
                   small
                   variant="danger"
+                  v-if="
+                    data.rra.mainRra &&
+                    ['submit_review'].includes(data.rra.mainRra.status) &&
+                    ['25', '4', '13'].includes($store.state.User.role)
+                  "
                 >
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi</span>

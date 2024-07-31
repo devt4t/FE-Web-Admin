@@ -49,7 +49,7 @@
                 setter: 'scooping_visit_id',
                 api: 'GetNewScoopingAll',
                 param: {
-                  data_no: 1,
+                  rra_no: 0,
                 },
                 default_label: formData.scooping_visit_code,
                 option: {
@@ -1683,7 +1683,7 @@ export default {
             rra_code: rraNumber,
             scooping_visit_start: this.formData.scooping_visit_start,
             scooping_visit_end: this.formData.scooping_visit_end,
-            type: 'pra'
+            type: "pra",
           },
         });
       } else {
@@ -1696,7 +1696,11 @@ export default {
       this.$set(this.formData, "land_area", data.land_area);
       this.$set(this.formData, "scooping_visit_village", data.village);
       this.$set(this.formData, "scooping_visit_village_name", data.desas_name);
-      this.$set(this.formData, "scooping_visit_start", data.start_scooping_date);
+      this.$set(
+        this.formData,
+        "scooping_visit_start",
+        data.start_scooping_date
+      );
       this.$set(this.formData, "scooping_visit_end", data.end_scooping_date);
     },
 

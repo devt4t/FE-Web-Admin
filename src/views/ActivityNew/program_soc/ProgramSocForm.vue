@@ -376,7 +376,7 @@
             <div class="d-flex flex-row" style="justify-content: flex-end">
               <v-btn variant="success" type="submit" :disabled="loading">
                 <v-icon>mdi-plus</v-icon>
-                <span>Tambah Sosialisasi Program</span>
+                <span>Tambah Data</span>
               </v-btn>
             </div>
           </v-col>
@@ -456,6 +456,7 @@ export default {
 
       //insert farmers
       for (const farmer of _participants) {
+        if (!farmer.name || !farmer.status_program) continue;
         farmer.form_no = resultMain;
         await this.$_api.post("AddFormMinatFarmers_new", farmer);
       }

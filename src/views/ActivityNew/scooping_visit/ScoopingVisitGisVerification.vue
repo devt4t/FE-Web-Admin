@@ -18,7 +18,7 @@
                   <geko-input
                     v-model="formData.dry_land_area"
                     :item="{
-                      label: 'Luas Lahan',
+                      label: 'Luas Lahan Kering',
                       validation: ['required'],
                       type: 'text',
                     }"
@@ -232,6 +232,7 @@ export default {
     dataKey(t) {
       if (t > 1) {
         this.isOpen = true;
+        this.$set(this.formData, "dry_land_area", this.dryLandArea);
       }
     },
     dryLandArea(t) {

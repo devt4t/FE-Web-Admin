@@ -105,7 +105,7 @@
                 <v-btn
                   variant="danger"
                   v-if="
-                    ['13', '4'].includes($store.state.User.role) &&
+                    ['13', '4', '25', '23'].includes($store.state.User.role) &&
                     data.status === 'submit_review'
                   "
                   @click="onUnverification()"
@@ -663,7 +663,7 @@ export default {
           name: "Kelengkapan Data Lahan Kering",
           items: [
             {
-              key: "total_kk",
+              key: "dry_land_area",
               label: "Luas Lahan Kering",
               append: "Ha",
               transform: "thousand-separator",

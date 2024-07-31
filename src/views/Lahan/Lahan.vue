@@ -2,7 +2,7 @@
   <geko-base-crud
     :config="config"
     :hideCreate="true"
-    :hideDelete="!['13'].includes($store.state.User.role)"
+    :hideDelete="!['13', '4'].includes($store.state.User.role)"
     :hideUpdate="true"
   >
     <template v-slot:list-indicator="{ item }">
@@ -323,7 +323,11 @@ export default {
         // setter: "AddFormMinatFarmers_new",
         // setter_redirect: "back",
         // update: "UpdateFormMinatMain_new",
-        // delete: "DeleteScoopingVisit_new",
+        delete: "DeleteDataLahan_new",
+        deleteKey: "lahan_no",
+        delete_ext_payload: {
+          delete_type: "hard_delete",
+        },
         // deleteLabel: "scooping_no",
         // filter_api: {
         //   typegetdata: "all",

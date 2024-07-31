@@ -118,12 +118,29 @@ export default {
       type: String,
       default: null,
     },
+    detail: {
+      type: String,
+      default: null,
+    },
+    detailIdKey: {
+      type: String,
+      default: null,
+    },
+    detailKey: {
+      type: String,
+      default: null,
+    },
     setterExtPayload: {
       type: Object,
       default: () => {},
     },
     updateExtPayload: {
       type: Object,
+      default: () => {},
+    },
+    formConfig: {
+      type: Object,
+      required: false,
       default: () => {},
     },
     fields: {
@@ -173,37 +190,66 @@ export default {
         return 0;
       }
     },
-    buildFields() {
+    getValue(keys, data) {
+      let tmpValue = data;
+      for (const value of keys.split(".")) {
+        if (value == "data") continue;
+        tmpValue = tmpValue[value];
+      }
+
+      return tmpValue;
+    },
+    async getInitialData() {
+      const data = await this.$_api.get(this.detail, {
+        [this.detailIdKey || "id"]: this.$route.query[this.detailIdKey || "id"],
+      });
+
+      const detailData = this.getValue(this.detailKey || "", data);
+
+      return detailData;
+    },
+    async buildFields() {
       if (this.$route.query.view === "update" && !this.$route.params) {
         this.$_alert.error(null, "Data not found");
         return;
       }
+
+      let initialData = this.$route.params;
+      if (this.$route.query.view == "update" && this.detail) {
+        initialData = await this.getInitialData();
+      }
+
+      console.log("tmp value", initialData);
       for (const f of this.fields) {
         let _value =
           f.option && f.option.default_value
             ? f.option.default_value
-            : this.$route.params[f.getter || f.view_data];
+            : initialData[f.getter || f.view_data];
 
         if (this.$route.query.view === "update") {
-          if (f.type === "select" && f.option.default_label) {
+          if (
+            (f.type === "select" && f.option.default_label) ||
+            (f.type === "row-slot" &&
+              f.base_type === "select" &&
+              f.option.default_label)
+          ) {
             this.$set(
               this.formData,
               f.option.default_label,
-              this.$route.params[f.option.default_label]
+              initialData[f.option.default_label]
             );
           }
 
           this.$set(
             this.formData,
             f.setter || f.view_data,
-            this.$route.params[
-              f.option ? f.option.getter || f.view_data : f.view_data
-            ]
+            initialData[f.option ? f.option.getter || f.view_data : f.view_data]
           );
         } else {
           this.$set(this.formData, f.setter || f.view_data, _value);
         }
       }
+      console.log(this.formData);
 
       this.ready = true;
     },
@@ -244,10 +290,17 @@ export default {
         .post(endpoint, payload)
         .then((res) => {
           this.loading = false;
-          this.$emit("success");
-          this.$_alert.success(
-            `Data berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"}`
-          );
+          if (this.isCreate) {
+            this.$emit("success", res);
+          }
+          if (
+            !this.formConfig ||
+            (this.formConfig && !this.formConfig.hideCreateAlert)
+          ) {
+            this.$_alert.success(
+              `Data berhasil ${this.isCreate ? "ditambahkan" : "diperbarui"}`
+            );
+          }
           this.$router.go(-1);
         })
         .catch(() => {

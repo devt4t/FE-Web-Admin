@@ -117,7 +117,6 @@ export default {
       this.getData();
     } else {
       this.data = this.$route.params;
-      console.log("data", this.data);
     }
   },
 
@@ -132,7 +131,7 @@ export default {
           return this.getValue(this.dataKey, res);
         });
 
-      this.data = detail;
+      this.data = Object.assign(this.$route.params, detail);
     },
 
     getValue(keys, data) {

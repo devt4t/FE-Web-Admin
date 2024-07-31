@@ -5,7 +5,15 @@
     padding-block: 2em;
     table {
         tr th {
-            font-weight: normal
+            font-weight: normal;
+            font-size: .9em;
+        }
+
+        tr td {
+            font-size: .9em;
+            .v-messages {
+                display: none;
+            }
         }
         tr td:not(:first-child) {
             text-align: center;
@@ -25,6 +33,10 @@
 
         tbody tr td {
             border-bottom: 1px solid rgba(170, 170, 170, 0.137) !important;
+        }
+        .v-input--checkbox, .v-input__slot {
+            margin: 0 !important;
+            padding: 0 !important;
         }
     }
 }

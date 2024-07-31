@@ -127,9 +127,15 @@
                     id: item.id,
                     form_code: item.form_no,
                     mu_no: data.mainSpr.mu_no,
+                    program_year: data.mainSpr.program_year,
                   },
 
-                  params: item,
+                  params: {
+                    ...item,
+
+                    mu_no: data.mainSpr.mu_no,
+                    program_year: data.mainSpr.program_year,
+                  },
                 })
               "
             >
@@ -248,7 +254,6 @@
 </template>
 
 <script>
-// 20, 25, 13
 import defaultData from "./ProgramSocData.js";
 export default {
   name: "program-soc-detail",
