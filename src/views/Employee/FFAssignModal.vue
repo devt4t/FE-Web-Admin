@@ -104,6 +104,11 @@
                     </v-col>
                   </v-row>
                 </v-col>
+                <v-col lg="12">
+                  <p class="text-danger" v-if="error_fc_ff">
+                    {{ error_fc_ff }}
+                  </p></v-col
+                >
 
                 <v-col lg="12" class="form-separator">
                   <div class="d-flex flex-row align-items-center">
@@ -219,10 +224,10 @@
                         :item="{
                           type: 'select',
                           label: 'Working Area / Desa',
-                          api: 'GetDesa',
+                          api: 'GetDesaByKecamatanTA_new',
                           validation: ['required'],
                           param: {
-                            kode_ta: area.area_code,
+                            ta_no: area.area_code,
                             program_year:
                               Array.isArray(area.program_year) &&
                               area.program_year.length > 0
@@ -230,7 +235,7 @@
                                 : '',
                           },
                           option: {
-                            getterKey: 'data.result',
+                            // getterKey: 'data.result',
                             default_label: area.desas_name,
                             list_pointer: {
                               label: 'name',
@@ -267,6 +272,11 @@
                     </v-col>
                   </v-row>
                 </v-col>
+                <v-col lg="12">
+                  <p class="text-danger" v-if="error_working_area">
+                    {{ error_working_area }}
+                  </p></v-col
+                >
               </v-row>
 
               <v-row>
@@ -321,10 +331,58 @@ export default {
       });
     },
     removeFcFf(i) {
-      this.fc_ff.splice(i, 1);
+      if (!this.fc_ff[i].id) {
+        this.fc_ff.splice(i, 1);
+        return;
+      }
+      this.$_alert
+        .confirm("Hapus Data FC FF?", "", "Ya, Hapus", "Batal", true)
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("DeleteAssignData", {
+                mainPivot_id: this.fc_ff[i].id,
+              })
+              .then((res) => {
+                this.fc_ff.splice(i, 1);
+                this.$_alert.success(" Berhasil hapus data FC FF");
+              })
+              .catch((err) => {
+                console.log("err", err);
+              });
+          }
+        });
     },
     removeWorkingArea(i) {
-      this.working_areas.splice(i, 1);
+      if (!this.working_areas[i].id) {
+        this.working_areas.splice(i, 1);
+        return;
+      }
+      this.$_alert
+        .confirm(
+          "Hapus Data Pemetaan Area Kerja?",
+          "",
+          "Ya, Hapus",
+          "Batal",
+          true
+        )
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("DeleteAssignData", {
+                workingArea_id: this.working_areas[i].id,
+              })
+              .then((res) => {
+                this.working_areas.splice(i, 1);
+                this.$_alert.success(
+                  " Berhasil hapus data pemetaan area kerja"
+                );
+              })
+              .catch((err) => {
+                console.log("err", err);
+              });
+          }
+        });
     },
     onOpen() {
       this.ffData = this.data;
@@ -356,13 +414,41 @@ export default {
     onSubmit() {
       if (this.loading) return;
       this.loading = true;
-
+      this.error_fc_ff = "";
+      this.error_working_area = "";
       let payloadFcFf = JSON.parse(JSON.stringify(this.fc_ff));
+      let uniqueValue = [];
       for (let item of payloadFcFf) {
+        for (const year of item.program_year) {
+          if (uniqueValue.includes(year)) {
+            this.error_fc_ff = `Tahun program pemetaan FC FF tidak boleh sama`;
+            this.$_alert.error(
+              {},
+              "Error",
+              "Tahun program pemetaan FC FF tidak boleh sama"
+            );
+            return;
+          }
+          uniqueValue.push(year);
+        }
         item.program_year = item.program_year.join(", ");
       }
+
+      uniqueValue = [];
       let payloadWorkingArea = JSON.parse(JSON.stringify(this.working_areas));
       for (let item of payloadWorkingArea) {
+        for (const year of item.program_year) {
+          if (uniqueValue.includes(year)) {
+            this.error_working_area = `Tahun program pemetaan Area Kerja tidak boleh sama`;
+            this.$_alert.error(
+              {},
+              "Error",
+              "Tahun program pemetaan Area Kerja tidak boleh sama"
+            );
+            return;
+          }
+          uniqueValue.push(year);
+        }
         item.program_year = item.program_year.join(", ");
         item.target_area = item.area_code;
         item.working_area = item.kode_desa;
@@ -426,6 +512,8 @@ export default {
       key1_label: "",
       working_areas: [],
       fc_ff: [],
+      error_fc_ff: null,
+      error_working_area: null,
       // working_areas: [
       //   {
       //     id: 4507,

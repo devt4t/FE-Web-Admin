@@ -356,18 +356,18 @@ export default {
               color: "warning",
               transform: "ts",
             },
-            belum_lengkap: {
-              label: "Lahan Belum Lengkap",
-              icon: "mdi-information-off",
-              color: "danger",
-              transform: "ts",
-            },
-            belum_ada: {
-              label: "Lahan Belum Ada Petani",
-              icon: "mdi-google-downasaur",
-              color: "info",
-              transform: "ts",
-            },
+            // belum_lengkap: {
+            //   label: "Lahan Belum Lengkap",
+            //   icon: "mdi-information-off",
+            //   color: "danger",
+            //   transform: "ts",
+            // },
+            // belum_ada: {
+            //   label: "Lahan Belum Ada Petani",
+            //   icon: "mdi-google-downasaur",
+            //   color: "info",
+            //   transform: "ts",
+            // },
             // petani_data_belum_lengkap: {
             //   label: "Petani Data Belum lengkap",
             //   icon: "mdi-account-remove",

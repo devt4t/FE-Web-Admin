@@ -8,7 +8,7 @@
       active: open,
     }"
   >
-    <div class="filter-item mb-5" v-for="(item, i) in fields" :key="'hf-' + i">
+    <div class="filter-item mb-5" v-for="(item, i) in filters" :key="'hf-' + i">
       <geko-input
         v-model="formData[item.setter]"
         :item="{
@@ -19,10 +19,19 @@
           option: item.option,
           api: item.getter,
           placeholder: item.label,
-          param: item.param,
+          param: item.param
+            ? {
+                ...item.param,
+                ...getParams[item.setter],
+              }
+            : {},
           default_label: item.option ? formData[item.option.default_label] : '',
         }"
-        :disabled="item.disabled || false"
+        :disabled="
+          typeof getParams[item.setter].disabled === 'boolean'
+            ? getParams[item.setter].disabled
+            : false
+        "
       />
     </div>
     <div
@@ -46,6 +55,7 @@ export default {
   name: "geko-base-filter",
   data() {
     return {
+      filters: [],
       formData: {},
     };
   },
@@ -70,8 +80,42 @@ export default {
   },
 
   methods: {
+    onInit() {
+      console.log("fields", this.fields);
+
+      for (const filter of this.fields) {
+        // if (
+        //   filter.param &&
+        //   filter.param.program_year == "current_program_year"
+        // ) {
+        //   filter.param.program_year = this.$store.state.tmpProgramYear;
+        // }
+
+        if (filter.param) {
+          for (const param of Object.keys(filter.param)) {
+            console.log(filter.param, param);
+            if (!filter.param[param]) continue;
+            if (filter.param[param] == "current_program_year") {
+              console.log("test", filter.param, param);
+              filter.param[param] = this.$store.state.tmpProgramYear;
+            } else if (
+              typeof filter.param[param] === "string" &&
+              filter.param[param].split(".").length > 1 &&
+              filter.param[param].split(".")[0] == "form"
+            ) {
+              filter.param[param] =
+                this.formData[filter.param[param].split(".")[1]];
+
+              filter.disabled = !this.formData[filter.param[param]];
+            }
+          }
+        }
+      }
+
+      console.log(this.fields);
+      this.filters = this.fields;
+    },
     onFilter() {
-      console.log("onfilter");
       this.$emit("filter", this.formData);
     },
 
@@ -83,9 +127,43 @@ export default {
       this.$emit("filter", _defaultValue);
     },
   },
+  computed: {
+    getParams() {
+      const result = {};
+      for (const value of this.fields) {
+        if (!value.form_param) {
+          result[value.setter] = {
+            disabled: value.disabled || false,
+          };
+          continue;
+        }
+
+        let _tmpValue = {};
+        for (const param of Object.keys(value.form_param)) {
+          _tmpValue[param] = this.formData[value.form_param[param]];
+        }
+        let _disabled = false;
+        for (const value of Object.keys(_tmpValue)) {
+          if (!_tmpValue[value]) {
+            _disabled = true;
+          }
+        }
+        _tmpValue.disabled = _disabled;
+        result[value.setter] = _tmpValue;
+      }
+
+      return result;
+    },
+  },
 
   mounted() {
-    console.log(this.fields);
+    this.onInit();
+  },
+
+  watch: {
+    fields() {
+      this.onInit();
+    },
   },
 };
 </script>

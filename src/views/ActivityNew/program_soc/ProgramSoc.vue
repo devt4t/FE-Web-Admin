@@ -4,6 +4,7 @@
     :hideDelete="!['13'].includes($store.state.User.role)"
     :hideUpdate="true"
     :key="'program-soc-detail' + componentKey"
+    @onExportExcel="onExportExcel($event)"
   >
     <template v-slot:list-form_no="{ item }">
       <div class="d-flex flex-column min-w-150px">
@@ -117,6 +118,64 @@ export default {
   },
 
   methods: {
+    async onExportExcel(data) {
+      this.$_alert.loading(
+        "Sedang mengexport data",
+        "Mohon tunggu sebentar, proses ini memerlukan waktu beberapa detik"
+      );
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+      let reqParams = Object.assign(data.filter, data.params);
+      reqParams.limit = parseInt(data.totalRecord * 1.5);
+      const dataList = await this.$_api
+        .get("GetFormMinatBulkData_new", reqParams)
+        .then((res) => {
+          return res.data;
+        })
+        .catch(() => {
+          return false;
+        });
+
+      if (!dataList) {
+        this.$_alert.error(
+          {},
+          "Export Gagal",
+          "Gagal mengambil data list sosialisasi program"
+        );
+      }
+      const axiosConfig = {
+        method: "POST",
+        url: `${this.$_config.baseUrlExport}export/soc-prog/excel`,
+        responseType: "arraybuffer",
+        data: {
+          data: dataList,
+        },
+      };
+
+      const exported = await axios(axiosConfig)
+        .then((res) => {
+          return res;
+        })
+        .catch((err) => {
+          console.log("err", err);
+          return false;
+        });
+
+      if (!exported) {
+        return this.$_alert.error({}, "Export Gagal");
+      }
+      const url = URL.createObjectURL(new Blob([exported.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      const filename = `sosialisasi-program-export${moment().format(
+        "DMMYYYYHHmmss"
+      )}.xlsx`;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+
+      this.$_alert.success("Successfully");
+    },
     async onExport(data) {
       if (this.exportIds.includes(data.id)) return;
       this.exportIds.push(data.id);
@@ -252,6 +311,7 @@ export default {
             setter: "program_year",
           },
         },
+        export: true,
         pk_field: null,
         permission: {
           create: "program-soc-create",
@@ -350,7 +410,6 @@ export default {
               },
               create: true,
               update: true,
-              filter: false,
             },
           },
 
@@ -364,7 +423,75 @@ export default {
               },
               create: true,
               update: true,
-              filter: false,
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "GetManagementUnitAdmin",
+                setter: "mu_no",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data.result",
+                  list_pointer: {
+                    code: "mu_no",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          {
+            id: "target_area_filter",
+            label: "Target Area",
+            methods: {
+              filter: {
+                type: "select",
+                getter: "GetTA_new",
+                setter: "area_code",
+                form_param: {
+                  mu_no: "mu_no",
+                },
+                param: {
+                  program_year: this.$store.state.tmpProgramYear,
+                },
+                option: {
+                  // getterKey: "data.result",
+                  list_pointer: {
+                    code: "area_code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          {
+            id: "village_filter",
+            label: "Desa",
+            methods: {
+              filter: {
+                type: "select",
+                getter: "GetDesa",
+                setter: "kode_desa",
+                form_param: {
+                  kode_ta: "area_code",
+                },
+                param: {
+                  program_year: this.$store.state.tmpProgramYear,
+                },
+                option: {
+                  getterKey: "data.result",
+                  list_pointer: {
+                    code: "kode_desa",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {
@@ -462,6 +589,31 @@ export default {
               create: false,
               update: false,
               filter: false,
+              filter: {
+                type: "select",
+                setter: "is_verified",
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Terverifikasi",
+                      code: 1,
+                    },
+                    {
+                      name: "Belum Terverifikasi",
+                      code: 0,
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
 

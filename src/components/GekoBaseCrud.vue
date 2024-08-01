@@ -152,6 +152,13 @@
                 <button class="toolbar-button mr-2" @click="onRefresh">
                   <v-icon>mdi-refresh</v-icon>
                 </button>
+                <button
+                  v-if="config.export"
+                  class="toolbar-button label mr-2"
+                  @click="onExportExcell()"
+                >
+                  <v-icon>mdi-microsoft-excel</v-icon>
+                </button>
 
                 <!-- <button class="toolbar-button mr-2">
                   <v-icon>mdi-microsoft-excel</v-icon>
@@ -720,6 +727,10 @@ export default {
         _data.base_type = item.methods[key].base_type || null;
       }
 
+      if (["filter"].includes(key)) {
+        _data.form_param = item.methods[key].form_param || null;
+      }
+
       return _data;
     },
 
@@ -757,11 +768,11 @@ export default {
 
       reqParams.limit = this.perPage;
       reqParams.offset = (this.page - 1) * this.perPage;
-      // window.scrollTo({
-      //   top: 0,
-      //   left: 0,
-      //   behavior: "smooth",
-      // });
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
       const responseData = await this.$_api
         .get(this.config.getter, reqParams)
         .catch(() => {
@@ -875,6 +886,17 @@ export default {
     onRefresh() {
       this.page = 1;
       this.getListData();
+    },
+
+    onExportExcell() {
+      const _data = {
+        params: this.params,
+        filter: this.filters,
+        data: this.data,
+        totalRecord: this.totalRecord,
+      };
+
+      this.$emit("onExportExcel", _data);
     },
   },
 

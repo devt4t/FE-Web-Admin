@@ -54,6 +54,21 @@ const _alert = {
       cancelButtonText: disagree || "Batalkan",
     });
   },
+  loading(title, text) {
+    Swal.fire({
+      title: title,
+      html: text,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      showCancelButton: false,
+      showConfirmButton: false,
+      position: "top-right",
+      toast: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  },
 };
 
 export default _alert;
