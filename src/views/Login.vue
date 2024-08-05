@@ -287,6 +287,13 @@ export default {
               response.data.data.result.User,
               true,
             ]);
+            this.$store.commit("set", [
+              "tmpProjectPurpose",
+              localStorage.getItem("tmpProjectPurpose")
+                ? localStorage.getItem("tmpProjectPurpose")
+                : "non-carbon",
+              true,
+            ]);
             this.load = false;
             this.disablevalue = false;
             this.colorsnackbar = "green";

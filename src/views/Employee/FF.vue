@@ -5,6 +5,7 @@
     :refreshKey="refreshKey"
     :hideDelete="!['13', '4'].includes($store.state.User.role)"
     @create-success="onCreateSuccess($event)"
+    :hideCreate="['19'].includes($store.state.User.role)"
   >
     <!-- LIST -->
     <template v-slot:list-name="{ item }">
@@ -22,10 +23,6 @@
         small
         class="d-flex flex-row align-items-center mt-2"
         @click="onAssignProgramYear(item)"
-        v-if="
-          item.main_pivots_program_year &&
-          item.main_pivots_program_year.replace(/ /g, '').split(',').length < 5
-        "
       >
         <v-icon small class="mr-1">mdi-account-switch</v-icon>
         <span>Assign</span>

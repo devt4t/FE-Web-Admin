@@ -60,6 +60,10 @@
       <div class="sidebar-menus">
         <div
           class="sidebar-menu-item"
+          v-if="
+            group.title !== 'Activities' ||
+            (group.title == 'Activities' && isCarbon !== null)
+          "
           v-for="(group, i) in items"
           :key="`group-${i}`"
           :class="{
@@ -127,7 +131,7 @@
                   )
                 : group.items
               : []" -->
-          <div
+          <!-- <div
             class="carbon-coming-soon"
             v-if="isCarbon && group.title == 'Activities'"
           >
@@ -142,7 +146,7 @@
             >
               Carbon Activity module is under development
             </p>
-          </div>
+          </div> -->
           <a
             v-if="Array.isArray(group.items)"
             v-for="(menu, j) in group.title == 'Activities'
@@ -439,7 +443,7 @@ export default {
     LottieAnimation,
   },
   data: () => ({
-    isCarbon: false,
+    isCarbon: null,
     profileOpen: false,
     drawer: null,
     nameadmin: "admin web",
@@ -463,6 +467,11 @@ export default {
     },
   }),
   mounted() {
+    if (!this.$store.state.tmpProjectPurpose) {
+      this.$store.commit("set", ["tmpProjectPurpose", "non-carbon", true]);
+    } else {
+      this.isCarbon = this.$store.state.tmpProjectPurpose === "carbon";
+    }
     if (!this.$store.state.token && !localStorage.getItem("token")) {
       //not authorized
       this.$router.push("/");
@@ -477,6 +486,17 @@ export default {
     }
   },
   watch: {
+    isCarbon: {
+      handler(t) {
+        if (this.isCarbon !== null) {
+          this.$store.commit("set", [
+            "tmpProjectPurpose",
+            t ? "carbon" : "non-carbon",
+            true,
+          ]);
+        }
+      },
+    },
     "$store.state.token": {
       handler(v) {
         if (v) {
@@ -503,6 +523,7 @@ export default {
   },
   methods: {
     avatarHelper(name) {
+      if (typeof name !== "string") return;
       if (name.split(" ").length > 1) {
         return name.split(" ")[0].charAt(0) + name.split(" ")[1].charAt(0);
       } else if (name.split(" ").length > 0) {

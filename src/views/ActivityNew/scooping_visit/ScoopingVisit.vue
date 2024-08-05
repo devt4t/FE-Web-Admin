@@ -176,6 +176,22 @@
       </div>
     </template>
 
+    <template v-slot:list-potential_status="{ item }">
+      <div class="d-flex flex-row justify-content-center">
+        <span
+          v-if="item.status == 'submit_review'"
+          class="badge"
+          :class="{
+            'bg-success': item.potential_status == 1,
+            'bg-danger': item.potential_status == 0,
+          }"
+          >{{ item.potential_status | parse("status-potential") }}</span
+        >
+
+        <span v-else>-</span>
+      </div>
+    </template>
+
     <template v-slot:list-bottom-action="{ item }">
       <v-btn
         small
@@ -430,6 +446,7 @@ export default {
               list: {
                 type: "row-slot",
                 view_data: "status",
+                header_class: "text-center",
                 class: {
                   document_saving: "badge bg-warning",
                   ready_to_submit: "badge bg-info",
@@ -448,7 +465,9 @@ export default {
             label: "Status Potensial",
             methods: {
               list: {
+                type: "row-slot",
                 view_data: "potential_status",
+                header_class: "text-center",
                 class: {
                   0: "badge bg-danger",
                   1: "badge bg-success",

@@ -419,6 +419,10 @@ export default {
       let payloadFcFf = JSON.parse(JSON.stringify(this.fc_ff));
       let uniqueValue = [];
       for (let item of payloadFcFf) {
+        if (item.program_year.length == 0) {
+          this.$_alert.error({}, "", "Tahun program harus diisi");
+          return;
+        }
         for (const year of item.program_year) {
           if (uniqueValue.includes(year)) {
             this.error_fc_ff = `Tahun program pemetaan FC FF tidak boleh sama`;
@@ -437,6 +441,10 @@ export default {
       uniqueValue = [];
       let payloadWorkingArea = JSON.parse(JSON.stringify(this.working_areas));
       for (let item of payloadWorkingArea) {
+        if (item.program_year.length == 0) {
+          this.$_alert.error({}, "", "Tahun program harus diisi");
+          return;
+        }
         for (const year of item.program_year) {
           if (uniqueValue.includes(year)) {
             this.error_working_area = `Tahun program pemetaan Area Kerja tidak boleh sama`;

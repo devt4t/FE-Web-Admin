@@ -222,15 +222,27 @@ button.circle {
 .badge.badge-info-light i {
   color: $info !important;
 }
+@mixin char-size() {
+  $char-size-list: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20;
 
+  @each $value in $char-size-list {
+    .mw-#{$value} {
+      min-width:calc($value + 3 ) + ch !important;
+    }
+  }
+}
+
+@include char-size();
 .vs-style.filter-select {
   height: 30px !important;
   border-radius: 20px !important;
   min-width: 200px;
+
+
   .vs__search {
     height: unset !important;
     border-radius: 20px;
-    // background-color: #F3F6F9 !important;
+  // background-color: #F3F6F9 !important;
   }
   .vs__dropdown-toggle {
     height: 30px !important;

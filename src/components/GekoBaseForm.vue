@@ -233,6 +233,7 @@ export default {
               f.base_type === "select" &&
               f.option.default_label)
           ) {
+            console.log("field", f);
             this.$set(
               this.formData,
               f.option.default_label,

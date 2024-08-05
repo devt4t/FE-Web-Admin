@@ -11,13 +11,22 @@ const menu = [
     title: "Employee",
     icon: "mdi-account-group",
     items: [
+      // {
+      //   title: "Employee",
+      //   to: "/Employee",
+      //   component: "Employee/Employee",
+      //   name: "Employee",
+      //   permission: "Employee",
+      //   icon: "mdi-account-group",
+      // },
       {
         title: "Employee",
-        to: "/Employee",
-        component: "Employee/Employee",
-        name: "Employee",
+        to: "/employee-v2",
+        component: "Employee/employee/EmployeeV2",
+        name: "Employee V2",
         permission: "Employee",
         icon: "mdi-account-group",
+        update: true,
       },
       {
         title: "Field Coordinator",
@@ -234,30 +243,6 @@ const menu = [
         prevent_route_validation: true,
         hide: true,
       },
-      // {
-      //   title: "Scooping Visit",
-      //   to: "/ScoopingVisit",
-      //   component: "Activity/ScopingVisit/index",
-      //   name: "ScoopingVisit",
-      //   permission: "ScoopingVisit",
-      //   icon: "mdi-home-edit",
-      // },
-      // {
-      //   title: "RRA & PRA",
-      //   to: "/RraPra",
-      //   component: "Activity/RraPra/index",
-      //   name: "RraPra",
-      //   permission: "RraPra",
-      //   icon: "mdi-home-search",
-      // },
-      // {
-      //   title: "Sosialisasi Program",
-      //   to: "/SosialisasiProgram",
-      //   component: "Activity/SosialisasiProgram/index",
-      //   name: "SosialisasiProgram",
-      //   permission: "SosialisasiProgram",
-      //   icon: "mdi-account-card",
-      // },
       {
         title: "Sosialisasi Tanam",
         to: "/SosialisasiTanam",
@@ -291,6 +276,7 @@ const menu = [
         permission: "PelatihanPetani",
         icon: "mdi-handshake",
         type: ["non-carbon"],
+        hide: true,
       },
       {
         title: "Lubang Tanam",
@@ -369,6 +355,17 @@ const menu = [
         name: "LihatTanggalDistribusi",
         permission: "Distribusi",
         hide: true,
+      },
+
+      //CARBON
+      {
+        title: "Social Engagement",
+        to: "/social-engagement",
+        component: "Common/UnderDevelopment",
+        name: "SocialEngagement",
+        permission: "SosialisasiProgram",
+        icon: "mdi-account-supervisor",
+        type: ["carbon"],
       },
     ],
   },

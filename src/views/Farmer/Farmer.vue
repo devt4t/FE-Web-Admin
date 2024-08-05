@@ -48,6 +48,36 @@
       </div>
     </template>
 
+    <template v-slot:detail-legal_land_categories="{ item }">
+      <span
+        :class="{
+          'badge bg-primary font-weight-500': ![
+            '',
+            null,
+            undefined,
+            '-',
+          ].includes(item.legal_land_categories),
+        }"
+        >{{ item.legal_land_categories }}</span
+      >
+    </template>
+    1 - 100% Kayu 2 - 60% kayu 40 mpts
+
+    <template v-slot:detail-project_model="{ item }">
+      <span v-if="!item || item == '-' || item == 0">-</span>
+      <span v-else>
+        <span v-if="item.project_model == 1"
+          ><strong>Model 1</strong> (100% Kayu)</span
+        >
+        <span v-else-if="item.project_model == 2"
+          ><strong>Model 2</strong> (60% Kayu & 40% MPTS)</span
+        >
+        <span v-else-if="item.project_model == 3"
+          ><strong>Model 3</strong> (40% Kayu & 60% MPTS)</span
+        >
+      </span>
+    </template>
+
     <template v-slot:detail-farmer_id="{ item }">
       <div class="d-flex flex-column">
         <span
@@ -548,6 +578,24 @@ export default {
             },
           },
           {
+            id: "project_model",
+            label: "Model Project",
+            methods: {
+              detail: {
+                type: "slot",
+              },
+            },
+          },
+          {
+            id: "legal_land_categories",
+            label: "Kategori Legalitas Lahan",
+            methods: {
+              detail: {
+                type: "slot",
+              },
+            },
+          },
+          {
             id: "ff_id",
             label: "Nama FF",
             methods: {
@@ -680,6 +728,8 @@ export default {
               filter: {
                 type: "select",
                 setter: "approve",
+                icon: "list-status",
+                main: true,
                 option: {
                   default_options: [
                     {
@@ -691,7 +741,7 @@ export default {
                       code: 1,
                     },
                     {
-                      name: "Belum Terverifikasi",
+                      name: "Belum Diverifikasi",
                       code: 0,
                     },
                   ],

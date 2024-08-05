@@ -99,6 +99,7 @@
     <div class="geko-list" v-if="activeView === 'list' && !this.hideList">
       <v-data-table
         :headers="header"
+        hide-default-header
         :items="data"
         :search="''"
         class="rounded-xl elevation-1 mx-3 pa-1"
@@ -118,6 +119,15 @@
         }"
         :loading="loading"
       >
+        <template v-slot:header="{ props: { headers } }">
+          <thead>
+            <tr>
+              <th v-for="h in headers" :class="h.class">
+                <span>{{ h.text | parse(h.transform) }}</span>
+              </th>
+            </tr>
+          </thead>
+        </template>
         <template v-slot:top>
           <div class="geko-list-header px-5 py-3 mt-1">
             <div class="pr-5 mr-5">
@@ -141,7 +151,10 @@
                 </form>
                 <button
                   class="toolbar-button mr-2"
-                  v-if="fields.filter.length > 0"
+                  v-if="
+                    Array.isArray(fields.filter) &&
+                    fields.filter.filter((x) => !x.main).length > 0
+                  "
                   @click="filterOpen = !filterOpen"
                   :class="{
                     active: filterOpen,
@@ -160,9 +173,16 @@
                   <v-icon>mdi-microsoft-excel</v-icon>
                 </button>
 
-                <!-- <button class="toolbar-button mr-2">
-                  <v-icon>mdi-microsoft-excel</v-icon>
-                </button> -->
+                <geko-base-filter
+                  v-if="
+                    Array.isArray(fields.filter) &&
+                    fields.filter.filter((x) => x.main).length > 0
+                  "
+                  :fields="fields.filter.filter((x) => x.main)"
+                  :mainFilter="true"
+                  :open="true"
+                  @filter="onFilter($event)"
+                />
               </div>
               <slot name="list-before-create"> </slot>
               <v-btn
@@ -184,10 +204,13 @@
             <slot name="list-after-filter"> </slot>
 
             <geko-base-filter
-              v-if="fields.filter.length > 0"
+              v-if="
+                Array.isArray(fields.filter) &&
+                fields.filter.filter((x) => !x.main).length > 0
+              "
               @close="filterOpen = false"
               :open="filterOpen"
-              :fields="fields.filter"
+              :fields="fields.filter.filter((x) => !x.main)"
               @filter="onFilter($event)"
             />
 
@@ -545,7 +568,6 @@ export default {
 
   methods: {
     onCreateSuccess(data) {
-      console.log("geko base form", data);
       this.$emit("create-success", data);
 
       this.getListData();
@@ -619,7 +641,6 @@ export default {
             _fields.filter.push(this.generateConfigField(f, "filter"));
           }
         }
-
         this.fields = _fields;
 
         return resolve();
@@ -669,7 +690,6 @@ export default {
 
     setDefaultFilter() {
       //GLOBAL FILTER DEFAULT VALUE
-      console.log("global filter", this.$store.state.tmpProgramYear);
       if (this.config.globalFilter) {
         if (this.config.globalFilter.program_year) {
           const _programYear = this.$store.state.tmpProgramYear
@@ -729,6 +749,8 @@ export default {
 
       if (["filter"].includes(key)) {
         _data.form_param = item.methods[key].form_param || null;
+        _data.main = item.methods[key].main || null;
+        _data.icon = item.methods[key].icon || null;
       }
 
       return _data;
@@ -742,7 +764,7 @@ export default {
       let _params = JSON.parse(JSON.stringify(this.params));
       let _filters = JSON.parse(JSON.stringify(this.filters));
       if (this.search) {
-        _params.search_value = this.search;
+        _params[this.config.search_key || "search_value"] = this.search;
       }
 
       if (this.config.globalFilter) {
@@ -930,9 +952,21 @@ export default {
       },
     },
     page(t) {
+      if (
+        typeof this.config.pagination == "boolean" &&
+        this.config.pagination == false
+      ) {
+        return;
+      }
       this.getListData();
     },
     perPage(t) {
+      if (
+        typeof this.config.pagination == "boolean" &&
+        this.config.pagination == false
+      ) {
+        return;
+      }
       this.page = 1;
       this.getListData();
     },

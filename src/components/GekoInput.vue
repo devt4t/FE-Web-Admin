@@ -58,7 +58,13 @@
         }"
         >{{ item.label || "Tolong Gunakan Label Ya..." }}</label
       >
-      <div class="d-flex flex-row input-group-wrapper">
+      <div
+        class="d-flex flex-row input-group-wrapper"
+        :class="{
+          invalid: errors.length > 0,
+        }"
+      >
+        <v-icon v-if="item.icon">{{ `mdi-${item.icon}` }}</v-icon>
         <input
           v-model="tmpValue"
           v-if="['text', 'number'].includes(item.type)"
@@ -68,9 +74,6 @@
           v-on:change="$emit('change', errors[0] ? '' : $event.target.value)"
           :placeholder="item.placeholder || ''"
           v-bind:value="value"
-          :class="{
-            invalid: errors.length > 0,
-          }"
           :disabled="disabled"
         />
 
@@ -106,6 +109,9 @@
           :class="{
             invalid: errors.length > 0,
             [item.ic || '']: true,
+            [item.ic == 'filter-select' && item.placeholder
+              ? `mw-${item.placeholder.length}`
+              : '']: true,
           }"
           :placeholder="item.placeholder || null"
           :disabled="disabled"

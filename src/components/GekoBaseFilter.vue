@@ -6,19 +6,22 @@
       'pb-5': !mainFilter,
       'flex-row': !mainFilter,
       active: open,
+      'main-filter': mainFilter,
     }"
   >
-    <div class="filter-item mb-5" v-for="(item, i) in filters" :key="'hf-' + i">
+    <div class="filter-item" v-for="(item, i) in filters" :key="'hf-' + i">
       <geko-input
         v-model="formData[item.setter]"
         :item="{
           label: item.label,
           type: item.type,
           ic: 'filter-select',
+          hide_label: item.hide_label || mainFilter,
           validation: [],
           option: item.option,
           api: item.getter,
           placeholder: item.label,
+          icon: item.icon,
           param: item.param
             ? {
                 ...item.param,
@@ -81,8 +84,6 @@ export default {
 
   methods: {
     onInit() {
-      console.log("fields", this.fields);
-
       for (const filter of this.fields) {
         // if (
         //   filter.param &&
@@ -112,7 +113,6 @@ export default {
         }
       }
 
-      console.log(this.fields);
       this.filters = this.fields;
     },
     onFilter() {
@@ -163,6 +163,15 @@ export default {
   watch: {
     fields() {
       this.onInit();
+    },
+    formData: {
+      deep: true,
+      immediate: false,
+      handler(t) {
+        if (this.mainFilter) {
+          this.onFilter();
+        }
+      },
     },
   },
 };
