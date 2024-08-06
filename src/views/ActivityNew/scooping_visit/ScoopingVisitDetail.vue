@@ -64,7 +64,7 @@
                 <v-btn
                   v-if="
                     data.status === 'ready_to_submit' &&
-                    ['4', '25', '23', '13'].includes($store.state.User.role)
+                    $_sys.isAllowed('scooping-visit-verification-create')
                   "
                   variant="warning"
                   class="mt-1"
@@ -96,7 +96,7 @@
                   v-if="
                     data.status === 'document_saving' &&
                     data.is_verify == 0 &&
-                    ['4', '13', '14'].includes($store.state.User.role)
+                    $_sys.isAllowed('scooping-visit-gis-verification-create')
                   "
                 >
                   Verifikasi GIS
@@ -105,7 +105,7 @@
                 <v-btn
                   variant="danger"
                   v-if="
-                    ['13', '4', '25', '23'].includes($store.state.User.role) &&
+                    $_sys.isAllowed('scooping-visit-unverification-create') &&
                     data.status === 'submit_review'
                   "
                   @click="onUnverification()"

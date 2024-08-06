@@ -7,8 +7,7 @@
       large
     ></v-breadcrumbs>
 
-    <v-card class="mx-auto my-2" max-width="1000">
-    </v-card>
+    <v-card class="mx-auto my-2" max-width="1000"> </v-card>
   </div>
 </template>
 
@@ -16,6 +15,11 @@
 export default {
   name: "Employee",
   data: () => ({
+    config: {
+      permission: {
+        read: "employee-manager-list",
+      },
+    },
     itemsbr: [
       {
         text: "Employee",
@@ -30,10 +34,10 @@ export default {
     ],
   }),
   mounted() {
-    this.$store.state.maintenanceOverlay = true
+    this.$store.state.maintenanceOverlay = true;
   },
   destroyed() {
-    this.$store.state.maintenanceOverlay = false
-  }
+    this.$store.state.maintenanceOverlay = false;
+  },
 };
 </script>

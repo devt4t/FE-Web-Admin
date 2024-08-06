@@ -27,7 +27,7 @@
                   small
                   variant="danger"
                   @click="onDelete()"
-                  v-if="['4', '13'].includes($store.state.User.role)"
+                  v-if="$_sys.isAllowed('rra-pra-delete')"
                   ><v-icon>mdi-delete-empty</v-icon><span>Hapus</span></v-btn
                 >
 
@@ -41,7 +41,7 @@
                     ['ready_to_submit', 'document_saving'].includes(
                       data.rra.mainRra.status
                     ) &&
-                    ['25', '4', '13'].includes($store.state.User.role)
+                    $_sys.isAllowed('rra-pra-verification-create')
                   "
                 >
                   <v-icon>mdi-file-check-outline</v-icon>
@@ -56,7 +56,7 @@
                   v-if="
                     data.rra.mainRra &&
                     ['submit_review'].includes(data.rra.mainRra.status) &&
-                    ['25', '4', '13'].includes($store.state.User.role)
+                    $_sys.isAllowed('rra-pra-unverification-create')
                   "
                 >
                   <v-icon>mdi-undo-variant</v-icon>

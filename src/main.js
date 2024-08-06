@@ -23,6 +23,7 @@ import service from "@/utils/service.js";
 import alert from "@/utils/alert.js";
 import filter from "@/utils/filter.js";
 import config from "@/utils/config.js";
+import global from "@/utils/global.js";
 
 import "@/utils/validation.js";
 import GekoBaseCrud from "@/components/GekoBaseCrud";
@@ -61,6 +62,7 @@ Vue.use(mdiAccount);
 Vue.prototype.$_alert = alert;
 Vue.prototype.$_api = service;
 Vue.prototype.$_config = config;
+Vue.prototype.$_sys = global;
 
 //global component
 Vue.component("geko-select", vSelect);

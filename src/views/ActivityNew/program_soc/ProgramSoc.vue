@@ -51,7 +51,7 @@
           v-if="
             item.is_verified == 0 &&
             $store.state.User &&
-            ['4', '13', '20', '25'].includes($store.state.User.role)
+            $_sys.isAllowed('sosialisasi-program-verification-create')
           "
           variant="success"
           @click="onVerify"
@@ -61,7 +61,7 @@
           v-if="
             item.is_verified == 1 &&
             $store.state.User &&
-            ['4', '13', '23', '25'].includes($store.state.User.role)
+            $_sys.isAllowed('sosialisasi-program-unverification-create')
           "
           variant="danger"
           @click="onVerify(false)"
@@ -314,12 +314,12 @@ export default {
         export: true,
         pk_field: null,
         permission: {
-          create: "program-soc-create",
-          read: "program-soc-list",
-          update: "program-soc-update",
-          show: "program-soc-show",
-          lookup: "program-soc-lookup",
-          delete: "program-soc-delete",
+          create: "sosialisasi-program-create",
+          read: "sosialisasi-program-list",
+          update: "sosialisasi-program-update",
+          detail: "sosialisasi-program-detail",
+          lookup: "sosialisasi-program-lookup",
+          delete: "sosialisasi-program-delete",
         },
         statistic: {
           statistic_key: "farmer_counter",
@@ -456,7 +456,7 @@ export default {
                   mu_no: "mu_no",
                 },
                 param: {
-                  program_year: this.$store.state.tmpProgramYear,
+                  program_year: "current_program_year",
                 },
                 option: {
                   // getterKey: "data.result",
@@ -481,7 +481,7 @@ export default {
                   kode_ta: "area_code",
                 },
                 param: {
-                  program_year: this.$store.state.tmpProgramYear,
+                  program_year: "current_program_year",
                 },
                 option: {
                   getterKey: "data.result",

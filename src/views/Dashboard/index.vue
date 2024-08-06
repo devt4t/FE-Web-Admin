@@ -370,6 +370,11 @@ export default {
     UMDetail,
   },
   data: () => ({
+    config: {
+      permission: {
+        read: "template-allow-all",
+      },
+    },
     dialogs: {
       ff_detail: {
         show: false,

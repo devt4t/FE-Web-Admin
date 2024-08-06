@@ -350,7 +350,11 @@
       DetailAdjustmentSostam
     },
     data: () => ({
-
+      config: {
+        permission: {
+          read: 'sosialisasi-tanam-list'
+        }
+      },
       page: 1,
       itemsPerPage: 10,
       itemsbr: [

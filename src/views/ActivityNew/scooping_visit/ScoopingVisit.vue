@@ -283,7 +283,7 @@ export default {
           create: "scooping-visit-create",
           read: "scooping-visit-list",
           update: "scooping-visit-update",
-          show: "scooping-visit-show",
+          detail: "scooping-visit-detail",
           lookup: "scooping-visit-lookup",
           delete: "scooping-visit-delete",
         },

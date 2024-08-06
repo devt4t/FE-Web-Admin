@@ -254,6 +254,11 @@ export default {
               },
               true,
             ]);
+            this.$store.commit("set", [
+              "permission",
+              response.data.data.result.role_task,
+              true,
+            ]);
             this.$store.commit("set", ["BaseUrlGet", this.BaseUrlGet, true]);
             this.$store.commit("set", [
               "tmpProgramYear",

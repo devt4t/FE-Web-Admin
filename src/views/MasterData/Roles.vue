@@ -3,6 +3,15 @@
     <template v-slot:detail-slave-raw="{ data }">
       <roles-detail :data="data" />
     </template>
+
+    <template v-slot:list-name="{ item }">
+      <span class="text-capitalize">{{
+        item.name
+          .split(" ")
+          .map((x) => (!["IT", "GIS"].includes(x) ? x.toLowerCase() : x))
+          .join(" ")
+      }}</span>
+    </template>
   </geko-base-crud>
 </template>
 
@@ -24,12 +33,12 @@ export default {
         setter: "addEmployeePosition_new",
         pk_field: null,
         permission: {
-          create: "roles-create",
-          read: "roles-list",
-          update: "roles-update",
-          show: "roles-show",
-          lookup: "roles-lookup",
-          delete: "roles-delete",
+          create: "task-create",
+          read: "task-list",
+          update: "task-update",
+          detail: "task-detail",
+          lookup: "task-lookup",
+          delete: "task-delete",
         },
         slave: [],
         fields: [
@@ -48,7 +57,9 @@ export default {
             id: "name",
             label: "Nama",
             methods: {
-              list: true,
+              list: {
+                type: "row-slot",
+              },
               detail: true,
               create: { validation: ["required"] },
               update: { validation: ["required"], setter: "new_name" },

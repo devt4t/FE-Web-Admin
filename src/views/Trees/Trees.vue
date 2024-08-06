@@ -10,7 +10,12 @@
     ></v-breadcrumbs>
     <!-- Modal -->
     <!-- Detail -->
-    <v-dialog v-model="dialogDetail" max-width="800px" content-class="rounded-xl" scrollable>
+    <v-dialog
+      v-model="dialogDetail"
+      max-width="800px"
+      content-class="rounded-xl"
+      scrollable
+    >
       <v-card>
         <v-card-title>
           <span class="headline">Detail Pohon</span>
@@ -278,36 +283,52 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="close">
-              Keluar
-            </v-btn>
+            <v-btn color="blue darken-1" text @click="close"> Keluar </v-btn>
             <v-btn color="blue darken-1" text @click="save"> Simpan </v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
     </v-dialog>
     <!-- Add Tree Locations -->
-    <v-dialog v-model="dialogs.treeLocations.add.show" content-class="rounded-xl" max-width="700px" persistent>
+    <v-dialog
+      v-model="dialogs.treeLocations.add.show"
+      content-class="rounded-xl"
+      max-width="700px"
+      persistent
+    >
       <v-card>
         <!-- Title -->
         <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
           <span class="">Tambah Lokasi Pohon</span>
           <v-spacer></v-spacer>
-          <v-icon color="red" @click="closeDialogAdjustTreeLocation">mdi-close-circle</v-icon>
+          <v-icon color="red" @click="closeDialogAdjustTreeLocation"
+            >mdi-close-circle</v-icon
+          >
         </v-card-title>
         <!-- Content -->
         <v-card-text>
           <!-- loading overlay -->
-          <v-overlay :value="dialogs.treeLocations.add.loading" absolute class="rounded-xl" color="white">
-              <div class="d-flex flex-column align-center justify-center">
-                  <v-progress-circular
-                      indeterminate
-                      color="green"
-                      size="123"
-                      width="7"
-                  ></v-progress-circular>
-                  <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Getting Trees in <strong>{{ dialogs.treeLocations.add.forms.mu_no || 'All' }}</strong> data...</p>
-              </div>
+          <v-overlay
+            :value="dialogs.treeLocations.add.loading"
+            absolute
+            class="rounded-xl"
+            color="white"
+          >
+            <div class="d-flex flex-column align-center justify-center">
+              <v-progress-circular
+                indeterminate
+                color="green"
+                size="123"
+                width="7"
+              ></v-progress-circular>
+              <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">
+                Getting Trees in
+                <strong>{{
+                  dialogs.treeLocations.add.forms.mu_no || "All"
+                }}</strong>
+                data...
+              </p>
+            </div>
           </v-overlay>
           <v-row class="my-0">
             <!-- select MU -->
@@ -317,7 +338,12 @@
                 hide-details
                 outlined
                 rounded
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }"
                 color="green"
                 item-color="green"
                 class="mb-2 mb-lg-0"
@@ -340,7 +366,12 @@
                 hide-details
                 outlined
                 rounded
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }"
                 color="green"
                 item-color="green"
                 class="mb-2 mb-lg-0"
@@ -357,7 +388,9 @@
                     color="green white--text"
                     close
                     @click="data.select"
-                    @click:close="dialogs.treeLocations.add.forms.KAYU.splice(data.index, 1)"
+                    @click:close="
+                      dialogs.treeLocations.add.forms.KAYU.splice(data.index, 1)
+                    "
                   >
                     {{ data.item.tree_name }}
                   </v-chip>
@@ -373,7 +406,12 @@
                 hide-details
                 outlined
                 rounded
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }"
                 color="green"
                 item-color="green"
                 class="mb-2 mb-lg-0"
@@ -390,7 +428,9 @@
                     color="green white--text"
                     close
                     @click="data.select"
-                    @click:close="dialogs.treeLocations.add.forms.MPTS.splice(data.index, 1)"
+                    @click:close="
+                      dialogs.treeLocations.add.forms.MPTS.splice(data.index, 1)
+                    "
                   >
                     {{ data.item.tree_name }}
                   </v-chip>
@@ -406,7 +446,12 @@
                 hide-details
                 outlined
                 rounded
-                :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
+                :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }"
                 color="green"
                 item-color="green"
                 class="mb-2 mb-lg-0"
@@ -423,7 +468,12 @@
                     color="green white--text"
                     close
                     @click="data.select"
-                    @click:close="dialogs.treeLocations.add.forms.CROPS.splice(data.index, 1)"
+                    @click:close="
+                      dialogs.treeLocations.add.forms.CROPS.splice(
+                        data.index,
+                        1
+                      )
+                    "
                   >
                     {{ data.item.tree_name }}
                   </v-chip>
@@ -434,12 +484,19 @@
         </v-card-text>
         <!-- Actions -->
         <v-card-actions>
-          <v-btn rounded color="red white--text pr-3" @click="closeDialogAdjustTreeLocation">
+          <v-btn
+            rounded
+            color="red white--text pr-3"
+            @click="closeDialogAdjustTreeLocation"
+          >
             <v-icon class="mr-1">mdi-close-circle</v-icon>
             Keluar
           </v-btn>
           <v-divider class="mx-2"></v-divider>
-          <v-btn rounded color="green white--text px-3" @click="saveTreeLocations"
+          <v-btn
+            rounded
+            color="green white--text px-3"
+            @click="saveTreeLocations"
             :disabled="!dialogs.treeLocations.add.forms.mu_no"
           >
             <v-icon class="mr-1">mdi-content-save-check</v-icon>
@@ -449,162 +506,215 @@
       </v-card>
     </v-dialog>
     <!-- Delete -->
-    <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
+    <v-dialog
+      v-model="dialogDelete"
+      max-width="500px"
+      content-class="rounded-xl"
+    >
       <v-card>
         <v-card-title class="headline"
           >Apa Anda Yakin Menghapus Data Ini?</v-card-title
         >
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDelete"
-            >Keluar</v-btn
-          >
-          <v-btn color="blue darken-1" text @click="verifDelete"
-            >OK</v-btn
-          >
+          <v-btn color="blue darken-1" text @click="closeDelete">Keluar</v-btn>
+          <v-btn color="blue darken-1" text @click="verifDelete">OK</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <!-- END:Modal -->
-    
-    <v-container fluid
-      data-aos="fade-up"
-      data-aos-delay="200">
+
+    <v-container fluid data-aos="fade-up" data-aos-delay="200">
       <!-- Expansions Panels -->
       <v-expansion-panels multiple v-model="expansions.model">
         <!-- Main Tree Section -->
         <v-expansion-panel class="rounded-xl">
           <v-expansion-panel-header>
-              <h3 class="dark--text"><v-icon class="mr-1">mdi-pine-tree</v-icon> Pohon Utama </h3>
+            <h3 class="dark--text">
+              <v-icon class="mr-1">mdi-pine-tree</v-icon> Pohon Utama
+            </h3>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-              <!-- loading overlay -->
-              <v-overlay :value="expansions.mainTrees.loading" absolute class="rounded-xl" color="white">
-                  <div class="d-flex flex-column align-center justify-center">
-                      <v-progress-circular
-                          indeterminate
-                          color="green"
-                          size="123"
-                          width="7"
-                      ></v-progress-circular>
-                      <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Mengambil Data <strong> Pohon Utama</strong></p>
-                  </div>
-              </v-overlay>
+            <!-- loading overlay -->
+            <v-overlay
+              :value="expansions.mainTrees.loading"
+              absolute
+              class="rounded-xl"
+              color="white"
+            >
+              <div class="d-flex flex-column align-center justify-center">
+                <v-progress-circular
+                  indeterminate
+                  color="green"
+                  size="123"
+                  width="7"
+                ></v-progress-circular>
+                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">
+                  Mengambil Data <strong> Pohon Utama</strong>
+                </p>
+              </div>
+            </v-overlay>
 
-              <v-data-table
-                :headers="headers"
-                :items="dataobject"
-                :search="search"
-                :footer-props="{
-                  itemsPerPageText:'Jumlah Data Per Halaman'
-                }"
-                class=""
-              >
-                <template v-slot:top>
-                  <v-toolbar flat>
-                    <v-text-field
-                      dense
-                      outlined
-                      rounded
-                      v-model="search"
-                      append-icon="mdi-magnify"
-                      color="green"
-                      label="Pencarian"
-                      hide-details
-                    ></v-text-field>
-                    <v-divider class="mx-2"></v-divider>
-                    <v-btn rounded dark class="mb-2" @click="showAddModal()" color="green">
-                      <v-icon small>mdi-plus</v-icon> Tambah Data
-                    </v-btn>
-                  </v-toolbar>
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <v-icon class="mr-3" @click="showDetail(item)" small color="info">
-                    mdi-information-outline
-                  </v-icon>
-                  <v-icon class="mr-2" @click="editItem(item)" color="warning">
-                    mdi-pencil
-                  </v-icon>
-                  <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon>
-                </template>
-              </v-data-table>
-            </v-expansion-panel-content>
+            <v-data-table
+              :headers="headers"
+              :items="dataobject"
+              :search="search"
+              :footer-props="{
+                itemsPerPageText: 'Jumlah Data Per Halaman',
+              }"
+              class=""
+            >
+              <template v-slot:top>
+                <v-toolbar flat>
+                  <v-text-field
+                    dense
+                    outlined
+                    rounded
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    color="green"
+                    label="Pencarian"
+                    hide-details
+                  ></v-text-field>
+                  <v-divider class="mx-2"></v-divider>
+                  <v-btn
+                    rounded
+                    dark
+                    class="mb-2"
+                    @click="showAddModal()"
+                    color="green"
+                    v-if="$_sys.isAllowed('trees-create')"
+                  >
+                    <v-icon small>mdi-plus</v-icon> Tambah Data
+                  </v-btn>
+                </v-toolbar>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-icon
+                  class="mr-3"
+                  @click="showDetail(item)"
+                  small
+                  color="info"
+                  v-if="$_sys.isAllowed('trees-detail')"
+                >
+                  mdi-information-outline
+                </v-icon>
+                <v-icon
+                  class="mr-2"
+                  @click="editItem(item)"
+                  color="warning"
+                  v-if="$_sys.isAllowed('trees-update')"
+                >
+                  mdi-pencil
+                </v-icon>
+                <v-icon
+                  @click="deleteItem(item)"
+                  color="red"
+                  v-if="$_sys.isAllowed('trees-delete')"
+                >
+                  mdi-delete
+                </v-icon>
+              </template>
+            </v-data-table>
+          </v-expansion-panel-content>
         </v-expansion-panel>
         <!-- Tree Location Section -->
         <v-expansion-panel class="rounded-xl">
           <v-expansion-panel-header>
-              <h3 class="dark--text"><v-icon class="mr-1">mdi-forest</v-icon> Pohon per-Management Unit</h3>
+            <h3 class="dark--text">
+              <v-icon class="mr-1">mdi-forest</v-icon> Pohon per-Management Unit
+            </h3>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-              <!-- loading overlay -->
-              <v-overlay :value="expansions.treeLocations.loading" absolute class="rounded-xl" color="white">
-                  <div class="d-flex flex-column align-center justify-center">
-                      <v-progress-circular
-                          indeterminate
-                          color="green"
-                          size="123"
-                          width="7"
-                      ></v-progress-circular>
-                      <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">Mengambil Data Pohon di <strong>{{ expansions.treeLocations.optionsMU.model }}</strong> data...</p>
-                  </div>
-              </v-overlay>
-              <v-data-table
-                :headers="expansions.treeLocations.headers"
-                :items="expansions.treeLocations.items"
-                :search="expansions.treeLocations.search"
-                :footer-props="{
-                  itemsPerPageText:'Jumlah Data Per Halaman'
-                }"
-                class=""
-              >
-                <template v-slot:top>
-                  <v-row class="align-center justify-center mx-0 my-0">
-                    <!-- select MU -->
-                    <v-autocomplete
-                      clearable
-                      dense
-                      hide-details
-                      outlined
-                      rounded
-                      :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-                      color="green"
-                      item-color="green"
-                      class="mb-2 mb-lg-0"
-                      item-value="mu_no"
-                      item-text="name"
-                      :label="expansions.treeLocations.optionsMU.label"
-                      :items="expansions.treeLocations.optionsMU.items"
-                      :loading="expansions.treeLocations.optionsMU.loading"
-                      :disabled="expansions.treeLocations.optionsMU.disabled"
-                      v-model="expansions.treeLocations.optionsMU.model"
-                    >
-
-                    </v-autocomplete>
-                    <v-divider class="mx-2"></v-divider>
-                    <!-- search -->
-                    <v-text-field
-                      dense
-                      class="mb-2 mb-lg-0 mr-lg-2"
-                      outlined
-                      rounded
-                      v-model="expansions.treeLocations.search"
-                      append-icon="mdi-magnify"
-                      color="green"
-                      label="Pencarian"
-                      hide-details
-                    ></v-text-field>
-                    <!-- add button -->
-                    <v-btn rounded dark class="mb-2" @click="dialogs.treeLocations.add.show = true" color="green">
-                      <v-icon class="mr-1">mdi-nature-people</v-icon> Sesuaikan Pohon
-                    </v-btn>
-                  </v-row>
-                </template>
-                <template v-slot:item.actions="{ item }">
-
-                </template>
-              </v-data-table>
-            </v-expansion-panel-content>
+            <!-- loading overlay -->
+            <v-overlay
+              :value="expansions.treeLocations.loading"
+              absolute
+              class="rounded-xl"
+              color="white"
+            >
+              <div class="d-flex flex-column align-center justify-center">
+                <v-progress-circular
+                  indeterminate
+                  color="green"
+                  size="123"
+                  width="7"
+                ></v-progress-circular>
+                <p class="mt-2 mb-0 green--text white rounded-xl px-2 py-1">
+                  Mengambil Data Pohon di
+                  <strong>{{
+                    expansions.treeLocations.optionsMU.model
+                  }}</strong>
+                  data...
+                </p>
+              </div>
+            </v-overlay>
+            <v-data-table
+              :headers="expansions.treeLocations.headers"
+              :items="expansions.treeLocations.items"
+              :search="expansions.treeLocations.search"
+              :footer-props="{
+                itemsPerPageText: 'Jumlah Data Per Halaman',
+              }"
+              class=""
+            >
+              <template v-slot:top>
+                <v-row class="align-center justify-center mx-0 my-0">
+                  <!-- select MU -->
+                  <v-autocomplete
+                    clearable
+                    dense
+                    hide-details
+                    outlined
+                    rounded
+                    :menu-props="{
+                      bottom: true,
+                      offsetY: true,
+                      rounded: 'xl',
+                      transition: 'slide-y-transition',
+                    }"
+                    color="green"
+                    item-color="green"
+                    class="mb-2 mb-lg-0"
+                    item-value="mu_no"
+                    item-text="name"
+                    :label="expansions.treeLocations.optionsMU.label"
+                    :items="expansions.treeLocations.optionsMU.items"
+                    :loading="expansions.treeLocations.optionsMU.loading"
+                    :disabled="expansions.treeLocations.optionsMU.disabled"
+                    v-model="expansions.treeLocations.optionsMU.model"
+                  >
+                  </v-autocomplete>
+                  <v-divider class="mx-2"></v-divider>
+                  <!-- search -->
+                  <v-text-field
+                    dense
+                    class="mb-2 mb-lg-0 mr-lg-2"
+                    outlined
+                    rounded
+                    v-model="expansions.treeLocations.search"
+                    append-icon="mdi-magnify"
+                    color="green"
+                    label="Pencarian"
+                    hide-details
+                  ></v-text-field>
+                  <!-- add button -->
+                  <v-btn
+                    rounded
+                    dark
+                    class="mb-2"
+                    @click="dialogs.treeLocations.add.show = true"
+                    color="green"
+                  >
+                    <v-icon class="mr-1">mdi-nature-people</v-icon> Sesuaikan
+                    Pohon
+                  </v-btn>
+                </v-row>
+              </template>
+              <template v-slot:item.actions="{ item }"> </template>
+            </v-data-table>
+          </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
     </v-container>
@@ -625,17 +735,22 @@ import axios from "axios";
 export default {
   name: "Trees",
   data: () => ({
+    config: {
+      permission: {
+        read: "trees-list",
+      },
+    },
     expansions: {
-      model: [0,1],
+      model: [0, 1],
       mainTrees: {
-        loading: false
+        loading: false,
       },
       treeLocations: {
         headers: [
-          {text: 'Management Unit', value: 'mu_name'},
-          {text: 'Kode Pohon', value: 'tree_code'},
-          {text: 'Nama Pohon', value: 'tree_name'},
-          {text: 'Kategori Pohon', value: 'category', align: 'center'},
+          { text: "Management Unit", value: "mu_name" },
+          { text: "Kode Pohon", value: "tree_code" },
+          { text: "Nama Pohon", value: "tree_name" },
+          { text: "Kategori Pohon", value: "category", align: "center" },
           // {text: 'Actions', value: 'actions', align: 'right'},
         ],
         items: [],
@@ -643,12 +758,12 @@ export default {
         optionsMU: {
           disabled: false,
           items: [],
-          label: 'Management Unit',
+          label: "Management Unit",
           loading: false,
-          model: '',
+          model: "",
         },
-        search: ''
-      }
+        search: "",
+      },
     },
     dialogs: {
       treeLocations: {
@@ -656,13 +771,13 @@ export default {
           loading: false,
           show: false,
           forms: {
-            mu_no: '',
+            mu_no: "",
             KAYU: [],
             MPTS: [],
-            CROPS: []
-          }
-        }
-      }
+            CROPS: [],
+          },
+        },
+      },
     },
     itemsbr: [
       {
@@ -693,7 +808,7 @@ export default {
       { text: "Pohon Buah/MPTS", value: "Pohon_Buah" },
       { text: "Perkebunan", value: "Perkebunan" },
       { text: "Tanaman Bawah/Empon-empon", value: "Tanaman_Bawah_Empon" },
-      { text: "Mangrove", value: "mangrove"},
+      { text: "Mangrove", value: "mangrove" },
     ],
     headers: [
       {
@@ -740,25 +855,25 @@ export default {
     colorsnackbar: null,
   }),
   watch: {
-    'expansions.treeLocations.optionsMU.model': {
+    "expansions.treeLocations.optionsMU.model": {
       async handler(newVal, oldVal) {
         if (newVal != oldVal) {
-          await this.getTreeLocationsData(newVal, 'TABLE')
+          await this.getTreeLocationsData(newVal, "TABLE");
         }
-      }
+      },
     },
-    'dialogs.treeLocations.add.forms.mu_no': {
+    "dialogs.treeLocations.add.forms.mu_no": {
       async handler(newVal, oldVal) {
         if (newVal != oldVal) {
-          this.dialogs.treeLocations.add.forms.KAYU = []
-          this.dialogs.treeLocations.add.forms.MPTS = []
-          this.dialogs.treeLocations.add.forms.CROPS = []
+          this.dialogs.treeLocations.add.forms.KAYU = [];
+          this.dialogs.treeLocations.add.forms.MPTS = [];
+          this.dialogs.treeLocations.add.forms.CROPS = [];
           if (newVal) {
-            await this.getTreeLocationsData(newVal, 'FORM')
+            await this.getTreeLocationsData(newVal, "FORM");
           }
         }
-      }
-    }
+      },
+    },
   },
   async mounted() {
     this.authtoken = localStorage.getItem("token");
@@ -766,14 +881,14 @@ export default {
     this.BaseUrlUpload = localStorage.getItem("BaseUrlUpload");
     this.User = JSON.parse(localStorage.getItem("User"));
     // getting Management Units Data
-    this.$store.state.loadingOverlay = true
-    this.$store.state.loadingOverlayText = 'Getting Management Units Data...'
-    await this.getManagementUnits()
-    this.$store.state.loadingOverlayText = null
-    this.$store.state.loadingOverlay = false
+    this.$store.state.loadingOverlay = true;
+    this.$store.state.loadingOverlayText = "Getting Management Units Data...";
+    await this.getManagementUnits();
+    this.$store.state.loadingOverlayText = null;
+    this.$store.state.loadingOverlay = false;
 
     // Getting Table Data
-    await this.initialize()
+    await this.initialize();
     // localStorage.setItem("token", this.authtoken);
     // this.getMU();
   },
@@ -781,19 +896,22 @@ export default {
     async initialize() {
       try {
         // getting Main Trees Data
-        this.expansions.mainTrees.loading = true
+        this.expansions.mainTrees.loading = true;
         const response = await axios.get(this.BaseUrlGet + "GetTreesAll", {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
           },
-        })
+        });
         if (response.data.length != 0) {
           this.dataobject = response.data.data.result.data;
         } else {
-          this.dataobject = []
-          console.log("Kosong")
+          this.dataobject = [];
+          console.log("Kosong");
         }
-        await this.getTreeLocationsData(this.expansions.treeLocations.optionsMU.model, 'TABLE')
+        await this.getTreeLocationsData(
+          this.expansions.treeLocations.optionsMU.model,
+          "TABLE"
+        );
       } catch (error) {
         console.error(error);
         if (error.response.status == 401) {
@@ -802,61 +920,75 @@ export default {
           this.$router.push("/");
         }
       } finally {
-        this.expansions.mainTrees.loading = false
+        this.expansions.mainTrees.loading = false;
       }
     },
     async getTreeLocationsData(MU, TYPE) {
-      if (TYPE == 'TABLE') this.expansions.treeLocations.loading = true
-      else this.dialogs.treeLocations.add.loading = true
+      if (TYPE == "TABLE") this.expansions.treeLocations.loading = true;
+      else this.dialogs.treeLocations.add.loading = true;
       let params = {
-        mu_no: MU || ''
-      }
-      await axios.get(this.BaseUrlGet + "GetTreesLocation?" + new URLSearchParams(params), {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        }).then((res) => {
-          if (TYPE == 'TABLE') this.expansions.treeLocations.items = res.data.data.result.data
+        mu_no: MU || "",
+      };
+      await axios
+        .get(
+          this.BaseUrlGet + "GetTreesLocation?" + new URLSearchParams(params),
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        )
+        .then((res) => {
+          if (TYPE == "TABLE")
+            this.expansions.treeLocations.items = res.data.data.result.data;
           else {
             res.data.data.result.data.forEach((val, index) => {
-              this.dialogs.treeLocations.add.forms[val.category].push(val.tree_code)
-            })
-          }          
-        }).catch(err => {
-          if (TYPE == 'TABLE') this.expansions.treeLocations.items = []
+              this.dialogs.treeLocations.add.forms[val.category].push(
+                val.tree_code
+              );
+            });
+          }
+        })
+        .catch((err) => {
+          if (TYPE == "TABLE") this.expansions.treeLocations.items = [];
           else {
-            this.dialogs.treeLocations.add.forms.KAYU = []
-            this.dialogs.treeLocations.add.forms.MPTS = []
-            this.dialogs.treeLocations.add.forms.CROPS = []
+            this.dialogs.treeLocations.add.forms.KAYU = [];
+            this.dialogs.treeLocations.add.forms.MPTS = [];
+            this.dialogs.treeLocations.add.forms.CROPS = [];
           }
           if (err.response.status == 401) {
             this.alerttoken = true;
             localStorage.removeItem("token");
             this.$router.push("/");
           }
-        }).finally(() => {
-          if (TYPE == 'TABLE') this.expansions.treeLocations.loading = false
-          else this.dialogs.treeLocations.add.loading = false
         })
+        .finally(() => {
+          if (TYPE == "TABLE") this.expansions.treeLocations.loading = false;
+          else this.dialogs.treeLocations.add.loading = false;
+        });
     },
     async getManagementUnits() {
-      this.expansions.treeLocations.optionsMU.loading = true
-      await axios.get(this.BaseUrlGet + "GetManagementUnit", {
-        headers: {
-          Authorization: `Bearer ` + this.authtoken,
-        },
-      }).then((res) => {
-        this.expansions.treeLocations.optionsMU.items = res.data.data.result
-      }).catch(err => {
-        this.expansions.treeLocations.optionsMU.items = []
-        if (err.response.status == 401) {
-          this.alerttoken = true;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        }
-      }).finally(() => {
-        this.expansions.treeLocations.optionsMU.loading = false
-      })
+      this.expansions.treeLocations.optionsMU.loading = true;
+      await axios
+        .get(this.BaseUrlGet + "GetManagementUnit", {
+          headers: {
+            Authorization: `Bearer ` + this.authtoken,
+          },
+        })
+        .then((res) => {
+          this.expansions.treeLocations.optionsMU.items = res.data.data.result;
+        })
+        .catch((err) => {
+          this.expansions.treeLocations.optionsMU.items = [];
+          if (err.response.status == 401) {
+            this.alerttoken = true;
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          }
+        })
+        .finally(() => {
+          this.expansions.treeLocations.optionsMU.loading = false;
+        });
     },
     async getDetail(item) {
       this.defaultItem.id = item.id;
@@ -1204,61 +1336,71 @@ export default {
       // this.close();
     },
     async saveTreeLocations() {
-      this.dialogs.treeLocations.add.show = false 
-      this.$store.state.loadingOverlayText = 'Adjust Tree Locations...'
-      this.$store.state.loadingOverlay = true
-      
+      this.dialogs.treeLocations.add.show = false;
+      this.$store.state.loadingOverlayText = "Adjust Tree Locations...";
+      this.$store.state.loadingOverlay = true;
+
       let dataForPost = {
         mu_no: this.dialogs.treeLocations.add.forms.mu_no,
         KAYU: this.dialogs.treeLocations.add.forms.KAYU || [],
         MPTS: this.dialogs.treeLocations.add.forms.MPTS || [],
         CROPS: this.dialogs.treeLocations.add.forms.CROPS || [],
-      }
-      console.log(dataForPost)
-      await axios.post(this.BaseUrlGet + 'AdjustTreesLocation',dataForPost, {
-        headers: {
-          Authorization: `Bearer ` + this.authtoken,
-        },
-      }).then(response => {
-        let res = response.data.data.result
+      };
+      console.log(dataForPost);
+      await axios
+        .post(this.BaseUrlGet + "AdjustTreesLocation", dataForPost, {
+          headers: {
+            Authorization: `Bearer ` + this.authtoken,
+          },
+        })
+        .then((response) => {
+          let res = response.data.data.result;
 
-        // show snackbar
-        this.textsnackbar = `Success Adjust Trees in ${res.mu_name} (${res.deleted} -> ${parseInt(res.created.KAYU) + parseInt(res.created.MPTS) + parseInt(res.created.CROPS)})`
-        this.timeoutsnackbar = 100000
-        this.colorsnackbar = 'green rounded-xl'
-        this.snackbar = true
+          // show snackbar
+          this.textsnackbar = `Success Adjust Trees in ${res.mu_name} (${
+            res.deleted
+          } -> ${
+            parseInt(res.created.KAYU) +
+            parseInt(res.created.MPTS) +
+            parseInt(res.created.CROPS)
+          })`;
+          this.timeoutsnackbar = 100000;
+          this.colorsnackbar = "green rounded-xl";
+          this.snackbar = true;
 
-        // reset form
-        this.dialogs.treeLocations.add.forms = {
-          mu_no: '',
-          KAYU: [],
-          MPTS: [],
-          CROPS: []
-        }
-      }).catch(err => {
-        console.log(err.response)
-        if (err.response.status == 401) {
-          this.alerttoken = true;
-          localStorage.removeItem("token");
-          this.$router.push("/");
-        } else {
-          this.dialogs.treeLocations.add.show = true 
-        }
-      }).finally(() => {
-        this.$store.state.loadingOverlayText = null
-        this.$store.state.loadingOverlay = false
-      })
+          // reset form
+          this.dialogs.treeLocations.add.forms = {
+            mu_no: "",
+            KAYU: [],
+            MPTS: [],
+            CROPS: [],
+          };
+        })
+        .catch((err) => {
+          console.log(err.response);
+          if (err.response.status == 401) {
+            this.alerttoken = true;
+            localStorage.removeItem("token");
+            this.$router.push("/");
+          } else {
+            this.dialogs.treeLocations.add.show = true;
+          }
+        })
+        .finally(() => {
+          this.$store.state.loadingOverlayText = null;
+          this.$store.state.loadingOverlay = false;
+        });
     },
     closeDialogAdjustTreeLocation() {
-      this.dialogs.treeLocations.add.show = false
+      this.dialogs.treeLocations.add.show = false;
       // reset form
       this.dialogs.treeLocations.add.forms = {
-        mu_no: '',
+        mu_no: "",
         KAYU: [],
         MPTS: [],
-        CROPS: []
-      }
-    }
+        CROPS: [],
+      };
+    },
   },
 };
 </script>

@@ -23,11 +23,12 @@
         small
         class="d-flex flex-row align-items-center mt-2"
         @click="onAssignProgramYear(item)"
+        v-if="$_sys.isAllowed('field-facilitator-update')"
       >
         <v-icon small class="mr-1">mdi-account-switch</v-icon>
         <span>Assign</span>
       </v-btn>
-      <v-btn
+      <!-- <v-btn
         variant="warning"
         small
         class="d-flex flex-row align-items-center mt-1"
@@ -41,12 +42,12 @@
       >
         <v-icon small class="mr-1">mdi-email-edit-outline</v-icon>
         <span>Email</span>
-      </v-btn>
+      </v-btn> -->
     </template>
 
     <template v-slot:list-main_pivots_program_year="{ item }">
       <div
-        class="d-flex flex-row list-program-year"
+        class="d-flex flex-row list-program-year justify-content-center"
         style="width: 150px; flex-wrap: wrap"
         v-if="item.main_pivots_program_year"
       >
@@ -561,6 +562,13 @@ export default {
     },
   },
 
+  mounted() {
+    this.$set(this.config, "setter_ext_payload", {
+      active: "1",
+      user_id: this.$store.state.User.employee_no,
+    });
+  },
+
   data() {
     return {
       ffData: null,
@@ -575,10 +583,7 @@ export default {
         getter: "GetFFAllWeb_new",
         getterDataKey: "data",
         setter: "AddFieldFacilitator",
-        setter_ext_payload: {
-          active: "1",
-          user_id: this.$store.state.User.employee_no,
-        },
+        setter_ext_payload: {},
         detail: "GetDetailFFWeb_new",
         detailIdKey: "ff_no",
         detailKey: "data.DetailFarmerMain",
@@ -605,7 +610,7 @@ export default {
           create: "field-facilitator-create",
           read: "field-facilitator-list",
           update: "field-facilitator-update",
-          show: "field-facilitator-show",
+          detail: "field-facilitator-detail",
           lookup: "field-facilitator-lookup",
           delete: "field-facilitator-delete",
         },
@@ -1233,6 +1238,7 @@ export default {
             label: "Program Year",
             methods: {
               list: {
+                header_class: "text-center",
                 type: "row-slot",
               },
               detail: {

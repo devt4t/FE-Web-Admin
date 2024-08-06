@@ -319,6 +319,11 @@ import data from "bootstrap/js/src/dom/data";
 
 export default {
   data: () => ({
+    config: {
+      permission: {
+        read: "lahan-list",
+      },
+    },
     userEmpNo: "",
     fcData: [],
     userGetParams: [],

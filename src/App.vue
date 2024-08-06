@@ -69,6 +69,7 @@
           :class="{
             activities: group.title == 'Activities',
             carbon: isCarbon && group.title == 'Activities',
+            'non-carbon': !isCarbon && group.title == 'Activities',
           }"
         >
           <button
@@ -100,6 +101,10 @@
           <div
             v-else-if="group.title === 'Activities'"
             class="sidebar-title mb-0 activities d-flex flex-row justify-content-between align-items-center"
+            :class="{
+              carbon: isCarbon && group.title == 'Activities',
+              'non-carbon': !isCarbon && group.title == 'Activities',
+            }"
           >
             <p class="mb-0">{{ group.title }}</p>
             <div class="carbon-switch">
@@ -467,23 +472,7 @@ export default {
     },
   }),
   mounted() {
-    if (!this.$store.state.tmpProjectPurpose) {
-      this.$store.commit("set", ["tmpProjectPurpose", "non-carbon", true]);
-    } else {
-      this.isCarbon = this.$store.state.tmpProjectPurpose === "carbon";
-    }
-    if (!this.$store.state.token && !localStorage.getItem("token")) {
-      //not authorized
-      this.$router.push("/");
-      this.isLoggedIn = false;
-      return;
-    } else {
-      this.buildConfig();
-      if (this.$route.path == "/") {
-        this.$router.push("/Dashboard");
-      }
-      this.isLoggedIn = true;
-    }
+    this.onInit();
   },
   watch: {
     isCarbon: {
@@ -522,6 +511,43 @@ export default {
     },
   },
   methods: {
+    async onInit() {
+      if (!this.$store.state.tmpProjectPurpose) {
+        this.$store.commit("set", ["tmpProjectPurpose", "non-carbon", true]);
+      } else {
+        this.isCarbon = this.$store.state.tmpProjectPurpose === "carbon";
+      }
+      if (!this.$store.state.token && !localStorage.getItem("token")) {
+        //not authorized
+        this.$router.push("/");
+        this.isLoggedIn = false;
+        return;
+      } else {
+        await this.getLatestPermission();
+        this.buildConfig();
+        if (this.$route.path == "/") {
+          this.$router.push("/Dashboard");
+        }
+        this.isLoggedIn = true;
+      }
+    },
+    getLatestPermission() {
+      return new Promise(async (resolve, reject) => {
+        this.$_api
+          .get("getEmployeeTaskRole_new")
+          .then((res) => {
+            if (Array.isArray(res.role_task)) {
+              this.$store.commit("set", ["permission", res.role_task, true]);
+              return resolve(res.role_task);
+            } else {
+              return reject();
+            }
+          })
+          .catch(() => {
+            return reject();
+          });
+      });
+    },
     avatarHelper(name) {
       if (typeof name !== "string") return;
       if (name.split(" ").length > 1) {
@@ -532,7 +558,6 @@ export default {
     },
     async buildConfig() {
       if (Array.isArray(this.items) && this.items.length > 0) return;
-      //test
       if (!this.$store.state.User) return;
       if (!Array.isArray(this.$store.state.User.list_val_menu)) return;
 
@@ -559,21 +584,32 @@ export default {
           continue;
         }
         if (!Array.isArray(menu.items)) {
-          listMenu.push({
-            title: menu.title,
-            icon: menu.icon,
-            to: menu.to,
-          });
+          const _component = await import(`@/views/${menu.component}.vue`);
+          if (_component.default.data instanceof Function) {
+            if (
+              _component.default.data().config &&
+              _component.default.data().config.permission &&
+              this.$_sys.isAllowed(
+                _component.default.data().config.permission.read
+              )
+            ) {
+              listMenu.push({
+                title: menu.title,
+                icon: menu.icon,
+                to: menu.to,
+              });
 
-          if (this.$router.getRoutes().find((x) => x.name === menu.name)) {
-            continue;
+              if (this.$router.getRoutes().find((x) => x.name === menu.name)) {
+                continue;
+              }
+
+              router.addRoute({
+                path: menu.to,
+                name: menu.name,
+                component: () => import(`@/views/${menu.component}.vue`),
+              });
+            }
           }
-
-          router.addRoute({
-            path: menu.to,
-            name: menu.name,
-            component: () => import(`@/views/${menu.component}.vue`),
-          });
         } else {
           //has submenu
           let _listMenuItem = {
@@ -583,39 +619,55 @@ export default {
           };
 
           for (const submenu of menu.items) {
-            let isAllowed = false;
-            let permissionList = !Array.isArray(submenu.permission)
-              ? [submenu.permission]
-              : submenu.permission;
+            // let isAllowed = false;
+            // let permissionList = !Array.isArray(submenu.permission)
+            //   ? [submenu.permission]
+            //   : submenu.permission;
 
-            for (const _permission of permissionList) {
-              isAllowed =
-                this.$store.state.User.list_val_menu.includes(_permission);
-            }
-            if (!isAllowed) continue;
+            // for (const _permission of permissionList) {
+            //   isAllowed =
+            //     this.$store.state.User.list_val_menu.includes(_permission);
+            // }
+            // if (!isAllowed) continue;
+            const _component = await import(`@/views/${submenu.component}.vue`);
+            // console.log("c", JSON.stringify(_component.default.data()));
 
-            if (!submenu.hide) {
-              _listMenuItem.items.push({
-                title: submenu.title,
-                to: submenu.to,
-                icon: submenu.icon,
-                update: submenu.update,
-                new: submenu.new,
-                type: Array.isArray(submenu.type) ? submenu.type : [],
-              });
-            }
+            if (_component.default.data instanceof Function) {
+              if (
+                _component.default.data().config &&
+                _component.default.data().config.permission &&
+                this.$_sys.isAllowed(
+                  _component.default.data().config.permission.read
+                )
+              ) {
+                if (!submenu.hide) {
+                  _listMenuItem.items.push({
+                    title: submenu.title,
+                    to: submenu.to,
+                    icon: submenu.icon,
+                    update: submenu.update,
+                    new: submenu.new,
+                    type: Array.isArray(submenu.type) ? submenu.type : [],
+                  });
+                }
 
-            if (
-              this.$router.getRoutes().find((x) => x.name === submenu.name) &&
-              !submenu.prevent_route_validation
-            ) {
-              continue;
+                if (
+                  this.$router
+                    .getRoutes()
+                    .find((x) => x.name === submenu.name) &&
+                  !submenu.prevent_route_validation
+                ) {
+                  continue;
+                }
+                router.addRoute({
+                  path: submenu.to,
+                  name: submenu.name,
+                  component: () => import(`@/views/${submenu.component}.vue`),
+                });
+              } else {
+                console.log(submenu.name);
+              }
             }
-            router.addRoute({
-              path: submenu.to,
-              name: submenu.name,
-              component: () => import(`@/views/${submenu.component}.vue`),
-            });
           }
 
           if (_listMenuItem.items.length > 0) {
@@ -627,6 +679,7 @@ export default {
     },
     async cekLogout() {
       this.profileOpen = false;
+      this.items = [];
       this.$store.commit("set", ["BaseUrlGet", "", true]);
       this.$store.commit("set", ["BaseUrlUpload", "", true]);
       this.$store.commit("set", ["BaseUrl", "", true]);
@@ -637,6 +690,7 @@ export default {
 
       this.$store.commit("set", ["token", "", true]);
       this.$store.commit("set", ["User", "", true]);
+      this.$store.commit("set", ["permission", "", true]);
       this.$router.push("/");
     },
 

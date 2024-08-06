@@ -775,6 +775,11 @@
       'detailModal': detailModal
   },
     data: () => ({
+    config: {
+      permission: {
+        read: 'monitoring-list'
+      }
+    },
       // general setting
       dialogExportDataToExcel:{
         show: false,

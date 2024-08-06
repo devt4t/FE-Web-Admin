@@ -14,13 +14,13 @@
       :items="dataobject"
       :search="search"
       :footer-props="{
-        itemsPerPageText:'Jumlah Data Per Halaman'
+        itemsPerPageText: 'Jumlah Data Per Halaman',
       }"
       class="rounded-xl elevation-6 mx-3 pa-1"
       data-aos="fade-up"
       data-aos-delay="200"
-      @update:page="($p) => page = $p"
-      @update:items-per-page="($p) => itemsPerPage = $p"
+      @update:page="($p) => (page = $p)"
+      @update:items-per-page="($p) => (itemsPerPage = $p)"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
@@ -34,10 +34,17 @@
             rounded
             outlined
             color="green"
-            style="max-width: 350px;"
+            style="max-width: 350px"
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
+          <v-btn
+            dark
+            rounded
+            class="mb-2"
+            @click="showAddModal()"
+            color="green"
+            v-if="$_sys.isAllowed('kecamatan-create')"
+          >
             <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
           <v-dialog v-model="dialog" max-width="500px">
@@ -107,13 +114,24 @@
         </v-toolbar>
       </template>
       <template v-slot:item.no="{ index }">
-        {{ (itemsPerPage * (page-1)) + index + 1 }}
+        {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="warning">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          color="warning"
+          v-if="$_sys.isAllowed('kecamatan-update')"
+        >
           mdi-pencil
         </v-icon>
-        <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon>
+        <v-icon
+          @click="deleteItem(item)"
+          color="red"
+          v-if="$_sys.isAllowed('kecamatan-delete')"
+        >
+          mdi-delete
+        </v-icon>
       </template>
     </v-data-table>
 
@@ -133,6 +151,11 @@ import axios from "axios";
 export default {
   name: "Kecamatan",
   data: () => ({
+    config: {
+      permission: {
+        read: "kecamatan-list",
+      },
+    },
     page: 1,
     itemsPerPage: 10,
     itemsbr: [
@@ -155,7 +178,7 @@ export default {
     authtoken: "",
     BaseUrlGet: "",
     headers: [
-      { text: "No", value: "no", width: '70' },
+      { text: "No", value: "no", width: "70" },
       { text: "Kecamatan", value: "namaKecamatan" },
       { text: "Kode_Kecamatan", value: "kode_kecamatan" },
       { text: "Kabupaten/Kota", value: "namaKabupaten" },

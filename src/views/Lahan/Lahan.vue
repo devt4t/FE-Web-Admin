@@ -1,10 +1,5 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :hideCreate="true"
-    :hideDelete="!['13', '4'].includes($store.state.User.role)"
-    :hideUpdate="true"
-  >
+  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true">
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
         <div
@@ -213,7 +208,7 @@
         </v-btn>
 
         <v-btn
-          v-if="['13', '14'].includes($store.state.User.role)"
+          v-if="$_sys.isAllowed('lahan-kml-bulk-upload-create')"
           class="mr-2 d-flex flex-row align-items-center"
           variant="info"
           @click="uploadKmlModal = uploadKmlModal + 1"
@@ -391,7 +386,7 @@ export default {
           create: "farmer-create",
           read: "farmer-list",
           update: "farmer-update",
-          show: "farmer-show",
+          detail: "farmer-detail",
           lookup: "farmer-lookup",
           delete: "farmer-delete",
         },

@@ -2222,6 +2222,11 @@ export default {
   },
   authtoken: "",
   data: () => ({
+    config: {
+      permission: {
+        read: 'lubang-tanam-list'
+      }
+    },
     dialogAddPlantingHoleLahanUmum: {
       confirm: false,
       model: false,

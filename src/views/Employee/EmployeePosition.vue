@@ -10,7 +10,8 @@
     ></v-breadcrumbs>
 
     <v-data-table
-      data-aos="fade-up" data-aos-delay="200"
+      data-aos="fade-up"
+      data-aos-delay="200"
       :headers="headers"
       :items="dataobject"
       :search="search"
@@ -23,8 +24,8 @@
       }"
       loading-text="Loading... Please wait"
       class="rounded-xl elevation-6 mx-3 pa-1"
-      @update:page="($p) => page = $p"
-      @update:items-per-page="($p) => itemsPerPage = $p"
+      @update:page="($p) => (page = $p)"
+      @update:items-per-page="($p) => (itemsPerPage = $p)"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
@@ -38,7 +39,7 @@
             rounded
             outlined
             color="green"
-            style="max-width: 350px;"
+            style="max-width: 350px"
           ></v-text-field>
           <v-divider class="ml-2"></v-divider>
           <v-dialog v-model="dialog" max-width="500px">
@@ -83,10 +84,15 @@
         </v-toolbar>
       </template>
       <template v-slot:item.no="{ index }">
-        {{ (itemsPerPage * (page-1)) + index + 1 }}
+        {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="warning">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          color="warning"
+          v-if="$_sys.isAllowed('employee-position-update')"
+        >
           mdi-pencil
         </v-icon>
         <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
@@ -109,6 +115,11 @@ import axios from "axios";
 export default {
   name: "Employee",
   data: () => ({
+    config: {
+      permission: {
+        read: "employee-position-list",
+      },
+    },
     page: 1,
     itemsPerPage: 10,
     itemsbr: [
@@ -130,7 +141,7 @@ export default {
     authtoken: "",
     BaseUrlGet: "",
     headers: [
-      { text: "No", value: "no", width: '70' },
+      { text: "No", value: "no", width: "70" },
       { text: "NIK", value: "nik" },
       { text: "Nama Emp", value: "name" },
       { text: "Grup Posisi", value: "position_group" },

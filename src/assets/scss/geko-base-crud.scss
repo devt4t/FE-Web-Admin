@@ -224,6 +224,38 @@
           min-width: 300px;
           border-right: 1px solid rgba(191, 191, 191, 0.3);
           margin-right: 8px;
+
+          .list-search-wrapper {
+            margin-right: 10px;
+            border: 1px solid rgba(128, 128, 128, 0.43);
+            border-radius: 30px;
+            height: 38px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding-inline: 10px;
+            input {
+              padding-left: 5px;
+              flex: 1;
+              height: 100%;
+              &::placeholder {
+                font-size: .9em;
+                color: rgba(128, 128, 128, 0.7);
+              }
+
+               &:focus {
+                outline: none;
+              }
+            }
+
+            .append {
+              
+              &:hover {
+                cursor: pointer;
+              }
+            }
+          }
         }
 
         .toolbar-button {
@@ -274,7 +306,8 @@
       border-radius: 5px;
       margin-right: 5px;
       i {
-        font-size: 12px !important;
+        font-size: 14px !important;
+        font-weight: 500;
       }
 
       &.geko-list-action-view {

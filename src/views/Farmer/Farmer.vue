@@ -2,7 +2,6 @@
   <geko-base-crud
     :config="config"
     :hideCreate="true"
-    :hideDelete="!['4', '13'].includes($store.state.User.role)"
     :hideUpdate="true"
     :key="`component-farmer-${componentKey}`"
   >
@@ -92,16 +91,22 @@
     </template>
 
     <template v-slot:detail-address="{ item }">
-      <span>
+      <span class="text-capitalize">
         <span> {{ item.address }}</span>
         <span v-if="item.rw"> RT {{ item.rt }}</span>
         <span v-if="item.rw"> RW {{ item.rw }}</span>
-        <span v-if="item.desas_name">, Desa {{ item.desas_name }}</span>
-        <span v-if="item.kecamatans_name"
-          >, Kec. {{ item.kecamatans_name }}</span
+        <span v-if="item.desas_name"
+          >, Desa {{ item.desas_name.toLowerCase() }}</span
         >
-        <span v-if="item.kabupatens_name">, {{ item.kabupatens_name }}</span>
-        <span v-if="item.provinces_name">, {{ item.provinces_name }}</span>
+        <span v-if="item.kecamatans_name"
+          >, Kec. {{ item.kecamatans_name.toLowerCase() }}</span
+        >
+        <span v-if="item.kabupatens_name"
+          >, {{ item.kabupatens_name.toLowerCase() }}</span
+        >
+        <span v-if="item.provinces_name"
+          >, {{ item.provinces_name.toLowerCase() }}</span
+        >
         <span v-if="item.post_code">, {{ item.post_code }}</span>
       </span>
     </template>
@@ -135,12 +140,12 @@
               v-bind:style="{
                 'background-image':
                   'url(' +
-                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.ktp_document}` +
+                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.ktp_document}` +
                   ')',
               }"
               @click="
                 showLightbox(
-                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.ktp_document}`
+                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.ktp_document}`
                 )
               "
             ></div>
@@ -152,12 +157,12 @@
               v-bind:style="{
                 'background-image':
                   'url(' +
-                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.farmer_profile}` +
+                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.farmer_profile}` +
                   ')',
               }"
               @click="
                 showLightbox(
-                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.farmer_profile}`
+                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.farmer_profile}`
                 )
               "
             ></div>
@@ -169,12 +174,12 @@
               v-bind:style="{
                 'background-image':
                   'url(' +
-                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.signature}` +
+                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.signature}` +
                   ')',
               }"
               @click="
                 showLightbox(
-                  `${$_config.baseUrlUpload}/${response.DetailFarmerMain.signature}`
+                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.signature}`
                 )
               "
             ></div>
@@ -216,8 +221,7 @@
         variant="success"
         @click="onVerification(item)"
         v-if="
-          item.approve == 0 &&
-          ['4', '13', '19', '20'].includes($store.state.User.role)
+          item.approve == 0 && $_sys.isAllowed('farmer-verification-create')
         "
       >
         <v-icon small class="mr-1">mdi-check</v-icon>
@@ -226,8 +230,7 @@
       <v-btn
         variant="danger"
         v-else-if="
-          item.approve == 1 &&
-          ['4', '13', '20'].includes($store.state.User.role)
+          item.approve == 1 && $_sys.isAllowed('farmer-unverification-create')
         "
         @click="onVerification(item)"
       >
@@ -373,7 +376,7 @@ export default {
           create: "farmer-create",
           read: "farmer-list",
           update: "farmer-update",
-          show: "farmer-show",
+          detail: "farmer-detail",
           lookup: "farmer-lookup",
           delete: "farmer-delete",
         },

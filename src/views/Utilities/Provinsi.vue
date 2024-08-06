@@ -43,6 +43,7 @@
             class="mb-2"
             @click="showAddModal()"
             color="green"
+            v-if="$_sys.isAllowed('provinsi-create')"
           >
             <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
@@ -105,10 +106,21 @@
         {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="warning">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          color="warning"
+          v-if="$_sys.isAllowed('provinsi-update')"
+        >
           mdi-pencil
         </v-icon>
-        <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon>
+        <v-icon
+          @click="deleteItem(item)"
+          color="red"
+          v-if="$_sys.isAllowed('provinsi-delete')"
+        >
+          mdi-delete
+        </v-icon>
       </template>
     </v-data-table>
 
@@ -128,6 +140,11 @@ import axios from "axios";
 export default {
   name: "Provinsi",
   data: () => ({
+    config: {
+      permission: {
+        read: "provinsi-list",
+      },
+    },
     page: 1,
     itemsPerPage: 10,
     formTitle: "Add Item",

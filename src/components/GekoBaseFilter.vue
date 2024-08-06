@@ -94,10 +94,10 @@ export default {
 
         if (filter.param) {
           for (const param of Object.keys(filter.param)) {
-            console.log(filter.param, param);
+            // console.log(filter.param, param);
             if (!filter.param[param]) continue;
             if (filter.param[param] == "current_program_year") {
-              console.log("test", filter.param, param);
+              // console.log("test", filter.param, param);
               filter.param[param] = this.$store.state.tmpProgramYear;
             } else if (
               typeof filter.param[param] === "string" &&

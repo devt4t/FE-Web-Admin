@@ -653,6 +653,11 @@ import data from "bootstrap/js/src/dom/data";
 
 export default {
   data: () => ({
+    config: {
+      permission: {
+        read: "lahan-list",
+      },
+    },
     dialog: false,
     dialogDetailTutupan: false,
     dialogEditTutupanLahan: false,

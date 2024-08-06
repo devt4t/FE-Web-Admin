@@ -1,7 +1,12 @@
 <template>
   <geko-base-crud :config="config" :key="'task-list' + componentKey">
     <template v-slot:list-before-create>
-      <v-btn variant="info" @click="onGenerate()">Generate Task</v-btn>
+      <v-btn
+        v-if="$_sys.isAllowed('task-create')"
+        variant="info"
+        @click="onGenerate()"
+        >Generate Task</v-btn
+      >
     </template>
   </geko-base-crud>
 </template>
@@ -40,12 +45,12 @@ export default {
         deleteKey: "code",
         pk_field: null,
         permission: {
-          create: "tasks-create",
-          read: "tasks-list",
-          update: "tasks-update",
-          show: "tasks-show",
-          lookup: "tasks-lookup",
-          delete: "tasks-delete",
+          create: "task-create",
+          read: "task-list",
+          update: "task-update",
+          detail: "task-detail",
+          lookup: "task-lookup",
+          delete: "task-delete",
         },
         slave: [],
         fields: [

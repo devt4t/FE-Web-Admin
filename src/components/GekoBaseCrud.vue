@@ -136,7 +136,7 @@
             <div class="d-flex flex-row geko-list-header-action">
               <div class="geko-list-header-toolbar">
                 <form v-on:submit.prevent="getListData">
-                  <v-text-field
+                  <!-- <v-text-field
                     v-model="search"
                     append-icon="mdi-magnify"
                     label="Pencarian"
@@ -147,7 +147,25 @@
                     outlined
                     color="green"
                     class="mr-2"
-                  ></v-text-field>
+                    @change="onChangeSearch"
+                  ></v-text-field> -->
+                  <div class="list-search-wrapper">
+                    <v-icon class="prepend">mdi-magnify</v-icon>
+                    <input
+                      v-model="search"
+                      type="text"
+                      :placeholder="'Cari data ' + config.title.toLowerCase()"
+                    />
+                    <v-icon
+                      v-if="typeof search == 'string' && search.length > 0"
+                      @click="
+                        search = '';
+                        getListData();
+                      "
+                      class="append"
+                      >mdi-close</v-icon
+                    >
+                  </div>
                 </form>
                 <button
                   class="toolbar-button mr-2"
@@ -186,7 +204,7 @@
               </div>
               <slot name="list-before-create"> </slot>
               <v-btn
-                v-if="!hideCreate"
+                v-if="!hideCreate && $_sys.isAllowed(config.permission.create)"
                 variant="success"
                 class="ml-4"
                 @click="
@@ -274,6 +292,7 @@
           <div class="geko-list-actions-wrapper d-flex flex-column">
             <div class="geko-list-actions">
               <button
+                v-if="$_sys.isAllowed(config.permission.detail)"
                 class="geko-list-action-view"
                 @click="
                   $router.push({
@@ -291,12 +310,13 @@
                   })
                 "
               >
-                <v-icon small>mdi-eye-outline</v-icon>
+                <v-icon small>mdi-information-outline</v-icon>
               </button>
+
               <slot
                 name="list-action-update"
                 v-bind:item="item"
-                v-if="!hideUpdate"
+                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update)"
               >
                 <button
                   class="geko-list-action-update"
@@ -316,7 +336,10 @@
                   <v-icon small>mdi-pencil-minus</v-icon>
                 </button>
               </slot>
-              <slot name="geko-list-action-delete" v-if="!hideDelete">
+              <slot
+                name="geko-list-action-delete"
+                v-if="!hideDelete && $_sys.isAllowed(config.permission.delete)"
+              >
                 <button
                   class="geko-list-action-delete"
                   @click="onDelete(item)"
@@ -332,7 +355,8 @@
                 v-if="
                   ['4', '13'].includes($store.state.User.role) &&
                   config.deleteSoft &&
-                  config.deleteSoft.payload
+                  config.deleteSoft.payload &&
+                  $_sys.isAllowed(config.permission.delete)
                 "
               >
                 <v-icon small>mdi-eye-off-outline</v-icon>
@@ -349,7 +373,10 @@
 
     <div
       class="geko-form mx-4"
-      v-if="['create', 'update'].includes(activeView)"
+      v-if="
+        ['create', 'update'].includes(activeView) &&
+        $_sys.isAllowed(config.permission[activeView])
+      "
     >
       <geko-base-form
         :title="config.title"
@@ -461,6 +488,7 @@ import "../assets/scss/geko-base-crud.scss";
 import GekoBaseForm from "./GekoBaseForm.vue";
 import GekoBaseDetail from "./GekoBaseDetail.vue";
 import GekoBaseFilter from "./GekoBaseFilter.vue";
+import _ from "lodash";
 export default {
   name: "geko-base-crud",
   props: {
@@ -537,7 +565,7 @@ export default {
       activeID: null,
       permission: {},
       statistic: null,
-      loading: true,
+      loading: false,
       totalRecord: null,
       globalFilter: {
         project_purpose: this.$store.state.tmpProjectPurpose,
@@ -756,10 +784,15 @@ export default {
       return _data;
     },
 
+    onChangeSearch: _.debounce(function () {
+      this.getListData();
+    }, 1500),
     async getListData() {
       if (this.hideList) {
         return;
       }
+      if (this.loading) return;
+
       this.loading = true;
       let _params = JSON.parse(JSON.stringify(this.params));
       let _filters = JSON.parse(JSON.stringify(this.filters));
@@ -973,6 +1006,16 @@ export default {
     refreshKey(t) {
       if (t > 0) {
         this.onRefresh();
+      }
+    },
+    search(t) {
+      if (this.loading) return;
+      if (t == "") {
+        return;
+      }
+
+      if (t) {
+        this.onChangeSearch();
       }
     },
   },

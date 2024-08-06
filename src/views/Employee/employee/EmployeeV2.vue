@@ -1,9 +1,7 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :hideCreate="!['4', '13'].includes($store.state.User.role)"
-    :hideUpdate="!['4', '13'].includes($store.state.User.role)"
-  >
+  <geko-base-crud :config="config">
+    <!-- :hideCreate="!['4', '13'].includes($store.state.User.role)"
+    :hideUpdate="!['4', '13'].includes($store.state.User.role)" -->
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
         <div
@@ -23,6 +21,11 @@ import employeeConfig from "./employeeConfig";
 export default {
   name: "crud-employee-v2",
   watch: {},
+  mounted() {
+    this.$set(this.config, "update_ext_payload", {
+      id: this.$route.query.id,
+    });
+  },
   data() {
     return {
       config: {
@@ -41,9 +44,7 @@ export default {
         //     project_modul: 'environment',
         // },
         update: "EditEmployee",
-        update_ext_payload: {
-          id: this.$route.query.id,
-        },
+        update_ext_payload: {},
         globalFilter: {
           // project_purpose: {
           //   setter: "purpose_code",
@@ -93,12 +94,12 @@ export default {
           ],
         },
         permission: {
-          create: "emplyoee-create",
-          read: "emplyoee-list",
-          update: "emplyoee-update",
-          show: "emplyoee-show",
-          lookup: "emplyoee-lookup",
-          delete: "emplyoee-delete",
+          create: "employee-create",
+          read: "employee-list",
+          update: "employee-update",
+          detail: "employee-detail",
+          lookup: "employee-lookup",
+          delete: "employee-delete",
         },
         slave: [],
         fields: employeeConfig,

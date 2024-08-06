@@ -29,7 +29,7 @@
                 <v-btn
                   v-if="
                     !openGisEdit &&
-                    ['2', '13', '14'].includes($store.state.User.role) &&
+                    $_sys.isAllowed('lahan-gis-verification-create') &&
                     data.main_lahan.fc_complete_data == 1
                   "
                   variant="success"
@@ -43,7 +43,7 @@
                 <v-btn
                   v-if="
                     !openGisEdit &&
-                    ['13', '19'].includes($store.state.User.role)
+                    $_sys.isAllowed('lahan-fc-verification-create')
                   "
                   variant="success"
                   class="mr-1 mb-2"
@@ -59,7 +59,7 @@
                 <v-btn
                   v-if="
                     !openGisEdit &&
-                    ['13', '20'].includes($store.state.User.role)
+                    $_sys.isAllowed('lahan-um-verification-create')
                   "
                   variant="success"
                   class="mr-1 mb-2"

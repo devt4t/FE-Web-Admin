@@ -18,29 +18,34 @@
       :search="search"
       :loading="tableLoading"
       :footer-props="{
-        itemsPerPageText: 'Jumlah Data Per Halaman'
+        itemsPerPageText: 'Jumlah Data Per Halaman',
       }"
       class="rounded-xl elevation-6 mx-3 pa-1"
-      @update:page="($p) => page = $p"
-      @update:items-per-page="($p) => itemsPerPage = $p"
+      @update:page="($p) => (page = $p)"
+      @update:items-per-page="($p) => (itemsPerPage = $p)"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
-        <!-- program years-->
+          <!-- program years-->
           <v-select
-              color="success"
-              item-color="success"
-              v-model="localConfig.programYear"
-              :items="['All Data',...$store.state.programYear.options]"
-              :disabled="tableLoading"
-              outlined
-              dense
-              hide-details
-              :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-              rounded
-              label="Tahun Program"
-              class="mx-auto mr-lg-2 mb-2 mb-lg-0"
-              style="max-width: 200px"
+            color="success"
+            item-color="success"
+            v-model="localConfig.programYear"
+            :items="['All Data', ...$store.state.programYear.options]"
+            :disabled="tableLoading"
+            outlined
+            dense
+            hide-details
+            :menu-props="{
+              bottom: true,
+              offsetY: true,
+              rounded: 'xl',
+              transition: 'slide-y-transition',
+            }"
+            rounded
+            label="Tahun Program"
+            class="mx-auto mr-lg-2 mb-2 mb-lg-0"
+            style="max-width: 200px"
           ></v-select>
           <v-text-field
             v-model="search"
@@ -52,10 +57,17 @@
             rounded
             outlined
             color="green"
-            style="max-width: 350px;"
+            style="max-width: 350px"
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
+          <v-btn
+            dark
+            rounded
+            class="mb-2"
+            @click="showAddModal()"
+            color="green"
+            v-if="$_sys.isAllowed('desa-create')"
+          >
             <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
           <v-dialog v-model="dialog" max-width="777" content-class="rounded-xl">
@@ -68,9 +80,7 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-
                     <v-col cols="12" lg="6">
-
                       <v-autocomplete
                         dense
                         hide-details
@@ -78,7 +88,10 @@
                         rounded
                         color="green"
                         item-color="green"
-                        :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
+                        :menu-props="{
+                          rounded: 'xl',
+                          transition: 'slide-y-transition',
+                        }"
                         v-model="defaultItem.kode_kecamatan"
                         :items="itemsKab"
                         item-value="kode_kecamatan"
@@ -89,9 +102,18 @@
                       >
                         <template v-slot:item="data">
                           <v-list-item-content>
-                            <v-list-item-title v-html="data.item.namaKecamatan"></v-list-item-title>
-                            <v-list-item-subtitle>Kode: {{ data.item.kode_kecamatan }}</v-list-item-subtitle>
-                            <v-list-item-subtitle>{{ data.item.namaKabupaten }}</v-list-item-subtitle>
+                            <v-list-item-title
+                              v-html="data.item.namaKecamatan"
+                            ></v-list-item-title>
+                            <v-list-item-subtitle
+                              >Kode:
+                              {{
+                                data.item.kode_kecamatan
+                              }}</v-list-item-subtitle
+                            >
+                            <v-list-item-subtitle>{{
+                              data.item.namaKabupaten
+                            }}</v-list-item-subtitle>
                           </v-list-item-content>
                         </template>
                       </v-autocomplete>
@@ -153,59 +175,81 @@
                     </v-col>
                   </v-row>
                   <div class="d-flex align-center my-4">
-                    <p class="mb-0"><v-icon class="mr-2">mdi-map-marker-distance</v-icon>Pemetaan Target Area</p>
+                    <p class="mb-0">
+                      <v-icon class="mr-2">mdi-map-marker-distance</v-icon
+                      >Pemetaan Target Area
+                    </p>
                     <v-divider class="mx-2"></v-divider>
                   </div>
-                  <v-row v-for="(assignTa, assignTaIndex) in defaultItem.ta_desas" :key="`row-ta-assign-${assignTaIndex}`">
+                  <v-row
+                    v-for="(assignTa, assignTaIndex) in defaultItem.ta_desas"
+                    :key="`row-ta-assign-${assignTaIndex}`"
+                  >
                     <v-col cols="auto" class="d-flex align-start">
-                      <v-btn fab x-small color="green white--text" class="elevation-0"><v-icon>mdi-numeric-{{ assignTaIndex + 1 }}</v-icon></v-btn>
+                      <v-btn
+                        fab
+                        x-small
+                        color="green white--text"
+                        class="elevation-0"
+                        ><v-icon
+                          >mdi-numeric-{{ assignTaIndex + 1 }}</v-icon
+                        ></v-btn
+                      >
                     </v-col>
                     <v-col>
                       <v-row>
                         <v-col cols="12">
                           <v-combobox
-                              dense
-                              multiple
-                              color="success"
-                              hide-details
-                              small-chips
-                              hide-selected
-                              item-color="success"
-                              :items="$store.state.programYear.options"
-                              v-model="assignTa.program_year"
-                              label="Tahun Program"
-                              :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                              outlined
-                              rounded
+                            dense
+                            multiple
+                            color="success"
+                            hide-details
+                            small-chips
+                            hide-selected
+                            item-color="success"
+                            :items="$store.state.programYear.options"
+                            v-model="assignTa.program_year"
+                            label="Tahun Program"
+                            :menu-props="{
+                              rounded: 'xl',
+                              transition: 'slide-y-transition',
+                            }"
+                            outlined
+                            rounded
                           >
-                              <template v-slot:no-data>
-                                  <v-list-item>
-                                  <v-list-item-content>
-                                      <v-list-item-title>
-                                      No results matching. Press <kbd>enter</kbd> to create a new one
-                                      </v-list-item-title>
-                                  </v-list-item-content>
-                                  </v-list-item>
-                              </template>
-                              <template v-slot:selection="{ attrs, item, parent, selected }">
-                                  <v-chip
-                                      v-bind="attrs"
-                                      :input-value="selected"
-                                      label
-                                      small
-                                      class="rounded-pill"
-                                  >
-                                      <span class="pr-2">
-                                          {{ item }}
-                                      </span>
-                                      <v-icon
-                                          small
-                                          @click="parent.selectItem(item)"
-                                      >
-                                          mdi-close-circle
-                                      </v-icon>
-                                  </v-chip>
-                              </template>
+                            <template v-slot:no-data>
+                              <v-list-item>
+                                <v-list-item-content>
+                                  <v-list-item-title>
+                                    No results matching. Press
+                                    <kbd>enter</kbd> to create a new one
+                                  </v-list-item-title>
+                                </v-list-item-content>
+                              </v-list-item>
+                            </template>
+                            <template
+                              v-slot:selection="{
+                                attrs,
+                                item,
+                                parent,
+                                selected,
+                              }"
+                            >
+                              <v-chip
+                                v-bind="attrs"
+                                :input-value="selected"
+                                label
+                                small
+                                class="rounded-pill"
+                              >
+                                <span class="pr-2">
+                                  {{ item }}
+                                </span>
+                                <v-icon small @click="parent.selectItem(item)">
+                                  mdi-close-circle
+                                </v-icon>
+                              </v-chip>
+                            </template>
                           </v-combobox>
                         </v-col>
                         <v-col cols="12">
@@ -216,13 +260,26 @@
                             rounded
                             color="green"
                             item-color="green"
-                            :menu-props="{rounded: 'xl',transition: 'slide-y-transition'}"
-                            :items="itemsTa.map(ita => {
-                              if (ita.program_year && assignTa.program_year)
-                                if (assignTa.program_year.every(pro => ita.program_year.split(',').includes(pro)))
-                                  return ita
-                              return null
-                            }).filter(n => n)"
+                            :menu-props="{
+                              rounded: 'xl',
+                              transition: 'slide-y-transition',
+                            }"
+                            :items="
+                              itemsTa
+                                .map((ita) => {
+                                  if (ita.program_year && assignTa.program_year)
+                                    if (
+                                      assignTa.program_year.every((pro) =>
+                                        ita.program_year
+                                          .split(',')
+                                          .includes(pro)
+                                      )
+                                    )
+                                      return ita;
+                                  return null;
+                                })
+                                .filter((n) => n)
+                            "
                             label="Pilih Target Area"
                             item-value="area_code"
                             item-text="namaTa"
@@ -233,9 +290,19 @@
                           >
                             <template v-slot:item="data">
                               <v-list-item-content>
-                                <v-list-item-title v-html="data.item.namaTa"></v-list-item-title>
-                                <v-list-item-subtitle>Kode: {{ data.item.area_code }}</v-list-item-subtitle>
-                                <v-list-item-subtitle>MU: {{ data.item.namaMu }}</v-list-item-subtitle>
+                                <v-list-item-title
+                                  v-html="data.item.namaTa"
+                                ></v-list-item-title>
+                                <v-list-item-subtitle
+                                  >Kode:
+                                  {{
+                                    data.item.area_code
+                                  }}</v-list-item-subtitle
+                                >
+                                <v-list-item-subtitle
+                                  >MU:
+                                  {{ data.item.namaMu }}</v-list-item-subtitle
+                                >
                               </v-list-item-content>
                             </template>
                           </v-autocomplete>
@@ -244,22 +311,32 @@
                     </v-col>
                   </v-row>
                   <v-row class="justify-center">
-                      <v-btn
-                          data-aos="fade-right" data-aos-offset="-10000" 
-                          :key="`village_set_ta_plus_btn`" 
-                          fab small color="green white--text" class="mx-1" 
-                          @click="() => modifyTotalSubData('+')"
-                      >
-                          <v-icon>mdi-plus</v-icon>
-                      </v-btn>
-                      <v-btn v-if="defaultItem.ta_desas.length > 1" 
-                          data-aos="fade-left" data-aos-offset="-10000" 
-                          :key="`village_set_ta_minus_btn`" 
-                          fab small color="red" outlined class="mx-1"
-                          @click="() => modifyTotalSubData('-')"
-                      >
-                          <v-icon>mdi-minus</v-icon>
-                      </v-btn>
+                    <v-btn
+                      data-aos="fade-right"
+                      data-aos-offset="-10000"
+                      :key="`village_set_ta_plus_btn`"
+                      fab
+                      small
+                      color="green white--text"
+                      class="mx-1"
+                      @click="() => modifyTotalSubData('+')"
+                    >
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="defaultItem.ta_desas.length > 1"
+                      data-aos="fade-left"
+                      data-aos-offset="-10000"
+                      :key="`village_set_ta_minus_btn`"
+                      fab
+                      small
+                      color="red"
+                      outlined
+                      class="mx-1"
+                      @click="() => modifyTotalSubData('-')"
+                    >
+                      <v-icon>mdi-minus</v-icon>
+                    </v-btn>
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -269,7 +346,13 @@
                   Keluar
                 </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn color="green white--text" rounded @click="save" class="" :disabled="saveDisabled"> 
+                <v-btn
+                  color="green white--text"
+                  rounded
+                  @click="save"
+                  class=""
+                  :disabled="saveDisabled"
+                >
                   <v-icon class="mr-1">mdi-content-save</v-icon>
                   Simpan
                 </v-btn>
@@ -296,17 +379,27 @@
         </v-toolbar>
       </template>
       <template v-slot:item.no="{ index }">
-        {{ (itemsPerPage * (page-1)) + index + 1 }}
+        {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <!--Status row-->
-      <template v-slot:item.status="{item}">
-        <v-chip :color="getStatusColumn('bg_color', item.status)" class="white--text">
-          <v-icon class="mr-1">{{ getStatusColumn('icon', item.status) }}</v-icon>
-          {{ getStatusColumn('text', item.status) }}
+      <template v-slot:item.status="{ item }">
+        <v-chip
+          :color="getStatusColumn('bg_color', item.status)"
+          class="white--text"
+        >
+          <v-icon class="mr-1">{{
+            getStatusColumn("icon", item.status)
+          }}</v-icon>
+          {{ getStatusColumn("text", item.status) }}
         </v-chip>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="warning">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          color="warning"
+          v-if="$_sys.isAllowed('desa-update')"
+        >
           mdi-pencil
         </v-icon>
         <!-- <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon> -->
@@ -329,6 +422,11 @@ import axios from "axios";
 export default {
   name: "Vilage",
   data: () => ({
+    config: {
+      permission: {
+        read: "desa-list",
+      },
+    },
     page: 1,
     itemsPerPage: 10,
     itemsbr: [
@@ -352,17 +450,17 @@ export default {
     BaseUrlGet: "",
     tableLoading: false,
     headers: [
-      { text: "No", value: "no", width: '70' },
+      { text: "No", value: "no", width: "70" },
       { text: "Desa", value: "namaDesa" },
       { text: "Kode_Desa", value: "kode_desa" },
       { text: "Kecamatan", value: "namaKecamatan" },
       { text: "Target Area", value: "namaTa" },
       { text: "Kode Pos", value: "post_code" },
-        /*YONGS
+      /*YONGS
         add data headers (Sample with postcode data)*/
-      {text: 'Status', value: 'status', align: 'center'},
-      {text : "Tahun Program", value: "program_year"},
-        /*End data headers*/
+      { text: "Status", value: "status", align: "center" },
+      { text: "Tahun Program", value: "program_year" },
+      /*End data headers*/
       { text: "Actions", value: "actions", sortable: false },
     ],
     dataobject: [],
@@ -379,18 +477,18 @@ export default {
       namaTa: "",
       post_code: "",
       program_year: "",
-      ta_desas: []
+      ta_desas: [],
     },
     ta_desas_default: {
       program_year: [],
-      area_code: ''
+      area_code: "",
     },
     snackbar: false,
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
     localConfig: {
-      programYear: '',
+      programYear: "",
     },
   }),
 
@@ -398,61 +496,63 @@ export default {
     this.authtoken = localStorage.getItem("token");
     this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
 
-    this.localConfig.programYear = this.$store.state.programYear.model
+    this.localConfig.programYear = this.$store.state.programYear.model;
     this.initialize();
   },
   watch: {
-    'localConfig.programYear': {
+    "localConfig.programYear": {
       handler(val) {
-        this.initialize()
-      }
-    }
+        this.initialize();
+      },
+    },
   },
 
   computed: {
     saveDisabled() {
-      if (!this.defaultItem.kode_kecamatan) return true
-      if (!this.defaultItem.kode_desa) return true
-      if (!this.defaultItem.namaDesa) return true
-      if (!this.defaultItem.post_code) return true
+      if (!this.defaultItem.kode_kecamatan) return true;
+      if (!this.defaultItem.kode_desa) return true;
+      if (!this.defaultItem.namaDesa) return true;
+      if (!this.defaultItem.post_code) return true;
 
-      let emptyTA = 0
-      this.defaultItem.ta_desas.forEach(val => {
-        if (val.program_year.length > 0) if (!val.area_code) emptyTA += 1
-      })
-      if (emptyTA > 0) return true
-      
-      return false
-    }
+      let emptyTA = 0;
+      this.defaultItem.ta_desas.forEach((val) => {
+        if (val.program_year.length > 0) if (!val.area_code) emptyTA += 1;
+      });
+      if (emptyTA > 0) return true;
+
+      return false;
+    },
   },
   methods: {
     async initialize() {
       try {
-        this.tableLoading = true
+        this.tableLoading = true;
 
         const response = await axios.get(
-            this.BaseUrlGet + `GetDesaAdmin?program_year=${this.localConfig.programYear}`,
-            {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        });
+          this.BaseUrlGet +
+            `GetDesaAdmin?program_year=${this.localConfig.programYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
 
         // status desa condition
 
         // console.log(response.data.data.result);
         if (response.data.length != 0) {
-          this.dataobject = response.data.data.result.map(val => {
+          this.dataobject = response.data.data.result.map((val) => {
             return {
               ...val,
-              ta_desas: val.ta_desas.map(val2 => {
+              ta_desas: val.ta_desas.map((val2) => {
                 return {
                   ...val2,
-                  program_year: val2.program_year.split(',')
+                  program_year: val2.program_year.split(","),
                   //program_year: val2.program_year ? val2.program_year.split(',') : []
-                }
-              })
-            }
+                };
+              }),
+            };
           });
         } else {
           console.log("Kosong");
@@ -463,27 +563,27 @@ export default {
           this.alerttoken = true;
         }
       } finally {
-        this.tableLoading = false
+        this.tableLoading = false;
       }
     },
     getStatusColumn(type, status) {
-      if (type == 'bg_color') {
-        if (status == '0') return 'orange'
-        if (status == '1') return 'green darken-1'
-        if (status == '2') return 'red'
+      if (type == "bg_color") {
+        if (status == "0") return "orange";
+        if (status == "1") return "green darken-1";
+        if (status == "2") return "red";
       }
-      if (type == 'icon') {
-        if (status == '0') return 'mdi-google-downasaur' //mdi:cancel
-        if (status == '1') return 'mdi-check-circle'
-        if (status == '2') return 'mdi-alert-rhombus-outline'
+      if (type == "icon") {
+        if (status == "0") return "mdi-google-downasaur"; //mdi:cancel
+        if (status == "1") return "mdi-check-circle";
+        if (status == "2") return "mdi-alert-rhombus-outline";
       }
-      if (type == 'text') {
-        if (status == '0') return 'Belum Mengikuti RRA'
-        if (status == '1') return 'Potensial'
-        if (status == '2') return 'Tidak Potensial'
+      if (type == "text") {
+        if (status == "0") return "Belum Mengikuti RRA";
+        if (status == "1") return "Potensial";
+        if (status == "2") return "Tidak Potensial";
       }
 
-      return ''
+      return "";
     },
     async verifDelete() {
       const datapost = {
@@ -525,13 +625,22 @@ export default {
         kode_desa: this.defaultItem.kode_desa,
         post_code: this.defaultItem.post_code,
         name: this.defaultItem.namaDesa,
-        ta_desas: this.defaultItem.ta_desas.map(val => {
-          if (val.program_year && val.area_code) 
-          return {...val, program_year: val.program_year.sort((a,b) => {return a - b}).toString()}
-          return null
-        }).filter(n => n)
+        ta_desas: this.defaultItem.ta_desas
+          .map((val) => {
+            if (val.program_year && val.area_code)
+              return {
+                ...val,
+                program_year: val.program_year
+                  .sort((a, b) => {
+                    return a - b;
+                  })
+                  .toString(),
+              };
+            return null;
+          })
+          .filter((n) => n),
       };
-      
+
       console.log(datapost);
       // this.dialogDetail = false;
       try {
@@ -561,7 +670,7 @@ export default {
         }
       }
     },
-//TEST, Ambil data Rrapra
+    //TEST, Ambil data Rrapra
     /*async getRrapra_status(){
     //need table
       try {
@@ -583,10 +692,20 @@ export default {
         kode_desa: this.defaultItem.kode_desa,
         post_code: this.defaultItem.post_code,
         name: this.defaultItem.namaDesa,
-        ta_desas: this.defaultItem.ta_desas.map(val => {
-          if (val.program_year && val.area_code) return {...val, program_year: val.program_year.sort((a,b) => {return a - b}).toString()}
-          return null
-        }).filter(n => n)
+        ta_desas: this.defaultItem.ta_desas
+          .map((val) => {
+            if (val.program_year && val.area_code)
+              return {
+                ...val,
+                program_year: val.program_year
+                  .sort((a, b) => {
+                    return a - b;
+                  })
+                  .toString(),
+              };
+            return null;
+          })
+          .filter((n) => n),
       };
       console.log(datapost);
       // this.dialogDetail = false;
@@ -676,8 +795,10 @@ export default {
       this.defaultItem.namaDesa = "";
       this.defaultItem.post_code = "";
       this.defaultItem.status_desa = "";
-      this.defaultItem.desa_program_year="";
-      this.defaultItem.ta_desas = [JSON.parse(JSON.stringify(this.ta_desas_default))]
+      this.defaultItem.desa_program_year = "";
+      this.defaultItem.ta_desas = [
+        JSON.parse(JSON.stringify(this.ta_desas_default)),
+      ];
       this.dialog = true;
     },
     editItem(item) {
@@ -705,17 +826,19 @@ export default {
       this.dialogDelete = false;
     },
     modifyTotalSubData(type) {
-        if (type == '+') {
-          this.defaultItem.ta_desas.push(JSON.parse(JSON.stringify(this.ta_desas_default)))
-        } else if (type == '-') {
-          this.defaultItem.ta_desas.pop()
-        }
+      if (type == "+") {
+        this.defaultItem.ta_desas.push(
+          JSON.parse(JSON.stringify(this.ta_desas_default))
+        );
+      } else if (type == "-") {
+        this.defaultItem.ta_desas.pop();
+      }
     },
     async save() {
       try {
-        this.dialog = false
-        this.$store.state.loadingOverlay = true
-        this.$store.state.loadingOverlayText = 'Loading...'
+        this.dialog = false;
+        this.$store.state.loadingOverlay = true;
+        this.$store.state.loadingOverlayText = "Loading...";
         if (
           this.defaultItem.kode_kecamatan != null &&
           this.defaultItem.kode_desa.length != 0 &&
@@ -733,10 +856,11 @@ export default {
         } else {
           this.snackbar = true;
           this.colorsnackbar = "red";
-          this.textsnackbar = "Gagal Menambah, Kolom tidak boleh ada yang kosong";
+          this.textsnackbar =
+            "Gagal Menambah, Kolom tidak boleh ada yang kosong";
         }
       } finally {
-        this.$store.state.loadingOverlay = false
+        this.$store.state.loadingOverlay = false;
       }
     },
   },

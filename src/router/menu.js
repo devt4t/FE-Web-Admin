@@ -361,7 +361,7 @@ const menu = [
       {
         title: "Social Engagement",
         to: "/social-engagement",
-        component: "Common/UnderDevelopment",
+        component: "ActivityNew/social_engagement/SocialEngagement",
         name: "SocialEngagement",
         permission: "SosialisasiProgram",
         icon: "mdi-account-supervisor",

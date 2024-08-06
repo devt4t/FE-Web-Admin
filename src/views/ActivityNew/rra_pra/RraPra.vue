@@ -101,12 +101,12 @@ export default {
         deleteKey: "id",
         pk_field: null,
         permission: {
-          create: "project-create",
-          read: "project-list",
-          update: "project-update",
-          show: "project-show",
-          lookup: "project-lookup",
-          delete: "project-delete",
+          create: "rra-pra-create",
+          read: "rra-pra-list",
+          update: "rra-pra-update",
+          detail: "rra-pra-detail",
+          lookup: "rra-pra-lookup",
+          delete: "rra-pra-delete",
         },
         statistic: {
           transform_key: {

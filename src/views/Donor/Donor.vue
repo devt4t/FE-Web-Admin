@@ -90,7 +90,7 @@ export default {
           create: "donor-create",
           read: "donor-list",
           update: "donor-update",
-          show: "donor-show",
+          detail: "donor-detail",
           lookup: "donor-lookup",
           delete: "donor-delete",
         },

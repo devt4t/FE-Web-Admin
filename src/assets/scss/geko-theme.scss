@@ -127,6 +127,20 @@ svg.wave {
         text-transform: uppercase;
         padding-block: 10px;
         padding-left: 1.5em;
+        
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        &:not(.activities) {
+          background: white;
+        }
+
+        &.activities.carbon {
+          background-color: #e7f6f8 !important;
+        }
+        &.activities.non-carbon {
+          background-color: white;
+        }
       }
       .sidebar-button {
         display: flex;

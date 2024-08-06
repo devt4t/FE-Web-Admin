@@ -497,6 +497,11 @@ import moment from "moment";
 
 export default {
   data: () => ({
+    config: {
+      permission: {
+        read: "material-organic-list",
+      },
+    },
     apiConfig: {
       baseUrl: localStorage.getItem("BaseUrlGet"),
       imageUrl: localStorage.getItem("BaseUrl"),

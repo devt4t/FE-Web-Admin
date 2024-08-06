@@ -5855,6 +5855,11 @@ export default {
     exportReportDistribusi,
   },
   data: () => ({
+    config: {
+      permission: {
+        read: 'distribusi-list'
+      }
+    },
     accessModul: {
       calendar: true,
       packingLabel: true,

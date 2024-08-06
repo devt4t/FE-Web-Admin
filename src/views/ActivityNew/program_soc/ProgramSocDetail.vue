@@ -20,7 +20,7 @@
             <v-btn
               v-if="
                 $store.state.User &&
-                ['4', '13', '19'].includes($store.state.User.role) &&
+                $_sys.isAllowed('sosialisasi-program-create') &&
                 data.mainSpr.is_verified == 0
               "
               variant="success"

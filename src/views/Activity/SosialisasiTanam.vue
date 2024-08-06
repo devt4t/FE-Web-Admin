@@ -3011,6 +3011,7 @@
               class="mb-2 mr-1 ml-2 d-none d-md-block"
               @click="showAddModal()"
               color="green"
+              v-if="$_sys.isAllowed('sosialisasi-tanam-create')"
             >
               <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Tambah FF
               Sostam
@@ -3629,6 +3630,11 @@ export default {
     ExportSostamByUM,
   },
   data: () => ({
+    config: {
+      permission: {
+        read: "sosialisasi-tanam-list",
+      },
+    },
     authtoken: "",
 
     selectExportUM: "",
@@ -4366,9 +4372,7 @@ export default {
     },
     async callApiGet(url) {
       try {
-        const response = await this.$_api.get(
-         url,
-        );
+        const response = await this.$_api.get(url);
         if (response) {
           const data = response.data.result;
           return data;
@@ -4518,12 +4522,9 @@ export default {
             ).innerHTML = `${resetHrs} : ${resrtMins} : ${resetSecs}`;
             if (!item.deletePeriod) {
               item.deletePeriod = true;
-              axios.post(
-                "deleteSosialisasiTanamPeriod",
-                {
-                  ff_no: item.ff_no,
-                }
-              );
+              axios.post("deleteSosialisasiTanamPeriod", {
+                ff_no: item.ff_no,
+              });
             }
           }
           // console.log(secs)

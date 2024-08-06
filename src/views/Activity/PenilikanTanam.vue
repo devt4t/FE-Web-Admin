@@ -3571,6 +3571,11 @@ export default {
   name: "PenilikanTanam",
   authtoken: "",
   data: () => ({
+    config: {
+      permission: {
+        read: 'realisasi-tanam-list'
+      }
+    },
     generalSettings: {
       programYear: "2022",
       landProgram: {

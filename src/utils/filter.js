@@ -50,7 +50,7 @@ Vue.filter("parse", (value, id) => {
       break;
 
     case "datetime":
-      _value = moment(value).format("D MMMM YYY HH:mm:ss");
+      _value = moment(value).format("D MMMM YYYY HH:mm:ss");
       break;
 
     case "border":

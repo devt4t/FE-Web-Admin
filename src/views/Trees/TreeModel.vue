@@ -56,7 +56,7 @@ export default {
           create: "tree-model-create",
           read: "tree-model-list",
           update: "tree-model-update",
-          show: "tree-model-show",
+          detail: "tree-model-detail",
           lookup: "tree-model-lookup",
           delete: "tree-model-delete",
         },
@@ -181,7 +181,6 @@ export default {
                 col_size: 12,
                 setter: "planting_year",
                 option: {
-                  default_value: this.$_config.programYear.model || "2024",
                   default_options: [
                     {
                       label: "2020",

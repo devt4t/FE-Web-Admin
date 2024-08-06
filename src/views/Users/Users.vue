@@ -15,13 +15,13 @@
       :search="search"
       :loading="table.loading"
       :footer-props="{
-        itemsPerPageText:'Jumlah Data Per Halaman'
+        itemsPerPageText: 'Jumlah Data Per Halaman',
       }"
       class="rounded-xl elevation-6 mx-3 pa-1"
       data-aos="fade-up"
       data-aos-delay="200"
-      @update:page="($p) => page = $p"
-      @update:items-per-page="($p) => itemsPerPage = $p"
+      @update:page="($p) => (page = $p)"
+      @update:items-per-page="($p) => (itemsPerPage = $p)"
     >
       <template v-slot:top>
         <v-toolbar flat class="rounded-xl">
@@ -35,10 +35,17 @@
             rounded
             outlined
             color="green"
-            style="max-width: 350px;"
+            style="max-width: 350px"
           ></v-text-field>
           <v-divider class="mx-2"></v-divider>
-          <v-btn dark rounded class="mb-2" @click="showAddModal()" color="green">
+          <v-btn
+            dark
+            rounded
+            class="mb-2"
+            @click="showAddModal()"
+            color="green"
+            v-if="$_sys.isAllowed('user-create')"
+          >
             <v-icon small>mdi-plus</v-icon> Tambah Data
           </v-btn>
 
@@ -46,69 +53,81 @@
           <v-dialog v-model="dialog" max-width="700px">
             <v-card>
               <v-form ref="form" v-model="valid" lazy-validation>
-              <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-text-field
-                        v-model="defaultItem.name"
-                        label="Nama"
-                        :rules="rules"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <v-text-field
-                        v-model="defaultItem.email"
-                        label="Email"
-                        :rules="rules"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="typeAdd == true">
-                    <v-col cols="12" sm="4" md="4">
-                      <v-select
-                        v-model="defaultItem.type"
-                        :items="itemsType"
-                        item-value="value"
-                        item-text="text"
-                        label="Pilih Tipe"
-                        v-on:change="selectedType"
-                        :rules="rules"
-                      ></v-select>
-                    </v-col>
-                    <v-col v-if="typeselectedFF == true" cols="12" sm="8" md="8">
-                      <v-autocomplete
-                        v-model="defaultItem.employee_no"
-                        :items="itemsFF"
-                        item-value="ff_no"
-                        item-text="namaFF"
-                        label="Pilih FF"
-                        clearable
-                      ></v-autocomplete>
-                    </v-col>
-                    <v-col v-if="typeselectedFF == false" cols="12" sm="8" md="8">
-                      <v-autocomplete
-                        v-model="defaultItem.employee_no"
-                        :items="itemsEmp"
-                        item-value="nik"
-                        item-text="name"
-                        label="Pilih Employee"
-                        clearable
-                      ></v-autocomplete>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Keluar
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Simpan </v-btn>
-              </v-card-actions>
+                <v-card-title>
+                  <span class="headline">{{ formTitle }}</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model="defaultItem.name"
+                          label="Nama"
+                          :rules="rules"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <v-text-field
+                          v-model="defaultItem.email"
+                          label="Email"
+                          :rules="rules"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row v-if="typeAdd == true">
+                      <v-col cols="12" sm="4" md="4">
+                        <v-select
+                          v-model="defaultItem.type"
+                          :items="itemsType"
+                          item-value="value"
+                          item-text="text"
+                          label="Pilih Tipe"
+                          v-on:change="selectedType"
+                          :rules="rules"
+                        ></v-select>
+                      </v-col>
+                      <v-col
+                        v-if="typeselectedFF == true"
+                        cols="12"
+                        sm="8"
+                        md="8"
+                      >
+                        <v-autocomplete
+                          v-model="defaultItem.employee_no"
+                          :items="itemsFF"
+                          item-value="ff_no"
+                          item-text="namaFF"
+                          label="Pilih FF"
+                          clearable
+                        ></v-autocomplete>
+                      </v-col>
+                      <v-col
+                        v-if="typeselectedFF == false"
+                        cols="12"
+                        sm="8"
+                        md="8"
+                      >
+                        <v-autocomplete
+                          v-model="defaultItem.employee_no"
+                          :items="itemsEmp"
+                          item-value="nik"
+                          item-text="name"
+                          label="Pilih Employee"
+                          clearable
+                        ></v-autocomplete>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="close">
+                    Keluar
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="save">
+                    Simpan
+                  </v-btn>
+                </v-card-actions>
               </v-form>
             </v-card>
           </v-dialog>
@@ -149,14 +168,31 @@
         </v-toolbar>
       </template>
       <template v-slot:item.no="{ index }">
-        {{ (itemsPerPage * (page-1)) + index + 1 }}
+        {{ itemsPerPage * (page - 1) + index + 1 }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon class="mr-2" @click="editItem(item)" color="warning">
+        <v-icon
+          class="mr-2"
+          @click="editItem(item)"
+          color="warning"
+          v-if="$_sys.isAllowed('user-update')"
+        >
           mdi-pencil
         </v-icon>
-        <v-icon @click="resetItem(item)" color="red"> mdi-autorenew </v-icon>
-        <v-icon @click="deleteItem(item)" color="red"> mdi-delete </v-icon>
+        <v-icon
+          @click="resetItem(item)"
+          color="red"
+          v-if="$_sys.isAllowed('user-update')"
+        >
+          mdi-autorenew
+        </v-icon>
+        <v-icon
+          @click="deleteItem(item)"
+          color="red"
+          v-if="$_sys.isAllowed('user-delete')"
+        >
+          mdi-delete
+        </v-icon>
       </template>
     </v-data-table>
 
@@ -176,6 +212,11 @@ import axios from "axios";
 export default {
   name: "Users",
   data: () => ({
+    config: {
+      permission: {
+        read: "user-list",
+      },
+    },
     page: 1,
     itemsPerPage: 10,
     itemsbr: [
@@ -227,13 +268,13 @@ export default {
       email: "",
       type: "",
     },
-    itemsType:[
+    itemsType: [
       { text: "FF", value: "FF" },
       { text: "Karyawan", value: "Employee" },
     ],
-    itemsEmp:[],
-    itemsFF:[],
-    itemsPositionEmp:[],
+    itemsEmp: [],
+    itemsFF: [],
+    itemsPositionEmp: [],
     typeselectedFF: true,
     typeAdd: true,
 
@@ -241,7 +282,7 @@ export default {
     textsnackbar: "Test",
     timeoutsnackbar: 2000,
     colorsnackbar: null,
-    table: {loading: false}
+    table: { loading: false },
   }),
   created() {
     this.authtoken = localStorage.getItem("token");
@@ -256,7 +297,7 @@ export default {
   methods: {
     async initialize() {
       try {
-        this.table.loading = true
+        this.table.loading = true;
         const response = await axios.get(this.BaseUrlGet + "GetUser", {
           headers: {
             Authorization: `Bearer ` + this.authtoken,
@@ -277,7 +318,7 @@ export default {
           this.dataobject = [];
         }
       } finally {
-        this.table.loading = false
+        this.table.loading = false;
       }
     },
     async GetEmp() {
@@ -305,11 +346,14 @@ export default {
     },
     async GetFF() {
       try {
-        const response = await axios.get(this.BaseUrlGet + "GetFieldFacilitatorAllWeb", {
-          headers: {
-            Authorization: `Bearer ` + this.authtoken,
-          },
-        });
+        const response = await axios.get(
+          this.BaseUrlGet + "GetFieldFacilitatorAllWeb",
+          {
+            headers: {
+              Authorization: `Bearer ` + this.authtoken,
+            },
+          }
+        );
         if (response.data.length != 0) {
           this.itemsFF = response.data.data.result.data;
         } else {
@@ -354,7 +398,7 @@ export default {
         employee_no: this.defaultItem.employee_no,
         name: this.defaultItem.name,
         email: this.defaultItem.email,
-        password: '123456',
+        password: "123456",
         role: this.defaultItem.type,
       };
       // this.dialogDetail = false;
@@ -389,7 +433,7 @@ export default {
           this.textsnackbar = "Gagal mengubah data";
           localStorage.removeItem("token");
           this.$router.push("/");
-        }else{
+        } else {
           this.dialog = true;
           this.snackbar = true;
           this.colorsnackbar = "red";
@@ -435,7 +479,7 @@ export default {
           this.textsnackbar = "Gagal mengubah data";
           localStorage.removeItem("token");
           this.$router.push("/");
-        }else{
+        } else {
           this.dialog = true;
           this.snackbar = true;
           this.colorsnackbar = "red";
@@ -480,7 +524,7 @@ export default {
           this.textsnackbar = "Gagal mengubah data";
           localStorage.removeItem("token");
           this.$router.push("/");
-        }else{
+        } else {
           this.dialog = true;
           this.snackbar = true;
           this.colorsnackbar = "red";
@@ -521,7 +565,6 @@ export default {
     },
 
     deleteItemConfirm() {
-      
       this.verifDelete();
     },
     close() {
@@ -530,28 +573,27 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
-    closeReset(){
-      this.dialogReset =false;
+    closeReset() {
+      this.dialogReset = false;
     },
-    deleteItem(item){
+    deleteItem(item) {
       this.defaultItem.id = item.id;
       this.dialogDelete = true;
     },
-    resetItem(item){
+    resetItem(item) {
       this.defaultItem.employee_no = item.employee_no;
       this.defaultItem.email = item.email;
       this.dialogReset = true;
     },
 
     showAddModal() {
-      
       this.defaultItem.id = "";
       this.defaultItem.name = "";
       this.defaultItem.role = "";
       this.defaultItem.employee_no = "";
       this.defaultItem.email = "";
       this.defaultItem.type = "FF";
-      this.formTitle = 'Tambah Data';
+      this.formTitle = "Tambah Data";
       this.typeAdd = true;
       this.dialog = true;
     },
@@ -561,38 +603,48 @@ export default {
       this.defaultItem.name = item.name;
       this.defaultItem.role = item.role;
       this.defaultItem.email = item.email;
-      if(item.role == 'ff'){this.defaultItem.type = 'FF';this.typeselectedFF = true;}
-      else{this.defaultItem.type = 'Employee';this.typeselectedFF = false;}
-      this.formTitle = 'Edit Data';
+      if (item.role == "ff") {
+        this.defaultItem.type = "FF";
+        this.typeselectedFF = true;
+      } else {
+        this.defaultItem.type = "Employee";
+        this.typeselectedFF = false;
+      }
+      this.formTitle = "Edit Data";
       this.typeAdd = false;
       this.dialog = true;
     },
-    selectedType(a){
-      if(a == 'FF'){this.typeselectedFF = true;this.defaultItem.type = a;}
-      else{this.typeselectedFF = false;this.defaultItem.type = a;}
+    selectedType(a) {
+      if (a == "FF") {
+        this.typeselectedFF = true;
+        this.defaultItem.type = a;
+      } else {
+        this.typeselectedFF = false;
+        this.defaultItem.type = a;
+      }
       // this.valueMU = a;
     },
-    save(){
+    save() {
       this.$refs.form.validate();
       if (
         this.defaultItem.name.length != 0 &&
         // this.defaultItem.birthday.length != 0 &&
         this.defaultItem.type != null &&
         this.defaultItem.employee_no != null &&
-        this.defaultItem.email.length != 0 
+        this.defaultItem.email.length != 0
       ) {
         if (this.defaultItem.id) {
           this.updateData();
-        }else{
+        } else {
           this.addData();
-        }        
+        }
       } else {
         this.snackbar = true;
         this.colorsnackbar = "red";
         this.textsnackbar =
           "Gagal Simpan, Semua kolom tidak boleh ada yang kosong";
       }
-    }
+    },
   },
 };
 </script>
