@@ -363,7 +363,7 @@
         @success="onSuccessGisVerification"
         :dryLandArea="data.dry_land_area"
         :scoopingVisitCode="data.data_no"
-        v-if="data.dry_land_area"
+        v-if="data"
       />
     </v-col>
     <v-col md="12">
