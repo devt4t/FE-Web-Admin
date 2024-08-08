@@ -336,7 +336,7 @@ export default {
       if (loading instanceof Function) loading(true);
 
       let params = {
-        search: search,
+        [this.item.option.search_key || "search"]: search,
         limit: limit,
       };
 
