@@ -1,5 +1,11 @@
 <template>
-  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true">
+  <geko-base-crud
+    :config="config"
+    :hideCreate="true"
+    :hideUpdate="true"
+    :refreshKey="refreshKey"
+    @onExportExcel="onExportExcel($event)"
+  >
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
         <div
@@ -7,11 +13,16 @@
           :class="{
             warning:
               item.approve == 0 && item.updated_gis.toLowerCase() == 'belum',
+            success: item.approve == 2 && item.eligible_status == 2,
             info:
-              item.approve == 0 && item.updated_gis.toLowerCase() == 'sudah',
-            primary: item.approve == 1,
-            success: item.approve == 2,
-            danger: item.approve == 3,
+              (item.approve == 0 &&
+                item.updated_gis.toLowerCase() == 'sudah') ||
+              (item.approve == 2 && item.eligible_status == 1),
+            primary: item.approve == 1 && item.fc_complete_data !== null,
+            danger:
+              item.approve == 3 ||
+              (item.approve == 2 && item.eligible_status == 0) ||
+              (item.approve == 1 && item.fc_complete_data == null),
           }"
         ></div>
       </div>
@@ -44,7 +55,7 @@
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <span v-on="on" class="text-08-em badge bg-light mt-1">{{
-              item.document_no
+              item.user_id
             }}</span>
           </template>
           <span>Kode FF</span>
@@ -72,10 +83,45 @@
       }}</span>
     </template>
 
+    <template v-slot:list-target_area="{ item }">
+      <div class="d-flex flex-column">
+        <span>{{ item.target_areas_name }}</span>
+        <span class="text-link font-weight-300 text-09-em">
+          MU {{ item.managementunits_name }}</span
+        >
+      </div>
+    </template>
+
     <template v-slot:list-lahan_size="{ item }">
-      <span class="d-block text-end font-weight-bold text-no-wrap">
-        {{ item.land_area | parse("ts") }}m&sup2;
-      </span>
+      <div class="d-flex flex-column">
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <div class="d-flex flex-row align-items-center" v-on="on">
+              <span class="d-block text-end font-weight-bold text-no-wrap">
+                <v-icon medium>mdi-file-document-outline</v-icon>
+                <span class="ml-1"
+                  >{{ item.land_area | parse("ts") }}m&sup2;</span
+                >
+              </span>
+            </div>
+          </template>
+          <span>Luas lahan SPPT</span>
+        </v-tooltip>
+
+        <v-tooltip top v-if="item.gis_polygon_area">
+          <template v-slot:activator="{ on }">
+            <div class="d-flex flex-row align-items-center mt-1" v-on="on">
+              <span class="d-block text-end font-weight-bold text-no-wrap">
+                <v-icon medium>mdi-vector-polygon</v-icon>
+                <span class="ml-1 text-link"
+                  >{{ item.gis_polygon_area | parse("ts") }}m&sup2;</span
+                >
+              </span>
+            </div>
+          </template>
+          <span>Luas lahan polygon</span>
+        </v-tooltip>
+      </div>
     </template>
 
     <template v-slot:list-planting_area="{ item }">
@@ -110,46 +156,98 @@
       </div>
     </template>
 
+    <template v-slot:list-total_wood="{ item }">
+      <span
+        class="d-block text-center"
+        v-if="
+          Array.isArray(item.total_from_detail) &&
+          item.total_from_detail.length > 0
+        "
+      >
+        {{ item.total_from_detail[0].pohon_kayu_detail | parse("ts") }}
+      </span>
+    </template>
+
+    <template v-slot:list-total_mpts="{ item }">
+      <span
+        class="d-block text-center"
+        v-if="
+          Array.isArray(item.total_from_detail) &&
+          item.total_from_detail.length > 0
+        "
+      >
+        {{ item.total_from_detail[0].pohon_mpts_detail | parse("ts") }}
+      </span>
+    </template>
+
     <template v-slot:list-total="{ item }">
-      <span class="font-weight-bold">{{
-        item.pohon_kayu + item.pohon_mpts
-      }}</span>
+      <span
+        class="font-weight-bold d-block text-center"
+        v-if="
+          Array.isArray(item.total_from_detail) &&
+          item.total_from_detail.length > 0
+        "
+        >{{
+          (item.total_from_detail[0].pohon_kayu_detail +
+            item.total_from_detail[0].pohon_mpts_detail)
+            | parse("ts")
+        }}</span
+      >
     </template>
 
     <template v-slot:list-status="{ item }">
-      <div class="d-flex flex-row text-no-wrap" style="align-items: center">
+      <div
+        class="d-flex flex-row text-no-wrap justify-content-center"
+        style="align-items: center"
+      >
         <div
           class="badge"
           :class="{
             'bg-warning':
               item.approve == 0 && item.updated_gis.toLowerCase() == 'belum',
             'bg-info':
-              item.approve == 0 && item.updated_gis.toLowerCase() == 'sudah',
+              (item.approve == 0 &&
+                item.updated_gis.toLowerCase() == 'sudah') ||
+              (item.approve == 2 && item.eligible_status == 1),
             'bg-primary': item.approve == 1,
             'bg-success': item.approve == 2,
-            'bg-danger': item.approve == 3,
+            'bg-danger':
+              item.approve == 3 ||
+              (item.approve == 2 && item.eligible_status == 0) ||
+              (item.approve == 1 && item.fc_complete_data == null),
           }"
         >
+          <span v-if="item.approve == 1 && item.fc_complete_data == null"
+            >Data Bermasalah</span
+          >
           <span
-            v-if="
+            v-else-if="
               item.approve == 0 && item.updated_gis.toLowerCase() == 'belum'
             "
             >Belum Diverifikasi</span
           >
           <span
-            v-if="
+            v-else-if="
               item.approve == 0 && item.updated_gis.toLowerCase() == 'sudah'
             "
             >Diverifikasi GIS</span
           >
           <span v-else-if="item.approve == 1">Diverifikasi FC</span>
-          <span v-else-if="item.approve == 2">Terverifikasi</span>
+          <span v-else-if="item.approve == 2">
+            <span v-if="item.eligible_status == 0">Tidak Bisa Ikut</span>
+            <span v-else-if="item.eligible_status == 1"
+              >Bisa Ikut Dengan Kondisi</span
+            >
+            <span v-else-if="item.eligible_status == 2">Bisa Ikut</span>
+          </span>
           <span v-else-if="item.approve == 3">Force Majeure</span>
         </div>
       </div>
     </template>
 
-    <template v-slot:list-before-create> </template>
+    <template v-slot:list-before-create>
+      <lahan-export-modal :dataKey="exportModal" />
+    </template>
 
     <template v-slot:list-fc_complete_data="{ item }">
       <div class="d-flex flex-row text-no-wrap justify-content-center">
@@ -227,6 +325,22 @@
         </v-btn> -->
       </div>
     </template>
+
+    <!-- <template v-slot:list-bottom-action="{ item }">
+      <div class="buttons mt-2">
+        <v-btn
+          variant="warning"
+          v-if="
+            $store.state.tmpProgramYear == '2023' &&
+            $_sys.isAllowed('lahan-update')
+          "
+          @click="joinNewProgram(item)"
+        >
+          <v-icon>mdi-bookmark-check</v-icon>
+          <span class="text-09-em">Ikutkan Program 2024</span>
+        </v-btn>
+      </div>
+    </template> -->
   </geko-base-crud>
 </template>
 
@@ -235,14 +349,48 @@ import moment from "moment";
 import "./lahan.scss";
 import LahanDetail from "./LahanDetail.vue";
 import LahanKmlUpload from "./LahanKmlUpload.vue";
+import LahanExportModal from "./LahanExportModal.vue";
 export default {
   name: "lahan-v2",
 
   components: {
     LahanDetail,
     LahanKmlUpload,
+    LahanExportModal,
   },
   methods: {
+    async joinNewProgram(item) {
+      return;
+      const confirmation = await this.$_alert.confirm(
+        "Ikutkan Program 2024?",
+        `Apakah anda yakin ingin mengikutkan lahan dengan Nomor Lahan ${item.lahan_no} di tahun program 2024?`,
+
+        "Ya, Ikutkan",
+        "Batal",
+        false
+      );
+      if (!confirmation.isConfirmed) return;
+      const updating = await this.$_api
+        .post("UpdateReusableLahan_new", {
+          lahan_no: item.lahan_no,
+          program_year: this.$_config.programYear.model,
+        })
+        .then(() => true)
+        .catch(() => false);
+
+      if (!updating) return;
+      this.$_alert.success(
+        "Berhasil",
+        "Lahan berhasil di ikutkan kembali di tahun program 2024",
+        "center"
+      );
+      this.refreshKey += 1;
+    },
+
+    onExportExcel(data) {
+      // console.log("data", data);
+      this.exportModal += 1;
+    },
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
 
@@ -301,14 +449,17 @@ export default {
   },
   data() {
     return {
+      refreshKey: 1,
       uploadKmlModal: 2,
       componentKey: 1,
+      exportModal: 0,
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);
       },
       config: {
         title: "Lahan",
         model_api: null,
+        export: true,
         getter: "GetLahanAll_new",
 
         // getterDataKey: "lahan.data",
@@ -406,6 +557,7 @@ export default {
             label: "Lahan",
             methods: {
               list: {
+                sticky: true,
                 type: "row-slot",
               },
             },
@@ -416,6 +568,33 @@ export default {
             methods: {
               list: {
                 type: "row-slot",
+              },
+            },
+          },
+
+          {
+            id: "mu_id",
+            label: "Management Unit",
+            methods: {
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                getter: "GetManagementUnitAdmin",
+                setter: "mu_no",
+                main: true,
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data.result",
+                  list_pointer: {
+                    code: "mu_no",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
               },
             },
           },
@@ -453,6 +632,30 @@ export default {
           //     list: true,
           //   },
           // },
+
+          {
+            id: "target_area",
+            label: "Target Area",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+              filter: {
+                type: "select",
+                getter: "GetTargetAreaAdmin",
+                setter: "area_code",
+                main: true,
+                option: {
+                  getterKey: "data.result",
+                  list_pointer: {
+                    code: "area_code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
           {
             id: "village",
             label: "Desa",
@@ -467,6 +670,7 @@ export default {
             label: "Tahun Bergabung",
             methods: {
               list: {
+                header_class: "text-center",
                 type: "row-slot",
               },
             },
@@ -476,6 +680,7 @@ export default {
             label: "Pola Tanam",
             methods: {
               list: {
+                class: "min-w-150px",
                 view_data: "opsi_pola_tanam",
               },
             },
@@ -504,7 +709,8 @@ export default {
             label: "Kayu",
             methods: {
               list: {
-                view_data: "pohon_kayu",
+                type: "row-slot",
+                // view_data: "pohon_kayu",
                 transform: "ts",
                 class: "text-center d-block",
               },
@@ -574,6 +780,17 @@ export default {
                     display: ["name"],
                   },
                 },
+              },
+            },
+          },
+          {
+            id: "created_at",
+            label: "Tgl. Dibuat",
+            methods: {
+              list: {
+                header_class: "text-center",
+                class: "text-no-wrap d-block text-center",
+                transform: "datetime",
               },
             },
           },

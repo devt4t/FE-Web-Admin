@@ -7,12 +7,38 @@
   >
     <template v-slot:list-join_year="{ item }">
       <div
-        class="d-flex flex row mt-1"
+        class="d-flex flex-row mt-1"
         style="justify-content: center; align-items: center"
       >
-        <span class="mb-0 badge bg-light">{{
-          formatDate(item.join_date, "YYYY")
-        }}</span>
+        <span
+          class="mb-0"
+          :class="{
+            'badge bg-primary': formatDate(item.join_date, 'YYYY') == '2024',
+            'badge bg-info': formatDate(item.join_date, 'YYYY') !== '2024',
+          }"
+          >{{ formatDate(item.join_date, "YYYY") }}</span
+        >
+      </div>
+    </template>
+
+    <template v-slot:list-total_lahan_outside="{ item }">
+      <span
+        class="d-block text-center font-weight-bold min-w-150px"
+        v-if="item.farmer_working_area_amount[0].jumlah_working_area"
+        >{{
+          item.farmer_working_area_amount[0].jumlah_working_area
+        }}
+        Lahan</span
+      >
+
+      <span class="d-block text-center min-w-150px" v-else>Tidak ada</span>
+    </template>
+    <template v-slot:list-ff_id="{ item }">
+      <div class="d-flex flex-column min-w-150px">
+        <span class="font-weight-500">{{ item.field_facilitators_name }}</span>
+        <div class="d-flex flex-row">
+          <span class="badge bg-light">{{ item.user_id }}</span>
+        </div>
       </div>
     </template>
 
@@ -38,6 +64,33 @@
       </div>
     </template>
 
+    <template v-slot:list-name="{ item }">
+      <div class="d-flex flex-column min-w-150px">
+        <v-tooltip
+          top
+          v-if="item.farmer_working_area_amount[0].jumlah_working_area > 0"
+        >
+          <template v-slot:activator="{ on }">
+            <span v-on="on" class="font-weight-bold"
+              >{{ item.name }} <span class="text-danger">*</span></span
+            >
+          </template>
+          <span
+            >Petani memiliki
+            {{ item.farmer_working_area_amount[0].jumlah_working_area }} lahan
+            diluar area kerja</span
+          >
+        </v-tooltip>
+
+        <span class="font-weight-bold" v-else>{{ item.name }}</span>
+        <div class="d-flex flex-row">
+          <span class="badge bg-light font-weight-300">{{
+            item.farmer_no
+          }}</span>
+        </div>
+      </div>
+    </template>
+
     <template v-slot:list-target_area="{ item }">
       <div class="d-flex flex-column">
         <p class="mb-0">{{ item.target_areas_name }}</p>
@@ -46,6 +99,29 @@
         >
       </div>
     </template>
+
+    <template v-slot:list-status="{ item }">
+      <div class="d-flex flex-row">
+        <span
+          class="badge"
+          :class="{
+            'badge bg-warning text-no-wrap': item.approve == 0,
+            'badge bg-success text-no-wrap': item.approve == 1,
+            // 'badge bg-danger text-no-wrap':
+            //   item.farmer_working_area_amount[0].jumlah_working_area == 0,
+          }"
+        >
+          <span v-if="item.approve == 0">Belum Diverifikasi</span>
+          <span v-else-if="item.approve == 1">Terverifikasi</span>
+        </span>
+      </div>
+    </template>
+
+    <!-- <template v-slot:detail-header-action="{ item, response }">
+      <div>
+        {{ JSON.stringify(response) }}
+      </div>
+    </template> -->
 
     <template v-slot:detail-legal_land_categories="{ item }">
       <span
@@ -60,7 +136,24 @@
         >{{ item.legal_land_categories }}</span
       >
     </template>
-    1 - 100% Kayu 2 - 60% kayu 40 mpts
+
+    <template v-slot:detail-row-detail_program_year="{ item, response }">
+      <div class="geko-base-detail-item">
+        <div class="label">
+          <p class="mb-0 pb-0">Tahun Program</p>
+        </div>
+        <div class="value">
+          <p class="mb-0 pb-0">
+            <span
+              class="badge bg-primary"
+              v-for="(f, i) in response?.DetailFarmerPivot"
+              :key="'farmer-detail-year' + i"
+              >{{ f.program_year }}</span
+            >
+          </p>
+        </div>
+      </div>
+    </template>
 
     <template v-slot:detail-project_model="{ item }">
       <span v-if="!item || item == '-' || item == 0">-</span>
@@ -217,26 +310,51 @@
     </template>
 
     <template v-slot:detail-header-action="{ item, response }">
-      <v-btn
-        variant="success"
-        @click="onVerification(item)"
-        v-if="
-          item.approve == 0 && $_sys.isAllowed('farmer-verification-create')
-        "
-      >
-        <v-icon small class="mr-1">mdi-check</v-icon>
-        <span>Verifikasi</span>
-      </v-btn>
-      <v-btn
-        variant="danger"
-        v-else-if="
-          item.approve == 1 && $_sys.isAllowed('farmer-unverification-create')
-        "
-        @click="onVerification(item)"
-      >
-        <v-icon small class="mr-1">mdi-close</v-icon
-        ><span>Unverifikasi</span></v-btn
-      >
+      <div>
+        <farmer-assign-modal
+          :data="response?.DetailFarmerPivot"
+          :dataKey="farmerAssignModal"
+          @success="componentKey += 1"
+        />
+        <v-btn variant="info" class="mr-2" @click="farmerAssignModal += 1"
+          ><v-icon small class="mr-1">mdi-account-convert-outline</v-icon>
+          <span>Assign Program Year</span>
+        </v-btn>
+        <v-btn
+          variant="success"
+          @click="onVerification(item)"
+          v-if="
+            item.approve == 0 && $_sys.isAllowed('farmer-verification-create')
+          "
+        >
+          <v-icon small class="mr-1">mdi-check</v-icon>
+          <span>Verifikasi</span>
+        </v-btn>
+        <v-btn
+          variant="success"
+          @click="onVerification(item)"
+          v-if="
+            item.approve == 1 && $_sys.isAllowed('farmer-verification-create')
+          "
+        >
+          <v-icon small class="mr-1">mdi-check</v-icon>
+          <span>Verifikasi</span>
+        </v-btn>
+        <v-btn
+          variant="danger"
+          v-else-if="
+            item.approve == 1 && $_sys.isAllowed('farmer-unverification-create')
+          "
+          @click="onVerification(item)"
+        >
+          <v-icon small class="mr-1">mdi-close</v-icon
+          ><span>Unverifikasi</span></v-btn
+        >
+      </div>
+    </template>
+
+    <template v-slot:detail-row>
+      <farmer-detail />
     </template>
   </geko-base-crud>
 </template>
@@ -244,9 +362,14 @@
 <script>
 import moment from "moment";
 import "./farmer.scss";
+import FarmerAssignModal from "./FarmerAssignModal.vue";
+import FarmerDetail from "./FarmerDetail.vue";
 export default {
   name: "farmer-v2",
-
+  components: {
+    FarmerAssignModal,
+    FarmerDetail,
+  },
   methods: {
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
@@ -257,13 +380,12 @@ export default {
       this.$store.state.lightbox.show = true;
     },
     onVerification(data) {
-      console.log(data);
       if (data.approve == 1) {
         this.$_alert
           .confirm(
             "Unverifikasi Petani",
             "Apakah anda yakin ingin unverifikasi data petani?",
-            "Ya, Delete",
+            "Ya, Unverifikasi",
             "Batal",
             true
           )
@@ -307,6 +429,7 @@ export default {
   },
   data() {
     return {
+      farmerAssignModal: 0,
       componentKey: 1,
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);
@@ -399,13 +522,32 @@ export default {
               list: {
                 view_data: "name",
                 class: "font-weight-500",
+                type: "row-slot",
               },
               detail: {
-                type: "slot",
+                view_data: "name",
               },
               create: { validation: ["required"] },
               update: { validation: ["required"], setter: "new_name" },
               filter: false,
+            },
+          },
+          {
+            id: "detail_farmer_no",
+            label: "Kode Petani",
+            methods: {
+              detail: {
+                view_data: "farmer_no",
+              },
+            },
+          },
+          {
+            id: "detail_program_year",
+            label: "Tahun Program",
+            methods: {
+              detail: {
+                type: "row-slot",
+              },
             },
           },
           {
@@ -603,7 +745,9 @@ export default {
             label: "Nama FF",
             methods: {
               list: {
-                view_data: "field_facilitators_name",
+                // view_data: "field_facilitators_name",
+                type: "row-slot",
+                // class: "min-w-150px",
               },
               detail: false,
               create: { validation: ["required"] },
@@ -637,6 +781,7 @@ export default {
                 col_size: 6,
                 getter: "GetManagementUnitAdmin",
                 setter: "mu_no",
+                main: true,
                 param: {
                   page: 1,
                   per_page: 10,
@@ -661,6 +806,7 @@ export default {
                 type: "row-slot",
               },
               filter: {
+                main: true,
                 type: "select",
                 getter: "GetTargetAreaAdmin",
                 setter: "area_code",
@@ -687,6 +833,16 @@ export default {
               filter: false,
             },
           },
+          // {
+          //   id: "total_lahan_outside",
+          //   label: "Jumlah Lahan Diluar Area Kerja",
+          //   methods: {
+          //     list: {
+          //       header_class: "text-center",
+          //       type: "row-slot",
+          //     },
+          //   },
+          // },
 
           {
             id: "program_year",
@@ -706,6 +862,7 @@ export default {
             label: "Tahun Bergabung",
             methods: {
               list: {
+                header_class: "text-center",
                 type: "row-slot",
                 class: "badge bg-primary",
               },
@@ -720,12 +877,13 @@ export default {
             methods: {
               list: {
                 header_class: "text-center",
-                class: {
-                  1: "badge bg-success text-no-wrap",
-                  0: "badge bg-warning text-no-wrap",
-                },
-                transform: "status-verification",
-                view_data: "approve",
+                type: "row-slot",
+                // class: {
+                //   1: "badge bg-success text-no-wrap",
+                //   0: "badge bg-warning text-no-wrap",
+                // },
+                // transform: "status-verification",
+                // view_data: "approve",
               },
               detail: false,
               filter: {
@@ -754,6 +912,17 @@ export default {
                     display: ["name"],
                   },
                 },
+              },
+            },
+          },
+
+          {
+            id: "created_at",
+            label: "Tgl Dibuat",
+            methods: {
+              list: {
+                transform: "datetime",
+                class: "min-w-150px",
               },
             },
           },

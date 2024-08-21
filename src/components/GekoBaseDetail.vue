@@ -27,7 +27,11 @@
         <div class="geko-base-detail-wrapper">
           <div class="geko-base-detail-list">
             <template v-for="(item, i) in fields">
-              <slot :name="`detail-row-${item.view_data}`" v-bind:item="data">
+              <slot
+                :name="`detail-row-${item.view_data}`"
+                v-bind:item="data"
+                v-bind:response="response"
+              >
                 <div
                   class="geko-base-detail-item"
                   :key="'base-detail' + i"

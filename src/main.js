@@ -39,6 +39,29 @@ extend("phone", {
     return new RegExp(/^(\+62|62|0)8[1-9][0-9]{6,9}$/).test(value);
   },
 });
+extend("decimal", {
+  validate: (value, { decimals = "*", separator = "." } = {}) => {
+    if (value === null || value === undefined || value === "") {
+      return {
+        valid: false,
+      };
+    }
+    if (Number(decimals) === 0) {
+      return {
+        valid: /^-?\d*$/.test(value),
+      };
+    }
+    const regexPart = decimals === "*" ? "+" : `{1,${decimals}}`;
+    const regex = new RegExp(
+      `^[-+]?\\d*(\\${separator}\\d${regexPart})?([eE]{1}[-]?\\d+)?$`
+    );
+
+    return {
+      valid: regex.test(value),
+    };
+  },
+  message: "The {_field_} field must contain only decimal values",
+});
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
   iconUrl: require("leaflet/dist/images/marker-icon.png"),
@@ -63,7 +86,6 @@ Vue.prototype.$_alert = alert;
 Vue.prototype.$_api = service;
 Vue.prototype.$_config = config;
 Vue.prototype.$_sys = global;
-
 //global component
 Vue.component("geko-select", vSelect);
 

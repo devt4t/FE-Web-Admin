@@ -186,6 +186,11 @@ export default {
     exportModal,
   },
   data: () => ({
+    config: {
+      permission: {
+        read: "report-data-list",
+      },
+    },
     configs: [
       // data petani (per-petani)
       {

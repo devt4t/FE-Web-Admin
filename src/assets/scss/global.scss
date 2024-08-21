@@ -114,6 +114,12 @@ button.circle {
 .text-capitalize {
   text-transform: capitalize !important;
 }
+.text-center {
+  text-align: center !important;
+}
+.d-block {
+  display: block !important;
+}
 
 .text-no-wrap {
   white-space: nowrap;
@@ -441,17 +447,45 @@ button.circle {
 }
 
 .text-warning {
-  color: $warning;
+  color: $warning !important;
 }
 
 .text-primary {
-  color: $primary;
+  color: $primary !important;
+}
+.text-info {
+  color: $info !important;
 }
 
-.text-black {
+.bg-success-light {
+  background-color: $success_light;
+}
+
+.bg-info-light {
+  background-color: $info_light;
+}
+.bg-danger-light {
+  background-color: $danger_light;
+}
+
+.bg-warning-light {
+  background-color: $warning_light;
+}
+
+.bg-primary-light {
+  background-color: $primary_light !important;
+}
+
+.bg-black {
   color: black;
 }
+.br-8 {
+  border-radius: 8px;
+}
 
+.br-12 {
+  border-radius: 12px;
+}
 .form-stepper-header {
   display: flex;
   flex-direction: row;
@@ -506,7 +540,7 @@ button.circle {
 }
 
 .text-link {
-  color: #1f4f94;
+  color: #1f4f94 !important;
 }
 
 table tbody tr td:has(.indicator-wrapper) {

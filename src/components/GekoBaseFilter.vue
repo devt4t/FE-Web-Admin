@@ -49,6 +49,10 @@
         <v-icon small>mdi-filter</v-icon>
         <span> Terapkan Filter</span>
       </v-btn>
+      <!-- <v-btn small variant="info" @click="onResetFilter">
+        <v-icon small>mdi-filter</v-icon>
+        <span> Reset Filter</span>
+      </v-btn> -->
     </div>
   </div>
 </template>

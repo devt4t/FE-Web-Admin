@@ -262,6 +262,9 @@
   .trees {
     margin-top: 1em;
     color: $success;
+    h4 {
+      font-size: 1.3em;
+    }
     .tree-list {
       display: flex;
       flex-direction: row;
@@ -300,12 +303,18 @@
   }
 }
 
+.lahan-detail .main-data-img {
+  border-radius: 12px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .lahan-detail .lahan-gis-verification {
   margin-top: 1em;
   background-color: rgba(221, 221, 221, 0.2);
   border-radius: 8px;
   padding: 1em;
-  max-height: 75vh;
   overflow-y: scroll;
   border: 1px solid rgba(221, 221, 221, 0.2);
   .file-upload {
@@ -351,6 +360,9 @@
   }
 }
 .lahan-detail .other-data {
+  h4 {
+    font-size: 1.3em;
+  }
   .other-data-list {
     display: flex;
     flex-direction: column;
@@ -362,9 +374,15 @@
       .label  {
         width: 35%;
         color: rgb(141, 141, 141);
+        font-size: .9em;
+        padding-right: 10px;
       }
       .value {
         width: 65%;
+        &::before {
+          content: ':';
+          padding-right: 10px;
+        }
 
         img {
           width: 5em;

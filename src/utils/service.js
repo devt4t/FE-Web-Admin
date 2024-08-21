@@ -47,7 +47,21 @@ env.interceptors.response.use(
       });
       return;
     } else if (error.response.status === 422 || error.response.status === 400) {
-      _alert.error(error.response);
+      let errorMessage;
+      if (error.response && error.response.data) {
+        if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data.error_message) {
+          errorMessage = error.response.data.error_message;
+        } else if (typeof error.response.data === "string") {
+          errorMessage = error.response.data;
+        } else if (typeof error.response === "string") {
+          errorMessage = error.response.data.error_message;
+        } else {
+          errorMessage = "Request gagal";
+        }
+      }
+      _alert.error(errorMessage);
     } else if (error.response.status === 500) {
       _alert.error({}, "Error", "Terjadi kesalahan system");
     } else if (error.response.status === 404) {

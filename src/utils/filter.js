@@ -11,7 +11,7 @@ Vue.filter("parse", (value, id) => {
         _value = value;
         break;
       }
-      _value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      _value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       break;
     case "no-empty":
       _value = [null, undefined, ""].includes(value) ? "-" : value;

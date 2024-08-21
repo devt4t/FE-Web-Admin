@@ -27,7 +27,7 @@
                   small
                   variant="danger"
                   @click="onDelete()"
-                  v-if="$_sys.isAllowed('rra-pra-delete')"
+                  v-if="$_sys.isAllowed('rra-pra-delete') && data.pra?.mainPra"
                   ><v-icon>mdi-delete-empty</v-icon><span>Hapus</span></v-btn
                 >
 
@@ -37,11 +37,13 @@
                   variant="success"
                   @click="onVerification('verification')"
                   v-if="
+                    data.rra &&
                     data.rra.mainRra &&
                     ['ready_to_submit', 'document_saving'].includes(
                       data.rra.mainRra.status
                     ) &&
-                    $_sys.isAllowed('rra-pra-verification-create')
+                    $_sys.isAllowed('rra-pra-verification-create') &&
+                    data.pra?.mainPra
                   "
                 >
                   <v-icon>mdi-file-check-outline</v-icon>
@@ -54,6 +56,7 @@
                   small
                   variant="danger"
                   v-if="
+                    data.rra &&
                     data.rra.mainRra &&
                     ['submit_review'].includes(data.rra.mainRra.status) &&
                     $_sys.isAllowed('rra-pra-unverification-create')
@@ -74,7 +77,7 @@
                 <span
                   v-if="f[1] === 'status'"
                   :class="{
-                    'badge bg-light': data.rra.mainRra && !data.pra.mainPra,
+                    'badge bg-light': data.rra.mainRra && !data.pra?.mainPra,
                     'badge bg-warning':
                       data.rra.mainRra &&
                       data.rra.mainRra.status == 'document_saving',
@@ -83,11 +86,12 @@
                       data.rra.mainRra.status == 'submit_review',
                   }"
                 >
-                  <span v-if="data.rra.mainRra && !data.pra.mainPra"
+                  <span v-if="data.rra?.mainRra && !data.pra?.mainPra"
                     >Draft</span
                   >
                   <span
                     v-else-if="
+                      data.rra &&
                       data.rra.mainRra &&
                       data.rra.mainRra.status == 'document_saving'
                     "
@@ -95,7 +99,7 @@
                   >
                   <span
                     v-else-if="
-                      data.rra.mainRra &&
+                      data.rra?.mainRra &&
                       data.rra.mainRra.status == 'submit_review'
                     "
                     >Terverifikasi</span
@@ -175,7 +179,7 @@
           <h5 class="mb-0 pb-0">{{ tabs[activeTab].label }}</h5>
         </v-card-title>
 
-        <div class="detail-wrapper">
+        <div class="detail-wrapper" v-if="data.rra">
           <rra-pra-detail-rra
             :data="data ? (activeTab == 0 ? data.rra : data.pra) : null"
             :scoopingData="data ? data.mainScooping : null"
@@ -275,6 +279,7 @@ export default {
       ) {
         payload.pra_no = this.data.pra.mainPra.pra_no;
       }
+
       this.$_alert
         .confirm(
           "Hapus data RRA PRA?",
@@ -294,13 +299,17 @@ export default {
               })
               .then(() => {
                 this.$_alert.success("Data RRA-PRA berhasil dihapus");
-                this.$router.replace({
-                  path: this.$route.path,
-                  query: {
-                    view: "list",
-                    id: "",
-                  },
-                });
+                this.$router
+                  .replace({
+                    path: this.$route.path,
+                    query: {
+                      view: "list",
+                      id: "",
+                    },
+                  })
+                  .catch(() => {
+                    this.$router.go(-1);
+                  });
               });
           }
         });

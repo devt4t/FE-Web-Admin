@@ -16,3 +16,111 @@
         }
     }
 }
+
+.farmer-detail {
+    .farmer-card {
+        
+        border-radius: 12px;
+    }
+    .farmer-card .farmer-side-wrapper {
+        overflow-y: scroll;
+    }
+    .farmer-side-wrapper {
+        padding-inline: 1em;
+        padding-bottom: 2em;
+        .side-title {
+            color: $success;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .farmer-info {
+            border-bottom: 1px dashed #b5b5c394;
+            padding-bottom: 10px;
+            .farmer-info-text {
+                display: flex;
+                flex: 1;
+                .farmer-info-list {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    margin-bottom: 3px;
+
+                    i {
+                        color: #b5b5c394;
+                        font-size: 1.2em;
+                        transform: translateY(-2px);
+                    }
+                    span {
+                        padding-left: 5px;
+                        font-size: .9em;
+                        font-weight: 500;
+
+                    }
+                }
+
+                
+            }
+            .farmer-info-avatar-wrapper {
+
+                .farmer-profile {
+                    width: 5em;
+                    height: 5em;
+                    border-radius: 50%;
+                    background-size: cover;
+                    background-position: center;
+                }
+                .farmer-info-avatar {
+                    background-color: #D9D9D9;
+                    width: 2.2em;
+                    height: 2.2em;
+                    border-radius: 50%;
+                    line-height: 2.2em;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 1.5em;
+                }
+
+            }
+        }
+
+        .farmer-side-list-wrapper {
+            padding-block: 10px;
+
+            .farmer-side-list {
+                display: flex;
+                flex-direction: column;
+                .farmer-side-item {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: flex-start;
+                    width: 100%;
+                    margin-bottom: 8px;
+                    .label {
+                        width: 35%;
+                        font-size: .85em;
+                        color: #a6a6b4;
+                        padding-right: 7px;
+
+                    }
+                    .value {
+                        width: 65%;
+                        font-size: .9em;
+                        position: relative;
+                        &::before {
+                            content: ':';
+                            margin-right: 5px;
+                        }
+                    }
+
+                    .item-photo {
+                        width: 6em;
+                        height: 6em;
+                        background-position: center;
+                        background-size: contain;
+                    }
+                }
+            }
+        }
+    }
+}

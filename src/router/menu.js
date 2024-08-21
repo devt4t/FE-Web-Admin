@@ -238,7 +238,7 @@ const menu = [
         title: "Petani (Sosialisasi Program)",
         to: "/sosialisasi-program-farmer-v2",
         component: "ActivityNew/program_soc/ProgramSocFarmer",
-        name: "newSosialisasiProgram",
+        name: "newSosialisasiProgramFarmer",
         permission: "sosialisasi-program-v2",
         prevent_route_validation: true,
         hide: true,

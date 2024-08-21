@@ -26,6 +26,32 @@
                 class="lahan-side-item d-flex flex-col"
                 style="flex-wrap: wrap"
               >
+                <div>
+                  <v-btn
+                    v-if="
+                      $_sys.isAllowed('lahan-fc-unverification-create') &&
+                      [0, 1, null].includes(data.main_lahan.fc_complete_data) &&
+                      data.main_lahan.updated_gis === 'belum'
+                    "
+                    variant="danger"
+                    class="mr-1 mb-1"
+                    @click="unverificationData('fc_complete_data')"
+                  >
+                    <v-icon>mdi-undo-variant</v-icon>
+                    <span>Unverifikasi Kelengkapan Data</span>
+                  </v-btn>
+
+                  <v-btn
+                    v-if="$_sys.isAllowed('lahan-um-unverification-create')"
+                    variant="danger"
+                    class="mr-1 mb-1"
+                    @click="unverificationData('um_seed')"
+                  >
+                    <v-icon>mdi-undo-variant</v-icon>
+                    <span>Unverifikasi Perubahan Bibit</span>
+                  </v-btn>
+                </div>
+
                 <v-btn
                   v-if="
                     !openGisEdit &&
@@ -90,6 +116,12 @@
             "
             :answers="data.lahan_term_answer_list"
             :role="verifRole"
+            :isCarbonProject="
+              Array.isArray(data.lahan_project) &&
+              data.lahan_project.length > 0 &&
+              data.lahan_project[0].project_planting_purposes_code == 'carbon'
+            "
+            :polygonGisArea="polygonGisArea"
             @success="
               componentKey += 1;
               openGisEdit = false;
@@ -111,25 +143,82 @@
                 <div class="d-flex flex-row value">
                   <span
                     :class="{
-                      'badge bg-warning': data.main_lahan.approve == 0,
-                      'badge bg-info': data.main_lahan.approve == 1,
+                      'badge bg-warning':
+                        data.main_lahan.approve == 0 &&
+                        data.main_lahan.updated_gis.toLowerCase() == 'belum',
+                      'badge bg-info':
+                        data.main_lahan.approve == 0 &&
+                        data.main_lahan.updated_gis.toLowerCase() == 'sudah',
+                      'badge bg-primary':
+                        data.main_lahan.approve == 1 &&
+                        data.main_lahan.fc_complete_data != null,
                       'badge bg-success': data.main_lahan.approve == 2,
+                      'badge bg-danger':
+                        data.main_lahan.approve == 3 ||
+                        (data.main_lahan.approve == 1 &&
+                          data.main_lahan.fc_complete_data == null),
                     }"
                   >
-                    <span v-if="data.main_lahan.approve == 0"
+                    <span
+                      v-if="
+                        data.main_lahan.approve == 1 &&
+                        data.main_lahan.fc_complete_data == null
+                      "
+                      >Data Bermasalah</span
+                    >
+                    <span
+                      v-else-if="
+                        data.main_lahan.approve == 0 &&
+                        data.main_lahan.updated_gis.toLowerCase() == 'belum'
+                      "
                       >Belum Diverifikasi</span
+                    >
+                    <span
+                      v-else-if="
+                        data.main_lahan.approve == 0 &&
+                        data.main_lahan.updated_gis.toLowerCase() == 'sudah'
+                      "
+                      >Diverifikasi GIS</span
                     >
                     <span v-else-if="data.main_lahan.approve == 1"
                       >Diverifikasi FC</span
                     >
                     <span v-else-if="data.main_lahan.approve == 2"
-                      >Diverifikasi UM</span
+                      >Terverifikasi</span
+                    >
+                    <span v-else-if="data.main_lahan.approve == 3"
+                      >Force Majeure</span
                     >
                   </span>
                 </div>
               </div>
+
               <div class="lahan-side-item">
-                <p class="mb-0 label">Eligible Status</p>
+                <p class="mb-0 label">Jumlah Bibit</p>
+                <div class="d-flex flex-row value">
+                  <span
+                    v-if="data.main_lahan.seed_is_modified == 1"
+                    class="badge"
+                    :class="{
+                      'bg-danger': data.main_lahan.seed_verify_status == 0,
+                      'bg-warning': data.main_lahan.seed_verify_status == null,
+                      'bg-success': data.main_lahan.seed_verify_status == 1,
+                    }"
+                  >
+                    <span v-if="data.main_lahan.seed_verify_status == 0"
+                      >Tidak Disetujui</span
+                    >
+                    <span v-else-if="data.main_lahan.seed_verify_status == 1"
+                      >Disetujui</span
+                    >
+
+                    <span v-else>Menunggu Approval</span>
+                  </span>
+                  <span v-else>-</span>
+                </div>
+              </div>
+              <div class="lahan-side-item">
+                <p class="mb-0 label">Eligibilitas Lahan</p>
                 <div class="d-flex flex-row value">
                   <span
                     :class="{
@@ -179,7 +268,7 @@
                   <div
                     class="log-data-item"
                     :class="{
-                      active: data.main_lahan.fc_complete_data == 1,
+                      active: [0, 1].includes(data.main_lahan.fc_complete_data),
                     }"
                   >
                     <div class="dot-wrapper">
@@ -310,13 +399,28 @@
                     <qr-code :text="data.main_lahan.barcode" />
                   </p>
                   <span class="mb-0 value" v-if="v.key === 'project'">
-                    <p
+                    <div
                       v-if="v.key === 'project'"
                       v-for="(project, j) in data.lahan_project"
                       :key="`project-${j}`"
+                      class="d-flex flex-col"
                     >
-                      {{ project.projects_project_name }}
-                    </p>
+                      <span>{{ project.projects_project_name }}</span>
+                      <div class="d-flex flex-row mb-2">
+                        <span
+                          class="badge"
+                          :class="{
+                            'bg-info':
+                              project.project_planting_purposes_code ==
+                              'carbon',
+                            'bg-light':
+                              project.project_planting_purposes_code !=
+                              'carbon',
+                          }"
+                          >{{ project.project_planting_purposes_name }}</span
+                        >
+                      </div>
+                    </div>
                   </span>
                   <p
                     class="mb-0 value"
@@ -372,7 +476,16 @@
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Tanam</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span v-if="data.main_lahan"
+              <!-- <span
+                v-if="data.main_lahan && data.main_lahan.updated_gis == 'sudah'"
+                >{{
+                  ((data.main_lahan.planting_area / 100) *
+                    data.main_lahan.land_area)
+                    | parse("ts")
+                }}
+                m&sup2;</span
+              > -->
+              <span
                 >{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span
               >
             </p>
@@ -442,13 +555,86 @@
           </div>
 
           <div class="trees">
-            <h4>Pohon</h4>
+            <div
+              class="d-flex flex-row align-items-center justify-content-between"
+            >
+              <h4 class="mb-0 pb-0">Pohon</h4>
+              <div class="trees-filter" v-if="trees.length > 1">
+                <v-btn
+                  v-for="(tree, i) in trees"
+                  :variant="tree.label != treesActive ? 'light' : 'success'"
+                  :key="`lahan-detail-tree-${i}`"
+                  class="mr-2"
+                  :class="{
+                    'font-weight-bold': tree.label == treesActive,
+                  }"
+                  @click="treesActive = tree.label"
+                  >{{ tree.label }}
+                </v-btn>
+              </div>
+            </div>
+
+            <div
+              class="d-flex flex-row align-items-center bg-warning-light px-3 py-3 br-8 mb-4 mt-3"
+              v-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis == 'belum' &&
+                Array.isArray(data.lahan_project) &&
+                data.lahan_project.length > 0 &&
+                data.lahan_project[0].project_planting_purposes_code == 'carbon'
+              "
+            >
+              <v-icon large class="text-warning mr-3">mdi-information</v-icon>
+              <span
+                class="text-warning"
+                v-if="
+                  data.main_lahan.pohon_kayu == 0 &&
+                  data.main_lahan.pohon_mpts == 0 &&
+                  data.main_lahan.seed_is_modified == null
+                "
+                >Untuk <strong>Project Carbon</strong>, data jumlah bibit akan
+                diperbarui setelah data lahan dan polygon lahan diverifikasi
+                oleh GIS. Update jumlah bibit dapat dilakukan melalui GEKO
+                Mobile App</span
+              >
+
+              <span
+                class="text-warning"
+                v-if="
+                  (data.main_lahan.pohon_kayu > 0 ||
+                    data.main_lahan.pohon_mpts > 0) &&
+                  data.main_lahan.seed_is_modified == null
+                "
+                >Untuk <strong>Project Carbon</strong>, data jumlah bibit masih
+                perkiraan. Jumlah bibit dapat diperbarui melalui GEKO Mobile App
+                setelah data lahan dan polygon lahan diverifikasi oleh
+                GIS.</span
+              >
+            </div>
+
+            <div
+              class="d-flex flex-row align-items-center bg-info-light px-2 py-2 br-8 mt-3"
+              v-if="
+                $_sys.isAllowed('lahan-um-verification-create') &&
+                data.main_lahan &&
+                data.main_lahan.seed_is_modified == 1 &&
+                data.main_lahan.seed_verify_status !== 1
+              "
+            >
+              <v-icon large class="text-info">mdi-information</v-icon>
+              <span class="text-info pl-3"
+                >Data jumlah bibit sudah diperbarui, silahkan verifikasi jumlah
+                bibit dan status eligibilitas lahan
+              </span>
+            </div>
 
             <div class="tree-list">
               <div
                 class="tree-item"
-                v-for="(item, i) in Array.isArray(data.lahan_detail)
-                  ? data.lahan_detail
+                v-for="(item, i) in Array.isArray(trees) &&
+                trees.find((x) => x.label == treesActive) &&
+                trees.find((x) => x.label == treesActive).data
+                  ? trees.find((x) => x.label == treesActive).data
                   : []"
               >
                 <v-icon>mdi-tree</v-icon>
@@ -482,10 +668,18 @@
                     "
                   >
                     <img
+                      class="main-data-img"
                       :src="
                         $_config.baseUrlUpload + '/' + data.main_lahan[item[1]]
                       "
                       alt=""
+                      @click="
+                        showLightbox(
+                          $_config.baseUrlUpload +
+                            '/' +
+                            data.main_lahan[item[1]]
+                        )
+                      "
                     />
                   </span>
                   <span
@@ -602,7 +796,7 @@
                           <v-icon small class="mr-1"
                             >mdi-close-circle-outline</v-icon
                           >
-                          <span>Ya</span>
+                          <span>Tidak</span>
                         </span>
                         <span
                           class="center-v text-no-wrap"
@@ -646,6 +840,54 @@ export default {
     LahanGisVerification,
   },
   methods: {
+    async unverificationData(type) {
+      if (type == "fc_complete_data") {
+        const prompt = await this.$_alert.confirm(
+          "Unverifikasi Data?",
+          "Apakah anda yakin ingin unverifikasi data kelengkapan lahan?",
+          "Unverifikasi",
+          "Batal",
+          true
+        );
+
+        if (!prompt.isConfirmed) return;
+
+        this.$_api
+          .post("UpdateLahanFCCompleteStatus_new", {
+            current_id: this.$route.query.id,
+            fc_complete_data: 2,
+          })
+          .then(() => {
+            this.$_alert.success(
+              "Kelengkapan data lahan berhasil diunverifikasi"
+            );
+            this.componentKey += 1;
+            this.getData();
+            this.loading = false;
+          });
+      } else if (type == "um_seed") {
+        const prompt = await this.$_alert.confirm(
+          "Unverifikasi Data?",
+          "Apakah anda yakin ingin unverifikasi jumlah bibit?",
+          "Unverifikasi",
+          "Batal",
+          true
+        );
+
+        if (!prompt.isConfirmed) return;
+        this.$_api
+          .post("UpdateSeedAmountVerification_new", {
+            current_id: this.$route.query.id,
+            verif_moduls: "unverif",
+          })
+          .then(() => {
+            this.$_alert.success("Jumlah bibit berhasil diunverifikasi");
+            this.componentKey += 1;
+            this.getData();
+            this.loading = false;
+          });
+      }
+    },
     toggleLayer(item, i) {
       var isLayerFillExist = this.map.getLayer(`${item.id}-fill`);
       if (isLayerFillExist) {
@@ -709,6 +951,22 @@ export default {
       });
 
       this.data = result;
+      let _trees = [];
+      for (const tree of result.lahan_detail) {
+        const idx = _trees.findIndex(
+          (x) => x.label == tree.detail_year.substring(0, 4)
+        );
+        if (idx < 0) {
+          _trees.push({
+            label: tree.detail_year.substring(0, 4),
+            data: [tree],
+          });
+        } else {
+          _trees[idx].data.push(tree);
+        }
+      }
+
+      this.trees = _trees;
       this.openMaps();
     },
 
@@ -733,6 +991,21 @@ export default {
         disabled: false,
         show: true,
       });
+
+      //calculate polygon
+      if (
+        Array.isArray(kmlGisData.features) &&
+        kmlGisData.features.length > 0 &&
+        kmlGisData.features[0].geometry
+      ) {
+        const polygonGis = turf.polygon(
+          kmlGisData.features[0].geometry.coordinates
+        );
+        const area = turf.area(polygonGis);
+        if (area) {
+          this.polygonGisArea = parseFloat(area).toFixed(2);
+        }
+      }
 
       if (this.map && this.map.setCenter instanceof Function) {
         this.map.setCenter(mapCenter);
@@ -937,10 +1210,13 @@ export default {
       formatDate(date, format) {
         return moment(date).format(format);
       },
+      trees: [],
+      treesActive: "2024",
       map: null,
       mapReady: false,
       mapOpen: true,
       openGisEdit: false,
+      polygonGisArea: 0,
       componentKey: 0,
       markers: [],
       verifRole: null,
@@ -1015,23 +1291,6 @@ export default {
           ],
         },
         {
-          name: "Kondisi Lahan",
-          items: [
-            {
-              label: "Jenis Lahan",
-              key: "main_lahan.lahan_type",
-            },
-            {
-              label: "Kondisi Terbaru",
-              key: "main_lahan.latest_condition",
-            },
-            {
-              label: "Deskripsi",
-              key: "main_lahan.description",
-            },
-          ],
-        },
-        {
           name: "Petani",
           items: [
             {
@@ -1046,6 +1305,23 @@ export default {
             {
               label: "Nama FF",
               key: "main_lahan.field_facilitators_name",
+            },
+          ],
+        },
+        {
+          name: "Kondisi Lahan",
+          items: [
+            {
+              label: "Jenis Lahan",
+              key: "main_lahan.lahan_type",
+            },
+            {
+              label: "Kondisi Terbaru",
+              key: "main_lahan.latest_condition",
+            },
+            {
+              label: "Deskripsi",
+              key: "main_lahan.description",
             },
           ],
         },
@@ -1114,18 +1390,19 @@ export default {
           "m",
         ],
         ["Koordinat", "coordinate"],
-        ["Current Crops", "current_crops"],
+        ["Tanaman Saat Ini", "current_crops"],
         ["Deskripsi", "description"],
         ["Pupuk", "fertilizer"],
         ["Elevation", "elevation"],
-        ["Drought", "drought", "boolean"],
-        ["floods", "floods", "boolean"],
-        ["landslide", "landslide", "boolean"],
+        ["Pernah Terjadi Kekeringan", "drought", "boolean"],
+        ["Pernah Terjadi Banjir", "floods", "boolean"],
+        ["Pernah Terjadi Longsor", "landslide", "boolean"],
+        ["Pernah Terjadi Kebakaran", "wildfire", "boolean"],
         ["Akurasi GPS", "gps_accuration"],
         ["Kode Internal", "internal_code"],
         ["Exposure", "exposure"],
         ["Desa Terdekat", "nearby_village", "boolean"],
-        ["Jarak ke Desa Terdekat", "nearby_village_distance", "boolean"],
+        ["Jarak ke Desa Terdekat", "nearby_village_distance", "", "", "m"],
         ["Potensi", "potency"],
         ["Jenis Tanah", "soil_type"],
         ["Foto Tanah", "soil_photo", "photo"],

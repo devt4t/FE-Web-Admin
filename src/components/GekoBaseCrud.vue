@@ -11,7 +11,7 @@
         class="breadcrumbsmain"
         :items="[
           {
-            text: 'Utilities',
+            text: 'Menu',
             disabled: true,
             href: 'breadcrumbs_dashboard',
           },
@@ -25,6 +25,34 @@
         large
         data-aos="fade-right"
       ></v-breadcrumbs>
+
+      <!-- <div class="global-search">
+        <input type="text" placeholder="Cari Modul" />
+        <div class="search-result">
+          <div class="menu-list">
+            <span class="menu-label">Activity</span>
+            <div class="submenu-list">
+              <div class="submenu-wrapper">
+                <a href="#">Sosialisasi Program</a>
+              </div>
+              <div class="submenu-wrapper">
+                <a href="#">Scooping Visit</a>
+              </div>
+            </div>
+          </div>
+          <div class="menu-list">
+            <span class="menu-label">Utilities</span>
+            <div class="submenu-list">
+              <div class="submenu-wrapper">
+                <a href="#">Management Unit</a>
+              </div>
+              <div class="submenu-wrapper">
+                <a href="#">Target Area</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
 
       <div
         class="global-filters d-flex flex-row"
@@ -106,7 +134,7 @@
         data-aos="fade-up"
         data-aos-delay="100"
         data-aos-duration="800"
-        @update:page="($p) => (page = $p)"
+        @update:page="onChangePage"
         @update:items-per-page="($p) => (perPage = $p)"
         :server-items-length="totalRecord"
         :items-per-page="perPage"
@@ -256,6 +284,10 @@
               </div>
             </div>
           </div>
+        </template>
+
+        <template v-slot:group>
+          <div>test</div>
         </template>
 
         <template v-slot:item.index="{ index }">
@@ -445,9 +477,13 @@
 
           <template
             v-for="(f, i) in fields.detail.filter((x) => x.type === 'row-slot')"
-            v-slot:[`detail-row-${f.view_data}`]="{ item }"
+            v-slot:[`detail-row-${f.view_data}`]="{ item, response }"
           >
-            <slot :name="'detail-row-' + f.view_data" v-bind:item="item">
+            <slot
+              :name="'detail-row-' + f.view_data"
+              v-bind:item="item"
+              v-bind:response="response"
+            >
             </slot>
           </template>
 
@@ -488,6 +524,8 @@ import "../assets/scss/geko-base-crud.scss";
 import GekoBaseForm from "./GekoBaseForm.vue";
 import GekoBaseDetail from "./GekoBaseDetail.vue";
 import GekoBaseFilter from "./GekoBaseFilter.vue";
+import menus from "@/router/menu";
+
 import _ from "lodash";
 export default {
   name: "geko-base-crud",
@@ -542,7 +580,7 @@ export default {
     refreshKey: {
       type: Number,
       requried: false,
-      defualt: 0,
+      default: 0,
     },
   },
   components: {
@@ -567,6 +605,7 @@ export default {
       statistic: null,
       loading: false,
       totalRecord: null,
+      preventFuckingBinding: false,
       globalFilter: {
         project_purpose: this.$store.state.tmpProjectPurpose,
       },
@@ -595,6 +634,11 @@ export default {
   },
 
   methods: {
+    onChangePage(t) {
+      if (this.preventFuckingBinding) return;
+      this.page = t;
+      this.getListData();
+    },
     onCreateSuccess(data) {
       this.$emit("create-success", data);
 
@@ -608,6 +652,7 @@ export default {
       await this.buildModule();
       await this.generateList();
       this.activeView = this.$route.query.view;
+
       this.getListData();
     },
     setGlobalFilter(key, value, localKey, refresh = true) {
@@ -747,9 +792,9 @@ export default {
           : item.label
           ? item.label
           : item.id,
-        header_class: item.methods[key].header_class || null,
+        header_class: item.methods[key].header_class || "",
         type: item.methods[key].type || "text",
-        class: item.methods[key].class || null,
+        class: item.methods[key].class || "",
         transform: item.methods[key].transform || null,
         validation: item.methods[key].validation || [],
         input:
@@ -758,6 +803,11 @@ export default {
             : true,
         default: item.methods[key].default || null,
       };
+
+      if (["list"].includes(key)) {
+        // if (item.methods[key].sticky)
+        // _data.header_class = _data.header_class += " sticky-left";
+      }
 
       if (["update", "create", "filter"].includes(key)) {
         _data.setter = item.methods[key].setter || _data.view_data;
@@ -792,7 +842,6 @@ export default {
         return;
       }
       if (this.loading) return;
-
       this.loading = true;
       let _params = JSON.parse(JSON.stringify(this.params));
       let _filters = JSON.parse(JSON.stringify(this.filters));
@@ -884,6 +933,7 @@ export default {
 
     onSearch(e) {
       if (e.preventDefault instanceof Function) e.preventDefault();
+
       this.getListData();
     },
 
@@ -984,15 +1034,6 @@ export default {
         }
       },
     },
-    page(t) {
-      if (
-        typeof this.config.pagination == "boolean" &&
-        this.config.pagination == false
-      ) {
-        return;
-      }
-      this.getListData();
-    },
     perPage(t) {
       if (
         typeof this.config.pagination == "boolean" &&
@@ -1000,7 +1041,11 @@ export default {
       ) {
         return;
       }
+      this.loading = true;
+
+      this.perPage = t;
       this.page = 1;
+      this.loading = false;
       this.getListData();
     },
     refreshKey(t) {

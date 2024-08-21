@@ -157,7 +157,6 @@ export default {
           return res;
         })
         .catch((err) => {
-          console.log("err", err);
           return false;
         });
 

@@ -190,7 +190,9 @@ export default {
                 : false,
           });
         }
-
+        processedData.sort((a, b) =>
+          a.task_name > b.task_name ? 1 : b.task_name > a.task_name ? -1 : 0
+        );
         this.tasks = processedData;
         console.log("TASKS", this.tasks);
         this.loading = false;

@@ -236,7 +236,6 @@
                           },
                           option: {
                             // getterKey: 'data.result',
-                            search_key: 'search_value',
                             default_label: area.desas_name,
                             list_pointer: {
                               label: 'name',

@@ -462,7 +462,7 @@ export default {
         openCase: "(Dari ",
         subCount: "0",
         closeCase: " )",
-        link: "Farmer",
+        link: "farmer-v2?view=list",
         icon: "mdi-nature-people",
         color: "orange",
         sub: "Orang",
@@ -476,7 +476,7 @@ export default {
         openCase: "(Dari ",
         subCount: "0",
         closeCase: " )",
-        link: "Lahan",
+        link: "lahan-v2?view=list",
         icon: "mdi-land-fields",
         color: "brown",
         sub: "Lahan",
@@ -489,7 +489,7 @@ export default {
       data1: {
         Judul: "Field Facilitator",
         Count: "0",
-        link: "FieldFacilitator",
+        link: "field-facilitator-v2?view=list",
         icon: "mdi-account",
         color: "blue",
         sub: "Orang",
@@ -678,9 +678,7 @@ export default {
         //   });
 
         const totalData = await this.$_api
-          .get(
-            this.$store.getters.getApiUrl(`GekoDashboardTotalDatas?${params}`)
-          )
+          .get(`GekoDashboardTotalDatas?${params}`)
           .then((res) => {
             return res.data.result;
           });

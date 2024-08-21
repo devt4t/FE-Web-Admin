@@ -336,12 +336,13 @@ export default {
       if (loading instanceof Function) loading(true);
 
       let params = {
-        [this.item.option.search_key || "search"]: search,
+        search: search,
+        search_value: search,
         limit: limit,
       };
 
       this.selectGetInitData(params, loading);
-    }),
+    }, 1000),
     async setDefaultValue() {
       if (
         this.item.option &&

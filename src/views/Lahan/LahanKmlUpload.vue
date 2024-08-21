@@ -38,6 +38,8 @@
                         Kelengkapan Data &amp; Status
                       </th>
                       <th>Altitude</th>
+                      <th>Luas Polygon</th>
+                      <th style="min-width: 200px">Jenis Tanah</th>
                       <th
                         v-for="(q, i) in questions"
                         :key="`head-${i}`"
@@ -128,7 +130,7 @@
                       <!-- ALTITUDE -->
                       <td>
                         <geko-input
-                          v-if="item.fc_complete_data == 1"
+                          :disabled="item.fc_complete_data != 1"
                           v-model="item.elevation"
                           :item="{
                             label: 'Altitude (mdpl)',
@@ -137,10 +139,141 @@
                           }"
                         />
                       </td>
+
+                      <!-- POLYGON AREA -->
+                      <td>
+                        <geko-input
+                          :disabled="item.fc_complete_data != 1"
+                          v-model="item.gis_polygon_area"
+                          :item="{
+                            label: 'Luas Polygon ',
+                            type: 'number',
+                            hide_label: true,
+                          }"
+                        />
+                      </td>
+
+                      <!-- JENIS TANAH -->
+                      <td>
+                        <geko-input
+                          :disabled="item.fc_complete_data != 1"
+                          v-model="item.soil_type"
+                          :item="{
+                            label: 'Luas Polygon ',
+                            type: 'select',
+                            option: {
+                              default_options: [
+                                {
+                                  label: 'Aluvial',
+                                  code: 'Aluvial',
+                                },
+                                {
+                                  label: 'Alvisol',
+                                  code: 'Alvisol',
+                                },
+                                {
+                                  label: 'Andosol',
+                                  code: 'Andosol',
+                                },
+                                {
+                                  label: 'Andosol Distrik',
+                                  code: 'Andosol Distrik',
+                                },
+                                {
+                                  label: 'Andosol Eutrik',
+                                  code: 'Andosol Eutrik',
+                                },
+                                {
+                                  label: 'Andosol Litik',
+                                  code: 'Andosol Litik',
+                                },
+                                {
+                                  label: 'Andosol Melanik',
+                                  code: 'Andosol Melanik',
+                                },
+                                {
+                                  label: 'Arenosol',
+                                  code: 'Arenosol',
+                                },
+                                {
+                                  label: 'Entisol',
+                                  code: 'Entisol',
+                                },
+                                {
+                                  label: 'Gleisol',
+                                  code: 'Gleisol',
+                                },
+                                {
+                                  label: 'Grumosol',
+                                  code: 'Grumosol',
+                                },
+                                {
+                                  label: 'Histosol',
+                                  code: 'Histosol',
+                                },
+                                {
+                                  label: 'Inseptisol',
+                                  code: 'Inseptisol',
+                                },
+                                {
+                                  label: 'Kambisol',
+                                  code: 'Kambisol',
+                                },
+                                {
+                                  label: 'Latosol',
+                                  code: 'Latosol',
+                                },
+                                {
+                                  label: 'Latosol Haplik',
+                                  code: 'Latosol Haplik',
+                                },
+                                {
+                                  label: 'Latosol Kromik',
+                                  code: 'Latosol Kromik',
+                                },
+                                {
+                                  label: 'Litosol',
+                                  code: 'Litosol',
+                                },
+                                {
+                                  label: 'Mediteran',
+                                  code: 'Mediteran',
+                                },
+                                {
+                                  label: 'Molisol',
+                                  code: 'Molisol',
+                                },
+                                {
+                                  label: 'Nitosol',
+                                  code: 'Nitosol',
+                                },
+                                {
+                                  label: 'Organosol',
+                                  code: 'Organosol',
+                                },
+                                {
+                                  label: 'Podsolik',
+                                  code: 'Podsolik',
+                                },
+                                {
+                                  label: 'Podsolik Haplik',
+                                  code: 'Podsolik Haplik',
+                                },
+                              ],
+                              list_pointer: {
+                                label: 'label',
+                                code: 'code',
+                                display: ['label'],
+                              },
+                            },
+                            hide_label: true,
+                          }"
+                        />
+                      </td>
                       <!-- QUESTIONS -->
                       <td v-for="(q, i) in questions" :key="`qt-${i}`">
                         <geko-input
-                          v-if="item.fc_complete_data == 1"
+                          :disabled="item.fc_complete_data != 1"
                           v-model="item[`question${i + 1}`]"
                           :item="{
                             hide_label: true,
@@ -327,6 +460,15 @@ export default {
     dataKey(t) {
       if (t > 1) {
         this.isOpen = true;
+      }
+    },
+
+    isOpen(t) {
+      if (!t) {
+        this.loading = false;
+        this.data = [];
+        this.step = 1;
+        this.questions = [];
       }
     },
   },

@@ -8,6 +8,8 @@ const _alert = {
     } catch {
       _text = "";
     }
+
+    if (typeof err === "string" && !title) _text = err;
     return Swal.fire({
       title: title,
       icon: "error",

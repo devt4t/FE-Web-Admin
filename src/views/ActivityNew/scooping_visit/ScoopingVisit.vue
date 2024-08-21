@@ -2,8 +2,8 @@
   <geko-base-crud
     :config="config"
     :key="'scooping-visit-' + componentKey"
-    :hideDelete="$store.state.User.role != 13"
-    :hideDeleteSoft="$store.state.User.role != 13"
+    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')"
+    :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')"
   >
     <template v-slot:create-form>
       <scooping-visit-form />

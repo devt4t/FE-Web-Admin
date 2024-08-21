@@ -1,5 +1,5 @@
 export default {
-  version: "2.1.12",
+  version: "2.2.0",
   baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
   baseUrlExport: "https://geko-export.tftdemo.net/",

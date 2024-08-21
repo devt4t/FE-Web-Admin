@@ -17,6 +17,17 @@
       </div>
     </template>
 
+    <template v-slot:list-indicator="{ item }">
+      <div class="indicator-wrapper pt-1">
+        <div
+          class="indicator"
+          :class="{
+            danger: item.active == 0,
+            success: item.active == 1,
+          }"
+        ></div>
+      </div>
+    </template>
     <template v-slot:list-bottom-action="{ item }">
       <v-btn
         variant="info"
@@ -141,7 +152,7 @@
             type: 'select',
             label: 'Kota / Kabupaten',
             api: 'GetKabupaten',
-            validation: [],
+            validation: ['required'],
             param: {
               province_code: formData.province,
             },
@@ -166,7 +177,7 @@
             type: 'select',
             label: 'Kecamatan',
             api: 'GetKecamatan',
-            validation: [],
+            validation: ['required'],
             param: {
               kabupaten_no: formData.city,
             },
@@ -191,7 +202,7 @@
             type: 'select',
             label: 'Desa',
             api: 'GetDesa',
-            validation: [],
+            validation: ['required'],
             param: {
               kode_kecamatan: formData.kecamatan,
             },
@@ -637,6 +648,15 @@ export default {
         slave: [],
         fields: [
           {
+            id: "indicator",
+            label: " ",
+            methods: {
+              list: {
+                type: "row-slot",
+              },
+            },
+          },
+          {
             id: "program_year",
             label: "Tahun Program",
             methods: {
@@ -1078,12 +1098,12 @@ export default {
               detail: true,
               create: {
                 type: "textarea",
-                validation: [],
+                validation: ['required'],
                 col_size: 6,
               },
               update: {
                 type: "textarea",
-                validation: [],
+                validation: ['required'],
                 col_size: 6,
               },
             },
@@ -1125,6 +1145,53 @@ export default {
                 base_type: "select",
                 option: {
                   default_label: "managementunits_name",
+                },
+              },
+
+              filter: {
+                validation: ["required"],
+                type: "select",
+                main: true,
+                col_size: 6,
+                getter: "GetManagementUnitAdmin",
+                setter: "mu_no",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data.result",
+                  list_pointer: {
+                    code: "mu_no",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            id: "fc_filter",
+            label: "Field Coordinator",
+            methods: {
+              filter: {
+                validation: ["required"],
+                type: "select",
+                main: true,
+                col_size: 6,
+                getter: "getEmployeeList_new",
+                setter: "fc_filter",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  list_pointer: {
+                    code: "nik",
+                    label: "name",
+                    display: ["name"],
+                  },
                 },
               },
             },
@@ -1289,6 +1356,33 @@ export default {
                       code: "0",
                     },
                   ],
+                },
+              },
+              filter: {
+                type: "select",
+                setter: "active",
+                icon: "list-status",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Aktif",
+                      code: 1,
+                    },
+                    {
+                      name: "Tidak Aktif",
+                      code: "0",
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
                 },
               },
             },

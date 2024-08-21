@@ -28,11 +28,37 @@
               }"
             />
           </v-col>
+          <v-col lg="12" v-if="role == 'gis' && isCarbonProject">
+            <geko-input
+              v-model="formData.gis_polygon_area"
+              :item="{
+                label: 'Luas Lahan Polygon (m)',
+                type: 'text',
+                validation: ['required', 'decimal'],
+              }"
+            />
+
+            <div
+              style="
+                background-color: #e1f0ff;
+                color: #1f4f94;
+                border-radius: 8px;
+              "
+              class="d-flex flex-row px-3 py-2 mt-2"
+              v-if="formData.gis_polygon_area"
+            >
+              <v-icon class="text-primary">mdi-information</v-icon>
+              <span class="text-08-em pl-2"
+                >Luas lahan polygon yang dihitung sistem kemungkinan berbeda 5 -
+                10m.</span
+              >
+            </div>
+          </v-col>
           <v-col lg="12" v-if="role == 'gis'">
             <geko-input
               v-model="formData.land_area"
               :item="{
-                label: 'Luas Lahan (m)',
+                label: 'Luas Lahan SPPT (m)',
                 type: 'number',
                 validation: ['required'],
               }"
@@ -463,6 +489,37 @@
 
           <v-col lg="12" v-if="role == 'um'">
             <geko-input
+              v-model="formData.seed_verify_status"
+              :item="{
+                label: 'Verifikasi Jumlah Bibit',
+                type: 'select-radio',
+                validation: ['required'],
+                option: {
+                  default_options: [
+                    {
+                      label: 'Tidak',
+                      code: '0',
+                    },
+                    {
+                      label: 'Ya',
+                      code: '1',
+                    },
+                  ],
+                  list_pointer: {
+                    label: 'name',
+                    code: 'code',
+                    display: ['name'],
+                  },
+                },
+              }"
+            />
+          </v-col>
+
+          <v-col
+            lg="12"
+            v-if="role == 'um' && formData.seed_verify_status == 1"
+          >
+            <geko-input
               v-model="formData.eligible_status"
               :item="{
                 label: 'Eligibilitas Lahan',
@@ -592,6 +649,14 @@ export default {
       required: false,
       default: null,
     },
+    isCarbonProject: {
+      required: false,
+      default: null,
+    },
+    polygonGisArea: {
+      required: false,
+      default: 0,
+    },
   },
   mounted() {
     this.initData();
@@ -621,93 +686,217 @@ export default {
       payload.current_id = this.$route.query.id;
 
       this.loading = true;
-      console.log(this.questions);
-      for (const question of this.questions) {
-        console.log("question", question);
-        console.log("answer", this.answers);
-        // const isCreate = "updateLahantermAnswer_new";
-        const isCreate = true;
-        await this.$_api.post(
-          isCreate ? "addLahanTermAnswer_new" : "updateLahantermAnswer_new",
-          {
-            lahan_no: this.data.lahan_no,
-            term_id: question.id,
-            term_answer: this.formData[`question_${question.id}`],
-            program_year: this.$_config.programYear.model || "2024",
-          }
-        );
-      }
       if (this.role === "gis") {
-        const nullableData = [
-          "tutupan_lahan",
-          "tutupan_pohon_percentage",
-          "tutupan_tanaman_bawah_percentage",
-          "tutupan_lain_bangunan_percentage",
-          "tutupan_lain_bangunan_photo",
-          "tutupan_pohon_photo",
-          "tutupan_tanaman_bawah_photo",
-          "nearby_village",
-          "animal_protected_habitat",
-        ];
+        this.$_alert
+          .confirm(
+            "Verifikasi?",
+            "Apakah anda yakin ingin verifikasi data lahan?",
+            "Verifikasi"
+          )
+          .then(async (res) => {
+            if (res.isConfirmed) {
+              const insertingQuestion = await this.submitIndicator()
+                .then(() => true)
+                .catch(() => false);
 
-        for (const item of nullableData) {
-          if (payload[item] == null) {
-            payload[item] = "0";
-          }
-        }
-        this.$_api
-          .post("UpdateLahanByGIS_new", payload)
-          .then(() => {
-            this.loading = false;
-            this.$_alert.success("Data lahan berhasil diverifikasi");
-            this.$emit("success", true);
-          })
-          .catch(() => {
-            this.loading = false;
+              if (!insertingQuestion) {
+                this.loading = false;
+                return;
+              }
+              const nullableData = [
+                "tutupan_lahan",
+                "tutupan_pohon_percentage",
+                "tutupan_tanaman_bawah_percentage",
+                "tutupan_lain_bangunan_percentage",
+                "tutupan_lain_bangunan_photo",
+                "tutupan_pohon_photo",
+                "tutupan_tanaman_bawah_photo",
+                "nearby_village",
+                "animal_protected_habitat",
+                "drought",
+                "landslide",
+                "exposure",
+                "floods",
+                "wildfire",
+              ];
+
+              for (const item of nullableData) {
+                if (payload[item] == null || payload[item] == 0) {
+                  payload[item] = "0";
+                }
+              }
+
+              payload.planting_area =
+                (payload.planting_area / 100) *
+                parseFloat(payload.gis_polygon_area);
+              this.$_api
+                .post("UpdateLahanByGIS_new", payload)
+                .then(() => {
+                  this.loading = false;
+                  this.$_alert.success("Data lahan berhasil diverifikasi");
+                  this.$emit("success", true);
+                })
+                .catch(() => {
+                  this.loading = false;
+                });
+            }
           });
       } else if (this.role == "fc") {
-        this.$_api
-          .post("UpdateLahanApproval_new", {
-            moduls: this.formData.moduls,
-            current_id: this.$route.query.id,
-          })
-          .then(() => {
-            this.loading = false;
-            this.$_alert.success("Data lahan berhasil diverifikasi");
-            this.$emit("success", true);
-          })
-          .catch(() => {
-            this.loading = false;
+        this.$_alert
+          .confirm(
+            "Verifikasi?",
+            "Apakah anda yakin ingin verifikasi data lahan?",
+            "Verifikasi"
+          )
+          .then(async (res) => {
+            if (res.isConfirmed) {
+              const submitIndicator = await this.submitIndicator()
+                .then(() => true)
+                .catch(() => false);
+              if (!submitIndicator) {
+                this.loading = false;
+                return;
+              }
+              this.$_api
+                .post("UpdateLahanApproval_new", {
+                  moduls: this.formData.moduls,
+                  current_id: this.$route.query.id,
+                })
+                .then(() => {
+                  this.loading = false;
+                  this.$_alert.success("Data lahan berhasil diverifikasi");
+                  this.$emit("success", true);
+                })
+                .catch(() => {
+                  this.loading = false;
+                });
+            }
           });
       } else if (this.role == "fc-verif-data") {
-        this.$_api
-          .post("UpdateLahanFCCompleteStatus_new", {
-            current_id: this.$route.query.id,
-            fc_complete_data: parseInt(this.formData.fc_complete_data),
-          })
-          .then(() => {
-            this.loading = false;
-            this.$_alert.success("Data lahan berhasil diverifikasi");
-            this.$emit("success", true);
-          })
-          .catch(() => {
-            this.loading = false;
+        this.$_alert
+          .confirm(
+            "Verifikasi?",
+            "Apakah anda yakin ingin verifikasi kelengkapan data lahan?",
+            "Verifikasi"
+          )
+          .then((res) => {
+            if (res.isConfirmed) {
+              this.$_api
+                .post("UpdateLahanFCCompleteStatus_new", {
+                  current_id: this.$route.query.id,
+                  fc_complete_data: parseInt(this.formData.fc_complete_data),
+                })
+                .then(() => {
+                  this.loading = false;
+                  this.$_alert.success("Data lahan berhasil diverifikasi");
+                  this.$emit("success", true);
+                })
+                .catch(() => {
+                  this.loading = false;
+                });
+            }
           });
       } else if (this.role == "um") {
-        this.$_api
-          .post("UpdateLahanEligibleStatus_new", {
-            current_id: this.$route.query.id,
-            eligible_status: parseInt(this.formData.eligible_status),
-          })
-          .then(() => {
-            this.loading = false;
-            this.$_alert.success("Data lahan berhasil diverifikasi");
-            this.$emit("success", true);
+        let verifList = [];
+        if (this.formData.seed_verify_status == 1) {
+          verifList.push("jumlah bibit");
+          verifList.push("eligibilitas lahan");
+        }
+        if (this.formData.seed_verify_status == 0)
+          verifList.push("jumlah bibit");
+        this.$_alert
+          .confirm(
+            "Verifikasi?",
+            `Apakah anda yakin ingin verifikasi ${verifList.join(" dan ")}?`,
+            "Verifikasi"
+          )
+          .then(async (res) => {
+            if (res.isConfirmed) {
+              let payload = {
+                current_id: this.$route.query.id,
+                verif_moduls: "verif",
+              };
+
+              const verifySeed = await this.$_api
+                .post("UpdateSeedAmountVerification_new", payload)
+                .then(() => {
+                  if (this.formData.seed_verify_status == 0) {
+                    this.loading = false;
+                    this.$_alert.success(
+                      `Data ${verifList.join(" dan ")} berhasil diverifikasi`
+                    );
+                    this.$emit("success", true);
+                    return false;
+                  } else {
+                    return true;
+                  }
+                })
+                .catch(() => {
+                  this.loading = false;
+                  return false;
+                });
+
+              if (!verifySeed) {
+                this.loading = false;
+                return;
+              }
+              this.$_api
+                .post("UpdateLahanEligibleStatus_new", {
+                  current_id: this.$route.query.id,
+                  eligible_status: parseInt(this.formData.eligible_status),
+                })
+                .then(() => {
+                  this.loading = false;
+                  this.$_alert.success(
+                    `Data ${verifList.join(" dan ")} berhasil diverifikasi`
+                  );
+                  this.$emit("success", true);
+                })
+                .catch(() => {
+                  this.loading = false;
+                });
+            } else {
+              this.loading = false;
+            }
           })
           .catch(() => {
             this.loading = false;
           });
       }
+    },
+
+    async submitIndicator() {
+      return new Promise(async (resolve, reject) => {
+        var i = 0;
+        for (const question of this.questions) {
+          const isCreate = this.answers.find((x) => question.id == x.term_id)
+            ? false
+            : true;
+          await this.$_api
+            .post(
+              isCreate ? "addLahanTermAnswer_new" : "updateLahantermAnswer_new",
+              {
+                current_id: isCreate
+                  ? null
+                  : this.answers.find((x) => question.id == x.term_id).id,
+                lahan_no: this.data.lahan_no,
+                term_id: question.id,
+                term_answer: this.formData[`question_${question.id}`],
+                program_year: this.$_config.programYear.model || "2024",
+              }
+            )
+            .then(() => {
+              i += 1;
+
+              if (i == this.questions.length) {
+                return resolve(true);
+              }
+            })
+            .catch((err) => {
+              return reject(err);
+            });
+        }
+      });
     },
     initData() {
       const keys = [
@@ -793,6 +982,11 @@ export default {
       handler(t, f) {
         this.calculateTutupan(t, f, "tutupan_lain_bangunan_percentage");
       },
+    },
+    polygonGisArea(t) {
+      if (t) {
+        this.$set(this.formData, "gis_polygon_area", t);
+      }
     },
   },
   computed: {

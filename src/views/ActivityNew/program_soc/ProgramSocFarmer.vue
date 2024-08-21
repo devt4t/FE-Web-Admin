@@ -25,12 +25,12 @@ export default {
         delete: "deleteProjectUtils",
         pk_field: null,
         permission: {
-          create: "program-socializations-create",
-          read: "program-socializations-list",
-          update: "program-socializations-update",
-          show: "program-socializations-show",
-          lookup: "program-socializations-lookup",
-          delete: "program-socializations-delete",
+          create: "sosialisasi-program-create",
+          read: "sosialisasi-program-list",
+          update: "sosialisasi-program-update",
+          show: "sosialisasi-program-show",
+          lookup: "sosialisasi-program-lookup",
+          delete: "sosialisasi-program-delete",
         },
         slave: [],
         fields: [
