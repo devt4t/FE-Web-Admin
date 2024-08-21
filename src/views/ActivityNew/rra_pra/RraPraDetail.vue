@@ -27,7 +27,7 @@
                   small
                   variant="danger"
                   @click="onDelete()"
-                  v-if="$_sys.isAllowed('rra-pra-delete') && data.pra?.mainPra"
+                  v-if="$_sys.isAllowed('rra-pra-delete')"
                   ><v-icon>mdi-delete-empty</v-icon><span>Hapus</span></v-btn
                 >
 

@@ -262,9 +262,11 @@ export default {
         )
         .then((res) => {
           if (res.isConfirmed) {
+            // ff_no, farmer_no, program_year
             this.$_api
-              .post("deleteFarmerPivot_new", {
+              .post("UnassignFarmerPivot_new", {
                 farmer_no: item.key2,
+                ff_no: item.key1,
                 program_year: item.program_year,
               })
               .then(() => {
