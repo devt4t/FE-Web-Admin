@@ -39,12 +39,14 @@
             padding-bottom: 10px;
             .farmer-info-text {
                 display: flex;
-                flex: 1;
+                width: calc(100% - 5em);
                 .farmer-info-list {
                     display: flex;
                     flex-direction: row;
                     align-items: center;
+                    width: 100%;
                     margin-bottom: 3px;
+                    word-wrap:break-word;
 
                     i {
                         color: #b5b5c394;

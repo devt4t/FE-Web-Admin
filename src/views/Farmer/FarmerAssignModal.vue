@@ -39,7 +39,10 @@
                         :disabled="f.id ? true : false"
                       />
                     </v-col>
-                    <v-col lg="5">
+                    <v-col
+                      lg="5"
+                      v-if="!$_sys.isAllowed('farmer-unassign-it-create')"
+                    >
                       <geko-input
                         v-model="f.program_year"
                         :item="{
@@ -48,28 +51,14 @@
                           validation: ['required'],
                           option: {
                             default_label: f.program_year,
-                            default_options: [
-                              {
-                                label: '2020',
-                                code: '2020',
-                              },
-                              {
-                                label: '2021',
-                                code: '2021',
-                              },
-                              {
-                                label: '2022',
-                                code: '2022',
-                              },
-                              {
-                                label: '2023',
-                                code: '2023',
-                              },
-                              {
-                                label: '2024',
-                                code: '2024',
-                              },
-                            ],
+                            default_options: $_config.programYear.options.map(
+                              (x) => {
+                                return {
+                                  label: x,
+                                  code: x,
+                                };
+                              }
+                            ),
                             list_pointer: {
                               label: 'label',
                               code: 'code',
@@ -78,6 +67,17 @@
                           },
                         }"
                         :disabled="f.id ? true : false"
+                      />
+                    </v-col>
+
+                    <v-col lg="5" v-else>
+                      <geko-input
+                        v-model="f.program_year"
+                        :item="{
+                          label: 'Tahun Program',
+                          type: 'text',
+                          validation: ['required'],
+                        }"
                       />
                     </v-col>
                     <v-col
@@ -137,32 +137,50 @@ export default {
     onOpen() {
       this.farmers = this.data;
     },
+    editProgramYear(payload) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          await this.$_api
+            .post("UpdateMainPivotProgramYear_new", payload)
+            .then(() => {
+              resolve();
+            })
+            .catch((err) => {
+              throw err;
+            });
+        } catch (error) {
+          console.log("err", error);
+
+          return reject();
+        }
+      });
+    },
+
     onClose() {
       this.ffData = null;
       this.loading = false;
       this.farmers = [];
     },
-
     async onSubmit() {
       if (this.loading) return;
+
       this.loading = true;
 
-      let originYear = this.$store.state.tmpProgramYear;
-
-      if (!originYear) {
-        originYear = localStorage.getItem("tmpProgramYear");
-        this.loading = false;
-        return;
-      }
+      let originYear =
+        this.$store.state.tmpProgramYear ||
+        localStorage.getItem("tmpProgramYear");
 
       if (!originYear) {
         this.$_alert.error({}, "Gagal", "Origin year tidak ditemukan");
         this.loading = false;
         return;
       }
-      let ffs = [];
 
+      let ffs = [];
       let years = [];
+      let successList = [];
+      let failedList = [];
+
       for (const farmer of this.farmers) {
         if (ffs.includes(farmer.key1)) {
           this.$_alert.error(
@@ -193,28 +211,32 @@ export default {
           this.loading = false;
           return;
         }
+
         ffs.push(farmer.key1);
         years.push(farmer.program_year);
       }
-      let successList = [];
-      let failedList = [];
 
       for (const farmer of this.farmers) {
-        if (farmer.id) continue;
-
-        await this.$_api
-          .post("UpdateFarmerPivot_new", {
-            ff_no: farmer.key1,
-            farmer_no: farmer.key2,
-            program_year: farmer.program_year,
-            origin_year: originYear,
-          })
-          .then(() => {
-            successList.push(farmer.program_year);
-          })
-          .catch(() => {
-            failedList.push(farmer.program_year);
-          });
+        if (farmer.id) {
+          if (this.$_sys.isAllowed("farmer-unassign-it-create")) {
+            await this.editProgramYear({
+              id: farmer.id,
+              program_year: farmer.program_year,
+            })
+              .then(() => successList.push(farmer.program_year))
+              .catch(() => failedList.push(farmer.program_year));
+          }
+        } else {
+          await this.$_api
+            .post("UpdateFarmerPivot_new", {
+              ff_no: farmer.key1,
+              farmer_no: farmer.key2,
+              program_year: farmer.program_year,
+              origin_year: originYear,
+            })
+            .then(() => successList.push(farmer.program_year))
+            .catch(() => failedList.push(farmer.program_year));
+        }
       }
 
       if (successList.length > 0) {
@@ -231,6 +253,7 @@ export default {
           true
         );
       }
+
       this.isOpen = false;
       this.$emit("success", true);
       this.loading = false;
@@ -268,6 +291,7 @@ export default {
                 farmer_no: item.key2,
                 ff_no: item.key1,
                 program_year: item.program_year,
+                pivot_id: item.id,
               })
               .then(() => {
                 this.$_alert.success(

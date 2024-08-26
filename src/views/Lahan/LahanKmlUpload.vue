@@ -1,12 +1,30 @@
 <template>
-  <v-dialog v-model="isOpen" width="70%">
+  <v-dialog v-model="isOpen" width="90%" style="min-height: 90vh">
     <template v-slot:default="{ isActive }">
       <v-card>
         <v-card-title> Bulk Upload KML </v-card-title>
         <v-card-text>
           <div class="upload d-flex flex-column" v-if="step == 1">
             <label for="kml">File KML</label>
-            <input type="file" @change="handleFileChange($event)" />
+            <div class="upload-file-wrapper">
+              <label for="kmlFile" class="kml-file">
+                <div class="wrapper">
+                  <v-icon>mdi-vector-polygon</v-icon>
+                </div>
+              </label>
+
+              <p class="kml-label">
+                <span v-if="!files" class="ml-2"
+                  >Upload file KML yang berisi banyak lahan</span
+                >
+                <span class="ml-2" v-else>{{ files_name }}</span>
+              </p>
+              <input
+                id="kmlFile"
+                type="file"
+                @change="handleFileChange($event)"
+              />
+            </div>
 
             <div class="d-flex flex-row justify-content-center">
               <v-btn @click="onUplaod" variant="success">
@@ -329,9 +347,17 @@
                   </div>
 
                   <div class="d-flex flex-row justify-content-center mt-3">
-                    <v-btn variant="success" type="submit"
-                      >Verifikasi Data</v-btn
-                    >
+                    <v-btn variant="success" type="submit">
+                      <v-icon v-if="!loading"> mdi-shape-polygon-plus </v-icon>
+
+                      <v-progress-circular
+                        v-else
+                        :size="20"
+                        color="success"
+                        indeterminate
+                      ></v-progress-circular>
+                      <span class="ml-1">Verifikasi Data</span>
+                    </v-btn>
                   </div>
                 </div>
               </form>
@@ -363,6 +389,7 @@ export default {
       data: [],
       questions: [],
       files: null,
+      files_name: null,
     };
   },
 
@@ -370,30 +397,52 @@ export default {
     async onBulkUpload() {
       if (this.loading) return;
       this.loading = true;
+
+      let verifSuccess = [];
+      let verifFailed = [];
       for (const lahan of this.data) {
         if (!lahan.id) continue;
         const isValid = lahan.fc_complete_data == 1 && lahan.approve == 0;
         if (!isValid) continue;
-
+        let tutupanPercentage =
+          parseFloat(lahan.tutupan_lain_bangunan_percentage || 0) +
+          parseFloat(lahan.tutupan_pohon_percentage || 0) +
+          parseFloat(lahan.tutupan_tanaman_bawah_percentage || 0);
+        let tutupanPlantingArea = parseFloat(
+          (tutupanPercentage / 100) * lahan.gis_polygon_area
+        ).toFixed(2);
+        let plantingArea = parseFloat(
+          lahan.gis_polygon_area - tutupanPlantingArea
+        );
         let payload = {
           current_id: lahan.id,
           elevation: lahan.elevation,
+          gis_polygon_area: lahan.gis_polygon_area,
+          soil_type: lahan.soil_type,
+          gis_planting_area: parseFloat(plantingArea).toFixed(2),
         };
 
         const kmlPath = await this.uploadKmlFile(lahan.lahan_no).catch(
           () => false
         );
-        if (!kmlPath) continue;
+        if (!kmlPath) {
+          verifFailed.push(lahan.lahan_no);
+          continue;
+        }
         payload.polygon_from_gis = kmlPath;
         console.log("payload update lahan", payload);
 
-        // const updatePolygon = await this.$_api
-        //   .post("UpdateLahanByGIS_new", payload)
-        //   .catch(() => {
-        //     return false;
-        //   });
+        const updatePolygon = await this.$_api
+          .post("UpdateLahanByGIS_new", payload)
+          .catch(() => {
+            return false;
+          });
 
-        // if (!updatePolygon) continue;
+        if (!updatePolygon) {
+          verifFailed.push(lahan.lahan_no);
+          continue;
+        }
+        verifSuccess.push(lahan.lahan_no);
 
         for (let i = 0; i < this.questions.length; i++) {
           const dataItem = this.questions[i];
@@ -403,7 +452,7 @@ export default {
             term_answer: lahan[`question${i + 1}`],
             program_year: this.$_config.programYear.model,
           };
-          // await this.$_api.post("addLahanTermAnswer_new", payloadTermAnswer);
+          await this.$_api.post("addLahanTermAnswer_new", payloadTermAnswer);
 
           console.log("payload term answer", payloadTermAnswer);
         }
@@ -415,7 +464,29 @@ export default {
       this.step = 1;
       this.questions = [];
       this.isOpen = false;
-      this.$_alert.success("Kml berhasil diupload");
+
+      let alertTitle = "Verifikasi Lahan Berhasil";
+      if (verifSuccess.length == 0) alertTitle = "Verifikasi Lahan Gagal";
+
+      let alertMessage = `<p>Data lahan berhasil diverifikasi : ${
+        verifSuccess.length === 0
+          ? "<strong>Tidak Ada</strong>"
+          : `<strong>${verifSuccess.join(
+              ", "
+            )}</strong><br /></p>Data lahan gagal diverifikasi : ${
+              verifFailed.length === 0
+                ? "<strong>Tidak Ada</strong>"
+                : `<strong>${verifFailed.join(", ")}</strong>`
+            }</p>`
+      }</p>`;
+      this.$_alert.success(
+        alertTitle,
+        alertMessage,
+        "center",
+        true,
+        false,
+        true
+      );
     },
     async uploadKmlFile(lahanNo) {
       return new Promise(async (resolve, reject) => {
@@ -453,6 +524,7 @@ export default {
     },
     handleFileChange(e) {
       this.files = e.target.files[0];
+      this.files_name = e.target.files[0].name;
     },
     onUplaod() {
       if (!this.files || this.loading) return;
@@ -510,6 +582,11 @@ export default {
         this.data = [];
         this.step = 1;
         this.questions = [];
+      }
+    },
+    files(t) {
+      if (!t) {
+        this.files_name = "";
       }
     },
   },

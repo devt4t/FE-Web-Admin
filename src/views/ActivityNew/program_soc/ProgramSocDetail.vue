@@ -290,57 +290,89 @@ export default {
           }
         });
     },
+    // generateStatisticTree(data) {
+    //   let _statistics = [];
+    //   for (const _data of data) {
+    //     //check if exist
+    //     if (_data.trees_tree_name_t1) {
+    //       const isExist = _statistics.findIndex(
+    //         (x) => x.label === _data.trees_tree_name_t1
+    //       );
+    //       if (isExist > -1) {
+    //         //is exist
+    //         _statistics[isExist].value += 1;
+    //       } else {
+    //         //is not exist
+    //         _statistics.push({
+    //           label: _data.trees_tree_name_t1,
+    //           value: 1,
+    //         });
+    //       }
+    //     }
+    //     if (_data.trees_tree_name_t2) {
+    //       const isExist = _statistics.findIndex(
+    //         (x) => x.label === _data.trees_tree_name_t2
+    //       );
+    //       if (isExist > -1) {
+    //         //is exist
+    //         _statistics[isExist].value += 1;
+    //       } else {
+    //         //is not exist
+    //         _statistics.push({
+    //           label: _data.trees_tree_name_t2,
+    //           value: 1,
+    //         });
+    //       }
+    //     }
+    //     if (_data.trees_tree_name_t3) {
+    //       const isExist = _statistics.findIndex(
+    //         (x) => x.label === _data.trees_tree_name_t3
+    //       );
+    //       if (isExist > -1) {
+    //         //is exist
+    //         _statistics[isExist].value += 1;
+    //       } else {
+    //         //is not exist
+    //         _statistics.push({
+    //           label: _data.trees_tree_name_t3,
+    //           value: 1,
+    //         });
+    //       }
+    //     }
+    //   }
+    //   return _statistics;
+    // },
+
+    //refactored
+    // Refactored vue js 2 function
+
     generateStatisticTree(data) {
-      let _statistics = [];
+      let statistics = [];
+
+      const updateStatistics = (treeName) => {
+        const isExist = statistics.findIndex((x) => x.label === treeName);
+        if (isExist > -1) {
+          statistics[isExist].value += 1;
+        } else {
+          statistics.push({ label: treeName, value: 1 });
+        }
+      };
+
       for (const _data of data) {
-        //check if exist
         if (_data.trees_tree_name_t1) {
-          const isExist = _statistics.findIndex(
-            (x) => x.label === _data.trees_tree_name_t1
-          );
-          if (isExist > -1) {
-            //is exist
-            _statistics[isExist].value += 1;
-          } else {
-            //is not exist
-            _statistics.push({
-              label: _data.trees_tree_name_t1,
-              value: 1,
-            });
-          }
+          updateStatistics(_data.trees_tree_name_t1);
         }
+
         if (_data.trees_tree_name_t2) {
-          const isExist = _statistics.findIndex(
-            (x) => x.label === _data.trees_tree_name_t2
-          );
-          if (isExist > -1) {
-            //is exist
-            _statistics[isExist].value += 1;
-          } else {
-            //is not exist
-            _statistics.push({
-              label: _data.trees_tree_name_t2,
-              value: 1,
-            });
-          }
+          updateStatistics(_data.trees_tree_name_t2);
         }
+
         if (_data.trees_tree_name_t3) {
-          const isExist = _statistics.findIndex(
-            (x) => x.label === _data.trees_tree_name_t3
-          );
-          if (isExist > -1) {
-            //is exist
-            _statistics[isExist].value += 1;
-          } else {
-            //is not exist
-            _statistics.push({
-              label: _data.trees_tree_name_t3,
-              value: 1,
-            });
-          }
+          updateStatistics(_data.trees_tree_name_t3);
         }
       }
-      return _statistics;
+
+      return statistics;
     },
 
     showLightbox(imgs, index) {

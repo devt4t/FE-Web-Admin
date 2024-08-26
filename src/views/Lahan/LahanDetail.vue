@@ -69,14 +69,19 @@
                 <v-btn
                   v-if="
                     !openGisEdit &&
-                    $_sys.isAllowed('lahan-fc-verification-create')
+                    $_sys.isAllowed('lahan-fc-verification-create') &&
+                    data.main_lahan &&
+                    ((data.main_lahan.fc_complete_data == null &&
+                      data.main_lahan.updated_gis.toLowerCase() === 'belum') ||
+                      data.main_lahan.updated_gis.toLowerCase() === 'sudah')
                   "
                   variant="success"
                   class="mr-1 mb-2"
                   @click="
                     openGisEdit = true;
                     verifRole =
-                      data.main_lahan.fc_complete_data == null
+                      data.main_lahan.fc_complete_data == null &&
+                      data.main_lahan.updated_gis.toLowerCase() == 'belum'
                         ? 'fc-verif-data'
                         : 'fc';
                   "
@@ -85,7 +90,10 @@
                 <v-btn
                   v-if="
                     !openGisEdit &&
-                    $_sys.isAllowed('lahan-um-verification-create')
+                    $_sys.isAllowed('lahan-um-verification-create') &&
+                    data.main_lahan &&
+                    data.main_lahan.updated_gis.toLowerCase() === 'sudah' &&
+                    data.main_lahan.approve == 1
                   "
                   variant="success"
                   class="mr-1 mb-2"
@@ -455,7 +463,20 @@
         <v-card-title>
           <h5 class="mb-0 pb-0">Polygon, Pohon &amp; Lainnya</h5>
         </v-card-title>
-
+        <div
+          class="alert bg-info-light px-3 mx-4 py-2 d-flex flex-row br-8 mb-4"
+          v-if="
+            data.main_lahan.updated_gis &&
+            data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+            data.main_lahan.gis_polygon_area
+          "
+        >
+          <v-icon large class="text-info">mdi-information</v-icon>
+          <span class="text-info d-block pl-2"
+            >Luas lahan dan luas tanam dihitung berdasarkan luas polygon
+            lahan</span
+          >
+        </div>
         <div class="lahan-stat-list">
           <div class="lahan-stat-item">
             <p class="mb-0 label">Tutupan Lahan</p>
@@ -468,8 +489,23 @@
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Lahan</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span v-if="data.main_lahan"
+              <span
+                v-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'belum'
+                "
                 >{{ data.main_lahan.land_area | parse("ts") }} m&sup2;</span
+              >
+              <span
+                v-else-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                  data.main_lahan.gis_polygon_area
+                "
+                >{{
+                  data.main_lahan.gis_polygon_area | parse("ts")
+                }}
+                m&sup2;</span
               >
             </p>
           </div>
@@ -486,7 +522,22 @@
                 m&sup2;</span
               > -->
               <span
+                v-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'belum'
+                "
                 >{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span
+              >
+              <span
+                v-else-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                  data.main_lahan.gis_polygon_area
+                "
+                >{{
+                  data.main_lahan.gis_planting_area | parse("ts")
+                }}
+                m&sup2;</span
               >
             </p>
           </div>
@@ -833,6 +884,7 @@
 import VueQRCodeComponent from "vue-qrcode-component";
 import LahanGisVerification from "./LahanGisVerification.vue";
 import moment from "moment";
+import { transform } from "lodash";
 export default {
   name: "land-detail",
   components: {
@@ -840,54 +892,107 @@ export default {
     LahanGisVerification,
   },
   methods: {
+    // async unverificationData(type) {
+    //   if (type == "fc_complete_data") {
+    //     const prompt = await this.$_alert.confirm(
+    //       "Unverifikasi Data?",
+    //       "Apakah anda yakin ingin unverifikasi data kelengkapan lahan?",
+    //       "Unverifikasi",
+    //       "Batal",
+    //       true
+    //     );
+
+    //     if (!prompt.isConfirmed) return;
+
+    //     this.$_api
+    //       .post("UpdateLahanFCCompleteStatus_new", {
+    //         current_id: this.$route.query.id,
+    //         fc_complete_data: 2,
+    //       })
+    //       .then(() => {
+    //         this.$_alert.success(
+    //           "Kelengkapan data lahan berhasil diunverifikasi"
+    //         );
+    //         this.componentKey += 1;
+    //         this.getData();
+    //         this.loading = false;
+    //       });
+    //   } else if (type == "um_seed") {
+    //     const prompt = await this.$_alert.confirm(
+    //       "Unverifikasi Data?",
+    //       "Apakah anda yakin ingin unverifikasi jumlah bibit?",
+    //       "Unverifikasi",
+    //       "Batal",
+    //       true
+    //     );
+
+    //     if (!prompt.isConfirmed) return;
+    //     this.$_api
+    //       .post("UpdateSeedAmountVerification_new", {
+    //         current_id: this.$route.query.id,
+    //         verif_moduls: "unverif",
+    //       })
+    //       .then(() => {
+    //         this.$_alert.success("Jumlah bibit berhasil diunverifikasi");
+    //         this.componentKey += 1;
+    //         this.getData();
+    //         this.loading = false;
+    //       });
+    //   }
+    // },
+
+    //refactored
     async unverificationData(type) {
-      if (type == "fc_complete_data") {
-        const prompt = await this.$_alert.confirm(
-          "Unverifikasi Data?",
-          "Apakah anda yakin ingin unverifikasi data kelengkapan lahan?",
-          "Unverifikasi",
-          "Batal",
-          true
-        );
+      if (this.loading) return;
+      const confirmationMessage =
+        type === "fc_complete_data"
+          ? "Apakah anda yakin ingin unverifikasi data kelengkapan lahan?"
+          : "Apakah anda yakin ingin unverifikasi jumlah bibit?";
+      const apiEndpoint =
+        type === "fc_complete_data"
+          ? "UpdateLahanFCCompleteStatus_new"
+          : "UpdateSeedAmountVerification_new";
+      const successMessage =
+        type === "fc_complete_data"
+          ? "Kelengkapan data lahan berhasil diunverifikasi"
+          : "Jumlah bibit berhasil diunverifikasi";
 
-        if (!prompt.isConfirmed) return;
+      const prompt = await this.$_alert.confirm(
+        "Unverifikasi Data?",
+        confirmationMessage,
+        "Unverifikasi",
+        "Batal",
+        true
+      );
 
-        this.$_api
-          .post("UpdateLahanFCCompleteStatus_new", {
-            current_id: this.$route.query.id,
-            fc_complete_data: 2,
-          })
-          .then(() => {
-            this.$_alert.success(
-              "Kelengkapan data lahan berhasil diunverifikasi"
-            );
-            this.componentKey += 1;
-            this.getData();
-            this.loading = false;
-          });
-      } else if (type == "um_seed") {
-        const prompt = await this.$_alert.confirm(
-          "Unverifikasi Data?",
-          "Apakah anda yakin ingin unverifikasi jumlah bibit?",
-          "Unverifikasi",
-          "Batal",
-          true
-        );
-
-        if (!prompt.isConfirmed) return;
-        this.$_api
-          .post("UpdateSeedAmountVerification_new", {
-            current_id: this.$route.query.id,
-            verif_moduls: "unverif",
-          })
-          .then(() => {
-            this.$_alert.success("Jumlah bibit berhasil diunverifikasi");
-            this.componentKey += 1;
-            this.getData();
-            this.loading = false;
-          });
+      if (!prompt.isConfirmed) {
+        this.loading = false;
+        return;
       }
+
+      this.loading = true;
+
+      this.$_api
+        .post(apiEndpoint, {
+          current_id: this.$route.query.id,
+          fc_complete_data: type === "fc_complete_data" ? 2 : undefined,
+          verif_moduls: type === "um_seed" ? "unverif" : undefined,
+        })
+        .then(() => {
+          this.$_alert.success(successMessage);
+          this.componentKey += 1;
+          this.getData();
+          this.loading = false;
+        })
+        .catch(() => {
+          this.$_alert.error({}, "Error", "Failed to unverify data");
+          this.loading = false;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
+
     toggleLayer(item, i) {
       var isLayerFillExist = this.map.getLayer(`${item.id}-fill`);
       if (isLayerFillExist) {
@@ -1210,6 +1315,7 @@ export default {
       formatDate(date, format) {
         return moment(date).format(format);
       },
+      loading: false,
       trees: [],
       treesActive: "2024",
       map: null,
@@ -1283,6 +1389,20 @@ export default {
               label: "No. Dokumen",
               key: "main_lahan.document_no",
               class: "font-weight-300",
+            },
+            {
+              label: "Luas Lahan SPPT",
+              key: "main_lahan.land_area",
+              class: "font-weight-bold",
+              append: "m²",
+              transform: "ts",
+            },
+            {
+              label: "Luas Lahan Polygon",
+              key: "main_lahan.gis_polygon_area",
+              class: "font-weight-bold",
+              append: "m²",
+              transform: "ts",
             },
             {
               label: "Project",

@@ -323,27 +323,33 @@
         <template v-slot:item.actions="{ item }">
           <div class="geko-list-actions-wrapper d-flex flex-column">
             <div class="geko-list-actions">
-              <button
+              <slot
+                name="list-action-detail"
+                v-bind:item="item"
                 v-if="$_sys.isAllowed(config.permission.detail)"
-                class="geko-list-action-view"
-                @click="
-                  $router.push({
-                    name: $route.name,
-                    query: {
-                      view: 'detail',
-                      id: item.id,
-                      [config.detailIdKey ? config.detailIdKey : '']:
-                        item[config.detailIdKey],
-                    },
-                    params:
-                      (config.detail && config.detailParams) || !config.detail
-                        ? item
-                        : null,
-                  })
-                "
               >
-                <v-icon small>mdi-information-outline</v-icon>
-              </button>
+                <button
+                  v-if="$_sys.isAllowed(config.permission.detail)"
+                  class="geko-list-action-view"
+                  @click="
+                    $router.push({
+                      name: $route.name,
+                      query: {
+                        view: 'detail',
+                        id: item.id,
+                        [config.detailIdKey ? config.detailIdKey : '']:
+                          item[config.detailIdKey],
+                      },
+                      params:
+                        (config.detail && config.detailParams) || !config.detail
+                          ? item
+                          : null,
+                    })
+                  "
+                >
+                  <v-icon small>mdi-information-outline</v-icon>
+                </button>
+              </slot>
 
               <slot
                 name="list-action-update"

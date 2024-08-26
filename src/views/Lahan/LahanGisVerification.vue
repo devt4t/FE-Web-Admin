@@ -94,7 +94,6 @@
               }"
             />
           </v-col>
-
           <v-col lg="12" v-if="role == 'gis'">
             <v-row class="tutupan-wrapper pb-5">
               <v-col lg="12">

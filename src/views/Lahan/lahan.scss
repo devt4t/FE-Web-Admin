@@ -2,6 +2,44 @@
 .lahan-detail {
 }
 
+.upload {
+  .upload-file-wrapper{
+    display: flex;
+    flex-direction: row;
+  }
+  .kml-file {
+    .wrapper {
+      width: 8em;
+      height: 8em;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #a6a6b728;
+      border: 1px dashed grey;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      &:hover {
+        cursor: pointer;
+      }
+  
+      i {
+        font-size: 3em;
+      }
+    }
+
+    .kml-label {
+      font-size: 1.2em;
+      font-weight: 500;
+      margin-left: 10px;
+    }
+  }
+
+  input[type=file] {
+    display: none;
+  }
+}
+
 .lahan-detail .lahan-side-wrapper {
   padding-inline: 1.2em;
 

@@ -533,7 +533,7 @@ export default {
     },
     getLatestPermission() {
       return new Promise(async (resolve, reject) => {
-        this.$_api
+        await this.$_api
           .get("getEmployeeTaskRole_new")
           .then((res) => {
             if (Array.isArray(res.role_task)) {
@@ -548,14 +548,19 @@ export default {
           });
       });
     },
+    // Refactored code
+
     avatarHelper(name) {
       if (typeof name !== "string") return;
-      if (name.split(" ").length > 1) {
-        return name.split(" ")[0].charAt(0) + name.split(" ")[1].charAt(0);
-      } else if (name.split(" ").length > 0) {
+
+      const nameParts = name.split(" ");
+      if (nameParts.length > 1) {
+        return nameParts[0].charAt(0) + nameParts[1].charAt(0);
+      } else if (nameParts.length > 0) {
         return `${name.charAt(0)}${name.charAt(1)}`;
       }
     },
+
     async buildConfig() {
       if (Array.isArray(this.items) && this.items.length > 0) return;
       if (!this.$store.state.User) return;

@@ -5,6 +5,24 @@
     :hideUpdate="true"
     :key="`component-farmer-${componentKey}`"
   >
+    <template v-slot:list-action-detail="{ item }">
+      <button
+        class="geko-list-action-view"
+        @click="
+          $router.push({
+            name: $route.name,
+            query: {
+              view: 'detail',
+              id: item.id,
+              farmer_no: item.farmer_no,
+              program_year: $store.state.tmpProgramYear,
+            },
+          })
+        "
+      >
+        <v-icon small>mdi-information-outline</v-icon>
+      </button>
+    </template>
     <template v-slot:list-join_year="{ item }">
       <div
         class="d-flex flex-row mt-1"
@@ -13,10 +31,12 @@
         <span
           class="mb-0"
           :class="{
-            'badge bg-primary': formatDate(item.join_date, 'YYYY') == '2024',
-            'badge bg-info': formatDate(item.join_date, 'YYYY') !== '2024',
+            'badge bg-primary':
+              formatDate(getMaskedValue(item).join_date, 'YYYY') == '2024',
+            'badge bg-info':
+              formatDate(getMaskedValue(item).join_date, 'YYYY') !== '2024',
           }"
-          >{{ formatDate(item.join_date, "YYYY") }}</span
+          >{{ formatDate(getMaskedValue(item).join_date, "YYYY") }}</span
         >
       </div>
     </template>
@@ -24,9 +44,11 @@
     <template v-slot:list-total_lahan_outside="{ item }">
       <span
         class="d-block text-center font-weight-bold min-w-150px"
-        v-if="item.farmer_working_area_amount[0].jumlah_working_area"
+        v-if="
+          getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area
+        "
         >{{
-          item.farmer_working_area_amount[0].jumlah_working_area
+          getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area
         }}
         Lahan</span
       >
@@ -35,9 +57,11 @@
     </template>
     <template v-slot:list-ff_id="{ item }">
       <div class="d-flex flex-column min-w-150px">
-        <span class="font-weight-500">{{ item.field_facilitators_name }}</span>
+        <span class="font-weight-500">{{
+          getMaskedValue(item).field_facilitators_name
+        }}</span>
         <div class="d-flex flex-row">
-          <span class="badge bg-light">{{ item.user_id }}</span>
+          <span class="badge bg-light">{{ getMaskedValue(item).user_id }}</span>
         </div>
       </div>
     </template>
@@ -47,20 +71,22 @@
         <div
           class="indicator"
           :class="{
-            warning: item.approve == 0,
-            success: item.approve == 1,
+            warning: getMaskedValue(item).approve == 0,
+            success: getMaskedValue(item).approve == 1,
           }"
         ></div>
       </div>
     </template>
 
     <template v-slot:statistic-petani_data_belum_lengkap="{ item }">
-      <span>{{ item.petani_belum_lengkap | parse("no-null") }}</span>
+      <span>{{
+        getMaskedValue(item).petani_belum_lengkap | parse("no-null")
+      }}</span>
     </template>
 
     <template v-slot:list-village="{ item }">
       <div class="d-flex flex-column">
-        <p class="mb-0">{{ item.desas_name }}</p>
+        <p class="mb-0">{{ getMaskedValue(item).desas_name }}</p>
       </div>
     </template>
 
@@ -68,24 +94,36 @@
       <div class="d-flex flex-column min-w-150px">
         <v-tooltip
           top
-          v-if="item.farmer_working_area_amount[0].jumlah_working_area > 0"
+          v-if="
+            getMaskedValue(item).farmer_working_area_amount &&
+            Array.isArray(getMaskedValue(item).farmer_working_area_amount) &&
+            getMaskedValue(item).farmer_working_area_amount.length > 0 &&
+            getMaskedValue(item).farmer_working_area_amount[0]
+              .jumlah_working_area > 0
+          "
         >
           <template v-slot:activator="{ on }">
             <span v-on="on" class="font-weight-bold"
-              >{{ item.name }} <span class="text-danger">*</span></span
+              >{{ getMaskedValue(item).name }}
+              <span class="text-danger">*</span></span
             >
           </template>
           <span
             >Petani memiliki
-            {{ item.farmer_working_area_amount[0].jumlah_working_area }} lahan
-            diluar area kerja</span
+            {{
+              getMaskedValue(item).farmer_working_area_amount[0]
+                .jumlah_working_area
+            }}
+            lahan diluar area kerja</span
           >
         </v-tooltip>
 
-        <span class="font-weight-bold" v-else>{{ item.name }}</span>
+        <span class="font-weight-bold" v-else>{{
+          getMaskedValue(item).name
+        }}</span>
         <div class="d-flex flex-row">
           <span class="badge bg-light font-weight-300">{{
-            item.farmer_no
+            getMaskedValue(item).farmer_no
           }}</span>
         </div>
       </div>
@@ -93,9 +131,9 @@
 
     <template v-slot:list-target_area="{ item }">
       <div class="d-flex flex-column">
-        <p class="mb-0">{{ item.target_areas_name }}</p>
+        <p class="mb-0">{{ getMaskedValue(item).target_areas_name }}</p>
         <span class="text-link text-08-em"
-          >MU {{ item.managementunits_name }}</span
+          >MU {{ getMaskedValue(item).managementunits_name }}</span
         >
       </div>
     </template>
@@ -105,14 +143,18 @@
         <span
           class="badge"
           :class="{
-            'badge bg-warning text-no-wrap': item.approve == 0,
-            'badge bg-success text-no-wrap': item.approve == 1,
+            'badge bg-warning text-no-wrap': getMaskedValue(item).approve == 0,
+            'badge bg-success text-no-wrap': getMaskedValue(item).approve == 1,
             // 'badge bg-danger text-no-wrap':
-            //   item.farmer_working_area_amount[0].jumlah_working_area == 0,
+            //   getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area == 0,
           }"
         >
-          <span v-if="item.approve == 0">Belum Diverifikasi</span>
-          <span v-else-if="item.approve == 1">Terverifikasi</span>
+          <span v-if="getMaskedValue(item).approve == 0"
+            >Belum Diverifikasi</span
+          >
+          <span v-else-if="getMaskedValue(item).approve == 1"
+            >Terverifikasi</span
+          >
         </span>
       </div>
     </template>
@@ -371,6 +413,18 @@ export default {
     FarmerDetail,
   },
   methods: {
+    getMaskedValue(item) {
+      if (!Array.isArray(item.log_farmers) || item.log_farmers.length === 0) {
+        return item;
+      }
+
+      const logData = item.log_farmers.find((x) =>
+        x.program_year.includes(this.$store.state.tmpProgramYear)
+      );
+
+      return logData ? logData : item;
+    },
+
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
 
@@ -380,51 +434,36 @@ export default {
       this.$store.state.lightbox.show = true;
     },
     onVerification(data) {
-      if (data.approve == 1) {
-        this.$_alert
-          .confirm(
-            "Unverifikasi Petani",
-            "Apakah anda yakin ingin unverifikasi data petani?",
-            "Ya, Unverifikasi",
-            "Batal",
-            true
-          )
-          .then((res) => {
-            if (res.isConfirmed) {
-              //unverif
-              this.$_api
-                .post("updateFarmerApproval", {
-                  current_id: this.$route.query.id,
-                })
-                .then(() => {
-                  this.$_alert.success("Data petani berhasil di unverifikasi");
-                  this.componentKey += 1;
-                });
-            }
-          });
-      } else {
-        this.$_alert
-          .confirm(
-            "Verifikasi Petani",
-            "Apakah anda yakin ingin verifikasi data petani?",
-            "Ya, Verifikasi",
-            "Batal",
-            false
-          )
-          .then((res) => {
-            if (res.isConfirmed) {
-              //verif
-              this.$_api
-                .post("updateFarmerApproval", {
-                  current_id: this.$route.query.id,
-                })
-                .then(() => {
-                  this.componentKey += 1;
-                  this.$_alert.success("Data petani berhasil di verifikasi");
-                });
-            }
-          });
-      }
+      const isApproved = data.approve === 1;
+      const action = isApproved ? "Unverifikasi" : "Verifikasi";
+
+      const confirmationMessage = isApproved
+        ? "Apakah anda yakin ingin unverifikasi data petani?"
+        : "Apakah anda yakin ingin verifikasi data petani?";
+      const successMessage = isApproved
+        ? "Data petani berhasil di unverifikasi"
+        : "Data petani berhasil di verifikasi";
+
+      this.$_alert
+        .confirm(
+          action + " Petani",
+          confirmationMessage,
+          "Ya, " + action,
+          "Batal",
+          isApproved
+        )
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("updateFarmerApproval", {
+                current_id: this.$route.query.id,
+              })
+              .then(() => {
+                this.componentKey += 1;
+                this.$_alert.success(successMessage);
+              });
+          }
+        });
     },
   },
   data() {

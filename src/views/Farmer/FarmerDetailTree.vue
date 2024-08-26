@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :headers="header"
-    :items="data"
+    :items="data.filter((x) => x.detail_year.includes(selected))"
     :search="''"
     class="rounded-xl elevation-1 mx-3 pa-1 mb-4"
     data-aos="fade-up"
@@ -14,8 +14,20 @@
   >
     <template v-slot:top>
       <div class="geko-list-header px-5 py-3 mt-1">
-        <div class="pr-5 mr-5 mb-3 pb-3 bordered-bottom">
-          <h4>Pohon</h4>
+        <div
+          class="pr-0 mb-3 pb-3 bordered-bottom d-flex flex-row align-items-center justify-content-between"
+        >
+          <h4 class="mb-0 pb-0">Pohon</h4>
+          <div class="d-flex flex-row align-items-center">
+            <v-btn
+              v-for="(item, i) in pivots"
+              :key="'filter-tree-' + i"
+              :variant="item.program_year === selected ? 'success' : 'light'"
+              class="ml-1"
+              @click="selected = item.program_year"
+              >{{ item.program_year }}</v-btn
+            >
+          </div>
         </div>
         <div
           v-if="hasEmptyTree"
@@ -79,6 +91,10 @@ export default {
       required: false,
       default: () => {},
     },
+    pivots: {
+      required: false,
+      default: () => [],
+    },
   },
   watch: {
     trees(t) {
@@ -95,6 +111,7 @@ export default {
   data() {
     return {
       hasEmptyTree: false,
+      selected: this.$route.query.program_year,
       header: [
         {
           text: "No",

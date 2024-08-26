@@ -44,7 +44,9 @@
 
               <div class="farmer-info-list">
                 <v-icon>mdi-map-marker-radius-outline</v-icon>
-                <span class="d-block">{{ mainData.target_areas_name }}</span>
+                <span class="d-block"
+                  >{{ mainData.target_areas_name?.replace(/_/g, " ") }}
+                </span>
               </div>
               <div class="d-flex flex-row mt-3">
                 <div
@@ -55,7 +57,9 @@
                     variant="success"
                     v-if="
                       $_sys.isAllowed('farmer-verification-create') &&
-                      mainData.approve == 0
+                      mainData.approve == 0 &&
+                      this.$store.state.tmpProgramYear ==
+                        this.$_config.programYear.model
                     "
                     small
                     class="mr-3 mb-2"
@@ -68,7 +72,9 @@
                     variant="danger"
                     v-else-if="
                       mainData.approve == 1 &&
-                      $_sys.isAllowed('farmer-unverification-create')
+                      $_sys.isAllowed('farmer-unverification-create') &&
+                      this.$store.state.tmpProgramYear ==
+                        this.$_config.programYear.model
                     "
                     small
                     @click="onVerification()"
@@ -125,12 +131,15 @@
                 <span class="label">{{ data.label }}</span>
                 <div class="value">
                   <span v-if="data.view_data == 'program_year'">
-                    <span
+                    <!-- <span
                       class="badge bg-primary mr-1"
                       v-for="(year, k) in ff"
                       :key="'year-' + k"
                       >{{ year.program_year }}</span
-                    >
+                    > -->
+                    <span class="badge bg-primary mr-1">{{
+                      $store.state.tmpProgramYear
+                    }}</span>
                   </span>
 
                   <span
@@ -209,7 +218,7 @@
         :mainData="mainData"
         @refresh="getData()"
       />
-      <farmer-detail-tree :trees="trees" :mainData="mainData" />
+      <farmer-detail-tree :trees="trees" :mainData="mainData" :pivots="ff" />
       <farmer-detail-land :lands="lands" :mainData="mainData" />
     </v-col>
   </v-row>
@@ -229,25 +238,55 @@ export default {
     FarmerDetailWorkingArea,
   },
   methods: {
+    // getAddress() {
+    //   if (!this.mainData.id) return;
+
+    //   let locationArr = [];
+
+    //   if (this.mainData.address) locationArr.push(this.mainData.address);
+    //   if (this.mainData.desas_name) locationArr.push(this.mainData.desas_name);
+    //   if (this.mainData.kecamatans_name)
+    //     locationArr.push(this.mainData.kecamatans_name);
+    //   if (this.mainData.kabupatens_name)
+    //     locationArr.push(this.mainData.kabupatens_name);
+    //   if (this.mainData.provinces_name)
+    //     locationArr.push(this.mainData.provinces_name);
+    //   if (this.mainData.desas_post_code)
+    //     locationArr.push(this.mainData.desas_post_code);
+    //   if (locationArr.length == 0) return "-";
+
+    //   return locationArr.map((x) => x.toLowerCase()).join(", ");
+    // },
+
+    //refactored code
     getAddress() {
-      if (!this.mainData.id) return;
+      if (!this.mainData.id) return "-";
 
-      let locationArr = [];
+      const locationArr = [
+        this.mainData.address,
+        this.mainData.desas_name,
+        this.mainData.kecamatans_name,
+        this.mainData.kabupatens_name,
+        this.mainData.provinces_name,
+        this.mainData.desas_post_code,
+      ];
 
-      if (this.mainData.address) locationArr.push(this.mainData.address);
-      if (this.mainData.desas_name) locationArr.push(this.mainData.desas_name);
-      if (this.mainData.kecamatans_name)
-        locationArr.push(this.mainData.kecamatans_name);
-      if (this.mainData.kabupatens_name)
-        locationArr.push(this.mainData.kabupatens_name);
-      if (this.mainData.provinces_name)
-        locationArr.push(this.mainData.provinces_name);
-      if (this.mainData.desas_post_code)
-        locationArr.push(this.mainData.desas_post_code);
-      if (locationArr.length == 0) return "-";
+      const filteredLocationArr = locationArr.filter((x) => (x ? true : false));
+      if (filteredLocationArr.length === 0) return "-";
 
-      return locationArr.map((x) => x.toLowerCase()).join(", ");
+      return filteredLocationArr.map((x) => x.toLowerCase()).join(", ");
     },
+
+    // avatarHelper(name) {
+    //   if (typeof name !== "string") return;
+    //   if (name.split(" ").length > 1) {
+    //     return name.split(" ")[0].charAt(0) + name.split(" ")[1].charAt(0);
+    //   } else if (name.split(" ").length > 0) {
+    //     return `${name.charAt(0)}${name.charAt(1)}`;
+    //   }
+    // },
+
+    //refactored
     avatarHelper(name) {
       if (typeof name !== "string") return;
       if (name.split(" ").length > 1) {
@@ -258,6 +297,13 @@ export default {
     },
 
     async getData() {
+      if (!this.$route.query.program_year) {
+        return this.$_alert.error(
+          null,
+          "Error",
+          "Tahun program tidak ditemukan"
+        );
+      }
       this.loading = true;
       const farmer = await this.$_api
         .get("GetDetailFarmer_new", {
@@ -267,8 +313,30 @@ export default {
 
       if (!farmer) return;
 
-      this.mainData = farmer.DetailFarmerMain;
-      this.trees = farmer.DetailFarmerTree;
+      if (
+        this.$route.query.program_year === this.$_config.programYear.model ||
+        (this.$route.query.program_year !== this.$_config.programYear.model &&
+          farmer.DetailFarmerMainLog.length == 0)
+      ) {
+        this.mainData = farmer.DetailFarmerMain;
+      } else {
+        const logMainData = farmer.DetailFarmerMainLog.find((x) =>
+          x.program_year.includes(this.$route.query.program_year)
+        );
+
+        if (!logMainData) {
+          this.$_alert.error(
+            "",
+            "Data Tidak Ditemukan",
+            `Data petani ${this.$route.query.farmer_no} tahun ${this.$route.query.program_year} tidak ditemukan`
+          );
+          return;
+        }
+
+        this.mainData = logMainData;
+      }
+
+      this.trees = farmer.DetailFarmerTree.concat(farmer.DetailFarmerTreeLog);
       this.ff = farmer.DetailFarmerPivot;
       this.lands = farmer.DetailFarmerLahanPivot;
       this.workingAreas = farmer.DetailFarmerWorkingArea;
@@ -282,111 +350,194 @@ export default {
       this.$store.state.lightbox.show = true;
     },
     onVerification() {
-      if (this.mainData.approve == 1) {
-        this.$_alert
-          .confirm(
-            "Unverifikasi Petani",
-            "Apakah anda yakin ingin unverifikasi data petani?",
-            "Ya, Unverifikasi",
-            "Batal",
-            true
-          )
-          .then((res) => {
-            if (res.isConfirmed) {
-              //unverif
-              this.$_api
-                .post("updateFarmerApproval", {
-                  current_id: this.$route.query.id,
-                })
-                .then(() => {
-                  this.$_alert.success("Data petani berhasil di unverifikasi");
-                  this.getData();
-                });
-            }
-          });
-      } else {
-        this.$_alert
-          .confirm(
-            "Verifikasi Petani",
-            "Apakah anda yakin ingin verifikasi data petani?",
-            "Ya, Verifikasi",
-            "Batal",
-            false
-          )
-          .then((res) => {
-            if (res.isConfirmed) {
-              //verif
-              this.$_api
-                .post("updateFarmerApproval", {
-                  current_id: this.$route.query.id,
-                })
-                .then(() => {
-                  this.getData();
-                  this.$_alert.success("Data petani berhasil di verifikasi");
-                });
-            }
-          });
-      }
-    },
-  },
-  mounted() {
-    if (this.$store.state.tmpProgramYear == 2024) {
-      this.fieldSide[1].items = [
-        {
-          label: "Penghasilan Pertanian Tahunan",
-          view_data: "avg_farming_income_yearly",
-        },
-        {
-          label: "Penghasilan Perikanan Tahunan",
-          view_data: "avg_fishery_income_yearly",
-        },
-        {
-          label: "Pengeluaran Makan Bulanan",
-          view_data: "avg_food_outcome_monthly",
-        },
-        {
-          label: "Pendapatan Bulanan",
-          view_data: "avg_income_permonth",
-        },
-        {
-          label: "Pendapatan Pariwisata",
-          view_data: "avg_nature_tourism_yearly",
-        },
-        {
-          label: "Pendapatan Usaha Kayu",
-          view_data: "avg_wood_bussines_income_yearly",
-        },
-        {
-          label: "Pendapatan Usaha Lainnya",
-          view_data: "avg_other_source_income_yearly",
-        },
-      ];
-    } else {
-      this.fieldSide[1].items = [
-        {
-          label: "Pekerjaan Utama",
-          view_data: "main_job",
-        },
-        {
-          label: "Penghasilan Utama",
-          view_data: "main_income",
-          transform: "idr",
-        },
-        {
-          label: "Pekerjaan Sampingan",
-          view_data: "side_job",
-        },
-        {
-          label: "Penghasilan Sampingan",
-          view_data: "side_income",
-          transform: "idr",
-        },
-      ];
-    }
+      const isApprove = this.mainData.approve === 1;
+      const action = isApprove ? "Unverifikasi" : "Verifikasi";
+      const message = isApprove
+        ? "Apakah anda yakin ingin unverifikasi data petani?"
+        : "Apakah anda yakin ingin verifikasi data petani?";
+      const successMessage = isApprove
+        ? "Data petani berhasil di unverifikasi"
+        : "Data petani berhasil di verifikasi";
 
-    this.fieldSide = this.fieldSide;
+      this.$_alert
+        .confirm(
+          `${action} Petani`,
+          message,
+          `Ya, ${action}`,
+          "Batal",
+          isApprove
+        )
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("updateFarmerApproval", {
+                current_id: this.$route.query.id,
+              })
+              .then(() => {
+                this.getData();
+                this.$_alert.success(successMessage);
+              });
+          }
+        });
+    },
+
+    // onVerification() {
+    //   if (this.mainData.approve == 1) {
+    //     this.$_alert
+    //       .confirm(
+    //         "Unverifikasi Petani",
+    //         "Apakah anda yakin ingin unverifikasi data petani?",
+    //         "Ya, Unverifikasi",
+    //         "Batal",
+    //         true
+    //       )
+    //       .then((res) => {
+    //         if (res.isConfirmed) {
+    //           //unverif
+    //           this.$_api
+    //             .post("updateFarmerApproval", {
+    //               current_id: this.$route.query.id,
+    //             })
+    //             .then(() => {
+    //               this.$_alert.success("Data petani berhasil di unverifikasi");
+    //               this.getData();
+    //             });
+    //         }
+    //       });
+    //   } else {
+    //     this.$_alert
+    //       .confirm(
+    //         "Verifikasi Petani",
+    //         "Apakah anda yakin ingin verifikasi data petani?",
+    //         "Ya, Verifikasi",
+    //         "Batal",
+    //         false
+    //       )
+    //       .then((res) => {
+    //         if (res.isConfirmed) {
+    //           //verif
+    //           this.$_api
+    //             .post("updateFarmerApproval", {
+    //               current_id: this.$route.query.id,
+    //             })
+    //             .then(() => {
+    //               this.getData();
+    //               this.$_alert.success("Data petani berhasil di verifikasi");
+    //             });
+    //         }
+    //       });
+    //   }
+    // },
+  },
+  // mounted() {
+  //   if (this.$store.state.tmpProgramYear == this.$_config.programYear.model) {
+  //     this.fieldSide[1].items = [
+  //       {
+  //         label: "Penghasilan Pertanian Tahunan",
+  //         view_data: "avg_farming_income_yearly",
+  //       },
+  //       {
+  //         label: "Penghasilan Perikanan Tahunan",
+  //         view_data: "avg_fishery_income_yearly",
+  //       },
+  //       {
+  //         label: "Pengeluaran Makan Bulanan",
+  //         view_data: "avg_food_outcome_monthly",
+  //       },
+  //       {
+  //         label: "Pendapatan Bulanan",
+  //         view_data: "avg_income_permonth",
+  //       },
+  //       {
+  //         label: "Pendapatan Pariwisata",
+  //         view_data: "avg_nature_tourism_yearly",
+  //       },
+  //       {
+  //         label: "Pendapatan Usaha Kayu",
+  //         view_data: "avg_wood_bussines_income_yearly",
+  //       },
+  //       {
+  //         label: "Pendapatan Usaha Lainnya",
+  //         view_data: "avg_other_source_income_yearly",
+  //       },
+  //     ];
+  //   } else {
+  //     this.fieldSide[1].items = [
+  //       {
+  //         label: "Pekerjaan Utama",
+  //         view_data: "main_job",
+  //       },
+  //       {
+  //         label: "Penghasilan Utama",
+  //         view_data: "main_income",
+  //         transform: "idr",
+  //       },
+  //       {
+  //         label: "Pekerjaan Sampingan",
+  //         view_data: "side_job",
+  //       },
+  //       {
+  //         label: "Penghasilan Sampingan",
+  //         view_data: "side_income",
+  //         transform: "idr",
+  //       },
+  //     ];
+  //   }
+
+  //   this.fieldSide = this.fieldSide;
+  //   this.getData();
+  // },
+
+  //refactored
+  mounted() {
+    const items =
+      this.$store.state.tmpProgramYear == this.$_config.programYear.model
+        ? [
+            {
+              label: "Penghasilan Pertanian Tahunan",
+              view_data: "avg_farming_income_yearly",
+            },
+            {
+              label: "Penghasilan Perikanan Tahunan",
+              view_data: "avg_fishery_income_yearly",
+            },
+            {
+              label: "Pengeluaran Makan Bulanan",
+              view_data: "avg_food_outcome_monthly",
+            },
+            { label: "Pendapatan Bulanan", view_data: "avg_income_permonth" },
+            {
+              label: "Pendapatan Pariwisata",
+              view_data: "avg_nature_tourism_yearly",
+            },
+            {
+              label: "Pendapatan Usaha Kayu",
+              view_data: "avg_wood_bussines_income_yearly",
+            },
+            {
+              label: "Pendapatan Usaha Lainnya",
+              view_data: "avg_other_source_income_yearly",
+            },
+          ]
+        : [
+            { label: "Pekerjaan Utama", view_data: "main_job" },
+            {
+              label: "Penghasilan Utama",
+              view_data: "main_income",
+              transform: "idr",
+            },
+            { label: "Pekerjaan Sampingan", view_data: "side_job" },
+            {
+              label: "Penghasilan Sampingan",
+              view_data: "side_income",
+              transform: "idr",
+            },
+          ];
+
+    this.$set(this.fieldSide, 1, { items });
     this.getData();
   },
+
   data() {
     return {
       mainData: {},
@@ -411,7 +562,7 @@ export default {
               view_data: "managementunits_name",
             },
             {
-              label: "FF Saat Ini",
+              label: "FF",
               view_data: "ff_name",
             },
             {
