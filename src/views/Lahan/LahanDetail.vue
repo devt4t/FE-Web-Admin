@@ -1528,7 +1528,7 @@ export default {
         ["Foto Tanah", "soil_photo", "photo"],
         ["SPPT", "sppt", "photo"],
         ["Tutupan Lahan", "tutupan_lahan", "", "", "%"],
-        ["Foto Tutupan Lahan", "tutupan_lahan_photo", "photo"],
+        ["Foto Tutupan Lahan", "tutupan_pohon_photo", "photo"],
         [
           "Tutupan Bangunan / Lainnya",
           "tutupan_lain_bangunan_percentage",
