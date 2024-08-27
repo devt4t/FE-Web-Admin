@@ -401,8 +401,10 @@ export default {
       let verifSuccess = [];
       let verifFailed = [];
       for (const lahan of this.data) {
+        console.log("lahan", lahan);
+
         if (!lahan.id) continue;
-        const isValid = lahan.fc_complete_data == 1 && lahan.approve == 0;
+        const isValid = lahan.fc_complete_data == 1;
         if (!isValid) continue;
         let tutupanPercentage =
           parseFloat(lahan.tutupan_lain_bangunan_percentage || 0) +
@@ -423,7 +425,11 @@ export default {
         };
 
         const kmlPath = await this.uploadKmlFile(lahan.lahan_no).catch(
-          () => false
+          (err) => {
+            console.log("err", err);
+
+            return false;
+          }
         );
         if (!kmlPath) {
           verifFailed.push(lahan.lahan_no);
@@ -434,7 +440,9 @@ export default {
 
         const updatePolygon = await this.$_api
           .post("UpdateLahanByGIS_new", payload)
-          .catch(() => {
+          .catch((err) => {
+            console.log("err update polygon", err);
+
             return false;
           });
 

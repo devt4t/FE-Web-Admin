@@ -292,7 +292,7 @@
         isLoggedIn ? 'logged-in' : ''
       }`"
     >
-      <svg
+      <!-- <svg
         class="wave"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -371,7 +371,7 @@
             />
           </use>
         </g>
-      </svg>
+      </svg> -->
       <router-view
         class="pb-4 pl-0 pl-lg-3"
         style="z-index: 1; position: relative"
@@ -381,13 +381,6 @@
     <!-- loading overlay -->
     <v-overlay :value="$store.state.loadingOverlay">
       <div class="d-flex flex-column align-center justify-center">
-        <!-- <v-progress-circular
-            indeterminate
-            color="white"
-            size="64"
-            data-aos="zoom-in"
-            data-aos-duration="1000"
-        ></v-progress-circular> -->
         <LottieAnimation
           ref="anim"
           :animationData="lottie.data.loading"
