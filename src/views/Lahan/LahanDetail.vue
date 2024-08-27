@@ -25,6 +25,7 @@
               <div
                 class="lahan-side-item d-flex flex-col"
                 style="flex-wrap: wrap"
+                v-if="getProject() === 'carbon'"
               >
                 <div>
                   <v-btn
@@ -49,6 +50,16 @@
                   >
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi Perubahan Bibit</span>
+                  </v-btn>
+
+                  <v-btn
+                    v-if="$_sys.isAllowed('lahan-um-unverification-create')"
+                    variant="danger"
+                    class="mr-1 mb-1"
+                    @click="unverificationData('um_unverification')"
+                  >
+                    <v-icon>mdi-undo-variant</v-icon>
+                    <span>Unverifikasi UM</span>
                   </v-btn>
                 </div>
 
@@ -104,8 +115,63 @@
                   >Verifikasi UM</v-btn
                 >
               </div>
+
+              <div
+                class="lahan-side-item d-flex flex-col"
+                style="flex-wrap: wrap"
+                v-if="getProject() === 'non-carbon'"
+              >
+                <v-btn
+                  v-if="
+                    $_sys.isAllowed('lahan-fc-unverification-create') &&
+                    [0, 1, null].includes(data.main_lahan.fc_complete_data)
+                  "
+                  variant="danger"
+                  class="mr-1 mb-1"
+                  @click="unverificationData('fc_complete_data')"
+                >
+                  <v-icon>mdi-undo-variant</v-icon>
+                  <span>Unverifikasi Kelengkapan Data</span>
+                </v-btn>
+
+                <v-btn
+                  v-if="$_sys.isAllowed('lahan-um-unverification-create')"
+                  variant="danger"
+                  class="mr-1 mb-1"
+                  @click="unverificationData('um_unverification')"
+                >
+                  <v-icon>mdi-undo-variant</v-icon>
+                  <span>Unverifikasi UM</span>
+                </v-btn>
+                <v-btn
+                  v-if="
+                    !openGisEdit &&
+                    $_sys.isAllowed('lahan-fc-verification-create') &&
+                    data.main_lahan
+                  "
+                  variant="success"
+                  class="mr-1 mb-2"
+                  @click="
+                    openGisEdit = true;
+                    verifRole = 'fc-non-carbon';
+                  "
+                  >Verifikasi FC</v-btn
+                >
+
+                <v-btn
+                  v-if="
+                    $_sys.isAllowed('lahan-um-verification-create') &&
+                    data.main_lahan
+                  "
+                  variant="success"
+                  class="mr-1 mb-2"
+                  @click="verifUmNonCarbon()"
+                  >Verifikasi Data Lahan</v-btn
+                >
+              </div>
             </div>
           </div>
+
           <lahan-gis-verification
             v-if="
               data.main_lahan &&
@@ -148,7 +214,25 @@
             <div class="lahan-side-item-wrapper" v-if="data.main_lahan">
               <div class="lahan-side-item">
                 <p class="mb-0 label">Status</p>
-                <div class="d-flex flex-row value">
+
+                <!--
+                  STATUS LAHAN CARBON
+                  - Belum Diverifikasi
+                  - Diverifikasi GIS
+                  - Diverifikasi FC
+                  - Terverifikasi
+
+
+                  STATUS LAHAN NON CARBON
+                  - Belum Diverifikasi
+                  - Diverifikasi FC
+                  - Terverifikasi / Force Majeure
+                -->
+
+                <div
+                  class="d-flex flex-row value"
+                  v-if="getProject() === 'carbon'"
+                >
                   <span
                     :class="{
                       'badge bg-warning':
@@ -196,6 +280,42 @@
                     >
                     <span v-else-if="data.main_lahan.approve == 3"
                       >Force Majeure</span
+                    >
+                  </span>
+                </div>
+
+                <div
+                  class="d-flex flex-row value"
+                  v-if="getProject() === 'non-carbon'"
+                >
+                  <span
+                    class="badge"
+                    :class="{
+                      'bg-warning':
+                        data.main_lahan.approve === 0 &&
+                        data.main_lahan.fc_complete_data === null,
+                      'bg-primary':
+                        data.main_lahan.approve === 0 &&
+                        data.main_lahan.fc_complete_data !== null,
+                      'bg-success': data.main_lahan.approve === 2,
+                    }"
+                  >
+                    <span
+                      v-if="
+                        data.main_lahan.approve === 0 &&
+                        data.main_lahan.fc_complete_data === null
+                      "
+                      >Belum Diverifikasi</span
+                    >
+                    <span
+                      v-else-if="
+                        data.main_lahan.approve === 0 &&
+                        data.main_lahan.fc_complete_data !== null
+                      "
+                      >Data Lahan Terverifikasi</span
+                    >
+                    <span v-else-if="data.main_lahan.approve === 2"
+                      >Terverifikasi</span
                     >
                   </span>
                 </div>
@@ -302,6 +422,7 @@
                     </div>
                   </div>
                   <div
+                    v-if="getProject() === 'carbon'"
                     class="log-data-item"
                     :class="{
                       active: data.main_lahan.gis_updated_at,
@@ -354,6 +475,7 @@
                     </div>
                   </div>
                   <div
+                    v-if="getProject() === 'carbon'"
                     class="log-data-item"
                     :class="{
                       active: data.main_lahan.update_eligible_at,
@@ -381,6 +503,29 @@
                         class="user"
                         >{{ data.main_lahan.update_eligible_by }}</span
                       >
+                    </div>
+                  </div>
+                  <div
+                    v-if="getProject() === 'non-carbon'"
+                    class="log-data-item"
+                    :class="{
+                      active: data.main_lahan.approve == 2,
+                    }"
+                  >
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span class="time" v-if="data.main_lahan.approved_at">{{
+                        formatDate(
+                          data.main_lahan.approved_at,
+                          "D MMMM YYYY HH:mm"
+                        )
+                      }}</span>
+                      <span class="label">UM Verifikasi Data Lahan</span>
+                      <span v-if="data.main_lahan.approved_by" class="user">{{
+                        data.main_lahan.approved_by
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -466,6 +611,7 @@
         <div
           class="alert bg-info-light px-3 mx-4 py-2 d-flex flex-row br-8 mb-4"
           v-if="
+            data.main_lahan &&
             data.main_lahan.updated_gis &&
             data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
             data.main_lahan.gis_polygon_area
@@ -884,7 +1030,6 @@
 import VueQRCodeComponent from "vue-qrcode-component";
 import LahanGisVerification from "./LahanGisVerification.vue";
 import moment from "moment";
-import { transform } from "lodash";
 export default {
   name: "land-detail",
   components: {
@@ -944,6 +1089,37 @@ export default {
     //refactored
     async unverificationData(type) {
       if (this.loading) return;
+
+      if (type == "um_unverification") {
+        this.loading = true;
+
+        const prompt = await this.$_alert.confirm(
+          "Unverifikasi Data?",
+          "",
+          "Unverifikasi",
+          "Batal",
+          true
+        );
+
+        if (!prompt.isConfirmed) {
+          this.loading = false;
+
+          return;
+        }
+
+        const payload = {
+          current_id: this.$route.query.id,
+          lahan_no: this.data.main_lahan.lahan_no,
+          moduls: "unverification",
+          approval_status: this.data.main_lahan.approve,
+          fc_email: this.data.main_lahan.users_email,
+        };
+        this.$_api.post("UpdateLahanApproval_new", payload).then(() => {
+          this.$_alert.success("Lahan berhasil diunverifikasi");
+        });
+
+        return;
+      }
       const confirmationMessage =
         type === "fc_complete_data"
           ? "Apakah anda yakin ingin unverifikasi data kelengkapan lahan?"
@@ -991,6 +1167,35 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+
+    async verifUmNonCarbon() {
+      if (this.loading) return;
+      this.loading = true;
+
+      const isConfirmed = await this.$_alert.confirm(
+        "Verifikasi Data Lahan?",
+        "Apakah anda yakin ingin verifikasi data lahan?",
+        "Ya, Verifikasi",
+        "Batal",
+        true
+      );
+      if (!isConfirmed.isConfirmed) {
+        this.loading = false;
+        return;
+      }
+
+      this.$_api.post("ENDPOINT", {
+        current_id: this.$route.query.id,
+      });
+    },
+
+    getProject() {
+      try {
+        return this.data.lahan_project[0].project_planting_purposes_code;
+      } catch {
+        return null;
+      }
     },
 
     toggleLayer(item, i) {

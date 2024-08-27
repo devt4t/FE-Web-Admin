@@ -581,6 +581,34 @@
             />
           </v-col>
 
+          <v-col lg="12" v-if="role == 'fc-non-carbon'">
+            <geko-input
+              v-model="formData.fc_complete_data"
+              :item="{
+                label: 'Kelengkapan Data',
+                type: 'select-radio',
+                validation: ['required'],
+                option: {
+                  default_options: [
+                    {
+                      label: 'Lengkap',
+                      code: '1',
+                    },
+                    {
+                      label: 'Tidak Lengkap',
+                      code: '0',
+                    },
+                  ],
+                  list_pointer: {
+                    label: 'name',
+                    code: 'code',
+                    display: ['name'],
+                  },
+                },
+              }"
+            />
+          </v-col>
+
           <v-col lg="12" v-if="role == 'fc-verif-data'">
             <geko-input
               v-model="formData.fc_complete_data"
@@ -794,6 +822,49 @@ export default {
                   this.loading = false;
                 });
             }
+          });
+      } else if (this.role == "fc-non-carbon") {
+        const isConfirmed = await this.$_alert.confirm(
+          "Verifikasi?",
+          "Apakah anda yakin ingin verifikasi kelengkapan data dan status lahan?",
+          "Verifikasi"
+        );
+
+        if (!isConfirmed.isConfirmed) {
+          this.loading = false;
+          return;
+        }
+
+        const fcComplete = await this.$_api
+          .post("UpdateLahanFCCompleteStatus_new", {
+            current_id: this.$route.query.id,
+            fc_complete_data: parseInt(this.formData.fc_complete_data),
+          })
+          .then(() => {
+            return true;
+          })
+          .catch(() => {
+            this.loading = false;
+
+            return false;
+          });
+
+        if (!fcComplete) {
+          this.loading = false;
+        }
+
+        this.$_api
+          .post("UpdateLahanApproval_new", {
+            moduls: "verification",
+            current_id: this.$route.query.id,
+          })
+          .then(() => {
+            this.loading = false;
+            this.$_alert.success("Data lahan berhasil diverifikasi");
+            this.$emit("success", true);
+          })
+          .catch(() => {
+            this.loading = false;
           });
       } else if (this.role == "um") {
         let verifList = [];

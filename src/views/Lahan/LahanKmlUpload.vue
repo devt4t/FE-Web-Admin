@@ -404,7 +404,9 @@ export default {
         console.log("lahan", lahan);
 
         if (!lahan.id) continue;
-        const isValid = lahan.fc_complete_data == 1;
+        const isValid =
+          lahan.fc_complete_data == 1 &&
+          ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
         if (!isValid) continue;
         let tutupanPercentage =
           parseFloat(lahan.tutupan_lain_bangunan_percentage || 0) +

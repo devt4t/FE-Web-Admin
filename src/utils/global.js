@@ -36,6 +36,21 @@ const _global = {
 
     return Array.isArray(permissions) && permissions.includes(permission);
   },
+
+  statusLahan(item, project) {
+    if (project === "carbon") {
+      const config = {
+        unverified:
+          !item.fc_complete_data && item.updated_gis.toLowerCase() === "belum",
+        "gis-verified": item.updated_gis.toLowerCase() === "sudah",
+        "fc-verified": item.approve == 1,
+        verified: item.approve == 2,
+        "force-majeure": item.approve == 3,
+      };
+
+      return config;
+    }
+  },
 };
 
 export default _global;

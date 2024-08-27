@@ -9,6 +9,7 @@
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
         <div
+          v-if="getProject(item) === 'carbon'"
           class="indicator"
           :class="{
             warning:
@@ -35,6 +36,20 @@
                 getMaskedValue(item).eligible_status == 0) ||
               (getMaskedValue(item).approve == 1 &&
                 getMaskedValue(item).fc_complete_data == null),
+          }"
+        ></div>
+
+        <div
+          class="indicator"
+          v-else-if="getProject(item) === 'non-carbon'"
+          :class="{
+            success: getMaskedValue(item).approve === 2,
+            warning:
+              getMaskedValue(item).approve === 0 &&
+              getMaskedValue(item).fc_complete_data === null,
+            primary:
+              getMaskedValue(item).approve === 0 &&
+              getMaskedValue(item).fc_complete_data !== null,
           }"
         ></div>
       </div>
@@ -244,6 +259,7 @@
         style="align-items: center"
       >
         <div
+          v-if="getProject(item) === 'carbon'"
           class="badge"
           :class="{
             'bg-warning':
@@ -313,6 +329,39 @@
           <span v-else-if="getMaskedValue(item).approve == 3"
             >Force Majeure</span
           >
+        </div>
+
+        <div v-else-if="getProject(item) === 'non-carbon'">
+          <span
+            class="badge"
+            :class="{
+              'bg-warning':
+                getMaskedValue(item).approve === 0 &&
+                getMaskedValue(item).fc_complete_data === null,
+              'bg-primary':
+                getMaskedValue(item).approve === 0 &&
+                getMaskedValue(item).fc_complete_data !== null,
+              'bg-success': getMaskedValue(item).approve === 2,
+            }"
+          >
+            <span
+              v-if="
+                getMaskedValue(item).approve === 0 &&
+                getMaskedValue(item).fc_complete_data === null
+              "
+              >Belum Diverifikasi</span
+            >
+            <span
+              v-else-if="
+                getMaskedValue(item).approve === 0 &&
+                getMaskedValue(item).fc_complete_data !== null
+              "
+              >Data Lahan Terverifikasi</span
+            >
+            <span v-else-if="getMaskedValue(item).approve === 2"
+              >Terverifikasi</span
+            >
+          </span>
         </div>
       </div>
     </template>
@@ -416,6 +465,13 @@ export default {
     LahanExportModal,
   },
   methods: {
+    getProject(item) {
+      try {
+        return item.land_project.project_planting_purposes_code;
+      } catch {
+        return null;
+      }
+    },
     getMaskedValue(item) {
       if (!Array.isArray(item.log_lahans) || item.log_lahans.length === 0) {
         return item;
