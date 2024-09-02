@@ -22,6 +22,7 @@
               style="flex-wrap: wrap; width: 100%"
               v-if="data.main_lahan"
             >
+              <!-- UNVERIFIKASI CARBON -->
               <div
                 class="lahan-side-item d-flex flex-col"
                 style="flex-wrap: wrap"
@@ -53,13 +54,26 @@
                   </v-btn>
 
                   <v-btn
+                    v-if="$_sys.isAllowed('lahan-gis-unverification-create')"
+                    variant="danger"
+                    class="mr-1 mb-1"
+                    @click="unverificationData('gis')"
+                  >
+                    <v-icon>mdi-undo-variant</v-icon>
+                    <span>Unverifikasi GIS</span>
+                  </v-btn>
+
+                  <v-btn
                     v-if="$_sys.isAllowed('lahan-um-unverification-create')"
                     variant="danger"
                     class="mr-1 mb-1"
                     @click="unverificationData('um_unverification')"
                   >
                     <v-icon>mdi-undo-variant</v-icon>
-                    <span>Unverifikasi UM</span>
+                    <span
+                      >Unverifikasi
+                      {{ data.main_lahan.approve == 2 ? "UM" : "FC" }}</span
+                    >
                   </v-btn>
                 </div>
 
@@ -116,11 +130,13 @@
                 >
               </div>
 
+              <!-- UNVERIFIKASI & VERIF NON CARBON -->
               <div
                 class="lahan-side-item d-flex flex-col"
                 style="flex-wrap: wrap"
                 v-if="getProject() === 'non-carbon'"
               >
+                <!-- UNVERIFIKASI -->
                 <v-btn
                   v-if="
                     $_sys.isAllowed('lahan-fc-unverification-create') &&
@@ -143,11 +159,13 @@
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi UM</span>
                 </v-btn>
+                <!-- VERIFIKASI -->
                 <v-btn
                   v-if="
                     !openGisEdit &&
                     $_sys.isAllowed('lahan-fc-verification-create') &&
-                    data.main_lahan
+                    data.main_lahan &&
+                    data.main_lahan.approve == 0
                   "
                   variant="success"
                   class="mr-1 mb-2"
@@ -161,7 +179,8 @@
                 <v-btn
                   v-if="
                     $_sys.isAllowed('lahan-um-verification-create') &&
-                    data.main_lahan
+                    data.main_lahan &&
+                    data.main_lahan.approve == 1
                   "
                   variant="success"
                   class="mr-1 mb-2"
@@ -229,6 +248,7 @@
                   - Terverifikasi / Force Majeure
                 -->
 
+                <!-- STATUS CARBON -->
                 <div
                   class="d-flex flex-row value"
                   v-if="getProject() === 'carbon'"
@@ -284,6 +304,7 @@
                   </span>
                 </div>
 
+                <!-- STATUS NON CARBON -->
                 <div
                   class="d-flex flex-row value"
                   v-if="getProject() === 'non-carbon'"
@@ -295,7 +316,7 @@
                         data.main_lahan.approve === 0 &&
                         data.main_lahan.fc_complete_data === null,
                       'bg-primary':
-                        data.main_lahan.approve === 0 &&
+                        data.main_lahan.approve === 1 &&
                         data.main_lahan.fc_complete_data !== null,
                       'bg-success': data.main_lahan.approve === 2,
                     }"
@@ -309,7 +330,7 @@
                     >
                     <span
                       v-else-if="
-                        data.main_lahan.approve === 0 &&
+                        data.main_lahan.approve === 1 &&
                         data.main_lahan.fc_complete_data !== null
                       "
                       >Data Lahan Terverifikasi</span
@@ -455,30 +476,7 @@
                   <div
                     class="log-data-item"
                     :class="{
-                      active: data.main_lahan.approved_at,
-                    }"
-                  >
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span class="time" v-if="data.main_lahan.approved_at">{{
-                        formatDate(
-                          data.main_lahan.approved_at,
-                          "D MMMM YYYY HH:mm"
-                        )
-                      }}</span>
-                      <span class="label">FC Verifikasi Data Lahan</span>
-                      <span v-if="data.main_lahan.approved_by" class="user">{{
-                        data.main_lahan.approved_by
-                      }}</span>
-                    </div>
-                  </div>
-                  <div
-                    v-if="getProject() === 'carbon'"
-                    class="log-data-item"
-                    :class="{
-                      active: data.main_lahan.update_eligible_at,
+                      active: data.main_lahan.approve >= 1,
                     }"
                   >
                     <div class="dot-wrapper">
@@ -487,7 +485,45 @@
                     <div class="log-value">
                       <span
                         class="time"
-                        v-if="data.main_lahan.update_eligible_at"
+                        v-if="
+                          data.main_lahan.approve >= 1 &&
+                          data.main_lahan.approved_at
+                        "
+                        >{{
+                          formatDate(
+                            data.main_lahan.approved_at,
+                            "D MMMM YYYY HH:mm"
+                          )
+                        }}</span
+                      >
+                      <span class="label">FC Verifikasi Data Lahan</span>
+                      <span
+                        v-if="
+                          data.main_lahan.approve >= 1 &&
+                          data.main_lahan.approved_by
+                        "
+                        class="user"
+                        >{{ data.main_lahan.approved_by }}</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    v-if="getProject() === 'carbon'"
+                    class="log-data-item"
+                    :class="{
+                      active: data.main_lahan.approve == 2,
+                    }"
+                  >
+                    <div class="dot-wrapper">
+                      <div class="dot"></div>
+                    </div>
+                    <div class="log-value">
+                      <span
+                        class="time"
+                        v-if="
+                          data.main_lahan.approve == 2 &&
+                          data.main_lahan.update_eligible_at
+                        "
                         >{{
                           formatDate(
                             data.main_lahan.update_eligible_at,
@@ -499,7 +535,10 @@
                         >UM Menentukan Eligibilitas Lahan</span
                       >
                       <span
-                        v-if="data.main_lahan.update_eligible_by"
+                        v-if="
+                          data.main_lahan.approve == 2 &&
+                          data.main_lahan.update_eligible_by
+                        "
                         class="user"
                         >{{ data.main_lahan.update_eligible_by }}</span
                       >
@@ -516,16 +555,28 @@
                       <div class="dot"></div>
                     </div>
                     <div class="log-value">
-                      <span class="time" v-if="data.main_lahan.approved_at">{{
-                        formatDate(
-                          data.main_lahan.approved_at,
-                          "D MMMM YYYY HH:mm"
-                        )
-                      }}</span>
+                      <span
+                        class="time"
+                        v-if="
+                          data.main_lahan.approve == 2 &&
+                          data.main_lahan.approved_at
+                        "
+                        >{{
+                          formatDate(
+                            data.main_lahan.approved_at,
+                            "D MMMM YYYY HH:mm"
+                          )
+                        }}</span
+                      >
                       <span class="label">UM Verifikasi Data Lahan</span>
-                      <span v-if="data.main_lahan.approved_by" class="user">{{
-                        data.main_lahan.approved_by
-                      }}</span>
+                      <span
+                        v-if="
+                          data.main_lahan.approve == 2 &&
+                          data.main_lahan.approved_by
+                        "
+                        class="user"
+                        >{{ data.main_lahan.approved_by }}</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -1037,86 +1088,17 @@ export default {
     LahanGisVerification,
   },
   methods: {
-    // async unverificationData(type) {
-    //   if (type == "fc_complete_data") {
-    //     const prompt = await this.$_alert.confirm(
-    //       "Unverifikasi Data?",
-    //       "Apakah anda yakin ingin unverifikasi data kelengkapan lahan?",
-    //       "Unverifikasi",
-    //       "Batal",
-    //       true
-    //     );
-
-    //     if (!prompt.isConfirmed) return;
-
-    //     this.$_api
-    //       .post("UpdateLahanFCCompleteStatus_new", {
-    //         current_id: this.$route.query.id,
-    //         fc_complete_data: 2,
-    //       })
-    //       .then(() => {
-    //         this.$_alert.success(
-    //           "Kelengkapan data lahan berhasil diunverifikasi"
-    //         );
-    //         this.componentKey += 1;
-    //         this.getData();
-    //         this.loading = false;
-    //       });
-    //   } else if (type == "um_seed") {
-    //     const prompt = await this.$_alert.confirm(
-    //       "Unverifikasi Data?",
-    //       "Apakah anda yakin ingin unverifikasi jumlah bibit?",
-    //       "Unverifikasi",
-    //       "Batal",
-    //       true
-    //     );
-
-    //     if (!prompt.isConfirmed) return;
-    //     this.$_api
-    //       .post("UpdateSeedAmountVerification_new", {
-    //         current_id: this.$route.query.id,
-    //         verif_moduls: "unverif",
-    //       })
-    //       .then(() => {
-    //         this.$_alert.success("Jumlah bibit berhasil diunverifikasi");
-    //         this.componentKey += 1;
-    //         this.getData();
-    //         this.loading = false;
-    //       });
-    //   }
-    // },
-
     //refactored
     async unverificationData(type) {
       if (this.loading) return;
 
+      if (type == "gis") {
+        this.handleGisUnverification();
+        return;
+      }
+
       if (type == "um_unverification") {
-        this.loading = true;
-
-        const prompt = await this.$_alert.confirm(
-          "Unverifikasi Data?",
-          "",
-          "Unverifikasi",
-          "Batal",
-          true
-        );
-
-        if (!prompt.isConfirmed) {
-          this.loading = false;
-
-          return;
-        }
-
-        const payload = {
-          current_id: this.$route.query.id,
-          lahan_no: this.data.main_lahan.lahan_no,
-          moduls: "unverification",
-          approval_status: this.data.main_lahan.approve,
-          fc_email: this.data.main_lahan.users_email,
-        };
-        this.$_api.post("UpdateLahanApproval_new", payload).then(() => {
-          this.$_alert.success("Lahan berhasil diunverifikasi");
-        });
+        this.handleUmUnverification();
 
         return;
       }
@@ -1148,7 +1130,7 @@ export default {
 
       this.loading = true;
 
-      this.$_api
+      const updateCompleteData = await this.$_api
         .post(apiEndpoint, {
           current_id: this.$route.query.id,
           fc_complete_data: type === "fc_complete_data" ? 2 : undefined,
@@ -1166,7 +1148,68 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          return false;
         });
+    },
+
+    async handleGisUnverification() {
+      this.loading = true;
+
+      const prompt = await this.$_alert.confirm(
+        "Unverifikasi Data GIS?",
+        "",
+        "Unverifikasi",
+        "Batal",
+        true
+      );
+
+      if (!prompt.isConfirmed) {
+        this.loading = false;
+        return;
+      }
+
+      let payload = {
+        current_id: this.$route.query.id,
+        moduls: "unverification",
+        approval_status: 3,
+      };
+
+      this.$_api.post("UpdateLahanApproval_new", payload).then((res) => {
+        this.$_alert.success("Lahan berhasil diunverifikasi");
+        this.loading = false;
+      });
+    },
+
+    async handleUmUnverification() {
+      this.loading = true;
+
+      const prompt = await this.$_alert.confirm(
+        "Unverifikasi Data?",
+        "",
+        "Unverifikasi",
+        "Batal",
+        true
+      );
+
+      if (!prompt.isConfirmed) {
+        this.loading = false;
+
+        return;
+      }
+
+      const payload = {
+        current_id: this.$route.query.id,
+        lahan_no: this.data.main_lahan.lahan_no,
+        moduls: "unverification",
+        approval_status: this.data.main_lahan.approve,
+        // approval_status: 2,
+        fc_email: this.data.main_lahan.users_email,
+      };
+      console.log("payload", payload);
+
+      this.$_api.post("UpdateLahanApproval_new", payload).then(() => {
+        this.$_alert.success("Lahan berhasil diunverifikasi");
+      });
     },
 
     async verifUmNonCarbon() {
@@ -1185,9 +1228,18 @@ export default {
         return;
       }
 
-      this.$_api.post("ENDPOINT", {
-        current_id: this.$route.query.id,
-      });
+      this.$_api
+        .post("UpdateLahanApproval_new", {
+          current_id: this.$route.query.id,
+          moduls: "verification",
+          approval_status: 2,
+        })
+        .then(() => {
+          this.loading = false;
+          this.componentKey += 1;
+          this.getData();
+          this.$_alert.success("Lahan berhasil diunverifikasi");
+        });
     },
 
     getProject() {
@@ -1312,6 +1364,8 @@ export default {
           kmlGisData.features[0].geometry.coordinates
         );
         const area = turf.area(polygonGis);
+        console.log("area", area);
+
         if (area) {
           this.polygonGisArea = parseFloat(area).toFixed(2);
         }
@@ -1376,6 +1430,8 @@ export default {
           layout: {
             visibility: "visible",
           },
+
+          mapZoom: 200,
           paint: {
             "fill-color": fillColor,
             "fill-opacity": [
@@ -1415,6 +1471,7 @@ export default {
           style: this.$_config.mapBoxStyle,
           zoom: 17,
           projection: "globe",
+          maxZoom: 100,
         });
 
         await this.map.dragRotate.disable();

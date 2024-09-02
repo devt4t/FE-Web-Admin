@@ -164,7 +164,8 @@
                 label: 'Foto Tutupan Pohon',
                 validation:
                   formData.tutupan_pohon_percentage &&
-                  formData.tutupan_pohon_percentage > 0
+                  formData.tutupan_pohon_percentage > 0 &&
+                  false
                     ? ['required']
                     : [],
                 type: 'upload',
@@ -189,7 +190,8 @@
                 label: 'Foto Tutupan Tanaman Bawah',
                 validation:
                   formData.tutupan_tanaman_bawah_percentage &&
-                  formData.tutupan_tanaman_bawah_percentage > 0
+                  formData.tutupan_tanaman_bawah_percentage > 0 &&
+                  false
                     ? ['required']
                     : [],
                 type: 'upload',
@@ -214,7 +216,8 @@
                 label: 'Foto Tutupan Bangunan / Lainnya',
                 validation:
                   formData.tutupan_lain_bangunan_percentage &&
-                  formData.tutupan_lain_bangunan_percentage > 0
+                  formData.tutupan_lain_bangunan_percentage > 0 &&
+                  false
                     ? ['required']
                     : [],
                 type: 'upload',
@@ -550,7 +553,7 @@
           </v-col>
 
           <v-col lg="12" v-if="role == 'fc'">
-            <geko-input
+            <!-- <geko-input
               v-model="formData.moduls"
               :item="{
                 label: 'Status Lahan',
@@ -578,7 +581,7 @@
                   },
                 },
               }"
-            />
+            /> -->
           </v-col>
 
           <v-col lg="12" v-if="role == 'fc-non-carbon'">
@@ -708,6 +711,123 @@ export default {
       this.$set(this.formData, "tutupan_lahan", tutupanLahan);
       this.$set(this.formData, "planting_area", plantingArea);
     },
+
+    async handleFcVerification() {
+      const prompt = await this.$_alert.confirm(
+        "Verifikasi?",
+        "Apakah anda yakin ingin verifikasi data lahan?",
+        "Verifikasi"
+      );
+
+      if (!prompt.isConfirmed) {
+        this.loading = false;
+        return;
+      }
+
+      const submitIndicator = await this.submitIndicator()
+        .then(() => true)
+        .catch(() => false);
+
+      if (!submitIndicator) {
+        this.loading = false;
+        return;
+      }
+
+      this.$_api
+        .post("UpdateLahanApproval_new", {
+          moduls: "verification",
+          current_id: this.$route.query.id,
+          approval_status: 1,
+        })
+        .then(() => {
+          this.loading = false;
+          this.$_alert.success("Data lahan berhasil diverifikasi");
+          this.$emit("success", true);
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
+
+    async handleUmVerification() {
+      let verifList = [];
+      if (this.formData.seed_verify_status == 1) {
+        verifList.push("jumlah bibit");
+        verifList.push("eligibilitas lahan");
+      }
+      if (this.formData.seed_verify_status == 0) verifList.push("jumlah bibit");
+
+      const prompt = await this.$_alert.confirm(
+        "Verifikasi?",
+        `Apakah anda yakin ingin verifikasi ${verifList.join(" dan ")}?`,
+        "Verifikasi"
+      );
+
+      if (!prompt.isConfirmed) {
+        this.loading = false;
+        return false;
+      }
+
+      let payload = {
+        current_id: this.$route.query.id,
+        verif_moduls: "verif",
+        approval_status: 2,
+      };
+
+      const verifySeed = await this.$_api
+        .post("UpdateSeedAmountVerification_new", payload)
+        .then(() => {
+          if (this.formData.seed_verify_status == 0) {
+            this.loading = false;
+            this.$_alert.success(
+              `Data ${verifList.join(" dan ")} berhasil diverifikasi`
+            );
+            this.$emit("success", true);
+            return false;
+          } else {
+            return true;
+          }
+        })
+        .catch(() => {
+          this.loading = false;
+          return false;
+        });
+
+      if (!verifySeed) {
+        this.loading = false;
+        return;
+      }
+
+      const updateApproval = await this.$_api
+        .post("UpdateLahanApproval_new", {
+          approval_status: 2,
+          current_id: this.$route.query.id,
+          moduls: "verification",
+        })
+        .then(() => true)
+        .catch(() => false);
+
+      if (!updateApproval) {
+        this.loading = false;
+        return;
+      }
+
+      this.$_api
+        .post("UpdateLahanEligibleStatus_new", {
+          current_id: this.$route.query.id,
+          eligible_status: parseInt(this.formData.eligible_status),
+        })
+        .then(() => {
+          this.loading = false;
+          this.$_alert.success(
+            `Data ${verifList.join(" dan ")} berhasil diverifikasi`
+          );
+          this.$emit("success", true);
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+    },
     async onSubmit() {
       let payload = JSON.parse(JSON.stringify(this.formData));
       payload.current_id = this.$route.query.id;
@@ -752,10 +872,19 @@ export default {
                   payload[item] = "0";
                 }
               }
-
-              payload.planting_area =
-                (payload.planting_area / 100) *
-                parseFloat(payload.gis_polygon_area);
+              // const tutupanPohon = parseInt(
+              //   payload.tutupan_pohon_percentage || 0
+              // );
+              // const tutupanTanamanBawah = parseInt(
+              //   payload.tutupan_tanaman_bawah_percentage || 0
+              // );
+              // const tutupanBangunan = parseInt(
+              //   payload.tutupan_lain_bangunan_percentage || 0
+              // );
+              const totalTutupan = payload.tutupan_lahan;
+              payload.gis_planting_area = parseFloat(
+                (totalTutupan / 100) * parseFloat(payload.gis_polygon_area)
+              ).toFixed(2);
               this.$_api
                 .post("UpdateLahanByGIS_new", payload)
                 .then(() => {
@@ -769,59 +898,30 @@ export default {
             }
           });
       } else if (this.role == "fc") {
-        this.$_alert
-          .confirm(
-            "Verifikasi?",
-            "Apakah anda yakin ingin verifikasi data lahan?",
-            "Verifikasi"
-          )
-          .then(async (res) => {
-            if (res.isConfirmed) {
-              const submitIndicator = await this.submitIndicator()
-                .then(() => true)
-                .catch(() => false);
-              if (!submitIndicator) {
-                this.loading = false;
-                return;
-              }
-              this.$_api
-                .post("UpdateLahanApproval_new", {
-                  moduls: this.formData.moduls,
-                  current_id: this.$route.query.id,
-                })
-                .then(() => {
-                  this.loading = false;
-                  this.$_alert.success("Data lahan berhasil diverifikasi");
-                  this.$emit("success", true);
-                })
-                .catch(() => {
-                  this.loading = false;
-                });
-            }
-          });
+        this.handleFcVerification();
       } else if (this.role == "fc-verif-data") {
-        this.$_alert
-          .confirm(
-            "Verifikasi?",
-            "Apakah anda yakin ingin verifikasi kelengkapan data lahan?",
-            "Verifikasi"
-          )
-          .then((res) => {
-            if (res.isConfirmed) {
-              this.$_api
-                .post("UpdateLahanFCCompleteStatus_new", {
-                  current_id: this.$route.query.id,
-                  fc_complete_data: parseInt(this.formData.fc_complete_data),
-                })
-                .then(() => {
-                  this.loading = false;
-                  this.$_alert.success("Data lahan berhasil diverifikasi");
-                  this.$emit("success", true);
-                })
-                .catch(() => {
-                  this.loading = false;
-                });
-            }
+        const prompt = await this.$_alert.confirm(
+          "Verifikasi?",
+          "Apakah anda yakin ingin verifikasi kelengkapan data lahan?",
+          "Verifikasi"
+        );
+
+        if (!prompt.isConfirmed) {
+          this.loading = false;
+          return;
+        }
+        await this.$_api
+          .post("UpdateLahanFCCompleteStatus_new", {
+            current_id: this.$route.query.id,
+            fc_complete_data: parseInt(this.formData.fc_complete_data),
+          })
+          .then(() => {
+            this.loading = false;
+            this.$_alert.success("Data lahan berhasil diverifikasi");
+            this.$emit("success", true);
+          })
+          .catch(() => {
+            this.loading = false;
           });
       } else if (this.role == "fc-non-carbon") {
         const isConfirmed = await this.$_alert.confirm(
@@ -857,6 +957,7 @@ export default {
           .post("UpdateLahanApproval_new", {
             moduls: "verification",
             current_id: this.$route.query.id,
+            approval_status: 1,
           })
           .then(() => {
             this.loading = false;
@@ -867,71 +968,7 @@ export default {
             this.loading = false;
           });
       } else if (this.role == "um") {
-        let verifList = [];
-        if (this.formData.seed_verify_status == 1) {
-          verifList.push("jumlah bibit");
-          verifList.push("eligibilitas lahan");
-        }
-        if (this.formData.seed_verify_status == 0)
-          verifList.push("jumlah bibit");
-        this.$_alert
-          .confirm(
-            "Verifikasi?",
-            `Apakah anda yakin ingin verifikasi ${verifList.join(" dan ")}?`,
-            "Verifikasi"
-          )
-          .then(async (res) => {
-            if (res.isConfirmed) {
-              let payload = {
-                current_id: this.$route.query.id,
-                verif_moduls: "verif",
-              };
-
-              const verifySeed = await this.$_api
-                .post("UpdateSeedAmountVerification_new", payload)
-                .then(() => {
-                  if (this.formData.seed_verify_status == 0) {
-                    this.loading = false;
-                    this.$_alert.success(
-                      `Data ${verifList.join(" dan ")} berhasil diverifikasi`
-                    );
-                    this.$emit("success", true);
-                    return false;
-                  } else {
-                    return true;
-                  }
-                })
-                .catch(() => {
-                  this.loading = false;
-                  return false;
-                });
-
-              if (!verifySeed) {
-                this.loading = false;
-                return;
-              }
-              this.$_api
-                .post("UpdateLahanEligibleStatus_new", {
-                  current_id: this.$route.query.id,
-                  eligible_status: parseInt(this.formData.eligible_status),
-                })
-                .then(() => {
-                  this.loading = false;
-                  this.$_alert.success(
-                    `Data ${verifList.join(" dan ")} berhasil diverifikasi`
-                  );
-                  this.$emit("success", true);
-                })
-                .catch(() => {
-                  this.loading = false;
-                });
-            } else {
-              this.loading = false;
-            }
-          })
-          .catch(() => {
-            this.loading = false;
-          });
+        this.handleUmVerification();
       }
     },
 

@@ -394,6 +394,68 @@ export default {
   },
 
   methods: {
+    // async onUpdateSoil() {
+    //   if (this.loading) return;
+    //   this.loading = true;
+
+    //   let verifSuccess = [];
+    //   let verifFailed = [];
+    //   for (const lahan of this.data) {
+    //     console.log("lahan", lahan);
+
+    //     if (!lahan.id) continue;
+
+    //     let payload = {
+    //       current_id: lahan.id,
+    //       soil_type: lahan.soil_type,
+    //     };
+    //     console.log("payload update lahan", payload);
+
+    //     const updatePolygon = await this.$_api
+    //       .post("UpdateLahanByGIS_new", payload)
+    //       .catch((err) => {
+    //         console.log("err update polygon", err);
+
+    //         return false;
+    //       });
+
+    //     if (!updatePolygon) {
+    //       verifFailed.push(lahan.lahan_no);
+    //       continue;
+    //     }
+    //     verifSuccess.push(lahan.lahan_no);
+    //   }
+
+    //   this.loading = false;
+    //   this.ready = true;
+    //   this.data = [];
+    //   this.step = 1;
+    //   this.questions = [];
+    //   this.isOpen = false;
+
+    //   let alertTitle = "Verifikasi Lahan Berhasil";
+    //   if (verifSuccess.length == 0) alertTitle = "Verifikasi Lahan Gagal";
+
+    //   let alertMessage = `<p>Data lahan berhasil diverifikasi : ${
+    //     verifSuccess.length === 0
+    //       ? "<strong>Tidak Ada</strong>"
+    //       : `<strong>${verifSuccess.join(
+    //           ", "
+    //         )}</strong><br s/></p>Data lahan gagal diverifikasi : ${
+    //           verifFailed.length === 0
+    //             ? "<strong>Tidak Ada</strong>"
+    //             : `<strong>${verifFailed.join(", ")}</strong>`
+    //         }</p>`
+    //   }</p>`;
+    //   this.$_alert.success(
+    //     alertTitle,
+    //     alertMessage,
+    //     "center",
+    //     true,
+    //     false,
+    //     true
+    //   );
+    // },
     async onBulkUpload() {
       if (this.loading) return;
       this.loading = true;
@@ -404,9 +466,10 @@ export default {
         console.log("lahan", lahan);
 
         if (!lahan.id) continue;
-        const isValid =
-          lahan.fc_complete_data == 1 &&
-          ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
+        // const isValid =
+        //   lahan.fc_complete_data == 1 &&
+        //   ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
+        const isValid = lahan.fc_complete_data == 1;
         if (!isValid) continue;
         let tutupanPercentage =
           parseFloat(lahan.tutupan_lain_bangunan_percentage || 0) +
@@ -454,18 +517,18 @@ export default {
         }
         verifSuccess.push(lahan.lahan_no);
 
-        for (let i = 0; i < this.questions.length; i++) {
-          const dataItem = this.questions[i];
-          const payloadTermAnswer = {
-            lahan_no: lahan.lahan_no,
-            term_id: dataItem.id,
-            term_answer: lahan[`question${i + 1}`],
-            program_year: this.$_config.programYear.model,
-          };
-          await this.$_api.post("addLahanTermAnswer_new", payloadTermAnswer);
+        // for (let i = 0; i < this.questions.length; i++) {
+        //   const dataItem = this.questions[i];
+        //   const payloadTermAnswer = {
+        //     lahan_no: lahan.lahan_no,
+        //     term_id: dataItem.id,
+        //     term_answer: lahan[`question${i + 1}`],
+        //     program_year: this.$_config.programYear.model,
+        //   };
+        //   await this.$_api.post("addLahanTermAnswer_new", payloadTermAnswer);
 
-          console.log("payload term answer", payloadTermAnswer);
-        }
+        //   console.log("payload term answer", payloadTermAnswer);
+        // }
       }
 
       this.loading = false;
@@ -481,7 +544,7 @@ export default {
       let alertMessage = `<p>Data lahan berhasil diverifikasi : ${
         verifSuccess.length === 0
           ? "<strong>Tidak Ada</strong>"
-          : `<strong>${verifSuccess.join(
+          : `<strong>${verifSuccess.length}<strong><br />${verifSuccess.join(
               ", "
             )}</strong><br /></p>Data lahan gagal diverifikasi : ${
               verifFailed.length === 0
@@ -515,12 +578,12 @@ export default {
 
         const kmlFile = new File(
           [kmlBlob.data],
-          `${moment().format("DDMMYYYYHHmmss")}.kml`
+          `lahan_polygon_${lahanNo}.kml`
         );
 
         const kmlPath = await this.$_api
           .upload("lahans/upload.php", {
-            nama: moment().format("DDMMYYYYHHmmss"),
+            nama: `lahan_polygon_${lahanNo}`,
             dir: "polygon-gis",
             type: "polygon",
             fileToUpload: kmlFile,

@@ -887,6 +887,71 @@ export default {
               },
             },
           },
+
+          {
+            id: "updated_gis",
+            label: "Verifikasi GIS",
+            methods: {
+              filter: {
+                type: "select",
+                main: true,
+                setter: "updated_gis",
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Belum",
+                      code: "belum",
+                    },
+                    {
+                      name: "Sudah",
+                      code: "Sudah",
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
+          // {
+          //   id: "fc_complete_data",
+          //   label: "Kelengkapan Data",
+          //   methods: {
+          //     filter: {
+          //       type: "select",
+          //       main: true,
+          //       setter: "fc_complete_data",
+          //       option: {
+          //         default_options: [
+          //           {
+          //             name: "Semua ",
+          //             code: null,
+          //           },
+          //           {
+          //             name: "Lengkap",
+          //             code: 1,
+          //           },
+          //           {
+          //             name: "Belum Lengkap",
+          //             code: "0",
+          //           },
+          //         ],
+          //         list_pointer: {
+          //           code: "code",
+          //           label: "name",
+          //           display: ["name"],
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
           {
             id: "created_at",
             label: "Tgl. Dibuat",
