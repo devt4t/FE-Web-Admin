@@ -71,7 +71,7 @@
                             (itemTable.value == 'lahan_approve' ? 
                             (tableData.lahan_complete == 0 || (tableData.jenis_bibit && tableData.jenis_bibit.length == 0) ? 'red' 
                             : 
-                            (tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'green' : 'orange') : 'red'))
+                            (tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 || tableData[itemTable.value] == 2 ? (tableData[itemTable.value] == 1 || tableData[itemTable.value] == 2 ? 'green' : 'orange') : 'red'))
                             : ''))} lighten-3`">
                             <!-- <span v-if="itemTable.value == 'farmer_nik'">
                                 '
@@ -87,7 +87,7 @@
                                     Belum Lengkap
                                 </span>
                                 <span v-else>
-                                    {{ tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 ? (tableData[itemTable.value] == 1 ? 'Terverifikasi' : 'Belum Verifikasi') : 'Belum Ada Data' }}
+                                    {{ tableData[itemTable.value] == 0 || tableData[itemTable.value] == 1 || tableData[itemTable.value] == 2 ? (tableData[itemTable.value] == 1 || tableData[itemTable.value] == 2 ? (tableData[itemTable.value] == 1 || tableData[itemTable.value] == 2 ? 'Terverifikasi FC' : 'Terverifikasi UM') : 'Belum Verifikasi') : 'Belum Ada Data' }}
                                 </span>
                             </span>
                             <span v-else-if="itemTable.value == 'jenis_bibit'">
