@@ -93,7 +93,8 @@
                 >
                 <v-btn
                   v-if="
-                    !openGisEdit &&
+                    !openFcCompleteData &&
+                    !openFc &&
                     $_sys.isAllowed('lahan-fc-verification-create') &&
                     data.main_lahan &&
                     ((data.main_lahan.fc_complete_data == null &&
@@ -102,14 +103,7 @@
                   "
                   variant="success"
                   class="mr-1 mb-2"
-                  @click="
-                    openGisEdit = true;
-                    verifRole =
-                      data.main_lahan.fc_complete_data == null &&
-                      data.main_lahan.updated_gis.toLowerCase() == 'belum'
-                        ? 'fc-verif-data'
-                        : 'fc';
-                  "
+                  @click="toggleVerificationFc"
                   >Verifikasi FC</v-btn
                 >
                 <v-btn
@@ -190,7 +184,7 @@
               </div>
             </div>
           </div>
-
+          <!-- 
           <lahan-gis-verification
             v-if="
               data.main_lahan &&
@@ -223,6 +217,76 @@
             @polygon_change="onChangePolygon"
             @close="
               openGisEdit = false;
+              verifRole = null;
+            "
+          /> -->
+
+          <lahan-verification-gis
+            v-if="
+              data.main_lahan &&
+              $_sys.isAllowed('lahan-gis-verification-create') &&
+              openGisEdit
+            "
+            :data="data.main_lahan"
+            :questions="
+              data.lahan_term_question_list.filter((x) => x.role_id == 14)
+            "
+            :answers="data.lahan_term_answer_list"
+            :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            :polygonGisArea="polygonGisArea"
+            @success="
+              componentKey += 1;
+              openGisEdit = false;
+              getData();
+            "
+            @polygon_change="onChangePolygon"
+            @close="
+              openGisEdit = false;
+              verifRole = null;
+            "
+          />
+
+          <lahan-verification-fc-complete-data
+            v-if="
+              data.main_lahan &&
+              $_sys.isAllowed('lahan-fc-verification-create') &&
+              openFcCompleteData
+            "
+            :data="data.main_lahan"
+            :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            @success="
+              componentKey += 1;
+              openFcCompleteData = false;
+              getData();
+            "
+            @close="
+              openFcCompleteData = false;
+              verifRole = null;
+            "
+          />
+
+          <lahan-verification-fc
+            v-if="
+              data.main_lahan &&
+              $_sys.isAllowed('lahan-fc-verification-create') &&
+              openFc
+            "
+            :data="data.main_lahan"
+            :questions="
+              data.lahan_term_question_list.filter((x) => x.role_id == 19)
+            "
+            :answers="data.lahan_term_answer_list"
+            :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            @success="
+              componentKey += 1;
+              openFc = false;
+              getData();
+            "
+            @close="
+              openFc = false;
               verifRole = null;
             "
           />
@@ -1081,14 +1145,42 @@
 <script>
 import VueQRCodeComponent from "vue-qrcode-component";
 import LahanGisVerification from "./LahanGisVerification.vue";
+import LahanVerificationGis from "./components/LahanVerificationGis.vue";
+import LahanVerificationFcCompleteData from "./components/LahanVerificationFcCompleteData.vue";
+import LahanVerificationFc from "./components/LahanVerificationFc.vue";
 import moment from "moment";
 export default {
   name: "land-detail",
   components: {
     "qr-code": VueQRCodeComponent,
     LahanGisVerification,
+    LahanVerificationGis,
+    LahanVerificationFcCompleteData,
+    LahanVerificationFc,
   },
   methods: {
+    getProject(lahanDetail) {
+      try {
+        return lahanDetail[0].project_planting_purposes_code;
+      } catch {
+        return false;
+      }
+    },
+    toggleVerificationFc() {
+      if (data.main_lahan.fc_complete_data === null) {
+        this.openFcCompleteData = !this.openFcCompleteData;
+      } else {
+        this.openFc = !this.openFc;
+      }
+
+      if (!this.openFc && !this.openFcCompleteData) {
+        this.verifRole =
+          data.main_lahan.fc_complete_data == null &&
+          data.main_lahan.updated_gis.toLowerCase() == "belum"
+            ? "fc-verif-data"
+            : "fc";
+      }
+    },
     //refactored
     async unverificationData(type) {
       if (this.loading) return;
@@ -1368,10 +1460,10 @@ export default {
 
         if (area && !this.data.main_lahan.gis_polygon_area) {
           this.polygonGisArea = parseFloat(area).toFixed(2);
-        }
-
-        else if (area && this.data.main_lahan.gis_polygon_area) {
-          this.polygonGisArea = parseFloat(this.data.main_lahan.gis_polygon_area).toFixed(2);
+        } else if (area && this.data.main_lahan.gis_polygon_area) {
+          this.polygonGisArea = parseFloat(
+            this.data.main_lahan.gis_polygon_area
+          ).toFixed(2);
         }
       }
 
@@ -1588,6 +1680,8 @@ export default {
       mapReady: false,
       mapOpen: true,
       openGisEdit: false,
+      openFcCompleteData: false,
+      openFc: false,
       polygonGisArea: 0,
       componentKey: 0,
       markers: [],

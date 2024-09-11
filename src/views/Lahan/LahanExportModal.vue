@@ -55,7 +55,6 @@
                     v-if="format == 'excel'"
                   >
                     <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
-
                     <v-progress-circular
                       v-else
                       :size="20"
