@@ -648,7 +648,6 @@ export default {
               },
               create: false,
               update: false,
-              filter: false,
               filter: {
                 type: "select",
                 setter: "is_verified",

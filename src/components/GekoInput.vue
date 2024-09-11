@@ -338,7 +338,10 @@ export default {
       let params = {
         search: search,
         search_value: search,
-        limit: limit,
+        limit:
+          this.item.param && this.item.param.limit
+            ? this.item.param.limit
+            : limit,
       };
 
       this.selectGetInitData(params, loading);

@@ -32,7 +32,23 @@
           >
             <span v-if="j == 0">{{ i + 1 }}</span>
             <span v-else>
-              <span v-if="f.translate">{{
+              <div
+                v-if="f.getter == 'custom_dusun'"
+                class="w-100 d-flex flex-row justify-content-center"
+              >
+                <v-btn
+                  variant="info"
+                  class="d-flex flex-row align-items-center w-100 py-2"
+                  medium
+                  v-if="d.potential == 1"
+                  @click="$emit('detailDusun', d)"
+                >
+                  <v-icon medium>mdi-information-outline</v-icon>
+                  <span class="ml-1">Detail Dusun</span>
+                </v-btn>
+                <span v-else>-</span>
+              </div>
+              <span v-else-if="f.translate">{{
                 defaultData[f.translate].find((x) => x.code == [d[f.getter]])
                   ?.name | parse(f.transform || "no-empty")
               }}</span>
@@ -44,8 +60,8 @@
                     : '']: true,
                 }"
                 v-else
-                >{{ d[f.getter] | parse(f.transform || "no-empty") }}</span
-              >
+                >{{ d[f.getter] | parse(f.transform || "no-empty") }}
+              </span>
               <span v-if="f.append">{{ f.append }}</span>
             </span>
           </td>

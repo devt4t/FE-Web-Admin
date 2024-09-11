@@ -61,11 +61,13 @@
                       this.$store.state.tmpProgramYear ==
                         this.$_config.programYear.model
                     "
+                    :disabled="Array.isArray(trees) && trees.length == 0"
                     small
                     class="mr-3 mb-2"
                     @click="onVerification()"
                   >
-                    Verifikasi
+                    <v-icon medium>mdi-check-underline</v-icon>
+                    <span class="ml-1">Verifikasi</span>
                   </v-btn>
 
                   <v-btn
@@ -85,10 +87,11 @@
                     variant="info"
                     v-if="$_sys.isAllowed('farmer-update')"
                     small
-                    class="mr-3 mb-2"
+                    class="mr-3 mb-2 py-2 d-flex flex-row align-items-center"
                     @click="farmerAssignModal += 1"
                   >
-                    Assign Program Year
+                    <v-icon medium>mdi-calendar-end</v-icon>
+                    <span class="ml-1">Assign Program Year</span>
                   </v-btn>
                 </div>
               </div>

@@ -217,6 +217,14 @@
           color: $info !important;
         }
       }
+
+      &.primary {
+        background-color: $primary_light !important;
+        .value,
+        i {
+          color: $primary !important;
+        }
+      }
       i {
         font-size: 2em;
       }

@@ -366,7 +366,7 @@
                   <span v-else>-</span>
                 </div>
               </div>
-              <div class="lahan-side-item">
+              <div class="lahan-side-item" v-if="getProject() === 'carbon'">
                 <p class="mb-0 label">Eligibilitas Lahan</p>
                 <div class="d-flex flex-row value">
                   <span
@@ -596,6 +596,7 @@
                 class="lahan-side-item"
                 v-for="(v, j) in item.items"
                 :key="'lahan-item' + i + j"
+                v-if="!v.project || (v.project && v.project === getProject())"
               >
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
@@ -990,7 +991,7 @@
               </div>
             </div>
           </div>
-          <div class="questions mt-5 pt-5">
+          <div class="questions mt-5 pt-5" v-if="getProject() === 'carbon'">
             <h4 class="mb-4 text-success">
               Kelayakan dan Kesesuaian Lahan Project
             </h4>
@@ -1364,10 +1365,13 @@ export default {
           kmlGisData.features[0].geometry.coordinates
         );
         const area = turf.area(polygonGis);
-        console.log("area", area);
 
-        if (area) {
+        if (area && !this.data.main_lahan.gis_polygon_area) {
           this.polygonGisArea = parseFloat(area).toFixed(2);
+        }
+
+        else if (area && this.data.main_lahan.gis_polygon_area) {
+          this.polygonGisArea = parseFloat(this.data.main_lahan.gis_polygon_area).toFixed(2);
         }
       }
 
@@ -1665,6 +1669,7 @@ export default {
               class: "font-weight-bold",
               append: "m²",
               transform: "ts",
+              project: "carbon",
             },
             {
               label: "Project",

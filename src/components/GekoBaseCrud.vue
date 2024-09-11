@@ -215,8 +215,17 @@
                   v-if="config.export"
                   class="toolbar-button label mr-2"
                   @click="onExportExcell()"
+                  style="background-color: #1b5e20"
                 >
-                  <v-icon>mdi-microsoft-excel</v-icon>
+                  <v-icon style="color: white">mdi-microsoft-excel</v-icon>
+                </button>
+                <button
+                  v-if="config.export"
+                  class="toolbar-button label mr-2"
+                  @click="onExportPdf()"
+                  style="background-color: #ff0000"
+                >
+                  <v-icon style="color: white">mdi-file-pdf-box</v-icon>
                 </button>
 
                 <geko-base-filter
@@ -227,6 +236,7 @@
                   :fields="fields.filter.filter((x) => x.main)"
                   :mainFilter="true"
                   :open="true"
+                  :data="filters"
                   @filter="onFilter($event)"
                 />
               </div>
@@ -277,7 +287,11 @@
                       :name="'statistic-' + stat.key"
                       v-bind:item="stat.data"
                     >
-                      <span>{{ stat.value | parse(stat.transform) }}</span>
+                      <span>{{
+                        [undefined, null, ""].includes(stat.value)
+                          ? "-"
+                          : stat.value | parse(stat.transform)
+                      }}</span>
                     </slot>
                   </p>
                 </div>
@@ -530,7 +544,6 @@ import "../assets/scss/geko-base-crud.scss";
 import GekoBaseForm from "./GekoBaseForm.vue";
 import GekoBaseDetail from "./GekoBaseDetail.vue";
 import GekoBaseFilter from "./GekoBaseFilter.vue";
-import menus from "@/router/menu";
 
 import _ from "lodash";
 export default {
@@ -864,12 +877,12 @@ export default {
         }
       }
 
-      if (typeof this.config.filter_api === "object") {
-        _params = Object.assign(
-          JSON.parse(JSON.stringify(this.config.filter_api)),
-          _params
-        );
-      }
+      // if (typeof this.config.filter_api === "object") {
+      //   _params = Object.assign(
+      //     JSON.parse(JSON.stringify(this.config.filter_api)),
+      //     _params
+      //   );
+      // }
 
       let reqParams = Object.assign(_filters, _params);
 
@@ -1008,6 +1021,17 @@ export default {
       };
 
       this.$emit("onExportExcel", _data);
+    },
+
+    onExportPdf() {
+      const _data = {
+        params: this.params,
+        filter: this.filters,
+        data: this.data,
+        totalRecord: this.totalRecord,
+      };
+
+      this.$emit("onExportPdf", _data);
     },
   },
 

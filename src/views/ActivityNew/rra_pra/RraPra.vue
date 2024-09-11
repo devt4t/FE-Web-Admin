@@ -131,6 +131,14 @@ export default {
             },
           },
         },
+        globalFilter: {
+          // project_purpose: {
+          //   setter: "purpose_code",
+          // },
+          program_year: {
+            setter: "program_year",
+          },
+        },
         fields: [
           {
             id: "id",
@@ -253,7 +261,32 @@ export default {
               detail: true,
               create: false,
               update: false,
-              filter: false,
+              filter: {
+                type: "select",
+                setter: "verified_status",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Belum Terverifikasi",
+                      code: "0",
+                    },
+                    {
+                      name: "Terverifikasi",
+                      code: "1",
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {

@@ -5,6 +5,7 @@
     :hideUpdate="true"
     :refreshKey="refreshKey"
     @onExportExcel="onExportExcel($event)"
+    @onExportPdf="onExportPdf($event)"
   >
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
@@ -16,15 +17,11 @@
               getMaskedValue(item).approve == 0 &&
               getMaskedValue(item).updated_gis.toLowerCase() == 'belum',
 
-            success:
-              getMaskedValue(item).approve == 2 &&
-              getMaskedValue(item).eligible_status == 2,
+            success: getMaskedValue(item).approve == 2,
 
             info:
-              (getMaskedValue(item).approve == 0 &&
-                getMaskedValue(item).updated_gis.toLowerCase() == 'sudah') ||
-              (getMaskedValue(item).approve == 2 &&
-                getMaskedValue(item).eligible_status == 1),
+              getMaskedValue(item).approve == 0 &&
+              getMaskedValue(item).updated_gis.toLowerCase() == 'sudah',
 
             primary:
               getMaskedValue(item).approve == 1 &&
@@ -32,8 +29,6 @@
 
             danger:
               getMaskedValue(item).approve == 3 ||
-              (getMaskedValue(item).approve == 2 &&
-                getMaskedValue(item).eligible_status == 0) ||
               (getMaskedValue(item).approve == 1 &&
                 getMaskedValue(item).fc_complete_data == null),
           }"
@@ -48,7 +43,7 @@
               getMaskedValue(item).approve === 0 &&
               getMaskedValue(item).fc_complete_data === null,
             primary:
-              getMaskedValue(item).approve === 0 &&
+              getMaskedValue(item).approve > 0 &&
               getMaskedValue(item).fc_complete_data !== null,
           }"
         ></div>
@@ -255,9 +250,12 @@
 
     <template v-slot:list-status="{ item }">
       <div
-        class="d-flex flex-row text-no-wrap justify-content-center"
+        class="d-flex flex-col text-no-wrap justify-content-center"
         style="align-items: center"
       >
+        <span v-if="item.approve == 2" class="badge bg-success mb-2">
+          Terverifikasi
+        </span>
         <div
           v-if="getProject(item) === 'carbon'"
           class="badge"
@@ -339,7 +337,7 @@
                 getMaskedValue(item).approve === 0 &&
                 getMaskedValue(item).fc_complete_data === null,
               'bg-primary':
-                getMaskedValue(item).approve === 0 &&
+                getMaskedValue(item).approve > 0 &&
                 getMaskedValue(item).fc_complete_data !== null,
               'bg-success': getMaskedValue(item).approve === 2,
             }"
@@ -353,7 +351,7 @@
             >
             <span
               v-else-if="
-                getMaskedValue(item).approve === 0 &&
+                getMaskedValue(item).approve > 0 &&
                 getMaskedValue(item).fc_complete_data !== null
               "
               >Data Lahan Terverifikasi</span
@@ -367,7 +365,7 @@
     </template>
 
     <template v-slot:list-before-create>
-      <lahan-export-modal :dataKey="exportModal" />
+      <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
     </template>
 
     <template v-slot:list-fc_complete_data="{ item }">
@@ -456,6 +454,7 @@ import "./lahan.scss";
 import LahanDetail from "./LahanDetail.vue";
 import LahanKmlUpload from "./LahanKmlUpload.vue";
 import LahanExportModal from "./LahanExportModal.vue";
+import config from "./lahanConfig.js";
 export default {
   name: "lahan-v2",
 
@@ -533,6 +532,12 @@ export default {
 
     onExportExcel() {
       this.exportModal += 1;
+      this.exportFormat = "excel";
+    },
+
+    onExportPdf() {
+      this.exportModal += 1;
+      this.exportFormat = "pdf";
     },
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
@@ -585,386 +590,11 @@ export default {
       uploadKmlModal: 2,
       componentKey: 1,
       exportModal: 0,
+      exportFormat: "",
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);
       },
-      config: {
-        title: "Lahan",
-        model_api: null,
-        export: true,
-        getter: "GetLahanAll_new",
-        delete: "DeleteDataLahan_new",
-        deleteKey: "lahan_no",
-        delete_ext_payload: {
-          delete_type: "hard_delete",
-        },
-
-        statistic: {
-          statistic_key: "count",
-          transform_key: {
-            total_data: {
-              label: "Total Lahan",
-              icon: "mdi-land-fields",
-              transform: "ts",
-            },
-            verified: {
-              label: "Lahan Terverifikasi",
-              icon: "mdi-check-circle",
-              color: "success",
-              transform: "ts",
-            },
-            unverified: {
-              label: "Lahan Belum Terverifikasi",
-              icon: "mdi-information",
-              color: "warning",
-              transform: "ts",
-            },
-          },
-        },
-        globalFilter: {
-          program_year: {
-            setter: "program_year",
-          },
-        },
-        pk_field: null,
-        permission: {
-          create: "farmer-create",
-          read: "farmer-list",
-          update: "farmer-update",
-          detail: "farmer-detail",
-          lookup: "farmer-lookup",
-          delete: "farmer-delete",
-        },
-        slave: [],
-        fields: [
-          {
-            id: "indicator",
-            label: " ",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-          {
-            id: "lahan_id",
-            label: "Lahan",
-            methods: {
-              list: {
-                sticky: true,
-                type: "row-slot",
-              },
-            },
-          },
-          {
-            id: "lahan_size",
-            label: "Luas Lahan",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-
-          {
-            id: "mu_id",
-            label: "Management Unit",
-            methods: {
-              filter: {
-                validation: ["required"],
-                type: "select",
-                col_size: 6,
-                getter: "GetManagementUnitAdmin",
-                setter: "mu_no",
-                main: true,
-                param: {
-                  page: 1,
-                  per_page: 10,
-                },
-                option: {
-                  getterKey: "data.result",
-                  list_pointer: {
-                    code: "mu_no",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
-            },
-          },
-          // {
-          //   id: "planting_area",
-          //   label: "Luas Area Tanam",
-          //   methods: {
-          //     list: {
-          //       type: "row-slot",
-          //     },
-          //   },
-          // },
-          {
-            id: "ff_id",
-            label: "Nama FF",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-          {
-            id: "farmer_id",
-            label: "Nama Petani",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-          // {
-          //   id: "farmer_nik",
-          //   label: "NIK Petani",
-          //   methods: {
-          //     list: true,
-          //   },
-          // },
-
-          {
-            id: "target_area",
-            label: "Target Area",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-              filter: {
-                type: "select",
-                getter: "GetTA_new",
-                setter: "area_code",
-                form_param: {
-                  mu_no: "mu_no",
-                },
-                param: {
-                  program_year: "current_program_year",
-                },
-                main: true,
-                option: {
-                  list_pointer: {
-                    code: "area_code",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
-            },
-          },
-          {
-            id: "village",
-            label: "Desa",
-            methods: {
-              list: {
-                view_data: "desas_name",
-              },
-            },
-          },
-          {
-            id: "program_year",
-            label: "Tahun Bergabung",
-            methods: {
-              list: {
-                header_class: "text-center",
-                type: "row-slot",
-              },
-            },
-          },
-          {
-            id: "planting_pattern",
-            label: "Pola Tanam",
-            methods: {
-              list: {
-                class: "min-w-150px",
-                view_data: "opsi_pola_tanam",
-              },
-            },
-          },
-          {
-            id: "cover",
-            label: "Tutupan",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-          {
-            id: "tree",
-            label: "Jenis Bibit",
-            methods: {
-              list: {
-                show: false,
-                type: "row-slot",
-              },
-            },
-          },
-          {
-            id: "total_wood",
-            label: "Kayu",
-            methods: {
-              list: {
-                type: "row-slot",
-                // view_data: "pohon_kayu",
-                transform: "ts",
-                class: "text-center d-block",
-              },
-            },
-          },
-          {
-            id: "total_mpts",
-            label: "MPTS",
-            methods: {
-              list: {
-                view_data: "pohon_mpts",
-                transform: "ts",
-                class: "text-center d-block",
-              },
-            },
-          },
-          {
-            id: "total",
-            label: "Kayu + MPTS",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-
-          {
-            id: "fc_complete_data",
-            label: "Kelengkapan Data",
-            methods: {
-              list: {
-                type: "row-slot",
-              },
-            },
-          },
-
-          {
-            id: "status",
-            label: "Status",
-            methods: {
-              list: {
-                header_class: "text-center",
-                type: "row-slot",
-              },
-              detail: false,
-              filter: {
-                type: "select",
-                main: true,
-                setter: "approve",
-                option: {
-                  default_options: [
-                    {
-                      name: "Semua Status",
-                      code: null,
-                    },
-                    {
-                      name: "Belum Terverifikasi",
-                      code: 0,
-                    },
-                    {
-                      name: "Diverifikasi FC",
-                      code: 1,
-                    },
-                    {
-                      name: "Terverifikasi",
-                      code: 2,
-                    },
-                  ],
-                  list_pointer: {
-                    code: "code",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
-            },
-          },
-
-          {
-            id: "updated_gis",
-            label: "Verifikasi GIS",
-            methods: {
-              filter: {
-                type: "select",
-                main: true,
-                setter: "updated_gis",
-                option: {
-                  default_options: [
-                    {
-                      name: "Semua Status",
-                      code: null,
-                    },
-                    {
-                      name: "Belum",
-                      code: "belum",
-                    },
-                    {
-                      name: "Sudah",
-                      code: "Sudah",
-                    },
-                  ],
-                  list_pointer: {
-                    code: "code",
-                    label: "name",
-                    display: ["name"],
-                  },
-                },
-              },
-            },
-          },
-          // {
-          //   id: "fc_complete_data",
-          //   label: "Kelengkapan Data",
-          //   methods: {
-          //     filter: {
-          //       type: "select",
-          //       main: true,
-          //       setter: "fc_complete_data",
-          //       option: {
-          //         default_options: [
-          //           {
-          //             name: "Semua ",
-          //             code: null,
-          //           },
-          //           {
-          //             name: "Lengkap",
-          //             code: 1,
-          //           },
-          //           {
-          //             name: "Belum Lengkap",
-          //             code: "0",
-          //           },
-          //         ],
-          //         list_pointer: {
-          //           code: "code",
-          //           label: "name",
-          //           display: ["name"],
-          //         },
-          //       },
-          //     },
-          //   },
-          // },
-          {
-            id: "created_at",
-            label: "Tgl. Dibuat",
-            methods: {
-              list: {
-                header_class: "text-center",
-                class: "text-no-wrap d-block text-center",
-                transform: "datetime",
-              },
-            },
-          },
-        ],
-      },
+      config: config,
     };
   },
 };

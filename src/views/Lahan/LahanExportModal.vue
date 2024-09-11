@@ -19,6 +19,9 @@
                       type: 'select',
                       validation: ['required'],
                       api: 'GetFFAllWeb_new',
+                      param: {
+                        limit: 20,
+                      },
                       option: {
                         list_pointer: {
                           label: 'name',
@@ -27,17 +30,36 @@
                         },
                       },
                     }"
+                    @selected="currentFfName = $event.name"
                   />
                 </v-col>
 
                 <v-col lg="12">
-                  <v-btn variant="success" type="submit">
+                  <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                    <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
+
+                    <v-progress-circular
+                      v-else
+                      :size="20"
+                      color="danger"
+                      indeterminate
+                    ></v-progress-circular>
+                    <span class="ml-1"> Export PDF</span>
+                  </v-btn>
+                </v-col>
+
+                <v-col lg="12">
+                  <v-btn
+                    variant="success"
+                    type="submit"
+                    v-if="format == 'excel'"
+                  >
                     <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
 
                     <v-progress-circular
                       v-else
                       :size="20"
-                      color="success"
+                      color="danger"
                       indeterminate
                     ></v-progress-circular>
                     <span class="ml-1"> Export Excel</span>
@@ -62,12 +84,16 @@ export default {
       ff_code: null,
       isOpen: false,
       loading: false,
+      currentFfName: "",
     };
   },
   props: {
     dataKey: {
       required: false,
       default: false,
+    },
+    format: {
+      required: true,
     },
   },
 
@@ -85,6 +111,11 @@ export default {
   },
 
   methods: {
+    test(data) {
+      console.log("data", data);
+    },
+    // export data
+
     async onSubmit() {
       if (this.loading) return;
 
@@ -119,12 +150,50 @@ export default {
         return;
       }
 
+      const trees = await this.$_api
+        .get("GetTreesAll")
+        .then((res) => {
+          return res.data.result.data;
+        })
+        .catch((err) => {
+          console.log("err", err);
+          return false;
+        });
+
+      // console.log("treee", trees);
+
+      if (!trees) {
+        this.loading = false;
+        return this.$_alert.error({}, "Gagal mengambil data pohon");
+      }
+
+      // this.loading = false;
+      // return;
+
+      const configUrl = {
+        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+        excel: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+      };
+
+      const configFilename = {
+        pdf: `Report-${this.currentFfName.replace(/ /g, "")}-${
+          this.ff_code
+        }-${moment().format("DMMYYYYHHmmss")}.pdf`,
+        excel: `Report-${this.currentFfName.replace(/ /g, "")}-${
+          this.ff_code
+        }-${moment().format("DMMYYYYHHmmss")}.xlsx`,
+      };
       const axiosConfig = {
         method: "POST",
-        url: `${this.$_config.baseUrlExport}export/farmer-land-polygon/excel`,
+        url: configUrl[this.format],
         responseType: "arraybuffer",
         data: {
           data: result.data,
+          trees: trees,
+        },
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${this.$store.state.token}`,
         },
       };
       const exported = await axios(axiosConfig)
@@ -144,9 +213,11 @@ export default {
       const url = URL.createObjectURL(new Blob([exported.data]));
       const link = document.createElement("a");
       link.href = url;
-      const filename = `report-pendataan-${moment().format(
-        "DMMYYYYHHmmss"
-      )}.xlsx`;
+      // const filename = `Report-${this.currentFfName.replace(/ /g, "")}-${
+      //   this.ff_code
+      // }-${moment().format("DMMYYYYHHmmss")}.xlsx`;
+
+      const filename = configFilename[this.format];
       link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();

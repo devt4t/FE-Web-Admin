@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="ready"
     class="filters d-flex"
     style="width: 100%; flex-wrap: wrap"
     :class="{
@@ -64,6 +65,7 @@ export default {
     return {
       filters: [],
       formData: {},
+      ready: false,
     };
   },
 
@@ -84,6 +86,11 @@ export default {
       required: false,
       default: false,
     },
+    data: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
 
   methods: {
@@ -98,10 +105,8 @@ export default {
 
         if (filter.param) {
           for (const param of Object.keys(filter.param)) {
-            // console.log(filter.param, param);
             if (!filter.param[param]) continue;
             if (filter.param[param] == "current_program_year") {
-              // console.log("test", filter.param, param);
               filter.param[param] = this.$store.state.tmpProgramYear;
             } else if (
               typeof filter.param[param] === "string" &&
@@ -115,9 +120,14 @@ export default {
             }
           }
         }
+
+        if (this.data[filter.setter]) {
+          this.$set(this.formData, filter.setter, this.data[filter.setter]);
+        }
       }
 
       this.filters = this.fields;
+      this.ready = true;
     },
     onFilter() {
       this.$emit("filter", this.formData);

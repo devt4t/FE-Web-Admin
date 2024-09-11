@@ -38,7 +38,8 @@
         v-if="
           item.status == 'document_saving' ||
           item.is_verify == 0 ||
-          item.project_data == 'No Project Found'
+          item.project_data == 'No Project Found' ||
+          true
         "
         class="geko-list-action-update"
         @click="
@@ -115,7 +116,6 @@
         <div
           class="indicator"
           :class="{
-            danger: item.project_data == 'No Project Found',
             warning:
               item.status == 'document_saving' &&
               item.is_verify == 0 &&
@@ -129,7 +129,11 @@
               item.project_data !== 'No Project Found',
             success:
               item.status == 'submit_review' &&
-              item.project_data !== 'No Project Found',
+              item.project_data !== 'No Project Found' &&
+              !['2022-05-05 00:00:00'].includes(item.created_at),
+            danger:
+              item.project_data == 'No Project Found' ||
+              ['2022-05-05 00:00:00'].includes(item.created_at),
           }"
         ></div>
       </div>
@@ -154,10 +158,15 @@
             'bg-success':
               item.status == 'submit_review' &&
               item.project_data != 'No Project Found',
-            'bg-danger': item.project_data == 'No Project Found',
+            'bg-danger':
+              item.project_data == 'No Project Found' ||
+              ['2022-05-05 00:00:00'].includes(item.created_at),
           }"
         >
-          <span v-if="item.project_data == 'No Project Found'"
+          <span v-if="['2022-05-05 00:00:00'].includes(item.created_at)"
+            >Data belum lengkap</span
+          >
+          <span v-else-if="item.project_data == 'No Project Found'"
             >Belum Assign Project</span
           >
           <span
@@ -238,6 +247,9 @@ export default {
       config: {
         title: "Scooping Visit",
         model_api: null,
+        filter_api: {
+          scooping_type: "new",
+        },
         getter: "GetNewScoopingAll",
         setter: "addProjectUtils",
         update: "updateProjectUtils",
@@ -297,6 +309,37 @@ export default {
               create: false,
               update: false,
               filter: false,
+            },
+          },
+
+          {
+            id: "management_unit_filter",
+            label: "Management Unit",
+            methods: {
+              list: false,
+              detail: false,
+              create: false,
+              update: false,
+              filter: {
+                validation: ["required"],
+                type: "select",
+                col_size: 6,
+                main: true,
+                getter: "GetManagementUnitAdmin",
+                setter: "mu_no",
+                param: {
+                  page: 1,
+                  per_page: 10,
+                },
+                option: {
+                  getterKey: "data.result",
+                  list_pointer: {
+                    code: "mu_no",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {
@@ -439,6 +482,19 @@ export default {
               update: false,
             },
           },
+
+          {
+            id: "program_year",
+            label: "Tahun Program",
+            methods: {
+              list: {
+                class: "badge bg-primary",
+              },
+              detail: false,
+              create: false,
+              update: false,
+            },
+          },
           {
             id: "status",
             label: "Status",
@@ -457,7 +513,36 @@ export default {
               detail: true,
               create: false,
               update: false,
-              filter: false,
+              filter: {
+                type: "select",
+                setter: "status",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Status",
+                      code: null,
+                    },
+                    {
+                      name: "Belum Terverifikasi",
+                      code: "document_saving",
+                    },
+                    {
+                      name: "Terverifikasi GIS",
+                      code: "ready_to_submit",
+                    },
+                    {
+                      name: "Terverifikasi",
+                      code: "submit_review",
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
           {
@@ -478,6 +563,38 @@ export default {
               create: false,
               update: false,
               filter: false,
+            },
+          },
+
+          {
+            id: "scooping_type",
+            label: "Desa Scooping",
+            methods: {
+              detail: false,
+              create: false,
+              update: false,
+              filter: {
+                type: "select",
+                setter: "scooping_type",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Desa",
+                      code: "",
+                    },
+                    {
+                      name: "Desa Baru",
+                      code: "new",
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
             },
           },
         ],

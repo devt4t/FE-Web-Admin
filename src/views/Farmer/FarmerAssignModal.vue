@@ -11,7 +11,11 @@
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
               <v-row>
                 <v-col lg="12">
-                  <v-btn variant="success" @click="addRow">
+                  <v-btn
+                    variant="success"
+                    @click="addRow"
+                    v-if="$_sys.isAllowed('farmer-update')"
+                  >
                     <v-icon>mdi-plus</v-icon>
                     <span>Tambah Tahun Program</span>
                   </v-btn>
@@ -88,10 +92,20 @@
                         justify-content: center;
                         transform: translateY(10%);
                       "
-                      @click="onDelete(f, i)"
-                      :disabled="loading"
                     >
-                      <v-btn variant="danger">
+                      <v-btn
+                        v-if="
+                          $_sys.isAllowed('farmer-unassign-it-create') ||
+                          (!$_sys.isAllowed('farmer-unassign-it-create') &&
+                            !f.id)
+                        "
+                        variant="danger"
+                        :disabled="
+                          loading ||
+                          (f.program_year == '2024' && farmers.length == 1)
+                        "
+                        @click="onDelete(f, i)"
+                      >
                         <v-icon>mdi-delete-empty</v-icon>
                       </v-btn>
                     </v-col>
@@ -268,11 +282,13 @@ export default {
       });
     },
     onDelete(item, i) {
+      if (item.program_year == 2024 && this.farmers.length == 1) return;
       if (this.loading) return;
       this.loading = true;
 
       if (!this.farmers[i].id) {
         this.farmers.splice(i, 1);
+        this.loading = false;
         return;
       }
       this.$_alert

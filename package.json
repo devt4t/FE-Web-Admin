@@ -7,7 +7,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "upload": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/OldWeb",
-    "upload-dev": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/dev/OldWeb/"
+    "upload-dev": "scp dist.zip sysadmin@168.63.242.116:/var/www/GEKO/dev/OldWeb/",
+    "upload-staging": "scp dist.zip sysadmin@172.188.34.49:/var/www/geko-staging",
+    "build:staging": "rm ./src/utils/config.js; cp ./src/utils/config.staging.js ./src/utils/config.js; vue-cli-service build"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

@@ -196,7 +196,7 @@
                           :format="_utils.numberFormat"
                           :from="0"
                           :to="totalData[`data${n}`].Count"
-                          :duration="5"
+                          :duration="1"
                           :delay="0"
                           easing="Power2.easeInOut"
                         />
@@ -267,7 +267,7 @@
                           :format="_utils.numberFormat"
                           :from="0"
                           :to="totalData_petani_lahan[`data${n}`].Count"
-                          :duration="5"
+                          :duration="1"
                           :delay="0"
                           easing="Power2.easeInOut"
                         />
@@ -280,8 +280,8 @@
                           :format="_utils.numberFormat"
                           :from="0"
                           :to="totalData_petani_lahan[`data${n}`].subCount"
-                          :duration="5"
-                          :delay="5"
+                          :duration="1"
+                          :delay="1"
                           easing="Power2.easeInOut"
                         />
                         <v-progress-circular

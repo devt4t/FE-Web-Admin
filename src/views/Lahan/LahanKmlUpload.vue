@@ -466,10 +466,10 @@ export default {
         console.log("lahan", lahan);
 
         if (!lahan.id) continue;
-        // const isValid =
-        //   lahan.fc_complete_data == 1 &&
-        //   ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
-        const isValid = lahan.fc_complete_data == 1;
+        const isValid =
+          lahan.fc_complete_data == 1 &&
+          ["belum", "Belum", null, "", "-"].includes(lahan.updated_gis);
+        // const isValid = lahan.fc_complete_data == 1;
         if (!isValid) continue;
         let tutupanPercentage =
           parseFloat(lahan.tutupan_lain_bangunan_percentage || 0) +
@@ -517,18 +517,18 @@ export default {
         }
         verifSuccess.push(lahan.lahan_no);
 
-        // for (let i = 0; i < this.questions.length; i++) {
-        //   const dataItem = this.questions[i];
-        //   const payloadTermAnswer = {
-        //     lahan_no: lahan.lahan_no,
-        //     term_id: dataItem.id,
-        //     term_answer: lahan[`question${i + 1}`],
-        //     program_year: this.$_config.programYear.model,
-        //   };
-        //   await this.$_api.post("addLahanTermAnswer_new", payloadTermAnswer);
+        for (let i = 0; i < this.questions.length; i++) {
+          const dataItem = this.questions[i];
+          const payloadTermAnswer = {
+            lahan_no: lahan.lahan_no,
+            term_id: dataItem.id,
+            term_answer: lahan[`question${i + 1}`],
+            program_year: this.$_config.programYear.model,
+          };
+          await this.$_api.post("addLahanTermAnswer_new", payloadTermAnswer);
 
-        //   console.log("payload term answer", payloadTermAnswer);
-        // }
+          console.log("payload term answer", payloadTermAnswer);
+        }
       }
 
       this.loading = false;
@@ -544,12 +544,14 @@ export default {
       let alertMessage = `<p>Data lahan berhasil diverifikasi : ${
         verifSuccess.length === 0
           ? "<strong>Tidak Ada</strong>"
-          : `<strong>${verifSuccess.length}<strong><br />${verifSuccess.join(
+          : `<strong>${verifSuccess.length}</strong><br />${verifSuccess.join(
               ", "
             )}</strong><br /></p>Data lahan gagal diverifikasi : ${
               verifFailed.length === 0
                 ? "<strong>Tidak Ada</strong>"
-                : `<strong>${verifFailed.join(", ")}</strong>`
+                : `<strong>${verifFailed.length}<br />${verifFailed.join(
+                    ", "
+                  )}</strong>`
             }</p>`
       }</p>`;
       this.$_alert.success(

@@ -181,7 +181,6 @@
                   },
                 },
               }"
-              :disabled="formData.province_code == 'JB'"
             />
           </v-col>
 

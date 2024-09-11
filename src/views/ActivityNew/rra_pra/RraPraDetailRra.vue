@@ -1,5 +1,10 @@
 <template>
   <div class="rra-detail" v-if="data && Array.isArray(configs)">
+    <rra-pra-detail-dusun-modal
+      v-if="activeMenu == 7"
+      :data="detailDusunData"
+      @close="detailDusunData = null"
+    />
     <!-- ADD PRA -->
     <div v-if="activeTab == 1 && !data.mainPra">
       <v-btn
@@ -60,6 +65,7 @@
               ]
             : null
         "
+        @detailDusun="detailDusunData = $event"
       />
     </div>
   </div>
@@ -68,11 +74,13 @@
 <script>
 import RraPraDetailTable from "./RraPraDetailTable.vue";
 import RraPraDetailCard from "./RraPraDetailCard.vue";
+import RraPraDetailDusunModal from "./RraPraDetailDusunModal.vue";
 export default {
   name: "rra-pra-detail-rra",
   components: {
     RraPraDetailTable,
     RraPraDetailCard,
+    RraPraDetailDusunModal,
   },
   props: {
     data: {
@@ -147,6 +155,7 @@ export default {
     return {
       village_borders: [],
       configs: null,
+      detailDusunData: null,
       mainConfig: [
         [
           {
@@ -366,10 +375,10 @@ export default {
                 },
                 header_class: "text-center",
               },
-              {
-                getter: "custom_dusun",
-                label: "Action",
-              },
+              // {
+              //   getter: "custom_dusun",
+              //   label: "Action",
+              // },
             ],
           },
         ],
