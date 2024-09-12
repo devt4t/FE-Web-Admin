@@ -108,7 +108,7 @@
                 >
                 <v-btn
                   v-if="
-                    !openGisEdit &&
+                    !openUm &&
                     $_sys.isAllowed('lahan-um-verification-create') &&
                     data.main_lahan &&
                     data.main_lahan.updated_gis.toLowerCase() === 'sudah' &&
@@ -117,7 +117,7 @@
                   variant="success"
                   class="mr-1 mb-2"
                   @click="
-                    openGisEdit = true;
+                    openUm = true;
                     verifRole = 'um';
                   "
                   >Verifikasi UM</v-btn
@@ -287,6 +287,26 @@
             "
             @close="
               openFc = false;
+              verifRole = null;
+            "
+          />
+
+          <lahan-verification-um
+            v-if="
+              data.main_lahan &&
+              $_sys.isAllowed('lahan-um-verification-create') &&
+              openUm
+            "
+            :data="data.main_lahan"
+            :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            @success="
+              componentKey += 1;
+              openUm = false;
+              getData();
+            "
+            @close="
+              openUm = false;
               verifRole = null;
             "
           />
@@ -1148,6 +1168,7 @@ import LahanGisVerification from "./LahanGisVerification.vue";
 import LahanVerificationGis from "./components/LahanVerificationGis.vue";
 import LahanVerificationFcCompleteData from "./components/LahanVerificationFcCompleteData.vue";
 import LahanVerificationFc from "./components/LahanVerificationFc.vue";
+import LahanVerificationUm from "./components/LahanVerificationUm.vue";
 import moment from "moment";
 export default {
   name: "land-detail",
@@ -1157,6 +1178,7 @@ export default {
     LahanVerificationGis,
     LahanVerificationFcCompleteData,
     LahanVerificationFc,
+    LahanVerificationUm,
   },
   methods: {
     getProject(lahanDetail) {
@@ -1167,18 +1189,24 @@ export default {
       }
     },
     toggleVerificationFc() {
-      if (data.main_lahan.fc_complete_data === null) {
+      if (this.data.main_lahan.fc_complete_data === null) {
         this.openFcCompleteData = !this.openFcCompleteData;
       } else {
         this.openFc = !this.openFc;
       }
 
+      this.verifRole =
+        this.data.main_lahan.fc_complete_data == null &&
+        this.data.main_lahan.updated_gis.toLowerCase() == "belum"
+          ? "fc-verif-data"
+          : "fc";
+      console.log(
+        this.data.main_lahan.fc_complete_data,
+        this.data.main_lahan.updated_gis
+      );
+
       if (!this.openFc && !this.openFcCompleteData) {
-        this.verifRole =
-          data.main_lahan.fc_complete_data == null &&
-          data.main_lahan.updated_gis.toLowerCase() == "belum"
-            ? "fc-verif-data"
-            : "fc";
+        console.log(this.verifRole);
       }
     },
     //refactored
@@ -1681,6 +1709,7 @@ export default {
       mapOpen: true,
       openGisEdit: false,
       openFcCompleteData: false,
+      openUm: false,
       openFc: false,
       polygonGisArea: 0,
       componentKey: 0,
