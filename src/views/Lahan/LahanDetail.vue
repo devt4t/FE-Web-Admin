@@ -1,6 +1,7 @@
 <template>
   <v-row class="lahan-detail" :key="'lahan-detail' + componentKey">
     <v-col md="4" xl="3">
+      <lahan-mou-print :lahanData="data.main_lahan" :modalKey="printModal" />
       <v-card
         data-aos="fade-up"
         data-aos-delay="100"
@@ -122,6 +123,15 @@
                   "
                   >Verifikasi UM</v-btn
                 >
+
+                <v-btn
+                  variant="primary"
+                  class="mr-1 mb-2 d-flex flex-row align-items-center"
+                  @click="printModal += 1"
+                >
+                  <v-icon>mdi-printer-outline</v-icon>
+                  <span class="ml-1">Print MOU</span>
+                </v-btn>
               </div>
 
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
@@ -1169,6 +1179,7 @@ import LahanVerificationGis from "./components/LahanVerificationGis.vue";
 import LahanVerificationFcCompleteData from "./components/LahanVerificationFcCompleteData.vue";
 import LahanVerificationFc from "./components/LahanVerificationFc.vue";
 import LahanVerificationUm from "./components/LahanVerificationUm.vue";
+import LahanMouPrint from "./components/LahanMouPrint.vue";
 import moment from "moment";
 export default {
   name: "land-detail",
@@ -1179,6 +1190,8 @@ export default {
     LahanVerificationFcCompleteData,
     LahanVerificationFc,
     LahanVerificationUm,
+
+    LahanMouPrint,
   },
   methods: {
     getProject(lahanDetail) {
@@ -1713,6 +1726,7 @@ export default {
       openFc: false,
       polygonGisArea: 0,
       componentKey: 0,
+      printModal: 0,
       markers: [],
       verifRole: null,
       legends: [
