@@ -141,6 +141,8 @@
                   <v-icon>mdi-printer-outline</v-icon>
                   <span class="ml-1">Print MOU</span>
                 </v-btn>
+
+                <v-btn variant="primary" @click="test">Test</v-btn>
               </div>
 
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
@@ -844,7 +846,11 @@
           </div>
         </div>
         <div class="polygon-wrapper">
-          <div class="map-wrapper" style="height: 400px; width: 100%">
+          <div
+            class="map-wrapper"
+            id="map-wrapper"
+            style="height: 400px; width: 100%"
+          >
             <div class="map-legends">
               <div
                 class="map-legend-item"
@@ -1190,6 +1196,8 @@ import LahanVerificationFc from "./components/LahanVerificationFc.vue";
 import LahanVerificationUm from "./components/LahanVerificationUm.vue";
 import LahanMouPrint from "./components/LahanMouPrint.vue";
 import moment from "moment";
+import html2canvas from "html2canvas";
+
 export default {
   name: "land-detail",
   components: {
@@ -1203,6 +1211,23 @@ export default {
     LahanMouPrint,
   },
   methods: {
+    test() {
+      const captureElement = document.querySelector(".map-wrapper"); // Select the element you want to capture. Select the <body> element to capture full page.
+      html2canvas(captureElement, { useCORS: true })
+        .then((canvas) => {
+          canvas.style.display = "none";
+          document.body.appendChild(canvas);
+          return canvas;
+        })
+        .then((canvas) => {
+          const image = canvas.toDataURL("image/png");
+          const a = document.createElement("a");
+          a.setAttribute("download", "my-image.png");
+          a.setAttribute("href", image);
+          a.click();
+          canvas.remove();
+        });
+    },
     getProject(lahanDetail) {
       try {
         return lahanDetail[0].project_planting_purposes_code;
@@ -1222,10 +1247,6 @@ export default {
         this.data.main_lahan.updated_gis.toLowerCase() == "belum"
           ? "fc-verif-data"
           : "fc";
-      console.log(
-        this.data.main_lahan.fc_complete_data,
-        this.data.main_lahan.updated_gis
-      );
 
       if (!this.openFc && !this.openFcCompleteData) {
         console.log(this.verifRole);
