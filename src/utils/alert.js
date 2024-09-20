@@ -56,6 +56,30 @@ const _alert = {
       cancelButtonText: disagree || "Batalkan",
     });
   },
+  confirmWithDeny(
+    title = null, 
+    text = null, 
+    agree = null, 
+    disagree = null, 
+    agreeColor = null, 
+    denyColor = null
+  ) {
+    return Swal.fire({
+      title: title,
+      text: text,
+      icon: "warning",
+      showDenyButton: true,
+      showCancelButton: true,
+      allowOutsideClick: false,
+      showCloseButton: true,
+      confirmButtonColor: agreeColor || "#6e9a34",
+      cancelButtonColor: "#d4d4d4",
+      denyButtonColor: denyColor || "#f44336",
+      confirmButtonText: agree || "Ya, Lanjutkan",
+      denyButtonText: disagree || "Batalkan",
+      cancelButtonText: 'Kembali'
+    });
+  },
   loading(title, text) {
     Swal.fire({
       title: title,
@@ -71,6 +95,9 @@ const _alert = {
       },
     });
   },
+  custom(config = {}) {
+    return Swal.fire(config)
+  }
 };
 
 export default _alert;

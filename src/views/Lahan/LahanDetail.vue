@@ -750,8 +750,8 @@
             </div>
           </div>
         </div>
-      </v-card></v-col
-    >
+      </v-card>
+    </v-col>
 
     <v-col lg="8">
       <v-card
@@ -1456,6 +1456,7 @@ export default {
       });
 
       this.data = result;
+      console.log('detailData res', result)
       let _trees = [];
       for (const tree of result.lahan_detail) {
         const idx = _trees.findIndex(
