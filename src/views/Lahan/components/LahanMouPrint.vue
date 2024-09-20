@@ -10,8 +10,14 @@
             class="d-flex flex-row align-items-center"
             @click="onPrint"
           >
-            <v-icon>mdi-printer-outline</v-icon>
-            <span>Print MOU</span>
+            <v-progress-circular
+              v-if="loading"
+              indeterminate
+              :size="20"
+              color="primary"
+            ></v-progress-circular>
+            <v-icon v-else>mdi-printer-outline</v-icon>
+            <span class="ml-1">Print MOU</span>
           </v-btn>
         </v-card-title>
 
@@ -87,6 +93,10 @@ export default {
       default: 0,
       required: true,
     },
+    mouData: {
+      default: null,
+      required: false,
+    },
   },
 
   methods: {
@@ -94,9 +104,32 @@ export default {
       this.loading = true;
       this.$refs.html2Pdf.generatePdf();
     },
-    onDownloadComplete() {
+    async onDownloadComplete() {
+      console.log("DOWNLOAD COMPLETE");
+
       this.loading = false;
       this.$_alert.success("Mou berhasil diunduh");
+
+      let mouData = this.mouData;
+      console.log("farmer data", this.lahanData);
+
+      let payload = {
+        farmer_no: this.lahanData.farmer_no,
+        program_year: this.$_config.programYear.model,
+        lahan_no: this.lahanData.lahan_no,
+        mou_no: this.lahanData.mou_no,
+      };
+      console.log("payload", payload);
+
+      if (!mouData) {
+        const insertingFarmerMou = await this.$_api
+          .post("createFarmerLahanMOU_new", payload)
+          .then((res) => {
+            console.log("res", res);
+
+            // return res
+          });
+      }
 
       return;
       this.$_api.post("UpdateLandMOUStatus_new", {
@@ -139,8 +172,6 @@ export default {
         farmer_ktp_photo: `${this.$_config.baseUrlExport}${this.lahanData.farmers_ktp_document_pivot_farmer}`,
         farmer_photo: `${this.$_config.baseUrlExport}${this.lahanData.farmers_ktp_document_pivot_farmer}`,
       };
-
-      console.log("data", this.data);
     },
     async beforeDownload({ html2pdf, options, pdfContent }) {
       console.log("options", options);
@@ -155,6 +186,7 @@ export default {
     return {
       isOpen: false,
       data: {},
+      loading: false,
     };
   },
 

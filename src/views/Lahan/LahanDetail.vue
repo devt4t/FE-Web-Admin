@@ -1,7 +1,16 @@
 <template>
   <v-row class="lahan-detail" :key="'lahan-detail' + componentKey">
     <v-col md="4" xl="3">
-      <lahan-mou-print :lahanData="data.main_lahan" :modalKey="printModal" />
+      <lahan-mou-print
+        :mouData="
+          Array.isArray(data.farmer_lahan_mou) &&
+          data.farmer_lahan_mou.length > 0
+            ? data.farmer_lahan_mou[0]
+            : null
+        "
+        :lahanData="data.main_lahan"
+        :modalKey="printModal"
+      />
       <v-card
         data-aos="fade-up"
         data-aos-delay="100"
@@ -1963,6 +1972,7 @@ export default {
         lahan_project: [],
         lahan_tutupan: [],
         lahan_tutupan_request: [],
+        farmer_lahan_mou: [],
       },
     };
   },
