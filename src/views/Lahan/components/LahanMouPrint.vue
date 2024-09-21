@@ -9,7 +9,7 @@
             <div class="d-flex" v-if="!openFormUpload">
               <!-- btn print -->
               <v-btn
-                v-if="mouData && mouData.printed_status == 3"
+                v-if="mouData && mouData.mou_status == 3"
                 large
                 variant="primary"
                 class="d-flex flex-row align-items-center"
