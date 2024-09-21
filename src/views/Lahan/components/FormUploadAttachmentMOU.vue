@@ -54,7 +54,14 @@ export default {
   methods: {
     onSubmit: async function () {
       try {
-        
+        // set payload
+        const payload = {}
+        for (const [field, data] in this.formData) {
+          if (this.formInputs.find(v => v.field == field).show) {
+            payload[field] = data
+          }
+        }
+        console.log('payload',payload)
       } catch (err) {
         console.log('onSubmit() err',err)
         this.$_alert.error(err)
