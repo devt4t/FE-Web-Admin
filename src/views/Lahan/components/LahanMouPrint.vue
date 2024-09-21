@@ -1,104 +1,178 @@
 <template>
-  <v-dialog v-model="isOpen" width="70%">
-    <template>
-      <v-card style="height: 90vh; overflow: auto">
-        <v-card-title class="d-flex flex-row justify-content-between mb-5">
-          <h4 class="mb-0 pb-0">Print MOU</h4>
-          <div class="d-flex">
-            <!-- btn print -->
-            <v-btn
-              large
-              variant="primary"
-              class="d-flex flex-row align-items-center"
-              @click="onPrint"
+  <div>
+    <!-- main dialog -->
+    <v-dialog v-model="isOpen" width="70%">
+      <template>
+        <v-card style="height: 90vh; overflow: auto">
+          <v-card-title class="d-flex flex-row justify-content-between mb-5">
+            <h4 class="mb-0 pb-0">Preview MOU</h4>
+            <div class="d-flex" v-if="!openFormUpload">
+              <!-- btn print -->
+              <v-btn
+                v-if="mouData && mouData.printed_status == 3"
+                large
+                variant="primary"
+                class="d-flex flex-row align-items-center"
+                @click="onPrint"
+              >
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="20"
+                  color="primary"
+                ></v-progress-circular>
+                <v-icon v-else>mdi-printer-outline</v-icon>
+                <span class="ml-1">Print {{ mouData && mouData.printed_status ? 'Ulang' : '' }} MOU</span>
+              </v-btn>
+              <!-- btn verifikasi -->
+              <v-btn
+                v-if="mouData && mouData.mou_status != 3"
+                large
+                variant="success"
+                class="d-flex flex-row align-items-center ml-2"
+                @click="onBtnClick('verif')"
+              >
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="20"
+                  color="success"
+                ></v-progress-circular>
+                <v-icon v-else>mdi-checkbox-outline</v-icon>
+                <span class="ml-1">Verifikasi MOU</span>
+              </v-btn>
+              <!-- btn upload berkas -->
+              <v-btn
+                large
+                variant="warning"
+                class="d-flex flex-row align-items-center ml-2"
+                @click="onBtnClick('open-upload-attachment')"
+              >
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="20"
+                  color="success"
+                ></v-progress-circular>
+                <v-icon v-else>mdi-file-alert-outline</v-icon>
+                <span class="ml-1">Upload Berkas</span>
+              </v-btn>
+            </div>
+          </v-card-title>
+          <v-card-text>
+            <!-- revision desc -->
+            <v-alert
+              v-if="mouData && mouData.mou_status == 2"
+              dense
+              text
+              icon="mdi-alert-circle-outline"
+              type="warning"
             >
-              <v-progress-circular
-                v-if="loading"
-                indeterminate
-                :size="20"
-                color="primary"
-              ></v-progress-circular>
-              <v-icon v-else>mdi-printer-outline</v-icon>
-              <span class="ml-1">Print {{ mouData && mouData.printed_status ? 'Ulang' : '' }} MOU</span>
-            </v-btn>
-            <!-- btn verifikasi -->
-            <v-btn
-							v-if="mouData && mouData.printed_status"
-              large
-              variant="success"
-              class="d-flex flex-row align-items-center ml-2"
-              @click="onBtnClick('verif')"
+              Revisi: {{ mouData.mou_revision_reason }}
+            </v-alert>
+            <!-- FormUploadAttachmentMOU -->
+            <FormUploadAttachmentMOU 
+              v-if="openFormUpload"
+              @close="openFormUpload = false"
+              @closeParent="isOpen = false"
+              @refreshData="refreshDetailLahan()"
+            />
+            <div
+              class="preview-wrapper"
+              v-else-if="typeof data === 'object' && Object.keys(data).length > 0"
             >
-              <v-progress-circular
-                v-if="loading"
-                indeterminate
-                :size="20"
-                color="success"
-              ></v-progress-circular>
-              <v-icon v-else>mdi-checkbox-outline</v-icon>
-              <span class="ml-1">Verifikasi MOU</span>
-            </v-btn>
-          </div>
+              <vue-html2pdf
+                :show-layout="true"
+                :float-layout="false"
+                :enable-download="true"
+                :preview-modal="true"
+                :filename="`MOU-${data.farmer_name}-${data.mou_start}-${data.mou_end}`"
+                :pdf-quality="1"
+                :manual-pagination="true"
+                pdf-format="a4"
+                pdf-orientation="portrait"
+                pdf-content-width="794px"
+                :pdf-content-height="1123"
+                ref="html2Pdf"
+                :html-to-pdf-options="{
+                  margin: 0,
+                  pagebreak: {
+                    mode: ['css', 'legacy'],
+                    after: '.html2pdf__page-break',
+                  },
+                  html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                  },
+                  jsPDF: {
+                    format: 'a4',
+                    unit: 'mm',
+                    orientation: 'p',
+                  },
+                }"
+                @beforeDownload="beforeDownload($event)"
+                @hasDownloaded="onDownloadComplete()"
+              >
+                <section slot="pdf-content">
+                  <mou-html :data="data" />
+                </section>
+              </vue-html2pdf>
+            </div>
+          </v-card-text>
+        </v-card>
+      </template>
+    </v-dialog>
+    <!-- revision dialog -->
+    <v-dialog v-model="dialogs.revision.isOpen" width="500">
+      <v-card>
+        <v-card-title>
+          <h4 class="mb-0 pb-0">Confirm Revision</h4>
         </v-card-title>
-
         <v-card-text>
-          <div
-            class="preview-wrapper"
-            v-if="typeof data === 'object' && Object.keys(data).length > 0"
+          <ValidationObserver
+            ref="revisionForm"
+            v-slot="{ handleSubmit }"
           >
-            <vue-html2pdf
-              :show-layout="true"
-              :float-layout="false"
-              :enable-download="true"
-              :preview-modal="true"
-              :filename="`MOU-${data.farmer_name}-${data.mou_start}-${data.mou_end}`"
-              :pdf-quality="1"
-              :manual-pagination="true"
-              pdf-format="a4"
-              pdf-orientation="portrait"
-              pdf-content-width="794px"
-              :pdf-content-height="1123"
-              ref="html2Pdf"
-              :html-to-pdf-options="{
-                margin: 0,
-                pagebreak: {
-                  mode: ['css', 'legacy'],
-                  after: '.html2pdf__page-break',
-                },
-                html2canvas: {
-                  scale: 3,
-                  useCORS: true,
-                },
-                jsPDF: {
-                  format: 'a4',
-                  unit: 'mm',
-                  orientation: 'p',
-                },
-              }"
-              @beforeDownload="beforeDownload($event)"
-              @hasDownloaded="onDownloadComplete()"
-            >
-              <section slot="pdf-content">
-                <mou-html :data="data" />
-              </section>
-            </vue-html2pdf>
-          </div>
+            <form @submit.prevent="handleSubmit(onSubmitRevisi)" autocomplete="off">
+              <geko-input
+                v-model="dialogs.revision.data.mou_revision_reason"
+                class="mb-5"
+                :item="{
+                  label: 'Deskripsi Revisi',
+                  validation: ['required'],
+                  type: 'textarea',
+                }"
+              />
+              <v-btn type="submit" variant="success" :disabled="loading">
+                <v-progress-circular
+                  v-if="loading"
+                  indeterminate
+                  :size="20"
+                  color="success"
+                ></v-progress-circular>
+                <v-icon v-else>mdi-content-save</v-icon>
+                Submit Revisi
+              </v-btn>
+            </form>
+          </ValidationObserver>
         </v-card-text>
       </v-card>
-    </template>
-  </v-dialog>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
 import VueHtml2pdf from "vue-html2pdf";
 import MouHtml from "./MouHtml.vue";
 import moment from "moment";
+import FormUploadAttachmentMOU from "./FormUploadAttachmentMOU.vue";
 export default {
   name: "LahanMouPrint",
 
   components: {
     VueHtml2pdf,
     MouHtml,
+    FormUploadAttachmentMOU
   },
   props: {
     lahanData: {
@@ -124,34 +198,33 @@ export default {
       this.loading = true;
       this.$refs.html2Pdf.generatePdf();
     },
-    onBtnClick: async function () {
-			// confirm 
-			const confirm = await this.$_alert.confirmWithDeny('Konfirmasi', 'Apakah anda yakin untuk verifikasi data ini?','Verifikasi','Revisi')
-
-			// if verified
-			if (confirm.isConfimed) {
-				// update print status
-				await this.updateFarmerMOU()
-			} 
-			// if revisi
-			else if (confirm.isDenied) {
-          const { value: reason } = await this.$_alert.custom({
-            title: 'Konfirmasi Revisi',
-            input: 'textarea',
-            inputLabel: 'Deskripsi revisi',
-            inputPlaceholder: 'Ketik disini ...',
-						showCancelButton: true,
-            inputAttributes: {
-              required: true
-            },
-            validationMessage: 'Silakan tulis alasan anda terlebih dahulu!'
-          })
-          if (!reason) return;
-					// update print status
-					await this.updateFarmerMOU({
-						mou_revision_reason: reason
-					})
-			}
+    onBtnClick: async function (type) {
+      console.log('this.lahanData',this.lahanData)
+      if (type == 'verif') {
+        // confirm 
+        const confirm = await this.$_alert.confirmWithDeny(
+          'Konfirmasi', 
+          'Apakah anda yakin untuk verifikasi data ini?',
+          'Verifikasi',
+          'Reject'
+        )
+        // if verified
+        if (confirm.isConfirmed) {
+          // update print status
+          this.loading = true
+          await this.updateFarmerMOUPrint()
+          this.isOpen = false
+          this.loading = false
+        } 
+        // if revisi
+        else if (confirm.isDenied) {
+          console.log('confirm.isDenied',confirm.isDenied)
+          this.dialogs.revision.isOpen = true
+        }
+      } 
+      else if (type == 'open-upload-attachment') {
+        this.openFormUpload = true
+      }
     },
     async onDownloadComplete() {
       try {
@@ -163,9 +236,6 @@ export default {
         let mouData = this.mouData;
         console.log("mouData", this.mouData);
         console.log("farmer data", this.lahanData);
-
-        // update print status
-				await this.updateFarmerMOU()
 
         return;
       } catch (err) {
@@ -206,13 +276,28 @@ export default {
         farmer_ktp_photo: `${this.$_config.baseUrlExport}${this.lahanData.farmers_ktp_document_pivot_farmer}`,
         farmer_photo: `${this.$_config.baseUrlExport}${this.lahanData.farmers_ktp_document_pivot_farmer}`,
       };
+
+      // default closed form
+      this.openFormUpload = false
+    },
+    onSubmitRevisi: async function () {
+      if (!this.dialogs.revision.data.mou_revision_reason) return;
+      this.loading = true
+      // update print status
+      await this.updateFarmerMOUPrint({
+        mou_reject_reason: this.dialogs.revision.data.mou_revision_reason
+      })
+      this.dialogs.revision.isOpen = false
+      this.dialogs.revision.data.mou_revision_reason = null
+      this.isOpen = false
+      this.loading = false
     },
     async beforeDownload({ html2pdf, options, pdfContent }) {
       console.log("options", options);
 
       // await html2pdf().set(options).from(pdfContent).toPdf().get("pdf").save();
     },
-		updateFarmerMOU: async function (param = {}) {
+		updateFarmerMOUPrint: async function (param = {}) {
 			try {
 				let payload = {
 					farmer_no: this.lahanData.farmer_no,
@@ -224,20 +309,21 @@ export default {
 				console.log("payload", payload);
 
 				// update print status
-				const res = await this.$_api
+				const {result: res} = await this.$_api
 					.post("farmer-mou/print", payload)
+          console.log('res',res)
 
 				// update local data
-				this.$parent.mouData = {
-					...this.mouData,
-					...res.data
-				}
+        this.refreshDetailLahan()
 					
 				return res
 			} catch (err) {
-				console.log('updateFarmerMOU() error', err);
+				console.log('updateFarmerMOUPrint() error', err);
 			}
-		}
+		},
+    refreshDetailLahan() {
+      this.$parent.getData()
+    }
   },
 
   mounted() {},
@@ -246,7 +332,14 @@ export default {
     return {
       isOpen: false,
       data: {},
+      dialogs: {
+        revision: {
+          isOpen: false,
+          data: {}
+        }
+      },
       loading: false,
+      openFormUpload: false
     };
   },
 

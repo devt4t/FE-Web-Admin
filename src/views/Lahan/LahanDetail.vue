@@ -5,7 +5,8 @@
         :mouData="
           Array.isArray(data.farmer_lahan_mou) &&
           data.farmer_lahan_mou.length > 0
-            ? data.farmer_lahan_mou[0]
+            ? data.farmer_lahan_mou
+              .find(v => v.mou_no == data.main_lahan.farmers_mou_no_pivot_farmer)
             : null
         "
         :lahanData="data.main_lahan"
@@ -138,11 +139,12 @@
                   class="mr-1 mb-2 d-flex flex-row align-items-center"
                   @click="printModal += 1"
                 >
-                  <v-icon>mdi-printer-outline</v-icon>
-                  <span class="ml-1">Print MOU</span>
+                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase() == 'preview'">mdi-file-document-outline</v-icon>
+                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase() == 'revisi'">mdi-file-document-edit-outline</v-icon>
+                  <v-icon v-else>mdi-printer-outline</v-icon>
+                  <span class="ml-1">{{ btnLabelLegalitasMOU }} MOU</span>
                 </v-btn>
               </div>
-
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
               <div
                 class="lahan-side-item d-flex flex-col"
@@ -1714,6 +1716,26 @@ export default {
         });
       }, 1000);
     },
+  },
+
+  computed: {
+    btnLabelLegalitasMOU() {
+      let label = 'Print'
+      if (Array.isArray(this.data.farmer_lahan_mou) &&
+        this.data.farmer_lahan_mou.length > 0
+      ) {
+        const find = this.data.farmer_lahan_mou
+          .find(v => v.mou_no == this.data.main_lahan.farmers_mou_no_pivot_farmer)
+        if (find) {
+          if (!find.mou_status) label = 'Preview'
+          else if (find.mou_status == 2) label = 'Revisi'
+          else if (find.mou_status == 3) label = 'Print & Upload'
+        }
+      }
+
+      
+      return label
+    }
   },
 
   mounted() {
