@@ -5,11 +5,11 @@
       <template>
         <v-card style="height: 90vh; overflow: auto">
           <v-card-title class="d-flex flex-row justify-content-between mb-5">
-            <h4 class="mb-0 pb-0">Preview MOU</h4>
+            <h4 class="mb-0 pb-0">Preview MOU {{ JSON.stringify(mouData) }}</h4>
+
             <div class="d-flex" v-if="!openFormUpload">
               <!-- btn print -->
               <v-btn
-                v-if="mouData && mouData.mou_status == 3"
                 large
                 variant="primary"
                 class="d-flex flex-row align-items-center"
@@ -22,11 +22,16 @@
                   color="primary"
                 ></v-progress-circular>
                 <v-icon v-else>mdi-printer-outline</v-icon>
-                <span class="ml-1">Print {{ mouData && mouData.printed_status ? 'Ulang' : '' }} MOU</span>
+                <span class="ml-1"
+                  >Print
+                  {{ mouData && mouData.printed_status ? "Ulang" : "" }}
+                  MOU</span
+                >
               </v-btn>
               <!-- btn verifikasi -->
+
+              <!-- v-if="mouData && mouData.mou_status != 3" -->
               <v-btn
-                v-if="mouData && mouData.mou_status != 3"
                 large
                 variant="success"
                 class="d-flex flex-row align-items-center ml-2"
@@ -71,7 +76,7 @@
               Revisi: {{ mouData.mou_revision_reason }}
             </v-alert>
             <!-- FormUploadAttachmentMOU -->
-            <FormUploadAttachmentMOU 
+            <FormUploadAttachmentMOU
               v-if="openFormUpload"
               @close="openFormUpload = false"
               @closeParent="isOpen = false"
@@ -79,7 +84,9 @@
             />
             <div
               class="preview-wrapper"
-              v-else-if="typeof data === 'object' && Object.keys(data).length > 0"
+              v-else-if="
+                typeof data === 'object' && Object.keys(data).length > 0
+              "
             >
               <vue-html2pdf
                 :show-layout="true"
@@ -129,11 +136,11 @@
           <h4 class="mb-0 pb-0">Confirm Revision</h4>
         </v-card-title>
         <v-card-text>
-          <ValidationObserver
-            ref="revisionForm"
-            v-slot="{ handleSubmit }"
-          >
-            <form @submit.prevent="handleSubmit(onSubmitRevisi)" autocomplete="off">
+          <ValidationObserver ref="revisionForm" v-slot="{ handleSubmit }">
+            <form
+              @submit.prevent="handleSubmit(onSubmitRevisi)"
+              autocomplete="off"
+            >
               <geko-input
                 v-model="dialogs.revision.data.mou_revision_reason"
                 class="mb-5"
@@ -172,7 +179,7 @@ export default {
   components: {
     VueHtml2pdf,
     MouHtml,
-    FormUploadAttachmentMOU
+    FormUploadAttachmentMOU,
   },
   props: {
     lahanData: {
@@ -199,31 +206,30 @@ export default {
       this.$refs.html2Pdf.generatePdf();
     },
     onBtnClick: async function (type) {
-      console.log('this.lahanData',this.lahanData)
-      if (type == 'verif') {
-        // confirm 
+      console.log("this.lahanData", this.lahanData);
+      if (type == "verif") {
+        // confirm
         const confirm = await this.$_alert.confirmWithDeny(
-          'Konfirmasi', 
-          'Apakah anda yakin untuk verifikasi data ini?',
-          'Verifikasi',
-          'Reject'
-        )
+          "Konfirmasi",
+          "Apakah anda yakin untuk verifikasi data ini?",
+          "Verifikasi",
+          "Reject"
+        );
         // if verified
         if (confirm.isConfirmed) {
           // update print status
-          this.loading = true
-          await this.updateFarmerMOUPrint()
-          this.isOpen = false
-          this.loading = false
-        } 
+          this.loading = true;
+          await this.updateFarmerMOUPrint();
+          this.isOpen = false;
+          this.loading = false;
+        }
         // if revisi
         else if (confirm.isDenied) {
-          console.log('confirm.isDenied',confirm.isDenied)
-          this.dialogs.revision.isOpen = true
+          console.log("confirm.isDenied", confirm.isDenied);
+          this.dialogs.revision.isOpen = true;
         }
-      } 
-      else if (type == 'open-upload-attachment') {
-        this.openFormUpload = true
+      } else if (type == "open-upload-attachment") {
+        this.openFormUpload = true;
       }
     },
     async onDownloadComplete() {
@@ -239,7 +245,7 @@ export default {
 
         return;
       } catch (err) {
-        console.log('onDownloadComplete() error', err)
+        console.log("onDownloadComplete() error", err);
       }
     },
     onOpen() {
@@ -278,52 +284,54 @@ export default {
       };
 
       // default closed form
-      this.openFormUpload = false
+      this.openFormUpload = false;
     },
     onSubmitRevisi: async function () {
       if (!this.dialogs.revision.data.mou_revision_reason) return;
-      this.loading = true
+      this.loading = true;
       // update print status
       await this.updateFarmerMOUPrint({
-        mou_reject_reason: this.dialogs.revision.data.mou_revision_reason
-      })
-      this.dialogs.revision.isOpen = false
-      this.dialogs.revision.data.mou_revision_reason = null
-      this.isOpen = false
-      this.loading = false
+        mou_reject_reason: this.dialogs.revision.data.mou_revision_reason,
+      });
+      this.dialogs.revision.isOpen = false;
+      this.dialogs.revision.data.mou_revision_reason = null;
+      this.isOpen = false;
+      this.loading = false;
     },
     async beforeDownload({ html2pdf, options, pdfContent }) {
       console.log("options", options);
 
       // await html2pdf().set(options).from(pdfContent).toPdf().get("pdf").save();
     },
-		updateFarmerMOUPrint: async function (param = {}) {
-			try {
-				let payload = {
-					farmer_no: this.lahanData.farmer_no,
-					program_year: this.$_config.programYear.model,
-					lahan_no: this.lahanData.lahan_no,
-					mou_no: this.lahanData.farmers_mou_no_pivot_farmer,
-					...param
-				};
-				console.log("payload", payload);
+    updateFarmerMOUPrint: async function (param = {}) {
+      try {
+        let payload = {
+          farmer_no: this.lahanData.farmer_no,
+          program_year: this.$_config.programYear.model,
+          lahan_no: this.lahanData.lahan_no,
+          mou_no: this.lahanData.farmers_mou_no_pivot_farmer,
+          ...param,
+        };
+        console.log("payload", payload);
 
-				// update print status
-				const {result: res} = await this.$_api
-					.post("farmer-mou/print", payload)
-          console.log('res',res)
+        // update print status
+        const { result: res } = await this.$_api.post(
+          "farmer-mou/print",
+          payload
+        );
+        console.log("res", res);
 
-				// update local data
-        this.refreshDetailLahan()
-					
-				return res
-			} catch (err) {
-				console.log('updateFarmerMOUPrint() error', err);
-			}
-		},
+        // update local data
+        this.refreshDetailLahan();
+
+        return res;
+      } catch (err) {
+        console.log("updateFarmerMOUPrint() error", err);
+      }
+    },
     refreshDetailLahan() {
-      this.$parent.getData()
-    }
+      this.$parent.getData();
+    },
   },
 
   mounted() {},
@@ -335,11 +343,11 @@ export default {
       dialogs: {
         revision: {
           isOpen: false,
-          data: {}
-        }
+          data: {},
+        },
       },
       loading: false,
-      openFormUpload: false
+      openFormUpload: false,
     };
   },
 
