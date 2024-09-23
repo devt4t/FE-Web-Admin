@@ -157,15 +157,12 @@
                   v-if="$_sys.isAllowed('lahan-print-mou-create')"
                   @click="printModal += 1"
                 >
-                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase() == 'preview'"
-                    >mdi-file-document-outline</v-icon
-                  >
-                  <v-icon
-                    v-else-if="btnLabelLegalitasMOU.toLowerCase() == 'revisi'"
-                    >mdi-file-document-edit-outline</v-icon
-                  >
+                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase().includes('upload')">mdi-file-upload-outline</v-icon>
+                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase().includes('revisi')">mdi-file-document-edit-outline</v-icon>
+                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase().includes('verifikasi')">mdi-file-alert-outline</v-icon>
+                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase().includes('lihat')">mdi-file-eye-outline</v-icon>
                   <v-icon v-else>mdi-printer-outline</v-icon>
-                  <span class="ml-1">{{ btnLabelLegalitasMOU }} MOU</span>
+                  <span class="ml-1">{{ btnLabelLegalitasMOU }}</span>
                 </v-btn>
 
                 <!-- PRINT APPENDIX LAHAN -->
@@ -1790,18 +1787,18 @@ export default {
 
   computed: {
     btnLabelLegalitasMOU() {
-      let label = "Print";
-      if (
-        Array.isArray(this.data.farmer_lahan_mou) &&
+      let label = 'Print MOU'
+      if (Array.isArray(this.data.farmer_lahan_mou) &&
         this.data.farmer_lahan_mou.length > 0
       ) {
         const find = this.data.farmer_lahan_mou.find(
           (v) => v.mou_no == this.data.main_lahan.farmers_mou_no_pivot_farmer
         );
         if (find) {
-          if (!find.mou_status) label = "Preview";
-          else if (find.mou_status == 2) label = "Revisi";
-          else if (find.mou_status == 3) label = "Print & Upload";
+          if (find.mou_status == 1) label = 'Upload Lampiran MOU'
+          else if (find.mou_status == 2) label = 'Revisi MOU'
+          else if (find.mou_status == 4) label = 'Verifikasi Lampiran'
+          else if (find.mou_status == 5) label = 'Lihat Lampiran'
         }
       }
 
