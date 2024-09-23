@@ -171,8 +171,12 @@
                 setter: 'project_id',
                 api: 'GetProjectAllAdmin',
                 default_label: formData.project_code,
+                param: {
+                  limit: 1000,
+                },
                 option: {
                   multiple: true,
+                  default_options: projects,
                   list_pointer: {
                     separator: '-',
                     code: 'id',

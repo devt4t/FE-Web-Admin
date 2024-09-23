@@ -9,6 +9,8 @@ export default {
       loading: false,
       existingProjectIds: [],
       existingFfIds: [],
+      projects: [],
+      deletedProjectIds: [],
       form: 1,
       formData: {
         village_persons: [
@@ -45,6 +47,14 @@ export default {
         behavior: "smooth",
       });
     },
+    'formData.project_id'(v) {
+
+      for (const project_id of this.existingProjectIds) {
+        
+      }
+      console.log('project change', v);
+      
+    }
 
   },
   methods: {
@@ -78,6 +88,10 @@ export default {
         "GetDetailScoopingVisitFFCandidate_new",
         { data_no: resData.data.data_no }
       );
+
+      const projectList = await this.$_api.get('GetProjectAllAdmin', {
+        limit: 200,
+      })
       const keys = [
         ["province", "province_id"],
         ["province", "province_code"],
@@ -164,20 +178,36 @@ export default {
 
       let existingProject = [];
       for (const d of resProject.data) {
-        this.existingProjectIds.push(d.project_id);
+        this.existingProjectIds.push(d.projects_id);
         existingProject.push({
           project_name: `${d.projects_project_name} - ${d.scooping_id}`,
-          code: d.project_id,
+          code: d.projects_id,
         });
       }
 
-      if (existingProject.length == 0 && this.formData.province_code === "JB") {
-        existingProject.push({
-          code: 22,
-          project_name: "AZ Preliminary Project - PJ00008",
-        });
+      // if (existingProject.length == 0 && this.formData.province_code === "JB") {
+      //   existingProject.push({
+      //     code: 22,
+      //     project_name: "AZ Preliminary Project - PJ00008",
+      //   });
+      // }
+      let _projects = []      
+     
+
+      for (const project of projectList.data) {
+        _projects.push({
+          id: project.id,
+          project_name: project.project_name
+        })
       }
-      this.$set(this.formData, "project_id", existingProject);
+      
+      this.projects = _projects
+
+      console.log("PROJECTS", this.projects);
+      console.log('EXISTING PROJECTS', this.existingProjectIds);
+      
+      
+      this.$set(this.formData, "project_id", this.existingProjectIds);
       this.$set(this.formData, "village_persons", figures.data);
       this.$set(this.formData, "ff_candidates", resFf.data);
       this.ready = true;
@@ -290,23 +320,39 @@ export default {
       }
     },
 
+    deleteProject() {
+      return new Promise(async(resolve) => {
+        const projectPayload = {
+          data_no: res.kode_scooping ?? this.formData.data_no,
+          project_id: parseInt(_projectId),
+          delete_type: 'hard_delete'
+        };
+        const endpoint = "DeleteScoopingVisitProject_new";
+        this.$_api.post(endpoint, projectPayload).catch((err) => {
+          console.log("err", err);
+
+          return resolve()
+        })
+        .then(() => {
+          return resolve()
+        })
+
+      })
+    },
+
     submitProject(res = {}) {
       for (let _project of this.formData.project_id) {
         const _projectId =
           typeof _project === "object" ? _project.code : _project;
         const isCreate = !this.existingProjectIds.includes(_projectId);
         if (!isCreate){
-
-          const projectPayload = {
-            data_no: res.kode_scooping ?? this.formData.data_no,
-            project_id: parseInt(_projectId),
-            delete_type: 'hard_delete'
-          };
-          const endpoint = "DeleteScoopingVisitProject_new";
-          this.$_api.post(endpoint, projectPayload).catch((err) => {
-            console.log("err", err);
-          });
+          continue;
         };
+
+        if (this.deletedProjectIds.includes(_projectId)) {
+          //delete project here
+        
+        }
 
         const projectPayload = {
           data_no: isCreate ? res.kode_scooping : this.formData.data_no,
