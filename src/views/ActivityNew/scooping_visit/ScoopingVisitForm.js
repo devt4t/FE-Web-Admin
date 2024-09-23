@@ -23,6 +23,7 @@ export default {
         other_ngo_input: "",
         other_ngo_data: [],
         ff_candidates: [],
+        
       },
     };
   },
@@ -44,6 +45,7 @@ export default {
         behavior: "smooth",
       });
     },
+
   },
   methods: {
     onChangeProvince(data) {
@@ -265,6 +267,7 @@ export default {
             res.kode_scooping = this.formData.data_no;
           }
           this.submitProject(res);
+
           this.submitOtherNgo(res);
           this.submitFfCandidate(res);
           this.submitFigure(res);
@@ -292,8 +295,18 @@ export default {
         const _projectId =
           typeof _project === "object" ? _project.code : _project;
         const isCreate = !this.existingProjectIds.includes(_projectId);
+        if (!isCreate){
 
-        if (!isCreate) continue;
+          const projectPayload = {
+            data_no: res.kode_scooping ?? this.formData.data_no,
+            project_id: parseInt(_projectId),
+            delete_type: 'hard_delete'
+          };
+          const endpoint = "DeleteScoopingVisitProject_new";
+          this.$_api.post(endpoint, projectPayload).catch((err) => {
+            console.log("err", err);
+          });
+        };
 
         const projectPayload = {
           data_no: isCreate ? res.kode_scooping : this.formData.data_no,
@@ -307,6 +320,7 @@ export default {
         });
       }
     },
+
 
     submitFigure(res = {}) {
       var i = 0;
