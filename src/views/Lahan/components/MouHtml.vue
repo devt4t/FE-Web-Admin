@@ -849,14 +849,14 @@
       >
         <div style="width: 30%">
           <img
-            src="https://i.ibb.co.com/WBPv9xs/Wd-De-E4cxt-ISzio-Ecx-HKsh9l9a3v-Pmjah-GY45-Ro-W8-JMf-TUFct-Wgp7ye-N6-Tf748-YOJb0.png"
+            :src="data.farmer_photo"
             style="width: 100%; height: auto"
           />
         </div>
 
         <div style="width: 50%">
           <img
-            src="https://cdn-brilio-net.akamaized.net/webp//news/2022/08/03/234588/paging/750xauto-oke-juga-nih-gaya-ultraman-nya.jpg"
+            :src="data.farmer_ktp_photo"
             style="width: 100%; height: auto"
           />
         </div>

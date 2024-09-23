@@ -288,8 +288,8 @@ export default {
         farmer_nik: this.lahanData.farmers_ktp_no_pivot_farmer,
         mou_start: mouStart,
         mou_end: mouEnd,
-        farmer_ktp_photo: `${this.$_config.baseUrlExport}${this.lahanData.farmers_ktp_document_pivot_farmer}`,
-        farmer_photo: `${this.$_config.baseUrlExport}${this.lahanData.farmers_ktp_document_pivot_farmer}`,
+        farmer_ktp_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_ktp_document_pivot_farmer}`,
+        farmer_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_ktp_document_pivot_farmer}`,
       };
 
       // default opened modal
