@@ -5,7 +5,7 @@
       <template>
         <v-card style="height: 90vh; overflow: auto">
           <v-card-title class="d-flex flex-row justify-content-between mb-5">
-            <h4 class="mb-0 pb-0">Preview MOU {{ JSON.stringify(mouData) }}</h4>
+            <h4 class="mb-0 pb-0">Preview MOU</h4>
 
             <div class="d-flex" v-if="!openFormUpload">
               <!-- btn print -->

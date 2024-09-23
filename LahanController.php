@@ -422,7 +422,7 @@ class LahanController extends Controller
                     "reference_table" => "farmers",
                     "table_alias" => "L",
                     "reference_column" => "farmer_no",
-                    "display" => ['name', 'ktp_no', 'ktp_document', 'address', 'farmer_profile', "post_code", "mou_no"],
+                    "display" => ['name', 'ktp_no', 'ktp_document', 'address', 'farmer_profile', "post_code", "mou_no", "legal_land_categories"],
                     "custom_alias" => "pivot_farmer",
                     "origin_table" => "K"
                     ],
@@ -1000,6 +1000,8 @@ class LahanController extends Controller
             
         }
     }
+    
+    
 
     public function farmerMouUpdate(Request $request) {
         
@@ -1204,6 +1206,88 @@ class LahanController extends Controller
                 'result' => $updatedData
             ], 200);
         }
+    }
+
+    public function farmerMouPrintAppendix(Request $request) {
+        
+        $validator = Validator::make($request -> all(),[
+            'mou_no' => 'required',
+        ]);
+
+        if($validator->fails()){
+            $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+            return response()->json($rslt, 422);
+        }
+
+        $isExist = DB::table('farmer_lahan_mou')->where([
+            'mou_no' => $request->mou_no,
+        ])->first();
+
+        if (!$isExist) {
+            return response()->json(['message' => 'MOU not found'], 422);
+        }
+
+        if ($isExist->mou_status == 2) {
+            return response()->json(['message' => 'MOU status is revision'], 422);
+        }
+
+        if ($isExist->mou_status == 4) {
+            return response()->json(['message' => 'MOU status is already signed'], 422);
+        }
+
+        if ($isExist->mou_status == 5) {
+            return response()->json(['message' => 'MOU status is already verified'], 422);
+        }
+
+
+        DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->update([
+            'mou_status' => 3,
+        ]);
+
+        return response()->json([
+            'message' => 'MOU updated successfully',
+            'result' => DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->first()
+        ], 200);
+    
+    }
+
+    public function farmerMouApprove(Request $request) {
+        
+        
+        $validator = Validator::make($request -> all(),[
+            'mou_no' => 'required',
+        ]);
+
+        if($validator->fails()){
+            $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+            return response()->json($rslt, 422);
+        }
+
+        $isExist = DB::table('farmer_lahan_mou')->where([
+            'mou_no' => $request->mou_no,
+        ])->first();
+
+        if (!$isExist) {
+            return response()->json(['message' => 'MOU not found'], 422);
+        }
+
+        if ($isExist->mou_status < 4) {
+            return response()->json(['message' => 'MOU status is not signed'], 422);
+        }
+
+        if ($isExist->mou_status == 5) {
+            return response()->json(['message' => 'MOU status is already verified'], 422);
+        }
+
+        DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->update([
+            'mou_status' => 5,
+            'verified_at' => Carbon::now(),
+        ]);
+
+        return response()->json([
+            'message' => 'MOU updated successfully',
+            'result' => DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->first()
+        ], 200);
     }
     
     public function updateFarmerLahanMOU_new(Request $request){
@@ -1512,8 +1596,8 @@ class LahanController extends Controller
                         $updateDatas = [ 
                             "0" => ['table_header' => 'updated_gis',                    'table_new_data' => 'belum',         'type' => 'string'],
                             "1" => ['table_header' => 'polygon_from_gis',                'table_new_data' => 'NULL' ,        'type' => 'int'],
-                            "2" => ['table_header' => 'gis_polygon_area',                'table_new_data' => 0,             'type' => 'string'],
-                            "3" => ['table_header' => 'gis_planting_area',              'table_new_data' => 'NULL' ,        'type' => 'int'],
+                            "2" => ['table_header' => 'gis_polygon_area',                'table_new_data' => '0',             'type' => 'int'],
+                            "3" => ['table_header' => 'gis_planting_area',              'table_new_data' => '0' ,        'type' => 'int'],
                             "4" => ['table_header' => 'gis_updated_at',                 'table_new_data' => 'NULL' ,        'type' => 'int'],
                             "5" => ['table_header' => 'gis_officer',                    'table_new_data' => 'NULL' ,        'type' => 'int'],
                             ];
@@ -1785,7 +1869,7 @@ class LahanController extends Controller
             }
             else{
                 $updateDatas = [ 
-                        "1" => ['table_header' => 'gis_planting_area',                   'table_new_data' => $request->gis_planting_area,                             'type' => 'string'],
+                        "1" => ['table_header' => 'gis_planting_area',                   'table_new_data' => $request->gis_planting_area,                             'type' => 'int'],
                     ];
                 $UpdateDatasLahan =  $this->dynamicUpdate([
                     'current_id' => $request->lahan_no,
@@ -1900,7 +1984,7 @@ class LahanController extends Controller
                     "23" => ['table_header' => 'animal_protected_habitat',              'table_new_data' => $request->animal_protected_habitat,         'type' => 'int'],
                     "24" => ['table_header' => 'animal_protected_habitat_distance',     'table_new_data' => $request->animal_protected_habitat_distance,'type' => 'int'],
                     "25" => ['table_header' => 'gis_polygon_area',                      'table_new_data' => $request->gis_polygon_area,                'type' => 'int'],
-                    "26" => ['table_header' => 'gis_planting_area',                       'table_new_data' => $request->gis_planting_area,                         'type' => 'string'],
+                    "26" => ['table_header' => 'gis_planting_area',                       'table_new_data' => $request->gis_planting_area,                         'type' => 'int'],
                     
                     "27" => ['table_header' => 'updated_at',                    'table_new_data' => Carbon::now()],
                     "28" => ['table_header' => 'gis_updated_at',                'table_new_data' => Carbon::now()],

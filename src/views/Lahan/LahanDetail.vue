@@ -5,12 +5,28 @@
         :mouData="
           Array.isArray(data.farmer_lahan_mou) &&
           data.farmer_lahan_mou.length > 0
-            ? data.farmer_lahan_mou
-              .find(v => v.mou_no == data.main_lahan.farmers_mou_no_pivot_farmer)
+            ? data.farmer_lahan_mou.find(
+                (v) => v.mou_no == data.main_lahan.farmers_mou_no_pivot_farmer
+              )
             : null
         "
         :lahanData="data.main_lahan"
         :modalKey="printModal"
+      />
+      <lahan-appendix-print
+        v-if="mapReady"
+        :mouData="
+          Array.isArray(data.farmer_lahan_mou) &&
+          data.farmer_lahan_mou.length > 0
+            ? data.farmer_lahan_mou.find(
+                (v) => v.mou_no == data.main_lahan.farmers_mou_no_pivot_farmer
+              )
+            : null
+        "
+        :lahanData="data.main_lahan"
+        :modalKey="printAppendixModal"
+        :imageData="polygonImageData"
+        :trees="data.lahan_detail"
       />
       <v-card
         data-aos="fade-up"
@@ -139,13 +155,21 @@
                   class="mr-1 mb-2 d-flex flex-row align-items-center"
                   @click="printModal += 1"
                 >
-                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase() == 'preview'">mdi-file-document-outline</v-icon>
-                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase() == 'revisi'">mdi-file-document-edit-outline</v-icon>
+                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase() == 'preview'"
+                    >mdi-file-document-outline</v-icon
+                  >
+                  <v-icon
+                    v-else-if="btnLabelLegalitasMOU.toLowerCase() == 'revisi'"
+                    >mdi-file-document-edit-outline</v-icon
+                  >
                   <v-icon v-else>mdi-printer-outline</v-icon>
                   <span class="ml-1">{{ btnLabelLegalitasMOU }} MOU</span>
                 </v-btn>
 
-                <v-btn variant="primary" @click="test">Test</v-btn>
+                <v-btn variant="primary" @click="onOpenAppendixPrint">
+                  <v-icon>mdi-printer-outline</v-icon>
+                  <span>Print Appendix</span>
+                </v-btn>
               </div>
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
               <div
@@ -1197,6 +1221,7 @@ import LahanVerificationFcCompleteData from "./components/LahanVerificationFcCom
 import LahanVerificationFc from "./components/LahanVerificationFc.vue";
 import LahanVerificationUm from "./components/LahanVerificationUm.vue";
 import LahanMouPrint from "./components/LahanMouPrint.vue";
+import LahanAppendixPrint from "./components/LahanAppendixPrint.vue";
 import moment from "moment";
 import html2canvas from "html2canvas";
 
@@ -1209,27 +1234,40 @@ export default {
     LahanVerificationFcCompleteData,
     LahanVerificationFc,
     LahanVerificationUm,
-
     LahanMouPrint,
+    LahanAppendixPrint,
   },
   methods: {
     test() {
-      const captureElement = document.querySelector(".map-wrapper"); // Select the element you want to capture. Select the <body> element to capture full page.
-      html2canvas(captureElement, { useCORS: true })
-        .then((canvas) => {
-          canvas.style.display = "none";
-          document.body.appendChild(canvas);
-          return canvas;
-        })
-        .then((canvas) => {
-          const image = canvas.toDataURL("image/png");
-          const a = document.createElement("a");
-          a.setAttribute("download", "my-image.png");
-          a.setAttribute("href", image);
-          a.click();
-          canvas.remove();
-        });
+      // const captureElement = document.querySelector(".map-wrapper");
+      var mapCanvas = document.querySelector(".mapboxgl-canvas");
+      mapCanvas.style.display = "block";
+      const mapImage = mapCanvas.toDataURL();
+
+      // html2canvas(captureElement, { useCORS: true })
+      //   .then((canvas) => {
+      //     canvas.style.display = "none";
+      //     document.body.appendChild(canvas);
+      //     return canvas;
+      //   })
+      //   .then((canvas) => {
+      //     const image = canvas.toDataURL("image/png");
+      //     const a = document.createElement("a");
+      //     a.setAttribute("download", "my-image.png");
+      //     a.setAttribute("href", image);
+      //     a.click();
+      //     canvas.remove();
+      //   });
     },
+
+    onOpenAppendixPrint() {
+      var mapCanvas = document.querySelector(".mapboxgl-canvas");
+      mapCanvas.style.display = "block";
+      const mapImage = mapCanvas.toDataURL();
+      this.polygonImageData = mapImage;
+      this.printAppendixModal += 1;
+    },
+
     getProject(lahanDetail) {
       try {
         return lahanDetail[0].project_planting_purposes_code;
@@ -1479,7 +1517,7 @@ export default {
       });
 
       this.data = result;
-      console.log('detailData res', result)
+      console.log("detailData res", result);
       let _trees = [];
       for (const tree of result.lahan_detail) {
         const idx = _trees.findIndex(
@@ -1642,6 +1680,7 @@ export default {
           zoom: 17,
           projection: "globe",
           maxZoom: 100,
+          preserveDrawingBuffer: true,
         });
 
         await this.map.dragRotate.disable();
@@ -1728,6 +1767,7 @@ export default {
               });
             }
           }
+          console.log("render", this.map.getCanvas().toDataURL("image/png"));
 
           this.mapReady = true;
         });
@@ -1735,28 +1775,31 @@ export default {
         this.map.on("click", (e) => {
           console.log(e);
         });
+
+        this.map.once("render", () => {});
       }, 1000);
     },
   },
 
   computed: {
     btnLabelLegalitasMOU() {
-      let label = 'Print'
-      if (Array.isArray(this.data.farmer_lahan_mou) &&
+      let label = "Print";
+      if (
+        Array.isArray(this.data.farmer_lahan_mou) &&
         this.data.farmer_lahan_mou.length > 0
       ) {
-        const find = this.data.farmer_lahan_mou
-          .find(v => v.mou_no == this.data.main_lahan.farmers_mou_no_pivot_farmer)
+        const find = this.data.farmer_lahan_mou.find(
+          (v) => v.mou_no == this.data.main_lahan.farmers_mou_no_pivot_farmer
+        );
         if (find) {
-          if (!find.mou_status) label = 'Preview'
-          else if (find.mou_status == 2) label = 'Revisi'
-          else if (find.mou_status == 3) label = 'Print & Upload'
+          if (!find.mou_status) label = "Preview";
+          else if (find.mou_status == 2) label = "Revisi";
+          else if (find.mou_status == 3) label = "Print & Upload";
         }
       }
 
-      
-      return label
-    }
+      return label;
+    },
   },
 
   mounted() {
@@ -1780,6 +1823,8 @@ export default {
       polygonGisArea: 0,
       componentKey: 0,
       printModal: 0,
+      printAppendixModal: 0,
+      polygonImageData: null,
       markers: [],
       verifRole: null,
       legends: [
