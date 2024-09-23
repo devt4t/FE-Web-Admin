@@ -150,9 +150,11 @@
                   >Verifikasi UM</v-btn
                 >
 
+                <!-- PRINT & PREVIEW MOU -->
                 <v-btn
                   variant="primary"
                   class="mr-1 mb-2 d-flex flex-row align-items-center"
+                  v-if="$_sys.isAllowed('lahan-print-mou-create')"
                   @click="printModal += 1"
                 >
                   <v-icon v-if="btnLabelLegalitasMOU.toLowerCase() == 'preview'"
@@ -166,7 +168,12 @@
                   <span class="ml-1">{{ btnLabelLegalitasMOU }} MOU</span>
                 </v-btn>
 
-                <v-btn variant="primary" @click="onOpenAppendixPrint">
+                <!-- PRINT APPENDIX LAHAN -->
+                <v-btn
+                  variant="primary"
+                  @click="onOpenAppendixPrint"
+                  v-if="$_sys.isAllowed('lahan-print-appendix-create')"
+                >
                   <v-icon>mdi-printer-outline</v-icon>
                   <span>Print Appendix</span>
                 </v-btn>
