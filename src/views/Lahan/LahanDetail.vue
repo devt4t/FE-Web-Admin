@@ -540,7 +540,11 @@
 
               <div
                 class="lahan-side-item"
-                v-if="data.main_lahan && data.main_lahan.approve == 2"
+                v-if="
+                  data.main_lahan &&
+                  data.main_lahan.approve == 2 &&
+                  getProject() === 'carbon'
+                "
               >
                 <p class="mb-0 label" v-if="getProject() === 'carbon'">
                   Status MOU
