@@ -289,7 +289,7 @@ export default {
       };
 
       // default opened modal
-      if (this.mouData && [1, 4, 5].includes(this.mouData.mou_status)) {
+      if (this.mouData && [1, 3, 4, 5].includes(this.mouData.mou_status)) {
         this.openFormUpload = true;
         if ([4, 5].includes(this.mouData.mou_status))
           this.formUploadPreview = true;
