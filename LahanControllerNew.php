@@ -169,6 +169,18 @@ class LahanController extends Controller
                     "join" => " LEFT JOIN farmers as D ON D.farmer_no = A.farmer_no ",
                     "display" => 'D.name as farmer_name',
                     ],
+                // "lahan_project" => [
+                //     "join" => " LEFT JOIN lahan_projects as J ON J.lahan_no = A.lahan_no ",
+                //     "display" => 'J.project_no as lahan_project_no',
+                //     ],
+                // "projects" => [
+                //     "join" => " LEFT JOIN projects as K ON K.project_no = J.project_no ",
+                //     "display" => 'K.project_no, K.project_name',
+                //     ],
+                // "project_purpose" => [
+                //     "join" => " LEFT JOIN project_planting_purposes as L ON L.id = K.project_planting_purpose_id ",
+                //     "display" => 'L.id as project_purpose_id, L.name as project_purpose_name',
+                //     ],
             ];
             $condition = [
                 "type"=> [
@@ -349,11 +361,33 @@ class LahanController extends Controller
                 $stat->unverified = DB::select($unapproveSql)[0]->datas;
                 // $stat->unverified = $stat_res;
             }
+            // if(isset($request->project_filter)){
+            //     $project = $request->project_filter;
+            //     $getList_project = DB::table('projects')->select('project_no')->get()->toArray();
+            //     $project_strArr = array_column($getList_project, 'project_no');
+            //     $frontProject_list = $project_strArr;
+            //     if(($key = array_search($project, $frontProject_list)) !== false){
+            //         unset($frontProject_list[$key]);
+            //         $frProject_list = [];
+            //         foreach($frontProject_list as $key){
+            //             array_push($frProject_list,$key);
+            //         }
+            //     }
+            //     foreach($result as $res){
+            //         $project_no = $res->land_project->project_no;
+            //         if(!in_array($project_no, $frontProject_list)){
+            //             $res->projects_no = $res->land_project->project_no;
+            //         }
+                    
+            //     }
+                
+            // }
             
             return response()->json([
                     'data' => $result,
                     'custom_count' => $cust_stat[0],
                     // 'sql' => $query['sql'],
+                    'project_filter_dev' => $frProject_list ?? 'test',
                     'total' => $result_record[0]->total,
                     
                 ], 200);
@@ -1032,107 +1066,29 @@ class LahanController extends Controller
         $program_year = $request->program_year;
 
         $farmerData = DB::table('farmer_lahan_mou')->where('farmer_no', $farmer_no)->first();
+        $farmerLahans = DB::table('main_pivots')->where([
+            'key1' => $farmer_no,
+            'type' => 'farmer_lahan',
+        ])->where('program_year', 'like', '%' . $program_year . '%')->get();
         if (!$farmerData) {
-            return response()->json(['message' => 'Farmer MOU not found'], 422);
+            return response()->json([
+                'data' => [
+                    'id' => null,
+                    'lahans' => $farmerLahans,
+                    'mou_lahans' => [],
+                ]
+            ], 200);
         }
+        
 
         $farmerMouLahan = DB::table('farmer_lahan_mou_lahan')->where('farmer_lahan_mou_id', $farmerData->id)->get();
 
+        $farmerData->mou_lahans = $farmerMouLahan;
         $farmerData->lahans = $farmerMouLahan;
 
         return response()->json(['data' => $farmerData], 200);
     }
 
-    public function farmerMouUpdate(Request $request) {
-        
-       $validator = Validator::make($request -> all(),[
-            'mou_no' => 'required',
-            'polygon_image' => 'required|string',
-            'mou_file' => 'required|string',
-            'land_ownership_photo' => 'string',
-            'land_not_sengketa_photo' => 'string',
-            'land_proof_photo' => 'string',
-        ]);
-
-        if($validator->fails()){
-            $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
-            return response()->json($rslt, 422);
-        }
-
-        $mou_no = $request->mou_no;
-
-        $farmerMouData = DB::table('farmer_lahan_mou')->where('mou_no', $mou_no)->first();
-        if (!$farmerMouData) {
-            return response()->json(['message' => 'MOU not found'], 422);
-        }
-
-        if ($farmerMouData->mou_status == 2) {
-            return response()->json(['message' => 'MOU status is revision'], 422);
-        }
-
-        $farmerData = DB::table('farmers')->where('farmer_no', $farmerMouData->farmer_no)->first();
-
-        if (!$farmerData) {
-            return response()->json(['message' => 'Farmer not found'], 422);
-        }
-
-        $farmerLegalLandCategories = $farmerData->legal_land_categories;
-
-        // Clear & Clean
-        if ($farmerLegalLandCategories == 'Clear & Clean') {
-            if (!isset($request->land_ownership_photo)) {
-                return response()->json(['message' => 'Land ownership photo is required'], 422);
-            }
-
-            $payload = [
-                'polygon_image' => $request->polygon_image,
-                'land_ownership_photo' => $request->land_ownership_photo,
-                'mou_status' => 4,
-                'signed_at' => Carbon::now(),
-                'mou_file' => $request->mou_file,
-            ];
-            $updating = DB::table('farmer_lahan_mou')->where('mou_no', $mou_no)->update($payload);
-
-            $updatedData = DB::table('farmer_lahan_mou')->where('mou_no', $mou_no)->first();
-            return response()->json([
-                'message' => 'MOU updated successfully',
-                'result' => $updatedData
-            ], 200);
-            
-        }
-
-        // Clear No Clean
-
-        else if ($farmerLegalLandCategories == 'Clear No Clean') {
-            if (!isset($request->land_ownership_photo)) {
-                return response()->json(['message' => 'Land ownership photo is required'], 422);
-            }
-
-            if (!isset($request->land_not_sengketa_photo)) {
-                return response()->json(['message' => 'Land not sengketa photo is required'], 422);
-            }
-
-            $payload = [
-                'polygon_image' => $request->polygon_image,
-                'land_ownership_photo' => $request->land_ownership_photo,
-                'land_not_sengketa_photo' => $request->land_not_sengketa_photo,
-                'mou_status' => 4,
-                'signed_at' => Carbon::now(),
-                'mou_file' => $request->mou_file,
-            ];
-            $updating = DB::table('farmer_lahan_mou')->where('mou_no', $mou_no)->update($payload);
-
-            $updatedData = DB::table('farmer_lahan_mou')->where('mou_no', $mou_no)->first();
-            return response()->json([
-                'message' => 'MOU updated successfully',
-                'result' => $updatedData
-            ], 200);
-        }
-
-        else {
-            return response()->json(['message' => 'Legal land categories unidentified'], 422);
-        }
-    }
     
     
     public function farmerMouPrint(Request $request){
@@ -1274,7 +1230,8 @@ class LahanController extends Controller
             ], 200);
         }
     }
-
+    
+    
     public function farmerMouPrintAppendix(Request $request) {
         
         $validator = Validator::make($request -> all(),[

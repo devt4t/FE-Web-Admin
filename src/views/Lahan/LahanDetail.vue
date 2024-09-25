@@ -202,6 +202,8 @@
                     mouData &&
                     mouData.mou_status == 1
                   "
+                  v-for="(lahan, i) in mouData.lahans"
+                  :key="`lahan-${i}`"
                 >
                   <v-icon>mdi-printer-outline</v-icon>
                   <span>Print Appendix</span>
@@ -526,7 +528,11 @@
 
               <div
                 class="lahan-side-item"
-                v-if="data.main_lahan && data.main_lahan.approve == 2"
+                v-if="
+                  data.main_lahan &&
+                  data.main_lahan.approve == 2 &&
+                  getProject() === 'carbon'
+                "
               >
                 <p class="mb-0 label" v-if="getProject() === 'carbon'">
                   Status MOU
@@ -1665,15 +1671,15 @@ export default {
 
       // get data mou
       try {
-        const {data: resMou} = await this.$_api.get('farmer-mou/find', {
+        const { data: resMou } = await this.$_api.get("farmer-mou/find", {
           farmer_no: result.main_lahan.farmer_no,
-          program_year: this.$_config.programYear.model
-        })
-        console.log('resMou', resMou)
-        this.mouData = resMou
+          program_year: this.$_config.programYear.model,
+        });
+        console.log("resMou", resMou);
+        this.mouData = resMou;
       } catch (err) {
-        console.log('getData() farmer-mou/find error',err)
-        this.mouData = null
+        console.log("getData() farmer-mou/find error", err);
+        this.mouData = null;
       }
 
       this.openMaps();
