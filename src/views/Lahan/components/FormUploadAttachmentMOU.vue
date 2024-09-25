@@ -18,80 +18,151 @@
         <span>Lihat MOU</span>
       </v-btn>
     </div>
-    <ValidationObserver v-if="mouData.mou_status == 3" ref="firstForm" v-slot="{ handleSubmit }">
-      <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-        <v-row>
-          <template v-for="(input, i) in formInputs">
-            <v-col v-if="input.show" :lg="preview ? 4 : 6" :key="`formInputAttach${i}`">
-              <!-- input -->
-              <geko-input
-                v-if="!preview"
-                v-model="formData[input.field]"
-                :item="{
-                  label: input.label,
-                  validation: input.validation,
-                  type: input.type,
-                  setter: input.setter,
-                  view_data: input.view_data,
-                  api: input.api,
-                  upload_type: input.upload_type,
-                  directory: input.directory,
-                  option: {
-                    icon: 'mdi-file-outline',
-                    label_hint:
-                      'Klik untuk memilih file yang akan diunggah',
-                  },
-                }"
-              />
-              <!-- preview -->
-              <div v-else
-                id="preview-wrapper"
-                @click="
-                showLightbox(
-                  $_config.baseUrlUpload + '/' + formData[input.field]
-                )"
-                :style="{
-                backgroundImage:
-                  'url(' +
-                  $_config.baseUrlUpload +
-                  '/' +
-                  formData[input.field] +
-                  ')',
-                }"
-              >
-                <h5>{{ input.label }}</h5>
-              </div>
-            </v-col>
-          </template>
+    <div v-if="mouData.mou_status > 2">
+      <!-- input -->
+      <geko-input
+        v-if="!preview"
+        v-model="mouData.mou_file"
+        :item="{
+          label: formInputs.find(v => v.field == 'mou_file').label,
+          validation: formInputs.find(v => v.field == 'mou_file').validation,
+          type: formInputs.find(v => v.field == 'mou_file').type,
+          setter: formInputs.find(v => v.field == 'mou_file').setter,
+          view_data: `${iLahan}${i}${formInputs.find(v => v.field == 'mou_file').view_data}`,
+          api: formInputs.find(v => v.field == 'mou_file').api,
+          upload_type: formInputs.find(v => v.field == 'mou_file').upload_type,
+          directory: formInputs.find(v => v.field == 'mou_file').directory,
+          option: {
+            icon: 'mdi-file-outline',
+            label_hint:
+              'Klik untuk memilih file yang akan diunggah',
+          },
+        }"
+      />
+      <!-- preview -->
+      <div v-else
+        id="preview-wrapper"
+        @click="
+        showLightbox(
+          $_config.baseUrlUpload + '/' + mouData.mou_file
+        )"
+        style="width: 250px;"
+        :style="{
+        backgroundImage:
+          'url(' +
+          $_config.baseUrlUpload +
+          '/' +
+          mouData.mou_file +
+          ')',
+        }"
+      >
+        <h5>{{ formInputs.find(v => v.field == 'mou_file').label }}</h5>
+      </div>
 
-          <v-col lg="12">
-            <v-btn
-              v-if="!preview"
-              type="submit"
-              variant="success"
-              class="w-100"
-              style="width: 100%"
-              :disabled="loading"
-            >
-              <v-icon>mdi-content-save-outline</v-icon>
-              <span>Simpan</span>
-            </v-btn>
-            <v-btn
-              v-else
-              type="button"
-              @click="lastVerification()"
-              variant="success"
-              class="w-100"
-              style="width: 100%"
-              :disabled="loading || mouData.mou_status == 5"
-            >
-              <v-icon>mdi-check-decagram-outline</v-icon>
-              <span>{{ mouData.mou_status == 5 ? 'Sudah' : '' }}Verifikasi Data</span>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </form>
-    </ValidationObserver>
+      <v-tabs
+        v-model="tab"
+        background-color="transparent"
+        color="success"
+        class="mt-5"
+      >
+        <v-tab
+          v-for="(lahan, iLahan) in mouData.mou_lahans"
+          :key="`tab${iLahan}`"
+        >
+          <b>{{ lahan.lahan_no }}</b>
+        </v-tab>
+      </v-tabs>
+  
+      <v-tabs-items v-model="tab">
+        <v-tab-item
+          v-for="(lahan, iLahan) in mouData.mou_lahans"
+          :key="`tab${iLahan}`"
+        >
+          <v-card
+            color="basil"
+            flat
+          >
+            <v-card-text>
+              <ValidationObserver :ref="`formUploadAttachment${iLahan}`" v-slot="{ handleSubmit }">
+                <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+                  <v-row>
+                    <template v-for="(input, i) in formInputs">
+                      <v-col v-if="input.show" :lg="preview ? 4 : 6" :key="`formInputAttach${iLahan}${i}`">
+                        <!-- input -->
+                        <geko-input
+                          v-if="!preview"
+                          v-model="lahan[input.field]"
+                          :item="{
+                            label: input.label,
+                            validation: input.validation,
+                            type: input.type,
+                            setter: input.setter,
+                            view_data: `${iLahan}${i}${input.view_data}`,
+                            api: input.api,
+                            upload_type: input.upload_type,
+                            directory: input.directory,
+                            option: {
+                              icon: 'mdi-file-outline',
+                              label_hint:
+                                'Klik untuk memilih file yang akan diunggah',
+                            },
+                          }"
+                        />
+                        <!-- preview -->
+                        <div v-else
+                          id="preview-wrapper"
+                          @click="
+                          showLightbox(
+                            $_config.baseUrlUpload + '/' + lahan[input.field]
+                          )"
+                          :style="{
+                          backgroundImage:
+                            'url(' +
+                            $_config.baseUrlUpload +
+                            '/' +
+                            lahan[input.field] +
+                            ')',
+                          }"
+                        >
+                          <h5>{{ input.label }}</h5>
+                        </div>
+                      </v-col>
+                    </template>
+          
+                    <v-col lg="12">
+                      <v-btn
+                        v-if="!preview"
+                        type="submit"
+                        variant="success"
+                        class="w-100"
+                        style="width: 100%"
+                        :disabled="loading"
+                      >
+                        <v-icon>mdi-content-save-outline</v-icon>
+                        <span>Simpan</span>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </form>
+              </ValidationObserver>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+      </v-tabs-items>
+      <!-- approve btn -->
+      <v-btn
+        v-if="preview"
+        type="button"
+        @click="lastVerification()"
+        variant="success"
+        class="w-100"
+        style="width: 100%"
+        :disabled="loading || mouData.mou_status == 5"
+      >
+        <v-icon>mdi-check-decagram-outline</v-icon>
+        <span>{{ mouData.mou_status == 5 ? 'Sudah' : '' }}Verifikasi Data</span>
+      </v-btn>
+    </div>
     <div v-else
       class="my-5 py-5"
     >
@@ -156,17 +227,21 @@ export default {
     onSubmit: async function () {
       try {
         this.loading = true
+
+        const lahanOpened = this.mouData.mou_lahans[this.tab]
         // set payload
         const payload = {
           mou_no: this.mouData.mou_no,
-          lahan_no: this.lahanData.lahan_no
+          lahan_no: lahanOpened.lahan_no,
+          mou_file: this.mouData.mou_file
         }
-        for (const [field, data] of Object.entries(this.formData)) {
-          if (this.formInputs.find(v => v.field == field).show) {
+        console.log('lahanOpened',lahanOpened)
+        for (const [field, data] of Object.entries(lahanOpened)) {
+          const findField = this.formInputs.find(v => v.field == field)
+          if (findField && findField.show) {
             payload[field] = data
           }
         }
-        console.log('payload',payload)
 
         // call API
         await this.$_api.post('farmer-mou/update', payload)
@@ -197,17 +272,14 @@ export default {
       // hide field
       let showField = []
       if (legalLandCategory == 'Clear & Clean') {
-        showField = ['land_ownership_photo','mou_file','polygon_image']
+        showField = ['land_ownership_photo','polygon_image']
       } else if (legalLandCategory == 'Clear No Clean') {
-        showField = ['land_not_sengketa_photo','land_proof_photo','mou_file','polygon_image']
+        showField = ['land_not_sengketa_photo','land_proof_photo','polygon_image']
       }
-      // set showing input & inputted data
+      // set showing input
       showField.forEach(f => {
         const find = this.formInputs.find(v => v.field == f)
-        if (find) {
-          find.show = true
-          if (this.mouData[find.field]) this.formData[find.field] = this.mouData[find.field]
-        }
+        if (find) find.show = true
       });
     },
     showLightbox(imgs, index) {
@@ -222,12 +294,10 @@ export default {
 
   mounted() {
     this.setForm()
-    console.log('this.lahanData',this.lahanData)
   },
   
   data() {
     return {
-      formData: {},
       formInputs: [
         // land_ownership_photo
         {
@@ -296,6 +366,7 @@ export default {
         },
       ],
       loading: false,
+      tab: 0
     }
   }
 }
