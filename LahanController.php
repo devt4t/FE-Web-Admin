@@ -1017,6 +1017,31 @@ class LahanController extends Controller
     }
     
     
+    public function farmerMouFind(Request $request) {
+        $validator = Validator::make($request -> all(),[
+            'farmer_no' => 'required',
+            'program_year' => 'required',
+        ]);
+
+        if($validator->fails()){
+            $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+            return response()->json($rslt, 422);
+        }
+
+        $farmer_no = $request->farmer_no;
+        $program_year = $request->program_year;
+
+        $farmerData = DB::table('farmer_lahan_mou')->where('farmer_no', $farmer_no)->first();
+        if (!$farmerData) {
+            return response()->json(['message' => 'Farmer MOU not found'], 422);
+        }
+
+        $farmerMouLahan = DB::table('farmer_lahan_mou_lahan')->where('farmer_lahan_mou_id', $farmerData->id)->get();
+
+        $farmerData->lahans = $farmerMouLahan;
+
+        return response()->json(['data' => $farmerData], 200);
+    }
 
     public function farmerMouUpdate(Request $request) {
         
@@ -1113,7 +1138,6 @@ class LahanController extends Controller
     public function farmerMouPrint(Request $request){
        $validator = Validator::make($request -> all(),[
             'farmer_no' => 'required',
-            'mou_no' => 'required',
             'program_year' => 'required',
         ]);
 
@@ -1122,6 +1146,13 @@ class LahanController extends Controller
             return response()->json($rslt, 422);
         }
 
+        // Check if farmer exist
+        $farmer = DB::table('farmers')->where('farmer_no', $request->farmer_no)->first();
+        if (!$farmer) {
+            return response()->json(['message' => 'Farmer not found'], 422);
+        }
+
+        // Check if farmer has lahan in 2024
         $allLahans = DB::table('main_pivots')->where([
             'key1' => $request->farmer_no,
             'type' => 'farmer_lahan',
@@ -1131,19 +1162,39 @@ class LahanController extends Controller
             return response()->json(['message' => 'Farmer doesnt have lahan in 2024'], 422);
         }  
 
+        // Check if farmer has mou in 2024
         $isExist = DB::table('farmer_lahan_mou')->where([
             'farmer_no' => $request->farmer_no,
-            'mou_no' => $request->mou_no,
             'program_year' => $request->program_year,
         ])->first();
-
-
         $_mouStatus = isset($request->mou_reject_reason) ? 2 : 1;
+        
 
         if (!$isExist) {
+            // Generate Mou No
+            // [Nomor Urut]-[Jenis]/T4T-Legal/[Kode Lokasi]/[Bulan Dalam Romawi]/[Tahun]
+            $countMou = DB::table('farmer_lahan_mou')->where('program_year', $request->program_year)->count();
+            $month = Carbon::now()->format('F');
+            $romawi = [
+                'Januari' => 'I',
+                'Februari' => 'II',
+                'Maret' => 'III',
+                'April' => 'IV',
+                'Mei' => 'V',
+                'Juni' => 'VI',
+                'Juli' => 'VII',
+                'Agustus' => 'VIII',
+                'September' => 'IX',
+                'Oktober' => 'X',
+                'November' => 'XI',
+                'Desember' => 'XII',
+            ];
+
+            $monthRomawi = $romawi[$month];
+            $mouNo = $countMou + 1 . '/MoU/T4T-Legal/JWB/' . $monthRomawi . '/' . Carbon::now()->format('Y');
             $dataToInsert = [
                 'farmer_no' => $request->farmer_no,
-                'mou_no' => $request->mou_no,
+                'mou_no' => $mouNo,
                 'program_year' => $request->program_year,
                 'mou_status' => $_mouStatus,
             ];
@@ -1171,7 +1222,7 @@ class LahanController extends Controller
 
             $insertedData = DB::table('farmer_lahan_mou')->where([
                 'farmer_no' => $request->farmer_no,
-                'mou_no' => $request->mou_no,
+                'mou_no' => $mouNo,
                 'program_year' => $request->program_year,
             ])->first();
 
@@ -1202,7 +1253,7 @@ class LahanController extends Controller
 
             $updating = DB::table('farmer_lahan_mou')->where([
                 'farmer_no' => $request->farmer_no,
-                'mou_no' => $request->mou_no,
+                'mou_no' => $isExist->mou_no,
                 'program_year' => $request->program_year,
             ])->update($dataToUpdate);
             
@@ -1213,7 +1264,7 @@ class LahanController extends Controller
 
             $updatedData = DB::table('farmer_lahan_mou')->where([
                 'farmer_no' => $request->farmer_no,
-                'mou_no' => $request->mou_no,
+                'mou_no' => $isExist->mou_no,
                 'program_year' => $request->program_year,
             ])->first();
 

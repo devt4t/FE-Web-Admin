@@ -48,11 +48,15 @@ export default {
       });
     },
     'formData.project_id'(v) {
-
+      if (!this.ready) return;
       for (const project_id of this.existingProjectIds) {
-        
+
+        //deleted
+        if (!v.includes(project_id) && !this.deletedProjectIds.includes(project_id)) {
+          this.deletedProjectIds.push(project_id);
+          
+        }
       }
-      console.log('project change', v);
       
     }
 
@@ -60,14 +64,6 @@ export default {
   methods: {
     onChangeProvince(data) {
       this.$set(this.formData, "province_code", data.province_code);
-      if (data.province_code === "JB") {
-        this.$set(this.formData, "project_id", [
-          {
-            code: 22,
-            project_name: "AZ Preliminary Project - PJ00008",
-          },
-        ]);
-      }
     },
     async initData() {
       const resData = await this.$_api.get("GetDetailScoopingVisit_new", {
@@ -112,19 +108,13 @@ export default {
         ["end_date", "end_scooping_date"],
         ["accessibility", "accessibility"],
         ["land_area", "village_area"],
-        // ["land_type", "land_type"],
-        // ["slope", "slope", "array"],
-        // ["altitude", "altitude"],
         ["vegetation_density", "vegetation_density", "array"],
         ["water_source", "water_source", "array"],
-        // ["rainfall", "rainfall", "array"],
         ["agroforestry_type", "agroforestry_type", "array"],
         ["goverment_place", "goverment_place", "array"],
         ["land_coverage", "land_coverage", "array"],
         ["electricity_source", "electricity_source", "array"],
         ["dry_land_area", "land_area"],
-        // ["village_polygon", "village_polygon"],
-        // ["dry_land_polygon", "dry_land_polygon"],
         ["total_dusun", "total_dusun"],
         ["potential_dusun", "potential_dusun"],
         ["potential_description", "potential_description"],
@@ -137,7 +127,6 @@ export default {
         ["village_profile", "village_profile"],
         ["status", "status"],
         ["complete_data", "complete_data"],
-        // ["project_id", "project_id"],
         ["projects_project_no", "project_code"],
         ["data_no", "data_no"],
         ["other_ngo", "other_ngo"],
@@ -292,15 +281,21 @@ export default {
       }
       this.$_api
         .post(endpoint, payload)
-        .then((res) => {
+        .then(async (res) => {
           if (!res.kode_scooping) {
             res.kode_scooping = this.formData.data_no;
           }
-          this.submitProject(res);
 
+          if (!this.isCreate) {
+            for (const project_id of this.deletedProjectIds) {
+              await this.deleteProject(project_id);
+            }
+          }
+          this.submitProject(res);
           this.submitOtherNgo(res);
           this.submitFfCandidate(res);
           this.submitFigure(res);
+          
         })
         .catch((err) => {
           console.log("err", err);
@@ -320,11 +315,11 @@ export default {
       }
     },
 
-    deleteProject() {
+    deleteProject(projectId) {
       return new Promise(async(resolve) => {
         const projectPayload = {
-          data_no: res.kode_scooping ?? this.formData.data_no,
-          project_id: parseInt(_projectId),
+          data_no: this.formData.data_no,
+          project_id: parseInt(projectId),
           delete_type: 'hard_delete'
         };
         const endpoint = "DeleteScoopingVisitProject_new";
