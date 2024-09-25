@@ -696,6 +696,15 @@ class LahanController extends Controller
             ]);
             
             $main_details = DB::selectOne($main_query);
+            $sumTutupans = $main_details->tutupan_pohon_percentage + $main_details->tutupan_tanaman_bawah_percentage + $main_details->tutupan_lain_bangunan_percentage;
+            if($main_details->gis_polygon_area != 0){
+                $land_areas = $main_details->gis_polygon_area;
+            }else{
+                $land_areas = $main_details->land_area;
+            }
+            $main_details->total_tutupan_percentage = $sumTutupans;
+            $main_details->total_planting_area_after_tutupan = $land_areas - (($sumTutupans/100)*$land_areas);
+            
             $lahan_broken_barcode = DB::select($lahan_broken_barcode_query);
             $lahan_details = DB::select($lahan_detail_query);
             $lahan_polygons = DB::select($lahan_polygons_query);
@@ -705,7 +714,7 @@ class LahanController extends Controller
             $lahan_ff_devices_request = DB::select($lahan_ff_devices_query); 
             $lahan_term_question_list = DB::select($lahan_term_question_query['sql']);
             $lahan_project_term_Request = DB::select($lahan_project_term_query);
-            $farmer_lahan_mou_Request = DB::select($farmer_lahan_mou_query); 
+            // $farmer_lahan_mou_Request = DB::select($farmer_lahan_mou_query); 
             
             
             return response()->json([
@@ -720,7 +729,7 @@ class LahanController extends Controller
                     'lahan_ff_devices_request' => $lahan_ff_devices_request,
                     'lahan_term_question_list' => $lahan_term_question_list,
                     'lahan_term_answer_list' => $lahan_project_term_Request,
-                    'farmer_lahan_mou' => $farmer_lahan_mou_Request
+                    // 'farmer_lahan_mou' => $farmer_lahan_mou_Request
                 ], 200);
     }
     
@@ -888,7 +897,7 @@ class LahanController extends Controller
                 "farmers_joinment" => [
                     "join" => " LEFT JOIN farmers as D ON D.farmer_no = A.farmer_no ",
                     "display" => 'D.name as farmer_name , D.ktp_no as farmer_nik, D.approve as farmer_approval, D.legal_land_categories, D.project_model, D.ktp_document as farmer_ktp, D.farmer_profile as farmer_photo',
-                    ],
+                ],
             ];
             $condition = [
                 "is_dell" => [
@@ -939,6 +948,12 @@ class LahanController extends Controller
             foreach($get_data as $datas){
                 $detailResult = "SELECT SUM(CASE WHEN B.tree_category = 'Pohon_Kayu' THEN A.amount ELSE 0 END) AS pohon_kayu_detail, SUM(CASE WHEN B.tree_category = 'Pohon_Buah' THEN A.amount ELSE 0 END) AS pohon_mpts_detail, SUM(CASE WHEN B.tree_category = 'Tanaman_Bawah_Empon' THEN A.amount ELSE 0 END) AS tanaman_bawah_detail, SUM(CASE WHEN B.tree_category = 'Mangrove' THEN A.amount ELSE 0 END) AS pohon_mangrove_detail FROM `lahan_details` A LEFT JOIN trees B ON B.tree_code = A.tree_code  WHERE A.lahan_no = '". $datas->lahan_no ."' AND YEAR(A.detail_year) = '". $program_year."'";
                 $datas->total_from_detail = DB::select($detailResult);
+                if($datas->gis_polygon_area != 0){
+                    $land_areas = $datas->gis_polygon_area;
+                }else{
+                    $land_areas = $datas->land_area;
+                }
+                $datas->current_land_area = $land_areas;
                 $lahanProjectRelation = [
                     "project_no" => [
                         "reference_table" => "projects",
@@ -1098,7 +1113,6 @@ class LahanController extends Controller
     public function farmerMouPrint(Request $request){
        $validator = Validator::make($request -> all(),[
             'farmer_no' => 'required',
-            'lahan_no' => 'required',
             'mou_no' => 'required',
             'program_year' => 'required',
         ]);
@@ -1107,23 +1121,28 @@ class LahanController extends Controller
             $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
             return response()->json($rslt, 422);
         }
-        
+
+        $allLahans = DB::table('main_pivots')->where([
+            'key1' => $request->farmer_no,
+            'type' => 'farmer_lahan',
+        ])->where('program_year', 'like', '%' . $request->program_year . '%')->get();
+
+        if (count($allLahans) == 0) {
+            return response()->json(['message' => 'Farmer doesnt have lahan in 2024'], 422);
+        }  
 
         $isExist = DB::table('farmer_lahan_mou')->where([
             'farmer_no' => $request->farmer_no,
-            'lahan_no' => $request->lahan_no,
             'mou_no' => $request->mou_no,
             'program_year' => $request->program_year,
         ])->first();
 
 
-        $_mouStatus = isset($request->mou_reject_reason)   ? 2 : 1;
+        $_mouStatus = isset($request->mou_reject_reason) ? 2 : 1;
 
         if (!$isExist) {
-
             $dataToInsert = [
                 'farmer_no' => $request->farmer_no,
-                'lahan_no' => $request->lahan_no,
                 'mou_no' => $request->mou_no,
                 'program_year' => $request->program_year,
                 'mou_status' => $_mouStatus,
@@ -1152,7 +1171,6 @@ class LahanController extends Controller
 
             $insertedData = DB::table('farmer_lahan_mou')->where([
                 'farmer_no' => $request->farmer_no,
-                'lahan_no' => $request->lahan_no,
                 'mou_no' => $request->mou_no,
                 'program_year' => $request->program_year,
             ])->first();
@@ -1184,7 +1202,6 @@ class LahanController extends Controller
 
             $updating = DB::table('farmer_lahan_mou')->where([
                 'farmer_no' => $request->farmer_no,
-                'lahan_no' => $request->lahan_no,
                 'mou_no' => $request->mou_no,
                 'program_year' => $request->program_year,
             ])->update($dataToUpdate);
@@ -1196,7 +1213,6 @@ class LahanController extends Controller
 
             $updatedData = DB::table('farmer_lahan_mou')->where([
                 'farmer_no' => $request->farmer_no,
-                'lahan_no' => $request->lahan_no,
                 'mou_no' => $request->mou_no,
                 'program_year' => $request->program_year,
             ])->first();
@@ -1212,6 +1228,7 @@ class LahanController extends Controller
         
         $validator = Validator::make($request -> all(),[
             'mou_no' => 'required',
+            'lahan_no' => 'required|string'
         ]);
 
         if($validator->fails()){
@@ -1219,36 +1236,71 @@ class LahanController extends Controller
             return response()->json($rslt, 422);
         }
 
-        $isExist = DB::table('farmer_lahan_mou')->where([
-            'mou_no' => $request->mou_no,
-        ])->first();
 
-        if (!$isExist) {
+        $farmerMou = DB::table('farmer_lahan_mou')->where([
+            'mou_no' => $request->mou_no
+        ])->first();
+        
+
+        if (!$farmerMou) {
             return response()->json(['message' => 'MOU not found'], 422);
         }
 
-        if ($isExist->mou_status == 2) {
+        if ($farmerMou->mou_status == 2) {
             return response()->json(['message' => 'MOU status is revision'], 422);
         }
 
-        if ($isExist->mou_status == 4) {
+        if ($farmerMou->mou_status == 4) {
             return response()->json(['message' => 'MOU status is already signed'], 422);
         }
 
-        if ($isExist->mou_status == 5) {
+        if ($farmerMou->mou_status == 5) {
             return response()->json(['message' => 'MOU status is already verified'], 422);
         }
 
+        
+        $isExist = DB::table('farmer_lahan_mou_lahan')->where([
+            'farmer_lahan_mou_id' => $farmerMou->id,
+            'lahan_no' => $request->lahan_no
+        ])->first();
 
-        DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->update([
-            'mou_status' => 3,
-        ]);
+        
+        $allLahans = DB::table('main_pivots')->where([
+            'key1' => $farmerMou->farmer_no,
+            'type' => 'farmer_lahan',
+        ])->where('program_year', 'like', '%' . $farmerMou->program_year . '%')->get();
 
-        return response()->json([
-            'message' => 'MOU updated successfully',
-            'result' => DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->first()
-        ], 200);
-    
+        if (count($allLahans) == 0) {
+            return response()->json(['message' => 'Farmer doesnt have lahan in 2024'], 422);
+        }
+
+
+        if (!$isExist) {
+            $dataToInsert = [
+                'farmer_lahan_mou_id' => $farmerMou->id,
+                'lahan_no' => $request->lahan_no,
+            ];
+
+            $inserting = DB::table('farmer_lahan_mou_lahan')->insert($dataToInsert);
+
+            if (!$inserting) {
+                return response()->json(['result' => 'failed'], 422);
+            }
+            $allMouLahans = DB::table('farmer_lahan_mou_lahan')->where([
+                'farmer_lahan_mou_id' => $farmerMou->id,
+            ])->get();
+            if (count($allLahans) == count($allMouLahans)) {
+                DB::table('farmer_lahan_mou')->where('mou_no', $request->mou_no)->update([
+                    'mou_status' => 3,
+                ]);
+            }
+            return response()->json([
+                'message' => 'MOU appendix printed successfully',
+                'result' => DB::table('farmer_lahan_mou_lahan')->where('lahan_no', $request->lahan_no)->first()
+            ], 200);
+        }
+
+        return response()->json(['message' => 'MOU appendix already printed'], 200);
     }
 
     public function farmerMouApprove(Request $request) {

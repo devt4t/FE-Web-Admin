@@ -2,6 +2,11 @@
   <v-row class="lahan-detail" :key="'lahan-detail' + componentKey">
     <v-col md="4" xl="3">
       <lahan-mou-print
+        v-if="
+          data.main_lahan &&
+          data.main_lahan.approve == 2 &&
+          $_sys.isAllowed('lahan-print-mou-create')
+        "
         :mouData="
           Array.isArray(data.farmer_lahan_mou) &&
           data.farmer_lahan_mou.length > 0
@@ -14,7 +19,13 @@
         :modalKey="printModal"
       />
       <lahan-appendix-print
-        v-if="mapReady"
+        v-if="
+          data.main_lahan &&
+          data.main_lahan.approve == 2 &&
+          mouData &&
+          mouData.mou_status == 1 &&
+          $_sys.isAllowed('lahan-print-appendix-create')
+        "
         :mouData="
           Array.isArray(data.farmer_lahan_mou) &&
           data.farmer_lahan_mou.length > 0
@@ -149,18 +160,49 @@
                   "
                   >Verifikasi UM</v-btn
                 >
+                <v-btn
+                  v-if="$_sys.isAllowed('lahan-gis-verification-update')"
+                  variant="info"
+                  class="mr-1 mb-2"
+                  @click="onRecalculatePlantingArea"
+                  :disabled="loading"
+                  ><v-icon>mdi-calculator</v-icon
+                  ><span class="ml-1">Recalculate Planting Area</span></v-btn
+                >
 
                 <!-- PRINT & PREVIEW MOU -->
                 <v-btn
                   variant="primary"
                   class="mr-1 mb-2 d-flex flex-row align-items-center"
-                  v-if="$_sys.isAllowed('lahan-print-mou-create')"
+                  v-if="
+                    $_sys.isAllowed('lahan-print-mou-create') &&
+                    data.main_lahan &&
+                    data.main_lahan.approve == 2
+                  "
                   @click="printModal += 1"
                 >
-                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase().includes('upload')">mdi-file-upload-outline</v-icon>
-                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase().includes('revisi')">mdi-file-document-edit-outline</v-icon>
-                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase().includes('verifikasi')">mdi-file-alert-outline</v-icon>
-                  <v-icon v-else-if="btnLabelLegalitasMOU.toLowerCase().includes('lihat')">mdi-file-eye-outline</v-icon>
+                  <v-icon
+                    v-if="btnLabelLegalitasMOU.toLowerCase().includes('upload')"
+                    >mdi-file-upload-outline</v-icon
+                  >
+                  <v-icon
+                    v-else-if="
+                      btnLabelLegalitasMOU.toLowerCase().includes('revisi')
+                    "
+                    >mdi-file-document-edit-outline</v-icon
+                  >
+                  <v-icon
+                    v-else-if="
+                      btnLabelLegalitasMOU.toLowerCase().includes('verifikasi')
+                    "
+                    >mdi-file-alert-outline</v-icon
+                  >
+                  <v-icon
+                    v-else-if="
+                      btnLabelLegalitasMOU.toLowerCase().includes('lihat')
+                    "
+                    >mdi-file-eye-outline</v-icon
+                  >
                   <v-icon v-else>mdi-printer-outline</v-icon>
                   <span class="ml-1">{{ btnLabelLegalitasMOU }}</span>
                 </v-btn>
@@ -169,7 +211,11 @@
                 <v-btn
                   variant="primary"
                   @click="onOpenAppendixPrint"
-                  v-if="$_sys.isAllowed('lahan-print-appendix-create')"
+                  v-if="
+                    $_sys.isAllowed('lahan-print-appendix-create') &&
+                    mouData &&
+                    mouData.mou_status == 1
+                  "
                 >
                   <v-icon>mdi-printer-outline</v-icon>
                   <span>Print Appendix</span>
@@ -214,10 +260,7 @@
                   "
                   variant="success"
                   class="mr-1 mb-2"
-                  @click="
-                    openGisEdit = true;
-                    verifRole = 'fc-non-carbon';
-                  "
+                  @click="openFcNonCarbon = true"
                   >Verifikasi FC</v-btn
                 >
 
@@ -318,6 +361,25 @@
             "
           />
 
+          <lahan-verification-fc-non-carbon
+            v-if="
+              data.main_lahan &&
+              $_sys.isAllowed('lahan-fc-verification-create') &&
+              openFcNonCarbon
+            "
+            :data="data.main_lahan"
+            :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            @success="
+              componentKey += 1;
+              openFcNonCarbon = false;
+              getData();
+            "
+            @close="
+              openFcNonCarbon = false;
+              verifRole = null;
+            "
+          />
           <lahan-verification-fc
             v-if="
               data.main_lahan &&
@@ -438,7 +500,6 @@
                     >
                   </span>
                 </div>
-
                 <!-- STATUS NON CARBON -->
                 <div
                   class="d-flex flex-row value"
@@ -471,6 +532,49 @@
                       >Data Lahan Terverifikasi</span
                     >
                     <span v-else-if="data.main_lahan.approve === 2"
+                      >Terverifikasi</span
+                    >
+                  </span>
+                </div>
+              </div>
+
+              <div
+                class="lahan-side-item"
+                v-if="data.main_lahan && data.main_lahan.approve == 2"
+              >
+                <p class="mb-0 label" v-if="getProject() === 'carbon'">
+                  Status MOU
+                </p>
+                <div class="d-flex flex-row value">
+                  <span
+                    class="badge"
+                    :class="{
+                      'bg-warning':
+                        !mouData || (mouData && mouData.mou_status == 0),
+                      'bg-primary': mouData && mouData.mou_status == 1,
+                      'bg-danger': mouData && mouData.mou_status == 2,
+                      'bg-info': mouData && mouData.mou_status == 3,
+                      'bg-success':
+                        mouData && [4, 5].includes(mouData.mou_status),
+                    }"
+                  >
+                    <span
+                      v-if="!mouData || (mouData && mouData.mou_status == 0)"
+                      >Belum Dicetak</span
+                    >
+                    <span v-else-if="mouData && mouData.mou_status == 1"
+                      >MOU Sudah Dicetak</span
+                    >
+                    <span v-else-if="mouData && mouData.mou_status == 2"
+                      >MOU Butuh Revisi</span
+                    >
+                    <span v-else-if="mouData && mouData.mou_status == 3"
+                      >Ready to be sign</span
+                    >
+                    <span v-else-if="mouData && mouData.mou_status == 4"
+                      >Signed</span
+                    >
+                    <span v-else-if="mouData && mouData.mou_status == 5"
                       >Terverifikasi</span
                     >
                   </span>
@@ -1223,6 +1327,7 @@ import LahanGisVerification from "./LahanGisVerification.vue";
 import LahanVerificationGis from "./components/LahanVerificationGis.vue";
 import LahanVerificationFcCompleteData from "./components/LahanVerificationFcCompleteData.vue";
 import LahanVerificationFc from "./components/LahanVerificationFc.vue";
+import LahanVerificationFcNonCarbon from "./components/LahanVerificationFcNonCarbon.vue";
 import LahanVerificationUm from "./components/LahanVerificationUm.vue";
 import LahanMouPrint from "./components/LahanMouPrint.vue";
 import LahanAppendixPrint from "./components/LahanAppendixPrint.vue";
@@ -1240,6 +1345,7 @@ export default {
     LahanVerificationUm,
     LahanMouPrint,
     LahanAppendixPrint,
+    LahanVerificationFcNonCarbon,
   },
   methods: {
     test() {
@@ -1262,6 +1368,37 @@ export default {
       //     a.click();
       //     canvas.remove();
       //   });
+    },
+
+    async onRecalculatePlantingArea() {
+      if (!this.data.main_lahan) return;
+      const totalTutupan = parseFloat(
+        this.data.main_lahan.total_tutupan_percentage
+      );
+      const polygonArea = this.data.main_lahan.gis_polygon_area;
+      const totalTutupanMeter = (totalTutupan / 100) * polygonArea;
+
+      const plantingArea = parseFloat(polygonArea - totalTutupanMeter).toFixed(
+        2
+      );
+      const payload = {
+        lahan_no: this.data.main_lahan.lahan_no,
+        gis_planting_area: plantingArea,
+      };
+
+      console.log("payload", payload);
+      this.loading = true;
+      const result = await this.$_api
+        .post("updateGISPlantingArea", payload)
+        .then(() => true)
+        .catch(() => false);
+
+      if (result) {
+        this.$_alert.success("Luas tanam berhasil dihitung ulang");
+      }
+      this.loading = false;
+
+      this.getData();
     },
 
     onOpenAppendixPrint() {
@@ -1521,7 +1658,12 @@ export default {
       });
 
       this.data = result;
-      console.log("detailData res", result);
+
+      if (Array.isArray(result.farmer_lahan_mou)) {
+        if (result.farmer_lahan_mou.length > 0) {
+          this.mouData = result.farmer_lahan_mou[0];
+        }
+      }
       let _trees = [];
       for (const tree of result.lahan_detail) {
         const idx = _trees.findIndex(
@@ -1787,18 +1929,19 @@ export default {
 
   computed: {
     btnLabelLegalitasMOU() {
-      let label = 'Print MOU'
-      if (Array.isArray(this.data.farmer_lahan_mou) &&
+      let label = "Print MOU";
+      if (
+        Array.isArray(this.data.farmer_lahan_mou) &&
         this.data.farmer_lahan_mou.length > 0
       ) {
         const find = this.data.farmer_lahan_mou.find(
           (v) => v.mou_no == this.data.main_lahan.farmers_mou_no_pivot_farmer
         );
         if (find) {
-          if (find.mou_status == 1) label = 'Upload Lampiran MOU'
-          else if (find.mou_status == 2) label = 'Revisi MOU'
-          else if (find.mou_status == 4) label = 'Verifikasi Lampiran'
-          else if (find.mou_status == 5) label = 'Lihat Lampiran'
+          if (find.mou_status == 1) label = "Upload Lampiran MOU";
+          else if (find.mou_status == 2) label = "Revisi MOU";
+          else if (find.mou_status == 4) label = "Verifikasi Lampiran";
+          else if (find.mou_status == 5) label = "Lihat Lampiran";
         }
       }
 
@@ -1822,6 +1965,7 @@ export default {
       mapOpen: true,
       openGisEdit: false,
       openFcCompleteData: false,
+      openFcNonCarbon: false,
       openUm: false,
       openFc: false,
       polygonGisArea: 0,
@@ -1829,6 +1973,7 @@ export default {
       printModal: 0,
       printAppendixModal: 0,
       polygonImageData: null,
+      mouData: null,
       markers: [],
       verifRole: null,
       legends: [
@@ -2034,7 +2179,8 @@ export default {
         ["Foto Tanah", "soil_photo", "photo"],
         ["SPPT", "sppt", "photo"],
         ["Tutupan Lahan", "tutupan_lahan", "", "", "%"],
-        ["Foto Tutupan Lahan", "tutupan_pohon_photo", "photo"],
+        ["Tutupan Pohon", "tutupan_pohon_percentage", "", "", "%"],
+        ["Foto Tutupan Pohon", "tutupan_pohon_photo", "photo"],
         [
           "Tutupan Bangunan / Lainnya",
           "tutupan_lain_bangunan_percentage",

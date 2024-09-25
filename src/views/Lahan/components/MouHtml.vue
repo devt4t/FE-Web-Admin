@@ -830,7 +830,7 @@
           class="d-flex"
           style="flex-direction: column; justify-content: flex-end"
         ></div>
-        <qr-code :text="'adfjasldfkjladfjlskdajflksjdfl'" :size="130"></qr-code>
+        <qr-code :text="data.mou_no" :size="130"></qr-code>
       </div>
     </section>
 
@@ -848,17 +848,11 @@
         "
       >
         <div style="width: 30%">
-          <img
-            :src="data.farmer_photo"
-            style="width: 100%; height: auto"
-          />
+          <img :src="data.farmer_photo" style="width: 100%; height: auto" />
         </div>
 
         <div style="width: 50%">
-          <img
-            :src="data.farmer_ktp_photo"
-            style="width: 100%; height: auto"
-          />
+          <img :src="data.farmer_ktp_photo" style="width: 100%; height: auto" />
         </div>
       </div>
     </section>

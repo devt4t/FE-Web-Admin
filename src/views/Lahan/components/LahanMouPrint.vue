@@ -127,7 +127,6 @@
               :float-layout="false"
               :enable-download="true"
               :preview-modal="true"
-              :filename="`MOU-${data.farmer_name}-${data.mou_start}-${data.mou_end}`"
               :pdf-quality="1"
               :manual-pagination="true"
               pdf-format="a4"
@@ -137,6 +136,7 @@
               ref="html2Pdf"
               :html-to-pdf-options="{
                 margin: 0,
+                filename: `MOU-${data.farmer_name}`,
                 pagebreak: {
                   mode: ['css', 'legacy'],
                   after: '.html2pdf__page-break',
@@ -248,10 +248,6 @@ export default {
         this.loading = false;
         this.$_alert.success("Mou berhasil diunduh");
 
-        let mouData = this.mouData;
-        console.log("mouData", this.mouData);
-        console.log("farmer data", this.lahanData);
-
         return;
       } catch (err) {
         console.log("onDownloadComplete() error", err);
@@ -290,6 +286,7 @@ export default {
         mou_end: mouEnd,
         farmer_ktp_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_ktp_document_pivot_farmer}`,
         farmer_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_ktp_document_pivot_farmer}`,
+        mou_no: this.lahanData.mou_no,
       };
 
       // default opened modal
@@ -325,14 +322,12 @@ export default {
           mou_no: this.lahanData.farmers_mou_no_pivot_farmer,
           ...param,
         };
-        console.log("payload", payload);
 
         // update print status
         const { result: res } = await this.$_api.post(
           "farmer-mou/print",
           payload
         );
-        console.log("res", res);
 
         // update local data
         this.refreshDetailLahan();

@@ -142,6 +142,7 @@ export default {
 
     onDownloadComplete() {
       this.loading = false;
+      this.$parent.getData();
     },
   },
 
