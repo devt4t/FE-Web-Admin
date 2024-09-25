@@ -16,7 +16,7 @@
           data.main_lahan &&
           data.main_lahan.approve == 2 &&
           mouData &&
-          ![0,2].includes(mouData.mou_status) &&
+          ![0, 2].includes(mouData.mou_status) &&
           $_sys.isAllowed('lahan-print-appendix-create')
         "
         :mouData="mouData || null"
@@ -194,6 +194,7 @@
                 </v-btn>
 
                 <!-- PRINT APPENDIX LAHAN -->
+
                 <v-btn
                   variant="primary"
                   @click="onOpenAppendixPrint"
@@ -206,7 +207,7 @@
                   :key="`lahan-${i}`"
                 >
                   <v-icon>mdi-printer-outline</v-icon>
-                  <span>Print Appendix</span>
+                  <span>Print Appendix {{ lahan.key2 }}</span>
                 </v-btn>
               </div>
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
@@ -1933,7 +1934,7 @@ export default {
     btnLabelLegalitasMOU() {
       let label = "Print MOU";
       if (this.mouData) {
-        if ([1,5].includes(this.mouData.mou_status)) label = "Preview MOU";
+        if ([1, 5].includes(this.mouData.mou_status)) label = "Preview MOU";
         else if (this.mouData.mou_status == 2) label = "Revisi MOU";
         else if (this.mouData.mou_status == 3) label = "Upload Lampiran";
         else if (this.mouData.mou_status == 4) label = "Verifikasi Lampiran";
