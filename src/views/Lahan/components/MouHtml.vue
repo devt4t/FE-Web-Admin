@@ -830,7 +830,7 @@
           class="d-flex"
           style="flex-direction: column; justify-content: flex-end"
         ></div>
-        <qr-code :text="data.mou_no" :size="130"></qr-code>
+        <qr-code v-if="data.mou_no" :text="data.mou_no" :size="130"></qr-code>
       </div>
     </section>
 
