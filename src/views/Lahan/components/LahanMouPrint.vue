@@ -30,19 +30,6 @@
                 MOU</span
               >
             </v-btn>
-            <!-- btn print -->
-            <v-btn
-              v-if="mouData && mouData.status >= 3"
-              small
-              variant="primary"
-              class="d-flex flex-row align-items-center ml-2"
-              @click="() => openPrintAppendix"
-            >
-              <v-icon>mdi-printer-outline</v-icon>
-              <span class="ml-1">Print Ulang Appendix</span>
-            </v-btn>
-            <!-- btn verifikasi -->
-
             <!-- btn revision -->
             <v-btn
               v-if="!mouData || mouData.mou_status == 0"
