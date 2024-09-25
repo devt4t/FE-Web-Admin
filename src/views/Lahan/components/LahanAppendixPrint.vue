@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- main dialog -->
-    <v-dialog v-model="isOpen" width="90%">
+    <v-dialog v-model="isOpen" width="1200" scrollable>
       <template>
-        <v-card style="height: 90vh; overflow: auto">
+        <v-card>
           <v-card-title class="d-flex flex-row justify-content-between mb-5">
             <h4 class="mb-0 pb-0">Preview Appendix Lahan</h4>
 
@@ -26,7 +26,7 @@
               </v-btn>
             </div>
           </v-card-title>
-          <v-card-text>
+          <v-card-text class="pt-5">
             <div class="preview-wrapper">
               <vue-html2pdf
                 :show-layout="true"
@@ -116,6 +116,7 @@ export default {
 
       this.$_api
         .post("farmer-mou/print-appendix", {
+          lahan_no: this.data.lahan_no,
           mou_no: this.data.mou_no,
         })
         .then(() => {
@@ -127,7 +128,7 @@ export default {
     },
     onOpen() {
       this.data = {
-        mou_no: this.lahanData.farmers_mou_no_pivot_farmer,
+        mou_no: this.mouData.mou_no,
         polygon_image: this.imageData,
         farmer_name: this.lahanData.farmers_name,
         farmer_no: this.lahanData.farmer_no,
@@ -135,6 +136,7 @@ export default {
         trees: this.trees,
         gis_polygon_area: this.lahanData.gis_polygon_area,
         gis_planting_area: this.lahanData.gis_planting_area,
+        lahan_no: this.lahanData.lahan_no
       };
 
       this.isOpen = true;

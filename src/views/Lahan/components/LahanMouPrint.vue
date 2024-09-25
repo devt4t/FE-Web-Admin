@@ -30,6 +30,17 @@
                 MOU</span
               >
             </v-btn>
+            <!-- btn print -->
+            <v-btn
+              v-if="mouData && mouData.status >= 3"
+              small
+              variant="primary"
+              class="d-flex flex-row align-items-center ml-2"
+              @click="() => openPrintAppendix"
+            >
+              <v-icon>mdi-printer-outline</v-icon>
+              <span class="ml-1">Print Ulang Appendix</span>
+            </v-btn>
             <!-- btn verifikasi -->
 
             <!-- btn revision -->
@@ -49,7 +60,7 @@
               <v-icon v-else>mdi-file-edit-outline</v-icon>
               <span class="ml-1">Revisi MOU</span>
             </v-btn>
-            <!-- btn upload berkas -->
+            <!-- btn upload lampiran -->
             <v-btn
               v-if="
                 mouData && mouData.printed_status && mouData.mou_status != 5
@@ -64,9 +75,9 @@
               "
             >
               <v-icon>mdi-file-alert-outline</v-icon>
-              <span class="ml-1">Upload Berkas</span>
+              <span class="ml-1">Upload Lampiran</span>
             </v-btn>
-            <!-- btn preview berkas -->
+            <!-- btn preview lampiran -->
             <v-btn
               v-if="
                 mouData &&
@@ -83,11 +94,11 @@
               "
             >
               <v-icon>mdi-file-eye-outline</v-icon>
-              <span class="ml-1">Preview Berkas</span>
+              <span class="ml-1">Preview Lampiran</span>
             </v-btn>
           </div>
         </v-card-title>
-        <v-card-text>
+        <v-card-text class="pt-5">
           <v-alert
             v-if="mouData && mouData.printed_at && !openFormUpload"
             dense
@@ -116,6 +127,7 @@
             @close="openFormUpload = false"
             @closeParent="isOpen = false"
             @refreshData="refreshDetailLahan()"
+            @openPrintAppendix="openPrintAppendix"
           />
           <!-- MOU -->
           <div
@@ -303,10 +315,24 @@ export default {
       await this.updateFarmerMOUPrint({
         mou_reject_reason: this.dialogs.revision.data.mou_revision_reason,
       });
+
+      // success
+      this.$_alert.success('Berhasil menyimpan data!')
+
       this.dialogs.revision.isOpen = false;
       this.dialogs.revision.data.mou_revision_reason = null;
       this.isOpen = false;
       this.loading = false;
+    },
+    openPrintAppendix() {
+      try {
+        this.isOpen = false
+        setTimeout(() => {
+          this.$parent.onOpenAppendixPrint()
+        }, 100);
+      } catch (err) {
+        console.log('openPrintAppendix() error', err)
+      }
     },
     async beforeDownload({ html2pdf, options, pdfContent }) {
       console.log("options", options);

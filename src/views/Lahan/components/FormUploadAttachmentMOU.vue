@@ -18,7 +18,7 @@
         <span>Lihat MOU</span>
       </v-btn>
     </div>
-    <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
+    <ValidationObserver v-if="mouData.mou_status == 3" ref="firstForm" v-slot="{ handleSubmit }">
       <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
         <v-row>
           <template v-for="(input, i) in formInputs">
@@ -92,6 +92,19 @@
         </v-row>
       </form>
     </ValidationObserver>
+    <div v-else
+      class="my-5 py-5"
+    >
+      <v-alert color="warning" dense text>
+        <v-icon large color="warning" class="mr-2">mdi-printer-alert</v-icon>
+        Silakan Print Appendix Terlebih Dahulu!
+      </v-alert>
+      <v-btn color="warning"
+        @click="openPrintAppendix()"
+      >
+        Print Appendix
+      </v-btn>
+    </div>
   </div>
 </template>
 <script>
@@ -145,7 +158,8 @@ export default {
         this.loading = true
         // set payload
         const payload = {
-          mou_no: this.mouData.mou_no
+          mou_no: this.mouData.mou_no,
+          lahan_no: this.lahanData.lahan_no
         }
         for (const [field, data] of Object.entries(this.formData)) {
           if (this.formInputs.find(v => v.field == field).show) {
@@ -172,6 +186,12 @@ export default {
         this.loading = false
       }
     },
+    openPrintAppendix() {
+      // open appendix modal
+      setTimeout(() => {
+        this.$emit('openPrintAppendix')
+      }, 100);
+    },  
     setForm() {
       const legalLandCategory = this.lahanData.farmers_legal_land_categories_pivot_farmer
       // hide field
