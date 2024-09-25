@@ -7,14 +7,7 @@
           data.main_lahan.approve == 2 &&
           $_sys.isAllowed('lahan-print-mou-create')
         "
-        :mouData="
-          Array.isArray(data.farmer_lahan_mou) &&
-          data.farmer_lahan_mou.length > 0
-            ? data.farmer_lahan_mou.find(
-                (v) => v.mou_no == data.main_lahan.farmers_mou_no_pivot_farmer
-              )
-            : null
-        "
+        :mouData="mouData || null"
         :lahanData="data.main_lahan"
         :modalKey="printModal"
       />
@@ -26,14 +19,7 @@
           mouData.mou_status == 1 &&
           $_sys.isAllowed('lahan-print-appendix-create')
         "
-        :mouData="
-          Array.isArray(data.farmer_lahan_mou) &&
-          data.farmer_lahan_mou.length > 0
-            ? data.farmer_lahan_mou.find(
-                (v) => v.mou_no == data.main_lahan.farmers_mou_no_pivot_farmer
-              )
-            : null
-        "
+        :mouData="mouData || null"
         :lahanData="data.main_lahan"
         :modalKey="printAppendixModal"
         :imageData="polygonImageData"
@@ -1659,11 +1645,7 @@ export default {
 
       this.data = result;
 
-      if (Array.isArray(result.farmer_lahan_mou)) {
-        if (result.farmer_lahan_mou.length > 0) {
-          this.mouData = result.farmer_lahan_mou[0];
-        }
-      }
+      // set trees data
       let _trees = [];
       for (const tree of result.lahan_detail) {
         const idx = _trees.findIndex(
@@ -1680,6 +1662,20 @@ export default {
       }
 
       this.trees = _trees;
+
+      // get data mou
+      try {
+        const {data: resMou} = await this.$_api.get('farmer-mou/find', {
+          farmer_no: result.main_lahan.farmer_no,
+          program_year: this.$_config.programYear.model
+        })
+        console.log('resMou', resMou)
+        this.mouData = resMou
+      } catch (err) {
+        console.log('getData() farmer-mou/find error',err)
+        this.mouData = null
+      }
+
       this.openMaps();
     },
 
@@ -1930,19 +1926,11 @@ export default {
   computed: {
     btnLabelLegalitasMOU() {
       let label = "Print MOU";
-      if (
-        Array.isArray(this.data.farmer_lahan_mou) &&
-        this.data.farmer_lahan_mou.length > 0
-      ) {
-        const find = this.data.farmer_lahan_mou.find(
-          (v) => v.mou_no == this.data.main_lahan.farmers_mou_no_pivot_farmer
-        );
-        if (find) {
-          if (find.mou_status == 1) label = "Upload Lampiran MOU";
-          else if (find.mou_status == 2) label = "Revisi MOU";
-          else if (find.mou_status == 4) label = "Verifikasi Lampiran";
-          else if (find.mou_status == 5) label = "Lihat Lampiran";
-        }
+      if (this.mouData) {
+        if (this.mouData.mou_status == 1) label = "Upload Lampiran MOU";
+        else if (this.mouData.mou_status == 2) label = "Revisi MOU";
+        else if (this.mouData.mou_status == 4) label = "Verifikasi Lampiran";
+        else if (this.mouData.mou_status == 5) label = "Lihat Lampiran";
       }
 
       return label;
