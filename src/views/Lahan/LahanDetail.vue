@@ -197,17 +197,22 @@
 
                 <v-btn
                   variant="primary"
-                  @click="onOpenAppendixPrint"
+                  @click="onOpenAppendixPrint(lahan.key2)"
                   v-if="
+                  data.main_lahan && 
                     $_sys.isAllowed('lahan-print-appendix-create') &&
                     mouData &&
                     mouData.mou_status == 1
                   "
                   v-for="(lahan, i) in mouData.lahans"
                   :key="`lahan-${i}`"
+                  class="mb-2"
                 >
                   <v-icon>mdi-printer-outline</v-icon>
-                  <span>Print Appendix {{ lahan.key2 }}</span>
+                  <span v-if="lahan.key2 === data.main_lahan.lahan_no"
+                    >Print Appendix {{ lahan.key2 }}</span
+                  >
+                  <span v-else>Print Appendix</span>
                 </v-btn>
               </div>
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
@@ -1394,7 +1399,14 @@ export default {
       this.getData();
     },
 
-    onOpenAppendixPrint() {
+    onOpenAppendixPrint(lahanNo) {
+
+      if (this.data.main_lahan && this.data.main_lahan.lahan_no === lahanNo) {
+        window.open(
+          `/#/lahan-v2?view=detail&id=${lahanNo}`
+        );
+        return
+      }
       var mapCanvas = document.querySelector(".mapboxgl-canvas");
       mapCanvas.style.display = "block";
       const mapImage = mapCanvas.toDataURL();

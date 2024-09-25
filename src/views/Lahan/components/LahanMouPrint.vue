@@ -32,7 +32,9 @@
             </v-btn>
             <!-- btn revision -->
             <v-btn
-              v-if="!mouData || mouData.mou_status == 0"
+              v-if="
+                (mouData && mouData.mou_status == 0) || (mouData && !mouData.id)
+              "
               small
               variant="warning"
               class="d-flex flex-row align-items-center ml-2"
@@ -304,7 +306,7 @@ export default {
       });
 
       // success
-      this.$_alert.success('Berhasil menyimpan data!')
+      this.$_alert.success("Berhasil menyimpan data!");
 
       this.dialogs.revision.isOpen = false;
       this.dialogs.revision.data.mou_revision_reason = null;
@@ -313,12 +315,12 @@ export default {
     },
     openPrintAppendix() {
       try {
-        this.isOpen = false
+        this.isOpen = false;
         setTimeout(() => {
-          this.$parent.onOpenAppendixPrint()
+          this.$parent.onOpenAppendixPrint();
         }, 100);
       } catch (err) {
-        console.log('openPrintAppendix() error', err)
+        console.log("openPrintAppendix() error", err);
       }
     },
     async beforeDownload({ html2pdf, options, pdfContent }) {
