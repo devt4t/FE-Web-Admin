@@ -454,6 +454,7 @@ import "./lahan.scss";
 import LahanDetail from "./LahanDetail.vue";
 import LahanKmlUpload from "./LahanKmlUpload.vue";
 import LahanExportModal from "./LahanExportModal.vue";
+import LahanExportSocialImpactModal from "./LahanExportModal_socialImpactOfficer.vue"
 import config from "./lahanConfig.js";
 export default {
   name: "lahan-v2",
@@ -462,6 +463,7 @@ export default {
     LahanDetail,
     LahanKmlUpload,
     LahanExportModal,
+    LahanExportSocialImpactModal,
   },
   methods: {
     getProject(item) {
