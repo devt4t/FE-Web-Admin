@@ -1371,7 +1371,7 @@ export default {
     async onRecalculatePlantingArea() {
       if (!this.data.main_lahan) return;
       const totalTutupan = parseFloat(
-        this.data.main_lahan.total_tutupan_percentage
+        this.data.main_lahan.tutupan_lahan
       );
       const polygonArea = this.data.main_lahan.gis_polygon_area;
       const totalTutupanMeter = (totalTutupan / 100) * polygonArea;

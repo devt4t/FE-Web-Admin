@@ -24,6 +24,7 @@
                         limit: 50,
                       },
                       option: {
+                        getterKey: 'data.result',
                         list_pointer: {
                           label: 'name',
                           code: 'mu_no',
@@ -156,7 +157,6 @@ export default {
       };
 
       const configFilename = {
-
         excel: `Report-${this.currentFfName.replace(/ /g, "")}-${
           this.mu_no
         }-${moment().format("DMMYYYYHHmmss")}.xlsx`,

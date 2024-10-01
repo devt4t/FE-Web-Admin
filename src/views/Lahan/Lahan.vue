@@ -366,6 +366,10 @@
 
     <template v-slot:list-before-create>
       <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
+      <lahan-export-social-impact-modal
+        :dataKey="exportSocialImpactModal"
+        :format="exportFormat"
+      />
     </template>
 
     <template v-slot:list-fc_complete_data="{ item }">
@@ -454,7 +458,7 @@ import "./lahan.scss";
 import LahanDetail from "./LahanDetail.vue";
 import LahanKmlUpload from "./LahanKmlUpload.vue";
 import LahanExportModal from "./LahanExportModal.vue";
-import LahanExportSocialImpactModal from "./LahanExportModal_socialImpactOfficer.vue"
+import LahanExportSocialImpactModal from "./LahanExportModal_socialImpactOfficer.vue";
 import config from "./lahanConfig.js";
 export default {
   name: "lahan-v2",
@@ -533,8 +537,12 @@ export default {
     },
 
     onExportExcel() {
-      this.exportModal += 1;
-      this.exportFormat = "excel";
+      if (this.$store.state.User.role == 25) {
+        this.exportSocialImpactModal += 1;
+      } else {
+        this.exportModal += 1;
+        this.exportFormat = "excel";
+      }
     },
 
     onExportPdf() {
@@ -592,6 +600,7 @@ export default {
       uploadKmlModal: 2,
       componentKey: 1,
       exportModal: 0,
+      exportSocialImpactModal: 0,
       exportFormat: "",
       formatDate(date, format = "DD MMMM YYYY", dateFormat = "YYYY-MM-DD") {
         return moment(date, dateFormat).format(format);

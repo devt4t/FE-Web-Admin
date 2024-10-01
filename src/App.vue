@@ -171,10 +171,19 @@
             }}</v-icon>
             <span
               >{{ menu.title }}
-              <span class="badge bg-info text-info" v-if="menu.update"
+              <span
+                class="badge bg-primary text-primary"
+                v-if="
+                  menu.third &&
+                  $store.state.User &&
+                  $store.state.User.role_id != 38
+                "
+                >3rd party</span
+              >
+              <span class="badge bg-info text-info" v-else-if="menu.update"
                 >v2</span
-              ></span
-            >
+              >
+            </span>
           </a>
         </div>
       </div>
@@ -486,7 +495,7 @@ export default {
           this.buildConfig();
 
           if (this.$route.path == "/") {
-            this.$router.push("/Dashboard");
+            this.redirectToDashboard();
           }
         } else {
           if (!localStorage.getItem("token")) {
@@ -496,7 +505,7 @@ export default {
             this.buildConfig();
 
             if (this.$route.path == "/") {
-              this.$router.push("/Dashboard");
+              this.redirectToDashboard();
             }
           }
         }
@@ -504,6 +513,19 @@ export default {
     },
   },
   methods: {
+    redirectToDashboard() {
+      if (this.$store.state.User && this.$store.state.User.role == 38) {
+        this.$router.push({
+          path: "lahan-2",
+          query: {
+            view: "list",
+          },
+        });
+
+        return;
+      }
+      this.$router.push("/Dashboard");
+    },
     async onInit() {
       if (!this.$store.state.tmpProjectPurpose) {
         this.$store.commit("set", ["tmpProjectPurpose", "non-carbon", true]);
@@ -519,7 +541,7 @@ export default {
         await this.getLatestPermission();
         this.buildConfig();
         if (this.$route.path == "/") {
-          this.$router.push("/Dashboard");
+          this.redirectToDashboard();
         }
         this.isLoggedIn = true;
       }
@@ -645,6 +667,7 @@ export default {
                     icon: submenu.icon,
                     update: submenu.update,
                     new: submenu.new,
+                    third: submenu.third,
                     type: Array.isArray(submenu.type) ? submenu.type : [],
                   });
                 }
@@ -663,7 +686,7 @@ export default {
                   component: () => import(`@/views/${submenu.component}.vue`),
                 });
               } else {
-                console.log(submenu.name);
+                // console.log(submenu.name);
               }
             }
           }

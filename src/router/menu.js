@@ -119,6 +119,17 @@ const menu = [
         prevent_route_validation: true,
       },
       {
+        title: "Lahan",
+        to: "/lahan-2",
+        component: "Lahan/Lahan2",
+        name: "Lahan2",
+        permission: "Lahan2",
+        icon: "mdi-square-rounded",
+        update: true,
+        prevent_route_validation: true,
+        third: true,
+      },
+      {
         title: "Lahan Umum",
         to: "/LahanUmum",
         component: "Lahan/LahanUmum",

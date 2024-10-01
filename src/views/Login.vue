@@ -228,20 +228,6 @@ export default {
         if (datapost.program_year) {
           this.snackbar = true;
           if (response.data.data.status.code == 200) {
-            // localStorage.setItem(
-            //   "token",
-            //   response.data.data.result.access_token
-            // );
-            // localStorage.setItem(
-            //   "User",
-            //   JSON.stringify(response.data.data.result.User)
-            // );
-            // localStorage.setItem("BaseUrlGet", this.BaseUrlGet);
-            // localStorage.setItem("BaseUrlUpload", this.BaseUrlUpload);
-            // localStorage.setItem("BaseUrl", this.BaseUrl);
-            // localStorage.setItem("BaseUrlPortal", this.BaseUrlPortal);
-            // localStorage.setItem("xAppKey_Portal", this.xAppKey_Portal);
-
             this.$store.commit("set", [
               "ApiConfig",
               {
