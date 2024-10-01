@@ -1189,6 +1189,113 @@ export default {
       }
     },
 
+    // export new land with seed
+    async getNewLahanWithSeedsPagination(page, per_page, py, mu){
+      const data = await this.$_api.get("lahan-export/for-report-data", {
+        program_year: py,
+        mu_no: mu,
+        offset: page,
+        limit: per_page
+      }).then((res) => res);
+      console.log(data.data);
+      if (page == 0) {
+        const treePhase = ["lahan"];
+        data.tree_locations.map((val) => {
+          treePhase.map((tp) => {
+            this.table.fields.push({
+              label: val.tree_name + " - " + tp,
+              key: `tree_${val.tree_code}-${tp}`,
+              type: "number",
+            });
+          });
+        });
+      }
+      for (const [indexMon, valMon] of Object.entries(
+        data.data
+      )) {
+        const dataGenerate = {
+          ...valMon,
+          project: valMon.detail_projects[0].projects_project_name || "Undefined",
+          project_id: valMon.detail_projects[0].project_no || "???",
+          project_type: valMon.detail_projects[0].project_planting_purposes_code || "???",
+          lahan_no: valMon.lahan_no || "???",
+          program_year: valMon.main_pivots_program_year_pivot || "???",
+          mu_name: valMon.managementunits_name || "???",
+          ta_name: valMon.target_areas_name || "???",
+          village_name: valMon.desas_name || "???",
+          ff_name: valMon.field_facilitators_name || "???",
+          farmer_name: valMon.farmer_name || "???",
+          
+          total_kayu: valMon.total_from_detail[0].pohon_kayu_detail || "0",
+          total_mpts: valMon.total_from_detail[0].pohon_mpts_detail || "0",
+          total_amount: valMon.total_from_detail[0].pohon_kayu_detail + valMon.total_from_detail[0].pohon_mpts_detail|| "0",
+        };
+        valMon.detail_seeds.map((val) => {
+          dataGenerate[`tree_${val.tree_code}-lahan`] = val.amount;
+        });
+
+        this.table.data.push(dataGenerate);
+      }
+      return data;
+    },
+    async getNewLahanWithSeeds(){
+      let loading = this.loading;
+      const config = this.config;
+
+      const NewLahanSeedParams = new URLSearchParams({});
+      config.fields
+        .filter((v) => v.filter)
+        .map((val) => {
+          NewLahanSeedParams.append(val.id, val.model);
+        });
+
+      const management_unit = config.fields.find(
+        (v) => v.id == "mu_name"
+      ).model;
+      const programYear = config.fields.find(
+        (v) => v.id == "program_year"
+      ).model;
+      console.log(management_unit + ' - ' + programYear)
+      const management_unit_name = config.fields
+        .find((v) => v.id == "mu_name")
+        .items.filter((fil) => {
+          return fil.value.includes(management_unit);
+        });
+
+      console.log(programYear + ", " + management_unit);
+
+      config.title = `exportLahanSeed_${programYear}_${management_unit_name[0].text}_FromGEKOReportData`;
+      this.download.title = config.title;
+      const limit = 200;
+      let offset = 0;
+      const newLandSeeds = await this.getNewLahanWithSeedsPagination(
+        offset,
+        limit,
+        programYear,
+        management_unit
+      );
+
+      if (newLandSeeds.total_data > offset) {
+        
+        for (let index = 0; index <= newLandSeeds.total_data; index++) {
+          loading.progress = Math.round(
+            (100 / newLandSeeds.total_data) * limit * (index + 1)
+          );
+          if(newLandSeeds.total_data > offset){
+            await this.getNewLahanWithSeedsPagination(
+              limit * (index + 1),
+              limit,
+              programYear,
+              management_unit
+            );
+            offset = limit * (index + 1)
+            console.log(newLandSeeds.total_data + " : " + offset) 
+          }else{
+            console.log('export done :)')
+          }
+        }
+      }
+    },
     // reminder :)
     async sendEmailToYongs(message = null) {
       console.log(this.$store.state.User.email);
@@ -1236,6 +1343,9 @@ export default {
         }
         if (config.section == "export-monitoring3") {
           await this.getMonitoring3();
+        }
+        if (config.section == "export-new-lahan-with-seed") {
+          await this.getNewLahanWithSeeds();
         }
         if (this.table.data.length > 0) {
           let emailMessage = config.title || "";
