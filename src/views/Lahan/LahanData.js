@@ -123,4 +123,102 @@ export default {
       code: "1",
     },
   ],
+  soil_type: [
+    {
+      label: 'Aluvial',
+      code: 'Aluvial',
+    },
+    {
+      label: 'Alvisol',
+      code: 'Alvisol',
+    },
+    {
+      label: 'Andosol',
+      code: 'Andosol',
+    },
+    {
+      label: 'Andosol Distrik',
+      code: 'Andosol Distrik',
+    },
+    {
+      label: 'Andosol Eutrik',
+      code: 'Andosol Eutrik',
+    },
+    {
+      label: 'Andosol Litik',
+      code: 'Andosol Litik',
+    },
+    {
+      label: 'Andosol Melanik',
+      code: 'Andosol Melanik',
+    },
+    {
+      label: 'Arenosol',
+      code: 'Arenosol',
+    },
+    {
+      label: 'Entisol',
+      code: 'Entisol',
+    },
+    {
+      label: 'Gleisol',
+      code: 'Gleisol',
+    },
+    {
+      label: 'Grumosol',
+      code: 'Grumosol',
+    },
+    {
+      label: 'Histosol',
+      code: 'Histosol',
+    },
+    {
+      label: 'Inseptisol',
+      code: 'Inseptisol',
+    },
+    {
+      label: 'Kambisol',
+      code: 'Kambisol',
+    },
+    {
+      label: 'Latosol',
+      code: 'Latosol',
+    },
+    {
+      label: 'Latosol Haplik',
+      code: 'Latosol Haplik',
+    },
+    {
+      label: 'Latosol Kromik',
+      code: 'Latosol Kromik',
+    },
+    {
+      label: 'Litosol',
+      code: 'Litosol',
+    },
+    {
+      label: 'Mediteran',
+      code: 'Mediteran',
+    },
+    {
+      label: 'Molisol',
+      code: 'Molisol',
+    },
+    {
+      label: 'Nitosol',
+      code: 'Nitosol',
+    },
+    {
+      label: 'Organosol',
+      code: 'Organosol',
+    },
+    {
+      label: 'Podsolik',
+      code: 'Podsolik',
+    },
+    {
+      label: 'Podsolik Haplik',
+      code: 'Podsolik Haplik',
+    },
+  ]
 };

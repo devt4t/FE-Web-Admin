@@ -160,9 +160,8 @@
             />
           </v-col>
 
-          <v-col md="6" v-if="formData.province_id">
+          <v-col md="6">
             <geko-input
-              v-model="formData.project_id"
               :item="{
                 label: 'Project',
                 validation: ['required'],
@@ -176,7 +175,6 @@
                 },
                 option: {
                   multiple: true,
-                  default_options: projects,
                   list_pointer: {
                     separator: '-',
                     code: 'id',

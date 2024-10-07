@@ -199,7 +199,7 @@
                   variant="primary"
                   @click="onOpenAppendixPrint(lahan.key2)"
                   v-if="
-                  data.main_lahan && 
+                    data.main_lahan &&
                     $_sys.isAllowed('lahan-print-appendix-create') &&
                     mouData &&
                     mouData.mou_status == 1
@@ -1370,9 +1370,7 @@ export default {
 
     async onRecalculatePlantingArea() {
       if (!this.data.main_lahan) return;
-      const totalTutupan = parseFloat(
-        this.data.main_lahan.tutupan_lahan
-      );
+      const totalTutupan = parseFloat(this.data.main_lahan.tutupan_lahan);
       const polygonArea = this.data.main_lahan.gis_polygon_area;
       const totalTutupanMeter = (totalTutupan / 100) * polygonArea;
 
@@ -1400,12 +1398,9 @@ export default {
     },
 
     onOpenAppendixPrint(lahanNo) {
-
-      if (this.data.main_lahan && this.data.main_lahan.lahan_no === lahanNo) {
-        window.open(
-          `/#/lahan-v2?view=detail&id=${lahanNo}`
-        );
-        return
+      if (this.data.main_lahan && this.data.main_lahan.lahan_no !== lahanNo) {
+        window.open(`/#/lahan-v2?view=detail&id=${lahanNo}`);
+        return;
       }
       var mapCanvas = document.querySelector(".mapboxgl-canvas");
       mapCanvas.style.display = "block";
@@ -1926,6 +1921,30 @@ export default {
                 ...this.legends[2],
                 show: true,
               });
+            }
+          }
+
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.polygon_tutupan_photo
+            )
+          ) {
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
+            );
+
+            if (kmlData.features.length > 0) {
+              this.addMapLayer(kmlData, "map-layer-1", "#FF7B7B", null);
+              this.$set(this.legends, 0, {
+                ...this.legends[0],
+                show: true,
+              });
+
+              const centerCoordinate = turf.center(kmlData);
+              const mapCenter = centerCoordinate.geometry.coordinates;
+              if (this.map && this.map.setCenter instanceof Function) {
+                this.map.setCenter(mapCenter);
+              }
             }
           }
           console.log("render", this.map.getCanvas().toDataURL("image/png"));
