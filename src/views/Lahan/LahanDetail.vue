@@ -1,274 +1,154 @@
 <template>
   <v-row class="lahan-detail" :key="'lahan-detail' + componentKey">
     <v-col md="4" xl="3">
-      <lahan-mou-print
-        v-if="
-          data.main_lahan &&
-          data.main_lahan.approve == 2 &&
-          $_sys.isAllowed('lahan-print-mou-create')
-        "
-        :mouData="mouData || null"
-        :lahanData="data.main_lahan"
-        :modalKey="printModal"
-      />
-      <lahan-appendix-print
-        v-if="
-          data.main_lahan &&
-          data.main_lahan.approve == 2 &&
-          mouData &&
-          ![0, 2].includes(mouData.mou_status) &&
-          $_sys.isAllowed('lahan-print-appendix-create')
-        "
-        :mouData="mouData || null"
-        :lahanData="data.main_lahan"
-        :modalKey="printAppendixModal"
-        :imageData="polygonImageData"
-        :trees="data.lahan_detail"
-      />
-      <v-card
-        data-aos="fade-up"
-        data-aos-delay="100"
-        data-aos-duration="800"
-        class="scooping-visit-detail-card mb-5"
-      >
+      <lahan-mou-print v-if="
+        data.main_lahan &&
+        data.main_lahan.approve == 2 &&
+        $_sys.isAllowed('lahan-print-mou-create')
+      " :mouData="mouData || null" :lahanData="data.main_lahan" :modalKey="printModal" />
+      <lahan-appendix-print v-if="
+        data.main_lahan &&
+        data.main_lahan.approve == 2 &&
+        mouData &&
+        ![0, 2].includes(mouData.mou_status) &&
+        $_sys.isAllowed('lahan-print-appendix-create')
+      " :mouData="mouData || null" :lahanData="data.main_lahan" :modalKey="printAppendixModal"
+        :imageData="polygonImageData" :trees="data.lahan_detail" />
+      <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="scooping-visit-detail-card mb-5">
         <v-card-title>
-          <v-icon large class="mr-2" @click="$router.go(-1)"
-            >mdi-arrow-left-circle</v-icon
-          >
+          <v-icon large class="mr-2" @click="$router.go(-1)">mdi-arrow-left-circle</v-icon>
           <h5 class="mb-0 pb-0">Detail Lahan</h5>
         </v-card-title>
         <div class="lahan-side-wrapper">
           <div class="lahan-side-list">
             <h4>Action</h4>
 
-            <div
-              class="lahan-side-item-wrapper"
-              style="flex-wrap: wrap; width: 100%"
-              v-if="data.main_lahan"
-            >
+            <div class="lahan-side-item-wrapper" style="flex-wrap: wrap; width: 100%" v-if="data.main_lahan">
               <!-- UNVERIFIKASI CARBON -->
-              <div
-                class="lahan-side-item d-flex flex-col"
-                style="flex-wrap: wrap"
-                v-if="getProject() === 'carbon'"
-              >
+              <div class="lahan-side-item d-flex flex-col" style="flex-wrap: wrap" v-if="getProject() === 'carbon'">
                 <div>
-                  <v-btn
-                    v-if="
-                      $_sys.isAllowed('lahan-fc-unverification-create') &&
-                      [0, 1, null].includes(data.main_lahan.fc_complete_data) &&
-                      data.main_lahan.updated_gis === 'belum'
-                    "
-                    variant="danger"
-                    class="mr-1 mb-1"
-                    @click="unverificationData('fc_complete_data')"
-                  >
+                  <v-btn v-if="
+                    $_sys.isAllowed('lahan-fc-unverification-create') &&
+                    [0, 1, null].includes(data.main_lahan.fc_complete_data) &&
+                    data.main_lahan.updated_gis === 'belum'
+                  " variant="danger" class="mr-1 mb-1" @click="unverificationData('fc_complete_data')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi Kelengkapan Data</span>
                   </v-btn>
 
-                  <v-btn
-                    v-if="$_sys.isAllowed('lahan-um-unverification-create')"
-                    variant="danger"
-                    class="mr-1 mb-1"
-                    @click="unverificationData('um_seed')"
-                  >
+                  <v-btn v-if="$_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
+                    @click="unverificationData('um_seed')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi Perubahan Bibit</span>
                   </v-btn>
 
-                  <v-btn
-                    v-if="$_sys.isAllowed('lahan-gis-unverification-create')"
-                    variant="danger"
-                    class="mr-1 mb-1"
-                    @click="unverificationData('gis')"
-                  >
+                  <v-btn v-if="$_sys.isAllowed('lahan-gis-unverification-create')" variant="danger" class="mr-1 mb-1"
+                    @click="unverificationData('gis')">
                     <v-icon>mdi-undo-variant</v-icon>
                     <span>Unverifikasi GIS</span>
                   </v-btn>
 
-                  <v-btn
-                    v-if="$_sys.isAllowed('lahan-um-unverification-create')"
-                    variant="danger"
-                    class="mr-1 mb-1"
-                    @click="unverificationData('um_unverification')"
-                  >
+                  <v-btn v-if="$_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
+                    @click="unverificationData('um_unverification')">
                     <v-icon>mdi-undo-variant</v-icon>
-                    <span
-                      >Unverifikasi
-                      {{ data.main_lahan.approve == 2 ? "UM" : "FC" }}</span
-                    >
+                    <span>Unverifikasi
+                      {{ data.main_lahan.approve == 2 ? "UM" : "FC" }}</span>
                   </v-btn>
                 </div>
 
-                <v-btn
-                  v-if="
-                    !openGisEdit &&
-                    $_sys.isAllowed('lahan-gis-verification-create') &&
-                    data.main_lahan.fc_complete_data == 1
-                  "
-                  variant="success"
-                  class="mr-1 mb-1"
-                  @click="
-                    openGisEdit = true;
-                    verifRole = 'gis';
-                  "
-                  >Verifikasi GIS</v-btn
-                >
-                <v-btn
-                  v-if="
-                    !openFcCompleteData &&
-                    !openFc &&
-                    $_sys.isAllowed('lahan-fc-verification-create') &&
-                    data.main_lahan &&
-                    ((data.main_lahan.fc_complete_data == null &&
-                      data.main_lahan.updated_gis.toLowerCase() === 'belum') ||
-                      data.main_lahan.updated_gis.toLowerCase() === 'sudah')
-                  "
-                  variant="success"
-                  class="mr-1 mb-2"
-                  @click="toggleVerificationFc"
-                  >Verifikasi FC</v-btn
-                >
-                <v-btn
-                  v-if="
-                    !openUm &&
-                    $_sys.isAllowed('lahan-um-verification-create') &&
-                    data.main_lahan &&
-                    data.main_lahan.updated_gis.toLowerCase() === 'sudah' &&
-                    data.main_lahan.approve == 1
-                  "
-                  variant="success"
-                  class="mr-1 mb-2"
-                  @click="
-                    openUm = true;
-                    verifRole = 'um';
-                  "
-                  >Verifikasi UM</v-btn
-                >
-                <v-btn
-                  v-if="$_sys.isAllowed('lahan-gis-verification-update')"
-                  variant="info"
-                  class="mr-1 mb-2"
-                  @click="onRecalculatePlantingArea"
-                  :disabled="loading"
-                  ><v-icon>mdi-calculator</v-icon
-                  ><span class="ml-1">Recalculate Planting Area</span></v-btn
-                >
+                <v-btn v-if="
+                  !openGisEdit &&
+                  $_sys.isAllowed('lahan-gis-verification-create') &&
+                  data.main_lahan.fc_complete_data == 1
+                " variant="success" class="mr-1 mb-1" @click="
+                  openGisEdit = true;
+                verifRole = 'gis';
+                ">Verifikasi GIS</v-btn>
+                <v-btn v-if="
+                  !openFcCompleteData &&
+                  !openFc &&
+                  $_sys.isAllowed('lahan-fc-verification-create') &&
+                  data.main_lahan &&
+                  ((data.main_lahan.fc_complete_data == null &&
+                    data.main_lahan.updated_gis.toLowerCase() === 'belum') ||
+                    data.main_lahan.updated_gis.toLowerCase() === 'sudah')
+                " variant="success" class="mr-1 mb-2" @click="toggleVerificationFc">Verifikasi FC</v-btn>
+                <v-btn v-if="
+                  !openUm &&
+                  $_sys.isAllowed('lahan-um-verification-create') &&
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() === 'sudah' &&
+                  data.main_lahan.approve == 1
+                " variant="success" class="mr-1 mb-2" @click="
+                  openUm = true;
+                verifRole = 'um';
+                ">Verifikasi UM</v-btn>
+                <v-btn v-if="$_sys.isAllowed('lahan-gis-verification-update')" variant="info" class="mr-1 mb-2"
+                  @click="onRecalculatePlantingArea" :disabled="loading"><v-icon>mdi-calculator</v-icon><span
+                    class="ml-1">Recalculate Planting Area</span></v-btn>
 
                 <!-- PRINT & PREVIEW MOU -->
-                <v-btn
-                  variant="primary"
-                  class="mr-1 mb-2 d-flex flex-row align-items-center"
-                  v-if="
-                    $_sys.isAllowed('lahan-print-mou-create') &&
-                    data.main_lahan &&
-                    data.main_lahan.approve == 2
-                  "
-                  @click="printModal += 1"
-                >
-                  <v-icon
-                    v-if="btnLabelLegalitasMOU.toLowerCase().includes('upload')"
-                    >mdi-file-upload-outline</v-icon
-                  >
-                  <v-icon
-                    v-else-if="
-                      btnLabelLegalitasMOU.toLowerCase().includes('revisi')
-                    "
-                    >mdi-file-document-edit-outline</v-icon
-                  >
-                  <v-icon
-                    v-else-if="
-                      btnLabelLegalitasMOU.toLowerCase().includes('verifikasi')
-                    "
-                    >mdi-file-alert-outline</v-icon
-                  >
-                  <v-icon
-                    v-else-if="
-                      btnLabelLegalitasMOU.toLowerCase().includes('lihat')
-                    "
-                    >mdi-file-eye-outline</v-icon
-                  >
+                <v-btn variant="primary" class="mr-1 mb-2 d-flex flex-row align-items-center" v-if="
+                  $_sys.isAllowed('lahan-print-mou-create') &&
+                  data.main_lahan &&
+                  data.main_lahan.approve == 2
+                " @click="printModal += 1">
+                  <v-icon v-if="btnLabelLegalitasMOU.toLowerCase().includes('upload')">mdi-file-upload-outline</v-icon>
+                  <v-icon v-else-if="
+                    btnLabelLegalitasMOU.toLowerCase().includes('revisi')
+                  ">mdi-file-document-edit-outline</v-icon>
+                  <v-icon v-else-if="
+                    btnLabelLegalitasMOU.toLowerCase().includes('verifikasi')
+                  ">mdi-file-alert-outline</v-icon>
+                  <v-icon v-else-if="
+                    btnLabelLegalitasMOU.toLowerCase().includes('lihat')
+                  ">mdi-file-eye-outline</v-icon>
                   <v-icon v-else>mdi-printer-outline</v-icon>
                   <span class="ml-1">{{ btnLabelLegalitasMOU }}</span>
                 </v-btn>
 
                 <!-- PRINT APPENDIX LAHAN -->
 
-                <v-btn
-                  variant="primary"
-                  @click="onOpenAppendixPrint(lahan.key2)"
-                  v-if="
-                    data.main_lahan &&
-                    $_sys.isAllowed('lahan-print-appendix-create') &&
-                    mouData &&
-                    mouData.mou_status == 1
-                  "
-                  v-for="(lahan, i) in mouData.lahans"
-                  :key="`lahan-${i}`"
-                  class="mb-2"
-                >
+                <v-btn variant="primary" @click="onOpenAppendixPrint(lahan.key2)" v-if="
+                  data.main_lahan &&
+                  $_sys.isAllowed('lahan-print-appendix-create') &&
+                  mouData &&
+                  mouData.mou_status == 1
+                " v-for="(lahan, i) in mouData.lahans" :key="`lahan-${i}`" class="mb-2">
                   <v-icon>mdi-printer-outline</v-icon>
-                  <span v-if="lahan.key2 === data.main_lahan.lahan_no"
-                    >Print Appendix {{ lahan.key2 }}</span
-                  >
+                  <span v-if="lahan.key2 === data.main_lahan.lahan_no">Print Appendix {{ lahan.key2 }}</span>
                   <span v-else>Print Appendix</span>
                 </v-btn>
               </div>
               <!-- UNVERIFIKASI & VERIF NON CARBON -->
-              <div
-                class="lahan-side-item d-flex flex-col"
-                style="flex-wrap: wrap"
-                v-if="getProject() === 'non-carbon'"
-              >
+              <div class="lahan-side-item d-flex flex-col" style="flex-wrap: wrap" v-if="getProject() === 'non-carbon'">
                 <!-- UNVERIFIKASI -->
-                <v-btn
-                  v-if="
-                    $_sys.isAllowed('lahan-fc-unverification-create') &&
-                    [0, 1, null].includes(data.main_lahan.fc_complete_data)
-                  "
-                  variant="danger"
-                  class="mr-1 mb-1"
-                  @click="unverificationData('fc_complete_data')"
-                >
+                <v-btn v-if="
+                  $_sys.isAllowed('lahan-fc-unverification-create') &&
+                  [0, 1, null].includes(data.main_lahan.fc_complete_data)
+                " variant="danger" class="mr-1 mb-1" @click="unverificationData('fc_complete_data')">
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi Kelengkapan Data</span>
                 </v-btn>
 
-                <v-btn
-                  v-if="$_sys.isAllowed('lahan-um-unverification-create')"
-                  variant="danger"
-                  class="mr-1 mb-1"
-                  @click="unverificationData('um_unverification')"
-                >
+                <v-btn v-if="$_sys.isAllowed('lahan-um-unverification-create')" variant="danger" class="mr-1 mb-1"
+                  @click="unverificationData('um_unverification')">
                   <v-icon>mdi-undo-variant</v-icon>
                   <span>Unverifikasi UM</span>
                 </v-btn>
                 <!-- VERIFIKASI -->
-                <v-btn
-                  v-if="
-                    !openGisEdit &&
-                    $_sys.isAllowed('lahan-fc-verification-create') &&
-                    data.main_lahan &&
-                    data.main_lahan.approve == 0
-                  "
-                  variant="success"
-                  class="mr-1 mb-2"
-                  @click="openFcNonCarbon = true"
-                  >Verifikasi FC</v-btn
-                >
+                <v-btn v-if="
+                  !openGisEdit &&
+                  $_sys.isAllowed('lahan-fc-verification-create') &&
+                  data.main_lahan &&
+                  data.main_lahan.approve == 0
+                " variant="success" class="mr-1 mb-2" @click="openFcNonCarbon = true">Verifikasi FC</v-btn>
 
-                <v-btn
-                  v-if="
-                    $_sys.isAllowed('lahan-um-verification-create') &&
-                    data.main_lahan &&
-                    data.main_lahan.approve == 1
-                  "
-                  variant="success"
-                  class="mr-1 mb-2"
-                  @click="verifUmNonCarbon()"
-                  >Verifikasi Data Lahan</v-btn
-                >
+                <v-btn v-if="
+                  $_sys.isAllowed('lahan-um-verification-create') &&
+                  data.main_lahan &&
+                  data.main_lahan.approve == 1
+                " variant="success" class="mr-1 mb-2" @click="verifUmNonCarbon()">Verifikasi Data Lahan</v-btn>
               </div>
             </div>
           </div>
@@ -309,272 +189,149 @@
             "
           /> -->
 
-          <lahan-verification-gis
-            v-if="
-              data.main_lahan &&
-              $_sys.isAllowed('lahan-gis-verification-create') &&
-              openGisEdit
-            "
-            :data="data.main_lahan"
-            :questions="
-              data.lahan_term_question_list.filter((x) => x.role_id == 14)
-            "
-            :answers="data.lahan_term_answer_list"
-            :role="verifRole"
-            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
-            :polygonGisArea="polygonGisArea"
-            @success="
+          <lahan-verification-gis v-if="
+            data.main_lahan &&
+            $_sys.isAllowed('lahan-gis-verification-create') &&
+            openGisEdit
+          " :data="data.main_lahan" :questions="data.lahan_term_question_list.filter((x) => x.role_id == 14)
+            " :answers="data.lahan_term_answer_list" :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'" :polygonGisArea="polygonGisArea" @success="
               componentKey += 1;
+            openGisEdit = false;
+            getData();
+            " @polygon_change="onChangePolygon" @close="
               openGisEdit = false;
-              getData();
-            "
-            @polygon_change="onChangePolygon"
-            @close="
-              openGisEdit = false;
-              verifRole = null;
-            "
-          />
+            verifRole = null;
+            " />
 
-          <lahan-verification-fc-complete-data
-            v-if="
-              data.main_lahan &&
-              $_sys.isAllowed('lahan-fc-verification-create') &&
-              openFcCompleteData
-            "
-            :data="data.main_lahan"
-            :role="verifRole"
-            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+          <lahan-verification-fc-complete-data v-if="
+            data.main_lahan &&
+            $_sys.isAllowed('lahan-fc-verification-create') &&
+            openFcCompleteData
+          " :data="data.main_lahan" :role="verifRole" :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
             @success="
               componentKey += 1;
+            openFcCompleteData = false;
+            getData();
+            " @close="
               openFcCompleteData = false;
-              getData();
-            "
-            @close="
-              openFcCompleteData = false;
-              verifRole = null;
-            "
-          />
+            verifRole = null;
+            " />
 
-          <lahan-verification-fc-non-carbon
-            v-if="
-              data.main_lahan &&
-              $_sys.isAllowed('lahan-fc-verification-create') &&
-              openFcNonCarbon
-            "
-            :data="data.main_lahan"
-            :role="verifRole"
-            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+          <lahan-verification-fc-non-carbon v-if="
+            data.main_lahan &&
+            $_sys.isAllowed('lahan-fc-verification-create') &&
+            openFcNonCarbon
+          " :data="data.main_lahan" :role="verifRole" :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
             @success="
               componentKey += 1;
+            openFcNonCarbon = false;
+            getData();
+            " @close="
               openFcNonCarbon = false;
-              getData();
-            "
-            @close="
-              openFcNonCarbon = false;
-              verifRole = null;
-            "
-          />
-          <lahan-verification-fc
-            v-if="
-              data.main_lahan &&
-              $_sys.isAllowed('lahan-fc-verification-create') &&
-              openFc
-            "
-            :data="data.main_lahan"
-            :questions="
-              data.lahan_term_question_list.filter((x) => x.role_id == 19)
-            "
-            :answers="data.lahan_term_answer_list"
-            :role="verifRole"
-            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            verifRole = null;
+            " />
+          <lahan-verification-fc v-if="
+            data.main_lahan &&
+            $_sys.isAllowed('lahan-fc-verification-create') &&
+            openFc
+          " :data="data.main_lahan" :questions="data.lahan_term_question_list.filter((x) => x.role_id == 19)
+            " :answers="data.lahan_term_answer_list" :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'" @success="
+              componentKey += 1;
+            openFc = false;
+            getData();
+            " @close="
+              openFc = false;
+            verifRole = null;
+            " />
+
+          <lahan-verification-um v-if="
+            data.main_lahan &&
+            $_sys.isAllowed('lahan-um-verification-create') &&
+            openUm
+          " :data="data.main_lahan" :role="verifRole" :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
             @success="
               componentKey += 1;
-              openFc = false;
-              getData();
-            "
-            @close="
-              openFc = false;
-              verifRole = null;
-            "
-          />
-
-          <lahan-verification-um
-            v-if="
-              data.main_lahan &&
-              $_sys.isAllowed('lahan-um-verification-create') &&
-              openUm
-            "
-            :data="data.main_lahan"
-            :role="verifRole"
-            :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
-            @success="
-              componentKey += 1;
+            openUm = false;
+            getData();
+            " @close="
               openUm = false;
-              getData();
-            "
-            @close="
-              openUm = false;
-              verifRole = null;
-            "
-          />
+            verifRole = null;
+            " />
 
+
+          <div v-if="data.main_lahan" class="lahan-side-list" v-for="(item, i) in sideTop"
+            :key="'land-detail-row-' + i">
+            <h4>{{ item.name }}</h4>
+
+            <div class="lahan-side-item-wrapper">
+              <div class="lahan-side-item" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
+                v-if="!v.project || (v.project && v.project === getProject())">
+                <p class="mb-0 label">{{ v.label }}</p>
+                <div class="value">
+                  <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
+                    <qr-code :text="data.main_lahan.barcode" />
+                  </p>
+                  <span class="mb-0 value" v-if="v.key === 'project'">
+                    <div v-if="v.key === 'project'" v-for="(project, j) in data.lahan_project" :key="`project-${j}`"
+                      class="d-flex flex-col">
+                      <span>{{ project.projects_project_name }}</span>
+                      <div class="d-flex flex-row mb-2">
+                        <span class="badge" :class="{
+                          'bg-info':
+                            project.project_planting_purposes_code ==
+                            'carbon',
+                          'bg-light':
+                            project.project_planting_purposes_code !=
+                            'carbon',
+                        }">{{ project.project_planting_purposes_name }}</span>
+                      </div>
+                    </div>
+                  </span>
+                  <p class="mb-0 value" v-if="v.type !== 'qrcode' && v.key !== 'project'">
+                    <span v-if="v.prepend">{{ v.prepend }}</span>
+                    <span :class="{
+                      [v.class || '']: true,
+                    }">{{
+                      getValue(v.key) | parse(v.transform || "no-empty")
+                    }}</span>
+                    <span v-if="v.append">{{ v.append }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="lahan-side-list">
             <h4>Status &amp; Log</h4>
 
             <div class="lahan-side-item-wrapper" v-if="data.main_lahan">
-              <div class="lahan-side-item">
-                <p class="mb-0 label">Status</p>
+              <lahan-detail-status-badge :data="data" :projectPurpose="getProject()" />
 
-                <!--
-                  STATUS LAHAN CARBON
-                  - Belum Diverifikasi
-                  - Diverifikasi GIS
-                  - Diverifikasi FC
-                  - Terverifikasi
-
-
-                  STATUS LAHAN NON CARBON
-                  - Belum Diverifikasi
-                  - Diverifikasi FC
-                  - Terverifikasi / Force Majeure
-                -->
-
-                <!-- STATUS CARBON -->
-                <div
-                  class="d-flex flex-row value"
-                  v-if="getProject() === 'carbon'"
-                >
-                  <span
-                    :class="{
-                      'badge bg-warning':
-                        data.main_lahan.approve == 0 &&
-                        data.main_lahan.updated_gis.toLowerCase() == 'belum',
-                      'badge bg-info':
-                        data.main_lahan.approve == 0 &&
-                        data.main_lahan.updated_gis.toLowerCase() == 'sudah',
-                      'badge bg-primary':
-                        data.main_lahan.approve == 1 &&
-                        data.main_lahan.fc_complete_data != null,
-                      'badge bg-success': data.main_lahan.approve == 2,
-                      'badge bg-danger':
-                        data.main_lahan.approve == 3 ||
-                        (data.main_lahan.approve == 1 &&
-                          data.main_lahan.fc_complete_data == null),
-                    }"
-                  >
-                    <span
-                      v-if="
-                        data.main_lahan.approve == 1 &&
-                        data.main_lahan.fc_complete_data == null
-                      "
-                      >Data Bermasalah</span
-                    >
-                    <span
-                      v-else-if="
-                        data.main_lahan.approve == 0 &&
-                        data.main_lahan.updated_gis.toLowerCase() == 'belum'
-                      "
-                      >Belum Diverifikasi</span
-                    >
-                    <span
-                      v-else-if="
-                        data.main_lahan.approve == 0 &&
-                        data.main_lahan.updated_gis.toLowerCase() == 'sudah'
-                      "
-                      >Diverifikasi GIS</span
-                    >
-                    <span v-else-if="data.main_lahan.approve == 1"
-                      >Diverifikasi FC</span
-                    >
-                    <span v-else-if="data.main_lahan.approve == 2"
-                      >Terverifikasi</span
-                    >
-                    <span v-else-if="data.main_lahan.approve == 3"
-                      >Force Majeure</span
-                    >
-                  </span>
-                </div>
-                <!-- STATUS NON CARBON -->
-                <div
-                  class="d-flex flex-row value"
-                  v-if="getProject() === 'non-carbon'"
-                >
-                  <span
-                    class="badge"
-                    :class="{
-                      'bg-warning':
-                        data.main_lahan.approve === 0 &&
-                        data.main_lahan.fc_complete_data === null,
-                      'bg-primary':
-                        data.main_lahan.approve === 1 &&
-                        data.main_lahan.fc_complete_data !== null,
-                      'bg-success': data.main_lahan.approve === 2,
-                    }"
-                  >
-                    <span
-                      v-if="
-                        data.main_lahan.approve === 0 &&
-                        data.main_lahan.fc_complete_data === null
-                      "
-                      >Belum Diverifikasi</span
-                    >
-                    <span
-                      v-else-if="
-                        data.main_lahan.approve === 1 &&
-                        data.main_lahan.fc_complete_data !== null
-                      "
-                      >Data Lahan Terverifikasi</span
-                    >
-                    <span v-else-if="data.main_lahan.approve === 2"
-                      >Terverifikasi</span
-                    >
-                  </span>
-                </div>
-              </div>
-
-              <div
-                class="lahan-side-item"
-                v-if="
-                  data.main_lahan &&
-                  data.main_lahan.approve == 2 &&
-                  getProject() === 'carbon'
-                "
-              >
+              <div class="lahan-side-item" v-if="
+                data.main_lahan &&
+                data.main_lahan.approve == 2 &&
+                getProject() === 'carbon'
+              ">
                 <p class="mb-0 label" v-if="getProject() === 'carbon'">
                   Status MOU
                 </p>
                 <div class="d-flex flex-row value">
-                  <span
-                    class="badge"
-                    :class="{
-                      'bg-warning':
-                        !mouData || (mouData && mouData.mou_status == 0),
-                      'bg-primary': mouData && mouData.mou_status == 1,
-                      'bg-danger': mouData && mouData.mou_status == 2,
-                      'bg-info': mouData && mouData.mou_status == 3,
-                      'bg-success':
-                        mouData && [4, 5].includes(mouData.mou_status),
-                    }"
-                  >
-                    <span
-                      v-if="!mouData || (mouData && mouData.mou_status == 0)"
-                      >Belum Dicetak</span
-                    >
-                    <span v-else-if="mouData && mouData.mou_status == 1"
-                      >MOU Sudah Dicetak</span
-                    >
-                    <span v-else-if="mouData && mouData.mou_status == 2"
-                      >MOU Butuh Revisi</span
-                    >
-                    <span v-else-if="mouData && mouData.mou_status == 3"
-                      >Ready to be sign</span
-                    >
-                    <span v-else-if="mouData && mouData.mou_status == 4"
-                      >Signed</span
-                    >
-                    <span v-else-if="mouData && mouData.mou_status == 5"
-                      >Terverifikasi</span
-                    >
+                  <span class="badge" :class="{
+                    'bg-warning':
+                      !mouData || (mouData && mouData.mou_status == 0),
+                    'bg-primary': mouData && mouData.mou_status == 1,
+                    'bg-danger': mouData && mouData.mou_status == 2,
+                    'bg-info': mouData && mouData.mou_status == 3,
+                    'bg-success':
+                      mouData && [4, 5].includes(mouData.mou_status),
+                  }">
+                    <span v-if="!mouData || (mouData && mouData.mou_status == 0)">Belum Dicetak</span>
+                    <span v-else-if="mouData && mouData.mou_status == 1">MOU Sudah Dicetak</span>
+                    <span v-else-if="mouData && mouData.mou_status == 2">MOU Butuh Revisi</span>
+                    <span v-else-if="mouData && mouData.mou_status == 3">Ready to be sign</span>
+                    <span v-else-if="mouData && mouData.mou_status == 4">Signed</span>
+                    <span v-else-if="mouData && mouData.mou_status == 5">Terverifikasi</span>
                   </span>
                 </div>
               </div>
@@ -582,21 +339,13 @@
               <div class="lahan-side-item">
                 <p class="mb-0 label">Jumlah Bibit</p>
                 <div class="d-flex flex-row value">
-                  <span
-                    v-if="data.main_lahan.seed_is_modified == 1"
-                    class="badge"
-                    :class="{
-                      'bg-danger': data.main_lahan.seed_verify_status == 0,
-                      'bg-warning': data.main_lahan.seed_verify_status == null,
-                      'bg-success': data.main_lahan.seed_verify_status == 1,
-                    }"
-                  >
-                    <span v-if="data.main_lahan.seed_verify_status == 0"
-                      >Tidak Disetujui</span
-                    >
-                    <span v-else-if="data.main_lahan.seed_verify_status == 1"
-                      >Disetujui</span
-                    >
+                  <span v-if="data.main_lahan.seed_is_modified == 1" class="badge" :class="{
+                    'bg-danger': data.main_lahan.seed_verify_status == 0,
+                    'bg-warning': data.main_lahan.seed_verify_status == null,
+                    'bg-success': data.main_lahan.seed_verify_status == 1,
+                  }">
+                    <span v-if="data.main_lahan.seed_verify_status == 0">Tidak Disetujui</span>
+                    <span v-else-if="data.main_lahan.seed_verify_status == 1">Disetujui</span>
 
                     <span v-else>Menunggu Approval</span>
                   </span>
@@ -604,279 +353,77 @@
                 </div>
               </div>
               <div class="lahan-side-item" v-if="getProject() === 'carbon'">
-                <p class="mb-0 label">Eligibilitas Lahan</p>
+                <p class="mb-0 label">Eligibilitas Lahan by GIS</p>
                 <div class="d-flex flex-row value">
-                  <span
-                    :class="{
-                      'text-danger': data.main_lahan.eligible_status == 0,
-                      'text-warning': data.main_lahan.eligible_status == 1,
-                      'text-success': data.main_lahan.eligible_status == 2,
-                    }"
-                  >
-                    <span v-if="data.main_lahan.eligible_status == 0"
-                      >Tidak Bisa Ikut</span
-                    >
-                    <span v-else-if="data.main_lahan.eligible_status == 1"
-                      >Bisa Ikut Dengan Tindakan Tambahan</span
-                    >
-                    <span v-else-if="data.main_lahan.eligible_status == 2"
-                      >Bisa Ikut</span
-                    >
+                  <span class="badge" :class="{
+                    'bg-danger': data.main_lahan.gis_eligibility_status == 0,
+                    'bg-success': data.main_lahan.gis_eligibility_status == 1,
+                    'bg-warning': data.main_lahan.gis_eligibility_status == null
+                  }">
+                    <span v-if="data.main_lahan.gis_eligibility_status == 0">Not Eligible</span>
+                    <span v-else-if="data.main_lahan.gis_eligibility_status == 1">Eligible</span>
+                    <span v-else>Belum Diverifikasi</span>
+                  </span>
+                </div>
+              </div>
+
+
+              <div class="lahan-side-item" v-if="getProject() === 'carbon'">
+                <p class="mb-0 label">Eligibilitas Lahan by UM</p>
+                <div class="d-flex flex-row value">
+                  <span class="badge" :class="{
+                    'bg-danger': data.main_lahan.eligible_status == 0,
+                    'bg-warning': data.main_lahan.eligible_status == 1,
+                    'bg-success': data.main_lahan.eligible_status == 2,
+                  }">
+                    <span v-if="data.main_lahan.eligible_status == 0">Tidak Bisa Ikut</span>
+                    <span v-else-if="data.main_lahan.eligible_status == 1">Bisa Ikut Dengan Tindakan Tambahan</span>
+                    <span v-else-if="data.main_lahan.eligible_status == 2">Bisa Ikut</span>
                     <span v-else>-</span>
                   </span>
                 </div>
               </div>
 
-              <div
-                class="lahan-side-item d-flex flex-col"
-                style="flex-direction: column !important"
-              >
+              <div class="lahan-side-item d-flex flex-col" style="flex-direction: column !important">
                 <p class="mb-0 label">Log Data</p>
-                <div class="d-flex flex-col log-data" v-if="data.main_lahan">
-                  <div class="log-data-item active">
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span class="time">{{
-                        formatDate(
-                          data.main_lahan.created_at,
-                          "D MMMM YYYY HH:mm"
-                        )
-                      }}</span>
-                      <span class="label">FF Menambahkan Data Lahan</span>
-                      <span class="user"
-                        >FF: {{ data.main_lahan.field_facilitators_name }}</span
-                      >
-                    </div>
-                  </div>
-
-                  <div
-                    class="log-data-item"
-                    :class="{
-                      active: [0, 1].includes(data.main_lahan.fc_complete_data),
-                    }"
-                  >
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span
-                        class="time"
-                        v-if="data.main_lahan.fc_complete_data_at"
-                        >{{
-                          formatDate(
-                            data.main_lahan.fc_complete_data_at,
-                            "D MMMM YYYY HH:mm"
-                          )
-                        }}</span
-                      >
-                      <span class="label">FC Verifikasi Kelengkapan Data</span>
-                      <span
-                        class="user"
-                        v-if="data.main_lahan.fc_complete_data_by"
-                        >{{ data.main_lahan.fc_complete_data_by }}</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    v-if="getProject() === 'carbon'"
-                    class="log-data-item"
-                    :class="{
-                      active: data.main_lahan.gis_updated_at,
-                    }"
-                  >
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span
-                        class="time"
-                        v-if="data.main_lahan.gis_updated_at"
-                        >{{
-                          formatDate(
-                            data.main_lahan.gis_updated_at,
-                            "D MMMM YYYY HH:mm"
-                          )
-                        }}</span
-                      >
-                      <span class="label"
-                        >GIS Verifikasi Polygon & Data Lahan</span
-                      >
-                      <span
-                        class="user"
-                        v-if="data.main_lahan.gis_updated_at"
-                        >{{ data.main_lahan.gis_officer }}</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    class="log-data-item"
-                    :class="{
-                      active: data.main_lahan.approve >= 1,
-                    }"
-                  >
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span
-                        class="time"
-                        v-if="
-                          data.main_lahan.approve >= 1 &&
-                          data.main_lahan.approved_at
-                        "
-                        >{{
-                          formatDate(
-                            data.main_lahan.approved_at,
-                            "D MMMM YYYY HH:mm"
-                          )
-                        }}</span
-                      >
-                      <span class="label">FC Verifikasi Data Lahan</span>
-                      <span
-                        v-if="
-                          data.main_lahan.approve >= 1 &&
-                          data.main_lahan.approved_by
-                        "
-                        class="user"
-                        >{{ data.main_lahan.approved_by }}</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    v-if="getProject() === 'carbon'"
-                    class="log-data-item"
-                    :class="{
-                      active: data.main_lahan.approve == 2,
-                    }"
-                  >
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span
-                        class="time"
-                        v-if="
-                          data.main_lahan.approve == 2 &&
-                          data.main_lahan.update_eligible_at
-                        "
-                        >{{
-                          formatDate(
-                            data.main_lahan.update_eligible_at,
-                            "D MMMM YYYY HH:mm"
-                          )
-                        }}</span
-                      >
-                      <span class="label"
-                        >UM Menentukan Eligibilitas Lahan</span
-                      >
-                      <span
-                        v-if="
-                          data.main_lahan.approve == 2 &&
-                          data.main_lahan.update_eligible_by
-                        "
-                        class="user"
-                        >{{ data.main_lahan.update_eligible_by }}</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    v-if="getProject() === 'non-carbon'"
-                    class="log-data-item"
-                    :class="{
-                      active: data.main_lahan.approve == 2,
-                    }"
-                  >
-                    <div class="dot-wrapper">
-                      <div class="dot"></div>
-                    </div>
-                    <div class="log-value">
-                      <span
-                        class="time"
-                        v-if="
-                          data.main_lahan.approve == 2 &&
-                          data.main_lahan.approved_at
-                        "
-                        >{{
-                          formatDate(
-                            data.main_lahan.approved_at,
-                            "D MMMM YYYY HH:mm"
-                          )
-                        }}</span
-                      >
-                      <span class="label">UM Verifikasi Data Lahan</span>
-                      <span
-                        v-if="
-                          data.main_lahan.approve == 2 &&
-                          data.main_lahan.approved_by
-                        "
-                        class="user"
-                        >{{ data.main_lahan.approved_by }}</span
-                      >
-                    </div>
-                  </div>
-                </div>
+                <lahan-detail-log-data :data="data" :projectPurpose="getProject()" />
               </div>
             </div>
           </div>
-          <div
-            v-if="data.main_lahan"
-            class="lahan-side-list"
-            v-for="(item, i) in side"
-            :key="'land-detail-row-' + i"
-          >
+          <div v-if="data.main_lahan" class="lahan-side-list" v-for="(item, i) in side" :key="'land-detail-row-' + i">
             <h4>{{ item.name }}</h4>
 
             <div class="lahan-side-item-wrapper">
-              <div
-                class="lahan-side-item"
-                v-for="(v, j) in item.items"
-                :key="'lahan-item' + i + j"
-                v-if="!v.project || (v.project && v.project === getProject())"
-              >
+              <div class="lahan-side-item" v-for="(v, j) in item.items" :key="'lahan-item' + i + j"
+                v-if="!v.project || (v.project && v.project === getProject())">
                 <p class="mb-0 label">{{ v.label }}</p>
                 <div class="value">
                   <p class="mb-0 value qrcode" v-if="v.type === 'qrcode'">
                     <qr-code :text="data.main_lahan.barcode" />
                   </p>
                   <span class="mb-0 value" v-if="v.key === 'project'">
-                    <div
-                      v-if="v.key === 'project'"
-                      v-for="(project, j) in data.lahan_project"
-                      :key="`project-${j}`"
-                      class="d-flex flex-col"
-                    >
+                    <div v-if="v.key === 'project'" v-for="(project, j) in data.lahan_project" :key="`project-${j}`"
+                      class="d-flex flex-col">
                       <span>{{ project.projects_project_name }}</span>
                       <div class="d-flex flex-row mb-2">
-                        <span
-                          class="badge"
-                          :class="{
-                            'bg-info':
-                              project.project_planting_purposes_code ==
-                              'carbon',
-                            'bg-light':
-                              project.project_planting_purposes_code !=
-                              'carbon',
-                          }"
-                          >{{ project.project_planting_purposes_name }}</span
-                        >
+                        <span class="badge" :class="{
+                          'bg-info':
+                            project.project_planting_purposes_code ==
+                            'carbon',
+                          'bg-light':
+                            project.project_planting_purposes_code !=
+                            'carbon',
+                        }">{{ project.project_planting_purposes_name }}</span>
                       </div>
                     </div>
                   </span>
-                  <p
-                    class="mb-0 value"
-                    v-if="v.type !== 'qrcode' && v.key !== 'project'"
-                  >
+                  <p class="mb-0 value" v-if="v.type !== 'qrcode' && v.key !== 'project'">
                     <span v-if="v.prepend">{{ v.prepend }}</span>
-                    <span
-                      :class="{
-                        [v.class || '']: true,
-                      }"
-                      >{{
-                        getValue(v.key) | parse(v.transform || "no-empty")
-                      }}</span
-                    >
+                    <span :class="{
+                      [v.class || '']: true,
+                    }">{{
+                      getValue(v.key) | parse(v.transform || "no-empty")
+                    }}</span>
                     <span v-if="v.append">{{ v.append }}</span>
                   </p>
                 </div>
@@ -888,60 +435,42 @@
     </v-col>
 
     <v-col lg="8">
-      <v-card
-        data-aos="fade-up"
-        data-aos-delay="100"
-        data-aos-duration="800"
-        class="scooping-visit-detail-card mb-5"
-      >
+      <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="scooping-visit-detail-card mb-5">
         <v-card-title>
           <h5 class="mb-0 pb-0">Polygon, Pohon &amp; Lainnya</h5>
         </v-card-title>
-        <div
-          class="alert bg-info-light px-3 mx-4 py-2 d-flex flex-row br-8 mb-4"
-          v-if="
-            data.main_lahan &&
-            data.main_lahan.updated_gis &&
-            data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
-            data.main_lahan.gis_polygon_area
-          "
-        >
+        <div class="alert bg-info-light px-3 mx-4 py-2 d-flex flex-row br-8 mb-4" v-if="
+          data.main_lahan &&
+          data.main_lahan.updated_gis &&
+          data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+          data.main_lahan.gis_polygon_area
+        ">
           <v-icon large class="text-info">mdi-information</v-icon>
-          <span class="text-info d-block pl-2"
-            >Luas lahan dan luas tanam dihitung berdasarkan luas polygon
-            lahan</span
-          >
+          <span class="text-info d-block pl-2">Luas lahan dan luas tanam dihitung berdasarkan luas polygon
+            lahan</span>
         </div>
         <div class="lahan-stat-list">
           <div class="lahan-stat-item">
             <p class="mb-0 label">Tutupan Lahan</p>
             <p class="mb-0 value">
-              <span v-if="data.main_lahan"
-                >{{ data.main_lahan.tutupan_lahan }}%</span
-              >
+              <span v-if="data.main_lahan">{{ data.main_lahan.tutupan_lahan }}%</span>
             </p>
           </div>
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Lahan</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span
-                v-if="
-                  data.main_lahan &&
-                  data.main_lahan.updated_gis.toLowerCase() == 'belum'
-                "
-                >{{ data.main_lahan.land_area | parse("ts") }} m&sup2;</span
-              >
-              <span
-                v-else-if="
-                  data.main_lahan &&
-                  data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
-                  data.main_lahan.gis_polygon_area
-                "
-                >{{
-                  data.main_lahan.gis_polygon_area | parse("ts")
-                }}
-                m&sup2;</span
-              >
+              <span v-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis.toLowerCase() == 'belum'
+              ">{{ data.main_lahan.land_area | parse("ts") }} m&sup2;</span>
+              <span v-else-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                data.main_lahan.gis_polygon_area
+              ">{{
+                data.main_lahan.gis_polygon_area | parse("ts")
+              }}
+                m&sup2;</span>
             </p>
           </div>
           <div class="lahan-stat-item">
@@ -956,53 +485,31 @@
                 }}
                 m&sup2;</span
               > -->
-              <span
-                v-if="
-                  data.main_lahan &&
-                  data.main_lahan.updated_gis.toLowerCase() == 'belum'
-                "
-                >{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span
-              >
-              <span
-                v-else-if="
-                  data.main_lahan &&
-                  data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
-                  data.main_lahan.gis_polygon_area
-                "
-                >{{
-                  data.main_lahan.gis_planting_area | parse("ts")
-                }}
-                m&sup2;</span
-              >
+              <span v-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis.toLowerCase() == 'belum'
+              ">{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span>
+              <span v-else-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                data.main_lahan.gis_polygon_area
+              ">{{
+                data.main_lahan.gis_planting_area | parse("ts")
+              }}
+                m&sup2;</span>
             </p>
           </div>
         </div>
         <div class="polygon-wrapper">
-          <div
-            class="map-wrapper"
-            id="map-wrapper"
-            style="height: 400px; width: 100%"
-          >
+          <div class="map-wrapper" id="map-wrapper" style="height: 400px; width: 100%">
             <div class="map-legends">
-              <div
-                class="map-legend-item"
-                v-for="(item, i) in legends"
-                :key="item.id"
-                :class="{
-                  active: item.show,
-                  disabled: item.disabled,
-                }"
-                @click="toggleLayer(item, i)"
-              >
-                <span
-                  v-if="item.id !== 'map-coordinate'"
-                  class="shape"
-                  :class="item.shape"
-                >
+              <div class="map-legend-item" v-for="(item, i) in legends" :key="item.id" :class="{
+                active: item.show,
+                disabled: item.disabled,
+              }" @click="toggleLayer(item, i)">
+                <span v-if="item.id !== 'map-coordinate'" class="shape" :class="item.shape">
                 </span>
-                <span v-else-if="item.id == 'map-coordinate'"
-                  ><v-icon class="icon">mdi-map-marker</v-icon></span
-                >
+                <span v-else-if="item.id == 'map-coordinate'"><v-icon class="icon">mdi-map-marker</v-icon></span>
                 <span>{{ item.label }}</span>
               </div>
             </div>
@@ -1016,117 +523,84 @@
           </div>
 
           <div class="lahan-photo-list d-flex flex-row" v-if="data.main_lahan">
-            <div
-              v-if="
-                data.main_lahan.photo1 !== '-' ||
-                data.main_lahan.photo2 !== '-' ||
-                data.main_lahan.photo3 !== '-' ||
-                data.main_lahan.photo4 !== '-'
-              "
-              class="lahan-photo-item"
-              v-for="(item, i) in [1, 2, 3, 4]"
-              :key="'lahan-photo' + i"
-              @click="
-                showLightbox(
-                  $_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`]
-                )
-              "
-              v-bind:style="{
+            <div v-if="
+              data.main_lahan.photo1 !== '-' ||
+              data.main_lahan.photo2 !== '-' ||
+              data.main_lahan.photo3 !== '-' ||
+              data.main_lahan.photo4 !== '-'
+            " class="lahan-photo-item" v-for="(item, i) in [1, 2, 3, 4]" :key="'lahan-photo' + i" @click="
+              showLightbox(
+                $_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`]
+              )
+              " v-bind:style="{
                 backgroundImage:
                   'url(' +
                   $_config.baseUrlUpload +
                   '/' +
                   data.main_lahan[`photo${item}`] +
                   ')',
-              }"
-            >
+              }">
               <h6>Foto Lahan {{ item }}</h6>
             </div>
           </div>
 
           <div class="trees">
-            <div
-              class="d-flex flex-row align-items-center justify-content-between"
-            >
+            <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
               <div class="trees-filter" v-if="trees.length > 1">
-                <v-btn
-                  v-for="(tree, i) in trees"
-                  :variant="tree.label != treesActive ? 'light' : 'success'"
-                  :key="`lahan-detail-tree-${i}`"
-                  class="mr-2"
-                  :class="{
+                <v-btn v-for="(tree, i) in trees" :variant="tree.label != treesActive ? 'light' : 'success'"
+                  :key="`lahan-detail-tree-${i}`" class="mr-2" :class="{
                     'font-weight-bold': tree.label == treesActive,
-                  }"
-                  @click="treesActive = tree.label"
-                  >{{ tree.label }}
+                  }" @click="treesActive = tree.label">{{ tree.label }}
                 </v-btn>
               </div>
             </div>
 
-            <div
-              class="d-flex flex-row align-items-center bg-warning-light px-3 py-3 br-8 mb-4 mt-3"
-              v-if="
-                data.main_lahan &&
-                data.main_lahan.updated_gis == 'belum' &&
-                Array.isArray(data.lahan_project) &&
-                data.lahan_project.length > 0 &&
-                data.lahan_project[0].project_planting_purposes_code == 'carbon'
-              "
-            >
+            <div class="d-flex flex-row align-items-center bg-warning-light px-3 py-3 br-8 mb-4 mt-3" v-if="
+              data.main_lahan &&
+              data.main_lahan.updated_gis == 'belum' &&
+              Array.isArray(data.lahan_project) &&
+              data.lahan_project.length > 0 &&
+              data.lahan_project[0].project_planting_purposes_code == 'carbon'
+            ">
               <v-icon large class="text-warning mr-3">mdi-information</v-icon>
-              <span
-                class="text-warning"
-                v-if="
-                  data.main_lahan.pohon_kayu == 0 &&
-                  data.main_lahan.pohon_mpts == 0 &&
-                  data.main_lahan.seed_is_modified == null
-                "
-                >Untuk <strong>Project Carbon</strong>, data jumlah bibit akan
+              <span class="text-warning" v-if="
+                data.main_lahan.pohon_kayu == 0 &&
+                data.main_lahan.pohon_mpts == 0 &&
+                data.main_lahan.seed_is_modified == null
+              ">Untuk <strong>Project Carbon</strong>, data jumlah bibit akan
                 diperbarui setelah data lahan dan polygon lahan diverifikasi
                 oleh GIS. Update jumlah bibit dapat dilakukan melalui GEKO
-                Mobile App</span
-              >
+                Mobile App</span>
 
-              <span
-                class="text-warning"
-                v-if="
-                  (data.main_lahan.pohon_kayu > 0 ||
-                    data.main_lahan.pohon_mpts > 0) &&
-                  data.main_lahan.seed_is_modified == null
-                "
-                >Untuk <strong>Project Carbon</strong>, data jumlah bibit masih
+              <span class="text-warning" v-if="
+                (data.main_lahan.pohon_kayu > 0 ||
+                  data.main_lahan.pohon_mpts > 0) &&
+                data.main_lahan.seed_is_modified == null
+              ">Untuk <strong>Project Carbon</strong>, data jumlah bibit masih
                 perkiraan. Jumlah bibit dapat diperbarui melalui GEKO Mobile App
                 setelah data lahan dan polygon lahan diverifikasi oleh
-                GIS.</span
-              >
+                GIS.</span>
             </div>
 
-            <div
-              class="d-flex flex-row align-items-center bg-info-light px-2 py-2 br-8 mt-3"
-              v-if="
-                $_sys.isAllowed('lahan-um-verification-create') &&
-                data.main_lahan &&
-                data.main_lahan.seed_is_modified == 1 &&
-                data.main_lahan.seed_verify_status !== 1
-              "
-            >
+            <div class="d-flex flex-row align-items-center bg-info-light px-2 py-2 br-8 mt-3" v-if="
+              $_sys.isAllowed('lahan-um-verification-create') &&
+              data.main_lahan &&
+              data.main_lahan.seed_is_modified == 1 &&
+              data.main_lahan.seed_verify_status !== 1
+            ">
               <v-icon large class="text-info">mdi-information</v-icon>
-              <span class="text-info pl-3"
-                >Data jumlah bibit sudah diperbarui, silahkan verifikasi jumlah
+              <span class="text-info pl-3">Data jumlah bibit sudah diperbarui, silahkan verifikasi jumlah
                 bibit dan status eligibilitas lahan
               </span>
             </div>
 
             <div class="tree-list">
-              <div
-                class="tree-item"
-                v-for="(item, i) in Array.isArray(trees) &&
+              <div class="tree-item" v-for="(item, i) in Array.isArray(trees) &&
                 trees.find((x) => x.label == treesActive) &&
                 trees.find((x) => x.label == treesActive).data
-                  ? trees.find((x) => x.label == treesActive).data
-                  : []"
-              >
+                ? trees.find((x) => x.label == treesActive).data
+                : []">
                 <v-icon>mdi-tree</v-icon>
                 <div class="tree-item-wrapper">
                   <span class="label">Pohon {{ item.trees_tree_name }} </span>
@@ -1140,92 +614,64 @@
             <h4 class="mb-4 text-success">Data Lahan Lainnya</h4>
 
             <div class="other-data-list">
-              <div
-                class="other-data-item"
-                v-for="(item, i) in mainData"
-                :key="'key-' + i"
-              >
+              <div class="other-data-item" v-for="(item, i) in mainData" :key="'key-' + i">
                 <p class="mb-0 label">{{ item[0] }}</p>
                 <div class="value" v-if="data.main_lahan">
-                  <span
-                    v-if="
-                      item.length > 2 &&
-                      item[2] == 'photo' &&
-                      ![null, undefined, '', '-'].includes(
-                        data.main_lahan[item[1]]
-                      ) &&
-                      data.main_lahan[item[1]] !== '-'
-                    "
-                  >
-                    <img
-                      class="main-data-img"
-                      :src="
-                        $_config.baseUrlUpload + '/' + data.main_lahan[item[1]]
-                      "
-                      alt=""
-                      @click="
+                  <span v-if="
+                    item.length > 2 &&
+                    item[2] == 'photo' &&
+                    ![null, undefined, '', '-'].includes(
+                      data.main_lahan[item[1]]
+                    ) &&
+                    data.main_lahan[item[1]] !== '-'
+                  ">
+                    <img class="main-data-img" :src="$_config.baseUrlUpload + '/' + data.main_lahan[item[1]]
+                      " alt="" @click="
                         showLightbox(
                           $_config.baseUrlUpload +
-                            '/' +
-                            data.main_lahan[item[1]]
+                          '/' +
+                          data.main_lahan[item[1]]
                         )
-                      "
-                    />
+                        " />
                   </span>
-                  <span
-                    v-else-if="
-                      item.length > 2 &&
-                      item[2] == 'boolean' &&
-                      data.main_lahan[item[1]] !== '-' &&
-                      ![null, undefined, '', '-'].includes(
-                        data.main_lahan[item[1]]
-                      )
-                    "
-                  >
-                    <span
-                      class="badge"
-                      :class="{
-                        'bg-success': data.main_lahan[item[1]] == 1,
-                        'bg-danger': data.main_lahan[item[1]] == 0,
-                      }"
-                    >
-                      <v-icon v-if="data.main_lahan[item[1]] == 1"
-                        >mdi-circle-fill</v-icon
-                      >
-                      <v-icon v-else-if="data.main_lahan[item[1]] == 0"
-                        >mdi-close-circle-fill</v-icon
-                      >
-                      <span
-                        >{{
-                          data.main_lahan[item[1]] == 1
-                            ? "Ya"
-                            : data.main_lahan[item[1]] == 0
+                  <span v-else-if="
+                    item.length > 2 &&
+                    item[2] == 'boolean' &&
+                    data.main_lahan[item[1]] !== '-' &&
+                    ![null, undefined, '', '-'].includes(
+                      data.main_lahan[item[1]]
+                    )
+                  ">
+                    <span class="badge" :class="{
+                      'bg-success': data.main_lahan[item[1]] == 1,
+                      'bg-danger': data.main_lahan[item[1]] == 0,
+                    }">
+                      <v-icon v-if="data.main_lahan[item[1]] == 1">mdi-circle-fill</v-icon>
+                      <v-icon v-else-if="data.main_lahan[item[1]] == 0">mdi-close-circle-fill</v-icon>
+                      <span>{{
+                        data.main_lahan[item[1]] == 1
+                          ? "Ya"
+                          : data.main_lahan[item[1]] == 0
                             ? "Tidak"
                             : "-"
-                        }}
+                      }}
                       </span>
                     </span>
                   </span>
 
-                  <span
-                    v-else-if="
+                  <span v-else-if="
+                    ![null, undefined, '', '-'].includes(
+                      data.main_lahan[item[1]]
+                    )
+                  ">
+                    <span>{{ data.main_lahan[item[1]] }}</span>
+                    <span v-if="
+                      item.length > 4 &&
+                      item[4] &&
                       ![null, undefined, '', '-'].includes(
                         data.main_lahan[item[1]]
                       )
-                    "
-                  >
-                    <span>{{ data.main_lahan[item[1]] }}</span>
-                    <span
-                      v-if="
-                        item.length > 4 &&
-                        item[4] &&
-                        ![null, undefined, '', '-'].includes(
-                          data.main_lahan[item[1]]
-                        )
-                      "
-                      >{{ item[4] }}</span
-                    ></span
-                  >
+                    ">{{ item[4] }}</span></span>
 
                   <span v-else>-</span>
                 </div>
@@ -1245,63 +691,47 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(question, i) in data.lahan_term_question_list"
-                  :key="`question-${i}`"
-                >
+                <tr v-for="(question, i) in data.lahan_term_question_list" :key="`question-${i}`">
                   <td class="text-center">{{ i + 1 }}</td>
                   <td>{{ question.question }}</td>
                   <td>
                     <div class="center-v text-no-wrap">
-                      <span
-                        class="badge"
-                        :class="{
-                          'bg-danger':
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ) &&
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ).term_answer == 0,
-                          'bg-success':
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ) &&
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ).term_answer == 1,
-                        }"
-                      >
-                        <span
-                          class="center-v text-no-wrap"
-                          v-if="
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ) &&
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ).term_answer == 0
-                          "
-                        >
-                          <v-icon small class="mr-1"
-                            >mdi-close-circle-outline</v-icon
-                          >
+                      <span class="badge" :class="{
+                        'bg-danger':
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ) &&
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ).term_answer == 0,
+                        'bg-success':
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ) &&
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ).term_answer == 1,
+                      }">
+                        <span class="center-v text-no-wrap" v-if="
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ) &&
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ).term_answer == 0
+                        ">
+                          <v-icon small class="mr-1">mdi-close-circle-outline</v-icon>
                           <span>Tidak</span>
                         </span>
-                        <span
-                          class="center-v text-no-wrap"
-                          v-else-if="
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ) &&
-                            data.lahan_term_answer_list.find(
-                              (x) => x.term_id === question.id
-                            ).term_answer == 1
-                          "
-                        >
-                          <v-icon small class="mr-1"
-                            >mdi-check-circle-outline</v-icon
-                          >
+                        <span class="center-v text-no-wrap" v-else-if="
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ) &&
+                          data.lahan_term_answer_list.find(
+                            (x) => x.term_id === question.id
+                          ).term_answer == 1
+                        ">
+                          <v-icon small class="mr-1">mdi-check-circle-outline</v-icon>
                           <span>Ya</span>
                         </span>
 
@@ -1330,7 +760,9 @@ import LahanVerificationUm from "./components/LahanVerificationUm.vue";
 import LahanMouPrint from "./components/LahanMouPrint.vue";
 import LahanAppendixPrint from "./components/LahanAppendixPrint.vue";
 import moment from "moment";
-import html2canvas from "html2canvas";
+import LahanDetailStatusBadge from './components/LahanDetailStatusBadge.vue'
+import LahanDetailLogData from "./components/LahanDetailLogData.vue";
+import LahanDetailData from './LahanDetailData.js'
 
 export default {
   name: "land-detail",
@@ -1344,6 +776,8 @@ export default {
     LahanMouPrint,
     LahanAppendixPrint,
     LahanVerificationFcNonCarbon,
+    LahanDetailStatusBadge,
+    LahanDetailLogData
   },
   methods: {
     test() {
@@ -1425,7 +859,7 @@ export default {
 
       this.verifRole =
         this.data.main_lahan.fc_complete_data == null &&
-        this.data.main_lahan.updated_gis.toLowerCase() == "belum"
+          this.data.main_lahan.updated_gis.toLowerCase() == "belum"
           ? "fc-verif-data"
           : "fc";
 
@@ -1892,6 +1326,17 @@ export default {
             }
           }
 
+          if (![null, '-', undefined].includes(this.data.main_lahan.polygon_tutupan_photo)) {
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
+            );
+            this.addMapLayer(kmlData, "map-layer-3", "#FFFFFF", "#FFFFFF");
+            this.$set(this.legends, 2, {
+              ...this.legends[2],
+              show: true,
+            });
+          }
+
           if (Array.isArray(this.data.lahan_polygon)) {
             for (const coord of this.data.lahan_polygon) {
               const marker = new mapboxgl.Marker()
@@ -1947,7 +1392,6 @@ export default {
               }
             }
           }
-          console.log("render", this.map.getCanvas().toDataURL("image/png"));
 
           this.mapReady = true;
         });
@@ -1956,7 +1400,7 @@ export default {
           console.log(e);
         });
 
-        this.map.once("render", () => {});
+        this.map.once("render", () => { });
       }, 1000);
     },
   },
@@ -1976,270 +1420,13 @@ export default {
   },
 
   mounted() {
+
+    this.$set(this.maps, 'accessToken', this.$_config.mapBoxApi)
+    this.$set(this.maps, 'mapStyle', this.$_config.mapBoxStyle)
     this.getData();
   },
   data() {
-    return {
-      formatDate(date, format) {
-        return moment(date).format(format);
-      },
-      loading: false,
-      trees: [],
-      treesActive: "2024",
-      map: null,
-      mapReady: false,
-      mapOpen: true,
-      openGisEdit: false,
-      openFcCompleteData: false,
-      openFcNonCarbon: false,
-      openUm: false,
-      openFc: false,
-      polygonGisArea: 0,
-      componentKey: 0,
-      printModal: 0,
-      printAppendixModal: 0,
-      polygonImageData: null,
-      mouData: null,
-      markers: [],
-      verifRole: null,
-      legends: [
-        {
-          id: "map-layer-1",
-          label: "FF Polygon",
-          show: false,
-          shape: "ff",
-        },
-        {
-          id: "map-layer-2",
-          label: "GIS Polygon",
-          show: false,
-          shape: "gis",
-        },
-        {
-          id: "map-coordinate",
-          label: "Coordinate",
-          show: false,
-          shape: "coordinate",
-        },
-      ],
-      maps: {
-        accessToken: this.$_config.mapBoxApi,
-        mapStyle: this.$_config.mapBoxStyle,
-        center: [113.9213, -0.7893],
-        zoom: 3,
-        geojson: {},
-        key: 111,
-        layerId: 0,
-        hoveredStateId: 0,
-        layerStyle: {
-          outline: {
-            color: "#000000",
-          },
-          fill: {
-            color: "#f06800",
-          },
-        },
-        popup: {
-          model: false,
-          content: {
-            title: "",
-            description: "",
-          },
-        },
-      },
-      side: [
-        {
-          name: "Informasi Lahan",
-          items: [
-            {
-              label: "QR Code",
-              key: "main_lahan.barcode",
-              type: "qrcode",
-            },
-            {
-              label: "No. Lahan",
-              key: "main_lahan.lahan_no",
-              class: "badge bg-primary",
-            },
-            {
-              label: "No. Dokumen",
-              key: "main_lahan.document_no",
-              class: "font-weight-300",
-            },
-            {
-              label: "Luas Lahan SPPT",
-              key: "main_lahan.land_area",
-              class: "font-weight-bold",
-              append: "m²",
-              transform: "ts",
-            },
-            {
-              label: "Luas Lahan Polygon",
-              key: "main_lahan.gis_polygon_area",
-              class: "font-weight-bold",
-              append: "m²",
-              transform: "ts",
-              project: "carbon",
-            },
-            {
-              label: "Project",
-              key: "project",
-            },
-          ],
-        },
-        {
-          name: "Petani",
-          items: [
-            {
-              label: "Nama",
-              key: "main_lahan.farmers_name",
-              class: "fotn-weight-bold",
-            },
-            {
-              label: "Kode",
-              key: "main_lahan.farmer_no",
-            },
-            {
-              label: "Nama FF",
-              key: "main_lahan.field_facilitators_name",
-            },
-          ],
-        },
-        {
-          name: "Kondisi Lahan",
-          items: [
-            {
-              label: "Jenis Lahan",
-              key: "main_lahan.lahan_type",
-            },
-            {
-              label: "Kondisi Terbaru",
-              key: "main_lahan.latest_condition",
-            },
-            {
-              label: "Deskripsi",
-              key: "main_lahan.description",
-            },
-          ],
-        },
-        {
-          name: "Lokasi Lahan",
-          items: [
-            {
-              label: "Management Unit",
-              key: "main_lahan.managementunits_name",
-            },
-            {
-              label: "Target Area",
-              key: "main_lahan.target_areas_name",
-            },
-            {
-              label: "Koordinat",
-              key: "main_lahan.coordinate",
-            },
-            {
-              label: "Desa",
-              key: "main_lahan.desas_name",
-            },
-            {
-              label: "Akses Lahan",
-              key: "main_lahan.access_to_lahan",
-            },
-            {
-              label: "Akses Sumber Air",
-              key: "main_lahan.access_to_water_sources",
-            },
-            {
-              label: "Jarak Lahan",
-              key: "main_lahan.jarak_lahan",
-            },
-          ],
-        },
-        {
-          name: "Informasi Lainnya",
-          items: [
-            {
-              label: "Pestisida",
-              key: "main_lahan.pesticide",
-            },
-            {
-              label: "Ketersediaan Air",
-              key: "main_lahan.water_availability",
-            },
-            {
-              label: "Pola Tanam",
-              key: "main_lahan.opsi_pola_tanam",
-            },
-          ],
-        },
-      ],
-      mainData: [
-        [
-          "Ada Habitat Satwa/Kawasan Dilindungi Terdekat",
-          "animal_protected_habitat",
-          "boolean",
-        ],
-        [
-          "Jarak Ke Habitat Satwa/Kawasan Dilindungi Terdekat",
-          "animal_protected_habitat_distance",
-          "",
-          "",
-          "m",
-        ],
-        ["Koordinat", "coordinate"],
-        ["Tanaman Saat Ini", "current_crops"],
-        ["Deskripsi", "description"],
-        ["Pupuk", "fertilizer"],
-        ["Elevation", "elevation"],
-        ["Pernah Terjadi Kekeringan", "drought", "boolean"],
-        ["Pernah Terjadi Banjir", "floods", "boolean"],
-        ["Pernah Terjadi Longsor", "landslide", "boolean"],
-        ["Pernah Terjadi Kebakaran", "wildfire", "boolean"],
-        ["Akurasi GPS", "gps_accuration"],
-        ["Kode Internal", "internal_code"],
-        ["Exposure", "exposure"],
-        ["Desa Terdekat", "nearby_village", "boolean"],
-        ["Jarak ke Desa Terdekat", "nearby_village_distance", "", "", "m"],
-        ["Potensi", "potency"],
-        ["Jenis Tanah", "soil_type"],
-        ["Foto Tanah", "soil_photo", "photo"],
-        ["SPPT", "sppt", "photo"],
-        ["Tutupan Lahan", "tutupan_lahan", "", "", "%"],
-        ["Tutupan Pohon", "tutupan_pohon_percentage", "", "", "%"],
-        ["Foto Tutupan Pohon", "tutupan_pohon_photo", "photo"],
-        [
-          "Tutupan Bangunan / Lainnya",
-          "tutupan_lain_bangunan_percentage",
-          "",
-          "",
-          "%",
-        ],
-        [
-          "Foto Tutupan Bangunan / Lainnya",
-          "tutupan_lain_bangunan_photo",
-          "photo",
-        ],
-
-        [
-          "Tutupan Tanaman Bawah",
-          "tutupan_tanaman_bawah_percentage",
-          "",
-          "",
-          "%",
-        ],
-        ["Foto Tutupan Tanaman Bawah", "tutupan_tanaman_bawah_photo", "photo"],
-      ],
-      data: {
-        main_lahan: null,
-        broken_barcode: [],
-        lahan_detail: [],
-        lahan_polygon: [],
-        lahan_project: [],
-        lahan_tutupan: [],
-        lahan_tutupan_request: [],
-        farmer_lahan_mou: [],
-      },
-    };
+    return LahanDetailData
   },
 };
 </script>

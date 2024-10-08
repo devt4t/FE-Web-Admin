@@ -104,7 +104,7 @@ const _service = {
       });
   },
 
-  upload(endPoint, file) {
+  upload(endPoint, file, uploadProgress) {
     const data = this.generateFormData(file);
 
     return axios
@@ -112,6 +112,14 @@ const _service = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (progressEvent) => {
+          if (uploadProgress && uploadProgress instanceof Function) {
+
+            uploadProgress(Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            ))
+          }
+        }
       })
       .then((response) => {
         return `${response.data.data.new_name}`;

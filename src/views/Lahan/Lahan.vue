@@ -1,52 +1,38 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :hideCreate="true"
-    :hideUpdate="true"
-    :refreshKey="refreshKey"
-    @onExportExcel="onExportExcel($event)"
-    @onExportPdf="onExportPdf($event)"
-  >
+  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :refreshKey="refreshKey"
+    @onExportExcel="onExportExcel($event)" @onExportPdf="onExportPdf($event)">
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          v-if="getProject(item) === 'carbon'"
-          class="indicator"
-          :class="{
-            warning:
-              getMaskedValue(item).approve == 0 &&
-              getMaskedValue(item).updated_gis.toLowerCase() == 'belum',
+        <div v-if="getProject(item) === 'carbon'" class="indicator" :class="{
+          warning:
+            getMaskedValue(item).approve == 0 &&
+            getMaskedValue(item).updated_gis.toLowerCase() == 'belum',
 
-            success: getMaskedValue(item).approve == 2,
+          success: getMaskedValue(item).approve == 2,
 
-            info:
-              getMaskedValue(item).approve == 0 &&
-              getMaskedValue(item).updated_gis.toLowerCase() == 'sudah',
+          info:
+            getMaskedValue(item).approve == 0 &&
+            getMaskedValue(item).updated_gis.toLowerCase() == 'sudah',
 
-            primary:
-              getMaskedValue(item).approve == 1 &&
-              getMaskedValue(item).fc_complete_data !== null,
+          primary:
+            getMaskedValue(item).approve == 1 &&
+            getMaskedValue(item).fc_complete_data !== null,
 
-            danger:
-              getMaskedValue(item).approve == 3 ||
-              (getMaskedValue(item).approve == 1 &&
-                getMaskedValue(item).fc_complete_data == null),
-          }"
-        ></div>
+          danger:
+            getMaskedValue(item).approve == 3 ||
+            (getMaskedValue(item).approve == 1 &&
+              getMaskedValue(item).fc_complete_data == null),
+        }"></div>
 
-        <div
-          class="indicator"
-          v-else-if="getProject(item) === 'non-carbon'"
-          :class="{
-            success: getMaskedValue(item).approve === 2,
-            warning:
-              getMaskedValue(item).approve === 0 &&
-              getMaskedValue(item).fc_complete_data === null,
-            primary:
-              getMaskedValue(item).approve > 0 &&
-              getMaskedValue(item).fc_complete_data !== null,
-          }"
-        ></div>
+        <div class="indicator" v-else-if="getProject(item) === 'non-carbon'" :class="{
+          success: getMaskedValue(item).approve === 2,
+          warning:
+            getMaskedValue(item).approve === 0 &&
+            getMaskedValue(item).fc_complete_data === null,
+          primary:
+            getMaskedValue(item).approve > 0 &&
+            getMaskedValue(item).fc_complete_data !== null,
+        }"></div>
       </div>
     </template>
 
@@ -54,9 +40,7 @@
       <template>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
-            <span v-on="on" class="text-link text-1-em"
-              >#{{ getMaskedValue(item).lahan_no }}</span
-            >
+            <span v-on="on" class="text-link text-1-em">#{{ getMaskedValue(item).lahan_no }}</span>
           </template>
 
           <span>Kode Lahan</span>
@@ -76,9 +60,8 @@
 
     <template v-slot:list-ff_id="{ item }">
       <template>
-        <span class="d-block">{{
-          getMaskedValue(item).field_facilitators_name
-        }}</span>
+        <span class="d-block">
+          {{ getMaskedValue(item).field_facilitators_name }}</span>
 
         <v-tooltip top>
           <template v-slot:activator="{ on }">
@@ -119,8 +102,7 @@
         <span>{{ getMaskedValue(item).target_areas_name }}</span>
 
         <span class="text-link font-weight-300 text-09-em">
-          MU {{ getMaskedValue(item).managementunits_name }}</span
-        >
+          MU {{ getMaskedValue(item).managementunits_name }}</span>
       </div>
     </template>
 
@@ -132,11 +114,9 @@
               <span class="d-block text-end font-weight-bold text-no-wrap">
                 <v-icon medium>mdi-file-document-outline</v-icon>
 
-                <span class="ml-1"
-                  >{{
-                    getMaskedValue(item).land_area | parse("ts")
-                  }}m&sup2;</span
-                >
+                <span class="ml-1">{{
+                  getMaskedValue(item).land_area | parse("ts")
+                }}m&sup2;</span>
               </span>
             </div>
           </template>
@@ -150,11 +130,9 @@
               <span class="d-block text-end font-weight-bold text-no-wrap">
                 <v-icon medium>mdi-vector-polygon</v-icon>
 
-                <span class="ml-1 text-link"
-                  >{{
-                    getMaskedValue(item).gis_polygon_area | parse("ts")
-                  }}m&sup2;</span
-                >
+                <span class="ml-1 text-link">{{
+                  getMaskedValue(item).gis_polygon_area | parse("ts")
+                }}m&sup2;</span>
               </span>
             </div>
           </template>
@@ -170,32 +148,22 @@
           {{ getMaskedValue(item).planting_area || 0 }}%
         </span>
 
-        <span v-if="getMaskedValue(item).planting_area"
-          >(~{{
-            (getMaskedValue(item).planting_area / 100) *
-            getMaskedValue(item).land_area
-          }}m)</span
-        >
+        <span v-if="getMaskedValue(item).planting_area">(~{{
+          (getMaskedValue(item).planting_area / 100) *
+          getMaskedValue(item).land_area
+        }}m)</span>
       </div>
     </template>
 
     <template v-slot:list-cover="{ item }">
-      <span class="d-block text-center"
-        >{{ getMaskedValue(item).tutupan_lahan }}%</span
-      >
+      <span class="d-block text-center">{{ getMaskedValue(item).tutupan_lahan }}%</span>
     </template>
 
     <template v-slot:list-tree="{ item }">
-      <div
-        class="d-flex flex-row min-w-200px"
-        v-if="Array.isArray(getMaskedValue(item).jenis_bibit)"
-        style="flex-wrap: wrap"
-      >
-        <div
-          class="badge bg-success text-no-wrap mr-1 mb-1"
-          v-for="(tree, i) in getMaskedValue(item).jenis_bibit"
-          :key="getMaskedValue(item).document_no + i"
-        >
+      <div class="d-flex flex-row min-w-200px" v-if="Array.isArray(getMaskedValue(item).jenis_bibit)"
+        style="flex-wrap: wrap">
+        <div class="badge bg-success text-no-wrap mr-1 mb-1" v-for="(tree, i) in getMaskedValue(item).jenis_bibit"
+          :key="getMaskedValue(item).document_no + i">
           <v-icon>mdi-tree-outline</v-icon>
 
           <span>{{ tree }}</span>
@@ -204,161 +172,114 @@
     </template>
 
     <template v-slot:list-total_wood="{ item }">
-      <span
-        class="d-block text-center"
-        v-if="
-          Array.isArray(getMaskedValue(item).total_from_detail) &&
-          getMaskedValue(item).total_from_detail.length > 0
-        "
-      >
+      <span class="d-block text-center" v-if="
+        Array.isArray(getMaskedValue(item).total_from_detail) &&
+        getMaskedValue(item).total_from_detail.length > 0
+      ">
         {{
           getMaskedValue(item).total_from_detail[0].pohon_kayu_detail
-            | parse("ts")
+          | parse("ts")
         }}
       </span>
     </template>
 
     <template v-slot:list-total_mpts="{ item }">
-      <span
-        class="d-block text-center"
-        v-if="
-          Array.isArray(getMaskedValue(item).total_from_detail) &&
-          getMaskedValue(item).total_from_detail.length > 0
-        "
-      >
+      <span class="d-block text-center" v-if="
+        Array.isArray(getMaskedValue(item).total_from_detail) &&
+        getMaskedValue(item).total_from_detail.length > 0
+      ">
         {{
           getMaskedValue(item).total_from_detail[0].pohon_mpts_detail
-            | parse("ts")
+          | parse("ts")
         }}
       </span>
     </template>
 
     <template v-slot:list-total="{ item }">
-      <span
-        class="font-weight-bold d-block text-center"
-        v-if="
-          Array.isArray(getMaskedValue(item).total_from_detail) &&
-          getMaskedValue(item).total_from_detail.length > 0
-        "
-        >{{
+      <span class="font-weight-bold d-block text-center" v-if="
+        Array.isArray(getMaskedValue(item).total_from_detail) &&
+        getMaskedValue(item).total_from_detail.length > 0
+      ">{{
           (getMaskedValue(item).total_from_detail[0].pohon_kayu_detail +
             getMaskedValue(item).total_from_detail[0].pohon_mpts_detail)
-            | parse("ts")
-        }}</span
-      >
+          | parse("ts")
+        }}</span>
     </template>
 
     <template v-slot:list-status="{ item }">
-      <div
-        class="d-flex flex-col text-no-wrap justify-content-center"
-        style="align-items: center"
-      >
+      <div class="d-flex flex-col text-no-wrap justify-content-center" style="align-items: center">
         <span v-if="item.approve == 2" class="badge bg-success mb-2">
           Terverifikasi
         </span>
-        <div
-          v-if="getProject(item) === 'carbon'"
-          class="badge"
-          :class="{
-            'bg-warning':
-              getMaskedValue(item).approve == 0 &&
-              getMaskedValue(item).updated_gis.toLowerCase() == 'belum',
+        <div v-if="getProject(item) === 'carbon'" class="badge" :class="{
+          'bg-warning':
+            getMaskedValue(item).approve == 0 &&
+            getMaskedValue(item).updated_gis.toLowerCase() == 'belum',
 
-            'bg-info':
-              (getMaskedValue(item).approve == 0 &&
-                getMaskedValue(item).updated_gis.toLowerCase() == 'sudah') ||
-              (getMaskedValue(item).approve == 2 &&
-                getMaskedValue(item).eligible_status == 1),
+          'bg-info':
+            (getMaskedValue(item).approve == 0 &&
+              getMaskedValue(item).updated_gis.toLowerCase() == 'sudah') ||
+            (getMaskedValue(item).approve == 2 &&
+              getMaskedValue(item).eligible_status == 1),
 
-            'bg-primary': getMaskedValue(item).approve == 1,
+          'bg-primary': getMaskedValue(item).approve == 1,
 
-            'bg-success': getMaskedValue(item).approve == 2,
+          'bg-success': getMaskedValue(item).approve == 2,
 
-            'bg-danger':
-              getMaskedValue(item).approve == 3 ||
-              (getMaskedValue(item).approve == 2 &&
-                getMaskedValue(item).eligible_status == 0) ||
-              (getMaskedValue(item).approve == 1 &&
-                getMaskedValue(item).fc_complete_data == null),
-          }"
-        >
-          <span
-            v-if="
-              getMaskedValue(item).approve == 1 &&
-              getMaskedValue(item).fc_complete_data == null
-            "
-            >Data Bermasalah</span
-          >
+          'bg-danger':
+            getMaskedValue(item).approve == 3 ||
+            (getMaskedValue(item).approve == 2 &&
+              getMaskedValue(item).eligible_status == 0) ||
+            (getMaskedValue(item).approve == 1 &&
+              getMaskedValue(item).fc_complete_data == null),
+        }">
+          <span v-if="
+            getMaskedValue(item).approve == 1 &&
+            getMaskedValue(item).fc_complete_data == null
+          ">Data Bermasalah</span>
 
-          <span
-            v-else-if="
-              getMaskedValue(item).approve == 0 &&
-              getMaskedValue(item).updated_gis.toLowerCase() == 'belum'
-            "
-            >Belum Diverifikasi</span
-          >
+          <span v-else-if="
+            getMaskedValue(item).approve == 0 &&
+            getMaskedValue(item).updated_gis.toLowerCase() == 'belum'
+          ">Belum Diverifikasi</span>
 
-          <span
-            v-else-if="
-              getMaskedValue(item).approve == 0 &&
-              getMaskedValue(item).updated_gis.toLowerCase() == 'sudah'
-            "
-            >Diverifikasi GIS</span
-          >
+          <span v-else-if="
+            getMaskedValue(item).approve == 0 &&
+            getMaskedValue(item).updated_gis.toLowerCase() == 'sudah'
+          ">Diverifikasi GIS</span>
 
-          <span v-else-if="getMaskedValue(item).approve == 1"
-            >Diverifikasi FC</span
-          >
+          <span v-else-if="getMaskedValue(item).approve == 1">Diverifikasi FC</span>
 
           <span v-else-if="getMaskedValue(item).approve == 2">
-            <span v-if="getMaskedValue(item).eligible_status == 0"
-              >Tidak Bisa Ikut</span
-            >
+            <span v-if="getMaskedValue(item).eligible_status == 0">Tidak Bisa Ikut</span>
 
-            <span v-else-if="getMaskedValue(item).eligible_status == 1"
-              >Bisa Ikut Dengan Kondisi</span
-            >
+            <span v-else-if="getMaskedValue(item).eligible_status == 1">Bisa Ikut Dengan Kondisi</span>
 
-            <span v-else-if="getMaskedValue(item).eligible_status == 2"
-              >Bisa Ikut</span
-            >
+            <span v-else-if="getMaskedValue(item).eligible_status == 2">Bisa Ikut</span>
           </span>
 
-          <span v-else-if="getMaskedValue(item).approve == 3"
-            >Force Majeure</span
-          >
+          <span v-else-if="getMaskedValue(item).approve == 3">Force Majeure</span>
         </div>
 
         <div v-else-if="getProject(item) === 'non-carbon'">
-          <span
-            class="badge"
-            :class="{
-              'bg-warning':
-                getMaskedValue(item).approve === 0 &&
-                getMaskedValue(item).fc_complete_data === null,
-              'bg-primary':
-                getMaskedValue(item).approve > 0 &&
-                getMaskedValue(item).fc_complete_data !== null,
-              'bg-success': getMaskedValue(item).approve === 2,
-            }"
-          >
-            <span
-              v-if="
-                getMaskedValue(item).approve === 0 &&
-                getMaskedValue(item).fc_complete_data === null
-              "
-              >Belum Diverifikasi</span
-            >
-            <span
-              v-else-if="
-                getMaskedValue(item).approve > 0 &&
-                getMaskedValue(item).fc_complete_data !== null
-              "
-              >Data Lahan Terverifikasi</span
-            >
-            <span v-else-if="getMaskedValue(item).approve === 2"
-              >Terverifikasi</span
-            >
+          <span class="badge" :class="{
+            'bg-warning':
+              getMaskedValue(item).approve === 0 &&
+              getMaskedValue(item).fc_complete_data === null,
+            'bg-primary':
+              getMaskedValue(item).approve > 0 &&
+              getMaskedValue(item).fc_complete_data !== null,
+            'bg-success': getMaskedValue(item).approve === 2,
+          }">
+            <span v-if="
+              getMaskedValue(item).approve === 0 &&
+              getMaskedValue(item).fc_complete_data === null
+            ">Belum Diverifikasi</span>
+            <span v-else-if="
+              getMaskedValue(item).approve > 0 &&
+              getMaskedValue(item).fc_complete_data !== null
+            ">Data Lahan Terverifikasi</span>
+            <span v-else-if="getMaskedValue(item).approve === 2">Terverifikasi</span>
           </span>
         </div>
       </div>
@@ -366,31 +287,21 @@
 
     <template v-slot:list-before-create>
       <lahan-export-modal :dataKey="exportModal" :format="exportFormat" />
-      <lahan-export-social-impact-modal
-        :dataKey="exportSocialImpactModal"
-        :format="exportFormat"
-      />
+      <lahan-export-social-impact-modal :dataKey="exportSocialImpactModal" :format="exportFormat" />
     </template>
 
     <template v-slot:list-fc_complete_data="{ item }">
       <div class="d-flex flex-row text-no-wrap justify-content-center">
-        <span
-          class="badge"
-          :class="{
-            'bg-success': getMaskedValue(item).fc_complete_data == 1,
+        <span class="badge" :class="{
+          'bg-success': getMaskedValue(item).fc_complete_data == 1,
 
-            'bg-danger': getMaskedValue(item).fc_complete_data == 0,
+          'bg-danger': getMaskedValue(item).fc_complete_data == 0,
 
-            'bg-info': getMaskedValue(item).fc_complete_data == null,
-          }"
-        >
-          <span v-if="getMaskedValue(item).fc_complete_data == 0"
-            >Belum Lengkap</span
-          >
+          'bg-info': getMaskedValue(item).fc_complete_data == null,
+        }">
+          <span v-if="getMaskedValue(item).fc_complete_data == 0">Belum Lengkap</span>
 
-          <span v-else-if="getMaskedValue(item).fc_complete_data == 1"
-            >Lengkap</span
-          >
+          <span v-else-if="getMaskedValue(item).fc_complete_data == 1">Lengkap</span>
 
           <span v-else>Menunggu Verifikasi FC</span>
         </span>
@@ -402,46 +313,32 @@
     </template>
 
     <template v-slot:list-after-filter>
-      <div
-        class="d-flex flex-row justify-content-start align-items-center pb-4"
-      >
-        <v-btn
-          class="mr-3"
-          variant="info"
-          @click="
-            $router.push({
-              path: '/DaftarQRLahanRusak',
-              query: {
-                view: 'list',
-              },
-            })
-          "
-        >
+      <div class="d-flex flex-row justify-content-start align-items-center pb-4">
+        <v-btn class="mr-3" variant="info" @click="
+          $router.push({
+            path: '/DaftarQRLahanRusak',
+            query: {
+              view: 'list',
+            },
+          })
+          ">
           <v-icon small class="mr-2">mdi-qrcode-remove</v-icon>
           <span>Barcode Lahan Rusak</span>
         </v-btn>
-        <v-btn
-          class="mr-3"
-          variant="success"
-          @click="
-            $router.push({
-              path: '/PermintaanTutupanLahan',
-              query: {
-                view: 'list',
-              },
-            })
-          "
-        >
+        <v-btn class="mr-3" variant="success" @click="
+          $router.push({
+            path: '/PermintaanTutupanLahan',
+            query: {
+              view: 'list',
+            },
+          })
+          ">
           <v-icon small class="mr-2">mdi-file-arrow-left-right-outline</v-icon>
           <span>Permintaan Pergantian Tutupan Lahan</span>
         </v-btn>
 
-        <v-btn
-          v-if="$_sys.isAllowed('lahan-kml-bulk-upload-create')"
-          class="mr-2 d-flex flex-row align-items-center"
-          variant="info"
-          @click="uploadKmlModal = uploadKmlModal + 1"
-        >
+        <v-btn v-if="$_sys.isAllowed('lahan-kml-bulk-upload-create')" class="mr-2 d-flex flex-row align-items-center"
+          variant="info" @click="uploadKmlModal = uploadKmlModal + 1">
           <v-icon>mdi-shape-polygon-plus</v-icon>
           <span>Bulk Upload KML</span>
         </v-btn>
@@ -508,36 +405,8 @@ export default {
       }
     },
 
-    async joinNewProgram(item) {
-      return;
-      const confirmation = await this.$_alert.confirm(
-        "Ikutkan Program 2024?",
-        `Apakah anda yakin ingin mengikutkan lahan dengan Nomor Lahan ${item.lahan_no} di tahun program 2024?`,
-
-        "Ya, Ikutkan",
-        "Batal",
-        false
-      );
-      if (!confirmation.isConfirmed) return;
-      const updating = await this.$_api
-        .post("UpdateReusableLahan_new", {
-          lahan_no: item.lahan_no,
-          program_year: this.$_config.programYear.model,
-        })
-        .then(() => true)
-        .catch(() => false);
-
-      if (!updating) return;
-      this.$_alert.success(
-        "Berhasil",
-        "Lahan berhasil di ikutkan kembali di tahun program 2024",
-        "center"
-      );
-      this.refreshKey += 1;
-    },
-
     onExportExcel() {
-      if (this.$store.state.User.role == 25) {
+      if ([16, 1, 3].includes(this.$store.state.User.role)) {
         this.exportSocialImpactModal += 1;
       } else {
         this.exportModal += 1;

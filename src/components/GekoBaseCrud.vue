@@ -848,6 +848,7 @@ export default {
         _data.form_param = item.methods[key].form_param || null;
         _data.main = item.methods[key].main || null;
         _data.icon = item.methods[key].icon || null;
+        _data.ext_param = item.methods[key].ext_param || {}
       }
 
       return _data;

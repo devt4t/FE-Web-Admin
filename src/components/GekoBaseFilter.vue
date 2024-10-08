@@ -1,48 +1,34 @@
 <template>
-  <div
-    v-if="ready"
-    class="filters d-flex"
-    style="width: 100%; flex-wrap: wrap"
-    :class="{
-      'pb-5': !mainFilter,
-      'flex-row': !mainFilter,
-      active: open,
-      'main-filter': mainFilter,
-    }"
-  >
+  <div v-if="ready" class="filters d-flex" style="width: 100%; flex-wrap: wrap" :class="{
+    'pb-5': !mainFilter,
+    'flex-row': !mainFilter,
+    active: open,
+    'main-filter': mainFilter,
+  }">
     <div class="filter-item" v-for="(item, i) in filters" :key="'hf-' + i">
-      <geko-input
-        v-model="formData[item.setter]"
-        :item="{
-          label: item.label,
-          type: item.type,
-          ic: 'filter-select',
-          hide_label: item.hide_label || mainFilter,
-          validation: [],
-          option: item.option,
-          api: item.getter,
-          placeholder: item.label,
-          icon: item.icon,
-          param: item.param
-            ? {
-                ...item.param,
-                ...getParams[item.setter],
-              }
-            : {},
-          default_label: item.option ? formData[item.option.default_label] : '',
-        }"
-        :disabled="
-          typeof getParams[item.setter].disabled === 'boolean'
-            ? getParams[item.setter].disabled
-            : false
-        "
-      />
+      <geko-input v-model="formData[item.setter]" :item="{
+        label: item.label,
+        type: item.type,
+        ic: 'filter-select',
+        hide_label: item.hide_label || mainFilter,
+        validation: [],
+        option: item.option,
+        api: item.getter,
+        placeholder: item.label,
+        icon: item.icon,
+        param: item.param
+          ? {
+            ...item.param,
+            ...getParams[item.setter],
+          }
+          : {},
+        default_label: item.option ? formData[item.option.default_label] : '',
+      }" :disabled="typeof getParams[item.setter].disabled === 'boolean'
+        ? getParams[item.setter].disabled
+        : false
+        " />
     </div>
-    <div
-      class="filter-footer d-flex flex-row"
-      style="align-items: center; width: 100%"
-      v-if="!mainFilter"
-    >
+    <div class="filter-footer d-flex flex-row" style="align-items: center; width: 100%" v-if="!mainFilter">
       <v-btn small variant="light" class="mr-3" @click="$emit('close', true)">
         <span>Batal</span>
       </v-btn>
@@ -130,6 +116,15 @@ export default {
       this.ready = true;
     },
     onFilter() {
+      for (const filter of this.filters) {
+        if (this.formData[filter.setter] && filter.ext_param) {
+          for (const param of Object.keys(filter.ext_param)) {
+            this.$set(this.formData, param, filter.ext_param[param])
+          }
+
+        }
+      }
+
       this.$emit("filter", this.formData);
     },
 

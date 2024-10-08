@@ -275,6 +275,37 @@ export default {
     },
 
     {
+      id: 'project_no',
+      label: 'Project',
+      methods: {
+        
+        filter: {
+          type: "select",
+          getter: "GetProjectAllAdmin",
+          setter: "project_no",
+          // form_param: {
+          //   mu_no: "mu_no",
+          // },
+          param: {
+            // program_year: "current_program_year",
+            project_filter: true,
+          },
+          ext_param: {
+            project_filter: true
+          },
+          main: true,
+          option: {
+            list_pointer: {
+              code: "project_no",
+              label: "project_name",
+              display: ["project_name"],
+            },
+          },
+        },
+      }
+    },
+
+    {
       id: "status",
       label: "Status",
       methods: {
