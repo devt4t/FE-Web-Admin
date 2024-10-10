@@ -333,6 +333,7 @@ export default {
           items: [],
         },
       },
+      User: {},
     };
   },
 
@@ -432,7 +433,9 @@ export default {
       }
     },
     initData: async function () {
+      this.User = this.$store.state.User;
       this.options.programYear = this.$store.state.programYear.model;
+      if (this.User.ff.ff.length > 0) this.options.mu_no.show = false;
 
       // get mu options data
       this.getOptionsData({
