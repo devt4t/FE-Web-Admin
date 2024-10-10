@@ -1,20 +1,13 @@
 <template>
   <div>
     <!-- header -->
-    <div class="d-flex align-items-center" data-aos="fade-left">
-      <v-icon class="mr-2">mdi-counter</v-icon>
-      Jumlah Data
+    <b-row data-aos="fade-left" class="align-items-center ma-0">
+      <div class="d-flex align-items-center">
+        <v-icon class="mr-2">mdi-counter</v-icon>
+        Jumlah Data
+      </div>
       <v-divider class="mx-2"></v-divider>
       <!-- program_year -->
-      <!-- <geko-input
-        v-model="options.programYear"
-        :item="{
-          label: 'Program',
-          validation: [],
-          type: 'select',
-          optionList: []
-        }"
-      /> -->
       <v-select
         dense
         hide-details
@@ -65,7 +58,7 @@
         style="max-width: 250px"
         @change="onChange('mu_no')"
       ></v-autocomplete>
-    </div>
+    </b-row>
 
     <!-- statistic data -->
     <b-row class="my-0">
