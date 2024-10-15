@@ -17,86 +17,20 @@
       @dialogActions="($val) => dialogActions($val)"
     ></u-m-detail>
     <!-- End:Dialogs -->
+
     <!-- Greetings -->
-    <div data-aos="fade-down">
-      <v-card rounded="xl" :dark="$store.state.theme == 'dark'">
-        <v-card-text>
-          <v-row
-            style="margin-top: -15px"
-            class="flex-column-reverse flex-lg-row"
-          >
-            <v-col cols="12" md="12" lg="9">
-              <v-card class="transparent elevation-0">
-                <v-card-title class="fontall">
-                  Selamat {{ time.isMorning() }}, {{ User.name || "-" }}
-                </v-card-title>
-                <v-card-subtitle>
-                  <span v-if="time.date">
-                    {{ time.date || "-" }}
-                  </span>
-                  <v-progress-circular
-                    v-else
-                    indeterminate
-                    color="white"
-                    size="15"
-                  ></v-progress-circular>
-                </v-card-subtitle>
-                <v-card-text class="pt-3">
-                  <p v-if="time.clock" class="mb-0" style="font-size: 40px">
-                    {{ time.clock || "-" }}
-                  </p>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" lg="3" class="pa-0">
-              <LottieAnimation
-                :animationData="femaleWork"
-                :loop="true"
-                :key="'female-work'"
-                style="height: 175px; padding: 0px"
-              />
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </div>
-    <!-- Manual Books -->
-    <div data-aos="fade-down" data-aos-delay="350">
-      <v-card class="mt-2 rounded-xl" :dark="$store.state.theme == 'dark'">
-        <v-card-text class="">
-          <v-row class="mx-0 align-center">
-            <p class="mb-0"><v-icon>mdi-book</v-icon> Buku Manual GEKO</p>
-            <v-divider class="mx-2"></v-divider>
-            <!-- <v-tooltip left content-class="rounded-xl">
-              <template v-slot:activator="{on, attrs}">
-                <v-btn v-bind="attrs" v-on="on" rounded color="green white--text" class="my-2 mr-2" small @click="() => {$router.push('GekoManual')}"><v-icon class="mr-1">mdi-book-open-variant</v-icon> Open</v-btn>
-              </template>
-              Click to open the manual book in new page
-            </v-tooltip> -->
-            <v-tooltip left content-class="rounded-xl">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  rounded
-                  color="blue white--text"
-                  class="my-2"
-                  small
-                  @click="() => downloadManualBook()"
-                  ><v-icon class="mr-1">mdi-download</v-icon> Unduh</v-btn
-                >
-              </template>
-              Click untuk membuka dan mengunduh buku manual
-            </v-tooltip>
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </div>
+    <greetings class="mb-0" />
+    <!-- End:Greetings -->
+
+    <!-- Statistic -->
+    <statistic />
+    <!-- End:Statistic -->
+
     <!-- <div style="width: 300px;height: 300px;overflow: hidden;display: flex;justify-content: center;align-items: center;">
       <spline-viewer url="https://prod.spline.design/sDCa1WJtTdVGmbP7/scene.splinecode"></spline-viewer>
     </div> -->
     <!-- Jumlah Data -->
-    <div data-aos="fade-down" data-aos-delay="350">
+    <div v-if="false" data-aos="fade-down" data-aos-delay="350">
       <v-card class="mt-2 rounded-xl" :dark="$store.state.theme == 'dark'">
         <v-card-title>
           <v-icon class="mr-2">mdi-counter</v-icon>
@@ -336,9 +270,9 @@
     </div>
 
     <!-- Maps -->
-    <DMap :options="options" data-aos="fade-up" />
+    <DMap v-if="false" :options="options" data-aos="fade-up" />
     <!-- 360 View -->
-    <tepview></tepview>
+    <tepview v-if="false"></tepview>
   </v-container>
 </template>
 
@@ -368,6 +302,8 @@ export default {
     FFDetail,
     FCDetail,
     UMDetail,
+    greetings: () => import("./components/greetings.vue"),
+    statistic: () => import("./components/statistic.vue"),
   },
   data: () => ({
     config: {
@@ -634,17 +570,6 @@ export default {
           program_year: this.options.programYear,
           province: this.options.province.model,
         });
-        //parameter total Petani
-        const totalPetaniParam = new URLSearchParams({
-          typegetdata: "several",
-          program_year: this.options.programYear,
-        });
-        const totalLahanParam = new URLSearchParams({
-          typegetdata: "several",
-          program_year: this.options.programYear,
-          page: "1",
-          per_page: "10",
-        });
         // if selected mu
         if (this.options.mu_no.model) {
           if (
@@ -663,60 +588,6 @@ export default {
               params.set("ff", userFF.toString());
             }
         }
-        // get total data dashboard
-        // const totalData = await axios
-        //   .get(
-        //     this.$store.getters.getApiUrl(`GekoDashboardTotalDatas?${params}`),
-        //     {
-        //       headers: {
-        //         Authorization: `Bearer ${this.$store.state.token}`,
-        //       },
-        //     }
-        //   )
-        //   .then((res) => {
-        //     return res.data.data.result;
-        //   });
-
-        const totalData = await this.$_api
-          .get(`GekoDashboardTotalDatas?${params}`)
-          .then((res) => {
-            return res.data.result;
-          });
-        const tdEl = this.totalData;
-        const tdPL = this.totalData_petani_lahan;
-        tdEl.data1.Count = (await totalData.total.ff) || 0;
-        tdPL.data1.Count = (await totalData.total.farmer) || 0;
-        tdPL.data2.Count = (await totalData.total.land_total) || 0;
-        tdEl.data2.Count = (await totalData.total.land_general_total) || 0;
-        tdEl.data3.Count = (await totalData.total.trees) || 0;
-
-        // const totalDataFarmer = await axios
-        //   .get(
-        //     this.$store.getters.getApiUrl(
-        //       `GetFarmerAllAdmin?${totalPetaniParam}`
-        //     ),
-        //     {
-        //       headers: {
-        //         Authorization: `Bearer ${this.$store.state.token}`,
-        //       },
-        //     }
-        //   )
-        //   .then((res) => {
-        //     return res.data.data.result;
-        //   });
-        const totalDataFarmer = await this.$_api
-          .get(`GetFarmerAllAdmin?${totalPetaniParam}`)
-          .then((res) => {
-            return res.data.result;
-          });
-        tdPL.data1.subCount = (await totalDataFarmer.count) || 0;
-
-        const totalDataLahan = await this.$_api
-          .get(`GetLahanAllAdmin?${totalLahanParam}`)
-          .then((res) => {
-            return res.data;
-          });
-        tdPL.data2.subCount = (await totalDataLahan.total) || 0;
       } catch (error) {
         this.dataobject = [];
         this.catchingError(error);
@@ -748,10 +619,6 @@ export default {
       setInterval(() => {
         this.time.clock = new Date().toLocaleTimeString("US");
       }, 100);
-    },
-    downloadManualBook() {
-      const url = `https://trees4trees.sharepoint.com/:b:/g/EdnPK5LSmNVIvauAiE1qy5MBb5zC9UhWdUUFokVeI9FV2g?e=3wlCiA`;
-      window.open(url, "_blank");
     },
     async setLottieDashboard(source) {
       if (source == "Penilikan Lubang") this.lottie.planting = await plant1;
