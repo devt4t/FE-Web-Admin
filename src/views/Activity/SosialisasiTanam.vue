@@ -1,13 +1,7 @@
 <template>
   <div>
-    <v-breadcrumbs
-      :dark="$store.state.theme == 'dark'"
-      class="breadcrumbsmain"
-      :items="itemsbr"
-      divider=">"
-      large
-      data-aos="fade-right"
-    ></v-breadcrumbs>
+    <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" :items="itemsbr" divider=">" large
+      data-aos="fade-right"></v-breadcrumbs>
 
     <div class="mx-9">
       <v-alert :value="alerttoken" color="red" elevation="24" type="error">
@@ -16,20 +10,11 @@
     </div>
 
     <!-- MODAL EXPORT PER UM  -->
-    <ExportSostamByUM
-      :show="dialogexportsostamPerUM"
-      :program_year="this.program_year"
-      :um_no="this.selectExportUM"
-      :fc_no="this.selectExportFC"
-      @close="dialogexportsostamPerUM = false"
-    >
+    <ExportSostamByUM :show="dialogexportsostamPerUM" :program_year="this.program_year" :um_no="this.selectExportUM"
+      :fc_no="this.selectExportFC" @close="dialogexportsostamPerUM = false">
     </ExportSostamByUM>
     <!-- MODAL EXPORT PER-FF-->
-    <Export
-      :show="dialogExportSostam"
-      :data="dialogExportSostamData"
-      @close="dialogExportSostam = false"
-    >
+    <Export :show="dialogExportSostam" :data="dialogExportSostamData" @close="dialogExportSostam = false">
     </Export>
 
     <v-dialog v-model="dialogExportDataSostam.show" max-width="500px">
@@ -43,63 +28,30 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  outlined
-                  rounded
-                  :menu-props="{
-                    bottom: true,
-                    offsetY: true,
-                    rounded: 'xl',
-                    transition: 'slide-y-transition',
-                  }"
-                  color="green"
-                  item-color="green"
-                  v-model="selectExportUM"
-                  :items="itemsum"
-                  item-value="nik"
-                  item-text="name"
-                  v-on:change="selectedExportUM"
-                  label="Pilih Unit Manager"
-                  clearable
-                ></v-autocomplete>
+                <v-autocomplete outlined rounded :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }" color="green" item-color="green" v-model="selectExportUM" :items="itemsum" item-value="nik"
+                  item-text="name" v-on:change="selectedExportUM" label="Pilih Unit Manager" clearable></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  v-model="selectExportFC"
-                  :items="itemsfc"
-                  item-value="nik"
-                  item-text="name"
-                  label="Field Coordinator"
-                  clearable
-                  :menu-props="{ rounded: 'xl', offsetY: true }"
-                  outlined
-                  rounded
-                  hide-details
-                  :rules="[(v) => !!v || 'Field is required']"
-                ></v-autocomplete>
+                <v-autocomplete v-model="selectExportFC" :items="itemsfc" item-value="nik" item-text="name"
+                  label="Field Coordinator" clearable :menu-props="{ rounded: 'xl', offsetY: true }" outlined rounded
+                  hide-details :rules="[(v) => !!v || 'Field is required']"></v-autocomplete>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            dark
-            color="red"
-            rounded
-            class="px-5"
-            @click="dialogExportDataSostam.show = false"
-          >
+          <v-btn dark color="red" rounded class="px-5" @click="dialogExportDataSostam.show = false">
             <v-icon small class="mr-1">mdi-close</v-icon>
             Cancel
           </v-btn>
-          <v-btn
-            color="green white--text"
-            rounded
-            class="px-5"
-            :disabled="disabledExportSostamFF"
-            @click="showExportSostamPerFCModal()"
-          >
+          <v-btn color="green white--text" rounded class="px-5" :disabled="disabledExportSostamFF"
+            @click="showExportSostamPerFCModal()">
             <v-icon small class="mr-1">mdi-microsoft-excel</v-icon>
             Export
           </v-btn>
@@ -120,93 +72,42 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  v-model="selectMU"
-                  :items="itemsMU"
-                  item-value="mu_no"
-                  item-text="name"
-                  :menu-props="{
-                    bottom: true,
-                    offsetY: true,
-                    rounded: 'xl',
-                    transition: 'slide-y-transition',
-                  }"
-                  color="green"
-                  item-color="green"
-                  outlined
-                  rounded
-                  hide-details
-                  v-on:change="selectedMU"
-                  label="Management Unit"
-                  clearable
-                ></v-autocomplete>
+                <v-autocomplete v-model="selectMU" :items="itemsMU" item-value="mu_no" item-text="name" :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }" color="green" item-color="green" outlined rounded hide-details v-on:change="selectedMU"
+                  label="Management Unit" clearable></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  v-model="selectTA"
-                  :items="itemsTA"
-                  item-value="area_code"
-                  item-text="name"
-                  v-on:change="selectedTA"
-                  label="Target Area"
-                  clearable
-                  :menu-props="{
+                <v-autocomplete v-model="selectTA" :items="itemsTA" item-value="area_code" item-text="name"
+                  v-on:change="selectedTA" label="Target Area" clearable :menu-props="{
                     bottom: true,
                     offsetY: true,
                     rounded: 'xl',
                     transition: 'slide-y-transition',
-                  }"
-                  color="green"
-                  item-color="green"
-                  outlined
-                  rounded
-                  hide-details
-                ></v-autocomplete>
+                  }" color="green" item-color="green" outlined rounded hide-details></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  v-model="selectVillage"
-                  :items="itemsVillage"
-                  item-value="kode_desa"
-                  item-text="name"
-                  v-on:change="selectedVillage"
-                  label="Desa"
-                  clearable
-                  :menu-props="{
+                <v-autocomplete v-model="selectVillage" :items="itemsVillage" item-value="kode_desa" item-text="name"
+                  v-on:change="selectedVillage" label="Desa" clearable :menu-props="{
                     bottom: true,
                     offsetY: true,
                     rounded: 'xl',
                     transition: 'slide-y-transition',
-                  }"
-                  color="green"
-                  item-color="green"
-                  outlined
-                  rounded
-                  hide-details
-                ></v-autocomplete>
+                  }" color="green" item-color="green" outlined rounded hide-details></v-autocomplete>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            dark
-            color="red"
-            rounded
-            class="px-5"
-            @click="dialogFilterArea = false"
-          >
+          <v-btn dark color="red" rounded class="px-5" @click="dialogFilterArea = false">
             <v-icon small class="mr-1">mdi-close</v-icon>
             Keluar
           </v-btn>
-          <v-btn
-            dark
-            color="warning"
-            rounded
-            class="px-5"
-            @click="searchbyarea"
-          >
+          <v-btn dark color="warning" rounded class="px-5" @click="searchbyarea">
             <v-icon small class="mr-1">mdi-filter</v-icon>
             Cari
           </v-btn>
@@ -225,59 +126,29 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  outlined
-                  rounded
-                  :menu-props="{
-                    bottom: true,
-                    offsetY: true,
-                    rounded: 'xl',
-                    transition: 'slide-y-transition',
-                  }"
-                  color="green"
-                  item-color="green"
-                  v-model="selectUM"
-                  :items="itemsum"
-                  item-value="nik"
-                  item-text="name"
-                  v-on:change="selectedUM"
-                  label="Pilih Unit Manager"
-                  clearable
-                ></v-autocomplete>
+                <v-autocomplete outlined rounded :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }" color="green" item-color="green" v-model="selectUM" :items="itemsum" item-value="nik"
+                  item-text="name" v-on:change="selectedUM" label="Pilih Unit Manager" clearable></v-autocomplete>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  outlined
-                  rounded
-                  :menu-props="{
-                    bottom: true,
-                    offsetY: true,
-                    rounded: 'xl',
-                    transition: 'slide-y-transition',
-                  }"
-                  color="green"
-                  item-color="green"
-                  v-model="selectFC"
-                  :items="itemsfc"
-                  item-value="nik"
-                  item-text="name"
-                  v-on:change="selectedFC"
-                  label="Pilih Field Coordinator"
-                  clearable
-                ></v-autocomplete>
+                <v-autocomplete outlined rounded :menu-props="{
+                  bottom: true,
+                  offsetY: true,
+                  rounded: 'xl',
+                  transition: 'slide-y-transition',
+                }" color="green" item-color="green" v-model="selectFC" :items="itemsfc" item-value="nik"
+                  item-text="name" v-on:change="selectedFC" label="Pilih Field Coordinator" clearable></v-autocomplete>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            dark
-            color="red"
-            rounded
-            class="px-5"
-            @click="dialogFilterEmp = false"
-          >
+          <v-btn dark color="red" rounded class="px-5" @click="dialogFilterEmp = false">
             <v-icon small class="mr-1">mdi-close</v-icon>
             Keluar
           </v-btn>
@@ -291,41 +162,23 @@
     </v-dialog>
 
     <!--Modal Planting Perode-->
-    <v-dialog
-      v-model="dialogPeriodeTanam.show"
-      max-width="999"
-      content-class="rounded-xl"
-      persistent
-      scrollable
-    >
+    <v-dialog v-model="dialogPeriodeTanam.show" max-width="999" content-class="rounded-xl" persistent scrollable>
       <v-card rounded="xl" elevation="10">
         <!-- Title -->
         <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
           <span class="">Tambah Data Periode Tanam</span>
           <v-spacer></v-spacer>
-          <v-icon color="red" @click="dialogPeriodeTanam.show = false"
-            >mdi-close-circle</v-icon
-          >
+          <v-icon color="red" @click="dialogPeriodeTanam.show = false">mdi-close-circle</v-icon>
         </v-card-title>
 
         <v-card-text class="px-0 px-lg-5">
           <!-- Loading -->
           <v-overlay absolute :value="dialogPeriodeTanam.loading">
             <div class="d-flex flex-column justify-center align-center">
-              <LottieAnimation
-                ref="anim"
-                :animationData="lottie.data.loading"
-                :loop="true"
-                style="height: 64px"
-              />
+              <LottieAnimation ref="anim" :animationData="lottie.data.loading" :loop="true" style="height: 64px" />
               <p class="mt-2 mb-0">
                 Loading...
-                <v-progress-circular
-                  :size="17"
-                  :width="3"
-                  indeterminate
-                  color="white"
-                >
+                <v-progress-circular :size="17" :width="3" indeterminate color="white">
                 </v-progress-circular>
               </p>
             </div>
@@ -334,33 +187,14 @@
           <v-container>
             <v-row>
               <!-- Tanggal Distribusi -->
-              <v-col
-                cols="12"
-                sm="12"
-                md="12"
-                lg="4"
-                class="d-flex flex-column align-center"
-              >
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                 <p class="mb-1">Tanggal Distribusi</p>
-                <v-menu
-                  rounded="xl"
-                  transition="slide-x-transition"
-                  bottom
-                  right
-                  offset-x
-                  :close-on-content-click="false"
-                  v-model="pTDatePickerShow"
-                >
+                <v-menu rounded="xl" transition="slide-x-transition" bottom right offset-x
+                  :close-on-content-click="false" v-model="pTDatePickerShow">
                   <template v-slot:activator="{ on: menu, attrs }">
                     <v-tooltip top>
                       <template v-slot:activator="{ on: tooltip }">
-                        <v-btn
-                          rounded
-                          large
-                          color="green lighten-1"
-                          v-bind="attrs"
-                          v-on="{ ...menu, ...tooltip }"
-                        >
+                        <v-btn rounded large color="green lighten-1" v-bind="attrs" v-on="{ ...menu, ...tooltip }">
                           <v-icon left> mdi-calendar </v-icon>
                           {{
                             dateFormat(
@@ -375,33 +209,16 @@
                   </template>
                   <v-card class="rounded-xl pb-2">
                     <v-overlay :value="datepicker2Loading">
-                      <div
-                        class="d-flex flex-column align-center justify-center"
-                      >
-                        <v-progress-circular
-                          indeterminate
-                          color="white"
-                          size="64"
-                        ></v-progress-circular>
+                      <div class="d-flex flex-column align-center justify-center">
+                        <v-progress-circular indeterminate color="white" size="64"></v-progress-circular>
                         <p class="mt-2 mb-0">Updating available dates...</p>
                       </div>
                     </v-overlay>
                     <div class="d-flex flex-column align-center">
-                      <v-date-picker
-                        color="green lighten-1 rounded-xl"
-                        v-model="dataToStore.distribution_time"
-                        min="2023-12-01"
-                        max="2024-02-15"
-                        :allowed-dates="showingAvailableDates"
-                        :key="datepicker2Key"
-                      ></v-date-picker>
-                      <v-btn
-                        color="green"
-                        class="white--text px-4"
-                        small
-                        rounded
-                        @click="pTDatePickerShow = false"
-                      >
+                      <v-date-picker color="green lighten-1 rounded-xl" v-model="dataToStore.distribution_time"
+                        min="2023-12-01" max="2024-02-15" :allowed-dates="showingAvailableDates"
+                        :key="datepicker2Key"></v-date-picker>
+                      <v-btn color="green" class="white--text px-4" small rounded @click="pTDatePickerShow = false">
                         <v-icon small class="mr-1">mdi-check-circle</v-icon>
                         Set
                       </v-btn>
@@ -410,13 +227,7 @@
                 </v-menu>
               </v-col>
 
-              <v-col
-                cols="12"
-                sm="12"
-                md="12"
-                lg="4"
-                class="d-flex flex-column align-center"
-              >
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                 <!-- Tanggal Penilikan Lubang -->
                 <v-col>
                   <p class="mb-1">Awal Pembuatan Lubang Tanam</p>
@@ -441,13 +252,7 @@
                 </v-col>
               </v-col>
 
-              <v-col
-                cols="12"
-                sm="12"
-                md="12"
-                lg="4"
-                class="d-flex flex-column align-center"
-              >
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                 <!-- Tanggal Realisasi Tanam -->
                 <v-col>
                   <p class="mb-1">Tanggal Awal Realisasi Tanam</p>
@@ -474,10 +279,7 @@
               <!-- Lokasi Distribusi -->
               <v-col cols="12">
                 <div class="d-flex align-center my-0">
-                  <p
-                    class="mb-0 grey--text text--darken-3"
-                    style="font-size: 17px"
-                  >
+                  <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                     <v-icon class="mr-2">mdi-map-marker</v-icon>Pilih Lokasi
                     Distribusi
                   </p>
@@ -485,28 +287,14 @@
                 </div>
               </v-col>
               <v-col cols="12" sm="12" md="12" lg="12" class="">
-                <v-text-field
-                  outlined
-                  rounded
-                  dense
-                  hide-details
-                  color="green"
-                  label="Koordinat Lokasi"
-                  v-model="dataToStore.distribution_coordinates"
-                >
+                <v-text-field outlined rounded dense hide-details color="green" label="Koordinat Lokasi"
+                  v-model="dataToStore.distribution_coordinates">
                   <template v-slot:append>
-                    <v-btn
-                      small
-                      rounded
-                      class="mb-2"
-                      color="green white--text"
-                      @click="
-                        () =>
-                          showModalPickCoordinate({
-                            model: dataToStore.distribution_coordinates,
-                          })
-                      "
-                    >
+                    <v-btn small rounded class="mb-2" color="green white--text" @click="() =>
+                      showModalPickCoordinate({
+                        model: dataToStore.distribution_coordinates,
+                      })
+                      ">
                       {{
                         dataToStore.distribution_coordinates ? "Edit" : "Ambil"
                       }}
@@ -517,56 +305,28 @@
               </v-col>
               <!-- detail alamat -->
               <v-col cols="12" sm="12" md="12" lg="12" class="">
-                <v-text-field
-                  color="green"
-                  dense
-                  outlined
-                  rounded
-                  placeholder="Balai Desa / Rumah Bp ... / dll"
-                  v-model="dataToStore.distribution_location"
-                  label="Detail Alamat Distribusi"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  hide-details
-                ></v-text-field>
+                <v-text-field color="green" dense outlined rounded placeholder="Balai Desa / Rumah Bp ... / dll"
+                  v-model="dataToStore.distribution_location" label="Detail Alamat Distribusi"
+                  :rules="[(v) => !!v || 'Field is required']" hide-details></v-text-field>
               </v-col>
               <!-- rekomendasi armada -->
               <v-col cols="12" sm="12" md="12" lg="12" class="">
-                <v-text-field
-                  color="green"
-                  dense
-                  outlined
-                  rounded
-                  label="Rekomendasi Armada"
-                  placeholder="Truck / SS / yang lainnya"
-                  v-model="dataToStore.distribution_rec_armada"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  hide-details
-                ></v-text-field>
+                <v-text-field color="green" dense outlined rounded label="Rekomendasi Armada"
+                  placeholder="Truck / SS / yang lainnya" v-model="dataToStore.distribution_rec_armada"
+                  :rules="[(v) => !!v || 'Field is required']" hide-details></v-text-field>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
 
-        <v-card-actions
-          v-if="dialogPeriodeTanam.loading == false"
-          class="elevation-15 rounded-xl"
-        >
-          <v-btn
-            color="red px-5"
-            rounded
-            dark
-            @click="dialogPeriodeTanam.show = false"
-          >
+        <v-card-actions v-if="dialogPeriodeTanam.loading == false" class="elevation-15 rounded-xl">
+          <v-btn color="red px-5" rounded dark @click="dialogPeriodeTanam.show = false">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
             Keluar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green white--text"
-            rounded
-            @click="showConfirmationPeriodeTanam"
-            :disabled="disabledCreatePeriodeTanamByFF"
-          >
+          <v-btn color="green white--text" rounded @click="showConfirmationPeriodeTanam"
+            :disabled="disabledCreatePeriodeTanamByFF">
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Buat Periode Tanam
           </v-btn>
@@ -575,41 +335,23 @@
     </v-dialog>
 
     <!-- Edit GIS -->
-    <v-dialog
-      v-model="dialogEditGIS.show"
-      max-width="999"
-      content-class="rounded-xl"
-      persistent
-      scrollable
-    >
+    <v-dialog v-model="dialogEditGIS.show" max-width="999" content-class="rounded-xl" persistent scrollable>
       <v-card rounded="xl" elevation="10">
         <!-- Title -->
         <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
           <span class="">Edit Data GIS</span>
           <v-spacer></v-spacer>
-          <v-icon color="red" @click="dialogEditGIS.show = false"
-            >mdi-close-circle</v-icon
-          >
+          <v-icon color="red" @click="dialogEditGIS.show = false">mdi-close-circle</v-icon>
         </v-card-title>
 
         <v-card-text class="px-0 px-lg-5">
           <!-- Loading -->
           <v-overlay absolute :value="dialogEditGIS.loading">
             <div class="d-flex flex-column justify-center align-center">
-              <LottieAnimation
-                ref="anim"
-                :animationData="lottie.data.loading"
-                :loop="true"
-                style="height: 64px"
-              />
+              <LottieAnimation ref="anim" :animationData="lottie.data.loading" :loop="true" style="height: 64px" />
               <p class="mt-2 mb-0">
                 Loading...
-                <v-progress-circular
-                  :size="17"
-                  :width="3"
-                  indeterminate
-                  color="white"
-                >
+                <v-progress-circular :size="17" :width="3" indeterminate color="white">
                 </v-progress-circular>
               </p>
             </div>
@@ -620,53 +362,29 @@
               <!-- Lokasi Distribusi -->
               <v-col cols="12">
                 <div class="d-flex align-center my-0">
-                  <p
-                    class="mb-0 grey--text text--darken-3"
-                    style="font-size: 17px"
-                  >
+                  <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                     <v-icon class="mr-2">mdi-map-marker</v-icon>Lokasi
                     Distribusi
                   </p>
                   <v-divider class="mx-2" color=""></v-divider>
                 </div>
               </v-col>
-              <v-text-field
-                outlined
-                rounded
-                dense
-                hide-details
-                color="green"
-                label="Koordinat Lokasi"
-                v-model="dataToStore.distribution_coordinates"
-              >
+              <v-text-field outlined rounded dense hide-details color="green" label="Koordinat Lokasi"
+                v-model="dataToStore.distribution_coordinates">
               </v-text-field>
             </v-row>
           </v-container>
         </v-card-text>
 
-        <v-card-actions
-          v-if="dialogEditGIS.loading == false"
-          class="elevation-15 rounded-xl"
-        >
-          <v-btn
-            color="red px-5"
-            rounded
-            dark
-            @click="dialogEditGIS.show = false"
-          >
+        <v-card-actions v-if="dialogEditGIS.loading == false" class="elevation-15 rounded-xl">
+          <v-btn color="red px-5" rounded dark @click="dialogEditGIS.show = false">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
             Keluar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green white--text"
-            rounded
-            @click="SaveEditGIS"
-            :disabled="
-              (User.role_group != 'IT' && User.role_name != 'GIS STAFF') ||
-              disabledEditDataGIS
-            "
-          >
+          <v-btn color="green white--text" rounded @click="SaveEditGIS" :disabled="(User.role_group != 'IT' && User.role_name != 'GIS STAFF') ||
+            disabledEditDataGIS
+            ">
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Edit Data GIS
           </v-btn>
@@ -674,34 +392,16 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="dialogConfirmPeriodeTanam"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogConfirmPeriodeTanam" max-width="500px" content-class="rounded-xl">
       <v-card>
-        <v-card-title class="d-flex justify-center"
-          >Apa Anda Yakin Untuk menambah Data Ini?</v-card-title
-        >
+        <v-card-title class="d-flex justify-center">Apa Anda Yakin Untuk menambah Data Ini?</v-card-title>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            color="orange white--text"
-            rounded
-            small
-            @click="dialogConfirmPeriodeTanam = false"
-            class="px-4"
-          >
+          <v-btn color="orange white--text" rounded small @click="dialogConfirmPeriodeTanam = false" class="px-4">
             <v-icon class="mr-1" small>mdi-close-circle</v-icon>
             Keluar
           </v-btn>
-          <v-btn
-            color="green white--text"
-            rounded
-            small
-            @click="addDataPeriodeTanam"
-            class="px-4"
-          >
+          <v-btn color="green white--text" rounded small @click="addDataPeriodeTanam" class="px-4">
             <v-icon class="mr-1" small>mdi-check-bold</v-icon>
             OK
           </v-btn>
@@ -711,46 +411,25 @@
     </v-dialog>
 
     <!-- Modal Create Sostam Per~FF -->
-    <PickCoordinate
-      :show="modals.pick_coordinate.show"
-      :data="modals.pick_coordinate.data"
-      @action="($v) => modalActions($v)"
-    />
-    <v-dialog
-      v-model="dialogAdd.show"
-      max-width="999"
-      content-class="rounded-xl"
-      persistent
-      scrollable
-    >
+    <PickCoordinate :show="modals.pick_coordinate.show" :data="modals.pick_coordinate.data"
+      @action="($v) => modalActions($v)" />
+    <v-dialog v-model="dialogAdd.show" max-width="999" content-class="rounded-xl" persistent scrollable>
       <v-card rounded="xl" elevation="10">
         <!-- Title -->
         <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
           <span class="">Tambah Data Sosialisasi Tanam FF</span>
           <v-spacer></v-spacer>
-          <v-icon color="red" @click="dialogAdd.show = false"
-            >mdi-close-circle</v-icon
-          >
+          <v-icon color="red" @click="dialogAdd.show = false">mdi-close-circle</v-icon>
         </v-card-title>
 
         <v-card-text class="px-0 px-lg-5">
           <!-- Loading -->
           <v-overlay absolute :value="dialogAdd.loading">
             <div class="d-flex flex-column justify-center align-center">
-              <LottieAnimation
-                ref="anim"
-                :animationData="lottie.data.loading"
-                :loop="true"
-                style="height: 64px"
-              />
+              <LottieAnimation ref="anim" :animationData="lottie.data.loading" :loop="true" style="height: 64px" />
               <p class="mt-2 mb-0">
                 Loading...
-                <v-progress-circular
-                  :size="17"
-                  :width="3"
-                  indeterminate
-                  color="white"
-                >
+                <v-progress-circular :size="17" :width="3" indeterminate color="white">
                 </v-progress-circular>
               </p>
             </div>
@@ -766,28 +445,14 @@
               </v-col>
               <!-- Select FF -->
               <v-col cols="12" sm="12" md="12">
-                <v-autocomplete
-                  dense
-                  outlined
-                  rounded
-                  color="success"
-                  item-color="success"
-                  :menu-props="{ rounded: 'xl' }"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  label="Pilih Field Facilitator"
-                  :items="options.ff.items"
-                  item-text="name"
-                  item-value="ff_no"
-                  v-model="options.ff.model"
-                  :loading="options.ff.loading"
-                  :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'"
-                  @change="getLahansFF()"
-                >
+                <v-autocomplete dense outlined rounded color="success" item-color="success"
+                  :menu-props="{ rounded: 'xl' }" :rules="[(v) => !!v || 'Field is required']"
+                  label="Pilih Field Facilitator" :items="options.ff.items" item-text="name" item-value="ff_no"
+                  v-model="options.ff.model" :loading="options.ff.loading"
+                  :no-data-text="options.ff.loading ? 'Loading...' : 'No Data'" @change="getLahansFF()">
                   <template v-slot:item="data">
                     <v-list-item-content>
-                      <v-list-item-title
-                        v-html="data.item.name"
-                      ></v-list-item-title>
+                      <v-list-item-title v-html="data.item.name"></v-list-item-title>
                       <v-list-item-subtitle>{{
                         data.item.ff_no
                       }}</v-list-item-subtitle>
@@ -797,34 +462,15 @@
               </v-col>
               <!-- Tanggal Distribusi -->
 
-              <v-col
-                cols="12"
-                sm="12"
-                md="12"
-                lg="4"
-                class="d-flex flex-column align-center"
-              >
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                 <p class="mb-1">Tanggal Distribusi</p>
-                <v-menu
-                  rounded="xl"
-                  transition="slide-x-transition"
-                  bottom
-                  right
-                  offset-x
-                  :close-on-content-click="false"
-                  v-model="datepicker2Show"
-                >
+                <v-menu rounded="xl" transition="slide-x-transition" bottom right offset-x
+                  :close-on-content-click="false" v-model="datepicker2Show">
                   <template v-slot:activator="{ on: menu, attrs }">
                     <v-tooltip top>
                       <template v-slot:activator="{ on: tooltip }">
-                        <v-btn
-                          rounded
-                          large
-                          :disabled="!options.ff.model"
-                          color="green lighten-1"
-                          v-bind="attrs"
-                          v-on="{ ...menu, ...tooltip }"
-                        >
+                        <v-btn rounded large :disabled="!options.ff.model" color="green lighten-1" v-bind="attrs"
+                          v-on="{ ...menu, ...tooltip }">
                           <v-icon left> mdi-calendar </v-icon>
                           {{
                             dateFormat(
@@ -839,33 +485,16 @@
                   </template>
                   <v-card class="rounded-xl pb-2">
                     <v-overlay :value="datepicker2Loading">
-                      <div
-                        class="d-flex flex-column align-center justify-center"
-                      >
-                        <v-progress-circular
-                          indeterminate
-                          color="white"
-                          size="64"
-                        ></v-progress-circular>
+                      <div class="d-flex flex-column align-center justify-center">
+                        <v-progress-circular indeterminate color="white" size="64"></v-progress-circular>
                         <p class="mt-2 mb-0">Updating available dates...</p>
                       </div>
                     </v-overlay>
                     <div class="d-flex flex-column align-center">
-                      <v-date-picker
-                        color="green lighten-1 rounded-xl"
-                        v-model="dataToStore.distribution_time"
-                        min="2023-12-01"
-                        max="2024-01-31"
-                        :allowed-dates="showingAvailableDates"
-                        :key="datepicker2Key"
-                      ></v-date-picker>
-                      <v-btn
-                        color="green"
-                        class="white--text px-4"
-                        small
-                        rounded
-                        @click="this.setTanggalDistribusi"
-                      >
+                      <v-date-picker color="green lighten-1 rounded-xl" v-model="dataToStore.distribution_time"
+                        min="2023-12-01" max="2024-01-31" :allowed-dates="showingAvailableDates"
+                        :key="datepicker2Key"></v-date-picker>
+                      <v-btn color="green" class="white--text px-4" small rounded @click="this.setTanggalDistribusi">
                         <v-icon small class="mr-1">mdi-check-circle</v-icon>
                         Set
                       </v-btn>
@@ -874,13 +503,7 @@
                 </v-menu>
               </v-col>
 
-              <v-col
-                cols="12"
-                sm="12"
-                md="12"
-                lg="4"
-                class="d-flex flex-column align-center"
-              >
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                 <!-- Tanggal Penilikan Lubang -->
                 <v-col>
                   <p class="mb-1">Awal Pembuatan Lubang Tanam</p>
@@ -905,13 +528,7 @@
                 </v-col>
               </v-col>
 
-              <v-col
-                cols="12"
-                sm="12"
-                md="12"
-                lg="4"
-                class="d-flex flex-column align-center"
-              >
+              <v-col cols="12" sm="12" md="12" lg="4" class="d-flex flex-column align-center">
                 <!-- Tanggal Realisasi Tanam -->
                 <v-col>
                   <p class="mb-1">Tanggal Awal Realisasi Tanam</p>
@@ -938,10 +555,7 @@
               <!-- Lokasi Distribusi -->
               <v-col cols="12">
                 <div class="d-flex align-center my-0">
-                  <p
-                    class="mb-0 grey--text text--darken-3"
-                    style="font-size: 17px"
-                  >
+                  <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                     <v-icon class="mr-2">mdi-map-marker</v-icon>Pilih Lokasi
                     Distribusi
                   </p>
@@ -949,28 +563,14 @@
                 </div>
               </v-col>
               <v-col cols="12" sm="12" md="12" lg="12" class="">
-                <v-text-field
-                  outlined
-                  rounded
-                  dense
-                  hide-details
-                  color="green"
-                  label="Koordinat Lokasi"
-                  v-model="dataToStore.distribution_coordinates"
-                >
+                <v-text-field outlined rounded dense hide-details color="green" label="Koordinat Lokasi"
+                  v-model="dataToStore.distribution_coordinates">
                   <template v-slot:append>
-                    <v-btn
-                      small
-                      rounded
-                      class="mb-2"
-                      color="green white--text"
-                      @click="
-                        () =>
-                          showModalPickCoordinate({
-                            model: dataToStore.distribution_coordinates,
-                          })
-                      "
-                    >
+                    <v-btn small rounded class="mb-2" color="green white--text" @click="() =>
+                      showModalPickCoordinate({
+                        model: dataToStore.distribution_coordinates,
+                      })
+                      ">
                       {{
                         dataToStore.distribution_coordinates ? "Edit" : "Ambil"
                       }}
@@ -981,61 +581,29 @@
               </v-col>
               <!-- detail alamat -->
               <v-col cols="12" sm="12" md="12" lg="12" class="">
-                <v-text-field
-                  color="green"
-                  dense
-                  outlined
-                  rounded
-                  placeholder="Balai Desa / Rumah Bp ... / dll"
-                  v-model="dataToStore.distribution_location"
-                  label="Detail Alamat Distribusi"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  hide-details
-                ></v-text-field>
+                <v-text-field color="green" dense outlined rounded placeholder="Balai Desa / Rumah Bp ... / dll"
+                  v-model="dataToStore.distribution_location" label="Detail Alamat Distribusi"
+                  :rules="[(v) => !!v || 'Field is required']" hide-details></v-text-field>
               </v-col>
               <!-- rekomendasi armada -->
               <v-col cols="12" sm="12" md="12" lg="12" class="">
-                <v-text-field
-                  color="green"
-                  dense
-                  outlined
-                  rounded
-                  label="Rekomendasi Armada"
-                  placeholder="Truck / SS / yang lainnya"
-                  v-model="dataToStore.distribution_rec_armada"
-                  :rules="[(v) => !!v || 'Field is required']"
-                  hide-details
-                ></v-text-field>
+                <v-text-field color="green" dense outlined rounded label="Rekomendasi Armada"
+                  placeholder="Truck / SS / yang lainnya" v-model="dataToStore.distribution_rec_armada"
+                  :rules="[(v) => !!v || 'Field is required']" hide-details></v-text-field>
               </v-col>
               <!-- materi pelatihan -->
               <v-col cols="12">
-                <v-autocomplete
-                  dense
-                  color="success"
-                  hide-details
-                  item-color="success"
-                  item-text="material_name"
-                  item-value="material_no"
-                  :items="training_material_items"
-                  label="Materi Pelatihan"
-                  :menu-props="{
+                <v-autocomplete dense color="success" hide-details item-color="success" item-text="material_name"
+                  item-value="material_no" :items="training_material_items" label="Materi Pelatihan" :menu-props="{
                     rounded: 'xl',
                     transition: 'slide-y-transition',
-                  }"
-                  outlined
-                  rounded
-                  readonly
-                  v-model="dataToStore.training_material"
-                ></v-autocomplete>
+                  }" outlined rounded readonly v-model="dataToStore.training_material"></v-autocomplete>
               </v-col>
 
               <!--Upload Absen Sostam-->
               <v-col cols="12">
                 <div class="d-flex align-center my-0">
-                  <p
-                    class="mb-0 grey--text text--darken-3"
-                    style="font-size: 17px"
-                  >
+                  <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                     <v-icon class="mr-2">mdi-note-alert</v-icon>Upload Absen
                     Sostam
                   </p>
@@ -1043,32 +611,18 @@
                 </div>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-file-input
-                  accept="image/png, image/jpeg, image/bmp"
-                  @change="
-                    (val) => {
-                      dataToStore.absensi_photo = val;
-                    }
-                  "
-                  placeholder="Pilih Foto Absensi Sostam 1"
-                  prepend-icon="mdi-camera"
-                  show-size
-                  label="Pilih Foto Absensi Sostam 1..."
-                ></v-file-input>
+                <v-file-input accept="image/png, image/jpeg, image/bmp" @change="(val) => {
+                  dataToStore.absensi_photo = val;
+                }
+                  " placeholder="Pilih Foto Absensi Sostam 1" prepend-icon="mdi-camera" show-size
+                  label="Pilih Foto Absensi Sostam 1..."></v-file-input>
               </v-col>
               <v-col cols="12" sm="12" md="12">
-                <v-file-input
-                  accept="image/png, image/jpeg, image/bmp"
-                  @change="
-                    (val) => {
-                      dataToStore.absensi_photo2 = val;
-                    }
-                  "
-                  placeholder="Pilih Foto Absensi Sostam 2"
-                  prepend-icon="mdi-camera"
-                  show-size
-                  label="Pilih Foto Absensi Sostam 2..."
-                ></v-file-input>
+                <v-file-input accept="image/png, image/jpeg, image/bmp" @change="(val) => {
+                  dataToStore.absensi_photo2 = val;
+                }
+                  " placeholder="Pilih Foto Absensi Sostam 2" prepend-icon="mdi-camera" show-size
+                  label="Pilih Foto Absensi Sostam 2..."></v-file-input>
               </v-col>
 
               <!-- Table -->
@@ -1076,10 +630,7 @@
                 <v-row class="align-center mb-4">
                   <v-col cols="12" class="">
                     <div class="d-flex align-center my-0">
-                      <p
-                        class="mb-0 grey--text text--darken-3"
-                        style="font-size: 17px"
-                      >
+                      <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                         <v-icon class="mr-2">mdi-account-group</v-icon> List
                         Petani & Lahan
                       </p>
@@ -1091,50 +642,24 @@
                     </div>
                   </v-col>
                   <v-col cols="12" class="d-flex justify-end">
-                    <v-btn
-                      :disabled="!options.ff.model"
-                      color="info"
-                      rounded
-                      @click="getLahansFF"
-                      small
-                    >
+                    <v-btn :disabled="!options.ff.model" color="info" rounded @click="getLahansFF" small>
                       <v-icon class="mr-1" small>mdi-refresh</v-icon>
                       Muat Ulang
                     </v-btn>
                   </v-col>
                 </v-row>
-                <v-data-table
-                  item-key="farmer_no"
-                  showSelect
-                  checkbox-color="green"
-                  color="success"
-                  class="rounded-xl elevation-5 mb-2"
-                  :headers="table.lahans.header"
-                  :items="table.lahans.items"
-                  :loading="table.lahans.loading"
-                  @input="($val) => selectedKehadiranPetani($val)"
-                  loading-text="Loading... Please wait"
-                  hide-default-footer
-                  :items-per-page="-1"
-                >
+                <v-data-table item-key="farmer_no" showSelect checkbox-color="green" color="success"
+                  class="rounded-xl elevation-5 mb-2" :headers="table.lahans.header" :items="table.lahans.items"
+                  :loading="table.lahans.loading" @input="($val) => selectedKehadiranPetani($val)"
+                  loading-text="Loading... Please wait" hide-default-footer :items-per-page="-1">
                   <template v-slot:top>
                     <!-- Trees Dialog -->
-                    <v-dialog
-                      v-model="table.lahans.dialogs.trees.show"
-                      max-width="700px"
-                      content-class="rounded-xl"
-                    >
+                    <v-dialog v-model="table.lahans.dialogs.trees.show" max-width="700px" content-class="rounded-xl">
                       <v-card>
-                        <v-card-title
-                          class="mb-1 headermodalstyle rounded-xl elevation-5"
-                        >
+                        <v-card-title class="mb-1 headermodalstyle rounded-xl elevation-5">
                           <span class="">Set Trees Amount</span>
                           <v-spacer></v-spacer>
-                          <v-icon
-                            color="red"
-                            @click="table.lahans.dialogs.trees.show = false"
-                            >mdi-close-circle</v-icon
-                          >
+                          <v-icon color="red" @click="table.lahans.dialogs.trees.show = false">mdi-close-circle</v-icon>
                         </v-card-title>
                         <v-card-content v-if="table.lahans.dialogs.trees.datas">
                           <v-container class="py-2">
@@ -1145,14 +670,12 @@
                                   <td>Luas Lahan</td>
                                   <td>:</td>
                                   <td>
-                                    <strong
-                                      >{{
-                                        numberFormat(
-                                          table.lahans.dialogs.trees.datas
-                                            .land_area
-                                        )
-                                      }}m<sup>2</sup></strong
-                                    >
+                                    <strong>{{
+                                      numberFormat(
+                                        table.lahans.dialogs.trees.datas
+                                          .land_area
+                                      )
+                                    }}m<sup>2</sup></strong>
                                   </td>
                                 </tr>
                                 <tr>
@@ -1181,9 +704,7 @@
                             </v-simple-table>
                             <!-- Trees -->
                             <h4>Seeds List</h4>
-                            <v-simple-table
-                              class="rounded-xl elevation-2 overflow-hidden"
-                            >
+                            <v-simple-table class="rounded-xl elevation-2 overflow-hidden">
                               <thead>
                                 <tr>
                                   <th>No</th>
@@ -1193,11 +714,8 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr
-                                  v-for="(tree, treeIndex) in table.lahans
-                                    .dialogs.trees.datas.trees"
-                                  :key="treeIndex"
-                                >
+                                <tr v-for="(tree, treeIndex) in table.lahans
+                                  .dialogs.trees.datas.trees" :key="treeIndex">
                                   <td>{{ treeIndex + 1 }}</td>
                                   <td>{{ tree.category }}</td>
                                   <td>{{ tree.tree_name }}</td>
@@ -1208,22 +726,12 @@
                           </v-container>
                         </v-card-content>
                         <v-card-actions>
-                          <v-btn
-                            color="red px-5"
-                            rounded
-                            dark
-                            @click="table.lahans.dialogs.trees.show = false"
-                          >
+                          <v-btn color="red px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
                             <v-icon class="mr-1">mdi-close-circle</v-icon>
                             Keluar
                           </v-btn>
                           <v-spacer></v-spacer>
-                          <v-btn
-                            color="green px-5"
-                            rounded
-                            dark
-                            @click="table.lahans.dialogs.trees.show = false"
-                          >
+                          <v-btn color="green px-5" rounded dark @click="table.lahans.dialogs.trees.show = false">
                             <v-icon class="mr-1">mdi-check-circle</v-icon>
                             Set
                           </v-btn>
@@ -1238,12 +746,10 @@
                     {{ numberFormat(item.no_lahan) }}
                   </template>
                   <template v-slot:item.total_kayu="{ item }">
-                    <v-icon class="mr-1" color="green">mdi-sprout</v-icon
-                    >{{ numberFormat(item.total_kayu) }}
+                    <v-icon class="mr-1" color="green">mdi-sprout</v-icon>{{ numberFormat(item.total_kayu) }}
                   </template>
                   <template v-slot:item.total_mpts="{ item }">
-                    <v-icon class="mr-1" color="orange">mdi-sprout</v-icon
-                    >{{ numberFormat(item.total_mpts) }}
+                    <v-icon class="mr-1" color="orange">mdi-sprout</v-icon>{{ numberFormat(item.total_mpts) }}
                   </template>
                   <template v-slot:header.data-table-select="{ index }">
                     Kehadiran
@@ -1254,21 +760,13 @@
           </v-container>
         </v-card-text>
 
-        <v-card-actions
-          v-if="dialogAdd.loading == false"
-          class="elevation-15 rounded-xl"
-        >
+        <v-card-actions v-if="dialogAdd.loading == false" class="elevation-15 rounded-xl">
           <v-btn color="red px-5" rounded dark @click="dialogAdd.show = false">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
             Keluar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green white--text"
-            rounded
-            @click="createSostamByFF()"
-            :disabled="disabledCreateSostamByFF"
-          >
+          <v-btn color="green white--text" rounded @click="createSostamByFF()" :disabled="disabledCreateSostamByFF">
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Buat Sostam
           </v-btn>
@@ -1285,38 +783,18 @@
           </v-card-title>
 
           <v-card-text>
-            <v-container
-              v-if="load == true"
-              fluid
-              fill-height
-              style="background-color: rgba(255, 255, 255, 0.5)"
-            >
+            <v-container v-if="load == true" fluid fill-height style="background-color: rgba(255, 255, 255, 0.5)">
               <v-layout justify-center align-center>
-                <v-progress-circular
-                  :size="80"
-                  :width="10"
-                  indeterminate
-                  color="primary"
-                >
+                <v-progress-circular :size="80" :width="10" indeterminate color="primary">
                 </v-progress-circular>
               </v-layout>
             </v-container>
             <v-container v-if="load == false">
               <v-row>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
-                    disabled
-                    rounded
-                    v-model="defaultItem.ff_no"
-                    :items="itemsff"
-                    item-text="name"
-                    item-value="ff_no"
-                    label="Pilih Field Facilitator"
-                    outlined
-                    clearable
-                    v-on:change="selectPetani"
-                    :rules="[(v) => !!v || 'Field is required']"
-                  ></v-select>
+                  <v-select disabled rounded v-model="defaultItem.ff_no" :items="itemsff" item-text="name"
+                    item-value="ff_no" label="Pilih Field Facilitator" outlined clearable v-on:change="selectPetani"
+                    :rules="[(v) => !!v || 'Field is required']"></v-select>
                 </v-col>
                 <!-- <v-col cols="12" sm="12" md="12">
                     <v-select
@@ -1343,18 +821,9 @@
                     ></v-text-field>
                   </v-col> -->
                 <v-col cols="12" sm="6" md="6">
-                  <v-select
-                    disabled
-                    rounded
-                    v-model="defaultItem.planting_year"
-                    :items="itemsTahun"
-                    item-text="text"
-                    item-value="value"
-                    label="Pilih Tahun Program"
-                    outlined
-                    clearable
-                    :rules="[(v) => !!v || 'Field is required']"
-                  ></v-select>
+                  <v-select disabled rounded v-model="defaultItem.planting_year" :items="itemsTahun" item-text="text"
+                    item-value="value" label="Pilih Tahun Program" outlined clearable
+                    :rules="[(v) => !!v || 'Field is required']"></v-select>
                 </v-col>
 
                 <!-- <v-col cols="12" sm="6" md="6">
@@ -1369,10 +838,7 @@
                 <!-- Update Photo Section -->
                 <v-col cols="12">
                   <div class="d-flex align-center my-0">
-                    <p
-                      class="mb-0 grey--text text--darken-3"
-                      style="font-size: 17px"
-                    >
+                    <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                       <v-icon class="mr-2">mdi-note-alert</v-icon>Upload Absen
                       Sostam
                     </p>
@@ -1380,80 +846,41 @@
                   </div>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-file-input
-                    accept="image/png, image/jpeg, image/bmp"
-                    @change="
-                      (val) => {
-                        dataToStore.absensi_photo = val;
-                      }
-                    "
-                    placeholder="Pilih Foto Absensi Sostam 1"
-                    prepend-icon="mdi-camera"
-                    show-size
-                    label="Pilih Foto Absensi Sostam 1..."
-                  ></v-file-input>
+                  <v-file-input accept="image/png, image/jpeg, image/bmp" @change="(val) => {
+                    dataToStore.absensi_photo = val;
+                  }
+                    " placeholder="Pilih Foto Absensi Sostam 1" prepend-icon="mdi-camera" show-size
+                    label="Pilih Foto Absensi Sostam 1..."></v-file-input>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-file-input
-                    accept="image/png, image/jpeg, image/bmp"
-                    @change="
-                      (val) => {
-                        dataToStore.absensi_photo2 = val;
-                      }
-                    "
-                    placeholder="Pilih Foto Absensi Sostam 2"
-                    prepend-icon="mdi-camera"
-                    show-size
-                    label="Pilih Foto Absensi Sostam 2..."
-                  ></v-file-input>
+                  <v-file-input accept="image/png, image/jpeg, image/bmp" @change="(val) => {
+                    dataToStore.absensi_photo2 = val;
+                  }
+                    " placeholder="Pilih Foto Absensi Sostam 2" prepend-icon="mdi-camera" show-size
+                    label="Pilih Foto Absensi Sostam 2..."></v-file-input>
                 </v-col>
 
                 <v-col cols="12" lg="4">
-                  <v-menu
-                    v-model="menu2"
-                    offset-x
-                    transition="slide-x-transition"
-                    rounded="xl"
-                  >
+                  <v-menu v-model="menu2" offset-x transition="slide-x-transition" rounded="xl">
                     <template v-slot:activator="{ on, attrs }">
                       <div class="d-flex flex-column align-center">
                         <p class="mb-0 mx-auto">
                           <strong>Distribusi Bibit</strong>
                         </p>
-                        <v-btn
-                          dark
-                          rounded
-                          class=""
-                          color="green"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
+                        <v-btn dark rounded class="" color="green" v-bind="attrs" v-on="on">
                           {{ dateFormat(datepicker2, "ddd, DD MMMM Y") }}
                         </v-btn>
                       </div>
                     </template>
                     <v-overlay :value="datepicker2Loading">
-                      <div
-                        class="d-flex flex-column align-center justify-center"
-                      >
-                        <v-progress-circular
-                          indeterminate
-                          color="white"
-                          size="64"
-                        ></v-progress-circular>
+                      <div class="d-flex flex-column align-center justify-center">
+                        <v-progress-circular indeterminate color="white" size="64"></v-progress-circular>
                         <p class="mt-2 mb-0">Updating available dates...</p>
                       </div>
                     </v-overlay>
-                    <v-date-picker
-                      v-model="datepicker2"
-                      min="2023-12-01"
-                      max="2024-01-31"
-                      :allowed-dates="showingAvailableDates"
-                      @input="menu2 = false"
-                      color="green"
-                      class="rounded-xl"
-                      :key="datepicker2Key2"
-                    ></v-date-picker>
+                    <v-date-picker v-model="datepicker2" min="2023-12-01" max="2024-01-31"
+                      :allowed-dates="showingAvailableDates" @input="menu2 = false" color="green" class="rounded-xl"
+                      :key="datepicker2Key2"></v-date-picker>
                   </v-menu>
                 </v-col>
 
@@ -1495,13 +922,7 @@
 
           <v-card-actions v-if="load == false">
             <v-spacer></v-spacer>
-            <v-btn
-              color="red darken-1"
-              dark
-              rounded
-              class="px-5"
-              @click="close"
-            >
+            <v-btn color="red darken-1" dark rounded class="px-5" @click="close">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Keluar
             </v-btn>
@@ -1515,11 +936,7 @@
     </v-dialog>
 
     <!-- Modal Edit Absensi -->
-    <v-dialog
-      v-model="dialogShowEditAbsensi"
-      max-width="800px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogShowEditAbsensi" max-width="800px" content-class="rounded-xl">
       <v-card rounded="xl">
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-title class="mb-1 headermodalstyle rounded-xl">
@@ -1527,19 +944,9 @@
           </v-card-title>
 
           <v-card-text>
-            <v-container
-              v-if="load == true"
-              fluid
-              fill-height
-              style="background-color: rgba(255, 255, 255, 0.5)"
-            >
+            <v-container v-if="load == true" fluid fill-height style="background-color: rgba(255, 255, 255, 0.5)">
               <v-layout justify-center align-center>
-                <v-progress-circular
-                  :size="80"
-                  :width="10"
-                  indeterminate
-                  color="primary"
-                >
+                <v-progress-circular :size="80" :width="10" indeterminate color="primary">
                 </v-progress-circular>
               </v-layout>
             </v-container>
@@ -1548,10 +955,7 @@
                 <!-- Update Photo Section -->
                 <v-col cols="12">
                   <div class="d-flex align-center my-0">
-                    <p
-                      class="mb-0 grey--text text--darken-3"
-                      style="font-size: 17px"
-                    >
+                    <p class="mb-0 grey--text text--darken-3" style="font-size: 17px">
                       <v-icon class="mr-2">mdi-note-alert</v-icon>Upload Absen
                       Sostam
                     </p>
@@ -1559,32 +963,18 @@
                   </div>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-file-input
-                    accept="image/png, image/jpeg, image/bmp"
-                    @change="
-                      (val) => {
-                        dataToStore.absensi_photo = val;
-                      }
-                    "
-                    placeholder="Pilih Foto Absensi Sostam 1"
-                    prepend-icon="mdi-camera"
-                    show-size
-                    label="Pilih Foto Absensi Sostam 1..."
-                  ></v-file-input>
+                  <v-file-input accept="image/png, image/jpeg, image/bmp" @change="(val) => {
+                    dataToStore.absensi_photo = val;
+                  }
+                    " placeholder="Pilih Foto Absensi Sostam 1" prepend-icon="mdi-camera" show-size
+                    label="Pilih Foto Absensi Sostam 1..."></v-file-input>
                 </v-col>
                 <v-col cols="12" sm="12" md="12">
-                  <v-file-input
-                    accept="image/png, image/jpeg, image/bmp"
-                    @change="
-                      (val) => {
-                        dataToStore.absensi_photo2 = val;
-                      }
-                    "
-                    placeholder="Pilih Foto Absensi Sostam 2"
-                    prepend-icon="mdi-camera"
-                    show-size
-                    label="Pilih Foto Absensi Sostam 2..."
-                  ></v-file-input>
+                  <v-file-input accept="image/png, image/jpeg, image/bmp" @change="(val) => {
+                    dataToStore.absensi_photo2 = val;
+                  }
+                    " placeholder="Pilih Foto Absensi Sostam 2" prepend-icon="mdi-camera" show-size
+                    label="Pilih Foto Absensi Sostam 2..."></v-file-input>
                 </v-col>
               </v-row>
             </v-container>
@@ -1592,24 +982,12 @@
 
           <v-card-actions v-if="load == false">
             <v-spacer></v-spacer>
-            <v-btn
-              color="red darken-1"
-              dark
-              rounded
-              class="px-5"
-              @click="close"
-            >
+            <v-btn color="red darken-1" dark rounded class="px-5" @click="close">
               <v-icon class="mr-1">mdi-close-circle</v-icon>
               Keluar
             </v-btn>
-            <v-btn
-              color="green"
-              dark
-              rounded
-              class="px-5"
-              @click="updateAbsentPhoto"
-              :disabled="disabledUpdateFotoAbsensi"
-            >
+            <v-btn color="green" dark rounded class="px-5" @click="updateAbsentPhoto"
+              :disabled="disabledUpdateFotoAbsensi">
               <v-icon class="mr-1">mdi-check-circle</v-icon>
               Save
             </v-btn>
@@ -1619,58 +997,29 @@
     </v-dialog>
 
     <!-- What do you want to edit? -->
-    <v-dialog
-      v-model="dialogShowEdit"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogShowEdit" max-width="500px" content-class="rounded-xl">
       <v-card>
-        <v-card-title class="justify-center"
-          >Data Mana Yang Ingin Anda Edit?</v-card-title
-        >
+        <v-card-title class="justify-center">Data Mana Yang Ingin Anda Edit?</v-card-title>
         <v-card-actions class="pb-3">
           <v-spacer></v-spacer>
           <v-row class="mx-2 my-0 mt-2 justify-center">
             <v-col cols="14" lg="6">
-              <v-btn
-                rounded
-                color="blue white--text"
-                @click="showEditModal"
-                class="px-5"
-                :disabled="
-                  User.role_group != 'IT' &&
-                  User.role_name != 'PLANNING MANAGER'
-                "
-                disabled
-              >
+              <v-btn rounded color="blue white--text" @click="showEditModal" class="px-5" :disabled="User.role_group != 'IT' &&
+                User.role_name != 'PLANNING MANAGER'
+                " disabled>
                 <v-icon class="mr-1">mdi-file-document-edit</v-icon>
-                Edit Sosialisasi</v-btn
-              >
+                Edit Sosialisasi</v-btn>
             </v-col>
             <v-col cols="14" lg="6">
-              <v-btn
-                color="green white--text"
-                rounded
-                :disabled="
-                  true ||
-                  (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')
-                "
-                @click="showEditJumlahPohonModal"
-                class="px-5"
-              >
+              <v-btn color="green white--text" rounded :disabled="true ||
+                (User.role_group != 'IT' && User.role_name != 'UNIT MANAGER')
+                " @click="showEditJumlahPohonModal" class="px-5">
                 <v-icon class="mr-1">mdi-forest</v-icon>
-                Jumlah Pohon</v-btn
-              >
+                Jumlah Pohon</v-btn>
             </v-col>
             <v-col cols="14" lg="6">
-              <v-btn
-                dark
-                rounded
-                @click="showPlantingPeriode"
-                color="green"
-                :disabled="User.role_group != 'IT'"
-                class="px-5"
-              >
+              <v-btn dark rounded @click="showPlantingPeriode" color="green" :disabled="User.role_group != 'IT'"
+                class="px-5">
                 <v-icon class="mr-1" small color="white">
                   mdi-plus-thick
                 </v-icon>
@@ -1685,18 +1034,11 @@
     </v-dialog>
 
     <!-- List Edit Jumlah Pohon -->
-    <v-dialog
-      v-model="dialogDetailPohon"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogDetailPohon" max-width="500px" content-class="rounded-xl">
       <v-card>
-        <v-card-title class="justify-center align-center py-5"
-          ><span class="">
+        <v-card-title class="justify-center align-center py-5"><span class="">
             <v-icon class="mr-1">mdi-forest</v-icon>
-            List Pohon Lahan</span
-          ></v-card-title
-        >
+            List Pohon Lahan</span></v-card-title>
         <v-card-text>
           <v-row class="">
             <v-col cols="12">
@@ -1708,8 +1050,7 @@
                     <td>
                       <strong>{{
                         numberFormat(DetailTreesLahanTempData.land_area || 0)
-                      }}</strong
-                      >m<sup>2</sup>
+                      }}</strong>m<sup>2</sup>
                     </td>
                   </tr>
                   <tr>
@@ -1718,16 +1059,13 @@
                     <td>
                       <strong>{{
                         DetailTreesLahanTempData.tutupan_lahan || 0
-                      }}</strong
-                      >%
+                      }}</strong>%
                     </td>
                   </tr>
-                  <tr
-                    v-if="
-                      DetailTreesLahanTempData.planting_details &&
-                      DetailTreesLahanTempData.land_area < 10000
-                    "
-                  >
+                  <tr v-if="
+                    DetailTreesLahanTempData.planting_details &&
+                    DetailTreesLahanTempData.land_area < 10000
+                  ">
                     <td>
                       Max Bibit Kayu
                       {{
@@ -1757,48 +1095,33 @@
             </v-col>
             <v-col cols="12" sm="12" md="12">
               <div class="d-flex flex-column align-center">
-                <v-btn
-                  color="red white--text mb-2"
-                  small
-                  v-if="
-                    DetailTreesLahanTempData.land_area < 10000 &&
-                    DetailTreesLahanTempData.max_seed_amount <
-                      getStatusTotalBibitInDetail(
-                        DetailTreesLahanTemp,
-                        'KAYU'
-                      ) +
-                        getStatusTotalBibitInDetail(
-                          DetailTreesLahanTemp,
-                          'MPTS'
-                        )
-                  "
-                  rounded
-                  @click="resetJumlahBibit()"
-                >
+                <v-btn color="red white--text mb-2" small v-if="
+                  DetailTreesLahanTempData.land_area < 10000 &&
+                  DetailTreesLahanTempData.max_seed_amount <
+                  getStatusTotalBibitInDetail(
+                    DetailTreesLahanTemp,
+                    'KAYU'
+                  ) +
+                  getStatusTotalBibitInDetail(
+                    DetailTreesLahanTemp,
+                    'MPTS'
+                  )
+                " rounded @click="resetJumlahBibit()">
                   <v-icon small class="mr-1">mdi-refresh</v-icon>
                   Reset Jumlah Bibit
                 </v-btn>
-                <v-data-table
-                  :headers="headersdetaileditjumlah"
-                  :items="DetailTreesLahanTemp"
-                  class="elevation-5 rounded-xl"
-                >
+                <v-data-table :headers="headersdetaileditjumlah" :items="DetailTreesLahanTemp"
+                  class="elevation-5 rounded-xl">
                   <!-- <template v-slot:item.tree_category="{ item }">
                       {{ gettype(item.tree_category) }}
                     </template> -->
                   <template v-slot:item.actions="{ item }">
-                    <v-icon
-                      v-if="true"
-                      @click="editDetailPohon(item)"
-                      color="warning"
-                      :disabled="
-                        disabledEditPohon(
-                          DetailTreesLahanTemp,
-                          item.tree_category,
-                          DetailTreesLahanTempData
-                        )
-                      "
-                    >
+                    <v-icon v-if="true" @click="editDetailPohon(item)" color="warning" :disabled="disabledEditPohon(
+                      DetailTreesLahanTemp,
+                      item.tree_category,
+                      DetailTreesLahanTempData
+                    )
+                      ">
                       mdi-pencil-circle
                     </v-icon>
                     <!-- <v-icon
@@ -1817,60 +1140,39 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            dark
-            color="red"
-            rounded
-            @click="closeDetailPohon"
-            class="px-5 mb-2"
-          >
+          <v-btn dark color="red" rounded @click="closeDetailPohon" class="px-5 mb-2">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
-            Keluar</v-btn
-          >
-          <v-btn
-            color="green"
-            rounded
-            @click="saveEditPohon"
-            class="px-5 mb-2 white--text"
-            :disabled="
-              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 ||
-              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS') >
-                Math.round(
-                  (40 / 60) *
-                    getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU')
-                ) ||
-              (DetailTreesLahanTempData.land_area < 10000 &&
-                DetailTreesLahanTempData.max_seed_amount <
-                  getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') +
-                    getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))
-            "
-          >
+            Keluar</v-btn>
+          <v-btn color="green" rounded @click="saveEditPohon" class="px-5 mb-2 white--text" :disabled="getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') == 0 ||
+            getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS') >
+            Math.round(
+              (40 / 60) *
+              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU')
+            ) ||
+            (DetailTreesLahanTempData.land_area < 10000 &&
+              DetailTreesLahanTempData.max_seed_amount <
+              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'KAYU') +
+              getStatusTotalBibitInDetail(DetailTreesLahanTemp, 'MPTS'))
+            ">
             <v-icon class="mr-1">mdi-check-circle</v-icon>
-            Simpan</v-btn
-          >
+            Simpan</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- Edit Jumlah Pohon -->
-    <v-dialog
-      v-model="dialogDetailPohonEdit"
-      max-width="450px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogDetailPohonEdit" max-width="450px" content-class="rounded-xl">
       <v-card>
         <v-card-text>
           <v-row class="pt-7">
             <v-col cols="12">
               <v-simple-table>
                 <tbody>
-                  <tr
-                    v-if="
-                      DetailTreesLahanTempData.planting_details &&
-                      DetailTreesLahanTempData.land_area < 10000
-                    "
-                  >
+                  <tr v-if="
+                    DetailTreesLahanTempData.planting_details &&
+                    DetailTreesLahanTempData.land_area < 10000
+                  ">
                     <td>Total Available</td>
                     <td>:</td>
                     <td>
@@ -1879,14 +1181,13 @@
                           getAvailableBibit(
                             DetailTreesLahanTemp,
                             DetailTreesLahanTempData.max_seed_amount ||
-                              getSeedCalculation(
-                                DetailTreesLahanTempData,
-                                "total_max_trees"
-                              ),
+                            getSeedCalculation(
+                              DetailTreesLahanTempData,
+                              "total_max_trees"
+                            ),
                             editedItemPohon
                           )
-                        }}</strong
-                      >
+                        }}</strong>
                       Bibit
                     </td>
                   </tr>
@@ -1908,62 +1209,33 @@
               </v-simple-table>
             </v-col>
             <v-col cols="12" sm="12" md="12">
-              <v-text-field
-                v-model="editedItemPohon.amount"
-                label="Jumlah Pohon"
-                hide-details
-                rounded
-                outlined
-                type="number"
-              ></v-text-field>
+              <v-text-field v-model="editedItemPohon.amount" label="Jumlah Pohon" hide-details rounded outlined
+                type="number"></v-text-field>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            rounded
-            small
-            color="red"
-            dark
-            @click="closeDetailEditPohon"
-            class="px-3"
-          >
+          <v-btn rounded small color="red" dark @click="closeDetailEditPohon" class="px-3">
             <v-icon small class="mr-1">mdi-close</v-icon>
-            Keluar</v-btn
-          >
-          <v-btn
-            rounded
-            small
-            color="green"
-            :disabled="
-              (DetailTreesLahanTempData.land_area < 10000 &&
-                getDisabledSaveItemPohon(
-                  DetailTreesLahanTemp,
-                  DetailTreesLahanTempData,
-                  editedItemPohon
-                )) ||
-              editedItemPohon.amount < 0
-            "
-            @click="saveEditPohonTemp"
-            class="px-3 white--text"
-          >
+            Keluar</v-btn>
+          <v-btn rounded small color="green" :disabled="(DetailTreesLahanTempData.land_area < 10000 &&
+            getDisabledSaveItemPohon(
+              DetailTreesLahanTemp,
+              DetailTreesLahanTempData,
+              editedItemPohon
+            )) ||
+            editedItemPohon.amount < 0
+            " @click="saveEditPohonTemp" class="px-3 white--text">
             <v-icon small class="mr-1">mdi-check</v-icon>
-            Set</v-btn
-          >
+            Set</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- Modal Detail -->
-    <v-dialog
-      v-model="dialogDetail"
-      max-width="800px"
-      scrollable
-      persistent
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogDetail" max-width="800px" scrollable persistent content-class="rounded-xl">
       <v-card rounded="xl">
         <v-card-title class="mb-1 headermodalstyle">
           <span class="">Detail Sosialisasi Tanam</span>
@@ -1971,31 +1243,17 @@
         <v-divider></v-divider>
         <v-card-text>
           <!-- Loader -->
-          <v-container
-            v-if="load == true"
-            fluid
-            fill-height
-            style="background-color: rgba(255, 255, 255, 0.5)"
-          >
+          <v-container v-if="load == true" fluid fill-height style="background-color: rgba(255, 255, 255, 0.5)">
             <v-layout justify-center align-center>
-              <v-progress-circular
-                :size="80"
-                :width="10"
-                indeterminate
-                color="success"
-              >
+              <v-progress-circular :size="80" :width="10" indeterminate color="success">
               </v-progress-circular>
             </v-layout>
           </v-container>
           <!-- Content -->
           <v-container v-if="load == false">
             <!-- Detail Map -->
-            <detailLokasiSostam
-              :section="'detailLokasiSostam'"
-              :long="defaultItem.long"
-              :lat="defaultItem.lat"
-              :ff_no="defaultItem.ff_no"
-            />
+            <detailLokasiSostam :section="'detailLokasiSostam'" :long="defaultItem.long" :lat="defaultItem.lat"
+              :ff_no="defaultItem.ff_no" />
 
             <v-divider style="background-color: black !important"></v-divider>
             <strong>Data Umum</strong>
@@ -2092,22 +1350,14 @@
                       Pembuatan Lubang Tanam
                     </th>
                     <td class="text-left" style="font-size: 14px">
-                      <v-card
-                        rounded
-                        block
-                        darken
-                        color="orange"
-                        class="align-center"
-                      >
-                        <strong
-                          >{{
-                            gettanggal(defaultItem.start_pembuatan_lubang_tanam)
-                          }}
+                      <v-card rounded block darken color="orange" class="align-center">
+                        <strong>{{
+                          gettanggal(defaultItem.start_pembuatan_lubang_tanam)
+                        }}
                           s/d
                           {{
                             gettanggal(defaultItem.pembuatan_lubang_tanam)
-                          }}</strong
-                        >
+                          }}</strong>
                       </v-card>
                     </td>
                   </tr>
@@ -2142,19 +1392,11 @@
                       Waktu Penanaman Petani
                     </th>
                     <td class="text-left" style="font-size: 14px">
-                      <v-card
-                        rounded
-                        block
-                        darken
-                        color="orange"
-                        class="align-center"
-                      >
-                        <strong
-                          >{{ gettanggal(defaultItem.planting_time) }} s/d
+                      <v-card rounded block darken color="orange" class="align-center">
+                        <strong>{{ gettanggal(defaultItem.planting_time) }} s/d
                           {{
                             gettanggal(defaultItem.end_planting_time)
-                          }}</strong
-                        >
+                          }}</strong>
                       </v-card>
                     </td>
                   </tr>
@@ -2164,11 +1406,9 @@
             <v-divider style="background-color: black !important"></v-divider>
             <div>
               <h4 class="mt-3">Jenis dan Jumlah Bibit</h4>
-              <v-simple-table
-                v-if="
-                  defaultItem.max_seed_amount && defaultItem.planting_details
-                "
-              >
+              <v-simple-table v-if="
+                defaultItem.max_seed_amount && defaultItem.planting_details
+              ">
                 <tbody>
                   <tr>
                     <td>
@@ -2203,18 +1443,12 @@
                     </td>
                     <td>:</td>
                     <td>
-                      <v-btn
-                        rounded
-                        dark
-                        :color="
-                          getStatusTotalBibitInDetail(
-                            defaultItem.planting_details,
-                            'COLOR',
-                            defaultItem.max_seed_amount
-                          )
-                        "
-                        class="pr-2"
-                      >
+                      <v-btn rounded dark :color="getStatusTotalBibitInDetail(
+                        defaultItem.planting_details,
+                        'COLOR',
+                        defaultItem.max_seed_amount
+                      )
+                        " class="pr-2">
                         {{
                           getStatusTotalBibitInDetail(
                             defaultItem.planting_details,
@@ -2238,15 +1472,13 @@
                       </v-btn>
                     </td>
                   </tr>
-                  <tr
-                    v-if="
-                      getStatusTotalBibitInDetail(
-                        defaultItem.planting_details,
-                        'EXISTS',
-                        'CROPS'
-                      ) > 0
-                    "
-                  >
+                  <tr v-if="
+                    getStatusTotalBibitInDetail(
+                      defaultItem.planting_details,
+                      'EXISTS',
+                      'CROPS'
+                    ) > 0
+                  ">
                     <td>Total Crops</td>
                     <td>:</td>
                     <td>
@@ -2264,11 +1496,7 @@
                 </tbody>
               </v-simple-table>
               <h3 class="ml-1">
-                <v-data-table
-                  :headers="headersdetail"
-                  :items="defaultItem.planting_details"
-                  class="elevation-1"
-                >
+                <v-data-table :headers="headersdetail" :items="defaultItem.planting_details" class="elevation-1">
                   <!-- <template v-slot:item.tree_category="{ item }">
                               {{ gettype(item.tree_category) }}
                             </template> -->
@@ -2279,24 +1507,14 @@
             <v-row class="mt-2 py-4">
               <v-col cols="12" md="6" lg="4">
                 <p>Tanda Tangan Petani</p>
-                <v-img
-                  aspect-ratio="1"
-                  lazy-src=""
-                  class="rounded-lg cursor-pointer elevation-5"
-                  transition="fade-transition"
-                  :src="`${$store.state.apiUrlImage}${defaultItem.signature}`"
-                  @click="
-                    () => {
-                      preview.signature.url = `${$store.state.apiUrlImage}${defaultItem.signature}`;
-                      preview.signature.modal = true;
-                    }
-                  "
-                >
+                <v-img aspect-ratio="1" lazy-src="" class="rounded-lg cursor-pointer elevation-5"
+                  transition="fade-transition" :src="`${$store.state.apiUrlImage}${defaultItem.signature}`" @click="() => {
+                    preview.signature.url = `${$store.state.apiUrlImage}${defaultItem.signature}`;
+                    preview.signature.modal = true;
+                  }
+                    ">
                   <template v-slot:placeholder>
-                    <v-skeleton-loader
-                      class="mx-auto rounded-lg"
-                      type="image"
-                    ></v-skeleton-loader>
+                    <v-skeleton-loader class="mx-auto rounded-lg" type="image"></v-skeleton-loader>
                   </template>
                 </v-img>
               </v-col>
@@ -2307,47 +1525,27 @@
             <v-row class="mt-2">
               <v-col cols="12" md="6" lg="4">
                 <p>Foto Absensi 1</p>
-                <v-img
-                  aspect-ratio="1"
-                  lazy-src=""
-                  class="rounded-lg cursor-pointer elevation-5"
-                  transition="fade-transition"
-                  :src="`${$store.state.apiUrlImage}${defaultItem.absensi1}`"
-                  @click="
-                    () => {
-                      preview.absensi1.url = `${$store.state.apiUrlImage}${defaultItem.absensi1}`;
-                      preview.absensi1.modal = true;
-                    }
-                  "
-                >
+                <v-img aspect-ratio="1" lazy-src="" class="rounded-lg cursor-pointer elevation-5"
+                  transition="fade-transition" :src="`${$store.state.apiUrlImage}${defaultItem.absensi1}`" @click="() => {
+                    preview.absensi1.url = `${$store.state.apiUrlImage}${defaultItem.absensi1}`;
+                    preview.absensi1.modal = true;
+                  }
+                    ">
                   <template v-slot:placeholder>
-                    <v-skeleton-loader
-                      class="mx-auto rounded-lg"
-                      type="image"
-                    ></v-skeleton-loader>
+                    <v-skeleton-loader class="mx-auto rounded-lg" type="image"></v-skeleton-loader>
                   </template>
                 </v-img>
               </v-col>
               <v-col cols="12" md="6" lg="4">
                 <p>Foto Absensi 2</p>
-                <v-img
-                  aspect-ratio="1"
-                  lazy-src=""
-                  class="rounded-lg cursor-pointer elevation-5"
-                  transition="fade-transition"
-                  :src="`${$store.state.apiUrlImage}${defaultItem.absensi2}`"
-                  @click="
-                    () => {
-                      preview.absensi2.url = `${$store.state.apiUrlImage}${defaultItem.absensi2}`;
-                      preview.absensi2.modal = true;
-                    }
-                  "
-                >
+                <v-img aspect-ratio="1" lazy-src="" class="rounded-lg cursor-pointer elevation-5"
+                  transition="fade-transition" :src="`${$store.state.apiUrlImage}${defaultItem.absensi2}`" @click="() => {
+                    preview.absensi2.url = `${$store.state.apiUrlImage}${defaultItem.absensi2}`;
+                    preview.absensi2.modal = true;
+                  }
+                    ">
                   <template v-slot:placeholder>
-                    <v-skeleton-loader
-                      class="mx-auto rounded-lg"
-                      type="image"
-                    ></v-skeleton-loader>
+                    <v-skeleton-loader class="mx-auto rounded-lg" type="image"></v-skeleton-loader>
                   </template>
                 </v-img>
               </v-col>
@@ -2356,82 +1554,50 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn
-            dark
-            color="red"
-            class="px-5"
-            rounded
-            @click="
-              () => {
-                dialogDetail = false;
-                disabledVerification = false;
-              }
-            "
-            outlined
-            elevation="1"
-          >
+          <v-btn dark color="red" class="px-5" rounded @click="() => {
+            dialogDetail = false;
+            disabledVerification = false;
+          }
+            " outlined elevation="1">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
             Keluar
           </v-btn>
           <v-spacer></v-spacer>
-          <p
-            class="red--text small mb-0"
-            v-if="
-              getStatusTotalBibitInDetail(
-                defaultItem.planting_details,
-                'KAYU'
-              ) < 1
-            "
-          >
+          <p class="red--text small mb-0" v-if="
+            getStatusTotalBibitInDetail(
+              defaultItem.planting_details,
+              'KAYU'
+            ) < 1
+          ">
             Kayu masih 0!
           </p>
-          <v-btn
-            v-if="
-              RoleAccesCRUDShow == true && defaultItem.waitingapproval == true
-            "
-            color="success"
-            rounded
-            @click="verifSubmit()"
-            :disabled="
-              !defaultItem.signature ||
+          <v-btn v-if="
+            RoleAccesCRUDShow == true && defaultItem.waitingapproval == true
+          " color="success" rounded @click="verifSubmit()" :disabled="!defaultItem.signature ||
+            getStatusTotalBibitInDetail(
+              defaultItem.planting_details,
+              'ALL'
+            ) == 0 ||
+            getStatusTotalBibitInDetail(
+              defaultItem.planting_details,
+              'KAYU'
+            ) == 0 ||
+            (defaultItem.land_area < 10000 &&
               getStatusTotalBibitInDetail(
                 defaultItem.planting_details,
-                'ALL'
-              ) == 0 ||
-              getStatusTotalBibitInDetail(
-                defaultItem.planting_details,
-                'KAYU'
-              ) == 0 ||
-              (defaultItem.land_area < 10000 &&
-                getStatusTotalBibitInDetail(
-                  defaultItem.planting_details,
-                  'COLOR',
-                  defaultItem.max_seed_amount
-                ) == 'red')
-            "
-            elevation="1"
-            class="px-5 white--text"
-          >
+                'COLOR',
+                defaultItem.max_seed_amount
+              ) == 'red')
+            " elevation="1" class="px-5 white--text">
             <v-icon class="mr-1">mdi-check-circle</v-icon>
             Verifikasi
           </v-btn>
-          <v-btn
-            v-if="
-              adjustmentStatus == true && defaultItem.waitingapproval == false
-            "
-            dark
-            color="blue"
-            class="px-5"
-            rounded
-            @click="dialogAdjustmentDataBibit = true"
-            :disabled="
-              !$store.state.User.role_name == 'FIELD COORDINATOR' &&
-              !$store.state.User.role_name == 'UNIT MANAGER' &&
-              !$store.state.User.role_group == 'IT'
-            "
-            outlined
-            elevation="1"
-          >
+          <v-btn v-if="
+            adjustmentStatus == true && defaultItem.waitingapproval == false
+          " dark color="blue" class="px-5" rounded @click="dialogAdjustmentDataBibit = true" :disabled="!$store.state.User.role_name == 'FIELD COORDINATOR' &&
+            !$store.state.User.role_name == 'UNIT MANAGER' &&
+            !$store.state.User.role_group == 'IT'
+            " outlined elevation="1">
             <v-icon class="mr-1">mdi-pencil</v-icon>
             Adjust Data Bibit Sostam
           </v-btn>
@@ -2440,13 +1606,7 @@
     </v-dialog>
 
     <!-- modal adjust data bibit -->
-    <v-dialog
-      v-model="dialogAdjustmentDataBibit"
-      max-width="800px"
-      scrollable
-      persistent
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogAdjustmentDataBibit" max-width="800px" scrollable persistent content-class="rounded-xl">
       <v-card rounded="xl">
         <v-card-title color="orange" class="mb-1 headermodalstyle">
           <span>Adjust Jumlah Bibit</span>
@@ -2468,18 +1628,12 @@
               </td>
               <td>:</td>
               <td>
-                <v-btn
-                  rounded
-                  dark
-                  :color="
-                    getStatusTotalBibitInDetail(
-                      dataToStore.adjustment_planting_details,
-                      'COLOR',
-                      defaultItem.max_seed_amount
-                    )
-                  "
-                  class="pr-2"
-                >
+                <v-btn rounded dark :color="getStatusTotalBibitInDetail(
+                  dataToStore.adjustment_planting_details,
+                  'COLOR',
+                  defaultItem.max_seed_amount
+                )
+                  " class="pr-2">
                   {{
                     getStatusTotalBibitInDetail(
                       dataToStore.adjustment_planting_details,
@@ -2510,28 +1664,17 @@
           <h4 class="mt-3 red--text">
             <strong>Klik Jumlah Bibit Pada Tabel Untuk Mengubah!</strong>
           </h4>
-          <v-data-table
-            :headers="headerUpdateDetailBibit"
-            :items="dataToStore.adjustment_planting_details"
-            class="elevation-1"
-          >
+          <v-data-table :headers="headerUpdateDetailBibit" :items="dataToStore.adjustment_planting_details"
+            class="elevation-1">
             <template v-slot:body="{ items, headers }">
               <tbody>
                 <tr v-for="(item, idx, k) in items" :key="idx">
                   <td v-for="(header, key) in headers" :key="key">
-                    <v-edit-dialog
-                      :return-value.sync="item[header.value]"
-                      @save="simpanJumlah"
-                      large
-                    >
+                    <v-edit-dialog :return-value.sync="item[header.value]" @save="simpanJumlah" large>
                       {{ item[header.value] }}
                       <template v-if="header.value == 'amount'" v-slot:input>
-                        <v-text-field
-                          v-model="item[header.value]"
-                          label="Edit"
-                          single-line
-                          type="number"
-                        ></v-text-field>
+                        <v-text-field v-model="item[header.value]" label="Edit" single-line
+                          type="number"></v-text-field>
                         <!-- Amount Limitation -->
                         <!-- @change="$v=>$v > item.maxAmount? item[header.value]=item.maxAmount:''"
                                   :rules="[
@@ -2546,12 +1689,7 @@
           </v-data-table>
         </v-card-text>
         <v-card-actions class="elevation-15 rounded-xl">
-          <v-btn
-            color="red px-5"
-            rounded
-            dark
-            @click="dialogAdjustmentDataBibit = false"
-          >
+          <v-btn color="red px-5" rounded dark @click="dialogAdjustmentDataBibit = false">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
             Keluar
           </v-btn>
@@ -2565,70 +1703,37 @@
     </v-dialog>
 
     <!-- Modal Verification -->
-    <v-dialog
-      v-model="dialogVerification"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogVerification" max-width="500px" content-class="rounded-xl">
       <v-card>
-        <v-card-title class="justify-center"
-          >Apakah Anda yakin Untuk <strong> Verifikasi</strong>?
+        <v-card-title class="justify-center">Apakah Anda yakin Untuk <strong> Verifikasi</strong>?
           <small class="red--text">Hasil Tidak Dapat Dikembalikan</small>
         </v-card-title>
         <v-card-actions class="pb-3">
           <v-spacer></v-spacer>
-          <v-btn
-            color="red white--text"
-            class="px-4"
-            rounded
-            @click="closeVerification"
-          >
+          <v-btn color="red white--text" class="px-4" rounded @click="closeVerification">
             <v-icon class="mr-1">mdi-close-circle</v-icon>
-            Keluar</v-btn
-          >
-          <v-btn
-            color="success"
-            class="px-4"
-            rounded
-            @click="VerificationItemConfirm"
-          >
+            Keluar</v-btn>
+          <v-btn color="success" class="px-4" rounded @click="VerificationItemConfirm">
             <v-icon class="mr-1">mdi-check-circle</v-icon>
-            YA</v-btn
-          >
+            YA</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!--Modal Petani Susulan-->
-    <v-dialog
-      v-model="dialogPetaniSusulan"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogPetaniSusulan" max-width="500px" content-class="rounded-xl">
       <v-card>
         <v-card-title class="d-flex justify-center">
           Apa Anda Yakin Melakukan Proses Ini?
         </v-card-title>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            color="red white--text"
-            rounded
-            small
-            @click="closePetaniSusulan"
-            class="px-4"
-          >
+          <v-btn color="red white--text" rounded small @click="closePetaniSusulan" class="px-4">
             <v-icon class="mr-1" small>mdi-close-circle</v-icon>
             Keluar
           </v-btn>
-          <v-btn
-            color="green white--text"
-            rounded
-            small
-            @click="approvePetaniSusulan"
-            class="px-4"
-          >
+          <v-btn color="green white--text" rounded small @click="approvePetaniSusulan" class="px-4">
             <v-icon class="mr-1" small>mdi-save</v-icon>
             Simpan
           </v-btn>
@@ -2637,34 +1742,16 @@
     </v-dialog>
 
     <!-- Modal Delete -->
-    <v-dialog
-      v-model="dialogDelete"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogDelete" max-width="500px" content-class="rounded-xl">
       <v-card>
-        <v-card-title class="d-flex justify-center"
-          >Apa Anda Yakin Menghapus Data Ini?</v-card-title
-        >
+        <v-card-title class="d-flex justify-center">Apa Anda Yakin Menghapus Data Ini?</v-card-title>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            color="orange white--text"
-            rounded
-            small
-            @click="closeDelete"
-            class="px-4"
-          >
+          <v-btn color="orange white--text" rounded small @click="closeDelete" class="px-4">
             <v-icon class="mr-1" small>mdi-close-circle</v-icon>
             Keluar
           </v-btn>
-          <v-btn
-            color="red white--text"
-            rounded
-            small
-            @click="deleteItemConfirm"
-            class="px-4"
-          >
+          <v-btn color="red white--text" rounded small @click="deleteItemConfirm" class="px-4">
             <v-icon class="mr-1" small>mdi-delete</v-icon>
             OK
           </v-btn>
@@ -2674,34 +1761,16 @@
     </v-dialog>
 
     <!-- Modal Unverif -->
-    <v-dialog
-      v-model="dialogUnverif"
-      max-width="500px"
-      content-class="rounded-xl"
-    >
+    <v-dialog v-model="dialogUnverif" max-width="500px" content-class="rounded-xl">
       <v-card>
-        <v-card-title class="d-flex justify-center"
-          >Apa Anda Yakin Untuk UNVERIFIKASI Data Ini?</v-card-title
-        >
+        <v-card-title class="d-flex justify-center">Apa Anda Yakin Untuk UNVERIFIKASI Data Ini?</v-card-title>
         <v-card-actions class="pb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            color="orange white--text"
-            rounded
-            small
-            @click="dialogUnverif = false"
-            class="px-4"
-          >
+          <v-btn color="orange white--text" rounded small @click="dialogUnverif = false" class="px-4">
             <v-icon class="mr-1" small>mdi-close-circle</v-icon>
             Keluar
           </v-btn>
-          <v-btn
-            color="red white--text"
-            rounded
-            small
-            @click="unverifItemConfirm"
-            class="px-4"
-          >
+          <v-btn color="red white--text" rounded small @click="unverifItemConfirm" class="px-4">
             <v-icon class="mr-1" small>mdi-undo</v-icon>
             OK
           </v-btn>
@@ -2710,39 +1779,21 @@
       </v-card>
     </v-dialog>
     <!-- Preview Signature Modal -->
-    <v-dialog
-      v-model="preview.signature.modal"
-      max-width="500px"
-      content-class="rounded-xl"
-      scrollable
-    >
+    <v-dialog v-model="preview.signature.modal" max-width="500px" content-class="rounded-xl" scrollable>
       <v-card class="rounded-xl">
         <v-card-title> Preview Foto Tanda Tangan </v-card-title>
         <v-card-text class="pa-1 fontall">
           <v-container>
-            <v-img
-              class="w-100 rounded-lg"
-              :lazy-src="`${preview.signature.url}`"
-              :src="`${preview.signature.url}`"
-            >
+            <v-img class="w-100 rounded-lg" :lazy-src="`${preview.signature.url}`" :src="`${preview.signature.url}`">
               <template v-slot:placeholder>
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="image"
-                ></v-skeleton-loader>
+                <v-skeleton-loader class="mx-auto" type="image"></v-skeleton-loader>
               </template>
             </v-img>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="red"
-            elevation="1"
-            outlined
-            class="rounded-lg"
-            @click="preview.signature.modal = false"
-          >
+          <v-btn color="red" elevation="1" outlined class="rounded-lg" @click="preview.signature.modal = false">
             <v-icon left> mdi-close-circle-outline </v-icon>
             Keluar
           </v-btn>
@@ -2751,39 +1802,21 @@
     </v-dialog>
 
     <!-- Preview Absensi1 Modal -->
-    <v-dialog
-      v-model="preview.absensi1.modal"
-      max-width="500px"
-      content-class="rounded-xl"
-      scrollable
-    >
+    <v-dialog v-model="preview.absensi1.modal" max-width="500px" content-class="rounded-xl" scrollable>
       <v-card class="rounded-xl">
         <v-card-title> Preview Foto Absensi 1 </v-card-title>
         <v-card-text class="pa-1 fontall">
           <v-container>
-            <v-img
-              class="w-100 rounded-lg"
-              :lazy-src="`${preview.absensi1.url}`"
-              :src="`${preview.absensi1.url}`"
-            >
+            <v-img class="w-100 rounded-lg" :lazy-src="`${preview.absensi1.url}`" :src="`${preview.absensi1.url}`">
               <template v-slot:placeholder>
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="image"
-                ></v-skeleton-loader>
+                <v-skeleton-loader class="mx-auto" type="image"></v-skeleton-loader>
               </template>
             </v-img>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="red"
-            elevation="1"
-            outlined
-            class="rounded-lg"
-            @click="preview.absensi1.modal = false"
-          >
+          <v-btn color="red" elevation="1" outlined class="rounded-lg" @click="preview.absensi1.modal = false">
             <v-icon left> mdi-close-circle-outline </v-icon>
             Keluar
           </v-btn>
@@ -2792,39 +1825,21 @@
     </v-dialog>
 
     <!-- Preview Absensi2 Modal -->
-    <v-dialog
-      v-model="preview.absensi2.modal"
-      max-width="500px"
-      content-class="rounded-xl"
-      scrollable
-    >
+    <v-dialog v-model="preview.absensi2.modal" max-width="500px" content-class="rounded-xl" scrollable>
       <v-card class="rounded-xl">
         <v-card-title> Preview Foto Absensi 2 </v-card-title>
         <v-card-text class="pa-1 fontall">
           <v-container>
-            <v-img
-              class="w-100 rounded-lg"
-              :lazy-src="`${preview.absensi2.url}`"
-              :src="`${preview.absensi2.url}`"
-            >
+            <v-img class="w-100 rounded-lg" :lazy-src="`${preview.absensi2.url}`" :src="`${preview.absensi2.url}`">
               <template v-slot:placeholder>
-                <v-skeleton-loader
-                  class="mx-auto"
-                  type="image"
-                ></v-skeleton-loader>
+                <v-skeleton-loader class="mx-auto" type="image"></v-skeleton-loader>
               </template>
             </v-img>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="red"
-            elevation="1"
-            outlined
-            class="rounded-lg"
-            @click="preview.absensi2.modal = false"
-          >
+          <v-btn color="red" elevation="1" outlined class="rounded-lg" @click="preview.absensi2.modal = false">
             <v-icon left> mdi-close-circle-outline </v-icon>
             Keluar
           </v-btn>
@@ -2834,27 +1849,16 @@
     <!-- END: MODAL -->
 
     <!-- Main Table -->
-    <v-data-table
-      data-aos="fade-up"
-      data-aos-delay="200"
-      class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
-      :headers="headers"
-      :items="dataobject"
-      :loading="loadtable"
-      :options.sync="table.options"
-      :server-items-length="table.datas.total"
-      loading-text="Loading... Please wait"
-      :page="table.pagination.current_page"
-      :show-expand="true"
-      single-expand
-      @item-expanded="checkExpandenItem"
+    <v-data-table data-aos="fade-up" data-aos-delay="200" class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+      :headers="headers" :items="dataobject" :loading="loadtable" :options.sync="table.options"
+      :server-items-length="table.datas.total" loading-text="Loading... Please wait"
+      :page="table.pagination.current_page" :show-expand="true" single-expand @item-expanded="checkExpandenItem"
       :footer-props="{
         itemsPerPageText: 'Jumlah Data Per Halaman',
         itemsPerPageOptions: [10, 25, 50, 100, 250, 500],
         showCurrentPage: true,
         showFirstLastPage: true,
-      }"
-    >
+      }">
       <!--CountDown-->
       <template v-slot:item.countDown="{ item }">
         <div :id="`counter-${item.id}`"></div>
@@ -2870,35 +1874,16 @@
             (table.pagination.current_page - 1) * table.pagination.per_page
           }}
         </span>
-        <v-progress-circular
-          v-else
-          indeterminate
-          color="green"
-          size="20"
-        ></v-progress-circular>
+        <v-progress-circular v-else indeterminate color="green" size="20"></v-progress-circular>
       </template>
 
       <template v-slot:top>
         <v-row class="pt-3 px-2">
           <v-col cols="12" lg="6" class="d-flex align-center">
             <!-- dropdown filter button -->
-            <v-menu
-              rounded="xl"
-              bottom
-              right
-              offset-y
-              transition="slide-y-transition"
-              :close-on-content-click="false"
-            >
+            <v-menu rounded="xl" bottom right offset-y transition="slide-y-transition" :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  dark
-                  class=""
-                  color="warning"
-                  v-bind="attrs"
-                  v-on="on"
-                  rounded
-                >
+                <v-btn dark class="" color="warning" v-bind="attrs" v-on="on" rounded>
                   <v-icon class="mr-1" small>mdi-filter-variant</v-icon>
                   Filter
                 </v-btn>
@@ -2906,39 +1891,21 @@
 
               <v-list class="d-flex flex-column align-center">
                 <v-list-item>
-                  <v-btn
-                    rounded
-                    dark
-                    class="px-9"
-                    @click="showFilterArea()"
-                    color="green"
-                  >
+                  <v-btn rounded dark class="px-9" @click="showFilterArea()" color="green">
                     <v-icon class="mx-2" small>mdi-map-legend</v-icon>
                     Berdasarkan Area
                   </v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn
-                    v-if="RoleAccesFilterShow == true"
-                    rounded
-                    dark
-                    class="mx-3 mt-1"
-                    @click="showFilterEmployee()"
-                    color="green"
-                  >
+                  <v-btn v-if="RoleAccesFilterShow == true" rounded dark class="mx-3 mt-1" @click="showFilterEmployee()"
+                    color="green">
                     <v-icon class="mx-2" small>mdi-account-group</v-icon>
                     Berdasarkan Karyawan
                   </v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn
-                    v-if="RoleAccesFilterShow == true"
-                    rounded
-                    dark
-                    class="mx-3 mt-1"
-                    @click="resetFilter()"
-                    color="green"
-                  >
+                  <v-btn v-if="RoleAccesFilterShow == true" rounded dark class="mx-3 mt-1" @click="resetFilter()"
+                    color="green">
                     <v-icon class="mx-2" small>mdi-refresh</v-icon>
                     Reset Filter
                   </v-btn>
@@ -2946,86 +1913,39 @@
               </v-list>
             </v-menu>
             <!-- Program Year -->
-            <v-select
-              color="success"
-              item-color="success"
-              v-model="program_year"
-              :items="$store.state.programYear.options"
-              outlined
-              dense
-              hide-details
-              :menu-props="{
+            <v-select color="success" item-color="success" v-model="program_year"
+              :items="$store.state.programYear.options" outlined dense hide-details :menu-props="{
                 bottom: true,
                 offsetY: true,
                 rounded: 'xl',
                 transition: 'slide-y-transition',
-              }"
-              rounded
-              label="Tahun Program"
-              class="mx-auto mx-lg-3"
-              style="max-width: 200px"
-            ></v-select>
+              }" rounded label="Tahun Program" class="mx-auto mx-lg-3" style="max-width: 200px"></v-select>
             <!-- Refresh Button -->
-            <v-btn
-              @click="resetFilter"
-              color="info white--text"
-              rounded
-              class="mb-2 mb-lg-0"
-              :disabled="loadtable"
-            >
+            <v-btn @click="resetFilter" color="info white--text" rounded class="mb-2 mb-lg-0" :disabled="loadtable">
               <v-icon v-if="!loadtable" small class="mr-1">mdi-refresh</v-icon>
-              <v-progress-circular
-                v-else
-                indeterminate
-                size="15"
-                class="mr-1"
-              ></v-progress-circular>
+              <v-progress-circular v-else indeterminate size="15" class="mr-1"></v-progress-circular>
               Muat Ulang
             </v-btn>
           </v-col>
-          <v-col
-            cols="12"
-            lg="6"
-            class="d-none d-lg-flex align-center justify-end"
-          >
-            <v-btn
-              dark
-              rounded
-              class="mb-2 mr-1 ml-2 d-none d-md-block"
-              color="orange"
-              @click="$router.push('AdjustmentDataSostam')"
-              :disabled="
-                !$store.state.User.role_name == 'FIELD COORDINATOR' &&
+          <v-col cols="12" lg="6" class="d-none d-lg-flex align-center justify-end">
+            <v-btn dark rounded class="mb-2 mr-1 ml-2 d-none d-md-block" color="orange"
+              @click="$router.push('AdjustmentDataSostam')" :disabled="!$store.state.User.role_name == 'FIELD COORDINATOR' &&
                 !$store.state.User.role_name == 'UNIT MANAGER' &&
                 !$store.state.User.role_group == 'IT'
-              "
-            >
+                ">
               <v-icon class="mr-1" small>mdi-pencil</v-icon> Data Adjustment
               Bibit Sostam
             </v-btn>
 
-            <v-btn
-              :disabled="!$store.state.User.role_group == 'IT'"
-              dark
-              rounded
-              class="mb-2 mr-1 ml-2 d-none d-md-block"
-              @click="showAddModal()"
-              color="green"
-              v-if="$_sys.isAllowed('sosialisasi-tanam-create')"
-            >
+            <v-btn :disabled="!$store.state.User.role_group == 'IT'" dark rounded
+              class="mb-2 mr-1 ml-2 d-none d-md-block" @click="showAddModal()" color="green"
+              v-if="$_sys.isAllowed('sosialisasi-tanam-create')">
               <v-icon class="mr-1" small>mdi-plus-circle</v-icon> Tambah FF
               Sostam
             </v-btn>
 
             <!-- dropdown export button -->
-            <v-menu
-              rounded="xl"
-              bottom
-              left
-              offset-y
-              transition="slide-y-transition"
-              :close-on-content-click="false"
-            >
+            <v-menu rounded="xl" bottom left offset-y transition="slide-y-transition" :close-on-content-click="false">
               <template v-slot:activator="{ on, attrs }">
                 <v-icon v-bind="attrs" v-on="on" color="dark">
                   mdi-dots-vertical
@@ -3034,29 +1954,16 @@
 
               <v-list class="d-flex flex-column align-center">
                 <v-list-item v-if="false">
-                  <v-btn
-                    v-if="RoleAccesCRUDShow == true"
-                    dark
-                    class=""
-                    @click="showAddModal()"
-                    color="green"
-                  >
+                  <v-btn v-if="RoleAccesCRUDShow == true" dark class="" @click="showAddModal()" color="green">
                     <v-icon small>mdi-plus</v-icon> Add
                   </v-btn>
                 </v-list-item>
                 <v-list-item>
-                  <v-btn
-                    v-if="
-                      User.role_group == 'IT' ||
-                      User.role_name == 'GIS STAFF' ||
-                      User.role_name == 'SOCIAL OFFICER'
-                    "
-                    dark
-                    rounded
-                    class=""
-                    @click="showExportPerUMModal()"
-                    color="blue"
-                  >
+                  <v-btn v-if="
+                    User.role_group == 'IT' ||
+                    User.role_name == 'GIS STAFF' ||
+                    User.role_name == 'SOCIAL OFFICER'
+                  " dark rounded class="" @click="showExportPerUMModal()" color="blue">
                     <v-icon>mdi-download-box</v-icon> Export Data Sostam By FC
                   </v-btn>
                 </v-list-item>
@@ -3075,16 +1982,7 @@
             </v-menu>
           </v-col>
           <v-fab-transition>
-            <v-btn
-              class="d-lg-none mb-16"
-              color="green"
-              dark
-              fixed
-              bottom
-              right
-              fab
-              @click="showAddModal()"
-            >
+            <v-btn class="d-lg-none mb-16" color="green" dark fixed bottom right fab @click="showAddModal()">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </v-fab-transition>
@@ -3092,137 +1990,68 @@
         <v-row class="pb-4 px-2">
           <v-col cols="12" lg="6">
             <!-- Page Table -->
-            <v-select
-              v-if="false"
-              v-model="table.pagination.current_page"
-              :items="table.pagination.page_options"
-              hide-details
-              outlined
-              dense
-              :menu-props="{
+            <v-select v-if="false" v-model="table.pagination.current_page" :items="table.pagination.page_options"
+              hide-details outlined dense :menu-props="{
                 bottom: true,
                 offsetY: true,
                 rounded: 'xl',
                 transition: 'slide-y-transition',
-              }"
-              rounded
-              label="Halaman"
-              class="centered-select"
-              style="width: 50%; max-width: 100px"
-            ></v-select>
+              }" rounded label="Halaman" class="centered-select" style="width: 50%; max-width: 100px"></v-select>
           </v-col>
 
           <v-col cols="12" lg="6" class="d-flex">
             <!-- Select Search Field -->
-            <v-select
-              color="success"
-              item-color="success"
-              v-model="table.search.field"
-              :items="table.search.options.column"
-              item-value="value"
-              item-text="text"
-              hide-details
-              outlined
-              dense
+            <v-select color="success" item-color="success" v-model="table.search.field"
+              :items="table.search.options.column" item-value="value" item-text="text" hide-details outlined dense
               :menu-props="{
                 bottom: true,
                 offsetY: true,
                 rounded: 'xl',
                 transition: 'slide-y-transition',
-              }"
-              rounded
-              label="Kolom Pencarian"
-              class="centered-select"
-              style="
+              }" rounded label="Kolom Pencarian" class="centered-select" style="
                 width: 50%;
                 max-width: 200px;
                 border-top-right-radius: 0px;
                 border-bottom-right-radius: 0px;
-              "
-            ></v-select>
+              "></v-select>
             <!-- Search Input -->
-            <v-text-field
-              color="success"
-              item-color="success"
-              v-if="
-                table.search.field != 'opsi_pola_tanam' &&
-                table.search.field != 'validation'
-              "
-              v-model="table.search.value"
-              append-icon="mdi-magnify"
-              outlined
-              dense
-              rounded
-              label="Pencarian"
-              hide-details
-              style="
+            <v-text-field color="success" item-color="success" v-if="
+              table.search.field != 'opsi_pola_tanam' &&
+              table.search.field != 'validation'
+            " v-model="table.search.value" append-icon="mdi-magnify" outlined dense rounded label="Pencarian"
+              hide-details style="
                 border-top-left-radius: 0px;
                 border-bottom-left-radius: 0px;
-              "
-              :loading="table.search.options.column_loading"
-            ></v-text-field>
-            <v-select
-              v-else-if="table.search.field == 'opsi_pola_tanam'"
-              color="success"
-              item-color="success"
-              v-model="table.search.value"
-              :items="table.search.options.pola_tanam"
-              placeholder="All"
-              hide-details
-              outlined
-              dense
+              " :loading="table.search.options.column_loading"></v-text-field>
+            <v-select v-else-if="table.search.field == 'opsi_pola_tanam'" color="success" item-color="success"
+              v-model="table.search.value" :items="table.search.options.pola_tanam" placeholder="All" hide-details
+              outlined dense :menu-props="{
+                bottom: true,
+                offsetY: true,
+                rounded: 'xl',
+                transition: 'slide-y-transition',
+              }" rounded clearable label="Pilih Opsi Pola Tanam" class="centered-select" style="
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+              " :loading="table.search.options.pola_tanam_loading"></v-select>
+            <v-select v-else color="success" item-color="success" v-model="table.search.value"
+              :items="table.search.options.validation" item-value="value" item-text="text" hide-details outlined dense
               :menu-props="{
                 bottom: true,
                 offsetY: true,
                 rounded: 'xl',
                 transition: 'slide-y-transition',
-              }"
-              rounded
-              clearable
-              label="Pilih Opsi Pola Tanam"
-              class="centered-select"
-              style="
+              }" rounded label="Status" class="centered-select" style="
                 border-top-left-radius: 0px;
                 border-bottom-left-radius: 0px;
-              "
-              :loading="table.search.options.pola_tanam_loading"
-            ></v-select>
-            <v-select
-              v-else
-              color="success"
-              item-color="success"
-              v-model="table.search.value"
-              :items="table.search.options.validation"
-              item-value="value"
-              item-text="text"
-              hide-details
-              outlined
-              dense
-              :menu-props="{
-                bottom: true,
-                offsetY: true,
-                rounded: 'xl',
-                transition: 'slide-y-transition',
-              }"
-              rounded
-              label="Status"
-              class="centered-select"
-              style="
-                border-top-left-radius: 0px;
-                border-bottom-left-radius: 0px;
-              "
-            ></v-select>
+              "></v-select>
           </v-col>
 
           <v-col cols="12" lg="6" class="d-none d-lg-flex align-center">
             <v-row class="pb-4 px-2">
               <p><strong>Persentase Adjustment Sostam: </strong></p>
 
-              <v-progress-linear
-                :value="progressBar.value"
-                color="amber"
-                height="25"
-              >
+              <v-progress-linear :value="progressBar.value" color="amber" height="25">
                 <strong>{{ Math.ceil(progressBar.value) }}%</strong>
               </v-progress-linear>
             </v-row>
@@ -3245,24 +2074,16 @@
       <!--Expand Detail table -->
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length" class="py-6">
-          <v-data-table
-            data-aos="fade-up"
-            data-aos-delay="200"
-            class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
-            :headers="subMainTable.table.expandItem.subHeader"
-            :items="subMainTable.table.expandItem.subItem"
-            :loading="subMainTable.table.expandItem.loading"
-            :options.sync="subMainTable.table.expandItem.options"
-            :server-items-length="subMainTable.table.expandItem.total"
-            loading-text="Loading... Please wait"
-            :page="subMainTable.table.expandItem.current_page"
-            :footer-props="{
+          <v-data-table data-aos="fade-up" data-aos-delay="200" class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
+            :headers="subMainTable.table.expandItem.subHeader" :items="subMainTable.table.expandItem.subItem"
+            :loading="subMainTable.table.expandItem.loading" :options.sync="subMainTable.table.expandItem.options"
+            :server-items-length="subMainTable.table.expandItem.total" loading-text="Loading... Please wait"
+            :page="subMainTable.table.expandItem.current_page" :footer-props="{
               itemsPerPageText: 'Jumlah Data Per Halaman',
               itemsPerPageOptions: [10, 25, 40, -1],
               showCurrentPage: true,
               showFirstLastPage: true,
-            }"
-          >
+            }">
             <!-- index column -->
             <template v-slot:item.subindex="{ item, index }">
               <span v-if="loadtable == false">
@@ -3270,7 +2091,7 @@
                   index +
                   1 +
                   (subMainTable.table.expandItem.current_page - 1) *
-                    subMainTable.table.expandItem.per_page
+                  subMainTable.table.expandItem.per_page
                 }}
               </span>
               <v-progress-circular v-else indeterminate color="green" size="20">
@@ -3283,8 +2104,8 @@
                   item.validation == 1
                     ? "Verifikasi FC"
                     : item.validation == 0
-                    ? "Belum Terverifikasi"
-                    : "-"
+                      ? "Belum Terverifikasi"
+                      : "-"
                 }}
               </v-chip>
             </template>
@@ -3294,23 +2115,16 @@
                   item.adjustment_validation == 1
                     ? "Verifikasi FC"
                     : item.adjustment_validation == 0
-                    ? "Belum Terverifikasi"
-                    : item.adjustment_validation == null
-                    ? "Belum Melakukan Adjustment"
-                    : "-"
+                      ? "Belum Terverifikasi"
+                      : item.adjustment_validation == null
+                        ? "Belum Melakukan Adjustment"
+                        : "-"
                 }}
               </v-chip>
             </template>
             <!-- Action table -->
             <template v-slot:item.subactions="{ item }">
-              <v-menu
-                rounded="xl"
-                bottom
-                left
-                offset-y
-                transition="slide-y-transition"
-                :close-on-content-click="false"
-              >
+              <v-menu rounded="xl" bottom left offset-y transition="slide-y-transition" :close-on-content-click="false">
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon v-bind="attrs" v-on="on" color="dark">
                     mdi-arrow-down-drop-circle
@@ -3319,20 +2133,8 @@
 
                 <v-list class="d-flex flex-column align-stretch">
                   <v-list-item>
-                    <v-btn
-                      dark
-                      class="w-100"
-                      rounded
-                      @click="showDetail(item)"
-                      color="info"
-                      block
-                    >
-                      <v-icon
-                        class="mr-1"
-                        @click="showDetail(item)"
-                        small
-                        color="white"
-                      >
+                    <v-btn dark class="w-100" rounded @click="showDetail(item)" color="info" block>
+                      <v-icon class="mr-1" @click="showDetail(item)" small color="white">
                         mdi-information-outline
                       </v-icon>
                       Detail
@@ -3354,21 +2156,14 @@
                   Edit
                 </v-btn>
               </v-list-item> -->
-                  <v-list-item
-                    v-if="
-                      RoleAccesCRUDShow == true &&
-                      item.validation == 1 &&
-                      (User.role_group == 'IT' ||
-                        User.role_name == 'UNIT MANAGER' ||
-                        User.role_name == 'REGIONAL MANAGER')
-                    "
-                  >
-                    <v-btn
-                      rounded
-                      @click="showUnverifModal(item)"
-                      color="warning"
-                      block
-                    >
+                  <v-list-item v-if="
+                    RoleAccesCRUDShow == true &&
+                    item.validation == 1 &&
+                    (User.role_group == 'IT' ||
+                      User.role_name == 'UNIT MANAGER' ||
+                      User.role_name == 'REGIONAL MANAGER')
+                  ">
+                    <v-btn rounded @click="showUnverifModal(item)" color="warning" block>
                       <v-icon class="mr-1" small color="white">
                         mdi-undo
                       </v-icon>
@@ -3376,13 +2171,7 @@
                     </v-btn>
                   </v-list-item>
                   <v-list-item>
-                    <v-btn
-                      dark
-                      rounded
-                      @click="verifPetaniSusulan(item)"
-                      color="green"
-                      class="px-5"
-                    >
+                    <v-btn dark rounded @click="verifPetaniSusulan(item)" color="green" class="px-5">
                       <v-icon class="mr-1" small color="white">
                         mdi-plus-box-outline
                       </v-icon>
@@ -3390,16 +2179,8 @@
                     </v-btn>
                   </v-list-item>
                   <v-list-item>
-                    <v-btn
-                      dark
-                      rounded
-                      @click="showEditGIS(item)"
-                      color="green"
-                      :disabled="
-                        User.role_group != 'IT' && User.role_name != 'GIS STAFF'
-                      "
-                      class="px-5"
-                    >
+                    <v-btn dark rounded @click="showEditGIS(item)" color="green" :disabled="User.role_group != 'IT' && User.role_name != 'GIS STAFF'
+                      " class="px-5">
                       <v-icon class="mr-1" small color="white">
                         mdi-file-document-edit
                       </v-icon>
@@ -3430,14 +2211,7 @@
 
       <!-- Action table -->
       <template v-slot:item.actions="{ item }">
-        <v-menu
-          rounded="xl"
-          bottom
-          left
-          offset-y
-          transition="slide-y-transition"
-          :close-on-content-click="false"
-        >
+        <v-menu rounded="xl" bottom left offset-y transition="slide-y-transition" :close-on-content-click="false">
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" color="dark">
               mdi-arrow-down-drop-circle
@@ -3460,95 +2234,59 @@
                 Detail
               </v-btn>
             </v-list-item> -->
-            <v-list-item
-              v-if="
-                (RoleAccesCRUDShow == true &&
-                  item.validation != 1 &&
-                  (User.role_name == 'FIELD COORDINATOR' ||
-                    User.role_name == 'UNIT MANAGER' ||
-                    User.role_name == 'REGIONAL MANAGER')) ||
-                User.role_group == 'IT' ||
-                User.role_name == 'PLANNING MANAGER'
-              "
-            >
-              <v-btn
-                vi
-                dark
-                class="px-7"
-                rounded
-                @click="showEditDetailModal(item)"
-                color="warning"
-                block
-              >
+            <v-list-item v-if="
+              (RoleAccesCRUDShow == true &&
+                item.validation != 1 &&
+                (User.role_name == 'FIELD COORDINATOR' ||
+                  User.role_name == 'UNIT MANAGER' ||
+                  User.role_name == 'REGIONAL MANAGER')) ||
+              User.role_group == 'IT' ||
+              User.role_name == 'PLANNING MANAGER'
+            ">
+              <v-btn vi dark class="px-7" rounded @click="showEditDetailModal(item)" color="warning" block>
                 <v-icon class="mr-1" small color="white"> mdi-pencil </v-icon>
                 Edit
               </v-btn>
             </v-list-item>
             <!-- edit foto absen -->
-            <v-list-item
-              v-if="
-                (RoleAccesCRUDShow == true &&
-                  item.validation != 1 &&
-                  (User.role_name == 'FIELD COORDINATOR' ||
-                    User.role_name == 'UNIT MANAGER' ||
-                    User.role_name == 'REGIONAL MANAGER')) ||
-                User.role_group == 'IT' ||
-                User.role_name == 'PLANNING MANAGER'
-              "
-            >
-              <v-btn
-                vi
-                dark
-                class="px-7"
-                rounded
-                @click="showEditAbsensiModal(item)"
-                color="success"
-                block
-              >
+            <v-list-item v-if="
+              (RoleAccesCRUDShow == true &&
+                item.validation != 1 &&
+                (User.role_name == 'FIELD COORDINATOR' ||
+                  User.role_name == 'UNIT MANAGER' ||
+                  User.role_name == 'REGIONAL MANAGER')) ||
+              User.role_group == 'IT' ||
+              User.role_name == 'PLANNING MANAGER'
+            ">
+              <v-btn vi dark class="px-7" rounded @click="showEditAbsensiModal(item)" color="success" block>
                 <v-icon class="mr-1" small color="white"> mdi-pencil </v-icon>
                 Edit Foto Absensi
               </v-btn>
             </v-list-item>
             <!-- export data -->
-            <v-list-item
-              v-if="
-                (RoleAccesCRUDShow == true &&
-                  item.validation != 1 &&
-                  (User.role_name == 'UNIT MANAGER' ||
-                    User.role_name == 'PLANNING MANAGER')) ||
-                User.role_group == 'IT'
-              "
-            >
-              <v-btn
-                :disabled="
-                  !$store.state.User.role_group == 'IT' ||
-                  !User.role_name == 'UNIT MANAGER' ||
-                  !User.email == 'pandu@trees4trees.org'
-                "
-                dark
-                rounded
-                @click="showExportModal(item)"
-                color="blue"
-              >
+            <v-list-item v-if="
+              (RoleAccesCRUDShow == true &&
+                item.validation != 1 &&
+                (User.role_name == 'UNIT MANAGER' ||
+                  User.role_name == 'PLANNING MANAGER')) ||
+              User.role_group == 'IT'
+            ">
+              <v-btn :disabled="!$store.state.User.role_group == 'IT' ||
+                !User.role_name == 'UNIT MANAGER' ||
+                !User.email == 'pandu@trees4trees.org'
+                " dark rounded @click="showExportModal(item)" color="blue">
                 <v-icon class="mr-1" small>mdi-microsoft-excel</v-icon>
                 Export Data Sostam
               </v-btn>
             </v-list-item>
-            <v-list-item
-              v-if="
-                RoleAccesCRUDShow == true &&
-                item.validation == 1 &&
-                (User.role_group == 'IT' ||
-                  User.role_name == 'UNIT MANAGER' ||
-                  User.role_name == 'REGIONAL MANAGER')
-              "
-            >
-              <v-btn
-                rounded
-                @click="showUnverifModal(item)"
-                color="warning"
-                block
-              >
+            <v-list-item v-if="
+              RoleAccesCRUDShow == true &&
+              item.validation == 1 &&
+              (User.role_group == 'IT' ||
+                User.role_name == 'UNIT MANAGER' ||
+                User.role_name == 'REGIONAL MANAGER')
+            ">
+              <v-btn rounded @click="showUnverifModal(item)" color="warning" block>
                 <v-icon class="mr-1" small color="white"> mdi-undo </v-icon>
                 Unverifikasi
               </v-btn>
@@ -3585,19 +2323,12 @@
     </v-data-table>
 
     <!-- Snackbar -->
-    <v-snackbar
-      v-model="snackbar"
-      :color="colorsnackbar"
-      :timeout="timeoutsnackbar"
-      rounded="xl"
-    >
+    <v-snackbar v-model="snackbar" :color="colorsnackbar" :timeout="timeoutsnackbar" rounded="xl">
       <div class="d-flex justify-between">
         <p class="mb-0">
           {{ textsnackbar }}
         </p>
-        <v-icon small class="pl-1" @click="snackbar = false"
-          >mdi-close-circle</v-icon
-        >
+        <v-icon small class="pl-1" @click="snackbar = false">mdi-close-circle</v-icon>
       </div>
     </v-snackbar>
   </div>
@@ -4539,8 +3270,8 @@ export default {
       axios
         .get(
           this.BaseUrlGet +
-            "SeedTotalAdjustmentPerNursery?program_year=" +
-            this.program_year,
+          "SeedTotalAdjustmentPerNursery?program_year=" +
+          this.program_year,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -4720,6 +3451,11 @@ export default {
               absent: "",
               absent2: "",
             };
+            console.log('test', this.dataToStore);
+            
+
+            return
+
             if (this.dataToStore.absensi_photo) {
               const namafile =
                 this.options.ff.model +
@@ -4752,7 +3488,6 @@ export default {
               );
               dataToStore.absent2 = response.data.data.new_name;
             }
-            console.log(dataToStore);
 
             await this.setUnavailableDistributionDates();
 
@@ -4801,8 +3536,8 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetManagementUnit" +
-            `?program_year=${this.program_year}`,
+          "GetManagementUnit" +
+          `?program_year=${this.program_year}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -4833,9 +3568,9 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetTargetArea?mu_no=" +
-            valparam +
-            `&program_year=${this.program_year}`,
+          "GetTargetArea?mu_no=" +
+          valparam +
+          `&program_year=${this.program_year}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -4871,9 +3606,9 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetDesa?kode_ta=" +
-            valparam +
-            `&program_year=${this.program_year}`,
+          "GetDesa?kode_ta=" +
+          valparam +
+          `&program_year=${this.program_year}`,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -4978,8 +3713,8 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetDetailSosisalisasiTanam?form_no=" +
-            item.form_no,
+          "GetDetailSosisalisasiTanam?form_no=" +
+          item.form_no,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -5323,9 +4058,9 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetEmployeebyManager?manager_code=" +
-            valcodeum +
-            "&position=19",
+          "GetEmployeebyManager?manager_code=" +
+          valcodeum +
+          "&position=19",
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -5352,10 +4087,10 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetFFbyUMandFC?position=" +
-            position +
-            "&code=" +
-            valcode,
+          "GetFFbyUMandFC?position=" +
+          position +
+          "&code=" +
+          valcode,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -5627,8 +4362,8 @@ export default {
       try {
         const response = await axios.get(
           this.BaseUrlGet +
-            "GetFarmerAllAdmin?typegetdata=several&ff=" +
-            this.valueFFForm,
+          "GetFarmerAllAdmin?typegetdata=several&ff=" +
+          this.valueFFForm,
           {
             headers: {
               Authorization: `Bearer ` + this.authtoken,
@@ -5910,8 +4645,8 @@ export default {
       var str = this.BaseUrlGet;
       window.open(
         str.substring(0, str.length - 4) +
-          "CetakLabelSosTam?form_no=" +
-          item.form_no
+        "CetakLabelSosTam?form_no=" +
+        item.form_no
       );
     },
 
@@ -6186,18 +4921,18 @@ export default {
       var str = this.BaseUrlGet;
       window.open(
         str.substring(0, str.length - 4) +
-          "ExportSostamSuperAdmin?mu=021" +
-          this.valueMU +
-          "&ta=021010" +
-          this.valueTA +
-          "&village=" +
-          this.valueVillage +
-          "&typegetdata=" +
-          this.typegetdata +
-          "&ff=" +
-          this.valueFFcode +
-          "&program_year=" +
-          this.program_year
+        "ExportSostamSuperAdmin?mu=021" +
+        this.valueMU +
+        "&ta=021010" +
+        this.valueTA +
+        "&village=" +
+        this.valueVillage +
+        "&typegetdata=" +
+        this.typegetdata +
+        "&ff=" +
+        this.valueFFcode +
+        "&program_year=" +
+        this.program_year
       );
 
       // this.valueMUExcel = "";
@@ -6466,7 +5201,7 @@ export default {
       let getAvailableBibit = this.getAvailableBibit(
         listEditPohon,
         dataSostamEditPohon.max_seed_amount ||
-          this.getSeedCalculation(dataSostamEditPohon, "total_max_trees"),
+        this.getSeedCalculation(dataSostamEditPohon, "total_max_trees"),
         editPohon
       );
       let totalNow = {
@@ -6711,7 +5446,7 @@ export default {
         {
           // day: '1',
           month: "12",
-          year: "2023",
+          year: "2024",
           program_year: this.$store.state.programYear.model,
           /*program_year: '2022',*/
           nursery: ff_nursery,
@@ -6719,7 +5454,7 @@ export default {
         {
           // day: '1',
           month: "01",
-          year: "2024",
+          year: "2025",
           program_year: this.$store.state.programYear.model,
           /*program_year: '2022',*/
           nursery: ff_nursery,
@@ -6732,8 +5467,8 @@ export default {
           await axios
             .get(
               localStorage.getItem("BaseUrlGet") +
-                "DistributionCalendar?" +
-                params,
+              "DistributionCalendar?" +
+              params,
               {
                 headers: {
                   Authorization: `Bearer ` + localStorage.getItem("token"),

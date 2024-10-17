@@ -1,30 +1,20 @@
 <template>
-  <div
-    class="geko-base-crud"
-    :class="{
-      [config.class || '']: true,
-    }"
-  >
+  <div class="geko-base-crud" :class="{
+    [config.class || '']: true,
+  }">
     <div class="d-flex flex-row geko-base-crud-header">
-      <v-breadcrumbs
-        :dark="$store.state.theme == 'dark'"
-        class="breadcrumbsmain"
-        :items="[
-          {
-            text: 'Menu',
-            disabled: true,
-            href: 'breadcrumbs_dashboard',
-          },
-          {
-            text: `${config.title}`,
-            disabled: true,
-            href: 'breadcrumbs_link_1',
-          },
-        ]"
-        divider=">"
-        large
-        data-aos="fade-right"
-      ></v-breadcrumbs>
+      <v-breadcrumbs :dark="$store.state.theme == 'dark'" class="breadcrumbsmain" :items="[
+        {
+          text: 'Menu',
+          disabled: true,
+          href: 'breadcrumbs_dashboard',
+        },
+        {
+          text: `${config.title}`,
+          disabled: true,
+          href: 'breadcrumbs_link_1',
+        },
+      ]" divider=">" large data-aos="fade-right"></v-breadcrumbs>
 
       <!-- <div class="global-search">
         <input type="text" placeholder="Cari Modul" />
@@ -54,19 +44,10 @@
         </div>
       </div> -->
 
-      <div
-        class="global-filters d-flex flex-row"
-        v-if="config.globalFilter && activeView === 'list'"
-      >
-        <geko-select
-          v-if="config.globalFilter.project_purpose"
-          v-model="globalFilter.project_purpose"
-          @option:selected="
-            setGlobalFilter('project_purpose', $event.code, 'tmpProjectPurpose')
-          "
-          class="vs-style v-select-40 no-clear min-w-150px mr-3"
-          placeholder="Tujuan Project"
-          :reduce="(x) => x.code"
+      <div class="global-filters d-flex flex-row" v-if="config.globalFilter && activeView === 'list'">
+        <geko-select v-if="config.globalFilter.project_purpose" v-model="globalFilter.project_purpose" @option:selected="
+          setGlobalFilter('project_purpose', $event.code, 'tmpProjectPurpose')
+          " class="vs-style v-select-40 no-clear min-w-150px mr-3" placeholder="Tujuan Project" :reduce="(x) => x.code"
           :options="[
             {
               label: 'Semua',
@@ -81,14 +62,9 @@
               label: 'Non Carbon',
               code: 'non-carbon',
             },
-          ]"
-        />
-        <geko-select
-          v-if="config.globalFilter.program_year"
-          v-model="globalFilter.tmpProgramYear"
-          class="vs-style v-select-40 no-clear min-w-100px"
-          placeholder="Tahun"
-          :options="[
+          ]" />
+        <geko-select v-if="config.globalFilter.program_year" v-model="globalFilter.tmpProgramYear"
+          class="vs-style v-select-40 no-clear min-w-100px" placeholder="Tahun" :options="[
             {
               label: 'Semua',
               code: '',
@@ -113,11 +89,9 @@
               label: '2024',
               code: '2024',
             },
-          ]"
-          @option:selected="
+          ]" @option:selected="
             setGlobalFilter('program_year', $event.code, 'tmpProgramYear')
-          "
-        />
+            " />
       </div>
     </div>
 
@@ -125,28 +99,15 @@
 
     <!-- :items-per-page="perPage" -->
     <div class="geko-list" v-if="activeView === 'list' && !this.hideList">
-      <v-data-table
-        :headers="header"
-        hide-default-header
-        :items="data"
-        :search="''"
-        class="rounded-xl elevation-1 mx-3 pa-1"
-        data-aos="fade-up"
-        data-aos-delay="100"
-        data-aos-duration="800"
-        @update:page="onChangePage"
-        @update:items-per-page="($p) => (perPage = $p)"
-        :server-items-length="totalRecord"
-        :items-per-page="perPage"
-        :page="page"
-        :footer-props="{
+      <v-data-table :headers="header" hide-default-header :items="data" :search="''"
+        class="rounded-xl elevation-1 mx-3 pa-1" data-aos="fade-up" data-aos-delay="100" data-aos-duration="800"
+        @update:page="onChangePage" @update:items-per-page="($p) => (perPage = $p)" :server-items-length="totalRecord"
+        :items-per-page="perPage" :page="page" :footer-props="{
           itemsPerPageText: 'Jumlah Data Per Halaman',
           itemsPerPageOptions: [10, 25, 50, 100, 200],
           showCurrentPage: true,
           showFirstLastPage: true,
-        }"
-        :loading="loading"
-      >
+        }" :loading="loading" :show-expand="config.expandable || false" single-expand>
         <template v-slot:header="{ props: { headers } }">
           <thead>
             <tr>
@@ -179,114 +140,69 @@
                   ></v-text-field> -->
                   <div class="list-search-wrapper">
                     <v-icon class="prepend">mdi-magnify</v-icon>
-                    <input
-                      v-model="search"
-                      type="text"
-                      :placeholder="'Cari data ' + config.title.toLowerCase()"
-                    />
-                    <v-icon
-                      v-if="typeof search == 'string' && search.length > 0"
-                      @click="
-                        search = '';
-                        getListData();
-                      "
-                      class="append"
-                      >mdi-close</v-icon
-                    >
+                    <input v-model="search" type="text" :placeholder="'Cari data ' + config.title.toLowerCase()" />
+                    <v-icon v-if="typeof search == 'string' && search.length > 0" @click="
+                      search = '';
+                    getListData();
+                    " class="append">mdi-close</v-icon>
                   </div>
                 </form>
-                <button
-                  class="toolbar-button mr-2"
-                  v-if="
-                    Array.isArray(fields.filter) &&
-                    fields.filter.filter((x) => !x.main).length > 0
-                  "
-                  @click="filterOpen = !filterOpen"
-                  :class="{
-                    active: filterOpen,
-                  }"
-                >
+                <button class="toolbar-button mr-2" v-if="
+                  Array.isArray(fields.filter) &&
+                  fields.filter.filter((x) => !x.main).length > 0
+                " @click="filterOpen = !filterOpen" :class="{
+                  active: filterOpen,
+                }">
                   <v-icon>mdi-filter</v-icon>
                 </button>
                 <button class="toolbar-button mr-2" @click="onRefresh">
                   <v-icon>mdi-refresh</v-icon>
                 </button>
-                <button
-                  v-if="config.export"
-                  class="toolbar-button label mr-2"
-                  @click="onExportExcell()"
-                  style="background-color: #1b5e20"
-                >
+                <button v-if="config.export" class="toolbar-button label mr-2" @click="onExportExcell()"
+                  style="background-color: #1b5e20">
                   <v-icon style="color: white">mdi-microsoft-excel</v-icon>
                 </button>
-                <button
-                  v-if="config.export"
-                  class="toolbar-button label mr-2"
-                  @click="onExportPdf()"
-                  style="background-color: #ff0000"
-                >
+                <button v-if="config.export" class="toolbar-button label mr-2" @click="onExportPdf()"
+                  style="background-color: #ff0000">
                   <v-icon style="color: white">mdi-file-pdf-box</v-icon>
                 </button>
 
-                <geko-base-filter
-                  v-if="
-                    Array.isArray(fields.filter) &&
-                    fields.filter.filter((x) => x.main).length > 0
-                  "
-                  :fields="fields.filter.filter((x) => x.main)"
-                  :mainFilter="true"
-                  :open="true"
-                  :data="filters"
-                  @filter="onFilter($event)"
-                />
+                <geko-base-filter v-if="
+                  Array.isArray(fields.filter) &&
+                  fields.filter.filter((x) => x.main).length > 0
+                " :fields="fields.filter.filter((x) => x.main)" :mainFilter="true" :open="true" :data="filters"
+                  @filter="onFilter($event)" />
               </div>
               <slot name="list-before-create"> </slot>
-              <v-btn
-                v-if="!hideCreate && $_sys.isAllowed(config.permission.create)"
-                variant="success"
-                class="ml-4"
+              <v-btn v-if="!hideCreate && $_sys.isAllowed(config.permission.create)" variant="success" class="ml-4"
                 @click="
                   $router.push({
                     query: {
                       view: 'create',
                     },
                   })
-                "
-              >
+                  ">
                 <v-icon small>mdi-plus</v-icon>
                 <span class="ms-2">Tambah Data</span>
               </v-btn>
             </div>
             <slot name="list-after-filter"> </slot>
 
-            <geko-base-filter
-              v-if="
-                Array.isArray(fields.filter) &&
-                fields.filter.filter((x) => !x.main).length > 0
-              "
-              @close="filterOpen = false"
-              :open="filterOpen"
-              :fields="fields.filter.filter((x) => !x.main)"
-              @filter="onFilter($event)"
-            />
+            <geko-base-filter v-if="
+              Array.isArray(fields.filter) &&
+              fields.filter.filter((x) => !x.main).length > 0
+            " @close="filterOpen = false" :open="filterOpen" :fields="fields.filter.filter((x) => !x.main)"
+              @filter="onFilter($event)" />
 
             <div class="statistics" v-if="config.statistic && statistic">
-              <div
-                class="statistic-item"
-                v-if="Array.isArray(statistic)"
-                v-for="(stat, i) in statistic"
-                :class="{
-                  [stat.color]: true,
-                }"
-              >
+              <div class="statistic-item" v-if="Array.isArray(statistic)" v-for="(stat, i) in statistic" :class="{
+                [stat.color]: true,
+              }">
                 <v-icon>{{ stat.icon }}</v-icon>
                 <div class="statistic-data">
                   <p class="mb-0 label">{{ stat.label }}</p>
                   <p class="mb-0 value">
-                    <slot
-                      :name="'statistic-' + stat.key"
-                      v-bind:item="stat.data"
-                    >
+                    <slot :name="'statistic-' + stat.key" v-bind:item="stat.data">
                       <span>{{
                         [undefined, null, ""].includes(stat.value)
                           ? "-"
@@ -308,109 +224,78 @@
           {{ (page - 1) * perPage + index + 1 }}
         </template>
 
-        <template
-          v-for="f in fields.list.filter(
-            (x) => x.type === 'row-slot' || x.transform || x.class
-          )"
-          v-slot:[`item.${f.view_data}`]="{ item }"
-        >
-          <slot
-            v-if="f.type === 'row-slot'"
-            :name="'list-' + f.view_data"
-            v-bind:item="item"
-          ></slot>
+        <template v-for="f in fields.list.filter(
+          (x) => x.type === 'row-slot' || x.transform || x.class
+        )" v-slot:[`item.${f.view_data}`]="{ item }">
+          <slot v-if="f.type === 'row-slot'" :name="'list-' + f.view_data" v-bind:item="item"></slot>
 
-          <span
-            v-else
-            :class="{
-              [typeof f.class === 'string' ? `d-block ${f.class}` : '']: true,
-              [typeof f.class === 'object' && f.class !== null
-                ? `d-block ${f.class[item[f.view_data]]}`
-                : '']: true,
-            }"
-            >{{
-              item[f.view_data] | parse(f.transform ? f.transform : "no-empty")
-            }}</span
-          >
+          <span v-else :class="{
+            [typeof f.class === 'string' ? `d-block ${f.class}` : '']: true,
+            [typeof f.class === 'object' && f.class !== null
+              ? `d-block ${f.class[item[f.view_data]]}`
+              : '']: true,
+          }">{{
+            item[f.view_data] | parse(f.transform ? f.transform : "no-empty")
+          }}</span>
         </template>
 
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:expanded-item="{ headers, item }">
+          <slot name="list-expanded-item" v-bind:headers="headers" v-bind:item="item"></slot>
+
+        </template>
+
+        <template v-slot:item.actions="{ item }" v-if="!hideAction">
           <div class="geko-list-actions-wrapper d-flex flex-column">
             <div class="geko-list-actions">
-              <slot
-                name="list-action-detail"
-                v-bind:item="item"
-                v-if="$_sys.isAllowed(config.permission.detail)"
-              >
-                <button
-                  v-if="$_sys.isAllowed(config.permission.detail)"
-                  class="geko-list-action-view"
-                  @click="
-                    $router.push({
-                      name: $route.name,
-                      query: {
-                        view: 'detail',
-                        id: item.id,
-                        [config.detailIdKey ? config.detailIdKey : '']:
-                          item[config.detailIdKey],
-                      },
-                      params:
-                        (config.detail && config.detailParams) || !config.detail
-                          ? item
-                          : null,
-                    })
-                  "
-                >
+              <slot name="list-action-detail" v-bind:item="item" v-if="$_sys.isAllowed(config.permission.detail)">
+                <button v-if="$_sys.isAllowed(config.permission.detail)" class="geko-list-action-view" @click="
+                  $router.push({
+                    name: $route.name,
+                    query: {
+                      view: 'detail',
+                      id: item.id,
+                      [config.detailIdKey ? config.detailIdKey : '']:
+                        item[config.detailIdKey],
+                    },
+                    params:
+                      (config.detail && config.detailParams) || !config.detail
+                        ? item
+                        : null,
+                  })
+                  ">
                   <v-icon small>mdi-information-outline</v-icon>
                 </button>
               </slot>
 
-              <slot
-                name="list-action-update"
-                v-bind:item="item"
-                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update)"
-              >
-                <button
-                  class="geko-list-action-update"
-                  @click="
-                    $router.push({
-                      query: {
-                        view: 'update',
-                        id: item.id,
-                        [config.detailIdKey ? config.detailIdKey : '']:
-                          item[config.detailIdKey],
-                      },
+              <slot name="list-action-update" v-bind:item="item"
+                v-if="!hideUpdate && $_sys.isAllowed(config.permission.update)">
+                <button class="geko-list-action-update" @click="
+                  $router.push({
+                    query: {
+                      view: 'update',
+                      id: item.id,
+                      [config.detailIdKey ? config.detailIdKey : '']:
+                        item[config.detailIdKey],
+                    },
 
-                      params: item,
-                    })
-                  "
-                >
+                    params: item,
+                  })
+                  ">
                   <v-icon small>mdi-pencil-minus</v-icon>
                 </button>
               </slot>
-              <slot
-                name="geko-list-action-delete"
-                v-if="!hideDelete && $_sys.isAllowed(config.permission.delete)"
-              >
-                <button
-                  class="geko-list-action-delete"
-                  @click="onDelete(item)"
-                  v-if="config.delete"
-                >
+              <slot name="geko-list-action-delete" v-if="!hideDelete && $_sys.isAllowed(config.permission.delete)">
+                <button class="geko-list-action-delete" @click="onDelete(item)" v-if="config.delete">
                   <v-icon small>mdi-trash-can-outline</v-icon>
                 </button>
               </slot>
 
-              <button
-                class="geko-list-action-soft-delete"
-                @click="onDelete(item, config.deleteSoft.payload)"
-                v-if="
-                  ['4', '13'].includes($store.state.User.role) &&
-                  config.deleteSoft &&
-                  config.deleteSoft.payload &&
-                  $_sys.isAllowed(config.permission.delete)
-                "
-              >
+              <button class="geko-list-action-soft-delete" @click="onDelete(item, config.deleteSoft.payload)" v-if="
+                ['4', '13'].includes($store.state.User.role) &&
+                config.deleteSoft &&
+                config.deleteSoft.payload &&
+                $_sys.isAllowed(config.permission.delete)
+              ">
                 <v-icon small>mdi-eye-off-outline</v-icon>
               </button>
             </div>
@@ -423,56 +308,28 @@
       </v-data-table>
     </div>
 
-    <div
-      class="geko-form mx-4"
-      v-if="
-        ['create', 'update'].includes(activeView) &&
-        $_sys.isAllowed(config.permission[activeView])
-      "
-    >
-      <geko-base-form
-        :title="config.title"
-        :fields="activeView === 'create' ? fields.create : fields.update"
-        :setter="config.setter"
-        :setterExtPayload="config.setter_ext_payload"
-        :update="config.update"
-        :updateExtPayload="config.update_ext_payload"
-        :detail="config.detail"
-        :detailIdKey="config.detailIdKey"
-        :detailKey="config.detailKey"
-        @success="onCreateSuccess"
-        :sort="
-          config.formOption && Array.isArray(config.formOption.sort)
-            ? config.formOption.sort
-            : null
-        "
-        :formConfig="config.formConfig || {}"
-        :update_id_getter="config.update_id_getter || 'id'"
-        :update_id_setter="config.update_id_setter || 'id'"
-      >
-        <template
-          v-for="f in fields.create.filter((x) => x.type === 'row-slot')"
-          v-slot:[`create-${f.view_data}`]="{ formData, field, setFormData }"
-        >
-          <slot
-            :name="'create-' + f.view_data"
-            v-bind:formData="formData"
-            v-bind:field="field"
-            v-bind:setFormData="setFormData"
-          >
+    <div class="geko-form mx-4" v-if="
+      ['create', 'update'].includes(activeView) &&
+      $_sys.isAllowed(config.permission[activeView])
+    ">
+      <geko-base-form :title="config.title" :fields="activeView === 'create' ? fields.create : fields.update"
+        :setter="config.setter" :setterExtPayload="config.setter_ext_payload" :update="config.update"
+        :updateExtPayload="config.update_ext_payload" :detail="config.detail" :detailIdKey="config.detailIdKey"
+        :detailKey="config.detailKey" @success="onCreateSuccess" :sort="config.formOption && Array.isArray(config.formOption.sort)
+          ? config.formOption.sort
+          : null
+          " :formConfig="config.formConfig || {}" :update_id_getter="config.update_id_getter || 'id'"
+        :update_id_setter="config.update_id_setter || 'id'">
+        <template v-for="f in fields.create.filter((x) => x.type === 'row-slot')"
+          v-slot:[`create-${f.view_data}`]="{ formData, field, setFormData }">
+          <slot :name="'create-' + f.view_data" v-bind:formData="formData" v-bind:field="field"
+            v-bind:setFormData="setFormData">
           </slot>
         </template>
 
-        <template
-          v-for="f in fields.update.filter((x) => x.type === 'row-slot')"
-          v-slot:[`update-${f.view_data}`]="{ formData, field, setter }"
-        >
-          <slot
-            :name="'update-' + f.view_data"
-            v-bind:formData="formData"
-            v-bind:field="field"
-            v-bind:setter="setter"
-          >
+        <template v-for="f in fields.update.filter((x) => x.type === 'row-slot')"
+          v-slot:[`update-${f.view_data}`]="{ formData, field, setter }">
+          <slot :name="'update-' + f.view_data" v-bind:formData="formData" v-bind:field="field" v-bind:setter="setter">
           </slot>
         </template>
 
@@ -484,33 +341,20 @@
 
     <div class="geko-base-detail mx-4" v-else-if="activeView === 'detail'">
       <slot name="detail-row">
-        <geko-base-detail
-          :fields="fields.detail"
-          :api="config.detail || ''"
-          :title="config.title"
-          :idKey="config.detailIdKey || 'id'"
-          :dataKey="config.detailKey || ''"
-        >
+        <geko-base-detail :fields="fields.detail" :api="config.detail || ''" :title="config.title"
+          :idKey="config.detailIdKey || 'id'" :dataKey="config.detailKey || ''">
           <template v-slot:detail-body>
             <slot name="detail-body"></slot>
           </template>
 
-          <template
-            v-for="(f, i) in fields.detail.filter((x) => x.type === 'row-slot')"
-            v-slot:[`detail-row-${f.view_data}`]="{ item, response }"
-          >
-            <slot
-              :name="'detail-row-' + f.view_data"
-              v-bind:item="item"
-              v-bind:response="response"
-            >
+          <template v-for="(f, i) in fields.detail.filter((x) => x.type === 'row-slot')"
+            v-slot:[`detail-row-${f.view_data}`]="{ item, response }">
+            <slot :name="'detail-row-' + f.view_data" v-bind:item="item" v-bind:response="response">
             </slot>
           </template>
 
-          <template
-            v-for="(f, i) in fields.detail.filter((x) => x.type === 'slot')"
-            v-slot:[`detail-${f.view_data}`]="{ item }"
-          >
+          <template v-for="(f, i) in fields.detail.filter((x) => x.type === 'slot')"
+            v-slot:[`detail-${f.view_data}`]="{ item }">
             <slot :name="`detail-${f.view_data}`" v-bind:item="item"> </slot>
           </template>
 
@@ -519,19 +363,11 @@
           </template>
 
           <template v-slot:detail-body-after="{ item, response }">
-            <slot
-              name="detail-body-after"
-              v-bind:item="item"
-              v-bind:response="response"
-            ></slot>
+            <slot name="detail-body-after" v-bind:item="item" v-bind:response="response"></slot>
           </template>
 
           <template v-slot:detail-header-action="{ item, response }">
-            <slot
-              name="detail-header-action"
-              v-bind:item="item"
-              v-bind:response="response"
-            ></slot>
+            <slot name="detail-header-action" v-bind:item="item" v-bind:response="response"></slot>
           </template>
         </geko-base-detail>
       </slot>
@@ -553,6 +389,11 @@ export default {
       type: Object,
       required: true,
       default: {},
+    },
+    hideAction: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     hideCreate: {
       type: Boolean,
@@ -745,17 +586,21 @@ export default {
 
         if (this.config.listOption && this.config.listOption.noIndex) {
         } else {
-          _header.push({
-            text: "",
-            key: "actions",
-            value: "actions",
-            class: "sticky-left",
-            sortable: false,
-          });
+          if (!this.hideAction) {
+
+            _header.push({
+              text: "",
+              key: "actions",
+              value: "actions",
+              class: "sticky-left",
+              sortable: false,
+            });
+          }
           _header.push({
             text: "#",
             value: "index",
             key: "index",
+            class: this.hideAction ? 'sticky-left' : '',
             sortable: false,
           });
         }
@@ -787,8 +632,8 @@ export default {
           const _programYear = this.$store.state.tmpProgramYear
             ? this.$store.state.tmpProgramYear
             : localStorage.getItem("tmpProgramYear")
-            ? localStorage.getItem("tmpProgramYear")
-            : this.$_config.programYear.model;
+              ? localStorage.getItem("tmpProgramYear")
+              : this.$_config.programYear.model;
           this.$set(
             this.globalFilter,
             "program_year",
@@ -809,8 +654,8 @@ export default {
         label: item.methods[key].label
           ? item.methods[key].label
           : item.label
-          ? item.label
-          : item.id,
+            ? item.label
+            : item.id,
         header_class: item.methods[key].header_class || "",
         type: item.methods[key].type || "text",
         class: item.methods[key].class || "",
@@ -890,8 +735,12 @@ export default {
       // reqParams.page = this.page;
       // reqParams.per_page = this.perPage;
 
-      reqParams.limit = this.perPage;
-      reqParams.offset = (this.page - 1) * this.perPage;
+      reqParams[this.config.limitKey || 'limit'] = this.perPage;
+      reqParams[this.config.offsetKey || 'offset'] = (this.page - 1) * this.perPage;
+
+      if (this.config.offsetKey == 'page') {
+        reqParams[this.config.offsetKey] = this.page;
+      }
       window.scrollTo({
         top: 0,
         left: 0,
@@ -947,7 +796,11 @@ export default {
           this.statistic = statisticArray;
         }
       }
-      this.totalRecord = responseData.total;
+
+      this.totalRecord = this.config.totalDataKey ? this.processListData(responseData, this.config.totalDataKey) : responseData.total;
+
+
+
       this.loading = false;
     },
 

@@ -32,6 +32,7 @@ import { extend, ValidationProvider, ValidationObserver } from "vee-validate";
 import vSelect from "vue-select";
 import DatePicker from "vue2-datepicker";
 import "vue2-datepicker/index.css";
+import 'vue2-datepicker/locale/id';
 delete L.Icon.Default.prototype._getIconUrl;
 
 extend("phone", {

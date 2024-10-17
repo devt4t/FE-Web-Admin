@@ -1,0 +1,94 @@
+
+.distribution-calendar .mx-calendar.mx-calendar-panel-date {
+    width: 100% !important;
+}
+
+.distribution-calendar .mx-calendar.mx-calendar-panel-date,
+.distribution-calendar .mx-datepicker.mx-datepicker-inline {
+    height: 35em !important;
+}
+
+.distribution-calendar .mx-calendar.mx-calendar-panel-date {
+    padding: 0 !important;
+}
+
+.distribution-calendar .mx-calendar-content {
+    height: calc(35em - 50px) !important;
+}
+
+.distribution-calendar .mx-date-row .cell {
+    font-size: 1.5em;
+}
+
+.distribution-calendar .mx-table.mx-table-date th {
+    font-size: 1.2em;
+}
+
+.distribution-calendar .mx-calendar-header {
+    padding-inline: 1em;
+    height: 50px !important;
+    padding-top: .5em;
+    background-color: rgba(224, 224, 224, 0.514);
+}
+
+.distribution-calendar table thead {
+
+    background-color: rgba(224, 224, 224, 0.514);
+}
+
+.distribution-date {
+    background-color: #F3F6F9;
+    padding: 1em 2em;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.distribution-date i {
+    font-size: 2em !important;
+    color: #1F4F94 !important;
+}
+
+.distribution-date label {
+    font-size: 1em;
+    font-weight: 500;
+    color: #1F4F94;
+}
+
+.distribution-date .distribution-date-label {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #1F4F94;
+}
+
+
+.planting-soc-form {
+    .map-container {
+        border: 1px solid rgb(211, 211, 211);
+        border-radius: 12px;
+    }
+
+    .farmer-lahan {
+        th {
+            font-size: .9em;
+            color: gray;
+            font-weight: 500;
+        }
+
+        td {
+            .amount {
+                font-weight: bold;
+                padding-left: 5px;
+                font-size: 1.1em;
+            }
+            .v-input--checkbox, .v-input--selection-controls__ripple, .v-input__slot {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .v-messages  {
+                display: none;
+            }
+        }
+    }
+}

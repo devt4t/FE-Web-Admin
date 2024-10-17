@@ -1,15 +1,14 @@
 <template>
     <div>
-        <v-dialog v-model="showModalPickCoordinate"
-            content-class="rounded-xl mx-1"
-            max-width="700"
-            scrollable
-            persistent
-        >
+        <v-dialog v-model="showModalPickCoordinate" content-class="rounded-xl mx-1" max-width="700" scrollable
+            persistent>
             <v-card>
                 <v-card-title class="rounded-xl green darken-3 ma-1 pa-2">
-                    <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon color="grey darken-3">mdi-map-marker</v-icon></v-btn> Ambil Koordinat Lokasi Habitat</span>
-                    <v-icon color="white" class="ml-auto" @click="showModalPickCoordinate = false">mdi-close-circle</v-icon>
+                    <span class="white--text"><v-btn class="white dark--text mr-1" fab x-small><v-icon
+                                color="grey darken-3">mdi-map-marker</v-icon></v-btn> Ambil Koordinat Lokasi
+                        Habitat</span>
+                    <v-icon color="white" class="ml-auto"
+                        @click="showModalPickCoordinate = false">mdi-close-circle</v-icon>
                 </v-card-title>
                 <v-card-text class="pa-2">
                     <!-- map -->
@@ -17,35 +16,24 @@
                         <!-- loading overlay -->
                         <v-overlay v-if="maps.loading.show" absolute justify-center align-center class="rounded-xl">
                             <div class="d-flex flex-column align-center justify-center">
-                                <v-progress-circular
-                                    :size="80"
-                                    :width="7"
-                                    indeterminate
-                                    color="white"
-                                >
+                                <v-progress-circular :size="80" :width="7" indeterminate color="white">
                                 </v-progress-circular>
                                 <p class="mb-0 text-center mt-4">{{ maps.loading.text || 'Loading...' }}</p>
                             </div>
                         </v-overlay>
-                        <div id="mapboxPickCoordinateHabitatLocation" ref="mapbox-pick-coordinate-habitat-location" :key="`maps-pick-coordinat-habitat-location-${showModalPickCoordinate}`" style="height: 400px;width: 100%" class="rounded-xl overflow-hidden"></div>
+                        <div id="mapboxPickCoordinateHabitatLocation" ref="mapbox-pick-coordinate-habitat-location"
+                            :key="`maps-pick-coordinat-habitat-location-${showModalPickCoordinate}`"
+                            style="height: 400px;width: 100%" class="rounded-xl overflow-hidden"></div>
                     </div>
 
-                    <v-text-field
-                        color="green"
-                        dense
-                        outlined
-                        rounded
-                        :value="getLongLatData"
-                        :disabled="maps.loading.show"
-                        label="Koordinat Distribusi (Long, Lat)"
-                        :rules="[(v) => !!v || 'Field is required']"
-                        hide-details
-                        :readonly="false"
-                        class="mt-3"
-                    ></v-text-field>
+                    <v-text-field color="green" dense outlined rounded :value="getLongLatData"
+                        :disabled="maps.loading.show" label="Koordinat Distribusi (Long, Lat)"
+                        :rules="[(v) => !!v || 'Field is required']" hide-details :readonly="false"
+                        class="mt-3"></v-text-field>
                 </v-card-text>
                 <v-card-actions class="justify-center">
-                    <v-btn :disabled="this.maps.loading.show" rounded outlined color="green" @click="saveCoordinate()"><v-icon>mdi-map-marker-check</v-icon> Simpan Titik Lokasi</v-btn>
+                    <v-btn :disabled="this.maps.loading.show" rounded outlined color="green"
+                        @click="saveCoordinate()"><v-icon>mdi-map-marker-check</v-icon> Simpan Titik Lokasi</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -64,8 +52,8 @@ export default {
             default: null
         },
     },
-    data: () =>  ({
-        maps:{
+    data: () => ({
+        maps: {
             accessToken: '',
             attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a>',
             center: [113.921300, -0.789300],
@@ -89,14 +77,14 @@ export default {
                 show: false,
                 text: 'Loading...'
             },
-            location: {lng: '', lat: ''},
+            location: { lng: '', lat: '' },
             mapStyle: '',
             model: null,
             popup: {
                 model: false,
                 content: {
-                title: '',
-                description: ''
+                    title: '',
+                    description: ''
                 }
             },
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -117,14 +105,14 @@ export default {
                     const lat = existingData.split(', ')[1]
                     mapOptions.center = [lng, lat]
                 } else mapOptions.center = [113.921300, -0.789300]
-                
+
                 if (!mapboxgl.supported()) {
                     Swal.fire({
                         title: 'Warning!',
                         text: `Your browser does not support Mapbox GL.`,
                         icon: 'error',
                         confirmButtonColor: '#f44336',
-                    }) 
+                    })
                 } else {
                     let map = await new mapboxgl.Map({
                         container: 'mapboxPickCoordinateHabitatLocation', // container ID
@@ -145,7 +133,7 @@ export default {
                         showUserHeading: true
                     })
                     // Map on Load
-                    await map.on("load", async function() {
+                    await map.on("load", async function () {
                         // add fog
                         await map.setFog({
                             color: 'rgb(186, 210, 235)', // Lower atmosphere
@@ -167,13 +155,13 @@ export default {
                         await map.addControl(new mapboxgl.NavigationControl());
                         // Add geolocate control to the map.
                         await map.addControl(geolocate);
-                        mapOptions.location = {lng: mapOptions.center[0], lat: mapOptions.center[1]}
+                        mapOptions.location = { lng: mapOptions.center[0], lat: mapOptions.center[1] }
                         // set marker
                         const marker = new mapboxgl.Marker({
                             draggable: true
                         })
-                        .setLngLat(mapOptions.center)
-                        .addTo(map);
+                            .setLngLat(mapOptions.center)
+                            .addTo(map);
                         // Map on click
                         map.on('click', (e) => {
                             marker.setLngLat(e.lngLat)
@@ -187,14 +175,13 @@ export default {
                             // coordinates.style.display = 'block';
                             // coordinates.innerHTML = `Longitude: ${lngLat.lng}<br />Latitude: ${lngLat.lat}`;
                         }
-                        marker.on('drag', showMarkerLngLat);
                         // geolocate event
                         geolocate.on('trackuserlocationstart', () => {
                             mapOptions.loading.show = true
                             mapOptions.loading.text = 'Mencari lokasi anda...'
                         });
                         geolocate.on('geolocate', async function (currentPosition) {
-                            const lngLatCP = [currentPosition.coords.longitude, currentPosition.coords.latitude] 
+                            const lngLatCP = [currentPosition.coords.longitude, currentPosition.coords.latitude]
                             await marker.setLngLat(lngLatCP)
                             await showMarkerLngLat()
                             mapOptions.loading.show = false
@@ -207,16 +194,16 @@ export default {
                                 duration: 4 * 1000
                             })
                         }
-                        
+
                         mapOptions.loading.show = false
                     })
                 }
-            } catch (err) {console.log(err)} finally {
+            } catch (err) { console.log(err) } finally {
             }
         },
         async saveCoordinate() {
             const lngLat = this.maps.location
-            this.$emit('action', {type: 'save', name: 'pick_coordinate', data: this.data, coordinate: lngLat})
+            this.$emit('action', { type: 'save', name: 'pick_coordinate', data: this.data, coordinate: lngLat })
         }
     },
     computed: {
@@ -224,15 +211,15 @@ export default {
             get: function () {
                 if (this.show) {
                     this.maps.loading.show = true
-                    setTimeout(() => {        
+                    setTimeout(() => {
                         this.initializeMaps()
                     }, 200);
                 }
                 return this.show
             },
-            set: function(newVal) {
+            set: function (newVal) {
                 if (newVal) {
-                } else this.$emit('action', {type: 'close', name: 'pick_coordinate'})
+                } else this.$emit('action', { type: 'close', name: 'pick_coordinate' })
             }
         },
         getLongLatData() {

@@ -31,15 +31,15 @@
         item.project_data == 'No Project Found' ||
         true
       " class="geko-list-action-update" @click="
-          $router.push({
-            query: {
-              view: 'update',
-              id: item.id,
-            },
+        $router.push({
+          query: {
+            view: 'update',
+            id: item.id,
+          },
 
-            params: item,
-          })
-          ">
+          params: item,
+        })
+        ">
         <v-icon small>mdi-pencil-minus</v-icon>
       </button>
       <div v-else></div>
@@ -152,11 +152,18 @@
     </template>
 
     <template v-slot:list-potential_status="{ item }">
-      <div class="d-flex flex-row justify-content-center">
-        <span v-if="item.status == 'submit_review'" class="badge" :class="{
+      <div class="d-flex flex-row justify-content-center min-w-150px">
+        <span v-if="item.status == 'submit_review' && item.potential_status != 4" class="badge" :class="{
           'bg-success': item.potential_status == 1,
           'bg-danger': item.potential_status == 0,
+          'bg-info': item.potential_status == 2,
+          'bg-light': item.potential_status == 3,
         }">{{ item.potential_status | parse("status-potential") }}</span>
+
+        <span v-else-if="item.status === 'submit_review' && item.potential_status == 4">
+          <span class="badge bg-info">Potensial Carbon</span>
+          <span class="badge bg-light">Potensial Non Carbon</span>
+        </span>
 
         <span v-else>-</span>
       </div>

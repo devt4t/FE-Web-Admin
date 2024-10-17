@@ -8,42 +8,47 @@
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
               <v-row class="scooping-visit-gis-verification">
                 <v-col md="6">
-                  <geko-input
-                    v-model="potential_status"
-                    :item="{
-                      label: 'Status Potensial',
-                      validation: ['required'],
-                      type: 'select',
-                      option: {
-                        default_options: [
-                          {
-                            text: 'Berpotensi',
-                            value: 1,
-                          },
-                          {
-                            text: 'Tidak berpotensi',
-                            value: 0,
-                          },
-                        ],
-                        list_pointer: {
-                          code: 'value',
-                          label: 'text',
-                          display: ['text'],
+                  <geko-input v-model="potential_status" :item="{
+                    label: 'Status Potensial',
+                    validation: ['required'],
+                    type: 'select',
+                    option: {
+                      default_options: [
+                        // {
+                        //   text: 'Berpotensi',
+                        //   value: 1,
+                        // },
+                        // {
+                        //   text: 'Tidak berpotensi',
+                        //   value: 0,
+                        // },
+                        {
+                          text: 'Potensial Carbon',
+                          value: 2,
                         },
+                        {
+                          text: 'Potensial Non Carbon',
+                          value: 3,
+                        },
+                        {
+                          text: 'Potensial Carbon & Non Carbon',
+                          value: 4,
+                        },
+                      ],
+                      list_pointer: {
+                        code: 'value',
+                        label: 'text',
+                        display: ['text'],
                       },
-                    }"
-                  />
+                    },
+                  }" />
                 </v-col>
 
                 <v-col md="12" class="d-flex flex-row justify-content-end">
                   <v-btn variant="light" @click="isOpen = false" class="mr-2">
                     Batal
                   </v-btn>
-                  <v-btn
-                    type="submit"
-                    :disabled="loading || !ready"
-                    variant="success"
-                  >
+                  <v-btn type="submit" :disabled="loading || !ready" variant="success">
                     Verifikasi
                   </v-btn>
                 </v-col>
