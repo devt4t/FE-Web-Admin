@@ -83,11 +83,26 @@ Vue.filter("parse", (value, id) => {
     case "lowercase":
       if (!value) _value = value;
       _value = value.toLowerCase();
+    
+    case "potential-vilage":
+      if (value == 0) {
+        _value = "Tidak Potensial";
+      } else if (value === 1) {
+        _value = null;
+      } else if (value === 2) {
+        _value = "Potensial Carbon";
+      } else if (value === 3) {
+        _value = "Potensial Non-Carbon";
+      } else if (value === 4) {
+        _value = "Potensial Carbon & Non-Carbon";
+      }
+      break;
 
     default:
       _value = value;
       break;
   }
+
 
   return _value;
 });

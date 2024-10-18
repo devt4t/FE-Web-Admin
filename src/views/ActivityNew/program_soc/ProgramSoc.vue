@@ -178,6 +178,10 @@ export default {
 
     //refactored
     async onExportExcel(data) {
+
+      if (this.isExportingExcel) return;
+      this.isExportingExcel = true;
+
       this.$_alert.loading(
         "Sedang mengexport data",
         "Mohon tunggu sebentar, proses ini memerlukan waktu beberapa detik"
@@ -198,6 +202,7 @@ export default {
         );
 
         if (!dataList) {
+          this.isExportingExcel = false;
           this.$_alert.error(
             {},
             "Export Gagal",
@@ -216,6 +221,7 @@ export default {
         const { data: exported } = await axios(axiosConfig);
 
         if (!exported) {
+          this.isExportingExcel = false;
           this.$_alert.error({}, "Export Gagal");
           return;
         }
@@ -230,8 +236,10 @@ export default {
         link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
+        this.isExportingExcel = false;
         this.$_alert.success("Successfully");
       } catch (error) {
+        this.isExportingExcel = false;
         this.$_alert.error({}, "Export Gagal");
       }
     },
@@ -332,6 +340,7 @@ export default {
   data() {
     return {
       exportIds: [],
+      isExportingExcel: false,
       componentKey: 1,
       formatDate(date, format = "YYYY-MM-DD", dateFormat = "YYYY-MM-DD") {
         return moment(date, format).format("DD MMMM YYYY");

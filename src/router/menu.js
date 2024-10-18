@@ -377,7 +377,7 @@ const menu = [
       {
         title: "Provinsi",
         to: "/Provinsi",
-        component: "Utilities/Provinsi",
+        component: "Utilities/provinsi/ProvinsiV2",
         name: "Provinsi",
         permission: "Provinsi",
         icon: "mdi-map-marker",
@@ -385,7 +385,7 @@ const menu = [
       {
         title: "Kab/Kota",
         to: "/Kabupaten",
-        component: "Utilities/Kab",
+        component: "Utilities/kabupaten/KabupatenV2",
         name: "Kabupaten",
         permission: "Kabupaten",
         icon: "mdi-map-marker",
@@ -393,7 +393,7 @@ const menu = [
       {
         title: "Kecamatan",
         to: "/Kecamatan",
-        component: "Utilities/Kecamatan",
+        component: "Utilities/kecamatan/KecamatanV2",
         name: "Kecamatan",
         permission: "Kecamatan",
         icon: "mdi-map-marker",
@@ -401,7 +401,7 @@ const menu = [
       {
         title: "Village",
         to: "/Vilage",
-        component: "Utilities/Vilage",
+        component: "Utilities/vilage/VilageV2",
         name: "Vilage",
         permission: "Vilage",
         icon: "mdi-map-marker",
