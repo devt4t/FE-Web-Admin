@@ -1,26 +1,17 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :key="'scooping-visit-' + componentKey"
-    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')"
-    :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')"
-  >
+  <geko-base-crud :config="config" :key="'scooping-visit-' + componentKey"
+    :hideDelete="!$_sys.isAllowed('scooping-visit-delete')" :hideDeleteSoft="!$_sys.isAllowed('scooping-visit-delete')">
     <template v-slot:create-form>
       <scooping-visit-form />
     </template>
 
     <template v-slot:list-projects="{ item }">
       <div class="scooping-project-wrapper min-w-200px">
-        <div
-          v-if="item.project_data && item.project_data !== 'No Project Found'"
-        >
-          <ol
-            class="ml-0 pl-0"
-            :style="{
-              'list-style-type':
-                item.project_data.split(',').length > 1 ? 'auto' : 'none',
-            }"
-          >
+        <div v-if="item.project_data && item.project_data !== 'No Project Found'">
+          <ol class="ml-0 pl-0" :style="{
+            'list-style-type':
+              item.project_data.split(',').length > 1 ? 'auto' : 'none',
+          }">
             <li class="mb-0" v-for="data in item.project_data.split(',')">
               {{ data.split(";").length > 1 ? data.split(";")[1] : "-" }}
             </li>
@@ -34,25 +25,21 @@
     </template>
 
     <template v-slot:list-action-update="{ item }">
-      <button
-        v-if="
-          item.status == 'document_saving' ||
-          item.is_verify == 0 ||
-          item.project_data == 'No Project Found' ||
-          true
-        "
-        class="geko-list-action-update"
-        @click="
-          $router.push({
-            query: {
-              view: 'update',
-              id: item.id,
-            },
+      <button v-if="
+        item.status == 'document_saving' ||
+        item.is_verify == 0 ||
+        item.project_data == 'No Project Found' ||
+        true
+      " class="geko-list-action-update" @click="
+        $router.push({
+          query: {
+            view: 'update',
+            id: item.id,
+          },
 
-            params: item,
-          })
-        "
-      >
+          params: item,
+        })
+        ">
         <v-icon small>mdi-pencil-minus</v-icon>
       </button>
       <div v-else></div>
@@ -89,12 +76,9 @@
       <div class="d-flex flex-col align-items-center min-w-300px" v-if="false">
         <ol>
           <li>
-            <div
-              class="d-flex flex-row pb-2"
-              :class="{
-                'border-dotted-bottom': true,
-              }"
-            >
+            <div class="d-flex flex-row pb-2" :class="{
+              'border-dotted-bottom': true,
+            }">
               <h5 class="font-weight-400 mb-0 text-09-em">
                 Project Pembangunan Masjid
               </h5>
@@ -113,113 +97,83 @@
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          class="indicator"
-          :class="{
-            warning:
-              item.status == 'document_saving' &&
-              item.is_verify == 0 &&
-              item.project_data !== 'No Project Found',
-            info:
-              item.status == 'document_saving' &&
-              item.is_verify == 1 &&
-              item.project_data !== 'No Project Found',
-            primary:
-              item.status == 'ready_to_submit' &&
-              item.project_data !== 'No Project Found',
-            success:
-              item.status == 'submit_review' &&
-              item.project_data !== 'No Project Found' &&
-              !['2022-05-05 00:00:00'].includes(item.created_at),
-            danger:
-              item.project_data == 'No Project Found' ||
-              ['2022-05-05 00:00:00'].includes(item.created_at),
-          }"
-        ></div>
+        <div class="indicator" :class="{
+          warning:
+            item.status == 'document_saving' &&
+            item.is_verify == 0 &&
+            item.project_data !== 'No Project Found',
+          info:
+            item.status == 'document_saving' &&
+            item.is_verify == 1 &&
+            item.project_data !== 'No Project Found',
+          primary:
+            item.status == 'ready_to_submit' &&
+            item.project_data !== 'No Project Found',
+          success:
+            item.status == 'submit_review' &&
+            item.project_data !== 'No Project Found' &&
+            !['2022-05-05 00:00:00'].includes(item.created_at),
+          danger:
+            item.project_data == 'No Project Found' ||
+            ['2022-05-05 00:00:00'].includes(item.created_at),
+        }"></div>
       </div>
     </template>
 
     <template v-slot:list-status="{ item }">
       <div class="d-flex flex-row min-w-150px" style="justify-content: center">
-        <span
-          class="badge"
-          :class="{
-            'bg-warning':
-              item.status == 'document_saving' &&
-              item.is_verify == 0 &&
-              item.project_data != 'No Project Found',
-            'bg-info':
-              item.status == 'document_saving' &&
-              item.is_verify == 1 &&
-              item.project_data != 'No Project Found',
-            'bg-primary':
-              item.status == 'ready_to_submit' &&
-              item.project_data != 'No Project Found',
-            'bg-success':
-              item.status == 'submit_review' &&
-              item.project_data != 'No Project Found',
-            'bg-danger':
-              item.project_data == 'No Project Found' ||
-              ['2022-05-05 00:00:00'].includes(item.created_at),
-          }"
-        >
-          <span v-if="['2022-05-05 00:00:00'].includes(item.created_at)"
-            >Data belum lengkap</span
-          >
-          <span v-else-if="item.project_data == 'No Project Found'"
-            >Belum Assign Project</span
-          >
-          <span
-            v-else-if="item.status == 'document_saving' && item.is_verify == 0"
-            >Pending</span
-          >
-          <span
-            v-else-if="item.status == 'document_saving' && item.is_verify == 1"
-            >GIS Review</span
-          >
-          <span v-else-if="item.status == 'ready_to_submit'"
-            >GIS Terverifikasi</span
-          >
+        <span class="badge" :class="{
+          'bg-warning':
+            item.status == 'document_saving' &&
+            item.is_verify == 0 &&
+            item.project_data != 'No Project Found',
+          'bg-info':
+            item.status == 'document_saving' &&
+            item.is_verify == 1 &&
+            item.project_data != 'No Project Found',
+          'bg-primary':
+            item.status == 'ready_to_submit' &&
+            item.project_data != 'No Project Found',
+          'bg-success':
+            item.status == 'submit_review' &&
+            item.project_data != 'No Project Found',
+          'bg-danger':
+            item.project_data == 'No Project Found' ||
+            ['2022-05-05 00:00:00'].includes(item.created_at),
+        }">
+          <span v-if="['2022-05-05 00:00:00'].includes(item.created_at)">Data belum lengkap</span>
+          <span v-else-if="item.project_data == 'No Project Found'">Belum Assign Project</span>
+          <span v-else-if="item.status == 'document_saving' && item.is_verify == 0">Pending</span>
+          <span v-else-if="item.status == 'document_saving' && item.is_verify == 1">GIS Review</span>
+          <span v-else-if="item.status == 'ready_to_submit'">GIS Terverifikasi</span>
           <span v-else-if="item.status == 'submit_review'">Terverifikasi</span>
         </span>
       </div>
     </template>
 
     <template v-slot:list-potential_status="{ item }">
-      <div class="d-flex flex-row justify-content-center">
-        <span
-          v-if="item.status == 'submit_review'"
-          class="badge"
-          :class="{
-            'bg-success': item.potential_status == 1,
-            'bg-danger': item.potential_status == 0,
-          }"
-          >{{ item.potential_status | parse("status-potential") }}</span
-        >
+      <div class="d-flex flex-row justify-content-center min-w-150px">
+        <span v-if="item.status == 'submit_review' && item.potential_status != 4" class="badge" :class="{
+          'bg-success': item.potential_status == 1,
+          'bg-danger': item.potential_status == 0,
+          'bg-info': item.potential_status == 2,
+          'bg-light': item.potential_status == 3,
+        }">{{ item.potential_status | parse("status-potential") }}</span>
+
+        <span v-else-if="item.status === 'submit_review' && item.potential_status == 4">
+          <span class="badge bg-info">Potensial Carbon</span>
+          <span class="badge bg-light">Potensial Non Carbon</span>
+        </span>
 
         <span v-else>-</span>
       </div>
     </template>
 
     <template v-slot:list-bottom-action="{ item }">
-      <v-btn
-        small
-        @click="onExport(item)"
-        variant="primary"
-        class="mt-1"
-        v-if="item.status == 'submit_review'"
-      >
-        <v-icon small v-if="!exportIds.includes(item.id)"
-          >mdi-microsoft-word</v-icon
-        >
+      <v-btn small @click="onExport(item)" variant="primary" class="mt-1" v-if="item.status == 'submit_review'">
+        <v-icon small v-if="!exportIds.includes(item.id)">mdi-microsoft-word</v-icon>
 
-        <v-progress-circular
-          v-else
-          color="primary"
-          :size="15"
-          :width="2"
-          indeterminate
-        ></v-progress-circular>
+        <v-progress-circular v-else color="primary" :size="15" :width="2" indeterminate></v-progress-circular>
         <span class="text-09-em ml-2">Export</span>
       </v-btn>
     </template>
@@ -556,6 +510,8 @@ export default {
                 class: {
                   0: "badge bg-danger",
                   1: "badge bg-success",
+                  2: 'badge bg-info',
+                  3: 'badge bg-light',
                 },
                 transform: "status-potential",
               },

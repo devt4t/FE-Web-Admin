@@ -48,6 +48,7 @@ export default {
       });
     },
     'formData.project_id'(v) {
+      
       if (!this.ready) return;
       for (const project_id of this.existingProjectIds) {
 
@@ -57,6 +58,8 @@ export default {
           
         }
       }
+
+      
       
     }
 
@@ -136,6 +139,7 @@ export default {
         ["next_event_contact_person", "next_event_contact_person"],
         ["ff_candidate", "ff_candidate"],
         ["field_companion_potency", "field_companion_potency"],
+        ["potential_status", "potential_status"],
       ];
 
       for (const key of keys) {
@@ -170,7 +174,7 @@ export default {
         this.existingProjectIds.push(d.projects_id);
         existingProject.push({
           project_name: `${d.projects_project_name} - ${d.scooping_id}`,
-          code: d.projects_id,
+          id: d.projects_id,
         });
       }
 
@@ -192,13 +196,12 @@ export default {
       
       this.projects = _projects
 
-      console.log("PROJECTS", this.projects);
-      console.log('EXISTING PROJECTS', this.existingProjectIds);
       
       
-      this.$set(this.formData, "project_id", this.existingProjectIds);
+      this.$set(this.formData, "project_id", existingProject);
       this.$set(this.formData, "village_persons", figures.data);
       this.$set(this.formData, "ff_candidates", resFf.data);
+      console.log('EXISTING PROJECTS', existingProject);
       this.ready = true;
     },
     onSubmit() {
@@ -249,7 +252,9 @@ export default {
         general_land_condition: this.formData.general_land_condition,
         field_companion_potency: this.formData.field_companion_potency,
         ff_candidate: this.formData.ff_candidate,
+        potential_status: this.formData.potential_status
       };
+      
 
       const keyJoins = [
         "land_type",
@@ -279,6 +284,8 @@ export default {
         payload.current_id = this.$route.query.id;
         payload.data_no = this.formData.data_no;
       }
+
+      
       this.$_api
         .post(endpoint, payload)
         .then(async (res) => {
@@ -287,10 +294,30 @@ export default {
           }
 
           if (!this.isCreate) {
-            for (const project_id of this.deletedProjectIds) {
-              await this.deleteProject(project_id);
+            for (const project_id of this.existingProjectIds) {
+              const _projectId = typeof project_id === 'object' ? project_id.id : project_id;
+
+              //need review
+              var projectFound = false
+              for (const item of this.formData.project_id) {
+                if (typeof item === 'object') {
+                  if (item.id === _projectId) {
+                    projectFound = true;
+                    break;
+                  }
+                } else {
+                  if (item === _projectId) {
+                    projectFound = true;
+                    break;
+                  }
+                }
+              }
+              if (!projectFound) {
+                await this.deleteProject(project_id);
+              }
             }
           }
+          
           this.submitProject(res);
           this.submitOtherNgo(res);
           this.submitFfCandidate(res);
@@ -318,7 +345,7 @@ export default {
     deleteProject(projectId) {
       return new Promise(async(resolve) => {
         const projectPayload = {
-          data_no: this.formData.data_no,
+          scooping_id: this.$route.query.id,
           project_id: parseInt(projectId),
           delete_type: 'hard_delete'
         };
@@ -335,19 +362,17 @@ export default {
       })
     },
 
-    submitProject(res = {}) {
+    async submitProject(res = {}) {
       for (let _project of this.formData.project_id) {
         const _projectId =
-          typeof _project === "object" ? _project.code : _project;
+          typeof _project === "object" ? _project.id : _project;
+
         const isCreate = !this.existingProjectIds.includes(_projectId);
+        
+
         if (!isCreate){
           continue;
         };
-
-        if (this.deletedProjectIds.includes(_projectId)) {
-          //delete project here
-        
-        }
 
         const projectPayload = {
           data_no: isCreate ? res.kode_scooping : this.formData.data_no,

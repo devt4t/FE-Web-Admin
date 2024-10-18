@@ -148,6 +148,13 @@
         .value {
           width: 60%;
           font-size: 0.95em;
+          position: relative;
+
+          &:not(:has(.value)):before {
+            content: ':';
+            left: -7px;
+            position: absolute;
+          }
         }
         .qrcode img {
           width: 80%;

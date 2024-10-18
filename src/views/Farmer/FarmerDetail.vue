@@ -34,7 +34,12 @@
             <div class="farmer-info-text d-flex flex-column">
               <div class="farmer-info-list">
                 <v-icon>mdi-account-badge-outline</v-icon>
-                <span>{{ mainData.name }}</span>
+                <span
+                  >{{ mainData.name }}
+                  <span v-if="mainData.nickname"
+                    >({{ mainData.nickname }})</span
+                  ></span
+                >
               </div>
 
               <div class="farmer-info-list">
@@ -241,25 +246,6 @@ export default {
     FarmerDetailWorkingArea,
   },
   methods: {
-    // getAddress() {
-    //   if (!this.mainData.id) return;
-
-    //   let locationArr = [];
-
-    //   if (this.mainData.address) locationArr.push(this.mainData.address);
-    //   if (this.mainData.desas_name) locationArr.push(this.mainData.desas_name);
-    //   if (this.mainData.kecamatans_name)
-    //     locationArr.push(this.mainData.kecamatans_name);
-    //   if (this.mainData.kabupatens_name)
-    //     locationArr.push(this.mainData.kabupatens_name);
-    //   if (this.mainData.provinces_name)
-    //     locationArr.push(this.mainData.provinces_name);
-    //   if (this.mainData.desas_post_code)
-    //     locationArr.push(this.mainData.desas_post_code);
-    //   if (locationArr.length == 0) return "-";
-
-    //   return locationArr.map((x) => x.toLowerCase()).join(", ");
-    // },
 
     //refactored code
     getAddress() {
@@ -279,15 +265,6 @@ export default {
 
       return filteredLocationArr.map((x) => x.toLowerCase()).join(", ");
     },
-
-    // avatarHelper(name) {
-    //   if (typeof name !== "string") return;
-    //   if (name.split(" ").length > 1) {
-    //     return name.split(" ")[0].charAt(0) + name.split(" ")[1].charAt(0);
-    //   } else if (name.split(" ").length > 0) {
-    //     return `${name.charAt(0)}${name.charAt(1)}`;
-    //   }
-    // },
 
     //refactored
     avatarHelper(name) {
@@ -383,161 +360,9 @@ export default {
           }
         });
     },
-
-    // onVerification() {
-    //   if (this.mainData.approve == 1) {
-    //     this.$_alert
-    //       .confirm(
-    //         "Unverifikasi Petani",
-    //         "Apakah anda yakin ingin unverifikasi data petani?",
-    //         "Ya, Unverifikasi",
-    //         "Batal",
-    //         true
-    //       )
-    //       .then((res) => {
-    //         if (res.isConfirmed) {
-    //           //unverif
-    //           this.$_api
-    //             .post("updateFarmerApproval", {
-    //               current_id: this.$route.query.id,
-    //             })
-    //             .then(() => {
-    //               this.$_alert.success("Data petani berhasil di unverifikasi");
-    //               this.getData();
-    //             });
-    //         }
-    //       });
-    //   } else {
-    //     this.$_alert
-    //       .confirm(
-    //         "Verifikasi Petani",
-    //         "Apakah anda yakin ingin verifikasi data petani?",
-    //         "Ya, Verifikasi",
-    //         "Batal",
-    //         false
-    //       )
-    //       .then((res) => {
-    //         if (res.isConfirmed) {
-    //           //verif
-    //           this.$_api
-    //             .post("updateFarmerApproval", {
-    //               current_id: this.$route.query.id,
-    //             })
-    //             .then(() => {
-    //               this.getData();
-    //               this.$_alert.success("Data petani berhasil di verifikasi");
-    //             });
-    //         }
-    //       });
-    //   }
-    // },
   },
-  // mounted() {
-  //   if (this.$store.state.tmpProgramYear == this.$_config.programYear.model) {
-  //     this.fieldSide[1].items = [
-  //       {
-  //         label: "Penghasilan Pertanian Tahunan",
-  //         view_data: "avg_farming_income_yearly",
-  //       },
-  //       {
-  //         label: "Penghasilan Perikanan Tahunan",
-  //         view_data: "avg_fishery_income_yearly",
-  //       },
-  //       {
-  //         label: "Pengeluaran Makan Bulanan",
-  //         view_data: "avg_food_outcome_monthly",
-  //       },
-  //       {
-  //         label: "Pendapatan Bulanan",
-  //         view_data: "avg_income_permonth",
-  //       },
-  //       {
-  //         label: "Pendapatan Pariwisata",
-  //         view_data: "avg_nature_tourism_yearly",
-  //       },
-  //       {
-  //         label: "Pendapatan Usaha Kayu",
-  //         view_data: "avg_wood_bussines_income_yearly",
-  //       },
-  //       {
-  //         label: "Pendapatan Usaha Lainnya",
-  //         view_data: "avg_other_source_income_yearly",
-  //       },
-  //     ];
-  //   } else {
-  //     this.fieldSide[1].items = [
-  //       {
-  //         label: "Pekerjaan Utama",
-  //         view_data: "main_job",
-  //       },
-  //       {
-  //         label: "Penghasilan Utama",
-  //         view_data: "main_income",
-  //         transform: "idr",
-  //       },
-  //       {
-  //         label: "Pekerjaan Sampingan",
-  //         view_data: "side_job",
-  //       },
-  //       {
-  //         label: "Penghasilan Sampingan",
-  //         view_data: "side_income",
-  //         transform: "idr",
-  //       },
-  //     ];
-  //   }
-
-  //   this.fieldSide = this.fieldSide;
-  //   this.getData();
-  // },
-
   //refactored
   mounted() {
-    const items =
-      this.$store.state.tmpProgramYear == this.$_config.programYear.model
-        ? [
-            {
-              label: "Penghasilan Pertanian Tahunan",
-              view_data: "avg_farming_income_yearly",
-            },
-            {
-              label: "Penghasilan Perikanan Tahunan",
-              view_data: "avg_fishery_income_yearly",
-            },
-            {
-              label: "Pengeluaran Makan Bulanan",
-              view_data: "avg_food_outcome_monthly",
-            },
-            { label: "Pendapatan Bulanan", view_data: "avg_income_permonth" },
-            {
-              label: "Pendapatan Pariwisata",
-              view_data: "avg_nature_tourism_yearly",
-            },
-            {
-              label: "Pendapatan Usaha Kayu",
-              view_data: "avg_wood_bussines_income_yearly",
-            },
-            {
-              label: "Pendapatan Usaha Lainnya",
-              view_data: "avg_other_source_income_yearly",
-            },
-          ]
-        : [
-            { label: "Pekerjaan Utama", view_data: "main_job" },
-            {
-              label: "Penghasilan Utama",
-              view_data: "main_income",
-              transform: "idr",
-            },
-            { label: "Pekerjaan Sampingan", view_data: "side_job" },
-            {
-              label: "Penghasilan Sampingan",
-              view_data: "side_income",
-              transform: "idr",
-            },
-          ];
-
-    this.$set(this.fieldSide, 1, { items });
     this.getData();
   },
 
@@ -579,6 +404,18 @@ export default {
                 0: "Belum Diverifikasi",
               },
               view_data: "approve",
+            },
+            {
+              label: "Status Carbon",
+              class: {
+                1: "badge bg-info",
+                0: "badge bg-light",
+              },
+              value: {
+                1: "Carbon",
+                0: "Non Carbon",
+              },
+              view_data: "farmer_carbon_status",
             },
             {
               label: "Kelengkapan Data",
@@ -627,14 +464,70 @@ export default {
 
         {
           label: "Pekerjaan & Pendapatan",
-          items: [],
+          items: [
+            {
+              label: "Jumlah Lahan yang Dimiliki",
+              view_data: "total_land_owned",
+            },
+            {
+              label:
+                "Apakah dalam pekerjaan Petani di lahan dibantu suami/istri?",
+              view_data: "is_farmer_partner_helping",
+            },
+            { label: "Pekerjaan Utama", view_data: "main_job" },
+            {
+              label: "Penghasilan Utama",
+              view_data: "main_income",
+              transform: "idr",
+            },
+            { label: "Pekerjaan Sampingan", view_data: "side_job" },
+            {
+              label: "Penghasilan Sampingan",
+              view_data: "side_income",
+              transform: "idr",
+            },
+            {
+              label: "Penghasilan Pertanian Tahunan",
+              view_data: "avg_farming_income_yearly",
+            },
+            {
+              label: "Penghasilan Perikanan Tahunan",
+              view_data: "avg_fishery_income_yearly",
+            },
+            {
+              label: "Pengeluaran Makan Bulanan",
+              view_data: "avg_food_outcome_monthly",
+            },
+            { label: "Pendapatan Bulanan", view_data: "avg_income_permonth" },
+            {
+              label: "Pendapatan Pariwisata",
+              view_data: "avg_nature_tourism_yearly",
+            },
+            {
+              label: "Pendapatan Usaha Kayu",
+              view_data: "avg_wood_bussines_income_yearly",
+            },
+            {
+              label: "Pendapatan Usaha Lainnya",
+              view_data: "avg_other_source_income_yearly",
+            },
+          ],
         },
         {
           label: "Data Lainnya",
           items: [
             {
+              label: "Group",
+              view_data: "group_no",
+            },
+            {
               label: "Tanggal Lahir",
               view_data: "birthday",
+            },
+            {
+              label: "Jenis Kelamin",
+              view_data: "gender",
+              transform: "gender",
             },
             {
               label: "Foto KTP",
@@ -695,6 +588,16 @@ export default {
             {
               label: "Jumlah Anggota Keluarga",
               view_data: "number_family_member",
+            },
+            {
+              label: "Tanggal Dibuat",
+              view_data: "created_at",
+              transform: "datetime",
+            },
+            {
+              label: "Terakhir Diperbarui",
+              view_data: "updated_at",
+              transform: "datetime",
             },
           ],
         },

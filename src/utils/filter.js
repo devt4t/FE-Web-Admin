@@ -43,7 +43,19 @@ Vue.filter("parse", (value, id) => {
       break;
 
     case "status-potential":
-      _value = value === 0 ? "Tidak Potensial" : "Potensial";
+      if (value === 0) {
+        _value = "Tidak Potensial";
+      }
+      if (value === 1) {
+        _value = "Potensial";
+      }
+      if (value === 2) {
+        _value = "Potensial Carbon";
+      }
+      if (value === 3) {
+        _value = "Potensial Non Carbon";
+      }
+      
       break;
 
     case "status-verification":

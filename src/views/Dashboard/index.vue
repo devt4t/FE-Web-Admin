@@ -308,7 +308,7 @@ export default {
   data: () => ({
     config: {
       permission: {
-        read: "template-allow-all",
+        read: "dashboard-list",
       },
     },
     dialogs: {
@@ -630,7 +630,6 @@ export default {
   async mounted() {
     this.User = this.$store.state.User;
     this.options.programYear = this.$store.state.programYear.model;
-    // console.log(this.User)
     if (this.User.ff.ff.length > 0) this.options.mu_no.show = false;
     await this.dateTimeNow();
     await this.initialize();

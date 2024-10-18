@@ -14,7 +14,7 @@ env.interceptors.request.use(
     }
 
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers["Authorization"] =  `Bearer ${token}`;
     }
     return config;
   },
@@ -105,6 +105,9 @@ const _service = {
   },
 
   upload(endPoint, file) {
+
+    
+    
     const data = this.generateFormData(file);
 
     return axios
@@ -115,6 +118,19 @@ const _service = {
       })
       .then((response) => {
         return `${response.data.data.new_name}`;
+      })
+      .catch((err) => {
+        throw err.response;
+      });
+  },
+
+  getNursery(endPoint, params = {}) {
+    return axios
+      .get(`https://backend.t4t-api.org/api/${endPoint}`, { params, headers: {
+        'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvYmFja2VuZC50NHQtYXBpLm9yZ1wvYXBpXC9sb2dpbiIsImlhdCI6MTcyOTA2MjE1NCwiZXhwIjoxNzYwMTY2MTU0LCJuYmYiOjE3MjkwNjIxNTQsImp0aSI6Ijl1NTdZTGlvSk9udnhOMEYiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.aWrD_gO2M5A-66XTpMb5itDwQx-tEBsW2oeUx7h-32k`
+      } })
+      .then((response) => {
+        return response.data;
       })
       .catch((err) => {
         throw err.response;
