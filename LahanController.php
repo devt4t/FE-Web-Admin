@@ -32,6 +32,99 @@ use App\LahanFFDevice;
 class LahanController extends Controller
 {
     // NEW GEKO
+    
+    public function Lahan2Find(Request $request)
+    {
+
+        $req = $request->all();
+        $searchValue = $request->search_value;
+        
+        $selectable = [
+            'A.key1 AS farmer_no',
+            'A.program_year',
+            'B.id',
+            'B.lahan_no',
+            'B.latitude',
+            'B.longitude',
+            'B.gis_polygon_area',
+            'B.gis_planting_area',
+            'B.photo1',
+            'B.photo2',
+            'B.photo3',
+            'B.photo4',
+            'C.name as farmer_name'
+        ];
+
+        $searchable = ['B.lahan_no'];
+        $searchs = [];
+
+        if ($searchValue) {
+            foreach ($searchable as $value) {
+                $searchs[] = $value . " LIKE '%" . $searchValue . "%'";
+            }
+        }
+        $filterable = [
+            "A.type = 'farmer_lahan'",
+            "A.program_year LIKE '%2024%'",
+            "LOWER(B.updated_gis) = 'sudah'"
+        ];
+        
+
+        $sortable = [];
+        $tableName = "lahans";
+        $tableAlias = "A";
+
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $field = [
+            '*'
+        ];
+
+        $group_concat = [];
+
+        $relation = [];
+        $condition = [];
+        $user_id = [];
+
+        
+
+        $sql = "
+        SELECT
+            " . implode(',', $selectable) . "
+        FROM main_pivots as A
+        INNER JOIN lahans AS B ON B.lahan_no = A.key2
+        INNER JOIN farmers AS C ON C.farmer_no = A.key1
+        WHERE " . implode(' AND ', $filterable) . "
+        " . (count($searchs) > 0 ? "AND (" . implode(', ', $searchs) . ")" : "") . "
+        ORDER BY B.id DESC
+        LIMIT " . $limit . " OFFSET " . $offset;
+
+
+
+        $result = DB::select($sql);
+
+        $sqlRecord = "
+            SELECT COUNT(1) AS count FROM main_pivots as A
+            INNER JOIN lahans AS B ON B.lahan_no = A.key2
+            WHERE " . implode(' AND ', $filterable) . "" . (count($searchs) > 0 ? "AND (" . implode(', ', $searchs) . ")" : "") . ";";
+
+        $result_record = DB::select($sqlRecord);
+
+        return response()->json([
+            'sql' => $sql,
+            'data' => $result,
+            'total' => $result_record[0]->count
+        ], 200);
+
+        
+
+        // return response()->json([
+        //     'data' => $result,
+        //     'count' => $rslt[0],
+        //     'sql' => $query['sql'],
+        //     'total' => $result_record[0]->total
+        // ], 200);
+    }
     public function GetLahanByLahan_no_new(Request $request){
         $detail_id = $request->lahan_no;
             $req = $request->all();
@@ -56,6 +149,17 @@ class LahanController extends Controller
                 ], 200);
     }
     
+
+    public function GetLahansByLahanNo_new(Request $request) {
+        $lahans = $request->lahans;
+
+        $result = DB::select("SELECT * FROM lahans WHERE lahan_no IN ('" . implode("','", $lahans) . "')");
+
+        return response()->json([
+            'data' => $result
+        ], 200);
+    }
+    
     public function GetLahanAll_new(Request $request){
         $validator = Validator::make($request->all(), [
                 // 'program_year' => 'required'
@@ -69,7 +173,7 @@ class LahanController extends Controller
             
             $req = $request->all();
             $searchValue = $request->search_value;
-            $searchable = ['A.lahan_no', 'G.name', 'H.name', 'B.name', 'C.name'];
+            $searchable = ['A.lahan_no', 'G.name', 'H.name', 'C.name'];
             $filterable = [
                 'farmer_no' => [
                         'request_value' => $request->farmer_no,
@@ -107,6 +211,26 @@ class LahanController extends Controller
                         'operator' => '='
                     ], 
                 ];
+            if(isset($request->project_filter) && isset($request->mu_no)){
+                $filterable['project_no'] = [
+                        'request_value' => $request->project_no,
+                        'table_alias' => 'J',
+                        'operator' => '='
+                    ];
+                $filterable['code'] = [
+                        'request_value' => $request->purpose_code,
+                        'table_alias' => 'L',
+                        'operator' => '=',
+                        "origin_table" => "K"
+                    ];
+            }
+            // $customFilter = [
+            //     "filter_project" => [
+            //             'request_value' => $request->project_no,
+            //             'custom_filter_field' => '(SELECT A.project_no FROM lahan_projects A LIMIT 1 OFFSET 0)',
+            //             'operator' => '='
+            //         ], 
+            //     ];
     
             $sortable = ['id', 'lahan_no', 'created_time'];
             $tableName = "lahans";
@@ -116,8 +240,53 @@ class LahanController extends Controller
             $offset = isset($req['offset']) ? $req['offset'] : 0;
             $field = ['*'];
                 
-
-                
+            $detailRelation = [
+                "village" => [
+                    "reference_table" => "desas",
+                    "table_alias" => "B",
+                    "reference_column" => "kode_desa",
+                    "display" => ['kode_desa', 'name'],
+                    ],
+                "user_id" => [
+                    "reference_table" => "field_facilitators",
+                    "table_alias" => "C",
+                    "reference_column" => "ff_no",
+                    "display" => ['id', 'name'],
+                    ],
+                "kecamatan" => [
+                    "reference_table" => "kecamatans",
+                    "table_alias" => "E",
+                    "reference_column" => "kode_kecamatan",
+                    "display" => ['name'],
+                    ],
+                "city" => [
+                    "reference_table" => "kabupatens",
+                    "table_alias" => "F",
+                    "reference_column" => "kabupaten_no",
+                    "display" => ['name'],
+                    ],
+                "mu_no" => [
+                    "reference_table" => "managementunits",
+                    "table_alias" => "G",
+                    "reference_column" => "mu_no",
+                    "display" => ['name']
+                    ],
+                "target_area" => [
+                    "reference_table" => "target_areas",
+                    "table_alias" => "H",
+                    "reference_column" => "area_code",
+                    "display" => ['name'],
+                    ],
+                "lahan_no" => [
+                    "reference_table" => "main_pivots",
+                    "table_alias" => "I",
+                    "reference_column" => "key2",
+                    "display" => [],
+                    "custom_alias" => "pivot",
+                    // "origin_table" => "D"
+                    ],
+            ];
+            
             $relation = [
                 "village" => [
                     "reference_table" => "desas",
@@ -164,24 +333,25 @@ class LahanController extends Controller
                     // "origin_table" => "D"
                     ],
             ];
+            
+            
             $custom_relation = [
                 "farmers_joinment" => [
                     "join" => " LEFT JOIN farmers as D ON D.farmer_no = A.farmer_no ",
                     "display" => 'D.name as farmer_name',
                     ],
-                // "lahan_project" => [
-                //     "join" => " LEFT JOIN lahan_projects as J ON J.lahan_no = A.lahan_no ",
-                //     "display" => 'J.project_no as lahan_project_no',
-                //     ],
-                // "projects" => [
-                //     "join" => " LEFT JOIN projects as K ON K.project_no = J.project_no ",
-                //     "display" => 'K.project_no, K.project_name',
-                //     ],
-                // "project_purpose" => [
-                //     "join" => " LEFT JOIN project_planting_purposes as L ON L.id = K.project_planting_purpose_id ",
-                //     "display" => 'L.id as project_purpose_id, L.name as project_purpose_name',
-                //     ],
             ];
+            if(isset($request->project_filter) && isset($request->mu_no)){
+                $custom_relation['jj'] = [
+                    "join" => " LEFT JOIN lahan_projects as J ON J.lahan_no = A.lahan_no ",
+                    ];
+                $custom_relation['kk'] = [
+                    "join" => " LEFT JOIN projects as K ON K.project_no = J.project_no ",
+                    ];
+                $custom_relation['ll'] = [
+                    "join" => " LEFT JOIN project_planting_purposes as L ON L.id = K.project_planting_purpose_id ",
+                    ];
+            }
             $condition = [
                 "type"=> [
                     "conditional_table" => "main_pivots",
@@ -256,10 +426,10 @@ class LahanController extends Controller
                     'tableName' => $tableName,
                     'indicator_column' => '',
                     'relation' => $relation, 
+                    'custom_relation' => $custom_relation,
                     'users_id' => $user_id,
                     'condition' => $condition,
                     'filterable' => $filterable,
-                    
                     'custom_counter' => $custom_counter,
                 ]);
                 
@@ -344,7 +514,7 @@ class LahanController extends Controller
                     'id_type' => 'string',
                     'detail_id' => $data->lahan_no,
                     'tableName' => 'log_lahans',
-                    'relation' => $relation, 
+                    'relation' => $detailRelation, 
                     'condition' => $log_condition,
                     'tableAlias' => 'A',
                     'field' => ["*"],
@@ -386,7 +556,7 @@ class LahanController extends Controller
             return response()->json([
                     'data' => $result,
                     'custom_count' => $cust_stat[0],
-                    // 'sql' => $query['sql'],
+                    'sql' => $query['sql'],
                     'project_filter_dev' => $frProject_list ?? 'test',
                     'total' => $result_record[0]->total,
                     
@@ -498,7 +668,7 @@ class LahanController extends Controller
                 "ii" => [
                     "join" => " LEFT JOIN desas as P ON P.kode_desa = L.village ",
                     "display" => 'P.name as desa_name_farmer',
-                    ],
+                    ]
             ];
             $brokenBarcodeRelation = [
                 "farmer_no" => [
@@ -702,12 +872,21 @@ class LahanController extends Controller
             $lahan_term_question_query = $this->DynamicList([
                 'tableName' => 'lahan_term_question',
                 'tableAlias' => 'A',
-                'limit' => 20,
+                'limit' => 100,
                 'offset' => 0,
                 'field' => $field,
                 'relation' => [],
                 'req' => $req,
             ]);
+            $lahan_project_term_condition = [
+                "is_del" => [
+                    "conditional_table" => "lahan_project_terms",
+                    "conditional_table_alias" => "A",
+                    "conditional_column" => "is_del",
+                    "conditional_param" => "=",
+                    "conditional_value" => "'0'",
+                    ]
+                ];
             $lahan_project_term_query = $this->DynamicDetail([
                 'sourceColumn' => 'lahan_no',
                 'id_type' => 'string',
@@ -716,6 +895,7 @@ class LahanController extends Controller
                 'tableAlias' => 'A',
                 'relation' => $termAnswerRelation,
                 'field' => $field,
+                'condition' => $lahan_project_term_condition,
                 'req' => $req
             ]);
             $farmer_lahan_mou_query = $this->DynamicDetail([
@@ -823,17 +1003,76 @@ class LahanController extends Controller
                 
         }
     }
+
+    public function lahanNonCarbonExport(Request $request) {
+        $sql = "
+            SELECT
+                A.key2,
+                (SELECT name FROM desas WHERE desas.kode_desa = B.village) as village_name,
+                (SELECT name FROM managementunits AS mu WHERE mu.mu_no = B.mu_no) as management_unit_name,
+                (SELECT name FROM target_areas AS ta WHERE ta.area_code = B.target_area) as target_area_name,
+                (SELECT name FROM kecamatans AS kc WHERE kc.kode_kecamatan = B.kecamatan) as kecamatan_name,
+                (SELECT name FROM kabupatens AS kb WHERE kb.kabupaten_no = B.city) as kabupaten_name,
+                (SELECT name FROM provinces AS pr WHERE pr.province_code = B.province) as province_name,
+                B.*,
+                F.name as farmer_name,
+                F.ktp_no as farmer_nik,
+                F.approve as farmer_approval,
+                F.legal_land_categories,
+                F.project_model,
+                F.ktp_document as farmer_ktp,
+                F.farmer_profile as farmer_photo
+            FROM main_pivots as A
+            LEFT JOIN lahans as B ON B.lahan_no = A.key2
+            LEFT JOIN lahan_projects AS C ON C.lahan_no = B.lahan_no AND C.program_year = '2024'
+            LEFT JOIN projects as D ON D.project_no = C.project_no
+            LEFT JOIN farmers as F on F.farmer_no = A.key1
+            WHERE A.program_year LIKE '%2024%'
+            AND A.type = 'farmer_lahan'
+            AND D.project_no = 'PJ00008'
+        ";
+
+        $lahans = DB::select($sql);
+
+        foreach ($lahans as $lahan) {
+            $sqlLahan = "
+                SELECT 
+                    A.id,
+                    A.lahan_no,
+                    A.tree_code,
+                    A.amount,
+                    A.detail_year ,
+                    B.tree_name,
+                    B.tree_category 
+                FROM lahan_details AS A
+                LEFT JOIN trees AS B ON B.tree_code  = A.tree_code 
+                WHERE A.lahan_no = '10_0000067854'
+                AND A.detail_year LIKE '%2024%'
+                LIMIT 10 OFFSET 0
+            ";
+            $lahanDetail = DB::select($sqlLahan);
+            $lahan->trees = $lahanDetail;
+        }
+                
+                
+        return response()->json([
+                'data' => $lahans,
+        ], 200);
+    }
     
     public function getExportDataLahanFarmer_new(Request $request){
         $validator = Validator::make($request -> all(),[
-            'ff_no' => 'required'
+            'ff_no' => 'string'
         ]);
         if($validator->fails()){
             $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
             return response()->json($rslt, 400);
         }else{
             $program_year = $request->program_year ?? '2024';
-            $employeeUser = [$request->ff_no];
+            $employeeUser = [];
+            if (isset($request->ff_no)) {
+                $employeeUser = [$request->ff_no];
+            }
             
             $req = $request->all();
             $searchValue = $request->search_value;
@@ -935,8 +1174,8 @@ class LahanController extends Controller
             ];
             $condition = [
                 "is_dell" => [
-                    "conditional_table" => "scooping_visits",
-                    "conditional_table_alias" => "A",
+                    "conditional_table" => "farmers",
+                    "conditional_table_alias" => "D",
                     "conditional_column" => "is_dell",
                     "conditional_param" => "=",
                     "conditional_value" => '0',
@@ -1050,6 +1289,430 @@ class LahanController extends Controller
         }
     }
     
+    public function getExportDataLahanFarmerWithDetailReport_new(Request $request){
+        $validator = Validator::make($request -> all(),[
+            'mu_no' => 'required'
+        ]);
+        if($validator->fails()){
+            $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+            return response()->json($rslt, 400);
+        }else{
+            $program_year = $request->program_year ?? '2024';
+            $employeeUser = [];
+            
+            $req = $request->all();
+            $searchValue = $request->search_value;
+            $searchable = [];
+            $filterable = [
+                'village' => [
+                        'request_value' => $request->kode_desa,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'target_area' => [
+                        'request_value' => $request->area_code,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'mu_no' => [
+                        'request_value' => $request->mu_no,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'approve' => [
+                        'request_value' => $request->approve,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'fc_complete_data' => [
+                        'request_value' => $request->complete_data_fc,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ], 
+                ];
+    
+            $sortable = ['id', 'lahan_no', 'created_time'];
+            $tableName = "lahans";
+            $tableAlias = "A";
+            
+            $limit = isset($req['limit']) ? $req['limit'] : 10;
+            $offset = isset($req['offset']) ? $req['offset'] : 0;
+            $field = ['*'];
+                
+
+                
+            $relation = [
+                "village" => [
+                    "reference_table" => "desas",
+                    "table_alias" => "B",
+                    "reference_column" => "kode_desa",
+                    "display" => ['kode_desa', 'name'],
+                    ],
+                "user_id" => [
+                    "reference_table" => "field_facilitators",
+                    "table_alias" => "C",
+                    "reference_column" => "ff_no",
+                    "display" => ['id', 'name'],
+                    ],
+                "kecamatan" => [
+                    "reference_table" => "kecamatans",
+                    "table_alias" => "E",
+                    "reference_column" => "kode_kecamatan",
+                    "display" => ['name'],
+                    ],
+                "city" => [
+                    "reference_table" => "kabupatens",
+                    "table_alias" => "F",
+                    "reference_column" => "kabupaten_no",
+                    "display" => ['name'],
+                    ],
+                "mu_no" => [
+                    "reference_table" => "managementunits",
+                    "table_alias" => "G",
+                    "reference_column" => "mu_no",
+                    "display" => ['name']
+                    ],
+                "target_area" => [
+                    "reference_table" => "target_areas",
+                    "table_alias" => "H",
+                    "reference_column" => "area_code",
+                    "display" => ['name'],
+                    ],
+                "lahan_no" => [
+                    "reference_table" => "main_pivots",
+                    "table_alias" => "I",
+                    "reference_column" => "key2",
+                    "display" => ['program_year'],
+                    "custom_alias" => "pivot",
+                    // "origin_table" => "D"
+                    ],
+            ];
+            $custom_relation = [
+                "farmers_joinment" => [
+                    "join" => " LEFT JOIN farmers as D ON D.farmer_no = A.farmer_no ",
+                    "display" => 'D.farmer_no as kode_petani, D.name as farmer_name , D.ktp_no as farmer_nik, D.approve as farmer_approval, D.legal_land_categories, D.project_model, D.ktp_document as farmer_ktp, D.farmer_profile as farmer_photo',
+                ],
+            ];
+            $condition = [
+                "is_dell" => [
+                    "conditional_table" => "lahans",
+                    "conditional_table_alias" => "A",
+                    "conditional_column" => "is_dell",
+                    "conditional_param" => "=",
+                    "conditional_value" => '0',
+                    ],
+                "type"=> [
+                    "conditional_table" => "main_pivots",
+                    "conditional_table_alias" => "I",
+                    "conditional_column" => "type",
+                    "conditional_param" => "=",
+                    "conditional_value" => "'farmer_lahan'",
+                    ],
+                "program_year"=> [
+                    "conditional_table" => "main_pivots",
+                    "conditional_table_alias" => "I",
+                    "conditional_column" => "program_year",
+                    "conditional_param" => "LIKE",
+                    "conditional_value" => "'%$program_year%'",
+                    ],
+                ];
+            $user_id = [
+                "user_id" => [
+                    "listId" => $employeeUser
+                    ],
+                ];
+    
+            $query =  $this->DynamicList([
+                        'tableName' => $tableName,
+                        'tableAlias' => $tableAlias,
+                        'limit' => $limit,
+                        'offset' => $offset,
+                        'field' => $field,
+                        'sortable' => $sortable,
+                        'filterable' => $filterable,
+                        'relation' => $relation,
+                        'custom_relation' => $custom_relation,
+                        'searchable' => $searchable,
+                        'search' => $searchValue,
+                        'condition' => $condition,
+                        'req' => $req,
+                        'users_id' => $user_id
+                    ]);
+            $get_data = DB::select($query['sql']);
+            $result_record = DB::select($query['sql_record']);
+            foreach($get_data as $datas){
+                $detailResult = "SELECT SUM(CASE WHEN B.tree_category = 'Pohon_Kayu' THEN A.amount ELSE 0 END) AS pohon_kayu_detail, SUM(CASE WHEN B.tree_category = 'Pohon_Buah' THEN A.amount ELSE 0 END) AS pohon_mpts_detail, SUM(CASE WHEN B.tree_category = 'Tanaman_Bawah_Empon' THEN A.amount ELSE 0 END) AS tanaman_bawah_detail, SUM(CASE WHEN B.tree_category = 'Mangrove' THEN A.amount ELSE 0 END) AS pohon_mangrove_detail FROM `lahan_details` A LEFT JOIN trees B ON B.tree_code = A.tree_code  WHERE A.lahan_no = '". $datas->lahan_no ."' AND YEAR(A.detail_year) = '". $program_year."'";
+                $datas->total_from_detail = DB::select($detailResult);
+                if($datas->gis_polygon_area != 0){
+                    $land_areas = $datas->gis_polygon_area;
+                }else{
+                    $land_areas = $datas->land_area;
+                }
+                $datas->current_land_area = $land_areas;
+                $lahanProjectRelation = [
+                    "project_no" => [
+                        "reference_table" => "projects",
+                        "table_alias" => "B",
+                        "reference_column" => "project_no",
+                        "display" => ['project_name'],
+                        ],
+                    "project_planting_purpose_id" => [
+                        "reference_table" => "project_planting_purposes",
+                        "table_alias" => "C",
+                        "reference_column" => "id",
+                        "display" => ['code'],
+                        "origin_table" => "B"
+                        ],
+                    ];
+                $getLahanProject = $this->DynamicDetail([
+                    'sourceColumn' => 'lahan_no',
+                    'id_type' => 'string',
+                    'detail_id' => $datas->lahan_no,
+                    'tableName' => 'lahan_projects',
+                    'tableAlias' => 'A',
+                    'field' => ['*'],
+                    'relation' => $lahanProjectRelation,
+                    'req' => $request
+                ]); 
+                $lahanDetailRelation = [
+                    "tree_code" => [
+                        "reference_table" => "trees",
+                        "table_alias" => "B",
+                        "reference_column" => "tree_code",
+                        "display" => ['tree_name', 'tree_category'],
+                        ],
+                    ];
+                $detailDataCondition = [
+                    "detail_year)" => [
+                        "conditional_table" => "lahan_details",
+                        "conditional_table_alias" => "YEAR(A",
+                        "conditional_column" => "detail_year",
+                        "conditional_param" => "LIKE",
+                        "conditional_value" => "'%$program_year%'",
+                        ],
+                ];
+                $getLahanDetail = $this->DynamicDetail([
+                    'sourceColumn' => 'lahan_no',
+                    'id_type' => 'string',
+                    'detail_id' => $datas->lahan_no,
+                    'tableName' => 'lahan_details',
+                    'tableAlias' => 'A',
+                    'field' => ['*'],
+                    'relation' => $lahanDetailRelation,
+                    'condition' => $detailDataCondition,
+                    'req' => $request
+                ]); 
+                
+                $datas->detail_seeds = DB::select($getLahanDetail);
+                $datas->detail_projects = DB::select($getLahanProject);
+            }
+            $treeData = DB::table('trees')->get();
+            return response()->json([
+                'data' => $get_data,
+                'total_data' => $result_record[0]->total,
+                'tree_locations' => $treeData
+                ], 200);
+            
+        }
+    }
+    
+    public function getExportDataLahanFarmerSocialImpact_new(Request $request){
+        $validator = Validator::make($request -> all(),[
+            'mu_no' => 'required'
+        ]);
+        if($validator->fails()){
+            $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+            return response()->json($rslt, 400);
+        }else{
+            $program_year = $request->program_year ?? '2024';
+            $employeeUser = [];
+            $req = $request->all();
+            $searchValue = $request->search_value;
+            $searchable = [];
+            $filterable = [
+                'village' => [
+                        'request_value' => $request->kode_desa,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'target_area' => [
+                        'request_value' => $request->area_code,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'mu_no' => [
+                        'request_value' => $request->mu_no,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'approve' => [
+                        'request_value' => $request->approve,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ],
+                'fc_complete_data' => [
+                        'request_value' => $request->complete_data_fc,
+                        'table_alias' => 'A',
+                        'operator' => '='
+                    ], 
+                ];
+    
+            $sortable = [];
+            $tableName = "lahans";
+            $tableAlias = "A";
+            
+            $limit = isset($req['limit']) ? $req['limit'] : 10;
+            $offset = isset($req['offset']) ? $req['offset'] : 0;
+            $field = ['*'];
+                
+
+                
+            $relation = [
+                "village" => [
+                    "reference_table" => "desas",
+                    "table_alias" => "B",
+                    "reference_column" => "kode_desa",
+                    "display" => ['kode_desa', 'name'],
+                    ],
+                "user_id" => [
+                    "reference_table" => "field_facilitators",
+                    "table_alias" => "C",
+                    "reference_column" => "ff_no",
+                    "display" => ['id', 'name'],
+                    ],
+                "kecamatan" => [
+                    "reference_table" => "kecamatans",
+                    "table_alias" => "E",
+                    "reference_column" => "kode_kecamatan",
+                    "display" => ['name'],
+                    ],
+                "city" => [
+                    "reference_table" => "kabupatens",
+                    "table_alias" => "F",
+                    "reference_column" => "kabupaten_no",
+                    "display" => ['name'],
+                    ],
+                "mu_no" => [
+                    "reference_table" => "managementunits",
+                    "table_alias" => "G",
+                    "reference_column" => "mu_no",
+                    "display" => ['name']
+                    ],
+                "target_area" => [
+                    "reference_table" => "target_areas",
+                    "table_alias" => "H",
+                    "reference_column" => "area_code",
+                    "display" => ['name'],
+                    ],
+                "lahan_no" => [
+                    "reference_table" => "main_pivots",
+                    "table_alias" => "I",
+                    "reference_column" => "key2",
+                    "display" => ['program_year'],
+                    "custom_alias" => "pivot",
+                    // "origin_table" => "D"
+                    ],
+            ];
+            $custom_relation = [
+                "farmers_joinment" => [
+                    "join" => " LEFT JOIN farmers as D ON D.farmer_no = A.farmer_no ",
+                    "display" => ' D.farmer_no as farmer_code,  D.name as farmer_name,  D.gender as farmer_gender,  D.address as farmer_address,  D.ktp_no as farmer_nik,  D.target_area as farmer_ta,  D.mu_no as farmer_mu,  D.village as farmer_desa,  D.origin as farmer_origin,  D.education as farmer_education,  D.non_formal_education as farmer_non_formal_education,  D.marrital_status as farmer_marrital_status,  D.main_job as farmer_main_job,  D.side_job as farmer_side_job,   D.approve as farmer_approval,  D.legal_land_categories, D.ktp_document as farmer_ktp,  D.farmer_profile as farmer_photo, D.number_family_member as farmer_family_member, D.is_farmer_partner_helping as farmer_partner_helping, D.main_income as farmer_main_income, D.avg_income_permonth as farmer_avg_income_permonth, D.avg_farming_income_yearly, D.avg_farm_income_yearly, D.avg_fishery_income_yearly, D.avg_nature_tourism_yearly, D.avg_wood_bussines_income_yearly, D.avg_other_source_income_yearly, D.avg_food_outcome_monthly, D.general_food_source, D.general_medicine_source'
+                ],
+                "mu_farmers" => [
+                    "join" => " LEFT JOIN managementunits as J ON J.mu_no = D.mu_no ",
+                    "display" => ' J.name as mu_farmer_name '
+                ],
+                "ta_farmers" => [
+                    "join" => " LEFT JOIN target_areas as K ON K.area_code = D.target_area ",
+                    "display" => ' K.name as ta_farmer_name '
+                ],
+                "desa_farmers" => [
+                    "join" => " LEFT JOIN desas as L ON L.kode_desa = D.village ",
+                    "display" => ' L.name as desa_farmer_name '
+                ],
+            ];
+            $condition = [
+                "is_dell" => [
+                    "conditional_table" => "lahans",
+                    "conditional_table_alias" => "A",
+                    "conditional_column" => "is_dell",
+                    "conditional_param" => "=",
+                    "conditional_value" => '0',
+                    ],
+                "type"=> [
+                    "conditional_table" => "main_pivots",
+                    "conditional_table_alias" => "I",
+                    "conditional_column" => "type",
+                    "conditional_param" => "=",
+                    "conditional_value" => "'farmer_lahan'",
+                    ],
+                "program_year"=> [
+                    "conditional_table" => "main_pivots",
+                    "conditional_table_alias" => "I",
+                    "conditional_column" => "program_year",
+                    "conditional_param" => "LIKE",
+                    "conditional_value" => "'%$program_year%'",
+                    ],
+                ];
+            $user_id = [
+                "user_id" => [
+                    "listId" => $employeeUser
+                    ],
+                ];
+    
+            $query =  $this->DynamicList([
+                        'tableName' => $tableName,
+                        'tableAlias' => $tableAlias,
+                        'limit' => $limit,
+                        'offset' => $offset,
+                        'field' => $field,
+                        'sortable' => $sortable,
+                        'filterable' => $filterable,
+                        'relation' => $relation,
+                        'custom_relation' => $custom_relation,
+                        'searchable' => $searchable,
+                        'search' => $searchValue,
+                        'condition' => $condition,
+                        'req' => $req,
+                        'users_id' => $user_id
+                    ]);
+            $get_data = DB::select($query['sql']);
+            foreach($get_data as $datas){
+                $lahanProjectRelation = [
+                    "project_no" => [
+                        "reference_table" => "projects",
+                        "table_alias" => "B",
+                        "reference_column" => "project_no",
+                        "display" => ['project_name'],
+                        ],
+                    "project_planting_purpose_id" => [
+                        "reference_table" => "project_planting_purposes",
+                        "table_alias" => "C",
+                        "reference_column" => "id",
+                        "display" => ['code'],
+                        "origin_table" => "B"
+                        ],
+                    ];
+                $getLahanProject = $this->DynamicDetail([
+                    'sourceColumn' => 'lahan_no',
+                    'id_type' => 'string',
+                    'detail_id' => $datas->lahan_no,
+                    'tableName' => 'lahan_projects',
+                    'tableAlias' => 'A',
+                    'field' => ['*'],
+                    'relation' => $lahanProjectRelation,
+                    'req' => $req
+                ]); 
+                
+                $datas->detail_projects = DB::selectOne($getLahanProject);
+            }
+            return response()->json(['data' => $get_data], 200);
+            
+        }
+    }
+    
+    
+    
     
     public function farmerMouFind(Request $request) {
         $validator = Validator::make($request -> all(),[
@@ -1088,8 +1751,6 @@ class LahanController extends Controller
 
         return response()->json(['data' => $farmerData], 200);
     }
-
-            
     public function farmerMouUpdate(Request $request) {
         
         $validator = Validator::make($request -> all(),[
@@ -1276,20 +1937,20 @@ class LahanController extends Controller
             // Generate Mou No
             // [Nomor Urut]-[Jenis]/T4T-Legal/[Kode Lokasi]/[Bulan Dalam Romawi]/[Tahun]
             $countMou = DB::table('farmer_lahan_mou')->where('program_year', $request->program_year)->count();
-            $month = Carbon::now()->format('F');
+            $month = Carbon::now()->format('m');
             $romawi = [
-                'Januari' => 'I',
-                'Februari' => 'II',
-                'Maret' => 'III',
-                'April' => 'IV',
-                'Mei' => 'V',
-                'Juni' => 'VI',
-                'Juli' => 'VII',
-                'Agustus' => 'VIII',
-                'September' => 'IX',
-                'Oktober' => 'X',
-                'November' => 'XI',
-                'Desember' => 'XII',
+                '01' => 'I',
+                '02' => 'II',
+                '03' => 'III',
+                '04' => 'IV',
+                '05' => 'V',
+                '06' => 'VI',
+                '07' => 'VII',
+                '08' => 'VIII',
+                '09' => 'IX',
+                '10' => 'X',
+                '11' => 'XI',
+                '12' => 'XII',
             ];
 
             $monthRomawi = $romawi[$month];
@@ -1379,6 +2040,7 @@ class LahanController extends Controller
     
     
     public function farmerMouPrintAppendix(Request $request) {
+        
         $validator = Validator::make($request -> all(),[
             'mou_no' => 'required',
             'lahan_no' => 'required|string'
@@ -2121,6 +2783,131 @@ class LahanController extends Controller
         
     }
     
+    public function UpdateLahanPolygonTutupan(Request $request){
+        $validator = Validator::make($request -> all(), [
+            'lahan_no' => 'required',
+            'polygon_tutupan_area' => 'required',
+            'polygon_tutupan_photo' => 'required',
+            'gis_eligibility_status' => 'required',
+            'tutupan_lahan' => 'required',
+            ]);
+            if($validator->fails()){
+                $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+                return response()->json($rslt, 400);
+            }else{
+                $tableName = 'lahans';
+                $updateDatas = [ 
+                    "0" => ['table_header' => 'polygon_tutupan_area',               'table_new_data' => $request->polygon_tutupan_area,                 'type' => 'string'],
+                    "1" => ['table_header' => 'polygon_tutupan_photo',              'table_new_data' => $request->polygon_tutupan_photo,                'type' => 'string'],
+                    "2" => ['table_header' => 'polygon_tutupan_status',             'table_new_data' => '1',                                            'type' => 'int'],
+                    "3" => ['table_header' => 'gis_eligibility_status',             'table_new_data' => $request->gis_eligibility_status,               'type' => 'string'],
+                    "4" => ['table_header' => 'gis_update_eligibility_at',          'table_new_data' => Carbon::now()],
+                    "5" => ['table_header' => 'polygon_tutupan_at',                 'table_new_data' => Carbon::now()],
+                    "6" => ['table_header' => 'polygon_tutupan_by',                 'table_new_data' => Auth::user()->employee_no,                      'type' => 'string'],
+                    "7" => ['table_header' => 'gis_planting_area',                  'table_new_data' => $request->gis_planting_area,                    'type' => 'int'],
+                    "8" => ['table_header' => 'tutupan_lahan',                      'table_new_data' => $request->tutupan_lahan,                        'type' => 'int'],
+                ];
+                if($request->gis_eligibility_status == 0){
+                    //update Land Project
+                    $updateLahanProjects = [ 
+                        "0" => ['table_header' => 'project_no',                     'table_new_data' => 'PJ00012',                 'type' => 'string'],
+                        // "1" => ['table_header' => 'program_year',                   'table_new_data' => $request->new_project_year,                'type' => 'string'],
+                    ];
+                    $lahanProjectDatas = $this->dynamicUpdate([
+                        'current_id' => $request->lahan_no,
+                        'tableName' => "lahan_projects",
+                        'inputData' => $updateLahanProjects,
+                        'other_id_index' => 'lahan_no',
+                        'id_data_type' => 'string' 
+                    ]);
+                    //update Land Project Terms
+                    $updateLahanProjectTerms = [ 
+                        "0" => ['table_header' => 'is_del',                     'table_new_data' => '1',                 'type' => 'int']
+                    ];
+                    $lahanProjectTermsDatas = $this->dynamicUpdate([
+                        'current_id' => $request->lahan_no,
+                        'tableName' => "lahan_project_terms",
+                        'inputData' => $updateLahanProjectTerms,
+                        'other_id_index' => 'lahan_no',
+                        'id_data_type' => 'string' 
+                    ]);
+                    $project_result = DB::update($lahanProjectDatas);
+                    $project_terms_result = DB::update($lahanProjectTermsDatas);
+                }
+                $datas = $this->dynamicUpdate([
+                    'current_id' => $request->lahan_no,
+                    'tableName' => "lahans",
+                    'inputData' => $updateDatas,
+                    'other_id_index' => 'lahan_no',
+                    'id_data_type' => 'string'
+                ]);
+                        
+                $result = DB::update($datas);
+                return response()->json([
+                    'result' => $result,
+                    // 'sql' => $datas
+                    ], 200);
+            }
+    }
+    
+    public function UpdateLahanLegalEligibility(Request $request){
+        $validator = Validator::make($request -> all(), [
+            'lahan_no' => 'required',
+            'legal_eligibility_status' => 'required',
+            ]);
+            if($validator->fails()){
+                $rslt =  $this->ResultReturn(400, $validator->errors()->first(), $validator->errors()->first());
+                return response()->json($rslt, 400);
+            }else{
+                $tableName = 'lahans';
+                $updateDatas = [ 
+                    "0" => ['table_header' => 'legal_eligibility_status',               'table_new_data' => $request->legal_eligibility_status,                 'type' => 'string'],
+                    "1" => ['table_header' => 'legal_eligibility_at',                     'table_new_data' => Carbon::now()],
+                    "2" => ['table_header' => 'legal_eligibility_by',                   'table_new_data' => Auth::user()->employee_no,                      'type' => 'string'],
+                ];
+                if($request->legal_eligibility_status == 0){
+                    //update Land Project
+                    $updateLahanProjects = [ 
+                        "0" => ['table_header' => 'project_no',                     'table_new_data' => 'PJ00012',                 'type' => 'string'],
+                    ];
+                    $lahanProjectDatas = $this->dynamicUpdate([
+                        'current_id' => $request->lahan_no,
+                        'tableName' => "lahan_projects",
+                        'inputData' => $updateLahanProjects,
+                        'other_id_index' => 'lahan_no',
+                        'id_data_type' => 'string' 
+                    ]);
+                    //update Land Project Terms
+                    $updateLahanProjectTerms = [ 
+                        "0" => ['table_header' => 'is_del',                     'table_new_data' => '1',                 'type' => 'int']
+                    ];
+                    $lahanProjectTermsDatas = $this->dynamicUpdate([
+                        'current_id' => $request->lahan_no,
+                        'tableName' => "lahan_project_terms",
+                        'inputData' => $updateLahanProjectTerms,
+                        'other_id_index' => 'lahan_no',
+                        'id_data_type' => 'string' 
+                    ]);
+                    $project_result = DB::update($lahanProjectDatas);
+                    $project_terms_result = DB::update($lahanProjectTermsDatas);
+                }
+                $datas = $this->dynamicUpdate([
+                    'current_id' => $request->lahan_no,
+                    'tableName' => "lahans",
+                    'inputData' => $updateDatas,
+                    'other_id_index' => 'lahan_no',
+                    'id_data_type' => 'string'
+                ]);
+                        
+                $result = DB::update($datas);
+                return response()->json([
+                    'result' => $result,
+                    // 'sql' => $datas
+                    ], 200);
+            }
+    }
+    
+    
     public function UpdateLahanByGIS_new(Request $request){
         $validator = Validator::make($request -> all(), [
             'current_id' => 'required',
@@ -2236,7 +3023,7 @@ class LahanController extends Controller
                 'req' => $request
             ]);
             $getLahanDatas_result = DB::select($getLahanDatas);
-            if($getLahanDatas_result[0]->approve == 1){
+            if($getLahanDatas_result[0]->approve > 0){
                 $createDatas = [
                     "1" => ['table_header' => 'lahan_no',                   'table_new_data' => $getLahanDatas_result[0]->lahan_no,                             'type' => 'string'],
                     "2" => ['table_header' => 'program_year',               'table_new_data' => $request->program_year,                         'type' => 'string'],
@@ -3501,7 +4288,6 @@ class LahanController extends Controller
                     if($detail->approve > 0){
                         $detail->approve = 1;
                     }
-                    
                     $getKec = Kecamatan::where('kode_kecamatan', $detail->kecamatan)->first();
                     $getDesa = Desa::where('kode_desa', $detail->village)->first();
                     $detail->desa = $getDesa->name." - ".$getKec->name;
@@ -4001,16 +4787,46 @@ class LahanController extends Controller
      *
      */
      public function LahansTestAPI(Request $request){
-        $getLastIdLahan = Lahan::orderBy('lahan_no','desc')->first(); 
-        if($getLastIdLahan){
-            $lahan_no = '10_'.str_pad(((int)substr($getLastIdLahan->lahan_no,-10) + 1), 10, '0', STR_PAD_LEFT);
-        }else{
-            $lahan_no = '10_0000000001';
-        }
-        if (isset($request->test_api)){
-            $getExistingMainPivot = DB::table('main_pivots')->where(['type' => 'farmer_lahan', 'key1' => $request->farmer_no, 'key2' => $lahan_no, 'program_year' => $request->year])->get();
-            return response()->json(['test_res' => $getExistingMainPivot], 200);
-        }
+         
+         $sql = "SELECT A.*, 
+                        B.kode_desa as desas_kode_desa, 
+                        B.name as desas_name, 
+                        C.id as field_facilitators_id, 
+                        C.name as field_facilitators_name, 
+                        E.name as kecamatans_name, 
+                        F.name as kabupatens_name, 
+                        G.name as managementunits_name, 
+                        H.name as target_areas_name, 
+                        D.name as farmer_name
+                        FROM lahans AS A 
+                        LEFT JOIN desas as B ON B.kode_desa = A.village  
+                        LEFT JOIN field_facilitators as C ON C.ff_no = A.user_id  
+                        LEFT JOIN kecamatans as E ON E.kode_kecamatan = A.kecamatan  
+                        LEFT JOIN kabupatens as F ON F.kabupaten_no = A.city  
+                        LEFT JOIN managementunits as G ON G.mu_no = A.mu_no  
+                        LEFT JOIN target_areas as H ON H.area_code = A.target_area  
+                        LEFT JOIN main_pivots as I ON I.key2 = A.lahan_no   
+                        LEFT JOIN farmers as D ON D.farmer_no = A.farmer_no 
+                        LEFT JOIN lahan_projects as M ON M.lahan_no = A.lahan_no
+                        WHERE TRUE AND TRUE AND TRUE 
+                        AND I.type = 'farmer_lahan' 
+                        AND I.program_year LIKE '%2024%'  
+                        ORDER BY A.created_at 
+                        DESC LIMIT 10 OFFSET 0";
+        
+        $res = DB::select($sql);
+         
+         return response()->json(['test_res' => $res], 200);
+        // $getLastIdLahan = Lahan::orderBy('lahan_no','desc')->first(); 
+        // if($getLastIdLahan){
+        //     $lahan_no = '10_'.str_pad(((int)substr($getLastIdLahan->lahan_no,-10) + 1), 10, '0', STR_PAD_LEFT);
+        // }else{
+        //     $lahan_no = '10_0000000001';
+        // }
+        // if (isset($request->test_api)){
+        //     $getExistingMainPivot = DB::table('main_pivots')->where(['type' => 'farmer_lahan', 'key1' => $request->farmer_no, 'key2' => $lahan_no, 'program_year' => $request->year])->get();
+        //     return response()->json(['test_res' => $getExistingMainPivot], 200);
+        // }
      }
     public function AddMandatoryLahan(Request $request){
         try{
@@ -4743,6 +5559,10 @@ class LahanController extends Controller
             }
 
             // if($request->user_id == "02320210001" || $request->user_id == "FF00001602"){
+            if($province == "JB" && $request->project_no == "PJ00008"){
+                $rslt =  $this->ResultReturn(400, 'Pendataan Lahan Carbon Ditutup Sementara', 'Gagal');
+                return response()->json($rslt, 400);
+            }else{
                 Lahan::create([
                     'lahan_no' => $request->barcode,
                     'longitude' => $request->longitude,
@@ -4938,7 +5758,7 @@ class LahanController extends Controller
             // }else{
             //     $rslt =  $this->ResultReturn(400, 'Waktu Pendataan Lahan Sudah Selesai', 'Gagal');
             //     return response()->json($rslt, 400);
-            // }
+            }
         }catch (\Exception $ex){
             return response()->json($ex);
         }
@@ -5169,8 +5989,10 @@ class LahanController extends Controller
             ->where('lahan_no', '=', $request->lahan_no)
             ->first();
         $luas_area_tanam = $getLahan->planting_area;
-        
-        if($getLahan->land_area >= $luas_area_tanam){
+        if($getLahan->approve > 0){
+            $rslt =  $this->ResultReturn(400, 'Tidak Dapat Melakukan Update, Data Sudah di Approve!, Silahkan Hubungi FC!', 'Error');
+            return response()->json($rslt, 400);
+        }else if($getLahan->land_area >= $luas_area_tanam){
             DB::table('lahan_details')->where('lahan_no',$request->lahan_no)->where('detail_year', 'LIKE', "{$tahun}%")->delete();
 
             $listTree = $request->tree_list;
@@ -5399,7 +6221,7 @@ class LahanController extends Controller
             
             $getStatusData = Lahan::where(['lahan_no' => $request->lahan_no])->first();
             $getPivot = MainPivot::where('type','farmer_lahan')->where('key2',$request->lahan_no)->first();
-            if($getStatusData->approve == 1 && $getPivot->program_year == $request->year){
+            if($getStatusData->approve > 0 && $getPivot->program_year == $request->year){
                 $rslt =  $this->ResultReturn(400, 'Tidak Dapat Melakukan Update, Data Sudah di Approve!, Silahkan Hubungi FC!', 'Error');
                 return response()->json($rslt, 400);
             }else {
@@ -5417,7 +6239,7 @@ class LahanController extends Controller
                 $y = explode(",",$request->year);
                 $tahun = count($y) > 1 ? $y[count($y)-2] : $request->year;
                         
-                if($getLahanDatas_result[0]->approve == 1){
+                if($getLahanDatas_result[0]->approve > 0){
                     $createDatas = [ 
                         "1" => ['table_header' => 'lahan_no',                   'table_new_data' => $getLahanDatas_result[0]->lahan_no,                             'type' => 'string'],
                         "2" => ['table_header' => 'program_year',               'table_new_data' => $tahun,                                                         'type' => 'string'],
