@@ -1,4 +1,5 @@
 export default {
+    refreshKey: 1,
         config: {
             title: "Sosialisasi Tanam",
             globalFilter: {

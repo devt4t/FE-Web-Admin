@@ -200,10 +200,10 @@
         Array.isArray(getMaskedValue(item).total_from_detail) &&
         getMaskedValue(item).total_from_detail.length > 0
       ">{{
-          (getMaskedValue(item).total_from_detail[0].pohon_kayu_detail +
-            getMaskedValue(item).total_from_detail[0].pohon_mpts_detail)
-          | parse("ts")
-        }}</span>
+        (getMaskedValue(item).total_from_detail[0].pohon_kayu_detail +
+          getMaskedValue(item).total_from_detail[0].pohon_mpts_detail)
+        | parse("ts")
+      }}</span>
     </template>
 
     <template v-slot:list-status="{ item }">
@@ -290,6 +290,23 @@
       <lahan-export-social-impact-modal :dataKey="exportSocialImpactModal" :format="exportFormat" />
     </template>
 
+    <template v-slot:list-project_id="{ item }">
+      <div class="d-flex flex-col min-w-200px">
+        <span class="font-weight-500">{{ item.land_project?.projects_project_name }}</span>
+        <div class="d-flex flex-row">
+          <span class="badge" :class="{
+            'bg-info': item.land_project && item.land_project.project_planting_purposes_code === 'carbon',
+            'bg-light': item.land_project && item.land_project.project_planting_purposes_code === 'non-carbon'
+          }">
+            <span
+              v-if="item.land_project && item.land_project.project_planting_purposes_code === 'carbon'">Carbon</span>
+            <span v-else-if="item.land_project && item.land_project.project_planting_purposes_code === 'non-carbon'">Non
+              Carbon</span>
+          </span>
+        </div>
+      </div>
+    </template>
+
     <template v-slot:list-fc_complete_data="{ item }">
       <div class="d-flex flex-row text-no-wrap justify-content-center">
         <span class="badge" :class="{
@@ -343,7 +360,20 @@
           <span>Bulk Upload KML</span>
         </v-btn>
 
+        <v-btn variant="primary">
+          <v-icon>mdi-microsoft-excel</v-icon>
+          <span>Export semua lahan</span>
+        </v-btn>
+
         <lahan-kml-upload :dataKey="uploadKmlModal" />
+      </div>
+    </template>
+
+    <template v-slot:toolbar-button>
+      <div class="d-flex flex-row">
+        <button class="toolbar-button mr-2">
+          <v-icon>mdi-microsoft-excel</v-icon>
+        </button>
       </div>
     </template>
   </geko-base-crud>

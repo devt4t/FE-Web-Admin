@@ -3315,11 +3315,11 @@ export default {
           })
           .then((res) => {
             if (typeof res.data.data.result !== "undefined") {
-              let items = res.data.data.result.data.data;
+              let items = res.data.data;
 
-              const total = res.data.data.result.data.total;
-              const current_page = res.data.data.result.data.current_page;
-              const last_page = res.data.data.result.data.last_page;
+              const total = res.data.total;
+              const current_page = res.data.current_page;
+              const last_page = res.data.last_page;
               resolve({
                 items,
                 total,
@@ -3452,7 +3452,7 @@ export default {
               absent2: "",
             };
             console.log('test', this.dataToStore);
-            
+
 
             return
 

@@ -11,65 +11,41 @@
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
               <v-row>
                 <v-col lg="12">
-                  <geko-input
-                    v-if="ffList.length > 0"
-                    v-model="ff_code"
-                    :item="{
-                      label: 'Field Facilitator',
-                      placeholder: 'Pilih Field Facilitator',
-                      type: 'select',
-                      validation: ['required'],
-                      api: 'GetFFAllWeb_new',
-                      param: {
-                        limit: 20,
+                  <geko-input v-if="ffList.length > 0" v-model="ff_code" :item="{
+                    label: 'Field Facilitator',
+                    placeholder: 'Pilih Field Facilitator',
+                    type: 'select',
+                    validation: ['required'],
+                    api: 'GetFFAllWeb_new',
+                    param: {
+                      limit: 20,
+                    },
+                    option: {
+                      multiple: true,
+                      default_options: ffList,
+                      list_pointer: {
+                        label: 'name',
+                        code: 'ff_no',
+                        display: ['name', 'ff_no'],
                       },
-                      option: {
-                        multiple: true,
-                        default_options: ffList,
-                        list_pointer: {
-                          label: 'name',
-                          code: 'ff_no',
-                          display: ['name', 'ff_no'],
-                        },
-                      },
-                    }"
-                    @option:selected="test($event)"
-                    :disabled="ffList.length == 0"
-                  />
-                  <v-progress-circular
-                    v-if="ffList.length == 0"
-                    indeterminate
-                    color="primary"
-                  ></v-progress-circular>
+                    },
+                  }" @option:selected="test($event)" :disabled="ffList.length == 0" />
+                  <v-progress-circular v-if="ffList.length == 0" indeterminate color="primary"></v-progress-circular>
                 </v-col>
 
                 <v-col lg="12">
                   <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
                     <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
 
-                    <v-progress-circular
-                      v-else
-                      :size="20"
-                      color="danger"
-                      indeterminate
-                    ></v-progress-circular>
+                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                     <span class="ml-1"> Export PDF</span>
                   </v-btn>
                 </v-col>
 
                 <v-col lg="12">
-                  <v-btn
-                    variant="success"
-                    type="submit"
-                    v-if="format == 'excel'"
-                  >
+                  <v-btn variant="success" type="submit" v-if="format == 'excel'">
                     <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
-                    <v-progress-circular
-                      v-else
-                      :size="20"
-                      color="danger"
-                      indeterminate
-                    ></v-progress-circular>
+                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
                     <span class="ml-1"> Export Excel</span>
                   </v-btn>
                 </v-col>
@@ -108,8 +84,8 @@ export default {
 
   watch: {
     dataKey(t) {
-      console.log("modal open", t);
       if (t > 0) {
+        this.getInitialData()
         this.isOpen = true;
       }
 
@@ -272,7 +248,7 @@ export default {
   },
 
   mounted() {
-    this.getInitialData();
+    // this.getInitialData();
   },
 };
 </script>

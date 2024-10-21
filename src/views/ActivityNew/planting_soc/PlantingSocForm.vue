@@ -9,7 +9,7 @@
 
 
 
-                    <v-col md="6">
+                    <v-col md="12">
                         <geko-input v-model="formData.ff_no" :item="{
                             label: 'Field Facilitator',
                             validation: ['required'],
@@ -29,7 +29,7 @@
                         }" @selected="onChangeFf($event)" />
                     </v-col>
 
-                    <v-col md="12">
+                    <v-col md="8">
 
                         <span class="geko-input" style="position: relative;">
                             <label class="required mb-3"> Tanggal Distribusi</label>
@@ -43,35 +43,73 @@
                             </v-overlay>
                         </span>
                     </v-col>
+                    <v-col md="4" sm="12">
 
-                    <v-col md="6">
-                        <div class="distribution-date">
-                            <v-icon>mdi-clipboard-text-clock-outline</v-icon>
-                            <div class="pl-3">
-                                <label for="">Pembuatan Lubang Tanam</label>
-                                <div class="distribution-date-label" v-if="plantingHoleStart && plantingHoleEnd">
-                                    {{ formatDate(plantingHoleStart, 'D MMMM YYYY') }} - {{ formatDate(plantingHoleEnd,
-                                        'D MMMM YYYY') }}
+                        <v-row class="distribution-date-row">
+                            <v-col md="12" sm="6">
+                                <div class="distribution-date success">
+                                    <v-icon>mdi-truck-fast-outline</v-icon>
+                                    <div class="pl-3">
+                                        <label for="">Distribusi</label>
+                                        <div class="distribution-date-label" v-if="formData.distribution_date">
+                                            {{ formatDate(formData.distribution_date, 'D MMMM YYYY') }}
+                                        </div>
+                                        <div class="distribution-date-label" v-else>-</div>
+                                    </div>
                                 </div>
-                                <div class="distribution-date-label" v-else>-</div>
-                            </div>
-                        </div>
+                            </v-col>
+                            <v-col md="12" sm="6">
+                                <div class="distribution-date success">
+                                    <v-icon>mdi-map-marker-distance</v-icon>
+                                    <div class="pl-3">
+                                        <label for="">Nursery</label>
+                                        <div class="distribution-date-label" v-if="nurseryLocation">
+                                            {{ nurseryLocation.name_location_nursery }}
+                                        </div>
+                                        <div class="distribution-date-label" v-else>-</div>
+                                    </div>
+                                </div>
+                            </v-col>
+
+
+                            <v-col md="12" sm="6">
+                                <div class="distribution-date">
+                                    <v-icon>mdi-clipboard-text-clock-outline</v-icon>
+                                    <div class="pl-3">
+                                        <label for="">Pembuatan Lubang Tanam</label>
+                                        <div class="distribution-date-label"
+                                            v-if="plantingHoleStart && plantingHoleEnd">
+                                            {{ formatDate(plantingHoleStart, 'D MMM YYYY') }} - {{
+                                                formatDate(plantingHoleEnd,
+                                                    'D MMM YYYY') }}
+                                        </div>
+                                        <div class="distribution-date-label" v-else>-</div>
+                                    </div>
+                                </div>
+                            </v-col>
+
+                            <v-col md="12" sm="6">
+                                <div class="distribution-date">
+                                    <v-icon>mdi-clipboard-text-clock-outline</v-icon>
+                                    <div class="pl-3">
+                                        <label for="">Realisasi Tanam</label>
+                                        <div class="distribution-date-label"
+                                            v-if="plantingRealizationStart && plantingRealizationEnd">
+                                            {{ formatDate(plantingRealizationStart, 'D MMM YYYY') }} -
+                                            {{ formatDate(plantingRealizationEnd, 'D MMM YYYY') }}
+                                        </div>
+                                        <div class="distribution-date-label" v-else>-</div>
+                                    </div>
+                                </div>
+                            </v-col>
+                        </v-row>
                     </v-col>
 
-                    <v-col md="6">
-                        <div class="distribution-date">
-                            <v-icon>mdi-clipboard-text-clock-outline</v-icon>
-                            <div class="pl-3">
-                                <label for="">Realisasi Tanam</label>
-                                <div class="distribution-date-label"
-                                    v-if="plantingRealizationStart && plantingRealizationEnd">
-                                    {{ formatDate(plantingRealizationStart, 'D MMMM YYYY') }} -
-                                    {{ formatDate(plantingRealizationEnd, 'D MMMM YYYY') }}
-                                </div>
-                                <div class="distribution-date-label" v-else>-</div>
-                            </div>
-                        </div>
-                    </v-col>
+
+
+
+
+
                     <v-col md="12" class="form-separator" v-if="lahans.length > 0">
                         <h4>Daftar Petani & Lahan</h4>
                     </v-col>
@@ -94,14 +132,14 @@
                                     <td class="text-center">
                                         <span class="d-flex flex-row align-items-center justify-content-center">
                                             <v-icon style="color: green;">mdi-sprout</v-icon>
-                                            <span class="amount">{{ farmer.total_kayu }}</span>
+                                            <span class="amount">{{ farmer.pohon_kayu }}</span>
                                         </span>
                                     </td>
                                     <td class="text-center">
 
                                         <span class="d-flex flex-row align-items-center justify-content-center">
                                             <v-icon style="color: orange;">mdi-sprout</v-icon>
-                                            <span class="amount">{{ farmer.total_mpts }}</span>
+                                            <span class="amount">{{ farmer.pohon_mpts }}</span>
                                         </span>
                                     </td>
                                     <td>
@@ -219,7 +257,10 @@
                     <v-col md="12">
                         <div class="d-flex flex-row justify-content-end">
                             <v-btn variant="success" type="submit">
-                                <v-icon>mdi-plus</v-icon>
+                                <v-icon v-if="!loading">mdi-plus</v-icon>
+
+                                <v-progress-circular v-else :size="20" color="green"
+                                    indeterminate></v-progress-circular>
                                 <span class="ml-1">Tambah Data Sostam</span>
                             </v-btn>
                         </div>

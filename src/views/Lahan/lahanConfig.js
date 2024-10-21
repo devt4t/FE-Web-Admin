@@ -85,6 +85,15 @@ export default {
       },
     },
     {
+      id: "project_id",
+      label: "Project",
+      methods: {
+        list: {
+          type: "row-slot",
+        },
+      },
+    },
+    {
       id: "lahan_size",
       label: "Luas Lahan",
       methods: {

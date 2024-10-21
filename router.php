@@ -233,6 +233,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('SoftDeleteLahan', 'Api\LahanController@SoftDeleteLahan');
     Route::post('UpdateDetailLahanPohon', 'Api\LahanController@UpdateDetailLahanPohon');
     Route::post('UpdateProjectLahan', 'Api\LahanController@UpdateProjectLahan');
+    Route::get('lahan-2', 'Api\LahanController@Lahan2Find');
     
     //TUTUPAN LAHAN
     Route::get('GetLahanTutupanRequestAllAdmin', 'Api\LahanTutupanController@GetLahanTutupanRequestAllAdmin');
@@ -759,6 +760,10 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::get('GetSostamAll_new', 'Api\SosialisasiTanamController@GetSostamAll_new');
         Route::get('GetDetailSostam_new', 'Api\SosialisasiTanamController@GetDetailSostam_new');
         
+        Route::get('new-sostam/list/distribution-calendar', 'Api\DistributionController@DistributionCalendar_new');
+        
+        Route::post('new-sostam/create/new-data', 'Api\SosialisasiTanamController@AddSosialisasiTanam_new');
+        
     // FARMER TRAINING
         Route::get('GetFarmerTrainingAll_new', 'Api\FarmerTrainingController@GetFarmerTrainingAll_new');
     // NEW MASTER DATA
@@ -789,11 +794,15 @@ Route::group(['middleware' => ['auth:api']], function () {
     //Lahan
         Route::get('GetLahanAll_new', 'Api\LahanController@GetLahanAll_new');
         Route::get('GetLahanByLahan_no_new', 'Api\LahanController@GetLahanByLahan_no_new');
+        Route::get('lahans-by-lahan-no', 'Api\LahanController@GetLahansByLahanNo_new');
         Route::get('getDetailLahan_new', 'Api\LahanController@getDetailLahan_new');
         Route::get('getLahanTermAnswer_new', 'Api\LahanController@getLahanTermAnswer_new');
         Route::get('getExportDataLahanFarmer_new', 'Api\LahanController@getExportDataLahanFarmer_new');
     
         Route::post('UpdateLahanApproval_new', 'Api\LahanController@UpdateLahanApproval_new');
+        
+        Route::post('update-lahan/polygon-tutupan', 'Api\LahanController@UpdateLahanPolygonTutupan');
+        Route::post('update-lahan/legal-eligibility', 'Api\LahanController@UpdateLahanLegalEligibility');
     
         Route::post('addLahanTermAnswer_new', 'Api\LahanController@addLahanTermAnswer_new');
         Route::post('UpdateLahanByGIS_new', 'Api\LahanController@UpdateLahanByGIS_new');
@@ -811,8 +820,22 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('createFarmerLahanMOU_new', 'Api\LahanController@createFarmerLahanMOU_new');
         Route::post('updateFarmerLahanMOU_new', 'Api\LahanController@updateFarmerLahanMOU_new');
         Route::post('deleteFarmerLahanMOU_new', 'Api\LahanController@deleteFarmerLahanMOU_new');
-        
         Route::post('farmer-mou/print', 'Api\LahanController@farmerMouPrint');
+        Route::post('farmer-mou/print-appendix', 'Api\LahanController@farmerMouPrintAppendix');
+        Route::post('farmer-mou/update', 'Api\LahanController@farmerMouUpdate');
+        Route::post('farmer-mou/approve', 'Api\LahanController@farmerMouApprove');
+        Route::get('farmer-mou/find', 'Api\LahanController@farmerMouFind');
+        
+        Route::get('lahan-export/social-impact-officer', 'Api\LahanController@getExportDataLahanFarmerSocialImpact_new');
+        Route::get('lahan-export/for-report-data', 'Api\LahanController@getExportDataLahanFarmerWithDetailReport_new');
+        
+        Route::get('lahan_dev/test', 'Api\LahanController@LahansTestAPI');
+        
+        // Lahan Assestment
+        Route::post('AddLahanAssestment', 'Api\LahanAssestmentController@AddLahanAssestment');
+        Route::post('UpdateLahanAssestment', 'Api\LahanAssestmentController@UpdateLahanAssestment');
+        Route::get('GetDetailLahanAssestment', 'Api\LahanAssestmentController@GetDetailLahanAssestment');
+        
     // NEW UTILITIES
     // Employees
     Route::get('getEmployeeList_new', 'Api\EmployeeController@getEmployeeList_new');
@@ -820,8 +843,18 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('deleteEmployeeData_new', 'Api\EmployeeController@deleteEmployeeData_new');
     Route::post('addEmployeePosition_new', 'Api\EmployeeController@addEmployeePosition_new');
     
-    //Desas
+    //areas
+    
     Route::get('GetDesaByKecamatanTA_new', 'Api\UtilitiesController@GetDesaByKecamatanTA_new');
+    //kemandagri
+    Route::get('new-utilities/desas', 'Api\UtilitiesController@GetDesaDynamicly');
+    Route::get('new-utilities/kecamatans', 'Api\UtilitiesController@GetKecamatanDynamicly');
+    Route::get('new-utilities/kabupatens', 'Api\UtilitiesController@GetKabupatenDynamicly');
+    Route::get('new-utilities/provinces', 'Api\UtilitiesController@GetProvincesDynamicly');
+    //T4T area management system
+    Route::get('new-utilities/target-areas', 'Api\UtilitiesController@GetTargetAreaDynamicly');
+    Route::get('new-utilities/management-units', 'Api\UtilitiesController@GetManagementUnitDynamicly');
+    
     // TA
     Route::get('GetTA_new', 'Api\UtilitiesController@GetTA_new');
     
@@ -834,4 +867,9 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('ControllerTestAPI', 'UserController@ControllerTestAPI');
     Route::get('getImageRouteForDev', 'UserController@getImageRouteForDev');
     Route::get('EmailToYongs', 'Api\TemporaryController@EmailtoExporter');
+    
+    // new dashboard
+    Route::get('new-dashboard/land-by-purpose', 'Api\DashboardController@CountLandByProjectPurpose');
+    Route::get('new-dashboard/farmers', 'Api\DashboardController@CountFarmers');
+    Route::get('new-dashboard/ff', 'Api\DashboardController@CountFieldFacilitators');
 });

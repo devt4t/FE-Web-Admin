@@ -118,63 +118,6 @@ export default {
   },
 
   methods: {
-    // async onExportExcel(data) {
-    //   this.$_alert.loading(
-    //     "Sedang mengexport data",
-    //     "Mohon tunggu sebentar, proses ini memerlukan waktu beberapa detik"
-    //   );
-    //   const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
-    //   let reqParams = Object.assign(data.filter, data.params);
-    //   reqParams.limit = parseInt(data.totalRecord * 1.5);
-    //   const dataList = await this.$_api
-    //     .get("GetFormMinatBulkData_new", reqParams)
-    //     .then((res) => {
-    //       return res.data;
-    //     })
-    //     .catch(() => {
-    //       return false;
-    //     });
-
-    //   if (!dataList) {
-    //     this.$_alert.error(
-    //       {},
-    //       "Export Gagal",
-    //       "Gagal mengambil data list sosialisasi program"
-    //     );
-    //   }
-    //   const axiosConfig = {
-    //     method: "POST",
-    //     url: `${this.$_config.baseUrlExport}export/soc-prog/excel`,
-    //     responseType: "arraybuffer",
-    //     data: {
-    //       data: dataList,
-    //     },
-    //   };
-
-    //   const exported = await axios(axiosConfig)
-    //     .then((res) => {
-    //       return res;
-    //     })
-    //     .catch((err) => {
-    //       return false;
-    //     });
-
-    //   if (!exported) {
-    //     return this.$_alert.error({}, "Export Gagal");
-    //   }
-    //   const url = URL.createObjectURL(new Blob([exported.data]));
-    //   const link = document.createElement("a");
-    //   link.href = url;
-    //   const filename = `sosialisasi-program-export${moment().format(
-    //     "DMMYYYYHHmmss"
-    //   )}.xlsx`;
-    //   link.setAttribute("download", filename);
-    //   document.body.appendChild(link);
-    //   link.click();
-
-    //   this.$_alert.success("Successfully");
-    // },
 
     //refactored
     async onExportExcel(data) {

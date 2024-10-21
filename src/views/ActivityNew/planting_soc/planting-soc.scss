@@ -1,3 +1,4 @@
+@import "../../../assets/scss/variables";
 
 .distribution-calendar .mx-calendar.mx-calendar-panel-date {
     width: 100% !important;
@@ -36,6 +37,7 @@
     background-color: rgba(224, 224, 224, 0.514);
 }
 
+
 .distribution-date {
     background-color: #F3F6F9;
     padding: 1em 2em;
@@ -43,23 +45,36 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-}
+    &.success {
+        background-color: $success_light !important;
+        i, label, .distribution-date-label {
+            color: $success !important;
+        }
 
-.distribution-date i {
-    font-size: 2em !important;
-    color: #1F4F94 !important;
-}
+        .distribution-date-label {
+            
+            font-size: 1.2em;
+        }
+    }
 
-.distribution-date label {
-    font-size: 1em;
-    font-weight: 500;
-    color: #1F4F94;
-}
+    
 
-.distribution-date .distribution-date-label {
-    font-size: 1.2em;
-    font-weight: 700;
-    color: #1F4F94;
+     i {
+        font-size: 2em !important;
+        color: #1F4F94 !important;
+    }
+
+     label {
+        font-size: 1em;
+        font-weight: 500;
+        color: #1F4F94;
+    }
+
+     .distribution-date-label {
+        font-weight: 700;
+        color: #1F4F94;
+        font-size: 1em;
+    }
 }
 
 
@@ -67,6 +82,10 @@
     .map-container {
         border: 1px solid rgb(211, 211, 211);
         border-radius: 12px;
+    }
+
+    .distribution-date-row {
+        padding-top: 2em;
     }
 
     .farmer-lahan {

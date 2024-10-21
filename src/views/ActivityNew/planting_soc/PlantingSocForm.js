@@ -19,6 +19,10 @@ export default {
             });
         },
         async onChangeFf(data) {
+            if (!data) {
+                return
+            }
+            
             this.ffCurrent = data
             this.allocations = []
             this.ffLahanData = []
@@ -34,14 +38,15 @@ export default {
             })
 
             if (Array.isArray(response.data) && response.data.length > 0 ) {
+                this.nurseryLocation = {
+                    address_nursery: response.data[0].address_nursery,
+                    name_location_nursery: response.data[0].name_location_nursery,
+                    location_nursery_id: response.data[0].location_nursery_id
+                }
                 this.allocations = response.data[0].allocation_periode_days
-
                 for (const allocation of this.allocations) {
                     this.availableDate.push(allocation.date_allocation)
                 }
-
-                console.log('testing',this.availableDate);
-                
             }
 
 
@@ -67,8 +72,20 @@ export default {
 
             }
             this.lahans = ffLahanData
+            this.validateSostam()
             this.loading = false
             
+        },
+
+        validateSostam() {
+            if (!this.ffCurrent) return
+
+            console.log(this.availableDate);
+            console.log('date', this.dateDistributionCurrent);
+            
+            
+            const isJateng = ['000','001','007', '008', '013', '014', '015', '016', '019'].includes(this.ffCurrent.mu_no)
+            const isJabar = !['000','001','007', '008', '013', '014', '015', '016', '019'].includes(this.ffCurrent.mu_no)
         },
 
         
@@ -133,6 +150,10 @@ export default {
             if (this.loading) return
             this.loading = true;
             const formData = JSON.parse(JSON.stringify(this.formData))
+            const _lahans = JSON.parse(JSON.stringify(this.lahans))
+            for (const lahan of _lahans) {
+                lahan.attendance = lahan.attendance ? 1 : 0
+            }
             
             let payload = {
                 ...formData,
@@ -142,14 +163,23 @@ export default {
                 distribution_latitude: this.marker._lngLat.lat,
                 distribution_longitude: this.marker._lngLat.lng,
                 distribution_rec_armada: formData.rec_armada,
-                distribution_coordinate: `${this.marker._lngLat.lat} ${this.marker._lngLat.lng}`,
+                distribution_coordinates: `${this.marker._lngLat.lat} ${this.marker._lngLat.lng}`,
                 planting_time: this.plantingRealizationStart,
-                planting_time_end: this.plantingRealizationEnd,
+                end_planting_time: this.plantingRealizationEnd,
                 penlub_time: this.plantingHoleEnd,
-                start_pembuatan_lubang_tanam: this.plantingHoleStart
+                start_pembuatan_lubang_tanam: this.plantingHoleStart,
+                nursery_location_id: this.nurseryLocation.location_nursery_id,
+                nursery_location_name: this.nurseryLocation.name_location_nursery,
+                absent: this.formData.absent1
             }
             this.loading = false
             console.log('payload', payload);
+
+            this.$_api.post('createSostamByFF', payload)
+                .then(() => {
+                    this.$_alert.success("Sosialisasi tanam berhasil dibuat")
+                    this.$router.go(-1)
+                })
             
         },
 
@@ -204,6 +234,7 @@ export default {
             plantingHoleEnd: null,
             plantingRealizationStart: null,
             plantingRealizationEnd: null,
+            nurseryLocation: null,
             formatDate: (date, format = 'YYYY-MM-DD') => {
                 return moment(date).format(format)
             },

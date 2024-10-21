@@ -158,14 +158,18 @@
                 <button class="toolbar-button mr-2" @click="onRefresh">
                   <v-icon>mdi-refresh</v-icon>
                 </button>
-                <button v-if="config.export" class="toolbar-button label mr-2" @click="onExportExcell()"
-                  style="background-color: #1b5e20">
-                  <v-icon style="color: white">mdi-microsoft-excel</v-icon>
-                </button>
                 <button v-if="config.export" class="toolbar-button label mr-2" @click="onExportPdf()"
                   style="background-color: #ff0000">
                   <v-icon style="color: white">mdi-file-pdf-box</v-icon>
                 </button>
+                <button v-if="config.export" class="toolbar-button label mr-2" @click="onExportExcell()"
+                  style="background-color: #1b5e20">
+                  <v-icon style="color: white">mdi-microsoft-excel</v-icon>
+                </button>
+
+                <slot name="toolbar-button">
+
+                </slot>
 
                 <geko-base-filter v-if="
                   Array.isArray(fields.filter) &&
@@ -247,7 +251,8 @@
         <template v-slot:item.actions="{ item }" v-if="!hideAction">
           <div class="geko-list-actions-wrapper d-flex flex-column">
             <div class="geko-list-actions">
-              <slot name="list-action-detail" v-bind:item="item" v-if="$_sys.isAllowed(config.permission.detail)">
+              <slot name="list-action-detail" v-bind:item="item"
+                v-if="$_sys.isAllowed(config.permission.detail) && !hideDetail">
                 <button v-if="$_sys.isAllowed(config.permission.detail)" class="geko-list-action-view" @click="
                   $router.push({
                     name: $route.name,
