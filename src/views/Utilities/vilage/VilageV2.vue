@@ -1,5 +1,8 @@
 <template>
   <geko-base-crud :config="config">
+    <template v-slot:list-program_year="{ item }">
+      <span class="badge bg-primary">{{ $store.state.tmpProgramYear }}</span>
+    </template>
   </geko-base-crud>
 </template>
 
