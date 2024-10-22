@@ -3083,11 +3083,12 @@ class SosialisasiTanamController extends Controller
                 'farmers.is_dell' => 0,
                 'farmers.approve' => 1,
                 ['main_pivots.program_year', 'LIKE', "%$py%"],
-                ['lahans.approve','!=',0],
+                ['lahans.approve','=',2],
                 'main_pivots.type' => 'farmer_lahan'
             ])
             ->orderBy('lahans.lahan_no')->groupBy('lahans.lahan_no')->get();
         $newLahan = [];
+        $newLahan1 = [];
         $kayu = 0;
         $mpts = 0;
             
@@ -3121,6 +3122,8 @@ class SosialisasiTanamController extends Controller
                 $landVal->total_kayu = $kayu;
                 $landVal->total_mpts = $mpts;
                 $landVal->trees = $landDetails;
+                $kayu = 0;
+                $mpts = 0;
                 array_push($newLahan, $landVal);
             }
         }
@@ -3136,7 +3139,8 @@ class SosialisasiTanamController extends Controller
         $datas = [
             'ff' => $ff,
             'lahans' => $newLahan,
-            'sostam' => $sostam
+            'sostam' => $sostam,
+            'lands' => $lands
         ];
         
         $rslt =  $this->ResultReturn(200, 'success', $datas);

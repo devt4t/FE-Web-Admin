@@ -132,14 +132,14 @@
                                     <td class="text-center">
                                         <span class="d-flex flex-row align-items-center justify-content-center">
                                             <v-icon style="color: green;">mdi-sprout</v-icon>
-                                            <span class="amount">{{ farmer.pohon_kayu }}</span>
+                                            <span class="amount">{{ farmer.total_kayu }}</span>
                                         </span>
                                     </td>
                                     <td class="text-center">
 
                                         <span class="d-flex flex-row align-items-center justify-content-center">
                                             <v-icon style="color: orange;">mdi-sprout</v-icon>
-                                            <span class="amount">{{ farmer.pohon_mpts }}</span>
+                                            <span class="amount">{{ farmer.total_mpts }}</span>
                                         </span>
                                     </td>
                                     <td>
