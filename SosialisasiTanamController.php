@@ -3083,11 +3083,12 @@ class SosialisasiTanamController extends Controller
                 'farmers.is_dell' => 0,
                 'farmers.approve' => 1,
                 ['main_pivots.program_year', 'LIKE', "%$py%"],
-                ['lahans.approve','!=',0],
+                ['lahans.approve','=',2],
                 'main_pivots.type' => 'farmer_lahan'
             ])
             ->orderBy('lahans.lahan_no')->groupBy('lahans.lahan_no')->get();
         $newLahan = [];
+        $newLahan1 = [];
         $kayu = 0;
         $mpts = 0;
             
@@ -3121,6 +3122,8 @@ class SosialisasiTanamController extends Controller
                 $landVal->total_kayu = $kayu;
                 $landVal->total_mpts = $mpts;
                 $landVal->trees = $landDetails;
+                $kayu = 0;
+                $mpts = 0;
                 array_push($newLahan, $landVal);
             }
         }
@@ -3136,7 +3139,8 @@ class SosialisasiTanamController extends Controller
         $datas = [
             'ff' => $ff,
             'lahans' => $newLahan,
-            'sostam' => $sostam
+            'sostam' => $sostam,
+            'lands' => $lands
         ];
         
         $rslt =  $this->ResultReturn(200, 'success', $datas);
@@ -3159,6 +3163,28 @@ class SosialisasiTanamController extends Controller
             $ff = explode(',', $req->ff ?? '');
             $py = $req->program_year;
         }
+        $user = Auth::user();
+        $employeeFfQuery = "
+            SELECT 
+                A.*
+            from main_pivots AS A
+            WHERE A.type = 'fc_ff'
+            AND A.program_year  LIKE  '%" . $py . "%'
+            AND A.key1 = '". $user['employee_no'] ."'
+        ";
+        $employeeFf = DB::select($employeeFfQuery);
+
+        $ffList = [];
+        foreach ($employeeFf as $ff) {
+            $ffList[] = $ff->key2;
+        }
+
+        $positionNoQuery = "select position_no from employees where nik = '" . $user->employee_no . "'";
+        $positionNo = DB::select($positionNoQuery);
+
+        if ( $positionNo[0]->position_no != '19' ) {
+            $ffList = [FALSE];
+        }
         
         $datas = FieldFacilitator::
             select('field_facilitators.name', 'field_facilitators.ff_no', 'ff_working_areas.mu_no')
@@ -3168,9 +3194,15 @@ class SosialisasiTanamController extends Controller
                 ['ff_working_areas.program_year', 'LIKE', "%$py%"],
                 'field_facilitators.active' => 1,
                 'lahans.is_dell' => 0,
-                'lahans.approve' => 1,
+                'lahans.approve' => 2,
             ])
-            ->whereYear('lahans.created_time', $py);
+            ->whereIn('lahans.user_id', $ffList)
+            ->whereYear('lahans.created_time', $py)
+            ->groupBy('field_facilitators.ff_no');
+
+        // if ($positionNo[0]['position_no'] == '19') {
+        //     $datas = 
+        // }
         
         if ($tgd == 'several' && isset($req->ff)) {
             $datas = $datas->whereIn('field_facilitators.ff_no', $ff);
@@ -3201,9 +3233,25 @@ class SosialisasiTanamController extends Controller
         //         array_push($newFF, $val);
         //     }
         // }
-        
-        $rslt =  $this->ResultReturn(200, 'success', $datas);
-        return response()->json($rslt, 200);
+
+
+        // return response()->json([
+        //     'test' => $user['employee_no'],
+        //     'test1' => $ffList,
+        // ], 200);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'status' => [
+                    'code' => 200,
+                    'description' => 'success'
+                ],
+                'result' => $datas,
+                'user' => $positionNo[0]->position_no
+            ]
+        ], 200);
+        // $rslt =  $this->ResultReturn(200, 'success', $datas);
+        // return response()->json($rslt, 200);
     }
     
     public function deleteSosialisasiTanamForm(Request $req) {

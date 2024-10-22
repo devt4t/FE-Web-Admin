@@ -828,6 +828,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         
         Route::get('lahan-export/social-impact-officer', 'Api\LahanController@getExportDataLahanFarmerSocialImpact_new');
         Route::get('lahan-export/for-report-data', 'Api\LahanController@getExportDataLahanFarmerWithDetailReport_new');
+        Route::get('lahan-export/non-carbon', 'Api\LahanController@lahanNonCarbonExport');
         
         Route::get('lahan_dev/test', 'Api\LahanController@LahansTestAPI');
         
