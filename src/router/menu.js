@@ -254,15 +254,15 @@ const menu = [
         prevent_route_validation: true,
         hide: true,
       },
-      {
-        title: "Sosialisasi Tanam",
-        to: "/SosialisasiTanam",
-        component: "Activity/SosialisasiTanam",
-        name: "SosialisasiTanam",
-        permission: "SosialisasiTanam",
-        icon: "mdi-account-badge",
-        type: ["non-carbon"],
-      },
+      // {
+      //   title: "Sosialisasi Tanam",
+      //   to: "/SosialisasiTanam",
+      //   component: "Activity/SosialisasiTanam",
+      //   name: "SosialisasiTanam",
+      //   permission: "SosialisasiTanam",
+      //   icon: "mdi-account-badge",
+      //   type: ["non-carbon"],
+      // },
       {
         title: "Sosialisasi Tanam",
         to: "/sosialisasi-tanam-v2",
@@ -297,7 +297,6 @@ const menu = [
         permission: "PelatihanPetani",
         icon: "mdi-handshake",
         type: ["non-carbon"],
-        hide: true,
       },
       {
         title: "Lubang Tanam",
@@ -325,15 +324,15 @@ const menu = [
         permission: "Distribusi",
         hide: true,
       },
-      {
-        title: "Distribusi",
-        to: "/Distribusi",
-        component: "Activity/Distribusi",
-        name: "Distribusi",
-        permission: "Distribusi",
-        icon: "mdi-truck-fast",
-        type: ["non-carbon"],
-      },
+      // {
+      //   title: "Distribusi",
+      //   to: "/Distribusi",
+      //   component: "Activity/Distribusi",
+      //   name: "Distribusi",
+      //   permission: "Distribusi",
+      //   icon: "mdi-truck-fast",
+      //   type: ["non-carbon"],
+      // },
 
       {
         title: "Realisasi Tanam",

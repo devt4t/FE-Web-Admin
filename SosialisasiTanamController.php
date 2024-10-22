@@ -3168,7 +3168,6 @@ class SosialisasiTanamController extends Controller
             AND A.program_year  LIKE  '%" . $py . "%'
             AND A.key1 = '". $user['employee_no'] ."'
         ";
-
         $employeeFf = DB::select($employeeFfQuery);
 
         $ffList = [];
@@ -3176,6 +3175,12 @@ class SosialisasiTanamController extends Controller
             $ffList[] = $ff->key2;
         }
 
+        $positionNoQuery = "select position_no from employees where nik = '" . $user->employee_no . "'";
+        $positionNo = DB::select($positionNoQuery);
+
+        if ( $positionNo[0]->position_no != '19' ) {
+            $ffList = [FALSE];
+        }
         
         $datas = FieldFacilitator::
             select('field_facilitators.name', 'field_facilitators.ff_no', 'ff_working_areas.mu_no')
@@ -3190,6 +3195,10 @@ class SosialisasiTanamController extends Controller
             ->whereIn('lahans.user_id', $ffList)
             ->whereYear('lahans.created_time', $py)
             ->groupBy('field_facilitators.ff_no');
+
+        // if ($positionNo[0]['position_no'] == '19') {
+        //     $datas = 
+        // }
         
         if ($tgd == 'several' && isset($req->ff)) {
             $datas = $datas->whereIn('field_facilitators.ff_no', $ff);
@@ -3226,9 +3235,19 @@ class SosialisasiTanamController extends Controller
         //     'test' => $user['employee_no'],
         //     'test1' => $ffList,
         // ], 200);
-        
-        $rslt =  $this->ResultReturn(200, 'success', $datas);
-        return response()->json($rslt, 200);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'status' => [
+                    'code' => 200,
+                    'description' => 'success'
+                ],
+                'result' => $datas,
+                'user' => $positionNo[0]->position_no
+            ]
+        ], 200);
+        // $rslt =  $this->ResultReturn(200, 'success', $datas);
+        // return response()->json($rslt, 200);
     }
     
     public function deleteSosialisasiTanamForm(Request $req) {
