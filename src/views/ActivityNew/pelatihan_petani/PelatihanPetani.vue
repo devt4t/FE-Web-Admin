@@ -12,7 +12,7 @@
     </template>
 
     <template v-slot:create-form>
-      <div></div>
+      <pelatihan-petani-create></pelatihan-petani-create>
     </template>
 
     <template v-slot:detail-action="{ item }">
