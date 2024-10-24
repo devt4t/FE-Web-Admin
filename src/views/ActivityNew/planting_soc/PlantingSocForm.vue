@@ -29,6 +29,15 @@
                         }" @selected="onChangeFf($event)" />
                     </v-col>
 
+                    <v-col md="12">
+                        <geko-input v-model="formData.soc_date" :item="{
+                            label: 'Tanggal Sostam',
+                            type: 'date',
+                            validation: ['required'],
+
+                        }" />
+                    </v-col>
+
                     <v-col md="8">
 
                         <span class="geko-input" style="position: relative;">
