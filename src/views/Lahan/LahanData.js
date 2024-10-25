@@ -220,5 +220,97 @@ export default {
       label: 'Podsolik Haplik',
       code: 'Podsolik Haplik',
     },
+  ],
+  farming_system: [
+    {
+      name: "Pertanian Skala Kecil (Sayuran)",
+      code: "Pertanian Skala Kecil (Sayuran)",
+    },
+    {
+      name: "Kopi",
+      code: "Kopi",
+    },
+    {
+      name: "Penanaman Pohon dan Tanaman secara Tumpang Sari",
+      code: "Penanaman Pohon dan Tanaman secara Tumpang Sari",
+    },
+    {
+      name: "Sawah",
+      code: "Sawah",
+    },
+    {
+      name: "Sangat Tererosi/Terkikis, Tidak Cocok untuk Pertanian",
+      code: "Sangat Tererosi/Terkikis, Tidak Cocok untuk Pertanian",
+    },
+    {
+      name: "Lainnya",
+      code: "Lainnya",
+    },
+  ],
+  contact: [
+    {
+      name: "Email",
+      code: "Email",
+    },
+    {
+      name: "Telepon",
+      code: "Telepon",
+    },
+    {
+      name: "Whatsapp",
+      code: "Whatsapp",
+    }
+  ],
+  land_used_proof: [
+    {
+      name: "Pemilik lahan menyediakan bukti penggunaan lahan",
+      code: "Pemilik lahan menyediakan bukti penggunaan lahan",
+    },
+    {
+      name: "Pemilik lahan tidak menyediakan bukti penggunaan lahan",
+      code: "Pemilik lahan tidak menyediakan bukti penggunaan lahan",
+    }
+  ],
+  expected_proof: [
+    {
+      name: "Vegetasi tutupan yang sangat minimum",
+      code: "Vegetasi tutupan yang sangat minimum",
+    },
+    {
+      name: "Tidak ada tutupan pohon yang signifikan",
+      code: "Tidak ada tutupan pohon yang signifikan",
+    }
+  ],
+  risk: [
+    {
+      name: "Informasi dari pemilik lahan",
+      code: "Informasi dari pemilik lahan",
+    },
+    {
+      name: "Pengamatan selama kunjungan",
+      code: "Pengamatan selama kunjungan",
+    },
+    {
+      name: "Ada tanda-tanda kejadian",
+      code: "Ada tanda-tanda kejadian",
+    }
+  ],
+  type_owner: [
+    {
+      name: "Sertifikat",
+      code: "Sertifikat",
+    },
+    {
+      name: "Letter C",
+      code: "Letter C",
+    },
+    {
+      name: "Akta Jual Beli",
+      code: "Akta Jual Beli",
+    },
+    {
+      name: "Lahan Waris/Sewa/Kuasa Garap",
+      code: "Lahan Waris/Sewa/Kuasa Garap",
+    }
   ]
 };

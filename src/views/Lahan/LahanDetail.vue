@@ -74,6 +74,12 @@
                     data.main_lahan.updated_gis.toLowerCase() === 'sudah')
                 " variant="success" class="mr-1 mb-2" @click="toggleVerificationFc">Verifikasi FC</v-btn>
                 <v-btn v-if="
+                  !openFcAssestment &&
+                  data.main_lahan &&
+                  (data.main_lahan.updated_gis.toLowerCase() === 'sudah')
+                " variant="success" class="mr-1 mb-2" @click="openFcAssestment = true;verifRole = 'fc-assestment'">
+                Lahan Assestment</v-btn>
+                <v-btn v-if="
                   !openUm &&
                   $_sys.isAllowed('lahan-um-verification-create') &&
                   data.main_lahan &&
@@ -243,6 +249,20 @@
             getData();
             " @close="
               openFc = false;
+            verifRole = null;
+            " />
+
+          <lahan-assestment v-if="
+            data.main_lahan &&
+            openFcAssestment
+          " :data="data.main_lahan" :questions="data.lahan_term_question_list.filter((x) => x.role_id == 19)
+          " :answers="data.lahan_term_answer_list" :assestment="data.lahan_assestment ?? data.main_lahan" :role="verifRole"
+            :isCarbonProject="getProject(data.lahan_project) === 'carbon'" :create="data.lahan_assestment ?? 'CREATE'" @success="
+              componentKey += 1;
+            openFcAssestment = false;
+            getData();
+            " @close="
+              openFcAssestment = false;
             verifRole = null;
             " />
 
@@ -763,6 +783,7 @@ import moment from "moment";
 import LahanDetailStatusBadge from './components/LahanDetailStatusBadge.vue'
 import LahanDetailLogData from "./components/LahanDetailLogData.vue";
 import LahanDetailData from './LahanDetailData.js'
+import LahanAssestment from "./components/LahanAssestment.vue";
 
 export default {
   name: "land-detail",
@@ -777,7 +798,8 @@ export default {
     LahanAppendixPrint,
     LahanVerificationFcNonCarbon,
     LahanDetailStatusBadge,
-    LahanDetailLogData
+    LahanDetailLogData,
+    LahanAssestment
   },
   methods: {
     test() {
