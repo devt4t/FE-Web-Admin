@@ -27,7 +27,10 @@
             </template>
 
             <template v-slot:item.land_area="{ item }">
-                {{ item.lahan_datas?.land_area }}
+                <span class="font-weight-bold" v-if="item.lahan_datas">
+                    {{ item.lahan_datas.luas_lahan_gis ? item.lahan_datas.luas_lahan_gis : item.lahan_datas.luas_lahan
+                    }} m2
+                </span>
             </template>
 
             <template v-slot:item.coordinate="{ item }">
@@ -103,7 +106,8 @@ export default {
                 // },
                 {
                     text: 'Total Bibit',
-                    value: 'max_seed_amount'
+                    value: 'total_seed',
+                    class: 'font-weight-bold'
                 },
                 {
                     text: 'Tahun Tanam',
@@ -124,6 +128,16 @@ export default {
             ],
             data: [],
             loading: true
+        }
+    },
+
+    watch: {
+        item: {
+            deep: true,
+            handler(t) {
+                this.data = []
+                this.getData()
+            }
         }
     },
     props: {

@@ -2,9 +2,13 @@
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="true" :hideUpdate="true">
 
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn variant="success" small class="mt-2" @click="onVerif(item)">
+            <v-btn v-if="!item.verified" variant="success" small class="mt-2" @click="onVerif(item)">
                 <v-icon small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
+            </v-btn>
+            <v-btn v-else variant="danger" small class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
             </v-btn>
         </template>
         <template v-slot:list-expanded-item="{ headers, item }">
@@ -44,6 +48,21 @@ export default {
                         this.$_alert.success('Sostam berhasil diverifikasi')
                         this.$refreshKey += 1
                     })
+
+            }
+        },
+        async onUnverif(item) {
+            const prompt = await this.$_alert.confirm('Unverifikasi Data Sostam?', 'Apakah anda yakin akan mengurungkan verifikasi data sostam ini?', 'Ya, Unverifikasi', 'Batal', true)
+
+            if (prompt.isConfirmed) {
+                // this.$_api.post('ValidateSosisalisasiTanam', {
+                //     soc_no: item.soc_no,
+                //     validate_by: this.$store.state.User.employee_no
+                // })
+                //     .then(() => {
+                //         this.$_alert.success('Sostam berhasil diverifikasi')
+                //         this.$refreshKey += 1
+                //     })
 
             }
         }
