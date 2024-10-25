@@ -13,12 +13,9 @@
               <div class="form-stepper-header-splitter">
                 <span></span>
               </div>
-              <div
-                class="form-stepper-header-item"
-                :class="{
-                  active: true,
-                }"
-              >
+              <div class="form-stepper-header-item" :class="{
+                active: true,
+              }">
                 <span class="value">2</span>
                 <span class="label">PRA</span>
               </div>
@@ -28,240 +25,170 @@
 
         <!-- FORM -->
         <v-row>
-          <v-col
-            md="12"
-            class="form-separator d-flex flex-row"
-            style="align-items: center"
-          >
+          <v-col md="12" class="form-separator d-flex flex-row" style="align-items: center">
             <h4>Data Scooping &amp; RRA</h4>
           </v-col>
 
           <v-col lg="5">
-            <geko-input
-              v-model="$route.query.scooping_visit_code"
-              :item="{
-                type: 'text',
-                validation: ['required'],
-                label: 'No. Scooping Visit',
-              }"
-              :disabled="true"
-            />
+            <geko-input v-model="$route.query.scooping_visit_code" :item="{
+              type: 'text',
+              validation: ['required'],
+              label: 'No. Scooping Visit',
+            }" :disabled="true" />
           </v-col>
 
           <v-col lg="6">
-            <geko-input
-              v-model="$route.query.rra_code"
-              :item="{
-                type: 'text',
-                validation: ['required'],
-                label: 'No. RRA',
-              }"
-              :disabled="true"
-            />
+            <geko-input v-model="$route.query.rra_code" :item="{
+              type: 'text',
+              validation: ['required'],
+              label: 'No. RRA',
+            }" :disabled="true" />
           </v-col>
 
           <v-col lg="5">
-            <geko-input
-              v-model="$route.query.scooping_visit_village"
-              :item="{
-                type: 'text',
-                validation: ['required'],
-                label: 'Desa ',
-              }"
-              :disabled="true"
-            />
+            <geko-input v-model="$route.query.scooping_visit_village" :item="{
+              type: 'text',
+              validation: ['required'],
+              label: 'Desa ',
+            }" :disabled="true" />
           </v-col>
 
           <v-col lg="6">
-            <geko-input
-              :item="{
-                type: 'text',
-                label: 'Tanggal Scooping',
-              }"
-              :disabled="true"
-              :value="`${formatDate(
-                $route.query.scooping_visit_start
-              )} - ${formatDate($route.query.scooping_visit_end)}`"
-            />
+            <geko-input :item="{
+              type: 'text',
+              label: 'Tanggal Scooping',
+            }" :disabled="true" :value="`${formatDate(
+              $route.query.scooping_visit_start
+            )} - ${formatDate($route.query.scooping_visit_end)}`" />
           </v-col>
           <template v-for="(parent, i) in config">
-            <v-col
-              md="12"
-              class="form-separator d-flex flex-row"
-              style="align-items: center"
-            >
+            <v-col md="12" class="form-separator d-flex flex-row" style="align-items: center">
               <h4>{{ parent.name }}</h4>
-              <v-btn
-                v-if="
-                  (parent.fieldData !== 'farmerIncomes' ||
-                    (parent.fieldData === 'farmerIncomes' &&
-                      formData.collection_type === 'Sampling')) &&
-                  parent.fieldData
-                "
-                small
-                variant="success"
-                class="ml-3"
-                @click="addRow(parent.fieldData)"
-                ><v-icon small>mdi-plus</v-icon></v-btn
-              >
+              <v-btn v-if="
+                (parent.fieldData !== 'farmerIncomes' ||
+                  (parent.fieldData === 'farmerIncomes' &&
+                    formData.collection_type === 'Sampling')) &&
+                parent.fieldData
+              " small variant="success" class="ml-3" @click="addRow(parent.fieldData)"><v-icon
+                  small>mdi-plus</v-icon></v-btn>
             </v-col>
 
-            <v-col
-              md="12"
-              v-if="
-                (Array.isArray(formFieldData[parent.fieldData]) &&
-                  formFieldData[parent.fieldData].length > 0) ||
-                !parent.fieldData
-              "
-            >
+            <v-col md="12" v-if="
+              (Array.isArray(formFieldData[parent.fieldData]) &&
+                formFieldData[parent.fieldData].length > 0) ||
+              !parent.fieldData
+            ">
               <div class="bg-grey">
-                <v-row
-                  v-if="
-                    (Array.isArray(parent.fields) &&
-                      parent.fields.filter(
-                        (x) => x.main_form && x.pre_main_form
-                      ).length > 0) ||
-                    !parent.fieldData
-                  "
-                >
-                  <v-col
-                    v-for="(input, k) in parent.fields.filter(
+                <v-row v-if="
+                  (Array.isArray(parent.fields) &&
+                    parent.fields.filter(
                       (x) => x.main_form && x.pre_main_form
-                    )"
-                    :key="`f-${i}-${k}`"
-                    :md="input.size"
-                  >
-                    <geko-input
-                      v-model="formData[input.setter]"
-                      :item="{
+                    ).length > 0) ||
+                  !parent.fieldData
+                ">
+                  <v-col v-for="(input, k) in parent.fields.filter(
+                    (x) => x.main_form && x.pre_main_form
+                  )" :key="`f-${i}-${k}`" :md="input.size">
+                    <geko-input v-model="formData[input.setter]" :item="{
+                      label: input.name,
+                      validation: input.validation || [],
+                      type: input.type || 'text',
+                      api: input.api || '',
+                      getterKey: input.getterKey,
+                      option: ['select', 'select-radio'].includes(input.type)
+                        ? {
+                          default_options: input.options || null,
+                          multiple: input.multiple,
+                          list_pointer: {
+                            code: input.code ? input.code : 'code',
+                            label: input.label ? input.label : 'name',
+                            display: [input.label ? input.label : 'name'],
+                          },
+                        }
+                        : null,
+                    }" />
+                  </v-col>
+                </v-row>
+                <v-row v-for="(f, j) in formFieldData[parent.fieldData]"
+                  v-if="parent.fields.filter((x) => !x.main_form).length > 0" :key="`f-${i}-${j}`">
+                  <template v-for="(input, k) in parent.fields.filter(
+                    (x) => !x.main_form
+                  )" v-if="
+                    (!input.show_if && !input.item_show_if) ||
+                    (input.show_if &&
+                      formData[input.show_if] == input.show_if_equals) ||
+                    (input.item_show_if &&
+                      f[input.item_show_if] == input.item_show_if_equals)
+                  ">
+                    <v-col :md="input.size" :key="`f-${i}-${j}-${k}`">
+                      <div v-if="input.type === 'delete'" class="d-flex flex-column"
+                        style="height: 100%; justify-content: center">
+                        <button v-if="
+                          formFieldData[parent.fieldData].length >
+                          (parent.allowEmpty ? 0 : 1)
+                        " class="text-danger" @click="removeRow(parent.fieldData, j)">
+                          <v-icon class="text-danger">mdi-close</v-icon>
+                        </button>
+                      </div>
+                      <geko-input v-else v-model="f[input.setter]" :item="{
                         label: input.name,
                         validation: input.validation || [],
                         type: input.type || 'text',
                         api: input.api || '',
-                        getterKey: input.getterKey,
-                        option: ['select', 'select-radio'].includes(input.type)
+                        option: ['select', 'select-radio'].includes(
+                          input.type
+                        )
                           ? {
-                              default_options: input.options || null,
-                              multiple: input.multiple,
-                              list_pointer: {
-                                code: input.code ? input.code : 'code',
-                                label: input.label ? input.label : 'name',
-                                display: [input.label ? input.label : 'name'],
-                              },
-                            }
+                            default_options: input.options || null,
+                            multiple: input.multiple,
+                            getterKey: input.getterKey,
+                            list_pointer: {
+                              code: input.code ? input.code : 'code',
+                              label: input.label ? input.label : 'name',
+                              display: [input.label ? input.label : 'name'],
+                            },
+                          }
                           : null,
-                      }"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row
-                  v-for="(f, j) in formFieldData[parent.fieldData]"
-                  v-if="parent.fields.filter((x) => !x.main_form).length > 0"
-                  :key="`f-${i}-${j}`"
-                >
-                  <template
-                    v-for="(input, k) in parent.fields.filter(
-                      (x) => !x.main_form
-                    )"
-                    v-if="
-                      (!input.show_if && !input.item_show_if) ||
-                      (input.show_if &&
-                        formData[input.show_if] == input.show_if_equals) ||
-                      (input.item_show_if &&
-                        f[input.item_show_if] == input.item_show_if_equals)
-                    "
-                  >
-                    <v-col :md="input.size" :key="`f-${i}-${j}-${k}`">
-                      <div
-                        v-if="input.type === 'delete'"
-                        class="d-flex flex-column"
-                        style="height: 100%; justify-content: center"
-                      >
-                        <button
-                          v-if="
-                            formFieldData[parent.fieldData].length >
-                            (parent.allowEmpty ? 0 : 1)
-                          "
-                          class="text-danger"
-                          @click="removeRow(parent.fieldData, j)"
-                        >
-                          <v-icon class="text-danger">mdi-close</v-icon>
-                        </button>
-                      </div>
-                      <geko-input
-                        v-else
-                        v-model="f[input.setter]"
-                        :item="{
-                          label: input.name,
-                          validation: input.validation || [],
-                          type: input.type || 'text',
-                          api: input.api || '',
-                          option: ['select', 'select-radio'].includes(
-                            input.type
-                          )
-                            ? {
-                                default_options: input.options || null,
-                                multiple: input.multiple,
-                                getterKey: input.getterKey,
-                                list_pointer: {
-                                  code: input.code ? input.code : 'code',
-                                  label: input.label ? input.label : 'name',
-                                  display: [input.label ? input.label : 'name'],
-                                },
-                              }
-                            : null,
-                        }"
-                      />
+                      }" />
                     </v-col>
                   </template>
                 </v-row>
 
-                <v-row
-                  v-if="
-                    Array.isArray(parent.fields) &&
-                    parent.fields.filter((x) => x.main_form && !x.pre_main_form)
-                      .length > 0
-                  "
-                >
-                  <v-col
-                    v-for="(input, k) in parent.fields.filter(
-                      (x) => x.main_form && !x.pre_main_form
-                    )"
-                    v-if="
-                      !input.show_if ||
-                      (input.show_if &&
-                        formData[input.show_if] == input.show_if_equals)
-                    "
-                    :class="{
+                <v-row v-if="
+                  Array.isArray(parent.fields) &&
+                  parent.fields.filter((x) => x.main_form && !x.pre_main_form)
+                    .length > 0
+                ">
+                  <v-col v-for="(input, k) in parent.fields.filter(
+                    (x) => x.main_form && !x.pre_main_form
+                  )" v-if="
+                    !input.show_if ||
+                    (input.show_if &&
+                      formData[input.show_if] == input.show_if_equals)
+                  " :class="{
                       'm-0 p-0': input.type === 'group',
-                    }"
-                    :md="input.size"
-                  >
+                    }" :md="input.size">
                     <div v-if="input.type === 'group'">
                       <h5>{{ input.name }}</h5>
                     </div>
-                    <geko-input
-                      v-else
-                      v-model="formData[input.setter]"
-                      :item="{
-                        label: input.name,
-                        validation: input.validation || [],
-                        type: input.type || 'text',
-                        api: input.api || '',
-                        option: ['select', 'select-radio'].includes(input.type)
-                          ? {
-                              default_options: input.options || null,
-                              multiple: input.multiple,
-                              getterKey: input.getterKey,
-                              list_pointer: {
-                                code: input.code ? input.code : 'code',
-                                label: input.label ? input.label : 'name',
-                                display: [input.label ? input.label : 'name'],
-                              },
-                            }
-                          : null,
-                      }"
-                    />
+                    <geko-input v-else v-model="formData[input.setter]" :item="{
+                      label: input.name,
+                      validation: input.validation || [],
+                      type: input.type || 'text',
+                      api: input.api || '',
+                      option: ['select', 'select-radio'].includes(input.type)
+                        ? {
+                          default_options: input.options || null,
+                          multiple: input.multiple,
+                          getterKey: input.getterKey,
+                          list_pointer: {
+                            code: input.code ? input.code : 'code',
+                            label: input.label ? input.label : 'name',
+                            display: [input.label ? input.label : 'name'],
+                          },
+                        }
+                        : null,
+                    }" />
                   </v-col>
                 </v-row>
               </div>
@@ -293,27 +220,19 @@
                 </thead>
 
                 <tbody>
-                  <tr
-                    v-for="(item, i) in formFieldData.existingProblems"
-                    :key="`index-${i}`"
-                  >
+                  <tr v-for="(item, i) in formFieldData.existingProblems" :key="`index-${i}`">
                     <td class="text-center">
                       <span v-if="item.problem_name">{{
                         item.problem_name
                       }}</span>
-                      <span v-else class="text-italic text-09-em text-grey"
-                        >Isi nama masalah terlebih dahulu</span
-                      >
+                      <span v-else class="text-italic text-09-em text-grey">Isi nama masalah terlebih dahulu</span>
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button
-                          v-for="(child, j) in formFieldData.existingProblems"
-                          @click="
-                            item.impact_to_people =
-                              j + 1 == item.impact_to_people ? null : j + 1
-                          "
-                          :class="{
+                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
+                          item.impact_to_people =
+                          j + 1 == item.impact_to_people ? null : j + 1
+                          " :class="{
                             'problem-matrix-btn': true,
                             active: item.impact_to_people == j + 1,
                             disabled:
@@ -323,29 +242,23 @@
                               formFieldData.existingProblems.findIndex(
                                 (x) => x.impact_to_people == j + 1
                               ) !== i,
-                          }"
-                          :disabled="
-                            formFieldData.existingProblems.find(
-                              (x) => x.impact_to_people == j + 1
-                            ) &&
+                          }" :disabled="formFieldData.existingProblems.find(
+                            (x) => x.impact_to_people == j + 1
+                          ) &&
                             formFieldData.existingProblems.findIndex(
                               (x) => x.impact_to_people == j + 1
                             ) !== i
-                          "
-                        >
+                            ">
                           {{ j + 1 }}
                         </button>
                       </div>
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button
-                          v-for="(child, j) in formFieldData.existingProblems"
-                          @click="
-                            item.interval_problem =
-                              j + 1 == item.interval_problem ? null : j + 1
-                          "
-                          :class="{
+                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
+                          item.interval_problem =
+                          j + 1 == item.interval_problem ? null : j + 1
+                          " :class="{
                             'problem-matrix-btn': true,
                             active: item.interval_problem == j + 1,
                             disabled:
@@ -355,29 +268,23 @@
                               formFieldData.existingProblems.findIndex(
                                 (x) => x.interval_problem == j + 1
                               ) !== i,
-                          }"
-                          :disabled="
-                            formFieldData.existingProblems.find(
-                              (x) => x.interval_problem == j + 1
-                            ) &&
+                          }" :disabled="formFieldData.existingProblems.find(
+                            (x) => x.interval_problem == j + 1
+                          ) &&
                             formFieldData.existingProblems.findIndex(
                               (x) => x.interval_problem == j + 1
                             ) !== i
-                          "
-                        >
+                            ">
                           {{ j + 1 }}
                         </button>
                       </div>
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button
-                          v-for="(child, j) in formFieldData.existingProblems"
-                          @click="
-                            item.priority =
-                              j + 1 == item.priority ? null : j + 1
-                          "
-                          :class="{
+                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
+                          item.priority =
+                          j + 1 == item.priority ? null : j + 1
+                          " :class="{
                             'problem-matrix-btn': true,
                             active: item.priority == j + 1,
                             disabled:
@@ -387,29 +294,23 @@
                               formFieldData.existingProblems.findIndex(
                                 (x) => x.priority == j + 1
                               ) !== i,
-                          }"
-                          :disabled="
-                            formFieldData.existingProblems.find(
-                              (x) => x.priority == j + 1
-                            ) &&
+                          }" :disabled="formFieldData.existingProblems.find(
+                            (x) => x.priority == j + 1
+                          ) &&
                             formFieldData.existingProblems.findIndex(
                               (x) => x.priority == j + 1
                             ) !== i
-                          "
-                        >
+                            ">
                           {{ j + 1 }}
                         </button>
                       </div>
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button
-                          v-for="(child, j) in formFieldData.existingProblems"
-                          @click="
-                            item.potential =
-                              j + 1 == item.potential ? null : j + 1
-                          "
-                          :class="{
+                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
+                          item.potential =
+                          j + 1 == item.potential ? null : j + 1
+                          " :class="{
                             'problem-matrix-btn': true,
                             active: item.potential == j + 1,
                             disabled:
@@ -419,16 +320,13 @@
                               formFieldData.existingProblems.findIndex(
                                 (x) => x.potential == j + 1
                               ) !== i,
-                          }"
-                          :disabled="
-                            formFieldData.existingProblems.find(
-                              (x) => x.potential == j + 1
-                            ) &&
+                          }" :disabled="formFieldData.existingProblems.find(
+                            (x) => x.potential == j + 1
+                          ) &&
                             formFieldData.existingProblems.findIndex(
                               (x) => x.potential == j + 1
                             ) !== i
-                          "
-                        >
+                            ">
                           {{ j + 1 }}
                         </button>
                       </div>
@@ -443,12 +341,9 @@
                     </td>
                     <td>
                       <div class="problem-matrix-wrapper">
-                        <button
-                          v-for="(child, j) in formFieldData.existingProblems"
-                          @click="
-                            item.ranking = j + 1 == item.ranking ? null : j + 1
-                          "
-                          :class="{
+                        <button v-for="(child, j) in formFieldData.existingProblems" @click="
+                          item.ranking = j + 1 == item.ranking ? null : j + 1
+                          " :class="{
                             'problem-matrix-btn': true,
                             active: item.ranking == j + 1,
                             disabled:
@@ -458,16 +353,13 @@
                               formFieldData.existingProblems.findIndex(
                                 (x) => x.ranking == j + 1
                               ) !== i,
-                          }"
-                          :disabled="
-                            formFieldData.existingProblems.find(
-                              (x) => x.ranking == j + 1
-                            ) &&
+                          }" :disabled="formFieldData.existingProblems.find(
+                            (x) => x.ranking == j + 1
+                          ) &&
                             formFieldData.existingProblems.findIndex(
                               (x) => x.ranking == j + 1
                             ) !== i
-                          "
-                        >
+                            ">
                           {{ j + 1 }}
                         </button>
                       </div>
@@ -519,12 +411,7 @@
 
         <v-col lg="12">
           <div class="d-flex flex-row" style="justify-content: flex-end">
-            <v-btn
-              type="submit"
-              variant="success"
-              @click="onSubmit"
-              :disabled="loading"
-            >
+            <v-btn type="submit" variant="success" @click="onSubmit" :disabled="loading">
               <v-icon>mdi-plus</v-icon>
               <span>Tambah Data PRA</span>
             </v-btn>
@@ -739,6 +626,8 @@ export default {
     return {
       componentKey: 1,
       tmpPraCode: null,
+      loading: false,
+      isLoading: false,
       formData: {},
       formFieldData: {
         landOwnerships: [{ pra_no: null }],
@@ -1437,6 +1326,9 @@ export default {
               type: "select",
               setter: "flora_status",
               options: defaultData.flora_status,
+
+              code: 'value',
+              label: 'text'
             },
           ],
         },
@@ -1488,6 +1380,9 @@ export default {
               type: "select",
               setter: "fauna_status",
               options: defaultData.flora_status,
+
+              code: 'value',
+              label: 'text'
             },
           ],
         },

@@ -130,6 +130,16 @@ export default {
             loading: true
         }
     },
+
+    watch: {
+        item: {
+            deep: true,
+            handler(t) {
+                this.data = []
+                this.getData()
+            }
+        }
+    },
     props: {
         item: {
             type: Object,
