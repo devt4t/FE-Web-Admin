@@ -31,7 +31,7 @@
             active: form === 3,
           }">
             <span class="value">3</span>
-            <span class="label">Data Lahan &amp; Dokumentasi</span>
+            <span class="label">Foto Absensi &amp; Dokumentasi</span>
           </div>
         </div>
       </v-col>
@@ -79,14 +79,14 @@
             }" />
           </v-col>
           <v-col>
-            <geko-input v-model="formData.materi_1" :item="{
+            <geko-input v-model="formData.first_material" :item="{
               label: 'Materi Pelatihan 1',
               validation: ['required'],
               col_size: 6,
               type: 'select',
               param: {},
               api: 'GetTrainingMaterials',
-              setter: 'materi_1',
+              setter: 'first_material',
               // default_label: '',
               option: {
                 getterKey: 'data.result',
@@ -124,14 +124,14 @@
             }" />
           </v-col>
           <v-col>
-            <geko-input v-model="formData.materi_2" :item="{
+            <geko-input v-model="formData.second_material" :item="{
               label: 'Materi Pelatihan 2',
               validation: ['required'],
               col_size: 6,
               type: 'select',
               param: {},
               api: 'GetTrainingMaterials',
-              setter: 'materi_2',
+              setter: 'second_material',
               // default_label: '',
               option: {
                 getterKey: 'data.result',
@@ -146,12 +146,12 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-model="formData.area_code" :disabled="!formData.program_year || !formData.mu_no" :item="{
+            <geko-input v-model="formData.target_area" :disabled="!formData.program_year || !formData.mu_no" :item="{
               label: 'Target Area',
               validation: ['required'],
               col_size: 6,
               type: 'select',
-              setter: 'area_code',
+              setter: 'target_area',
               param: {
                 page: 1,
                 per_page: 10,
@@ -159,50 +159,54 @@
                 mu_no: formData.mu_no
               },
               api: 'new-utilities/target-areas',
-              default_label: formData.area_code,
+              default_label: formData.target_area,
               option: {
                 getterKey: 'data',
                 list_pointer: {
                   code: 'area_code',
                   label: 'name',
                   display: ['name', 'area_code'],
+                  status: 1,
+                  user_id: null,
+
                 },
               },
             }" />
           </v-col>
           <v-col>
-            <geko-input v-model="formData.materi_3" :disabled="!formData.materi_1 || !formData.materi_2" :item="{
-              label: 'Materi Pelatihan 3',
-              col_size: 6,
-              type: 'select',
-              param: {},
-              api: 'GetTrainingMaterials',
-              setter: 'materi_3',
-              // default_label: '',
-              option: {
-                getterKey: 'data.result',
-                list_pointer: {
-                  label: 'material_name',
-                  code: 'material_no',
-                  display: ['material_name'],
+            <geko-input v-model="formData.third_material"
+              :disabled="!formData.first_material || !formData.second_material" :item="{
+                label: 'Materi Pelatihan 3',
+                col_size: 6,
+                type: 'select',
+                param: {},
+                api: 'GetTrainingMaterials',
+                setter: 'third_material',
+                // default_label: '',
+                option: {
+                  getterKey: 'data.result',
+                  list_pointer: {
+                    label: 'material_name',
+                    code: 'material_no',
+                    display: ['material_name'],
+                  },
                 },
-              },
-            }" />
+              }" />
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-model="formData.kode_desa"
-              :disabled="!formData.program_year || !formData.mu_no || !formData.area_code" :item="{
+            <geko-input v-model="formData.village"
+              :disabled="!formData.program_year || !formData.mu_no || !formData.target_area" :item="{
                 label: 'Desa',
                 validation: ['required'],
                 col_size: 6,
                 type: 'select',
                 api: 'GetDesaFarmerTraining',
                 param: {
-                  area_code: formData.area_code
+                  area_code: formData.target_area
                 },
-                setter: 'kode_desa',
+                setter: 'village',
                 option: {
                   getterKey: 'data.result',
                   list_pointer: {
@@ -214,7 +218,7 @@
               }" @selected="setNamaDesa($event)" />
           </v-col>
           <v-col>
-            <geko-input v-model="formData.date" :item="{
+            <geko-input v-model="formData.training_date" :item="{
               label: 'Tanggal Pelatihan',
               validation: ['required'],
               col_size: 6,
@@ -225,8 +229,8 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-model="formData.ff_no" :disabled="!formData.program_year || !formData.mu_no || !formData.area_code
-              || !formData.kode_desa
+            <geko-input key="id" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
+              || !formData.village
               " :item="{
                 label: 'Field Facilitator Aktif',
                 validation: ['required'],
@@ -234,10 +238,11 @@
                 type: 'select',
                 api: 'GetFFDesa',
                 param: {
-                  kode_desa: formData.kode_desa
+                  kode_desa: formData.village
                 },
-                setter: 'ff_no',
+                setter: 'ff_additional',
                 option: {
+                  multiple: true,
                   getterKey: 'data.result',
                   list_pointer: {
                     label: 'FFname',
@@ -252,8 +257,8 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-model="formData.manager_code" :disabled="!formData.program_year || !formData.mu_no || !formData.area_code
-              || !formData.kode_desa || !formData.ff_no" :item="{
+            <geko-input v-model="formData.unit_manager" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
+              || !formData.village || !formData.ff_additional" :item="{
                 label: 'Unit Manager',
                 validation: ['required'],
                 col_size: 6,
@@ -262,7 +267,7 @@
                 param: {
                   position_code: '20'
                 },
-                setter: 'manager_code',
+                setter: 'unit_manager',
                 option: {
                   getterKey: 'data.result.data',
                   list_pointer: {
@@ -278,17 +283,17 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input v-model="formData.fc_no" :disabled="!formData.program_year || !formData.mu_no || !formData.area_code
-              || !formData.kode_desa || !formData.ff_no || !formData.manager_code" :item="{
+            <geko-input v-model="formData.fc_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
+              || !formData.village || !formData.ff_additional || !formData.unit_manager" :item="{
                 label: 'Field Coordinator',
                 validation: ['required'],
                 col_size: 6,
                 api: 'GetEmployeebyManager',
                 param: {
-                  manager_code: formData.manager_code
+                  manager_code: formData.unit_manager
                 },
                 type: 'select',
-                setter: 'fc_no',
+                setter: 'fc_additional',
                 option: {
                   multiple: true,
                   getterKey: 'data.result.data',
@@ -383,7 +388,7 @@
               param: {
                 typegetdata: 'all',
                 mu: formData.mu_no,
-                ta: formData.area_code
+                ta: formData.target_area
               },
               key: 'selectPetaniLain',
               option: {
@@ -396,6 +401,163 @@
                 // default_options: allFarmerByMUandTA
               },
             }" @selected="handleSelectedOtherFarmer" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="12" class="form-separator">
+            <h4>Peserta Umum</h4>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <div class="village-person-list">
+              <v-row v-for="(person, i) in formData.peserta_tambahan" :key="'persons-' + i">
+                <v-col md="1" class="index-wrapper">
+                  <!-- <div class="index-wrapper"> -->
+                  <div class="index">{{ i + 1 }}</div>
+                  <!-- </div> -->
+                </v-col>
+
+                <v-col md="3">
+                  <geko-input v-model="person.name" :item="{
+                    label: 'Nama',
+                    validation: ['required'],
+                    type: 'text',
+                  }" />
+                </v-col>
+
+                <v-col md="2">
+                  <geko-input v-model="person.address" :item="{
+                    label: 'Alamat',
+                    validation: ['required'],
+                    type: 'text',
+                  }" />
+                </v-col>
+
+                <v-col md="2">
+                  <geko-input v-model="person.phone" :item="{
+                    label: 'No HP/WA',
+                    validation: ['required', 'phone'],
+                    type: 'text',
+                  }" />
+                </v-col>
+                <v-col md="2">
+                  <geko-input v-model="person.gender" :item="{
+                    label: 'Jenis Kelamin',
+                    validation: ['required'],
+                    type: 'select',
+                    option: {
+                      list_pointer: {
+                        label: 'label',
+                        code: 'label',
+                        display: ['label'],
+                      },
+                      default_options: [
+                        { label: 'Laki-laki' },
+                        { label: 'Perempuan' },
+                      ]
+                    }
+                  }" />
+                </v-col>
+
+                <v-col md="1" class="d-flex flex-column justify-content-center"
+                  style="justify-content: center; align-items: flex-start">
+                  <button @click="hapusPesertaTambahan(i)">
+                    <v-icon color="red">mdi-close</v-icon>
+                  </button>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col md="12">
+                  <v-btn variant="primary" @click="tambahPesertaTambahan">
+                    <v-icon>mdi-plus</v-icon>
+                    <span>Tambah Peserta Tambahan</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+        </v-row>
+        <v-col md="12">
+          <div class="d-flex flex-row justify-content-end" style="justify-content: flex-end">
+            <v-btn variant="light" @click="form--" class="mr-3">Back</v-btn>
+            <v-btn type="submit" variant="success" :disabled="loading">
+              <v-icon>mdi-chevron-right</v-icon>
+              <span>Selanjutnya</span>
+            </v-btn>
+          </div>
+        </v-col>
+      </form>
+    </ValidationObserver>
+
+    <ValidationObserver ref="thirdForm" v-slot="{ handleSubmit }" v-show="form === 3" class="geko-form-wrapper">
+      <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+        <v-row>
+          <v-col md="12" class="form-separator">
+            <h4>Foto Absensi &amp; Dokumentasi</h4>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn small href="https://www.iloveimg.com/compress-image" target="_blank"><v-icon left
+                small>mdi-zip-box</v-icon> klik untuk kompres gambar</v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="12">
+            <geko-input v-model="formData.absent" :item="{
+              label: 'Foto Absensi Tertulis',
+              validation: ['required'],
+              type: 'upload',
+              api: '/farmer-training/upload1.php',
+              directory: 'absensi-images',
+              upload_type: 'image/*',
+              setter: 'absent',
+              view_data: 'absent',
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 0.5,
+              },
+            }" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="12">
+            <geko-input v-model="formData.absent2" :item="{
+              label: 'Foto Absensi Tertulis (2)',
+              type: 'upload',
+              api: '/farmer-training/upload1.php',
+              directory: 'absensi-images',
+              upload_type: 'image/*',
+              setter: 'absent2',
+              view_data: 'absent2',
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 0.5,
+              },
+            }" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="12">
+            <geko-input v-model="formData.dokumentasi" :item="{
+              label: 'Foto Dokumentasi',
+              validation: ['required'],
+              type: 'upload',
+              api: 'scooping_visits/upload.php',
+              directory: 'documentation-photos',
+              upload_type: 'image/*',
+              setter: 'dokumentasi',
+              view_data: 'dokumentasi',
+              option: {
+                label_hint:
+                  'Klik gambar untuk memilih berkas yang akan diunggah',
+                max_size: 0.5,
+              },
+            }" />
           </v-col>
         </v-row>
         <v-col md="12">
@@ -423,6 +585,13 @@ import ModalDetailPetani from './ModalDetailPetani.vue';
 export default {
   name: "pelatihan-petani-create",
   components: { ModalDetailPetani },
+  props: {
+    user: {
+      required: true,
+      type: Object,
+      default: {},
+    },
+  },
   data() {
     return {
       form: 1,
@@ -436,6 +605,7 @@ export default {
       peserta: [],
       selectedFarmerData: {},
       allFarmerByMUandTA: [],
+      tmpAbsentImage: null,
       farmerTable: {
         header: [
           { text: "No", value: "no", align: 'center' },
@@ -446,7 +616,12 @@ export default {
           { text: "NIK", value: "nik", },
         ],
       },
-      formData: {}
+      formData: {
+        organic_material: ["ORG22090001", "ORG22090002"],
+        peserta_tambahan: [],
+        status: 1,
+        user_id: this.user.email
+      }
     }
   },
   watch: {
@@ -458,28 +633,28 @@ export default {
       });
     },
     // 'formData.mu_no': function () {
-    //   this.formData.area_code = null
+    //   this.formData.target_area = null
     // },
-    // 'formData.area_code': function () {
-    //   this.formData.kode_desa = null
+    // 'formData.target_area': function () {
+    //   this.formData.village = null
     // },
-    // 'formData.kode_desa': function () {
-    //   this.formData.ff_no = null
+    // 'formData.village': function () {
+    //   this.formData.ff_additional = null
     // },
-    'formData.manager_code': function () {
-      this.formData.fc_no = null
+    'formData.unit_manager': function () {
+      this.formData.fc_additional = null
     },
-    'formData.kode_desa': function (kode_desa) {
+    'formData.village': function (village) {
       this.peserta = []
       this.getFarmers()
-      this.isTrainingCompletedForVilage(kode_desa)
+      this.isTrainingCompletedForVilage(village)
     }
   },
   methods: {
     async getFarmers() {
       const farmers = await this.$_api.get('GetFarmerAllAdmin', {
         typegetdata: 'several',
-        village: this.formData.kode_desa
+        village: this.formData.village
       })
 
       this.farmers = farmers.data.result.data ?? [];
@@ -489,8 +664,24 @@ export default {
     },
     onSubmit() {
       if (this.form < 3) {
+        if (this.form === 2 && !this.peserta.length) {
+          return;
+        }
         this.form++;
-        return;
+      } else {
+
+        this.formData.farmers = this.peserta.map(farmer => {
+          return {farmer_no: farmer.kode}
+        });
+        
+        this.$_api.post('AddFarmerTraining', this.formData)
+          .then(response => {
+            this.$router.go(-1);
+            this.$refreshKey += 1;
+            this.$_alert.success("Data pelatihan petani berhasil ditambahkan");
+          }).catch(err => {
+            // 
+          });
       }
     },
     handleSelectedOtherFarmer(farmer) {
@@ -498,13 +689,13 @@ export default {
       this.isModalDetailOpened = true;
     },
     handleAddedOtherFarmer(farmer) {
-
+      this.isModalDetailOpened = false;
       farmer.nama = farmer.nama.split(' - ')[0];
 
       /*
       sudah ada ditabel && sudah jadi peserta = prevent
       sudah ada ditabel && belum jadi peserta = push peserta
-      belum ada ditabel && belum jadi peserta = push farmers & push peserta
+      belum ada ditabel && belum jadi peserta = push farmers (tabel) & push peserta
       */
 
       if (
@@ -527,10 +718,21 @@ export default {
         this.$_alert.success(`${farmer.nama} - ${farmer.kode}`, `Berhasil menambahkan peserta`, 'top-right', false, 1500);
       }
 
+    },
+    hapusPesertaTambahan(i) {
+      this.formData.peserta_tambahan.splice(i, 1);
+    },
+    tambahPesertaTambahan() {
+      this.formData.peserta_tambahan.push({
+        name: "",
+        address: "",
+        phone: "",
+        gender: "",
+      });
+    },
+    isTrainingCompletedForVilage(village) {
+      // 
     }
   },
-  isTrainingCompletedForVilage(kode_desa) {
-    // 
-  }
 }
 </script>

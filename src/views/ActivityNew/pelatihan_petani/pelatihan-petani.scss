@@ -1,3 +1,6 @@
+@import "@/assets/scss/_variables.scss";
+
+
 .list-header {
   width: 100%;
   display: flex;
@@ -104,5 +107,28 @@ table {
     td:last-of-type {
       padding-left: 10px;
     }
+  }
+}
+
+.village-person-list {
+  .index-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .index {
+
+          display: block;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          background: $primary_light;
+          border-radius: 50%;
+          color: $primary;
+          font-size: 1.2em;
+          font-weight: bold;
+          text-align: center;
+      }
+      
   }
 }

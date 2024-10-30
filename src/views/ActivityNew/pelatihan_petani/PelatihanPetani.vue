@@ -13,7 +13,7 @@
     </template>
 
     <template v-slot:create-form>
-      <pelatihan-petani-create></pelatihan-petani-create>
+      <pelatihan-petani-create :user="user"></pelatihan-petani-create>
     </template>
 
     <template v-slot:detail-slave-raw="{ data }">
@@ -22,8 +22,8 @@
 
     <template v-slot:detail-action="{ item }">
       <div>
-        <v-btn v-if="!item.status" variant="success" @click="onVerif(item)">Verifikasi</v-btn>
-        <v-btn v-else variant="danger" @click="onUnverif(item)">Unverifikasi</v-btn>
+        <v-btn v-if="!item.status" variant="success" @click="onVerifDetail(item)">Verifikasi</v-btn>
+        <v-btn v-else variant="danger" @click="onUnverifDetail(item)">Unverifikasi</v-btn>
       </div>
     </template>
 
@@ -47,12 +47,15 @@ export default {
   data() {
     return {
       config: pelatihanPetaniConfig,
-      user: [],
+      user: {},
       refreshKey: 1
     }
   },
   mounted() {
-    this.user = JSON.parse(localStorage.getItem("User"));
+    const user = JSON.parse(localStorage.getItem("User"));
+    this.user = user;
+    this.$set(this.config.delete_ext_payload, 'user_email', user.email);
+    this.$set(this.config.deleteSoft.payload, 'user_email', user.email);
   },
   methods: {
     async onVerif(item) {
@@ -64,7 +67,7 @@ export default {
         })
           .then(() => {
             this.$_alert.success('Pelatihan berhasil diverifikasi')
-            this.$refreshKey += 1
+            this.refreshKey += 1
           })
       }
     },
@@ -77,10 +80,18 @@ export default {
         })
           .then(() => {
             this.$_alert.success('Pelatihan berhasil diunverifikasi')
-            this.$refreshKey += 1
+            this.refreshKey += 1
           })
 
       }
+    },
+    async onVerifDetail(item){
+      await this.onVerif(item);
+      this.$router.go(-1);
+    },
+    async onUnverifDetail(item){
+      await this.onUnverif(item);
+      this.$router.go(-1);
     },
     onExportExcel(data) {
 
