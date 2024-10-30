@@ -146,7 +146,7 @@ export default {
             })
             
         },
-        onSubmit() {
+        async onSubmit() {
             if (this.loading) return
             this.loading = true;
             const formData = JSON.parse(JSON.stringify(this.formData))
@@ -173,13 +173,17 @@ export default {
                 absent: this.formData.absent1
             }
             this.loading = false
-            console.log('payload', payload);
 
-            this.$_api.post('createSostamByFF', payload)
+
+            await this.$_api.post('createSostamByFF', payload)
                 .then(() => {
+                    
+                    this.loading = false
                     this.$_alert.success("Sosialisasi tanam berhasil dibuat")
                     this.$router.go(-1)
                 })
+
+            this.loading = false
             
         },
 
@@ -220,6 +224,7 @@ export default {
         return {
             formData: {
                 distribution_date: null,
+                soc_date: moment().format('YYYY-MM-DD')
             },
             ready: false,
             loading: true,

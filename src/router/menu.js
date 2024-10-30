@@ -289,6 +289,15 @@ const menu = [
         permission: ["Monitoring2", "PenilikanTanam"],
         hide: true,
       },
+      // {
+      //   title: "Pelatihan Petani old",
+      //   to: "/PelatihanPetani.old",
+      //   component: "Activity/PelatihanPetani",
+      //   name: "PelatihanPetani",
+      //   permission: "PelatihanPetani",
+      //   icon: "mdi-handshake",
+      //   type: ["non-carbon"],
+      // },
       {
         title: "Pelatihan Petani",
         to: "/PelatihanPetani",
@@ -428,6 +437,14 @@ const menu = [
         permission: "Kecamatan",
         icon: "mdi-map-marker",
       },
+      // {
+      //   title: "Test",
+      //   to: "/test2",
+      //   component: "Utilities/vilage/Vilage.old",
+      //   name: "Test2",
+      //   permission: "Test2",
+      //   icon: "mdi-map-marker",
+      // },
       {
         title: "Village",
         to: "/Vilage",
@@ -436,14 +453,14 @@ const menu = [
         permission: "Vilage",
         icon: "mdi-map-marker",
       },
-      {
-        title: "Desa",
-        to: "/village-v2",
-        component: "Utilities/Village",
-        name: "Village",
-        permission: "Vilage",
-        icon: "mdi-map-marker",
-      },
+      // {
+      //   title: "Desa",
+      //   to: "/village-v2",
+      //   component: "Utilities/Village",
+      //   name: "Village",
+      //   permission: "Vilage",
+      //   icon: "mdi-map-marker",
+      // },
       {
         title: "Management Unit",
         to: "/ManagementUnit",

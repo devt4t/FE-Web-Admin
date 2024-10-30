@@ -15,6 +15,7 @@ export default {
     openFcNonCarbon: false,
     openUm: false,
     openFc: false,
+    openFcAssestment: false,
     polygonGisArea: 0,
     componentKey: 0,
     printModal: 0,
