@@ -445,6 +445,7 @@ const menu = [
       //   permission: "Test2",
       //   icon: "mdi-map-marker",
       // },
+      
       {
         title: "Village",
         to: "/Vilage",
@@ -461,6 +462,14 @@ const menu = [
       //   permission: "Vilage",
       //   icon: "mdi-map-marker",
       // },
+      {
+        title: "Regional",
+        to: "/Regional",
+        component: "Utilities/Regional",
+        name: "Regional",
+        permission: "Regional",
+        icon: "mdi-map-marker",
+      },
       {
         title: "Management Unit",
         to: "/ManagementUnit",
@@ -510,14 +519,7 @@ const menu = [
         icon: "mdi-tree",
         update: true,
       },
-      {
-        title: "Regional",
-        to: "/Regional",
-        component: "Utilities/Regional",
-        name: "Regional",
-        permission: "Regional",
-        icon: "mdi-map-marker",
-      },
+      
     ],
   },
 
@@ -572,6 +574,14 @@ const menu = [
         name: "Roles",
         permission: "TaskGroup",
         icon: "mdi-database-edit",
+      },
+      {
+        title: "Area Management System",
+        to: "/ams",
+        component: "AreasManagement/main-ams/mainListAMS",
+        name: "Area Management System",
+        permission: "AreaManagementSystem",
+        icon: "application-array",
       },
     ],
   },

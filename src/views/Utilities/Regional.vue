@@ -1,11 +1,26 @@
 <!-- Contain Regional Datas -->
 <template>
-    <geko-base-crud :config="config" />
+    <geko-base-crud :config="config">
+        <template v-slot:list-active_status="{ item }">
+            <div class="d-flex flex-row" style="flex-wrap: wrap;">
+                <span class="badge" :class="{
+                    'bg-success': item.active_status == 1,
+                    'bg-danger': item.active_status == 0
+                }">
+                    <span v-if="item.active_status == 1">Aktif</span>
+                    <span v-else-if="item.active_status == 0">Tidak Aktif</span>
+                    <span v-else>-</span>
+                </span>
+            </div>
+        </template>
+    </geko-base-crud>
+    
 </template>
 
 <script>
+import regionConfig from "./regional/regionConfig";
 export default {
-    name: "crud-regional-data",
+    name: "crud-regional",
     watch: {},
     data() {
         return {
@@ -16,70 +31,23 @@ export default {
                     model: '2024'
                 },
                 model_api: null,
-                getter: "getRegion",
-                // can we add list path in case the response getting more complicated sir?
-                setter: "region",
+                getter: "new-utilities/region/list",
+                setter: "regional",
                 pk_field: null,
 
                 filter_api: {
                     project_modul: "type",
                 },
                 permission: {
-                    create: "region-create",
-                    read: "region-list",
-                    update: "region-update",
-                    show: "region-show",
-                    lookup: "region-lookup",
-                    delete: "region-delete",
+                    create: "regional-create",
+                    read: "regional-list",
+                    update: "regional-update",
+                    show: "regional-show",
+                    lookup: "regional-lookup",
+                    delete: "regional-delete",
                 },
                 slave: [],
-                fields: [
-                    {
-                        id: "id",
-                        methods: {
-                            list: false,
-                            detail: false,
-                            create: false,
-                            update: false,
-                            filter: false,
-                        },
-                    },
-
-                    {
-                        id: "region_code",
-                        label: "Kode Regional",
-                        methods: {
-                            list: true,
-                            detail: true,
-                            create: { validation: ["required"] },
-                            update: { validation: ["required"] },
-                            filter: false,
-                        },
-                    },
-
-                    {
-                        id: "name",
-                        label: "Nama Regional",
-                        methods: {
-                            list: true,
-                            detail: true,
-                            create: { validation: ["required"] },
-                            update: { validation: ["required"] },
-                            filter: false,
-                        },
-                    },
-                    {
-                        id: "active_status",
-                        label: "Status Aktif",
-                        methods: {
-                            list: true,
-                            detail: true,
-                            create: { validation: ["required"] },
-                            update: { validation: ["required"] },
-                            filter: false,
-                        },
-                    },
-                ],
+                fields: regionConfig
             },
         };
     },
