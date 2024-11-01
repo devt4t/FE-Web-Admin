@@ -32,7 +32,9 @@ export default {
                 },
                 model_api: null,
                 getter: "new-utilities/region/list",
-                setter: "regional",
+                getterDataKey: "result",
+                
+                setter: "new-utilities/region/create",
                 pk_field: null,
 
                 filter_api: {

@@ -96,7 +96,7 @@ export default [
               },
             },
           },
-        filter: false,
+        filter: true,
       },
     },
   ];
