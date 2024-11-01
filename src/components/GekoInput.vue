@@ -61,7 +61,8 @@
             ? `mw-${item.placeholder.length}`
             : '']: true,
         }" :placeholder="item.placeholder || null" :disabled="disabled" :options="selectOptions"
-          @option:selected="$emit('selected', $event)" @open="selectGetInitData"
+          @option:selected="$emit('selected', $event)" 
+          @option:deselected="$emit('deselected', $event)" @open="selectGetInitData"
           :reduce="(x) => x[item.option?.list_pointer.code || 'code']" v-model="tmpValue" @search="selectSearchData"
           :appendToBody="true" :label="item.option && item.option.list_pointer
             ? item.option.list_pointer.label

@@ -48,7 +48,7 @@ export default {
     return {
       config: pelatihanPetaniConfig,
       user: {},
-      refreshKey: 1
+      refreshKey: 1,
     }
   },
   mounted() {
