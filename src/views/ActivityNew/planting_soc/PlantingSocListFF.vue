@@ -9,7 +9,7 @@
             </template>
 
             <template v-slot:item.status="{ item }">
-                <div class="d-flex flex-column align-items-center">
+                <div class="d-flex flex-column align-items-center min-w-150px">
                     <span class="badge" :class="{
                         'bg-warning': item.validation == 0,
                         'bg-success': item.validation == 1
@@ -39,6 +39,24 @@
 
             <template v-slot:item.opsi_pola_tanam="{ item }">
                 {{ item.lahan_datas?.opsi_pola_tanam }}
+            </template>
+
+            <template v-slot:item.farmer_signature="{ item }">
+                <div class="d-flex flex-row justify-content-center">
+                    <span class="badge" :class="{
+                        'bg-success': item.signature,
+                        'bg-warning': !item.signature
+                    }">{{ item.signature ? 'Sudah' : 'Belum' }}</span>
+                </div>
+            </template>
+
+            <template v-slot:item.attendance="{ item }">
+                <div class="d-flex flex-row min-w-100px">
+                    <span class="badge" :class="{
+                        'bg-success': item.attendance,
+                        'bg-danger': !item.attendance
+                    }">{{ item.attendance ? 'Hadir' : 'Tidak Hadir' }}</span>
+                </div>
             </template>
         </v-data-table>
     </td>
@@ -112,6 +130,14 @@ export default {
                 {
                     text: 'Tahun Tanam',
                     value: 'planting_year'
+                },
+                {
+                    text: 'Attendance',
+                    value: 'attendance'
+                },
+                {
+                    text: 'Tanda Tangan Petani',
+                    value: 'farmer_signature'
                 },
                 {
                     text: 'Status',

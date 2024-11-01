@@ -124,20 +124,72 @@
                     </v-col>
 
                     <v-col md="12" v-if="lahans.length > 0">
+                        <div class="lahan-statistic">
+                            <div class="lahan-statistic-item light">
+                                <v-icon>mdi-account-multiple</v-icon>
+                                <div class="lahan-statistic-value">
+                                    <span class="label">Jumlah Petani</span>
+                                    <span class="value">{{ lahanStatistic.totalFarmer != null ?
+                                        lahanStatistic.totalFarmer : '-' }}</span>
+                                </div>
+                            </div>
+                            <div class="lahan-statistic-item success">
+                                <v-icon style="color: green;">mdi-sprout</v-icon>
+                                <div class="lahan-statistic-value">
+                                    <span class="label">Jumlah Kayu</span>
+                                    <span class="value">{{ lahanStatistic.totalKayu != null ? lahanStatistic.totalKayu :
+                                        '-' | parse('ts') }}</span>
+                                </div>
+                            </div>
+                            <div class="lahan-statistic-item warning">
+                                <v-icon style="color: orange;">mdi-sprout</v-icon>
+                                <div class="lahan-statistic-value">
+                                    <span class="label">Jumlah MPTS</span>
+                                    <span class="value">{{ lahanStatistic.totalMpts != null ? lahanStatistic.totalMpts :
+                                        '-' | parse('ts') }}</span>
+                                </div>
+                            </div>
+                            <div class="lahan-statistic-item primary">
+                                <v-icon style="color: #5ab2ff;">mdi-account-multiple</v-icon>
+                                <div class="lahan-statistic-value">
+                                    <span class="label">Jumlah Bibit</span>
+                                    <span class="value">{{ lahanStatistic.totalSeed != null ?
+                                        lahanStatistic.totalSeed : '-' | parse('ts') }}</span>
+                                </div>
+                            </div>
+                        </div>
                         <table class="farmer-lahan geko-table">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Petani</th>
+                                    <th class="text-left">Petani</th>
+                                    <th class="text-left">No. Lahan</th>
                                     <th>Total Kayu</th>
                                     <th>Total MPTS</th>
+                                    <th>Total Bibit</th>
                                     <th>Kehadiran</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(farmer, i) in lahans" :key="`farmer-land-${i}`">
-                                    <td class="text-center">{{ i + 1 }}</td>
-                                    <td class="text-left">{{ farmer.farmer_name }}</td>
+                                <tr v-for="(farmer, i) in lahans" :key="`farmer-land-${i}`" :class="{
+                                    'bordered': farmer.bordered
+                                }">
+                                    <td class="text-center">
+                                        <span v-if="farmer.bordered">{{ farmer.index
+                                            }}</span>
+                                    </td>
+                                    <td class="text-left">
+                                        <div class="d-block" v-if="farmer.bordered">
+                                            <h4 class="font-weight-normal">{{ farmer.farmer_name }}</h4>
+                                            <span class="badge bg-light">
+                                                {{ farmer.farmer_no }}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-left">
+                                        <h4 class="font-weight-normal">{{ farmer.lahan_no }}</h4>
+                                    </td>
                                     <td class="text-center">
                                         <span class="d-flex flex-row align-items-center justify-content-center">
                                             <v-icon style="color: green;">mdi-sprout</v-icon>
@@ -151,10 +203,20 @@
                                             <span class="amount">{{ farmer.total_mpts }}</span>
                                         </span>
                                     </td>
+                                    <td class="text-center">
+
+                                        <span class="d-flex flex-row align-items-center justify-content-center">
+                                            <v-icon style="color: #5ab2ff;">mdi-sprout</v-icon>
+                                            <span class="amount" style="color: #5ab2ff">{{ farmer.total_mpts +
+                                                farmer.total_kayu }}</span>
+                                        </span>
+                                    </td>
                                     <td>
 
                                         <div class="d-flex flex-row justify-content-center">
-                                            <v-checkbox v-model="farmer.attendance" color="success"></v-checkbox>
+                                            <v-checkbox @change="onChangeAttendance($event, farmer)"
+                                                v-if="farmer.bordered" v-model="farmer.attendance"
+                                                color="success"></v-checkbox>
                                         </div>
                                     </td>
                                 </tr>
@@ -265,7 +327,7 @@
 
                     <v-col md="12">
                         <div class="d-flex flex-row justify-content-end">
-                            <v-btn variant="success" type="submit">
+                            <v-btn :disabled="loading" variant="success" type="submit">
                                 <v-icon v-if="!loading">mdi-plus</v-icon>
 
                                 <v-progress-circular v-else :size="20" color="green"
