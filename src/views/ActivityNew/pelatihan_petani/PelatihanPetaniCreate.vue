@@ -41,7 +41,7 @@
       <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
         <v-row>
           <v-col>
-            <geko-input v-model="formData.program_year" :item="{
+            <geko-input :disabled="true" v-model="formData.program_year" :item="{
               label: 'Tahun Program',
               validation: ['required'],
               col_size: 6,
@@ -230,7 +230,7 @@
         <v-row>
           <v-col>
             <geko-input key="id" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
-              || !formData.village
+              || !formData.village || !farmerByAllFF.size
               " :item="{
                 label: 'Field Facilitator Aktif',
                 validation: ['required'],
@@ -250,7 +250,7 @@
                     display: ['FFname', 'ff_no'],
                   },
                 },
-              }" />
+              }" @selected="setFarmerBySelectedFF" @deselected="unsetFarmerBySelectedFF" />
           </v-col>
           <v-col>
           </v-col>
@@ -344,6 +344,12 @@
                   <p class="mb-0 value">{{ peserta.length }}</p>
                 </div>
               </div>
+            </div>
+
+            <div style="display: inline-block; margin: 0px 10px 10px 0px" v-for="ff in farmerBySelectedFF">
+              <v-btn :variant="isActive===key ? 'success' : 'secondary'" @click="isActive=key">{{ ff.FFname }}
+                <v-badge v-if="ff.totalSelectedFarmer" color="primary" :content="ff.totalSelectedFarmer" inline></v-badge>
+              </v-btn>
             </div>
 
             <v-data-table class="elevation-1" :items="farmers" :headers="farmerTable.header" :search="search"
@@ -462,7 +468,7 @@
 
                 <v-col md="1" class="d-flex flex-column justify-content-center"
                   style="justify-content: center; align-items: flex-start">
-                  <button @click="hapusPesertaTambahan(i)">
+                  <button @click="hapusPesertaUmum(i)">
                     <v-icon color="red">mdi-close</v-icon>
                   </button>
                 </v-col>
@@ -470,9 +476,9 @@
 
               <v-row>
                 <v-col md="12">
-                  <v-btn variant="primary" @click="tambahPesertaTambahan">
+                  <v-btn variant="primary" @click="tambahPesertaUmun">
                     <v-icon>mdi-plus</v-icon>
-                    <span>Tambah Peserta Tambahan</span>
+                    <span>Tambah Peserta Umum</span>
                   </v-btn>
                 </v-col>
               </v-row>
@@ -594,6 +600,7 @@ export default {
   },
   data() {
     return {
+      isActive: null,
       form: 1,
       isModalDetailOpened: false,
       loading: false,
@@ -604,8 +611,8 @@ export default {
       page: 1,
       peserta: [],
       selectedFarmerData: {},
-      allFarmerByMUandTA: [],
-      tmpAbsentImage: null,
+      farmerByAllFF: new Map(),
+      farmerBySelectedFF: new Object(),
       farmerTable: {
         header: [
           { text: "No", value: "no", align: 'center' },
@@ -620,7 +627,8 @@ export default {
         organic_material: ["ORG22090001", "ORG22090002"],
         peserta_tambahan: [],
         status: 1,
-        user_id: this.user.email
+        user_id: this.user.email,
+        program_year: '2024'
       }
     }
   },
@@ -645,10 +653,11 @@ export default {
       this.formData.fc_additional = null
     },
     'formData.village': function (village) {
+      this.resetSelectedFF()
       this.peserta = []
       this.getFarmers()
-      this.isTrainingCompletedForVilage(village)
-    }
+      // this.isTrainingCompletedInSelectedVillage(village)
+    },
   },
   methods: {
     async getFarmers() {
@@ -656,8 +665,8 @@ export default {
         typegetdata: 'several',
         village: this.formData.village
       })
-
       this.farmers = farmers.data.result.data ?? [];
+      this.farmerByAllFF = Map.groupBy(farmers.data.result.data, ({ ff_no }) => ff_no);
     },
     setNamaDesa(value) {
       this.selectedDesaName = value.Desaname;
@@ -671,9 +680,9 @@ export default {
       } else {
 
         this.formData.farmers = this.peserta.map(farmer => {
-          return {farmer_no: farmer.kode}
+          return { farmer_no: farmer.kode }
         });
-        
+
         this.$_api.post('AddFarmerTraining', this.formData)
           .then(response => {
             this.$router.go(-1);
@@ -719,10 +728,10 @@ export default {
       }
 
     },
-    hapusPesertaTambahan(i) {
+    hapusPesertaUmum(i) {
       this.formData.peserta_tambahan.splice(i, 1);
     },
-    tambahPesertaTambahan() {
+    tambahPesertaUmun() {
       this.formData.peserta_tambahan.push({
         name: "",
         address: "",
@@ -730,8 +739,24 @@ export default {
         gender: "",
       });
     },
-    isTrainingCompletedForVilage(village) {
-      // 
+    // isTrainingCompletedInSelectedVillage(village) {
+    //   // 
+    // },
+    setFarmerBySelectedFF(ff) {
+      const FF = ff[ff.length - 1]
+      this.$set(this.farmerBySelectedFF, FF.ff_no, {
+        FFname: FF.FFname.split(' - ')[0],
+        farmers: this.farmerByAllFF.get(FF.ff_no),
+        totalSelectedFarmer: 0
+      });
+    },
+    unsetFarmerBySelectedFF(ff) {
+      this.$delete(this.farmerBySelectedFF, ff.ff_no);
+    },
+    resetSelectedFF() {
+      this.farmerByAllFF.clear()
+      this.farmerBySelectedFF = new Object()
+      this.formData.ff_additional = []
     }
   },
 }
