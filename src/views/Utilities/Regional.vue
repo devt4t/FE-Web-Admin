@@ -1,20 +1,6 @@
 <!-- Contain Regional Datas -->
 <template>
-    <geko-base-crud :config="config">
-        <!-- <template v-slot:list-active_status="{ item }">
-            <div class="d-flex flex-row" style="flex-wrap: wrap;">
-                <span class="badge" :class="{
-                    'bg-success': item.active_status == 1,
-                    'bg-danger': item.active_status == 0
-                }">
-                    <span v-if="item.active_status == 1">Aktif</span>
-                    <span v-else-if="item.active_status == 0">Tidak Aktif</span>
-                    <span v-else>-</span>
-                </span>
-            </div>
-        </template> -->
-    </geko-base-crud>
-    
+    <geko-base-crud :config="config"/>    
 </template>
 
 <script>
@@ -35,6 +21,8 @@ export default {
                 getterDataKey: "result",
                 
                 setter: "new-utilities/region/create",
+                update: "new-utilities/region/update",
+                delete: "new-utilities/region/delete",
                 pk_field: null,
 
                 filter_api: {

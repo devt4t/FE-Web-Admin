@@ -1,37 +1,20 @@
 <template>
-    <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
-        <template v-slot:list-active_status="{ item }">
-            <div class="d-flex flex-row" style="flex-wrap: wrap;">
-                <span class="badge" :class="{
-                    'bg-success': item.active_status == 1,
-                    'bg-danger': item.active_status == 0
-                }">
-                    <span v-if="item.active_status == 1">Aktif</span>
-                    <span v-else-if="item.active_status == 0">Tidak Aktif</span>
-                    <span v-else>-</span>
-                </span>
-                <span class="badge bg-light" v-if="item.potential_status == 4">Potensial Non Carbon</span>
-            </div>
-        </template>
-
-        <template v-slot:list-program_year="{ item }">
-            <span class="badge bg-primary">{{ $_config.programYear.model }}</span>
-        </template>
-    </geko-base-crud>
+    <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true" :hideCreate="true"/>
+        
 </template>
 
 <script>
 export default {
-    name: "crud-village",
+    name: "crud-area-management-system",
     watch: {},
     data() {
         return {
             config: {
-                title: "Regional",
+                title: "Area Management System",
                 model_api: null,
-                getter: "new-utilities/region/list",
+                getter: "ams/get-list",
                 totalDataKey: 'count_record',
-                setter: "addProjectUtils",
+                setter: "ams/post_create",
                 setter_ext_payload: {
                     project_modul: "purpose",
                 },
