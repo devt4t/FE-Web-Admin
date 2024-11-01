@@ -1,7 +1,7 @@
 <!-- Contain Regional Datas -->
 <template>
     <geko-base-crud :config="config">
-        <template v-slot:list-active_status="{ item }">
+        <!-- <template v-slot:list-active_status="{ item }">
             <div class="d-flex flex-row" style="flex-wrap: wrap;">
                 <span class="badge" :class="{
                     'bg-success': item.active_status == 1,
@@ -12,7 +12,7 @@
                     <span v-else>-</span>
                 </span>
             </div>
-        </template>
+        </template> -->
     </geko-base-crud>
     
 </template>

@@ -50,8 +50,22 @@ export default [
       id: "active_status",
       label: "Status Aktif",
       methods: {
-        list: true,
-        detail: true,
+        list: {
+          view_data: "active_status",
+          class: {
+            0: "badge bg-danger",
+            1: "badge bg-success",
+          },
+          transform: "active-status",
+        },
+        detail: {
+          view_data: "active_status",
+          class: {
+            0: "badge bg-danger",
+            1: "badge bg-success",
+          },
+          transform: "active-status",
+        },
         create: {
             type: "select",
             col_size: 6,
