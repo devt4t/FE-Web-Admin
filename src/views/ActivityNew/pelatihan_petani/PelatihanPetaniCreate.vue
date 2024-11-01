@@ -329,58 +329,64 @@
         </v-row>
         <v-row>
           <v-col>
-            <div class="list-search-wrapper">
-              <v-icon class="prepend">mdi-magnify</v-icon>
-              <input v-model="search" type="text" :placeholder="'Cari petani'" />
-              <v-icon v-if="typeof search == 'string' && search.length > 0" @click="search = ''
-                " class="append">mdi-close</v-icon>
+            <div v-for="(ff, name, key) in farmerBySelectedFF">
+              <div :style="{ display: isActive === name ? 'block' : 'none' }" class="list-search-wrapper">
+                <v-icon class="prepend">mdi-magnify</v-icon>
+                <input v-model="ff.search" type="text" :placeholder="'Cari petani'" />
+                <v-icon v-if="typeof ff.search == 'string' && ff.search.length > 0" @click="ff.search = ''
+                  " class="append">mdi-close</v-icon>
+              </div>
             </div>
 
-            <div class="statistics mb-3">
+            <!-- <div class="statistics mb-3">
               <div class="statistic-item light">
                 <v-icon>mdi-list-status</v-icon>
                 <div class="statistic-data">
                   <p class="mb-0 label">Total Peserta Terpilih</p>
-                  <p class="mb-0 value">{{ peserta.length }}</p>
+                  <p class="mb-0 value">{{ totalSelectedPeserta }}</p>
                 </div>
               </div>
-            </div>
+            </div> -->
 
-            <div style="display: inline-block; margin: 0px 10px 10px 0px" v-for="ff in farmerBySelectedFF">
-              <v-btn :variant="isActive===key ? 'success' : 'secondary'" @click="isActive=key">{{ ff.FFname }}
-                <v-badge v-if="ff.totalSelectedFarmer" color="primary" :content="ff.totalSelectedFarmer" inline></v-badge>
+            <div style="display: inline-block; margin: 0px 10px 10px 0px" v-for="(ff, name, key) in farmerBySelectedFF">
+              <v-btn :variant="isActive === name ? 'success' : 'light'" @click="isActive = name">{{ ff.FFname }}
+                <v-badge small v-if="ff.selectedFarmers.length" color="primary" :content="ff.selectedFarmers.length"
+                  inline></v-badge>
               </v-btn>
             </div>
 
-            <v-data-table class="elevation-1" :items="farmers" :headers="farmerTable.header" :search="search"
-              show-select disable-sort item-key="idTblPetani" v-model="peserta" :items-per-page="itemPerPage"
-              :page="page" :footer-props="{
-                itemsPerPageText: 'Jumlah Data Per Halaman',
-                itemsPerPageOptions: [5, 10, 25, 40, -1],
-              }" @update:page="($p) => (page = $p)" @update:items-per-page="($p) => (itemPerPage = $p)">
+            <div :style="{ display: isActive === name ? 'block' : 'none', margin: '0px 10px 10px 0px' }"
+              v-for="(ff, name, key) in farmerBySelectedFF">
+              <v-data-table class="elevation-1" :items="ff.farmers" :headers="farmerTable.header" :search="ff.search"
+                show-select disable-sort item-key="idTblPetani" v-model="ff.selectedFarmers"
+                :items-per-page="ff.itemPerPage" :page="ff.page" :footer-props="{
+                  itemsPerPageText: 'Jumlah Data Per Halaman',
+                  itemsPerPageOptions: [5, 10, 25, 40, -1],
+                }" @update:page="($p) => (page = $p)" @update:items-per-page="($p) => (itemPerPage = $p)">
 
-              <template v-slot:item.no="{ index }">
-                {{ ++index }}
-              </template>
+                <template v-slot:item.no="{ index }">
+                  {{ ++index }}
+                </template>
 
-              <template v-slot:item.photo="{ item }">
-                <v-avatar color="secondary" size="30" class="my-1 cursor-pointer" @click="() => {
-                  // show bigger image | Lightbox
-                }
-                  ">
-                  <img :src="`${$store.state.apiUrlImage}Uploads/fphoto_${item.nik}.jpg`"
-                    :alt="`Foto petani ${item.nama}`" />
-                </v-avatar>
-              </template>
+                <template v-slot:item.photo="{ item }">
+                  <v-avatar color="secondary" size="30" class="my-1 cursor-pointer" @click="() => {
+                    // show bigger image | Lightbox
+                  }
+                    ">
+                    <img :src="`${$store.state.apiUrlImage}Uploads/fphoto_${item.nik}.jpg`"
+                      :alt="`Foto petani ${item.nama}`" />
+                  </v-avatar>
+                </template>
 
-              <template v-slot:item.no_petani="{ item }">
-                <div class="center-horizontally">
-                  {{ item.kode }}
-                </div>
-              </template>
+                <template v-slot:item.no_petani="{ item }">
+                  <div class="center-horizontally">
+                    {{ item.kode }}
+                  </div>
+                </template>
 
 
-            </v-data-table>
+              </v-data-table>
+            </div>
 
           </v-col>
         </v-row>
@@ -602,11 +608,11 @@ export default {
     return {
       isActive: null,
       form: 1,
+      totalSelectedPeserta: 0,
       isModalDetailOpened: false,
       loading: false,
       selectedDesaName: '',
       farmers: [], // getFarmers()
-      search: '',
       itemPerPage: 10,
       page: 1,
       peserta: [],
@@ -671,6 +677,7 @@ export default {
     setNamaDesa(value) {
       this.selectedDesaName = value.Desaname;
     },
+    countTotalPeseerta(){},
     onSubmit() {
       if (this.form < 3) {
         if (this.form === 2 && !this.peserta.length) {
@@ -747,7 +754,8 @@ export default {
       this.$set(this.farmerBySelectedFF, FF.ff_no, {
         FFname: FF.FFname.split(' - ')[0],
         farmers: this.farmerByAllFF.get(FF.ff_no),
-        totalSelectedFarmer: 0
+        selectedFarmers: [],
+        search: ''
       });
     },
     unsetFarmerBySelectedFF(ff) {
