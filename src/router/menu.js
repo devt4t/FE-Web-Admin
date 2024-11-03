@@ -468,7 +468,7 @@ const menu = [
         component: "Utilities/Regional",
         name: "Regional",
         permission: "Regional",
-        icon: "mdi-map-marker",
+        icon: "mdi-map-marker-radius",
       },
       {
         title: "Management Unit",
@@ -528,6 +528,14 @@ const menu = [
     icon: "mdi-database-cog-outline",
     items: [
       {
+        title: "Area Management System",
+        to: "/AreaManagementSystem",
+        component: "AreasManagement/main-ams/mainListAMS",
+        name: "Area Management System",
+        permission: "AreaManagementSystem",
+        icon: "mdi-application-array",
+      },
+      {
         title: "Tipe Project",
         to: "/ProjectTypes",
         component: "Utilities/ProjectTypes",
@@ -575,14 +583,14 @@ const menu = [
         permission: "TaskGroup",
         icon: "mdi-database-edit",
       },
-      {
-        title: "Area Management System",
-        to: "/ams",
-        component: "AreasManagement/main-ams/mainListAMS",
-        name: "Area Management System",
-        permission: "AreaManagementSystem",
-        icon: "application-array",
-      },
+      // {
+      //   title: "Area Management System",
+      //   to: "/ams",
+      //   component: "AreasManagement/main-ams/mainListAMS",
+      //   name: "Area Management System",
+      //   permission: "AreaManagementSystem",
+      //   icon: "mdi-application-array",
+      // },
     ],
   },
   {
