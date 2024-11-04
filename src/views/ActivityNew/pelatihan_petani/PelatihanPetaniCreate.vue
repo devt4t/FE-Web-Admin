@@ -586,7 +586,7 @@
 
     <!-- Modals -->
     <modal-detail-petani :isOpen="isModalDetailOpened" :dataFarmer="selectedFarmerData"
-      @addedOtherFarmer="handleAddedOtherFarmer"></modal-detail-petani>
+      @addedOtherFarmer="handleAddedOtherFarmer" @batal="isModalDetailOpened = false"></modal-detail-petani>
     <!-- End Modals -->
   </v-card>
 </template>
