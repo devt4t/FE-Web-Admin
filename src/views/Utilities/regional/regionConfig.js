@@ -110,7 +110,28 @@ export default [
               },
             },
           },
-        filter: true,
+        filter: {
+          type: "select",
+          col_size: 6,
+          validation: ["required"],
+          option: {
+            default_options: [
+              {
+                name: "Tidak Aktif",
+                code: "0",
+              },
+              {
+                name: "Aktif",
+                code: "1",
+              }
+            ],
+            list_pointer: {
+              code: "code",
+              label: "name",
+              display: ["name"],
+            },
+          },
+        },
       },
     },
   ];
