@@ -1,6 +1,5 @@
-<!-- This Is Base Model For Planting Hole Survielliance -->
 <template>
-    <!-- <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="true" :hideUpdate="true"/> -->
+    <!-- <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true"/> -->
     <div class="under-development">
         <div class="wrapper">
         <div class="text-wrapper">
@@ -19,22 +18,45 @@
 
 <script>
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
+import plantingHoleConfig from "./PlantingHoleConfig";
 import LottieAnimation from "lottie-web-vue";
-import config from './PlantingHoleConfig'
-
-import "./planting-hole.scss";
 export default {
-    name: "crud-planting_hole_surviellance",
     components: {
-        LottieAnimation
+        LottieAnimation,
     },
+    name: "crud-planting-hole",
     watch: {},
-    methods: {
-        
-    },
-    lottie: maintenanceAnimation,
     data() {
-        return config
+        return {
+            config: {
+                title: "Lubang Tanam",
+                model_api: null,
+                getter: "new-planting-hole/list/main",
+                totalDataKey: 'count_record',
+                // setter: "ams/post_create",
+                // update: "ams/post_update",
+                // delete: "ams/post_delete",
+                
+                deleteKey: "id",
+                pk_field: null,
+                globalFilter: {
+                    program_year: {
+                    setter: "program_year",
+                    },
+                },
+                permission: {
+                    create: "lubang-tanam-create",
+                    read: "lubang-tanam-list",
+                    // update: "lubang-tanam-update",
+                    detail: "lubang-tanam-detail",
+                    // lookup: "lubang-tanam-lookup",
+                    // delete: "lubang-tanam-delete",
+                },
+                slave: [],
+                fields: plantingHoleConfig,
+            },
+            lottie: maintenanceAnimation,
+        };
     },
 };
 </script>
