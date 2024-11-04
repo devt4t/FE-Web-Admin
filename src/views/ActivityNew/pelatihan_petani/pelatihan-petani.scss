@@ -1,3 +1,6 @@
+@import "@/assets/scss/_variables.scss";
+
+
 .list-header {
   width: 100%;
   display: flex;
@@ -49,5 +52,83 @@
       bottom: 5px;
       transition: all 0.3s ease;
     }
+  }
+}
+
+.list-search-wrapper {
+  border: 1px solid rgba(128, 128, 128, 0.43);
+  border-radius: 30px;
+  height: 38px;
+  width: 300px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 10px;
+
+  input {
+    padding-left: 5px;
+    flex: 1;
+    height: 100%;
+
+    &::placeholder {
+      font-size: .9em;
+      color: rgba(128, 128, 128, 0.7);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .append {
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.center-horizontally {
+  margin-left: 6px;
+  margin-top: 7px;
+}
+
+table {
+  tr {
+    td {
+      padding-bottom: 5px;
+    }
+
+    td:first-of-type {
+      padding-right: 10px;
+    }
+    td:last-of-type {
+      padding-left: 10px;
+    }
+  }
+}
+
+.village-person-list {
+  .index-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .index {
+
+          display: block;
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          background: $primary_light;
+          border-radius: 50%;
+          color: $primary;
+          font-size: 1.2em;
+          font-weight: bold;
+          text-align: center;
+      }
+      
   }
 }

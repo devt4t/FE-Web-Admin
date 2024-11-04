@@ -97,6 +97,13 @@ Vue.filter("parse", (value, id) => {
         _value = "Potensial Carbon & Non-Carbon";
       }
       break;
+    case "active-status":
+      if (value == 0) {
+        _value = "Non-Aktif";
+      } else if (value === 1) {
+        _value = "Aktif";
+      }
+      break;
 
     default:
       _value = value;

@@ -25,7 +25,7 @@
                   <v-icon>mdi-list-status</v-icon>
                   <div class="statistic-data">
                     <p class="mb-0 label">Total FC</p>
-                    <p class="mb-0 value">{{ data.data.result.field_coordinator.length }}</p>
+                    <p class="mb-0 value">{{ data.data.result.field_coordinator.length ?? '' }}</p>
                   </div>
                 </div>
               </div>
@@ -78,7 +78,7 @@
           </div>
 
           <div class="absent-photo-list d-flex flex-row" v-if="true">
-            <div class="absent-photo-item" v-for="(item, i) in data.data.result.absent" :key="'absent-photo' + i"
+            <div class="absent-photo-item" v-for="(item, i) in data.data.result.absent ?? []" :key="'absent-photo' + i"
               @click="showLightbox($_config.baseUrlUpload + '/' + item)" v-bind:style="{
                 backgroundImage:
                   'url(' +
@@ -105,12 +105,13 @@
 
           <div class="absent-photo-list d-flex flex-row" v-if="true">
             <div class="absent-photo-item"
-              @click="showLightbox($_config.baseUrlUpload + '/' + data.data.result.documentation_photo)" v-bind:style="{
+              @click="showLightbox($_config.baseUrlUpload + '/' + data.data.result.documentation_photo ?? '')"
+              v-bind:style="{
                 backgroundImage:
                   'url(' +
                   $_config.baseUrlUpload +
                   '/' +
-                  data.data.result.documentation_photo +
+                  data.data.result.documentation_photo ?? '' +
                   ')',
               }">
               <h6>Foto Dokumentasi</h6>
@@ -119,8 +120,8 @@
 
         </v-card>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
-          <v-data-table :headers="configPesertaUmum.table.header" :items="data.data.result.peserta_umums" :search="''"
-            class="rounded-xl elevation- pa-1 px-5">
+          <v-data-table :headers="configPesertaUmum.table.header" :items="data.data.result.peserta_umums ?? []"
+            :search="''" class="rounded-xl elevation- pa-1 px-5">
 
             <template v-slot:item.index="{ index }">
               {{ index + 1 }}
@@ -141,7 +142,7 @@
                   <v-icon>mdi-list-status</v-icon>
                   <div class="statistic-data">
                     <p class="mb-0 label">Total Peserta Umum</p>
-                    <p class="mb-0 value">{{ data.data.result.peserta_umums.length }}</p>
+                    <p class="mb-0 value">{{ data.data.result.peserta_umums.length ?? 0 }}</p>
                   </div>
                 </div>
               </div>
@@ -154,8 +155,8 @@
     <v-row>
       <v-col>
         <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
-          <v-data-table :headers="configKehadiranPetani.table.header" :items="data.data.result.farmers" :search="''"
-            class="rounded-xl elevation- pa-1 px-5">
+          <v-data-table :headers="configKehadiranPetani.table.header" :items="data.data.result.farmers ?? []"
+            :search="''" class="rounded-xl elevation- pa-1 px-5">
 
             <template v-slot:item.index="{ index }">
               {{ index + 1 }}
@@ -176,7 +177,7 @@
                   <v-icon>mdi-list-status</v-icon>
                   <div class="statistic-data">
                     <p class="mb-0 label">Total Petani</p>
-                    <p class="mb-0 value">{{ data.data.result.farmers.length }}</p>
+                    <p class="mb-0 value">{{ data.data.result.farmers.length ?? 0 }}</p>
                   </div>
                 </div>
               </div>
@@ -196,8 +197,8 @@ export default {
   name: "pelatihan-petani-detail",
   props: {
     data: {
-      required: false,
-      default: null,
+      required: true,
+      default: [],
     },
   },
   methods: {
