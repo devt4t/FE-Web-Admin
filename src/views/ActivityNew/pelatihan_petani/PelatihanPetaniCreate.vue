@@ -586,7 +586,7 @@
 
     <!-- Modals -->
     <modal-detail-petani :isOpen="isModalDetailOpened" :dataFarmer="selectedFarmerData"
-      @addedOtherFarmer="handleAddedOtherFarmer"></modal-detail-petani>
+      @addedOtherFarmer="handleAddedOtherFarmer" @batal="isModalDetailOpened = false"></modal-detail-petani>
     <!-- End Modals -->
   </v-card>
 </template>
@@ -634,7 +634,8 @@ export default {
         peserta_tambahan: [],
         status: 1,
         user_id: this.user.email,
-        program_year: '2024'
+        program_year: '2024',
+        farmers: []
       }
     }
   },
@@ -677,18 +678,36 @@ export default {
     setNamaDesa(value) {
       this.selectedDesaName = value.Desaname;
     },
-    countTotalPeseerta(){},
+    countTotalPeseerta() {
+      let total = 0;
+      for (const ff_no in this.farmerBySelectedFF) {
+        total += this.farmerBySelectedFF[ff_no].selectedFarmers.length
+      }
+      return total;
+    },
     onSubmit() {
       if (this.form < 3) {
-        if (this.form === 2 && !this.peserta.length) {
+        if (this.form === 2 && !this.countTotalPeseerta()) {
           return;
         }
         this.form++;
       } else {
 
-        this.formData.farmers = this.peserta.map(farmer => {
-          return { farmer_no: farmer.kode }
-        });
+        let ff_selected_farmer = [];
+
+        for (let ff_no in this.farmerBySelectedFF) {
+          if (this.farmerBySelectedFF[ff_no].selectedFarmers.length) {
+            ff_selected_farmer.push(ff_no)
+            
+            for (let selectedFarmerKey in this.farmerBySelectedFF[ff_no].selectedFarmers) {
+              this.formData.farmers.push({
+                farmer_no: this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey].kode
+              });
+            }
+          }
+        }
+
+        this.formData.ff_additional = ff_selected_farmer;
 
         this.$_api.post('AddFarmerTraining', this.formData)
           .then(response => {
@@ -714,25 +733,38 @@ export default {
       belum ada ditabel && belum jadi peserta = push farmers (tabel) & push peserta
       */
 
-      if (
-        this.peserta.some(
-          peserta => peserta.idTblPetani === farmer.idTblPetani)
-        && this.farmers.some(
-          petani => petani.idTblPetani === farmer.idTblPetani)
-      ) {
-        this.$_alert.error('', `${farmer.nama}`, `Sudah menjadi peserta`);
-        return
-      } else if (
-        this.farmers.some(
-          petani => petani.idTblPetani === farmer.idTblPetani)
-      ) {
-        this.peserta.push(farmer)
+      if (!Object.keys(this.farmerBySelectedFF).includes(farmer.ff_no)) {
+        this.$set(this.farmerBySelectedFF, farmer.ff_no, {
+          FFname: farmer.user,
+          farmers: [farmer],
+          selectedFarmers: [farmer],
+          search: ''
+        });
         this.$_alert.success(`${farmer.nama} - ${farmer.kode}`, `Berhasil menambahkan peserta`, 'top-right', false, 1500);
       } else {
-        this.farmers.push(farmer)
-        this.peserta.push(farmer)
-        this.$_alert.success(`${farmer.nama} - ${farmer.kode}`, `Berhasil menambahkan peserta`, 'top-right', false, 1500);
+        if (
+          this.farmerBySelectedFF[farmer.ff_no].selectedFarmers.some(
+            peserta => peserta.idTblPetani === farmer.idTblPetani)
+          && this.farmerBySelectedFF[farmer.ff_no].farmers.some(
+            petani => petani.idTblPetani === farmer.idTblPetani)
+        ) {
+          this.$_alert.error('', `${farmer.nama}`, `Sudah menjadi peserta`);
+          return
+        } else if (
+          this.farmerBySelectedFF[farmer.ff_no].farmers.some(
+            petani => petani.idTblPetani === farmer.idTblPetani)
+        ) {
+          this.farmerBySelectedFF[farmer.ff_no].selectedFarmers.push(farmer)
+          this.$_alert.success(`${farmer.nama} - ${farmer.kode}`, `Berhasil menambahkan peserta`, 'top-right', false, 1500);
+        } else {
+          this.farmerBySelectedFF[farmer.ff_no].farmers.push(farmer)
+          this.farmerBySelectedFF[farmer.ff_no].selectedFarmers.push(farmer)
+          this.$_alert.success(`${farmer.nama} - ${farmer.kode}`, `Berhasil menambahkan peserta`, 'top-right', false, 1500);
+        }
       }
+
+
+
 
     },
     hapusPesertaUmum(i) {

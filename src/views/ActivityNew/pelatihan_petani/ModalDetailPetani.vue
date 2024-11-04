@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isOpen" :width="'35%'" :style="{
     'min-height': '90vh', 'background-color': 'white'
-  }">
+  }" persistent>
     <v-card>
       <v-card-title class="text-center d-block font-weight-bold">
         Detail Petani
@@ -64,7 +64,10 @@
               </v-btn>
             </v-col>
             <v-col>
-              <v-btn variant="danger" @click="() => this.isOpen = false">
+              <v-btn variant="danger" @click="() => {
+                this.isOpen = false
+                this.$emit('batal');
+              }">
                 <v-icon left>mdi-undo</v-icon>
                 <span>Batal</span>
               </v-btn>
