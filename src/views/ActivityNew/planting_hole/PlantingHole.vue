@@ -10,7 +10,18 @@
                 <span>Verifikasi</span>
             </v-btn>
         </template>
+
+        <template v-slot:detail-slave-raw="{ data }">
+            <planting-hole-detail :data="data"></planting-hole-detail>
+        </template>
+        <template v-slot:detail-action="{ item }">
+            <div>
+                <v-btn v-if="!item.is_validate" variant="success" @click="onVerifDetail(item)"><v-icon left small>mdi-check-bold</v-icon>Verifikasi</v-btn>
+                <v-btn v-else variant="danger" @click="onUnverifDetail(item)"><v-icon left small>mdi-undo</v-icon>Unverifikasi</v-btn>
+            </div>
+        </template>
     </geko-base-crud>
+    
     <!-- <div class="under-development">
         <div class="wrapper">
         <div class="text-wrapper">
@@ -47,7 +58,9 @@ export default {
                 getter: "new-planting-hole/list/main",
                 getterDataKey: "data",
                 totalDataKey: 'total',
-                
+                detail: "new-planting-hole/detail/main",
+                detailIdKey: "ph_form_no",
+                detailKey: "result",
                 deleteKey: "id",
                 pk_field: null,
                 globalFilter: {
@@ -61,7 +74,10 @@ export default {
                 permission: {
                     create: "lubang-tanam-create",
                     read: "lubang-tanam-list",
+                    update: "lubang-tanam-update",
                     detail: "lubang-tanam-detail",
+                    lookup: "lubang-tanam-lookup",
+                    delete: "lubang-tanam-delete",
                 },
                 slave: [],
                 fields: plantingHoleConfig,
@@ -104,6 +120,14 @@ export default {
 
             }
             console.log(item.ph_form_no)
+        },
+        async onVerifDetail(item){
+            this.$router.go(-1);
+            await this.onVerif(item);
+        },
+        async onUnverifDetail(item){
+            this.$router.go(-1);
+            await this.onUnverif(item);
         },
     },
 };

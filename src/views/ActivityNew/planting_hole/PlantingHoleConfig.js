@@ -55,6 +55,7 @@ export default [
             'non-carbon': "badge bg-warning",
             '-': "badge bg-danger",
           }
+          
         },
         create: false,
           update: false,
@@ -63,29 +64,35 @@ export default [
     },
     {
       id: "field_facilitators_name",
-      label: "Nama FF",
+      label: "Field Facilitator",
       methods: {
-        list: true,
-        detail: true,
+        list: {
+          view_data: "field_facilitators_name"
+        },
+        detail: {
+          view_data: "field_facilitators_name"
+        },
         create: {
           type: "text",
-          col_size: 6,
           validation: ["required"],
+          col_size: 6,
         },
         update: {
           type: "text",
-          col_size: 6,
           validation: ["required"],
+          col_size: 6,
         },
         filter: false,
-      },
+      }
     },
     {
       id: "farmers_name",
       label: "Nama Petani",
       methods: {
         list: true,
-        detail: true,
+        detail: {
+          view_data: "farmers_name"
+        },
         create: {
           type: "text",
           col_size: 6,
@@ -268,6 +275,19 @@ export default [
             },
           },
         },
+      },
+    },
+    {
+      id: "action",
+      label: "Action",
+      methods: {
+        list: false,
+        detail: {
+          type: "slot",
+        },
+        create: false,
+        update: false,
+        filter: false,
       },
     },
   ];
