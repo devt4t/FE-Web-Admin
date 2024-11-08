@@ -145,12 +145,10 @@ export default {
             await this.onUnverif(item);
         },
         onExportExcel(data) {
-            console.log({ data })
             this.exportModal += 1;
             this.exportFormat = "excel";
         },
         onExportPdf(data) {
-            console.log({ data })
             this.exportModal += 1;
             this.exportFormat = "pdf";
         }
