@@ -1,5 +1,5 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true"/>
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true"/>
     <!-- <div class="under-development">
         <div class="wrapper">
         <div class="text-wrapper">
@@ -28,6 +28,7 @@ export default {
     watch: {},
     data() {
         return {
+            refreshKey: 1,
             config: {
                 title: "Area Management System",
                 model_api: null,

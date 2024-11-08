@@ -1,7 +1,22 @@
 <template>
-  <geko-base-crud :config="config">
+  <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true">
     <template v-slot:list-program_year="{ item }">
       <span class="badge bg-primary">{{ $store.state.tmpProgramYear }}</span>
+    </template>
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn
+        variant="info"
+        small
+        class="d-flex flex-row align-items-center mt-2"
+        @click="onAssignTADesas(item)"
+        v-if="$_sys.isAllowed('field-facilitator-update')"
+      >
+        <v-icon small class="mr-1">mdi-clipboard-text</v-icon>
+        <span>Assign Target Area</span>
+      </v-btn>
+    </template>
+    <template v-slot:list-after-filter>
+      
     </template>
   </geko-base-crud>
 </template>
@@ -16,6 +31,11 @@ export default {
       id: this.$route.query.id,
     });
   },
+  methods:{
+    onAssignTADesas(item){
+      console.log(item)
+    }
+  },
   data() {
     return {
       config: {
@@ -26,7 +46,7 @@ export default {
         // },
         model_api: null,
         getter: "new-utilities/desas",
-        setter: "AddEmployee",
+        setter: "new-utilities/create/desas",
         search_key: "search_value",
         // getterDataKey: "data.result.data",
         pagination: true,
@@ -39,9 +59,9 @@ export default {
           // project_purpose: {
           //   setter: "purpose_code",
           // },
-          program_year: {
-            setter: "program_year",
-          },
+          // program_year: {
+          //   setter: "program_year",
+          // },
         },
         delete: "DeleteEmployee",
         // delete_ext_payload: {
