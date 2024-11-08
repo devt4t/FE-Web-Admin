@@ -8,6 +8,15 @@
                 {{ index + 1 }}
             </template>
 
+            <template v-slot:item.action="{ item }">
+                <div class="d-flex flex-column flex-col">
+                    <v-btn variant="warning" small @click="$emit('edit', item)">
+                        <v-icon>mdi-pencil</v-icon>
+                        <span>Perbarui</span>
+                    </v-btn>
+                </div>
+            </template>
+
             <template v-slot:item.status="{ item }">
                 <div class="d-flex flex-column align-items-center min-w-150px">
                     <span class="badge" :class="{
@@ -27,7 +36,7 @@
             </template>
 
             <template v-slot:item.land_area="{ item }">
-                <span class="font-weight-bold" v-if="item.lahan_datas">
+                <span class="font-weight-bold d-block min-w-150px" v-if="item.lahan_datas">
                     {{ item.lahan_datas.luas_lahan_gis ? item.lahan_datas.luas_lahan_gis : item.lahan_datas.luas_lahan
                     }} m2
                 </span>
@@ -86,6 +95,10 @@ export default {
     data() {
         return {
             dataHeaders: [
+                {
+                    text: '#',
+                    value: 'action'
+                },
                 {
                     text: 'No',
                     value: 'index',
@@ -147,10 +160,6 @@ export default {
                 //     text: 'Status Adjustment',
                 //     value: 'adjustment_validation'
                 // },
-                {
-                    text: '#',
-                    value: 'action'
-                }
             ],
             data: [],
             loading: true

@@ -1,6 +1,10 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="true" :hideUpdate="true">
 
+        <template v-slot:list-before-create>
+            <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
+        </template>
+
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="success" small class="d-block" @click="onExportExcel(item)">
                 <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
@@ -18,7 +22,7 @@
             </v-btn>
         </template>
         <template v-slot:list-expanded-item="{ headers, item }">
-            <planting-soc-list-ff :item="item" :headers="headers"></planting-soc-list-ff>
+            <planting-soc-list-ff :item="item" :headers="headers" @edit="onEditFarmer($event)"></planting-soc-list-ff>
         </template>
 
         <template v-slot:create-form>
@@ -36,14 +40,20 @@ import moment from 'moment'
 import axios from 'axios'
 
 import "./planting-soc.scss";
+import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 export default {
     name: "crud-planting-socialization",
     components: {
         PlantingSocListFf,
-        PlantingSocForm
+        PlantingSocForm,
+        PlantingSocFarmerEdit
     },
     watch: {},
     methods: {
+        onEditFarmer(item) {
+            this.farmerEditKey += 1
+            this.farmerEditData = item
+        },
         async onExportExcel(item) {
             try {
                 if (this.exportIds.includes(item.ff_no)) return
@@ -115,7 +125,8 @@ export default {
             if (prompt.isConfirmed) {
                 this.$_api.post('ValidateSosisalisasiTanam', {
                     soc_no: item.soc_no,
-                    validate_by: this.$store.state.User.employee_no
+                    validate_by: this.$store.state.User.employee_no,
+                    program_year: this.$store.state.tmpProgramYear
                 })
                     .then(() => {
                         this.$_alert.success('Sostam berhasil diverifikasi')
