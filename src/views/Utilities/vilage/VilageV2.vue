@@ -1,23 +1,55 @@
 <template>
-  <geko-base-crud :config="config">
+  <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true">
     <template v-slot:list-program_year="{ item }">
       <span class="badge bg-primary">{{ $store.state.tmpProgramYear }}</span>
+    </template>
+    <template v-slot:list-bottom-action="{ item }">
+      <v-btn
+        variant="info"
+        small
+        class="d-flex flex-row align-items-center mt-2"
+        @click="onAssignTADesas(item)"
+        v-if="$_sys.isAllowed('field-facilitator-update')"
+      >
+        <v-icon small class="mr-1">mdi-clipboard-text</v-icon>
+        <span>Assign Target Area</span>
+      </v-btn>
+    </template>
+    <template v-slot:list-after-filter>
+      <village-ta-adjustment 
+        @success="refreshKey = refreshKey + 1"
+        :data="village_data"
+        :dataKey="village_data_key"/>
     </template>
   </geko-base-crud>
 </template>
 
 <script>
 import vilageConfig from "./vilageConfig";
+import villageTaAdjustment from "./VillageV2AdjustmentForm.vue";
 export default {
   name: "crud-vilage-v2",
+  components: {
+    villageTaAdjustment,
+  },
   watch: {},
   mounted() {
     this.$set(this.config, "update_ext_payload", {
       id: this.$route.query.id,
     });
   },
+  methods:{
+    onAssignTADesas(item){
+      this.village_data = item
+      this.village_data_key = this.village_data_key + 1
+      console.log(this.village_data)
+    }
+  },
   data() {
     return {
+      refreshKey: 0,
+      village_data: null,
+      village_data_key: 0,
       config: {
         title: "Village",
         // program_year: {
@@ -26,7 +58,7 @@ export default {
         // },
         model_api: null,
         getter: "new-utilities/desas",
-        setter: "AddEmployee",
+        setter: "new-utilities/create/desas",
         search_key: "search_value",
         // getterDataKey: "data.result.data",
         pagination: true,
@@ -39,9 +71,9 @@ export default {
           // project_purpose: {
           //   setter: "purpose_code",
           // },
-          program_year: {
-            setter: "program_year",
-          },
+          // program_year: {
+          //   setter: "program_year",
+          // },
         },
         delete: "DeleteEmployee",
         // delete_ext_payload: {

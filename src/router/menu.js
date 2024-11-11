@@ -457,6 +457,15 @@ const menu = [
         icon: "mdi-map-marker",
       },
       {
+        title: "Old Village",
+        to: "/test2",
+        component: "Utilities/vilage/Vilage.old",
+        name: "Test2",
+        permission: "Test2",
+        icon: "mdi-map-marker",
+      },
+      
+      {
         title: "Village",
         to: "/village",
         component: "Utilities/vilage/Vilage.old",
@@ -468,7 +477,8 @@ const menu = [
         title: "Village",
         to: "/Vilage-v2",
         component: "Utilities/vilage/VilageV2",
-        name: "Vilage2",
+        name: "Vilage",
+        update: true,
         permission: "Vilage",
         icon: "mdi-map-marker",
         update: true,

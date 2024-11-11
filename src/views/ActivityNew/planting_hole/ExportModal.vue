@@ -103,7 +103,7 @@ export default {
     async getInitialData() {
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
-        limit: 100,
+        limit: 10000,
         offset: 0,
       });
 
@@ -136,27 +136,20 @@ export default {
     },
 
     async onSubmit() {
-
-      console.log('onSubmit() start')
       
       if (this.loading) return;
       
       this.loading = true;
-      console.log('will iterate ff_code array')
       for (const _ff of this.ff_code) {
         if (!_ff) continue;
-
-        console.log('onSubmit() will get export data')
 
         const result = await this.getExportData(_ff);
 
         if (!result) {
-          console.log('dont have data')
           this.loading = false;
           continue;
         }
         
-        console.log('have data', result)
         if (
           !Array.isArray(result.data) ||
           (Array.isArray(result.data) && result.data.length == 0)
