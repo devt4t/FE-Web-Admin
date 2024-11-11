@@ -196,26 +196,26 @@ export default [
       },
       create: false,
       update: false,
-      filter: {
-        validation: ["required"],
-        type: "select",
-        col_size: 6,
-        main: true,
-        getter: "new-utilities/target-areas",
-        setter: "kode_ta",
-        param: {
-          page: 1,
-          per_page: 10,
-        },
-        option: {
-          getterKey: "data",
-          list_pointer: {
-            code: "area_code",
-            label: "name",
-            display: ["name"],
-          },
-        },
-      },
+      // filter: {
+      //   validation: ["required"],
+      //   type: "select",
+      //   col_size: 6,
+      //   main: true,
+      //   getter: "new-utilities/target-areas",
+      //   setter: "kode_ta",
+      //   param: {
+      //     page: 1,
+      //     per_page: 10,
+      //   },
+      //   option: {
+      //     getterKey: "data",
+      //     list_pointer: {
+      //       code: "area_code",
+      //       label: "name",
+      //       display: ["name"],
+      //     },
+      //   },
+      // },
     },
   },
   {
@@ -277,50 +277,50 @@ export default [
       },
       create: false,
       update: false,
-      filter: {
-        validation: ["required"],
-        type: "select",
-        col_size: 6,
-        main: true,
-        setter: "potential_status",
-        param: {
-          page: 1,
-          per_page: 10,
-        },
-        option: {
-          default_options: [
-            {
-              name: "Semua Status",
-              code: null,
-            },
-            {
-              name: "Tidak Potensial",
-              code: "0",
-            },
-            {
-              name: "Belum Pengecekan",
-              code: "1",
-            },
-            {
-              name: "Potensial Carbon",
-              code: "2",
-            },
-            {
-              name: "Potensial Non-Carbon",
-              code: "3",
-            },
-            {
-              name: "Potensial Carbon & Non-Carbon",
-              code: "4",
-            },
-          ],
-          list_pointer: {
-            code: "code",
-            label: "name",
-            display: ["name"],
-          },
-        },
-      },
+      // filter: {
+      //   validation: ["required"],
+      //   type: "select",
+      //   col_size: 6,
+      //   main: true,
+      //   setter: "potential_status",
+      //   param: {
+      //     page: 1,
+      //     per_page: 10,
+      //   },
+      //   option: {
+      //     default_options: [
+      //       {
+      //         name: "Semua Status",
+      //         code: null,
+      //       },
+      //       {
+      //         name: "Tidak Potensial",
+      //         code: "0",
+      //       },
+      //       {
+      //         name: "Belum Pengecekan",
+      //         code: "1",
+      //       },
+      //       {
+      //         name: "Potensial Carbon",
+      //         code: "2",
+      //       },
+      //       {
+      //         name: "Potensial Non-Carbon",
+      //         code: "3",
+      //       },
+      //       {
+      //         name: "Potensial Carbon & Non-Carbon",
+      //         code: "4",
+      //       },
+      //     ],
+      //     list_pointer: {
+      //       code: "code",
+      //       label: "name",
+      //       display: ["name"],
+      //     },
+      //   },
+      // },
     },
   },
 ];
