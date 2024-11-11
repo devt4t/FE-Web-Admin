@@ -105,6 +105,13 @@ Vue.filter("parse", (value, id) => {
       }
       break;
 
+    case "simple-status":
+      if (value == 0) {
+        _value = "Belum Terverifikasi";
+      } else if (value === 1) {
+        _value = "Terverifikasi";
+      }
+      break;
     default:
       _value = value;
       break;

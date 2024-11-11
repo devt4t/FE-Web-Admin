@@ -23,11 +23,12 @@ export default {
                 setter: "new-utilities/region/create",
                 update: "new-utilities/region/update",
                 delete: "new-utilities/region/delete",
+                // globalFilter: {
+                //     program_year: {
+                //     setter: "program_year",
+                //     },
+                // },
                 pk_field: null,
-
-                filter_api: {
-                    project_modul: "type",
-                },
                 permission: {
                     create: "regional-create",
                     read: "regional-list",
