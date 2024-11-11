@@ -130,15 +130,29 @@ export default {
                 })
                     .then(() => {
                         this.$_alert.success('Sostam berhasil diverifikasi')
-                        this.$refreshKey += 1
+                        this.refreshKey += 1
                     })
 
             }
         },
         async onUnverif(item) {
             const prompt = await this.$_alert.confirm('Unverifikasi Data Sostam?', 'Apakah anda yakin akan mengurungkan verifikasi data sostam ini?', 'Ya, Unverifikasi', 'Batal', true)
-
+            // console.log('item', item)
             if (prompt.isConfirmed) {
+
+                const isConfirmed = await this.$_api.post('sostam/unverification', {
+                    soc_no: item.soc_no,
+                    program_year: this.$store.state.tmpProgramYear
+                })
+                    .catch(() => false)
+
+                if (!isConfirmed) {
+                    this.$_alert.error('Data sostam gagal diunverifikasi')
+                    return
+                }
+
+                this.$_alert.success('Data sostam berhasil diunverifikasi')
+                this.refreshKey += 1
                 // this.$_api.post('ValidateSosisalisasiTanam', {
                 //     soc_no: item.soc_no,
                 //     validate_by: this.$store.state.User.employee_no

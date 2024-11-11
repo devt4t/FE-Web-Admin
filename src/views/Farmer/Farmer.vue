@@ -1,57 +1,38 @@
 <template>
-  <geko-base-crud
-    :config="config"
-    :hideCreate="true"
-    :hideUpdate="true"
-    :key="`component-farmer-${componentKey}`"
-  >
+  <geko-base-crud :config="config" :hideCreate="true" :hideUpdate="true" :key="`component-farmer-${componentKey}`">
     <template v-slot:list-action-detail="{ item }">
-      <button
-        class="geko-list-action-view"
-        @click="
-          $router.push({
-            name: $route.name,
-            query: {
-              view: 'detail',
-              id: item.id,
-              farmer_no: item.farmer_no,
-              program_year: $store.state.tmpProgramYear,
-            },
-          })
-        "
-      >
+      <button class="geko-list-action-view" @click="
+        $router.push({
+          name: $route.name,
+          query: {
+            view: 'detail',
+            id: item.id,
+            farmer_no: item.farmer_no,
+            program_year: $store.state.tmpProgramYear,
+          },
+        })
+        ">
         <v-icon small>mdi-information-outline</v-icon>
       </button>
     </template>
     <template v-slot:list-join_year="{ item }">
-      <div
-        class="d-flex flex-row mt-1"
-        style="justify-content: center; align-items: center"
-      >
-        <span
-          class="mb-0"
-          :class="{
-            'badge bg-primary':
-              formatDate(getMaskedValue(item).join_date, 'YYYY') == '2024',
-            'badge bg-info':
-              formatDate(getMaskedValue(item).join_date, 'YYYY') !== '2024',
-          }"
-          >{{ formatDate(getMaskedValue(item).join_date, "YYYY") }}</span
-        >
+      <div class="d-flex flex-row mt-1" style="justify-content: center; align-items: center">
+        <span class="mb-0" :class="{
+          'badge bg-primary':
+            formatDate(getMaskedValue(item).join_date, 'YYYY') == '2024',
+          'badge bg-info':
+            formatDate(getMaskedValue(item).join_date, 'YYYY') !== '2024',
+        }">{{ formatDate(getMaskedValue(item).join_date, "YYYY") }}</span>
       </div>
     </template>
 
     <template v-slot:list-total_lahan_outside="{ item }">
-      <span
-        class="d-block text-center font-weight-bold min-w-150px"
-        v-if="
-          getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area
-        "
-        >{{
-          getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area
-        }}
-        Lahan</span
-      >
+      <span class="d-block text-center font-weight-bold min-w-150px" v-if="
+        getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area
+      ">{{
+        getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area
+      }}
+        Lahan</span>
 
       <span class="d-block text-center min-w-150px" v-else>Tidak ada</span>
     </template>
@@ -68,13 +49,10 @@
 
     <template v-slot:list-indicator="{ item }">
       <div class="indicator-wrapper pt-1">
-        <div
-          class="indicator"
-          :class="{
-            warning: getMaskedValue(item).approve == 0,
-            success: getMaskedValue(item).approve == 1,
-          }"
-        ></div>
+        <div class="indicator" :class="{
+          warning: getMaskedValue(item).approve == 0,
+          success: getMaskedValue(item).approve == 1,
+        }"></div>
       </div>
     </template>
 
@@ -92,30 +70,23 @@
 
     <template v-slot:list-name="{ item }">
       <div class="d-flex flex-column min-w-150px">
-        <v-tooltip
-          top
-          v-if="
-            getMaskedValue(item).farmer_working_area_amount &&
-            Array.isArray(getMaskedValue(item).farmer_working_area_amount) &&
-            getMaskedValue(item).farmer_working_area_amount.length > 0 &&
-            getMaskedValue(item).farmer_working_area_amount[0]
-              .jumlah_working_area > 0
-          "
-        >
+        <v-tooltip top v-if="
+          getMaskedValue(item).farmer_working_area_amount &&
+          Array.isArray(getMaskedValue(item).farmer_working_area_amount) &&
+          getMaskedValue(item).farmer_working_area_amount.length > 0 &&
+          getMaskedValue(item).farmer_working_area_amount[0]
+            .jumlah_working_area > 0
+        ">
           <template v-slot:activator="{ on }">
-            <span v-on="on" class="font-weight-bold"
-              >{{ getMaskedValue(item).name }}
-              <span class="text-danger">*</span></span
-            >
+            <span v-on="on" class="font-weight-bold">{{ getMaskedValue(item).name }}
+              <span class="text-danger">*</span></span>
           </template>
-          <span
-            >Petani memiliki
+          <span>Petani memiliki
             {{
               getMaskedValue(item).farmer_working_area_amount[0]
                 .jumlah_working_area
             }}
-            lahan diluar area kerja</span
-          >
+            lahan diluar area kerja</span>
         </v-tooltip>
 
         <span class="font-weight-bold" v-else>{{
@@ -126,35 +97,28 @@
             getMaskedValue(item).farmer_no
           }}</span>
         </div>
+        <span class="font-weight-300 text-09-em">{{ getMaskedValue(item).updated_at | parse('datetime') }}</span>
+
       </div>
     </template>
 
     <template v-slot:list-target_area="{ item }">
       <div class="d-flex flex-column">
         <p class="mb-0">{{ getMaskedValue(item).target_areas_name }}</p>
-        <span class="text-link text-08-em"
-          >MU {{ getMaskedValue(item).managementunits_name }}</span
-        >
+        <span class="text-link text-08-em">MU {{ getMaskedValue(item).managementunits_name }}</span>
       </div>
     </template>
 
     <template v-slot:list-status="{ item }">
       <div class="d-flex flex-row">
-        <span
-          class="badge"
-          :class="{
-            'badge bg-warning text-no-wrap': getMaskedValue(item).approve == 0,
-            'badge bg-success text-no-wrap': getMaskedValue(item).approve == 1,
-            // 'badge bg-danger text-no-wrap':
-            //   getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area == 0,
-          }"
-        >
-          <span v-if="getMaskedValue(item).approve == 0"
-            >Belum Diverifikasi</span
-          >
-          <span v-else-if="getMaskedValue(item).approve == 1"
-            >Terverifikasi</span
-          >
+        <span class="badge" :class="{
+          'badge bg-warning text-no-wrap': getMaskedValue(item).approve == 0,
+          'badge bg-success text-no-wrap': getMaskedValue(item).approve == 1,
+          // 'badge bg-danger text-no-wrap':
+          //   getMaskedValue(item).farmer_working_area_amount[0].jumlah_working_area == 0,
+        }">
+          <span v-if="getMaskedValue(item).approve == 0">Belum Diverifikasi</span>
+          <span v-else-if="getMaskedValue(item).approve == 1">Terverifikasi</span>
         </span>
       </div>
     </template>
@@ -166,17 +130,14 @@
     </template> -->
 
     <template v-slot:detail-legal_land_categories="{ item }">
-      <span
-        :class="{
-          'badge bg-primary font-weight-500': ![
-            '',
-            null,
-            undefined,
-            '-',
-          ].includes(item.legal_land_categories),
-        }"
-        >{{ item.legal_land_categories }}</span
-      >
+      <span :class="{
+        'badge bg-primary font-weight-500': ![
+          '',
+          null,
+          undefined,
+          '-',
+        ].includes(item.legal_land_categories),
+      }">{{ item.legal_land_categories }}</span>
     </template>
 
     <template v-slot:detail-row-detail_program_year="{ item, response }">
@@ -186,12 +147,8 @@
         </div>
         <div class="value">
           <p class="mb-0 pb-0">
-            <span
-              class="badge bg-primary"
-              v-for="(f, i) in response?.DetailFarmerPivot"
-              :key="'farmer-detail-year' + i"
-              >{{ f.program_year }}</span
-            >
+            <span class="badge bg-primary" v-for="(f, i) in response?.DetailFarmerPivot"
+              :key="'farmer-detail-year' + i">{{ f.program_year }}</span>
           </p>
         </div>
       </div>
@@ -200,24 +157,16 @@
     <template v-slot:detail-project_model="{ item }">
       <span v-if="!item || item == '-' || item == 0">-</span>
       <span v-else>
-        <span v-if="item.project_model == 1"
-          ><strong>Model 1</strong> (100% Kayu)</span
-        >
-        <span v-else-if="item.project_model == 2"
-          ><strong>Model 2</strong> (60% Kayu & 40% MPTS)</span
-        >
-        <span v-else-if="item.project_model == 3"
-          ><strong>Model 3</strong> (40% Kayu & 60% MPTS)</span
-        >
+        <span v-if="item.project_model == 1"><strong>Model 1</strong> (100% Kayu)</span>
+        <span v-else-if="item.project_model == 2"><strong>Model 2</strong> (60% Kayu & 40% MPTS)</span>
+        <span v-else-if="item.project_model == 3"><strong>Model 3</strong> (40% Kayu & 60% MPTS)</span>
       </span>
     </template>
 
     <template v-slot:detail-farmer_id="{ item }">
       <div class="d-flex flex-column">
-        <span
-          >{{ item.name }}
-          <span v-if="item.nickname">({{ item.nickname }})</span></span
-        >
+        <span>{{ item.name }}
+          <span v-if="item.nickname">({{ item.nickname }})</span></span>
         <div class="d-flex flex-row mt-1">
           <span class="badge bg-primary">NIK {{ item.ktp_no }}</span>
           <span class="ml-2 badge bg-light">{{ item.farmer_no }}</span>
@@ -230,18 +179,10 @@
         <span> {{ item.address }}</span>
         <span v-if="item.rw"> RT {{ item.rt }}</span>
         <span v-if="item.rw"> RW {{ item.rw }}</span>
-        <span v-if="item.desas_name"
-          >, Desa {{ item.desas_name.toLowerCase() }}</span
-        >
-        <span v-if="item.kecamatans_name"
-          >, Kec. {{ item.kecamatans_name.toLowerCase() }}</span
-        >
-        <span v-if="item.kabupatens_name"
-          >, {{ item.kabupatens_name.toLowerCase() }}</span
-        >
-        <span v-if="item.provinces_name"
-          >, {{ item.provinces_name.toLowerCase() }}</span
-        >
+        <span v-if="item.desas_name">, Desa {{ item.desas_name.toLowerCase() }}</span>
+        <span v-if="item.kecamatans_name">, Kec. {{ item.kecamatans_name.toLowerCase() }}</span>
+        <span v-if="item.kabupatens_name">, {{ item.kabupatens_name.toLowerCase() }}</span>
+        <span v-if="item.provinces_name">, {{ item.provinces_name.toLowerCase() }}</span>
         <span v-if="item.post_code">, {{ item.post_code }}</span>
       </span>
     </template>
@@ -252,11 +193,8 @@
           <div class="label">Jenis Bibit</div>
           <div class="value">
             <div class="d-flex flex-row">
-              <div
-                class="badge bg-success mr-2"
-                v-for="(tree, i) in response ? response.DetailFarmerTree : []"
-                :key="`farmer-${i}`"
-              >
+              <div class="badge bg-success mr-2" v-for="(tree, i) in response ? response.DetailFarmerTree : []"
+                :key="`farmer-${i}`">
                 <v-icon class="mr-1">mdi-tree</v-icon>
                 <span>{{ tree.trees_tree_name }}</span>
               </div>
@@ -264,60 +202,45 @@
           </div>
         </div>
 
-        <div
-          class="mt-5 d-flex flex-row"
-          style="justify-content: space-between"
-        >
+        <div class="mt-5 d-flex flex-row" style="justify-content: space-between">
           <div class="d-flex flex-column farmer-detail-photo">
             <h6>Foto KTP</h6>
-            <div
-              class="img cover"
-              v-bind:style="{
-                'background-image':
-                  'url(' +
-                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.ktp_document}` +
-                  ')',
-              }"
-              @click="
-                showLightbox(
-                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.ktp_document}`
-                )
-              "
-            ></div>
+            <div class="img cover" v-bind:style="{
+              'background-image':
+                'url(' +
+                `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.ktp_document}` +
+                ')',
+            }" @click="
+              showLightbox(
+                `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.ktp_document}`
+              )
+              "></div>
           </div>
           <div class="d-flex flex-column farmer-detail-photo">
             <h6>Profile Petani</h6>
-            <div
-              class="img cover"
-              v-bind:style="{
-                'background-image':
-                  'url(' +
-                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.farmer_profile}` +
-                  ')',
-              }"
-              @click="
-                showLightbox(
-                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.farmer_profile}`
-                )
-              "
-            ></div>
+            <div class="img cover" v-bind:style="{
+              'background-image':
+                'url(' +
+                `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.farmer_profile}` +
+                ')',
+            }" @click="
+              showLightbox(
+                `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.farmer_profile}`
+              )
+              "></div>
           </div>
           <div class="d-flex flex-column farmer-detail-photo">
             <h6>Tanda Tangan</h6>
-            <div
-              class="img"
-              v-bind:style="{
-                'background-image':
-                  'url(' +
-                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.signature}` +
-                  ')',
-              }"
-              @click="
-                showLightbox(
-                  `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.signature}`
-                )
-              "
-            ></div>
+            <div class="img" v-bind:style="{
+              'background-image':
+                'url(' +
+                `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.signature}` +
+                ')',
+            }" @click="
+              showLightbox(
+                `${$_config.baseUrlUpload}/${response?.DetailFarmerMain.signature}`
+              )
+              "></div>
           </div>
         </div>
       </div>
@@ -325,13 +248,10 @@
 
     <template v-slot:detail-complete_data="{ item }">
       <div class="d-flex flex-row">
-        <div
-          class="badge"
-          :class="{
-            'bg-success': item.complete_data == 1,
-            'bg-danger': item.complete_data == 0,
-          }"
-        >
+        <div class="badge" :class="{
+          'bg-success': item.complete_data == 1,
+          'bg-danger': item.complete_data == 0,
+        }">
           {{ item.complete_data == 1 ? "Lengkap" : "Belum Lengkap" }}
         </div>
       </div>
@@ -339,13 +259,10 @@
 
     <template v-slot:detail-approve="{ item }">
       <div class="d-flex flex-row">
-        <div
-          class="badge"
-          :class="{
-            'bg-success': item.approve == 1,
-            'bg-danger': item.approve == 0,
-          }"
-        >
+        <div class="badge" :class="{
+          'bg-success': item.approve == 1,
+          'bg-danger': item.approve == 0,
+        }">
           {{ item.approve == 1 ? "Terverifikasi" : "Belum Diverifikasi" }}
         </div>
       </div>
@@ -353,45 +270,28 @@
 
     <template v-slot:detail-header-action="{ item, response }">
       <div>
-        <farmer-assign-modal
-          :data="response?.DetailFarmerPivot"
-          :dataKey="farmerAssignModal"
-          @success="componentKey += 1"
-        />
-        <v-btn variant="info" class="mr-2" @click="farmerAssignModal += 1"
-          ><v-icon small class="mr-1">mdi-account-convert-outline</v-icon>
+        <farmer-assign-modal :data="response?.DetailFarmerPivot" :dataKey="farmerAssignModal"
+          @success="componentKey += 1" />
+        <v-btn variant="info" class="mr-2" @click="farmerAssignModal += 1"><v-icon small
+            class="mr-1">mdi-account-convert-outline</v-icon>
           <span>Assign Program Year</span>
         </v-btn>
-        <v-btn
-          variant="success"
-          @click="onVerification(item)"
-          v-if="
-            item.approve == 0 && $_sys.isAllowed('farmer-verification-create')
-          "
-        >
+        <v-btn variant="success" @click="onVerification(item)" v-if="
+          item.approve == 0 && $_sys.isAllowed('farmer-verification-create')
+        ">
           <v-icon small class="mr-1">mdi-check</v-icon>
           <span>Verifikasi</span>
         </v-btn>
-        <v-btn
-          variant="success"
-          @click="onVerification(item)"
-          v-if="
-            item.approve == 1 && $_sys.isAllowed('farmer-verification-create')
-          "
-        >
+        <v-btn variant="success" @click="onVerification(item)" v-if="
+          item.approve == 1 && $_sys.isAllowed('farmer-verification-create')
+        ">
           <v-icon small class="mr-1">mdi-check</v-icon>
           <span>Verifikasi</span>
         </v-btn>
-        <v-btn
-          variant="danger"
-          v-else-if="
-            item.approve == 1 && $_sys.isAllowed('farmer-unverification-create')
-          "
-          @click="onVerification(item)"
-        >
-          <v-icon small class="mr-1">mdi-close</v-icon
-          ><span>Unverifikasi</span></v-btn
-        >
+        <v-btn variant="danger" v-else-if="
+          item.approve == 1 && $_sys.isAllowed('farmer-unverification-create')
+        " @click="onVerification(item)">
+          <v-icon small class="mr-1">mdi-close</v-icon><span>Unverifikasi</span></v-btn>
       </div>
     </template>
 
@@ -960,11 +860,33 @@ export default {
             label: "Tgl Dibuat",
             methods: {
               list: {
+                show: false,
                 transform: "datetime",
                 class: "min-w-150px",
               },
             },
           },
+
+          {
+            id: 'updated_at',
+            label: 'Tgl. Pendataan',
+            methods: {
+              list: {
+                transform: 'datetime',
+                class: 'min-w-150px'
+              },
+
+              filter: {
+                validation: ["required"],
+                type: "daterange",
+                col_size: 6,
+                getter: "updated_at",
+                setter: "submission_date",
+                icon: 'calendar-edit',
+                main: true,
+              },
+            }
+          }
         ],
       },
     };
