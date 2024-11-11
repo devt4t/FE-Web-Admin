@@ -16,15 +16,22 @@
       </v-btn>
     </template>
     <template v-slot:list-after-filter>
-      
+      <village-ta-adjustment 
+        @success="refreshKey = refreshKey + 1"
+        :data="village_data"
+        :dataKey="village_data_key"/>
     </template>
   </geko-base-crud>
 </template>
 
 <script>
 import vilageConfig from "./vilageConfig";
+import villageTaAdjustment from "./VillageV2AdjustmentForm.vue";
 export default {
   name: "crud-vilage-v2",
+  components: {
+    villageTaAdjustment,
+  },
   watch: {},
   mounted() {
     this.$set(this.config, "update_ext_payload", {
@@ -33,11 +40,16 @@ export default {
   },
   methods:{
     onAssignTADesas(item){
-      console.log(item)
+      this.village_data = item
+      this.village_data_key = this.village_data_key + 1
+      console.log(this.village_data)
     }
   },
   data() {
     return {
+      refreshKey: 0,
+      village_data: null,
+      village_data_key: 0,
       config: {
         title: "Village",
         // program_year: {

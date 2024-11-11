@@ -7,7 +7,7 @@
           <v-card-text class="ff-email-wrapper">
             <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
               <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-                <v-row class="assign-ff-wrapper" v-if="ffData">
+                <v-row class="assign-ff-wrapper" v-if="village_data">
                   <v-col lg="12" class="form-separator">
                     <div class="d-flex flex-row align-items-center">
                       <p class="mb-0">Pemetaan TA - Desa</p>
@@ -21,17 +21,17 @@
                       </v-btn>
                     </div>
                   </v-col>
-                  <!-- <v-col lg="12" v-for="(fcff, i) in fc_ff" :key="'fcff-' + i">
+                  <v-col lg="12" v-for="(taDesa, i) in ta_desa" :key="'taDesa-' + i">
                     <v-row class="mx-3 bg-grey">
                       <v-col lg="6">
                         <geko-input
-                          v-model="fcff.program_year"
+                          v-model="taDesa.program_year"
                           :item="{
                             label: 'Tahun Program',
                             type: 'select',
                             validation: ['required'],
                             option: {
-                              default_label: fcff.program_year,
+                              default_label: taDesa.program_year,
                               multiple: true,
                               default_options: [
                                 {
@@ -67,13 +67,13 @@
   
                       <v-col lg="5">
                         <geko-input
-                          v-model="fcff.key1"
+                          v-model="taDesa.key1"
                           :item="{
                             type: 'select',
                             label: 'Field Coordinator',
                             validation: ['required'],
                             api: 'getEmployeeList_new',
-                            default_label: fcff.employees_name,
+                            default_label: taDesa.employees_name,
                             option: {
                               list_pointer: {
                                 code: 'nik',
@@ -105,10 +105,10 @@
                     </v-row>
                   </v-col>
                   <v-col lg="12">
-                    <p class="text-danger" v-if="error_fc_ff">
-                      {{ error_fc_ff }}
+                    <p class="text-danger" v-if="error_ta_desa">
+                      {{ error_ta_desa }}
                     </p></v-col
-                  > -->
+                  >
   
                 </v-row>
   
@@ -150,78 +150,65 @@
   
     methods: {
       addTaDesa() {
-        this.fc_ff.push({
+        this.ta_desa.push({
           id: "",
-          key1: null,
-          key2: this.ffData.ff_no,
-          type: "fc_ff",
+          area_code: null,
+          kode_desa: this.village_data.kode_desa,
         });
       },
       removeTADesa(i) {
-        if (!this.fc_ff[i].id) {
-          this.fc_ff.splice(i, 1);
+        if (!this.ta_desa[i].id) {
+          this.ta_desa.splice(i, 1);
           return;
         }
         this.$_alert
-          .confirm("Hapus Data FC FF?", "", "Ya, Hapus", "Batal", true)
-          .then((res) => {
-            if (res.isConfirmed) {
-              this.$_api
-                .post("DeleteAssignData", {
-                  mainPivot_id: this.fc_ff[i].id,
-                })
-                .then((res) => {
-                  this.fc_ff.splice(i, 1);
-                  this.$_alert.success(" Berhasil hapus data FC FF");
-                })
-                .catch((err) => {
-                  console.log("err", err);
-                });
-            }
-          });
+          // .confirm("Hapus Data FC FF?", "", "Ya, Hapus", "Batal", true)
+          // .then((res) => {
+          //   if (res.isConfirmed) {
+          //     this.$_api
+          //       .post("DeleteAssignData", {
+          //         mainPivot_id: this.ta_desa[i].id,
+          //       })
+          //       .then((res) => {
+          //         this.ta_desa.splice(i, 1);
+          //         this.$_alert.success(" Berhasil hapus data FC FF");
+          //       })
+          //       .catch((err) => {
+          //         console.log("err", err);
+          //       });
+          //   }
+          // });
       },
       onOpen() {
-        this.ffData = this.data;
-        if (Array.isArray(this.ffData.ff_main_pivot)) {
-          let newFcFf = [];
-          for (const item of this.ffData.ff_main_pivot) {
+        this.village_data = this.data;
+        console.log('data', this.data)
+        if (Array.isArray(this.village_data.ff_main_pivot)) {
+          let newtaDesa = [];
+          for (const item of this.village_data.ff_main_pivot) {
             if (!item.program_year) item.program_year = [];
             else {
               item.program_year = item.program_year.replace(/ /g, "").split(",");
             }
-            newFcFf.push(item);
+            newtaDesa.push(item);
           }
-          this.fc_ff = newFcFf;
-        }
-  
-        if (Array.isArray(this.ffData.ff_working_areas)) {
-          let newWorkingAreas = [];
-          for (const item of this.ffData.ff_working_areas) {
-            if (!item.program_year) item.program_year = [];
-            else {
-              item.program_year = item.program_year.replace(/ /g, "").split(",");
-            }
-            newWorkingAreas.push(item);
-          }
-          this.working_areas = newWorkingAreas;
+          this.ta_desa = newtaDesa;
         }
       },
   
       onSubmit() {
         if (this.loading) return;
         this.loading = true;
-        this.error_fc_ff = "";
-        this.error_working_area = "";
-        let payloadFcFf = JSON.parse(JSON.stringify(this.fc_ff));
+        this.error_ta_desa = "";
+        let payloadtaDesa = JSON.parse(JSON.stringify(this.ta_desa));
         let uniqueValue = [];
-        for (let item of payloadFcFf) {
+        for (let item of payloadtaDesa) {
           if (item.program_year.length == 0) {
             this.$_alert.error({}, "", "Tahun program harus diisi");
             return;
           }
           for (const year of item.program_year) {
             if (uniqueValue.includes(year)) {
-              this.error_fc_ff = `Tahun program pemetaan FC FF tidak boleh sama`;
+              this.error_ta_desa = `Tahun program pemetaan FC FF tidak boleh sama`;
               this.$_alert.error(
                 {},
                 "Error",
@@ -236,14 +223,14 @@
   
         uniqueValue = [];
   
-        const keys = ["id", "ff_no", "name", "ktp_no", "active"];
+        const keys = ["id", "kode_desa", "name", "ktp_no", "active"];
   
         let payload = {
-          fc_ff: payloadFcFf,
+          ta_desa: payloadtaDesa,
         };
   
         for (const key of keys) {
-          if (this.ffData[key]) payload[key] = this.ffData[key];
+          if (this.village_data[key]) payload[key] = this.village_data[key];
         }
   
         this.$_api
@@ -271,7 +258,7 @@
         if (t) {
           this.onOpen();
         } else {
-          this.ffData = null;
+          this.village_data = null;
           this.loading = false;
           this.programYears = [];
           this.existingProgramYears = [];
@@ -283,7 +270,7 @@
     data() {
       return {
         isOpen: false,
-        ffData: null,
+        village_data: null,
         loading: false,
         programYears: [],
         existingProgramYears: [],
@@ -291,9 +278,8 @@
         error: "",
         key1: "",
         key1_label: "",
-        working_areas: [],
-        fc_ff: [],
-        error_fc_ff: null,
+        ta_desa: [],
+        error_ta_desa: null,
         error_working_area: null,
       };
     },

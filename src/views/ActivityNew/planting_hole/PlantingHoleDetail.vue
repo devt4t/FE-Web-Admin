@@ -50,13 +50,13 @@
 
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                        @click="showLightbox($_config.baseUrlUpload + '/' + data.result.gambar1 ?? '')"
+                        @click="showLightbox($_config.baseUrlUpload + '/' + data.result.farmer_signature ?? '')"
                         v-bind:style="{
                         backgroundImage:
                             'url(' +
                             $_config.baseUrlUpload +
                             '/' +
-                            data.result.gambar1 ?? '' +
+                            data.result.farmer_signature ?? '' +
                             ')',
                         }">
                         <h6>Foto Tandatangan Petani</h6>
