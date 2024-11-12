@@ -236,7 +236,7 @@
                 validation: ['required'],
                 col_size: 6,
                 type: 'select',
-                api: 'GetFFDesa',
+                api: 'GetFFDesa_new',
                 param: {
                   kode_desa: formData.village
                 },
@@ -245,9 +245,9 @@
                   multiple: true,
                   getterKey: 'data.result',
                   list_pointer: {
-                    label: 'FFname',
+                    label: 'field_facilitators_name',
                     code: 'ff_no',
-                    display: ['FFname', 'ff_no'],
+                    display: ['field_facilitators_name', 'ff_no'],
                   },
                 },
               }" @selected="setFarmerBySelectedFF" @deselected="unsetFarmerBySelectedFF" />

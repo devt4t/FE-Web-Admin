@@ -62,10 +62,10 @@
 import axios from "axios";
 import moment from "moment";
 export default {
-  name: "lahan-export-modal",
+  name: "export-modal",
   data() {
     return {
-      ff_code: ['FF00001234'],
+      ff_code: ['FF00000756'],
       isOpen: false,
       loading: false,
       currentFfName: "",
@@ -103,7 +103,7 @@ export default {
     async getInitialData() {
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
-        limit: 10000,
+        limit: 100,
         offset: 0,
       });
 
