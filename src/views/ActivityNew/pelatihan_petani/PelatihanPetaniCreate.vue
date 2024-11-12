@@ -202,20 +202,20 @@
                 validation: ['required'],
                 col_size: 6,
                 type: 'select',
-                api: 'GetDesaFarmerTraining',
+                api: 'village/dataset',
                 param: {
                   area_code: formData.target_area
                 },
                 setter: 'village',
                 option: {
-                  getterKey: 'data.result',
+                  getterKey: 'data',
                   list_pointer: {
-                    label: 'Desaname',
+                    label: 'desas_name',
                     code: 'kode_desa',
-                    display: ['Desaname', 'kode_desa'],
+                    display: ['desas_name', 'kode_desa'],
                   },
                 },
-              }" @selected="setNamaDesa($event)" />
+              }" @selected="handleOnSelectDesa($event)" />
           </v-col>
           <v-col>
             <geko-input v-model="formData.training_date" :item="{
@@ -229,26 +229,22 @@
         </v-row>
         <v-row>
           <v-col>
-            <geko-input key="id" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
+            <geko-input v-if="allFFByDesa.length > 0" key="id" v-model="formData.ff_additional" :disabled="!formData.program_year || !formData.mu_no || !formData.target_area
               || !formData.village || !farmerByAllFF.size
               " :item="{
                 label: 'Field Facilitator Aktif',
                 validation: ['required'],
                 col_size: 6,
                 type: 'select',
-                api: 'GetFFDesa_new',
-                param: {
-                  kode_desa: formData.village
-                },
                 setter: 'ff_additional',
                 option: {
                   multiple: true,
-                  getterKey: 'data.result',
                   list_pointer: {
                     label: 'field_facilitators_name',
                     code: 'ff_no',
                     display: ['field_facilitators_name', 'ff_no'],
                   },
+                  default_options: allFFByDesa
                 },
               }" @selected="setFarmerBySelectedFF" @deselected="unsetFarmerBySelectedFF" />
           </v-col>
@@ -349,7 +345,8 @@
             </div> -->
 
             <div style="display: inline-block; margin: 0px 10px 10px 0px" v-for="(ff, name, key) in farmerBySelectedFF">
-              <v-btn :variant="isActive === name ? 'success' : 'light'" @click="isActive = name">{{ ff.field_facilitators_name }}
+              <v-btn :variant="isActive === name ? 'success' : 'light'" @click="isActive = name">{{
+                ff.field_facilitators_name }}
                 <v-badge small v-if="ff.selectedFarmers.length" color="primary" :content="ff.selectedFarmers.length"
                   inline></v-badge>
               </v-btn>
@@ -606,6 +603,7 @@ export default {
   },
   data() {
     return {
+      allFFByDesa: [],
       isActive: null,
       form: 1,
       totalSelectedPeserta: 0,
@@ -675,8 +673,19 @@ export default {
       this.farmers = farmers.data.result.data ?? [];
       this.farmerByAllFF = Map.groupBy(farmers.data.result.data, ({ ff_no }) => ff_no);
     },
-    setNamaDesa(value) {
+    handleOnSelectDesa(value) {
       this.selectedDesaName = value.Desaname;
+      // api: 'GetFFDesa_new',
+      // param: {
+      //   kode_desa: formData.village
+      // },
+      this.$_api.get('field-facilitator/dataset', {
+        village_code: value.kode_desa,
+        limit: 1000
+      }).then(res => {
+        // this.$set(this, 'allFFByDesa', res.data.result);
+        this.allFFByDesa = res.data;
+      })
     },
     countTotalPeseerta() {
       let total = 0;

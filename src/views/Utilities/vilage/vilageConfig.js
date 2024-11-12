@@ -146,98 +146,98 @@ export default [
       filter: false,
     },
   },
-  {
-    id: "mu_no_from_ta_pivot",
-    label: "Managemen Unit",
-    methods: {
-      list: {
-        view_data: "mu_name",
-        transform: "no-empty"
-      },
-      detail: {
-        view_data: "mu_name",
-        transform: "no-empty"
-      },
-      create: false,
-      update: false,
-      filter: {
-        validation: ["required"],
-        type: "select",
-        col_size: 6,
-        main: true,
-        getter: "new-utilities/management-units",
-        setter: "mu_no",
-        param: {
-          page: 1,
-          per_page: 10,
-        },
-        option: {
-          getterKey: "data",
-          list_pointer: {
-            code: "mu_no",
-            label: "name",
-            display: ["name"],
-          },
-        },
-      },
-    },
-  },
-  {
-    id: "ta_from_pivot",
-    label: "Target Area",
-    methods: {
-      list: {
-        view_data: "ta_from_pivot_name",
-        transform: "no-empty"
-      },
-      detail: {
-        view_data: "ta_from_pivot_name",
-        transform: "no-empty"
-      },
-      create: false,
-      update: false,
-      // filter: {
-      //   validation: ["required"],
-      //   type: "select",
-      //   col_size: 6,
-      //   main: true,
-      //   getter: "new-utilities/target-areas",
-      //   setter: "kode_ta",
-      //   param: {
-      //     page: 1,
-      //     per_page: 10,
-      //   },
-      //   option: {
-      //     getterKey: "data",
-      //     list_pointer: {
-      //       code: "area_code",
-      //       label: "name",
-      //       display: ["name"],
-      //     },
-      //   },
-      // },
-    },
-  },
-  {
-    id: "project_name",
-    label: "Nama Project",
-    methods: {
-      list: { transform: "no-empty" },
-      detail: { transform: "no-empty" },
-      create: false,
-      update: false,
-    },
-  },
-  {
-    id: "program_year_from_pivot",
-    label: "Tahun Program",
-    methods: {
-      list: true,
-      detail: { transform: "no-empty" },
-      create: false,
-      update: false,
-    },
-  },
+  // {
+  //   id: "mu_no_from_ta_pivot",
+  //   label: "Managemen Unit",
+  //   methods: {
+  //     list: {
+  //       view_data: "mu_name",
+  //       transform: "no-empty"
+  //     },
+  //     detail: {
+  //       view_data: "mu_name",
+  //       transform: "no-empty"
+  //     },
+  //     create: false,
+  //     update: false,
+  //     filter: {
+  //       validation: ["required"],
+  //       type: "select",
+  //       col_size: 6,
+  //       main: true,
+  //       getter: "new-utilities/management-units",
+  //       setter: "mu_no",
+  //       param: {
+  //         page: 1,
+  //         per_page: 10,
+  //       },
+  //       option: {
+  //         getterKey: "data",
+  //         list_pointer: {
+  //           code: "mu_no",
+  //           label: "name",
+  //           display: ["name"],
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
+  // {
+  //   id: "ta_from_pivot",
+  //   label: "Target Area",
+  //   methods: {
+  //     list: {
+  //       view_data: "ta_from_pivot_name",
+  //       transform: "no-empty"
+  //     },
+  //     detail: {
+  //       view_data: "ta_from_pivot_name",
+  //       transform: "no-empty"
+  //     },
+  //     create: false,
+  //     update: false,
+  //     // filter: {
+  //     //   validation: ["required"],
+  //     //   type: "select",
+  //     //   col_size: 6,
+  //     //   main: true,
+  //     //   getter: "new-utilities/target-areas",
+  //     //   setter: "kode_ta",
+  //     //   param: {
+  //     //     page: 1,
+  //     //     per_page: 10,
+  //     //   },
+  //     //   option: {
+  //     //     getterKey: "data",
+  //     //     list_pointer: {
+  //     //       code: "area_code",
+  //     //       label: "name",
+  //     //       display: ["name"],
+  //     //     },
+  //     //   },
+  //     // },
+  //   },
+  // },
+  // {
+  //   id: "project_name",
+  //   label: "Nama Project",
+  //   methods: {
+  //     list: { transform: "no-empty" },
+  //     detail: { transform: "no-empty" },
+  //     create: false,
+  //     update: false,
+  //   },
+  // },
+  // {
+  //   id: "program_year_from_pivot",
+  //   label: "Tahun Program",
+  //   methods: {
+  //     list: true,
+  //     detail: { transform: "no-empty" },
+  //     create: false,
+  //     update: false,
+  //   },
+  // },
   {
     id: "status",
     label: "Status",

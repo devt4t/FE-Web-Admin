@@ -1,8 +1,8 @@
 <template>
-  <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true">
-    <template v-slot:list-program_year="{ item }">
+  <geko-base-crud :config="config" :hideDelete="true" :refreshKey="refreshKey">
+    <!-- <template v-slot:list-program_year="{ item }">
       <span class="badge bg-primary">{{ $store.state.tmpProgramYear }}</span>
-    </template>
+    </template> -->
     <template v-slot:list-bottom-action="{ item }">
       <v-btn
         variant="info"
@@ -47,7 +47,7 @@ export default {
     onAssignTADesas(item){
       this.village_data = item
       this.village_data_key = this.village_data_key + 1
-      console.log(this.village_data)
+      console.log('village data: ', this.village_data)
     }
   },
   data() {
@@ -57,10 +57,7 @@ export default {
       village_data_key: 0,
       config: {
         title: "Village",
-        // program_year: {
-        //     show: false,
-        //     model: "2024",
-        // },
+        
         model_api: null,
         getter: "new-utilities/desas",
         setter: "new-utilities/create/desas",
@@ -73,26 +70,14 @@ export default {
         // setter_ext_payload: {
         //     project_modul: 'environment',
         // },
-        update: "EditEmployee",
-        update_ext_payload: {},
+        update: "new-utilities/update/desas",
         globalFilter: {
-          // project_purpose: {
-          //   setter: "purpose_code",
-          // },
-          // program_year: {
-          //   setter: "program_year",
-          // },
+          
         },
         delete: "DeleteEmployee",
-        // delete_ext_payload: {
-        //     delete_type: "hard_delete",
-        //     project_modul: 'environment',
-        // },
+        
         deleteKey: "id",
         pk_field: null,
-        // filter_api: {
-        //     project_modul: 'environment',
-        // },
 
         formOption: {
           sort: [
