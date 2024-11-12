@@ -12,11 +12,13 @@
 
                 <span>Export Excel</span>
             </v-btn>
-            <v-btn v-if="!item.verified" variant="success" small class="mt-2" @click="onVerif(item)">
+            <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')" variant="success"
+                small class="mt-2" @click="onVerif(item)">
                 <v-icon small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
             </v-btn>
-            <v-btn v-else variant="danger" small class="mt-2" @click="onUnverif(item)">
+            <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                variant="danger" small class="mt-2" @click="onUnverif(item)">
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
