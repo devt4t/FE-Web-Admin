@@ -1,5 +1,5 @@
 <template>
-  <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true">
+  <geko-base-crud :config="config" :hideUpdate="true" :hideDelete="true" :refreshKey="refreshKey">
     <template v-slot:list-program_year="{ item }">
       <span class="badge bg-primary">{{ $store.state.tmpProgramYear }}</span>
     </template>
@@ -47,7 +47,7 @@ export default {
     onAssignTADesas(item){
       this.village_data = item
       this.village_data_key = this.village_data_key + 1
-      console.log(this.village_data)
+      console.log('village data: ', this.village_data)
     }
   },
   data() {
