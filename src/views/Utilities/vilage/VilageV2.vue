@@ -15,6 +15,9 @@
         <span>Assign Target Area</span>
       </v-btn>
     </template>
+    <template v-slot:detail-slave-raw="{ data }">
+        <village-detail :data="data"></village-detail>
+    </template>
     <template v-slot:list-after-filter>
       <village-ta-adjustment 
         @success="refreshKey = refreshKey + 1"
@@ -27,10 +30,12 @@
 <script>
 import vilageConfig from "./vilageConfig";
 import villageTaAdjustment from "./VillageV2AdjustmentForm.vue";
+import villageDetail from "./VillageDetail.vue";
 export default {
   name: "crud-vilage-v2",
   components: {
     villageTaAdjustment,
+    villageDetail
   },
   watch: {},
   mounted() {
@@ -60,6 +65,9 @@ export default {
         getter: "new-utilities/desas",
         setter: "new-utilities/create/desas",
         search_key: "search_value",
+        detail: "new-utilities/detail/desas",
+        detailIdKey: "kode_desa",
+        detailKey: "data",
         // getterDataKey: "data.result.data",
         pagination: true,
         // setter_ext_payload: {

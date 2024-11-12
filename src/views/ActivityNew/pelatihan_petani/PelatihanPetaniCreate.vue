@@ -349,7 +349,7 @@
             </div> -->
 
             <div style="display: inline-block; margin: 0px 10px 10px 0px" v-for="(ff, name, key) in farmerBySelectedFF">
-              <v-btn :variant="isActive === name ? 'success' : 'light'" @click="isActive = name">{{ ff.FFname }}
+              <v-btn :variant="isActive === name ? 'success' : 'light'" @click="isActive = name">{{ ff.field_facilitators_name }}
                 <v-badge small v-if="ff.selectedFarmers.length" color="primary" :content="ff.selectedFarmers.length"
                   inline></v-badge>
               </v-btn>
@@ -735,7 +735,7 @@ export default {
 
       if (!Object.keys(this.farmerBySelectedFF).includes(farmer.ff_no)) {
         this.$set(this.farmerBySelectedFF, farmer.ff_no, {
-          FFname: farmer.user,
+          field_facilitators_name: farmer.user,
           farmers: [farmer],
           selectedFarmers: [farmer],
           search: ''
@@ -784,7 +784,7 @@ export default {
     setFarmerBySelectedFF(ff) {
       const FF = ff[ff.length - 1]
       this.$set(this.farmerBySelectedFF, FF.ff_no, {
-        FFname: FF.FFname.split(' - ')[0],
+        field_facilitators_name: FF.field_facilitators_name.split(' - ')[0],
         farmers: this.farmerByAllFF.get(FF.ff_no),
         selectedFarmers: [],
         search: ''
