@@ -62,10 +62,10 @@
 import axios from "axios";
 import moment from "moment";
 export default {
-  name: "lahan-export-modal",
+  name: "export-modal",
   data() {
     return {
-      ff_code: ['FF00001234'],
+      ff_code: [],
       isOpen: false,
       loading: false,
       currentFfName: "",
