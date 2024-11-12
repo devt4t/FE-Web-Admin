@@ -174,3 +174,56 @@
         }
     }
 }
+
+.planting-soc-detail {
+    .card-body {
+        padding: 1em 2em;
+    }
+
+    table.planting-soc-table {
+        width: 100%;
+        // margin-inline: 2em;
+        tr td {
+            border-bottom: 1px solid rgba(206, 206, 206, 0.3);
+            padding-block: 5px;
+        }
+        td:first-child {
+            vertical-align: top;
+            width: 20%;
+            font-weight: 300;
+            font-size: .95em;
+        }
+
+        td:last-child {
+            width: 80%;
+            &:before {
+                content: ':';
+                position: absolute;
+                transform: translateX(-10px);
+            }
+        }
+
+        .distribution-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .distribution-start {
+                background-color: $success_light;
+                padding: 1em;
+                border-radius: 12px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                color: $success;
+                i {
+                    font-size: 5em;
+                    color: $success;
+                }
+
+                
+            }
+        }
+    }
+}

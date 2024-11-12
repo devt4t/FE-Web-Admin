@@ -1,12 +1,12 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="true" :hideUpdate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true">
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
         </template>
 
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn variant="success" small class="d-block" @click="onExportExcel(item)">
+            <v-btn variant="success" small class="d-block mt-1" @click="onExportExcel(item)">
                 <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
                 <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
@@ -31,6 +31,9 @@
             <planting-soc-form></planting-soc-form>
         </template>
 
+        <template v-slot:detail-row>
+            <planting-soc-detail />
+        </template>
     </geko-base-crud>
 </template>
 
@@ -40,6 +43,7 @@ import PlantingSocListFf from './PlantingSocListFF.vue'
 import PlantingSocForm from './PlantingSocForm.vue'
 import moment from 'moment'
 import axios from 'axios'
+import PlantingSocDetail from './PlantingSocDetail.vue'
 
 import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
@@ -48,7 +52,8 @@ export default {
     components: {
         PlantingSocListFf,
         PlantingSocForm,
-        PlantingSocFarmerEdit
+        PlantingSocFarmerEdit,
+        PlantingSocDetail
     },
     watch: {},
     methods: {

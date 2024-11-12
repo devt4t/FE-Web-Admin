@@ -10,6 +10,7 @@ export default {
         setter: "program_year",
       },
     },
+    detailIdKey: "soc_no",
     getter: "GetSocAllAdmin",
     // getterDataKey: 'data.result.data.data',
     // totalDataKey: 'data.result.data',
