@@ -1,7 +1,7 @@
 <template>
   <geko-base-crud :config="config" @onExportExcel="onExportExcel($event)" :hideUpdate="true" :refreshKey="refreshKey">
 
-    <template v-slot:list-bottom-action="{ item }">
+    <template v-if="this.$_sys.isAllowed('pelatihan-petani-update')" v-slot:list-bottom-action="{ item }">
       <v-btn v-if="item.status" variant="danger" small class="mt-2" @click="onUnverif(item)">
         <v-icon left small>mdi-undo</v-icon>
         <span>Unverifikasi</span>
@@ -20,7 +20,7 @@
       <pelatihan-petani-detail :data="data"></pelatihan-petani-detail>
     </template>
 
-    <template v-slot:detail-action="{ item }">
+    <template v-if="this.$_sys.isAllowed('pelatihan-petani-update')" v-slot:detail-action="{ item }">
       <div>
         <v-btn v-if="!item.status" variant="success" @click="onVerifDetail(item)">Verifikasi</v-btn>
         <v-btn v-else variant="danger" @click="onUnverifDetail(item)">Unverifikasi</v-btn>
@@ -85,11 +85,11 @@ export default {
 
       }
     },
-    async onVerifDetail(item){
+    async onVerifDetail(item) {
       await this.onVerif(item);
       this.$router.go(-1);
     },
-    async onUnverifDetail(item){
+    async onUnverifDetail(item) {
       await this.onUnverif(item);
       this.$router.go(-1);
     },

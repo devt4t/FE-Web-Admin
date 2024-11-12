@@ -65,7 +65,7 @@ export default {
   name: "export-modal",
   data() {
     return {
-      ff_code: ['FF00000756'],
+      ff_code: [],
       isOpen: false,
       loading: false,
       currentFfName: "",
@@ -103,7 +103,7 @@ export default {
     async getInitialData() {
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
-        limit: 100,
+        limit: 10000,
         offset: 0,
       });
 
