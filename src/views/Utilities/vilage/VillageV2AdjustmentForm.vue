@@ -67,16 +67,21 @@
   
                       <v-col lg="5">
                         <geko-input
-                          v-model="taDesa.key1"
+                          v-model="taDesa.area_code"
                           :item="{
                             type: 'select',
-                            label: 'Field Coordinator',
+                            label: 'Target Area',
                             validation: ['required'],
-                            api: 'getEmployeeList_new',
-                            default_label: taDesa.employees_name,
+                            api: 'new-utilities/target-areas',
+                            default_label: taDesa.target_areas_name,
+                            param: {
+                              active: 1,
+                              limit: 1000,
+                              offset: 0
+                            },
                             option: {
                               list_pointer: {
-                                code: 'nik',
+                                code: 'area_code',
                                 label: 'name',
                                 display: ['name'],
                               },
@@ -151,8 +156,9 @@
     methods: {
       addTaDesa() {
         this.ta_desa.push({
-          id: "",
+          id:"",
           area_code: null,
+          program_year: null,
           kode_desa: this.village_data.kode_desa,
         });
       },
@@ -162,29 +168,30 @@
           return;
         }
         this.$_alert
-          // .confirm("Hapus Data FC FF?", "", "Ya, Hapus", "Batal", true)
-          // .then((res) => {
-          //   if (res.isConfirmed) {
-          //     this.$_api
-          //       .post("DeleteAssignData", {
-          //         mainPivot_id: this.ta_desa[i].id,
-          //       })
-          //       .then((res) => {
-          //         this.ta_desa.splice(i, 1);
-          //         this.$_alert.success(" Berhasil hapus data FC FF");
-          //       })
-          //       .catch((err) => {
-          //         console.log("err", err);
-          //       });
-          //   }
-          // });
+          .confirm("Hapus Data TA - Desa?", "", "Ya, Hapus", "Batal", true)
+          .then((res) => {
+            if (res.isConfirmed) {
+              // console.log('data deleted: ', this.ta_desa[i].id)
+              this.$_api
+                .post("new-utilities/delete/ta_desas", {
+                  id: this.ta_desa[i].id,
+                })
+                .then((res) => {
+                  this.ta_desa.splice(i, 1);
+                  this.$_alert.success(" Berhasil hapus data TA - Desa");
+                })
+                .catch((err) => {
+                  console.log("err", err);
+                });
+            }
+          });
       },
       onOpen() {
         this.village_data = this.data;
         console.log('data', this.data)
-        if (Array.isArray(this.village_data.ff_main_pivot)) {
+        if (Array.isArray(this.village_data.ta_desas_pivot)) {
           let newtaDesa = [];
-          for (const item of this.village_data.ff_main_pivot) {
+          for (const item of this.village_data.ta_desas_pivot) {
             if (!item.program_year) item.program_year = [];
             else {
               item.program_year = item.program_year.replace(/ /g, "").split(",");
@@ -208,11 +215,11 @@
           }
           for (const year of item.program_year) {
             if (uniqueValue.includes(year)) {
-              this.error_ta_desa = `Tahun program pemetaan FC FF tidak boleh sama`;
+              this.error_ta_desa = `Tahun program TA - Desa tidak boleh sama`;
               this.$_alert.error(
                 {},
                 "Error",
-                "Tahun program pemetaan FC FF tidak boleh sama"
+                "Tahun program TA - Desa tidak boleh sama"
               );
               return;
             }
@@ -223,7 +230,7 @@
   
         uniqueValue = [];
   
-        const keys = ["id", "kode_desa", "name", "ktp_no", "active"];
+        const keys = ["id", "kode_desa", "area_code", "program_year", "active"];
   
         let payload = {
           ta_desa: payloadtaDesa,
@@ -232,11 +239,11 @@
         for (const key of keys) {
           if (this.village_data[key]) payload[key] = this.village_data[key];
         }
-  
+        console.log(payload)
         this.$_api
-          .post("UpdateFieldFacilitator", payload)
+          .post("new-utilities/create/ta_desas", payload)
           .then(() => {
-            this.$_alert.success("FF berhasil di assign ke program year baru");
+            this.$_alert.success("Berhasil Melakukan Update TA - Desa");
             this.isOpen = false;
             this.loading = false;
             this.$emit("success", true);
@@ -276,8 +283,8 @@
         existingProgramYears: [],
         newProgramYear: null,
         error: "",
-        key1: "",
-        key1_label: "",
+        target_area: "",
+        target_area_label: "",
         ta_desa: [],
         error_ta_desa: null,
         error_working_area: null,
