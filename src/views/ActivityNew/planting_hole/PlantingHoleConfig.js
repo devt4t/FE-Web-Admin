@@ -107,6 +107,99 @@ export default [
       },
     },
     {
+      id: "lahans_mu_no",
+      label: "Management Unit",
+      methods: {
+        list: false,
+        detail: false,
+        create: false,
+        update: false,
+        filter: {
+          validation: ["required"],
+          type: "select",
+          col_size: 6,
+          getter: "new-utilities/management-units",
+          setter: "mu_no",
+          param: {
+            page: 1,
+            per_page: 100,
+          },
+          option: {
+            getterKey: "data",
+            list_pointer: {
+              code: "mu_no",
+              label: "name",
+              display: ["name"],
+            },
+          },
+        },
+      },
+    },
+    {
+      id: "lahans_target_area",
+      label: "Target Area",
+      methods: {
+        list: false,
+        detail: false,
+        create: false,
+        update: false,
+        filter: {
+          validation: ["required"],
+          type: "select",
+          col_size: 6,
+          getter: "new-utilities/target-areas",
+          setter: "target_area",
+          form_param: {
+            mu_no: "mu_no",
+          },
+          param: {
+            page: 1,
+            per_page: 100,
+          },
+          option: {
+            getterKey: "data",
+            list_pointer: {
+              code: "area_code",
+              label: "name",
+              display: ["name"],
+            },
+          },
+        },
+      },
+    },
+    {
+      id: "lahans_village",
+      label: "Desa",
+      methods: {
+        list: false,
+        detail: false,
+        create: false,
+        update: false,
+        filter: {
+          validation: ["required"],
+          type: "select",
+          col_size: 6,
+          getter: "new-utilities/desas/ta_desas",
+          setter: "village",
+          form_param: {
+            area_code: "target_area",
+          },
+          param: {
+            page: 1,
+            per_page: 100,
+          },
+          option: {
+            getterKey: "data",
+            list_pointer: {
+              code: "kode_desa",
+              label: "name",
+              display: ["desas_name", 'program_year'],
+            },
+          },
+        },
+      },
+    },
+    {
       id: "total_holes",
       label: "Total Lubang",
       methods: {
@@ -260,11 +353,11 @@ export default [
           option: {
             default_options: [
               {
-                name: "Tidak Aktif",
+                name: "Belum Terverifikasi",
                 code: "0",
               },
               {
-                name: "Aktif",
+                name: "Terverifikasi",
                 code: "1",
               }
             ],
