@@ -5,6 +5,15 @@
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
         </template>
 
+        <template v-slot:list-after-filter>
+            <div class="d-flex flex-row justify-content-start">
+                <v-btn variant="info">
+                    <v-icon>mdi-table-arrow-right</v-icon>
+                    <span>Export Lahan By MU</span>
+                </v-btn>
+            </div>
+        </template>
+
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="success" small class="d-block mt-1" @click="onExportExcel(item)">
                 <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
