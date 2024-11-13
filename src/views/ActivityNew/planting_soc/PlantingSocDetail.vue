@@ -41,7 +41,7 @@
                                 <div class="distribution-wrapper">
                                     <div class="distribution-start">
                                         <v-icon>mdi-tanker-truck</v-icon>
-                                        <span class="d-block">Nursery Kebumen</span>
+                                        <span class="d-block title">Nursery Kebumen</span>
                                         <span class="d-block distribution-seed">
                                             {{ data.total_seed | parse('ts') }} bibit
                                         </span>
@@ -53,7 +53,7 @@
 
                                     <div class="distribution-end">
                                         <v-icon>mdi-truck-fast</v-icon>
-                                        <span class="d-block">{{ data.distribution_location }}</span>
+                                        <span class="d-block location">{{ data.distribution_location }}</span>
                                     </div>
                                 </div>
                             </td>
