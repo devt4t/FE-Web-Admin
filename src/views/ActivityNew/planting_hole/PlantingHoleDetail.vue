@@ -103,20 +103,12 @@
                 <h6>Foto Dokumentasi 2</h6>
               </div>
             </div>
-            <div class="absent-photo-list d-flex flex-row" v-if="true">
-              <div class="absent-photo-item"
-                @click="showLightbox($_config.baseUrlUpload + '/' + data.result.gambar3 ?? '')"
-                v-bind:style="{
-                  backgroundImage:
-                    'url(' +
-                    $_config.baseUrlUpload +
-                    '/' +
-                    data.result.gambar3 ?? '' +
-                    ')',
-                }">
-                <h6>Foto Dokumentasi 3</h6>
+            <!-- <div class="absent-photo-list d-flex flex-row" v-if="true">
+              <div class="absent-photo-item">
+                <h6>Status Adjustment</h6>
+                <p></p>
               </div>
-            </div>
+            </div> -->
   
           </v-card>
           
