@@ -433,6 +433,7 @@
     }
     .filter-item {
       margin-right: 10px;
+      margin-bottom: 10px;
 
       .input-group-wrapper {
         background-color: #F3F6F9;
@@ -582,6 +583,20 @@
       justify-content: center;
       border-top-right-radius: 8px;
       border-bottom-right-radius: 8px;
+    }
+
+    .mx-datepicker-range {
+      height: 30px !important;
+      .mx-input {
+        background-color: transparent !important;
+        height: 30px !important;
+      }
+      .mx-input-wrapper {
+        height: 30px !important;
+      }
+      .mx-icon-calendar {
+        display: none;
+      }
     }
   }
   .error-message {

@@ -46,6 +46,16 @@
           <span>Kode Lahan</span>
         </v-tooltip>
 
+
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <span v-on="on" class="text-09-em d-block font-weight-300">{{
+              getMaskedValue(item).updated_at | parse('datetime')
+            }}</span>
+          </template>
+
+          <span>Tgl. Pendataan</span>
+        </v-tooltip>
         <v-tooltip top>
           <template v-slot:activator="{ on }">
             <span v-on="on" class="text-09-em d-block font-weight-500">{{
@@ -360,10 +370,10 @@
           <span>Bulk Upload KML</span>
         </v-btn>
 
-        <v-btn variant="primary">
+        <!-- <v-btn variant="primary">
           <v-icon>mdi-microsoft-excel</v-icon>
           <span>Export semua lahan</span>
-        </v-btn>
+        </v-btn> -->
 
         <lahan-kml-upload :dataKey="uploadKmlModal" />
       </div>

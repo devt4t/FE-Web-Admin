@@ -284,10 +284,9 @@ export default {
     },
 
     {
-      id: 'project_no',
-      label: 'Project',
+      id: "project_no",
+      label: "Project",
       methods: {
-        
         filter: {
           type: "select",
           getter: "GetProjectAllAdmin",
@@ -300,7 +299,7 @@ export default {
             project_filter: true,
           },
           ext_param: {
-            project_filter: true
+            project_filter: true,
           },
           main: true,
           option: {
@@ -311,7 +310,7 @@ export default {
             },
           },
         },
-      }
+      },
     },
 
     {
@@ -421,13 +420,22 @@ export default {
     //   },
     // },
     {
-      id: "created_at",
-      label: "Tgl. Dibuat",
+      id: "updated_at",
+      label: "Tgl. Pendataan",
       methods: {
         list: {
           header_class: "text-center",
           class: "text-no-wrap d-block text-center",
           transform: "datetime",
+        },
+        filter: {
+          validation: ["required"],
+          type: "daterange",
+          col_size: 6,
+          getter: "updated_at",
+          setter: "submission_date",
+          icon: "calendar-edit",
+          main: true,
         },
       },
     },

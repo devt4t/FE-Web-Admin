@@ -43,7 +43,7 @@
           v-bind:value="value" :disabled="disabled" />
 
         <date-picker v-else-if="['date', 'daterange'].includes(item.type)" v-model="tmpValue" valueType="format"
-          class="w-100 date" :class="{
+          class="w-100 date" :placeholder="item.placeholder || ''" :class="{
             invalid: errors.length > 0,
           }" :range="item.type === 'daterange'"></date-picker>
 
@@ -61,10 +61,9 @@
             ? `mw-${item.placeholder.length}`
             : '']: true,
         }" :placeholder="item.placeholder || null" :disabled="disabled" :options="selectOptions"
-          @option:selected="$emit('selected', $event)" 
-          @option:deselected="$emit('deselected', $event)" @open="selectGetInitData"
-          :reduce="(x) => x[item.option?.list_pointer.code || 'code']" v-model="tmpValue" @search="selectSearchData"
-          :appendToBody="true" :label="item.option && item.option.list_pointer
+          @option:selected="$emit('selected', $event)" @option:deselected="$emit('deselected', $event)"
+          @open="selectGetInitData" :reduce="(x) => x[item.option?.list_pointer.code || 'code']" v-model="tmpValue"
+          @search="selectSearchData" :appendToBody="true" :label="item.option && item.option.list_pointer
             ? item.option.list_pointer.label
             : 'label'
             " :searchable="typeof item.searchable === 'boolean' ? item.searchable : true

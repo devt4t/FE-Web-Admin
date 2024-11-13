@@ -270,7 +270,7 @@ const menu = [
         name: "SosialisasiTanam2",
         permission: "SosialisasiTanam",
         icon: "mdi-account-badge",
-        type: ["non-carbon", 'carbon'],
+        type: ["non-carbon", "carbon"],
         update: true,
       },
       {
@@ -293,7 +293,16 @@ const menu = [
       //   title: "Pelatihan Petani old",
       //   to: "/PelatihanPetani.old",
       //   component: "Activity/PelatihanPetani",
-      //   name: "PelatihanPetani",
+      //   name: "PelatihanPetani1",
+      //   permission: "PelatihanPetani",
+      //   icon: "mdi-handshake",
+      //   type: ["non-carbon"],
+      // },
+      // {
+      //   title: "Pelatihan Petani",
+      //   to: "/PelatihanPetani",
+      //   component: "Activity/PelatihanPetani",
+      //   name: "PelatihanPetani1",
       //   permission: "PelatihanPetani",
       //   icon: "mdi-handshake",
       //   type: ["non-carbon"],
@@ -458,12 +467,21 @@ const menu = [
       
       {
         title: "Village",
-        to: "/Vilage",
+        to: "/village",
+        component: "Utilities/vilage/Vilage.old",
+        name: "Village",
+        permission: "Village",
+        icon: "mdi-map-marker",
+      },
+      {
+        title: "Village",
+        to: "/Vilage-v2",
         component: "Utilities/vilage/VilageV2",
         name: "Vilage",
         update: true,
         permission: "Vilage",
         icon: "mdi-map-marker",
+        update: true,
       },
       // {
       //   title: "Desa",
@@ -530,7 +548,6 @@ const menu = [
         icon: "mdi-tree",
         update: true,
       },
-      
     ],
   },
 
