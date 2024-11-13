@@ -1,7 +1,8 @@
 <template>
   <div>
     <!-- Breadcrumb -->
-    <v-breadcrumbs
+    <geko-base-crud :config="config"/>  
+    <!-- <v-breadcrumbs
       :dark="$store.state.theme == 'dark'"
       data-aos="fade-right"
       class="breadcrumbsmain"
@@ -19,7 +20,7 @@
       ]"
       divider=">"
       large
-    ></v-breadcrumbs>
+    ></v-breadcrumbs> -->
 
     <!-- MODAL -->
     <!-- dialog export filter -->
@@ -70,7 +71,7 @@
             </v-card>
         </v-dialog> -->
     <!-- dialog Export -->
-    <exportReportDistribusi
+    <!-- <exportReportDistribusi
       :show="distributionReport.dialogExportDistributionReport.show"
       :distribution_date="distributionReport.datePicker.model"
       :ff_no="distributionReport.dialogs.exportFilter.ff_model"
@@ -80,7 +81,7 @@
       :program_year="this.generalSettings.programYear"
       @close="distributionReport.dialogExportDistributionReport.show = false"
     >
-    </exportReportDistribusi>
+    </exportReportDistribusi> -->
 
     <!-- Detail Seed Modal -->
     <v-dialog
@@ -5845,19 +5846,27 @@
 import Swal from "sweetalert2";
 import axios from "axios";
 import moment from "moment";
-import { QrcodeStream } from "vue-qrcode-reader";
+// import { QrcodeStream } from "vue-qrcode-reader";
 import trucksJSON from "@/utils/trucks";
-import exportReportDistribusi from "@/views/Activity/distribusi/exportReportDistribusi";
+// import exportReportDistribusi from "@/views/Activity/distribusi/exportReportDistribusi";
 
 export default {
   components: {
-    QrcodeStream,
-    exportReportDistribusi,
+    // QrcodeStream,
+    // exportReportDistribusi,
   },
   data: () => ({
     config: {
       permission: {
-        read: 'distribusi-list'
+        title: "Distribution",
+        permission: {
+            create: "distribusi-create",
+            read: "distribusi-list",
+            update: "distribusi-update",
+            show: "distribusi-show",
+            lookup: "distribusi-lookup",
+            delete: "distribusi-delete",
+        },
       }
     },
     accessModul: {

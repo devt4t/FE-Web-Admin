@@ -362,15 +362,15 @@ const menu = [
         permission: "Distribusi",
         hide: true,
       },
-      // {
-      //   title: "Distribusi",
-      //   to: "/Distribusi",
-      //   component: "Activity/Distribusi",
-      //   name: "Distribusi",
-      //   permission: "Distribusi",
-      //   icon: "mdi-truck-fast",
-      //   type: ["non-carbon"],
-      // },
+      {
+        title: "Distribusi",
+        to: "/Distribusi",
+        component: "Activity/Distribusi",
+        name: "Distribusi",
+        permission: "Distribusi",
+        icon: "mdi-truck-fast",
+        type: ["non-carbon"],
+      },
 
       {
         title: "Realisasi Tanam",
