@@ -65,7 +65,7 @@ export default {
   name: "export-modal",
   data() {
     return {
-      ff_code: [],
+      ff_code: ['FF00000756'],
       isOpen: false,
       loading: false,
       currentFfName: "",
