@@ -1,7 +1,11 @@
 <template>
-  <v-dialog v-model="isOpen" :width="step == 1 ? '50%' : '90%'" :style="{
-    'min-height': '90vh',
-  }">
+  <v-dialog
+    v-model="isOpen"
+    :width="step == 1 ? '50%' : '90%'"
+    :style="{
+      'min-height': '90vh',
+    }"
+  >
     <template v-slot:default="{ isActive }">
       <v-card>
         <v-card-title class="text-center d-block font-weight-bold">
@@ -9,28 +13,31 @@
         </v-card-title>
         <v-card-text>
           <div class="upload d-flex flex-column" v-if="step == 1">
-            <geko-input v-model="kmlType" :item="{
-              type: 'select-radio',
-              label: 'Jenis Polygon',
-              validation: ['required'],
-              option: {
-                list_pointer: {
-                  label: 'label',
-                  code: 'code',
-                  display: ['label'],
+            <geko-input
+              v-model="kmlType"
+              :item="{
+                type: 'select-radio',
+                label: 'Jenis Polygon',
+                validation: ['required'],
+                option: {
+                  list_pointer: {
+                    label: 'label',
+                    code: 'code',
+                    display: ['label'],
+                  },
+                  default_options: [
+                    {
+                      label: 'Polygon Lahan',
+                      code: 'land',
+                    },
+                    {
+                      label: 'Polygon Tutupan',
+                      code: 'cover',
+                    },
+                  ],
                 },
-                default_options: [
-                  {
-                    label: 'Polygon Lahan',
-                    code: 'land',
-                  },
-                  {
-                    label: 'Polygon Tutupan',
-                    code: 'cover',
-                  },
-                ],
-              },
-            }" />
+              }"
+            />
             <label for="kml">File KML</label>
             <div class="upload-file-wrapper">
               <label for="kmlFile" class="kml-file">
@@ -40,14 +47,24 @@
               </label>
 
               <p class="kml-label">
-                <span v-if="!files" class="ml-2">Upload file KML yang berisi banyak lahan</span>
+                <span v-if="!files" class="ml-2"
+                  >Upload file KML yang berisi banyak lahan</span
+                >
                 <span class="ml-2" v-else>{{ files_name }}</span>
               </p>
-              <input id="kmlFile" type="file" @change="handleFileChange($event)" />
+              <input
+                id="kmlFile"
+                type="file"
+                @change="handleFileChange($event)"
+              />
             </div>
 
             <div class="mb-4" v-if="step == 1 && loading">
-              <v-progress-linear v-model="uploadProgress" color="success" height="25">
+              <v-progress-linear
+                v-model="uploadProgress"
+                color="success"
+                height="25"
+              >
                 <template v-slot:default="{ value }">
                   <strong>{{ Math.ceil(value) }}%</strong>
                 </template>
@@ -55,24 +72,38 @@
             </div>
 
             <div class="d-flex flex-row justify-content-center">
-
               <v-btn @click="onUplaod" variant="success">
                 <v-icon v-if="!loading">mdi-cloud-upload-outline</v-icon>
 
-                <v-progress-circular v-else :size="20" color="success" indeterminate></v-progress-circular>
+                <v-progress-circular
+                  v-else
+                  :size="20"
+                  color="success"
+                  indeterminate
+                ></v-progress-circular>
                 <span>Upload</span>
               </v-btn>
             </div>
           </div>
 
-          <div class="d-flex flex-column result" v-if="step == 2 && kmlType == 'land'">
+          <div
+            class="d-flex flex-column result"
+            v-if="step == 2 && kmlType == 'land'"
+          >
             <ValidationObserver ref="mainForm" v-slot="{ handleSubmit }">
-              <form @submit.prevent="handleSubmit(onBulkUpload)" autocomplete="off" v-if="ready">
+              <form
+                @submit.prevent="handleSubmit(onBulkUpload)"
+                autocomplete="off"
+                v-if="ready"
+              >
                 <div class="mt-4">
                   <p v-for="(q, i) in questions" class="mb-0 text-09-em">
                     {{ `Pertanyaan ${i + 1} : ${q.question}` }}
                   </p>
-                  <div class="table-wrapper" style="width: 100%; overflow-x: auto">
+                  <div
+                    class="table-wrapper"
+                    style="width: 100%; overflow-x: auto"
+                  >
                     <table class="geko-table">
                       <thead>
                         <tr>
@@ -84,7 +115,11 @@
                           <th>Altitude</th>
                           <th>Luas Polygon</th>
                           <th style="min-width: 200px">Jenis Tanah</th>
-                          <th v-for="(q, i) in questions" :key="`head-${i}`" style="min-width: 150px">
+                          <th
+                            v-for="(q, i) in questions"
+                            :key="`head-${i}`"
+                            style="min-width: 150px"
+                          >
                             {{ `Pertanyaan ${i + 1}` }}
                           </th>
                         </tr>
@@ -95,19 +130,26 @@
                           <td>{{ i + 1 }}</td>
                           <!-- Lahan -->
                           <td class="font-weight-bold">
-                            <a class="mb-0 text-link" target="_blank" :href="`/#/lahan-v2?view=detail&id=${item.id}`">{{
-                              item.lahan_no }}</a>
+                            <a
+                              class="mb-0 text-link"
+                              target="_blank"
+                              :href="`/#/lahan-v2?view=detail&id=${item.id}`"
+                              >{{ item.lahan_no }}</a
+                            >
                           </td>
 
                           <!-- KELENGKAPAN DATA -->
                           <td>
                             <div class="d-flex flex-row justify-content-center">
-                              <span class="badge text-08-em" :class="{
-                                'bg-success': item.fc_complete_data == 1,
-                                'bg-info':
-                                  item.fc_complete_data == 0 ||
-                                  item.fc_complete_data == null,
-                              }">
+                              <span
+                                class="badge text-08-em"
+                                :class="{
+                                  'bg-success': item.fc_complete_data == 1,
+                                  'bg-info':
+                                    item.fc_complete_data == 0 ||
+                                    item.fc_complete_data == null,
+                                }"
+                              >
                                 {{
                                   item.fc_complete_data
                                     ? "Lengkap"
@@ -116,106 +158,139 @@
                               </span>
                             </div>
 
-                            <div class="d-flex flex-row justify-content-center mt-2">
-                              <span class="badge text-08-em" :class="{
-                                'bg-warning':
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'belum',
-                                'bg-info':
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'sudah',
-                                'bg-primary': item.approve == 1,
-                                'bg-success': item.approve == 2,
-                                'bg-danger': item.approve == 3,
-                              }">
-                                <span v-if="
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'belum'
-                                ">Belum Diverifikasi</span>
-                                <span v-if="
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'sudah'
-                                ">Diverifikasi GIS</span>
-                                <span v-else-if="item.approve == 1">Diverifikasi FC</span>
-                                <span v-else-if="item.approve == 2">Terverifikasi</span>
-                                <span v-else-if="item.approve == 3">Force Majeure</span>
+                            <div
+                              class="d-flex flex-row justify-content-center mt-2"
+                            >
+                              <span
+                                class="badge text-08-em"
+                                :class="{
+                                  'bg-warning':
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'belum',
+                                  'bg-info':
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'sudah',
+                                  'bg-primary': item.approve == 1,
+                                  'bg-success': item.approve == 2,
+                                  'bg-danger': item.approve == 3,
+                                }"
+                              >
+                                <span
+                                  v-if="
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'belum'
+                                  "
+                                  >Belum Diverifikasi</span
+                                >
+                                <span
+                                  v-if="
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'sudah'
+                                  "
+                                  >Diverifikasi GIS</span
+                                >
+                                <span v-else-if="item.approve == 1"
+                                  >Diverifikasi FC</span
+                                >
+                                <span v-else-if="item.approve == 2"
+                                  >Terverifikasi</span
+                                >
+                                <span v-else-if="item.approve == 3"
+                                  >Force Majeure</span
+                                >
                               </span>
                             </div>
                           </td>
 
                           <!-- ALTITUDE -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.elevation" :item="{
-                              label: 'Altitude (mdpl)',
-                              type: 'text',
-                              validation:
-                                item.fc_complete_data != 1
-                                  ? []
-                                  : ['required'],
-                              hide_label: true,
-                            }" />
+                            <geko-input
+                              :disabled="item.fc_complete_data != 1"
+                              v-model="item.elevation"
+                              :item="{
+                                label: 'Altitude (mdpl)',
+                                type: 'text',
+                                validation:
+                                  item.fc_complete_data != 1
+                                    ? []
+                                    : ['required'],
+                                hide_label: true,
+                              }"
+                            />
                           </td>
 
                           <!-- POLYGON AREA -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.gis_polygon_area" :item="{
-                              label: 'Luas Polygon ',
-                              validation:
-                                item.fc_complete_data != 1
-                                  ? []
-                                  : ['required', 'double:2'],
-                              type: 'text',
-                              hide_label: true,
-                            }" />
+                            <geko-input
+                              :disabled="item.fc_complete_data != 1"
+                              v-model="item.gis_polygon_area"
+                              :item="{
+                                label: 'Luas Polygon ',
+                                validation:
+                                  item.fc_complete_data != 1
+                                    ? []
+                                    : ['required', 'double:2'],
+                                type: 'text',
+                                hide_label: true,
+                              }"
+                            />
                           </td>
 
                           <!-- JENIS TANAH -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.soil_type" :item="{
-                              label: 'Luas Polygon ',
-                              type: 'select',
-                              validation:
-                                item.fc_complete_data != 1
-                                  ? []
-                                  : ['required'],
-                              option: {
-                                default_options: lahanData.soil_type,
-                                list_pointer: {
-                                  label: 'label',
-                                  code: 'code',
-                                  display: ['label'],
+                            <geko-input
+                              :disabled="item.fc_complete_data != 1"
+                              v-model="item.soil_type"
+                              :item="{
+                                label: 'Luas Polygon ',
+                                type: 'select',
+                                validation:
+                                  item.fc_complete_data != 1
+                                    ? []
+                                    : ['required'],
+                                option: {
+                                  default_options: lahanData.soil_type,
+                                  list_pointer: {
+                                    label: 'label',
+                                    code: 'code',
+                                    display: ['label'],
+                                  },
                                 },
-                              },
-                              hide_label: true,
-                            }" />
+                                hide_label: true,
+                              }"
+                            />
                           </td>
                           <!-- QUESTIONS -->
                           <td v-for="(q, i) in questions" :key="`qt-${i}`">
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item[`question${i + 1}`]" :item="{
-                              hide_label: true,
-                              type: 'select-radio',
-                              validation:
-                                item.fc_complete_data != 1
-                                  ? []
-                                  : ['required'],
-                              option: {
-                                default_options: [
-                                  {
-                                    label: 'Ya',
-                                    code: '1',
+                            <geko-input
+                              :disabled="item.fc_complete_data != 1"
+                              v-model="item[`question${i + 1}`]"
+                              :item="{
+                                hide_label: true,
+                                type: 'select-radio',
+                                validation:
+                                  item.fc_complete_data != 1
+                                    ? []
+                                    : ['required'],
+                                option: {
+                                  default_options: [
+                                    {
+                                      label: 'Ya',
+                                      code: '1',
+                                    },
+                                    {
+                                      label: 'Tidak',
+                                      code: '0',
+                                    },
+                                  ],
+                                  list_pointer: {
+                                    label: 'name',
+                                    code: 'code',
+                                    display: ['name'],
                                   },
-                                  {
-                                    label: 'Tidak',
-                                    code: '0',
-                                  },
-                                ],
-                                list_pointer: {
-                                  label: 'name',
-                                  code: 'code',
-                                  display: ['name'],
                                 },
-                              },
-                            }" />
+                              }"
+                            />
                           </td>
                         </tr>
                       </tbody>
@@ -226,7 +301,12 @@
                     <v-btn variant="success" type="submit">
                       <v-icon v-if="!loading"> mdi-shape-polygon-plus </v-icon>
 
-                      <v-progress-circular v-else :size="20" color="success" indeterminate></v-progress-circular>
+                      <v-progress-circular
+                        v-else
+                        :size="20"
+                        color="success"
+                        indeterminate
+                      ></v-progress-circular>
                       <span class="ml-1">Verifikasi Data</span>
                     </v-btn>
                   </div>
@@ -234,14 +314,24 @@
               </form>
             </ValidationObserver>
           </div>
-          <div class="d-flex flex-column result" v-if="step == 2 && kmlType == 'cover'">
+          <div
+            class="d-flex flex-column result"
+            v-if="step == 2 && kmlType == 'cover'"
+          >
             <ValidationObserver ref="coverForm" v-slot="{ handleSubmit }">
-              <form @submit.prevent="handleSubmit(onBulkUpload)" autocomplete="off" v-if="ready">
+              <form
+                @submit.prevent="handleSubmit(onBulkUpload)"
+                autocomplete="off"
+                v-if="ready"
+              >
                 <div class="mt-4">
                   <p v-for="(q, i) in questions" class="mb-0 text-09-em">
                     {{ `Pertanyaan ${i + 1} : ${q.question}` }}
                   </p>
-                  <div class="table-wrapper" style="width: 100%; overflow-x: auto">
+                  <div
+                    class="table-wrapper"
+                    style="width: 100%; overflow-x: auto"
+                  >
                     <table class="geko-table">
                       <thead>
                         <tr>
@@ -254,33 +344,48 @@
                           <th style="max-width: 100px">Luas Lahan (m2)</th>
                           <th>Luas Tutupan (m2)</th>
                           <th>Luas Area Tanam (m2)</th>
-                          <th v-for="(q, i) in questions" :key="`head-${i}`" style="min-width: 150px">
+                          <th
+                            v-for="(q, i) in questions"
+                            :key="`head-${i}`"
+                            style="min-width: 150px"
+                          >
                             {{ `Pertanyaan ${i + 1}` }}
                           </th>
                         </tr>
                       </thead>
 
                       <tbody>
-                        <tr v-for="(item, i) in data" :key="`key-${i}`" :class="{
-                          eligible: item.gis_eligible_status == 1,
-                          'not-eligible': item.gis_eligible_status == 0,
-                        }">
+                        <tr
+                          v-for="(item, i) in data"
+                          :key="`key-${i}`"
+                          :class="{
+                            eligible: item.gis_eligible_status == 1,
+                            'not-eligible': item.gis_eligible_status == 0,
+                          }"
+                        >
                           <td>{{ i + 1 }}</td>
                           <!-- Lahan -->
                           <td class="font-weight-bold">
-                            <a class="mb-0 text-link" target="_blank" :href="`/#/lahan-v2?view=detail&id=${item.id}`">{{
-                              item.lahan_no }}</a>
+                            <a
+                              class="mb-0 text-link"
+                              target="_blank"
+                              :href="`/#/lahan-v2?view=detail&id=${item.id}`"
+                              >{{ item.lahan_no }}</a
+                            >
                           </td>
 
                           <!-- KELENGKAPAN DATA -->
                           <td>
                             <div class="d-flex flex-row justify-content-center">
-                              <span class="badge text-08-em" :class="{
-                                'bg-success': item.fc_complete_data == 1,
-                                'bg-info':
-                                  item.fc_complete_data == 0 ||
-                                  item.fc_complete_data == null,
-                              }">
+                              <span
+                                class="badge text-08-em"
+                                :class="{
+                                  'bg-success': item.fc_complete_data == 1,
+                                  'bg-info':
+                                    item.fc_complete_data == 0 ||
+                                    item.fc_complete_data == null,
+                                }"
+                              >
                                 {{
                                   item.fc_complete_data
                                     ? "Lengkap"
@@ -289,38 +394,58 @@
                               </span>
                             </div>
 
-                            <div class="d-flex flex-row justify-content-center mt-2">
-                              <span class="badge text-08-em" :class="{
-                                'bg-warning':
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'belum',
-                                'bg-info':
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'sudah',
-                                'bg-primary': item.approve == 1,
-                                'bg-success': item.approve == 2,
-                                'bg-danger': item.approve == 3,
-                              }">
-                                <span v-if="
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'belum'
-                                ">Belum Diverifikasi</span>
-                                <span v-if="
-                                  item.approve == 0 &&
-                                  item.updated_gis.toLowerCase() == 'sudah'
-                                ">Diverifikasi GIS</span>
-                                <span v-else-if="item.approve == 1">Diverifikasi FC</span>
-                                <span v-else-if="item.approve == 2">Terverifikasi</span>
-                                <span v-else-if="item.approve == 3">Force Majeure</span>
+                            <div
+                              class="d-flex flex-row justify-content-center mt-2"
+                            >
+                              <span
+                                class="badge text-08-em"
+                                :class="{
+                                  'bg-warning':
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'belum',
+                                  'bg-info':
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'sudah',
+                                  'bg-primary': item.approve == 1,
+                                  'bg-success': item.approve == 2,
+                                  'bg-danger': item.approve == 3,
+                                }"
+                              >
+                                <span
+                                  v-if="
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'belum'
+                                  "
+                                  >Belum Diverifikasi</span
+                                >
+                                <span
+                                  v-if="
+                                    item.approve == 0 &&
+                                    item.updated_gis.toLowerCase() == 'sudah'
+                                  "
+                                  >Diverifikasi GIS</span
+                                >
+                                <span v-else-if="item.approve == 1"
+                                  >Diverifikasi FC</span
+                                >
+                                <span v-else-if="item.approve == 2"
+                                  >Terverifikasi</span
+                                >
+                                <span v-else-if="item.approve == 3"
+                                  >Force Majeure</span
+                                >
                               </span>
                             </div>
                           </td>
 
                           <td>
-                            <span class="badge" :class="{
-                              'bg-success': item.gis_eligible_status == 1,
-                              'bg-danger': item.gis_eligible_status == 0,
-                            }">
+                            <span
+                              class="badge"
+                              :class="{
+                                'bg-success': item.gis_eligible_status == 1,
+                                'bg-danger': item.gis_eligible_status == 0,
+                              }"
+                            >
                               {{
                                 item.gis_eligible_status == 1
                                   ? "Eligible"
@@ -331,16 +456,22 @@
 
                           <!-- POLYGON AREA -->
                           <td>
-                            <geko-input :disabled="true" v-model="item.gis_polygon_area" :item="{
-                              label: 'Luas Area Tanam',
-                              validation: [],
-                              type: 'text',
-                              hide_label: true,
-                            }" />
+                            <geko-input
+                              :disabled="true"
+                              v-model="item.gis_polygon_area"
+                              :item="{
+                                label: 'Luas Area Tanam',
+                                validation: [],
+                                type: 'text',
+                                hide_label: true,
+                              }"
+                            />
                           </td>
                           <!-- TUTUPAN AREA -->
                           <td>
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item.polygon_tutupan_area"
+                            <geko-input
+                              :disabled="item.fc_complete_data != 1"
+                              v-model="item.polygon_tutupan_area"
                               :item="{
                                 label: 'Luas Tutupan',
                                 validation:
@@ -349,58 +480,74 @@
                                     : ['required', 'double'],
                                 type: 'text',
                                 hide_label: true,
-                              }" />
+                              }"
+                            />
                           </td>
 
                           <!-- PLANTING AREA -->
                           <td>
-                            <geko-input :disabled="item.gis_planting_area" v-model="item.gis_planting_area" :item="{
-                              label: 'Luas Area Tanam',
-                              validation: item.gis_planting_area
-                                ? []
-                                : ['required', 'double'],
-                              type: 'text',
-                              hide_label: true,
-                            }" />
+                            <geko-input
+                              :disabled="item.gis_planting_area"
+                              v-model="item.gis_planting_area"
+                              :item="{
+                                label: 'Luas Area Tanam',
+                                validation: item.gis_planting_area
+                                  ? []
+                                  : ['required', 'double'],
+                                type: 'text',
+                                hide_label: true,
+                              }"
+                            />
                           </td>
                           <!-- QUESTIONS -->
                           <td v-for="(q, i) in questions" :key="`qt-${i}`">
-                            <geko-input :disabled="item.fc_complete_data != 1" v-model="item[`answer${q.id}`]" :item="{
-                              hide_label: true,
-                              type: 'select-radio',
-                              validation:
-                                item.fc_complete_data != 1
-                                  ? []
-                                  : ['required'],
-                              option: {
-                                default_options: [
-                                  {
-                                    label: 'Ya',
-                                    code: '1',
+                            <geko-input
+                              :disabled="item.fc_complete_data != 1"
+                              v-model="item[`answer${q.id}`]"
+                              :item="{
+                                hide_label: true,
+                                type: 'select-radio',
+                                validation:
+                                  item.fc_complete_data != 1
+                                    ? []
+                                    : ['required'],
+                                option: {
+                                  default_options: [
+                                    {
+                                      label: 'Ya',
+                                      code: '1',
+                                    },
+                                    {
+                                      label: 'Tidak',
+                                      code: '0',
+                                    },
+                                  ],
+                                  list_pointer: {
+                                    label: 'name',
+                                    code: 'code',
+                                    display: ['name'],
                                   },
-                                  {
-                                    label: 'Tidak',
-                                    code: '0',
-                                  },
-                                ],
-                                list_pointer: {
-                                  label: 'name',
-                                  code: 'code',
-                                  display: ['name'],
                                 },
-                              },
-                            }" />
+                              }"
+                            />
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
 
-                  <div class="card-footer d-flex flex-row justify-content-center mt-3">
+                  <div
+                    class="card-footer d-flex flex-row justify-content-center mt-3"
+                  >
                     <v-btn variant="success" type="submit">
                       <v-icon v-if="!loading"> mdi-shape-polygon-plus </v-icon>
 
-                      <v-progress-circular v-else :size="20" color="success" indeterminate></v-progress-circular>
+                      <v-progress-circular
+                        v-else
+                        :size="20"
+                        color="success"
+                        indeterminate
+                      ></v-progress-circular>
                       <span class="ml-1">Verifikasi Data</span>
                     </v-btn>
                   </div>
@@ -436,7 +583,7 @@ export default {
       files: null,
       files_name: null,
       kmlType: "land",
-      uploadProgress: '0'
+      uploadProgress: "0",
     };
   },
 
@@ -483,18 +630,28 @@ export default {
           continue;
         }
 
-        const tutupanLahan = parseFloat(lahan.polygon_tutupan_area / lahan.gis_polygon_area * 100).toFixed(2)
+        const tutupanLahan = parseFloat(
+          (lahan.gis_planting_enhancement_area / lahan.land_area) * 100
+        ).toFixed(2);
         const payload = {
+          gis_polygon_area: lahan.land_area,
           lahan_no: lahan.lahan_no,
           polygon_tutupan_area: lahan.polygon_tutupan_area,
-          polygon_tutupan_photo: null,
-          gis_planting_area: lahan.gis_planting_area,
+          polygon_tutupan_photo: lahan.kml_file,
+          gis_planting_area: lahan.planting_area,
           gis_eligibility_status: lahan.gis_eligible_status,
-          tutupan_lahan: tutupanLahan
+          gis_planting_enhancement_area: lahan.gis_planting_enhancement_area,
+          tutupan_lahan: tutupanLahan,
+          gis_eligiblity_type: lahan.gis_eligiblity_type,
+          gis_eligibility_srnppi: lahan.gis_eligibility_srnppi,
+          seed_planting: lahan.seed_planting,
+          seed_planting_enhancement: lahan.seed_planting_enhancement,
+          seed_total: lahan.seed_total,
+          seeds: lahan.seeds,
         };
 
         const kmlPath = await this.uploadKmlFile(
-          `${lahan.lahan_no}-LAND_COVER`
+          `${lahan.lahan_no}-LAND_COVER.kml`
         ).catch((err) => {
           return false;
         });
@@ -624,17 +781,19 @@ export default {
       let alertTitle = "Verifikasi Lahan Berhasil";
       if (verifSuccess.length == 0) alertTitle = "Verifikasi Lahan Gagal";
 
-      let alertMessage = `<p>Data lahan berhasil diverifikasi : ${verifSuccess.length === 0
-        ? "<strong>Tidak Ada</strong>"
-        : `<strong>${verifSuccess.length}</strong><br />${verifSuccess.join(
-          ", "
-        )}</strong><br /></p>Data lahan gagal diverifikasi : ${verifFailed.length === 0
+      let alertMessage = `<p>Data lahan berhasil diverifikasi : ${
+        verifSuccess.length === 0
           ? "<strong>Tidak Ada</strong>"
-          : `<strong>${verifFailed.length}<br />${verifFailed.join(
-            ", "
-          )}</strong>`
-        }</p>`
-        }</p>`;
+          : `<strong>${verifSuccess.length}</strong><br />${verifSuccess.join(
+              ", "
+            )}</strong><br /></p>Data lahan gagal diverifikasi : ${
+              verifFailed.length === 0
+                ? "<strong>Tidak Ada</strong>"
+                : `<strong>${verifFailed.length}<br />${verifFailed.join(
+                    ", "
+                  )}</strong>`
+            }</p>`
+      }</p>`;
       this.$_alert.success(
         alertTitle,
         alertMessage,
