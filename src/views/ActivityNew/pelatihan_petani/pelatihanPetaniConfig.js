@@ -1,4 +1,6 @@
-export default {
+import { reactive } from "vue"
+
+export default reactive({
   // export: true,
   title: "Pelatihan Petani",
   getter: "farmer-training",
@@ -9,15 +11,17 @@ export default {
   detail: "DetailFarmerTraining",
   detailIdKey: "training_no",
   detailKey: "data.result",
-  delete: "a",
+  delete: "DeleteFarmerTraining",
   deleteLabel: "id",
   deleteKey: "id",
   delete_ext_payload: {
     delete_type: "hard_delete",
+    user_email: null
   },
   deleteSoft: {
     payload: {
       delete_type: "soft_delete",
+      user_email: null
     },
   },
   pk_field: null,
@@ -312,4 +316,4 @@ export default {
       },
     },
   ]
-}
+});

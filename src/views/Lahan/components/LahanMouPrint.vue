@@ -11,131 +11,64 @@
 
           <div class="d-flex" v-if="!openFormUpload">
             <!-- btn print -->
-            <v-btn
-              small
-              variant="primary"
-              class="d-flex flex-row align-items-center"
-              @click="onPrint"
-            >
-              <v-progress-circular
-                v-if="loading"
-                indeterminate
-                :size="20"
-                color="primary"
-              ></v-progress-circular>
+            <v-btn small variant="primary" class="d-flex flex-row align-items-center" @click="onPrint">
+              <v-progress-circular v-if="loading" indeterminate :size="20" color="primary"></v-progress-circular>
               <v-icon v-else>mdi-printer-outline</v-icon>
-              <span class="ml-1"
-                >Print
+              <span class="ml-1">Print
                 {{ mouData && mouData.printed_status ? "Ulang" : "" }}
-                MOU</span
-              >
+                MOU</span>
             </v-btn>
             <!-- btn revision -->
-            <v-btn
-              v-if="
-                (mouData && mouData.mou_status == 0) || (mouData && !mouData.id)
-              "
-              small
-              variant="warning"
-              class="d-flex flex-row align-items-center ml-2"
-              @click="() => (dialogs.revision.isOpen = true)"
-            >
-              <v-progress-circular
-                v-if="loading"
-                indeterminate
-                :size="20"
-                color="warning"
-              ></v-progress-circular>
+            <v-btn v-if="
+              (mouData && mouData.mou_status == 0) || (mouData && !mouData.id)
+            " small variant="warning" class="d-flex flex-row align-items-center ml-2"
+              @click="() => (dialogs.revision.isOpen = true)">
+              <v-progress-circular v-if="loading" indeterminate :size="20" color="warning"></v-progress-circular>
               <v-icon v-else>mdi-file-edit-outline</v-icon>
               <span class="ml-1">Revisi MOU</span>
             </v-btn>
             <!-- btn upload lampiran -->
-            <v-btn
-              v-if="
-                mouData && mouData.printed_status && mouData.mou_status != 5
-              "
-              :disabled="loading"
-              small
-              variant="warning"
-              class="d-flex flex-row align-items-center ml-2"
-              @click="
-                openFormUpload = true;
-                formUploadPreview = false;
-              "
-            >
+            <v-btn v-if="
+              mouData && mouData.printed_status && mouData.mou_status != 5
+            " :disabled="loading" small variant="warning" class="d-flex flex-row align-items-center ml-2" @click="
+              openFormUpload = true;
+            formUploadPreview = false;
+            ">
               <v-icon>mdi-file-alert-outline</v-icon>
               <span class="ml-1">Upload Lampiran</span>
             </v-btn>
             <!-- btn preview lampiran -->
-            <v-btn
-              v-if="
-                mouData &&
-                mouData.printed_status &&
-                [4, 5].includes(mouData.mou_status)
-              "
-              :disabled="loading"
-              small
-              variant="success"
-              class="d-flex flex-row align-items-center ml-2"
-              @click="
-                openFormUpload = true;
-                formUploadPreview = true;
-              "
-            >
+            <v-btn v-if="
+              mouData &&
+              mouData.printed_status &&
+              [4, 5].includes(mouData.mou_status)
+            " :disabled="loading" small variant="success" class="d-flex flex-row align-items-center ml-2" @click="
+              openFormUpload = true;
+            formUploadPreview = true;
+            ">
               <v-icon>mdi-file-eye-outline</v-icon>
               <span class="ml-1">Preview Lampiran</span>
             </v-btn>
           </div>
         </v-card-title>
         <v-card-text class="pt-5">
-          <v-alert
-            v-if="mouData && mouData.printed_at && !openFormUpload"
-            dense
-            text
-            icon="mdi-printer-check"
-            type="info"
-          >
+          <v-alert v-if="mouData && mouData.printed_at && !openFormUpload" dense text icon="mdi-printer-check"
+            type="info">
             {{ mouData.printed_at | parse("datetime") }}
           </v-alert>
           <!-- revision desc -->
-          <v-alert
-            v-if="mouData && mouData.mou_status == 2"
-            dense
-            text
-            icon="mdi-alert-circle-outline"
-            type="warning"
-          >
+          <v-alert v-if="mouData && mouData.mou_status == 2" dense text icon="mdi-alert-circle-outline" type="warning">
             Revisi: {{ mouData.mou_revision_reason }}
           </v-alert>
           <!-- FormUploadAttachmentMOU -->
-          <FormUploadAttachmentMOU
-            v-if="openFormUpload"
-            :mouData="mouData"
-            :lahanData="lahanData"
-            :preview="formUploadPreview"
-            @close="openFormUpload = false"
-            @closeParent="isOpen = false"
-            @refreshData="refreshDetailLahan()"
-            @openPrintAppendix="openPrintAppendix"
-          />
+          <FormUploadAttachmentMOU v-if="openFormUpload" :mouData="mouData" :lahanData="lahanData"
+            :preview="formUploadPreview" @close="openFormUpload = false" @closeParent="isOpen = false"
+            @refreshData="refreshDetailLahan()" @openPrintAppendix="openPrintAppendix" />
           <!-- MOU -->
-          <div
-            class="preview-wrapper"
-            v-else-if="typeof data === 'object' && Object.keys(data).length > 0"
-          >
-            <vue-html2pdf
-              :show-layout="true"
-              :float-layout="false"
-              :enable-download="true"
-              :preview-modal="true"
-              :pdf-quality="1"
-              :manual-pagination="true"
-              pdf-format="a4"
-              pdf-orientation="portrait"
-              pdf-content-width="794px"
-              :pdf-content-height="1123"
-              ref="html2Pdf"
-              :html-to-pdf-options="{
+          <div class="preview-wrapper" v-else-if="typeof data === 'object' && Object.keys(data).length > 0">
+            <vue-html2pdf :show-layout="true" :float-layout="false" :enable-download="true" :preview-modal="true"
+              :pdf-quality="1" :manual-pagination="true" pdf-format="a4" pdf-orientation="portrait"
+              pdf-content-width="794px" :pdf-content-height="1123" ref="html2Pdf" :html-to-pdf-options="{
                 margin: 0,
                 filename: `MOU-${data.farmer_name}`,
                 pagebreak: {
@@ -151,10 +84,7 @@
                   unit: 'mm',
                   orientation: 'p',
                 },
-              }"
-              @beforeDownload="beforeDownload($event)"
-              @hasDownloaded="onDownloadComplete()"
-            >
+              }" @beforeDownload="beforeDownload($event)" @hasDownloaded="onDownloadComplete()">
               <section slot="pdf-content">
                 <mou-html :data="data" />
               </section>
@@ -171,26 +101,14 @@
         </v-card-title>
         <v-card-text>
           <ValidationObserver ref="revisionForm" v-slot="{ handleSubmit }">
-            <form
-              @submit.prevent="handleSubmit(onSubmitRevisi)"
-              autocomplete="off"
-            >
-              <geko-input
-                v-model="dialogs.revision.data.mou_revision_reason"
-                class="mb-5"
-                :item="{
-                  label: 'Deskripsi Revisi',
-                  validation: ['required'],
-                  type: 'textarea',
-                }"
-              />
+            <form @submit.prevent="handleSubmit(onSubmitRevisi)" autocomplete="off">
+              <geko-input v-model="dialogs.revision.data.mou_revision_reason" class="mb-5" :item="{
+                label: 'Deskripsi Revisi',
+                validation: ['required'],
+                type: 'textarea',
+              }" />
               <v-btn type="submit" variant="success" :disabled="loading">
-                <v-progress-circular
-                  v-if="loading"
-                  indeterminate
-                  :size="20"
-                  color="success"
-                ></v-progress-circular>
+                <v-progress-circular v-if="loading" indeterminate :size="20" color="success"></v-progress-circular>
                 <v-icon v-else>mdi-content-save</v-icon>
                 Submit Revisi
               </v-btn>
@@ -221,7 +139,7 @@ export default {
     },
     farmerData: {
       required: false,
-      default: () => {},
+      default: () => { },
     },
     modalKey: {
       type: Number,
@@ -286,7 +204,7 @@ export default {
         mou_start: mouStart,
         mou_end: mouEnd,
         farmer_ktp_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_ktp_document_pivot_farmer}`,
-        farmer_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_ktp_document_pivot_farmer}`,
+        farmer_photo: `${this.$_config.baseUrlUpload}/${this.lahanData.farmers_farmer_profile_pivot_farmer}`,
         mou_no: this.lahanData.mou_no,
       };
 
@@ -357,7 +275,7 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() { },
 
   data() {
     return {

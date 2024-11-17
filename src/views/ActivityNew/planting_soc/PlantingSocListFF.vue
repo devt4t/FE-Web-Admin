@@ -8,8 +8,17 @@
                 {{ index + 1 }}
             </template>
 
+            <template v-slot:item.action="{ item }">
+                <div class="d-flex flex-column flex-col">
+                    <v-btn variant="warning" small @click="$emit('edit', item)">
+                        <v-icon>mdi-pencil</v-icon>
+                        <span>Perbarui</span>
+                    </v-btn>
+                </div>
+            </template>
+
             <template v-slot:item.status="{ item }">
-                <div class="d-flex flex-column align-items-center">
+                <div class="d-flex flex-column align-items-center min-w-150px">
                     <span class="badge" :class="{
                         'bg-warning': item.validation == 0,
                         'bg-success': item.validation == 1
@@ -27,7 +36,7 @@
             </template>
 
             <template v-slot:item.land_area="{ item }">
-                <span class="font-weight-bold" v-if="item.lahan_datas">
+                <span class="font-weight-bold d-block min-w-150px" v-if="item.lahan_datas">
                     {{ item.lahan_datas.luas_lahan_gis ? item.lahan_datas.luas_lahan_gis : item.lahan_datas.luas_lahan
                     }} m2
                 </span>
@@ -39,6 +48,24 @@
 
             <template v-slot:item.opsi_pola_tanam="{ item }">
                 {{ item.lahan_datas?.opsi_pola_tanam }}
+            </template>
+
+            <template v-slot:item.farmer_signature="{ item }">
+                <div class="d-flex flex-row justify-content-center">
+                    <span class="badge" :class="{
+                        'bg-success': item.signature,
+                        'bg-warning': !item.signature
+                    }">{{ item.signature ? 'Sudah' : 'Belum' }}</span>
+                </div>
+            </template>
+
+            <template v-slot:item.attendance="{ item }">
+                <div class="d-flex flex-row min-w-100px">
+                    <span class="badge" :class="{
+                        'bg-success': item.attendance,
+                        'bg-danger': !item.attendance
+                    }">{{ item.attendance ? 'Hadir' : 'Tidak Hadir' }}</span>
+                </div>
             </template>
         </v-data-table>
     </td>
@@ -68,6 +95,10 @@ export default {
     data() {
         return {
             dataHeaders: [
+                {
+                    text: '#',
+                    value: 'action'
+                },
                 {
                     text: 'No',
                     value: 'index',
@@ -114,6 +145,14 @@ export default {
                     value: 'planting_year'
                 },
                 {
+                    text: 'Attendance',
+                    value: 'attendance'
+                },
+                {
+                    text: 'Tanda Tangan Petani',
+                    value: 'farmer_signature'
+                },
+                {
                     text: 'Status',
                     value: 'status'
                 },
@@ -121,10 +160,6 @@ export default {
                 //     text: 'Status Adjustment',
                 //     value: 'adjustment_validation'
                 // },
-                {
-                    text: '#',
-                    value: 'action'
-                }
             ],
             data: [],
             loading: true

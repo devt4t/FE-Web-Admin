@@ -1,19 +1,21 @@
 <template>
   <div style="border-right: 1px solid transparent" v-if="data">
     <section class="pdf-item">
-      <h3
-        class="text-center text-black font-weight-bold text-1-em"
-        style="margin-bottom: 2em"
-      >
-        PERJANJIAN KERJASAMA<br />PENGGUNAAN LAHAN UNTUK PENANAMAN POHON DALAM
-        PROYEK KARBON<br />Antara<br />YAYASAN BUMI HIJAU LESTARI
-        (Trees4Trees)<br />Dengan PETANI <br />PEMILIK TANAH/LAHAN
+      <h3 class="text-center text-black font-weight-bold text-1-em" style="margin-bottom: 2em">
+        PERJANJIAN KERJASAMA<br />
+        PENANAMAN, PEMELIHARAAN DAN PEMANTAUAN POHON<br />
+        DALAM PROYEK KARBON<br />
+        Antara<br />
+        YAYASAN BUMI HIJAU LESTARI<br />
+        Dengan <br />
+        PETANI PEMILIK LAHAN
       </h3>
 
       <p class="text-black">
         Perjanjian ini dibuat pada hari {{ formatDate("dddd") }} tanggal
         {{ formatDate("DD") }}
-        bulan {{ formatDate("MMMM") }} tahun {{ formatDate("YYYY") }} antara:
+        bulan {{ formatDate("MMMM") }} tahun {{ formatDate("YYYY") }},<br />
+        bertempat di ___, oleh dan antara:
       </p>
       <table class="text-black table-1" style="margin-bottom: 1em">
         <tr class="font-weight-bold">
@@ -30,6 +32,14 @@
             Jl. Sanggung Barat No.11 RT 006/ RW 002 Jatingaleh, Candisari,
             Semarang.
           </td>
+        </tr>
+        <tr>
+          <td>No. Telepon</td>
+          <td>___</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>___</td>
         </tr>
       </table>
       <p class="text-black" style="margin-bottom: 0.8em">
@@ -51,52 +61,48 @@
           <td>No. KTP</td>
           <td>{{ data.farmer_nik }}</td>
         </tr>
+        <tr>
+          <td>No. Telepon</td>
+          <td>{{ data.farmer_nik }}</td>
+        </tr>
       </table>
 
       <p class="text-black">
-        Bertindak atas nama sendiri sebagai pemilik sah dari tanah/lahan yang
-        digunakan untuk proyek ini, yang selanjutnya disebut
+        Bertindak atas nama sendiri sebagai pemilik sah dari lahan yang
+        digunakan untuk Proyek ini, yang selanjutnya disebut
         <strong>"PIHAK KEDUA"</strong>.
       </p>
 
       <p class="text-black">
-        PIHAK PERTAMA dan PIHAK KEDUA secara sendiri-sendiri disebut
-        <strong>“PIHAK”</strong> dan secara bersama-sama disebut
-        <strong>“PARA PIHAK”</strong>.
-      </p>
-
-      <p class="text-black">
-        PARA PIHAK dengan ini terlebih dahulu menerangkan sebagai berikut :
+        <strong>PIHAK PERTAMA</strong> dan <strong>PIHAK KEDUA</strong>, yang selanjutnya secara sendiri-sendiri disebut
+        sebagai
+        <strong>“PIHAK”</strong> dan secara bersama-sama disebut sebagai
+        <strong>“PARA PIHAK”</strong>, terlebih dahulu menerangkan hal-hal sebagai berikut:
       </p>
 
       <ol>
         <li class="text-black">
-          Bahwa PIHAK PERTAMA adalah
-          <strong>Badan Hukum berupa Yayasan</strong> yang mana sesuai dengan
-          akta pendiriannya bergerak di bidang Lingkungan Hidup, Sosial dan
-          Perlindungan Konsumen
+          Bahwa <strong>PIHAK PERTAMA</strong> adalah
+          Badan Usaha Yayasan yang bergerak di bidang Lingkungan
+          Hidup, Sosial, Pendidikan <strong>PIHAK PERTAMA</strong> bertindak sebagai pemrakarsa proyek,
+          bertanggung jawab atas pengembangan, implementasi, dan pengelolaan proyek karbon.
         </li>
         <li class="text-black">
-          Bahwa PIHAK KEDUA adalah <strong>Perorangan</strong> yang berkuasa
-          penuh atas kepemilikan lahan
+          Bahwa <strong>PIHAK KEDUA</strong> adalah pemilik sah dari lahan yang akan digunakan dalam rangka
+          penanaman, pemeliharaan dan pemantauan pohon dalam Proyek karbon oleh <strong>PIHAK
+            PERTAMA</strong>, dan sebagai anggota Land-Owner Group, sebuah badan hukum yang didirikan
+          untuk mewakili pemilik lahan yang terlibat dalam Proyek karbon.
         </li>
       </ol>
 
       <p class="text-black" style="margin-top: 0">
-        Atas dasar pertimbangan yang diuraikan tersebut diatas, PARA PIHAK
-        <span class="text-italic">sah dan berwenang serta telah sepakat</span>
-        untuk melakukan perjanjian Penggunaan Lahan Untuk Penanaman Pohon Dalam
-        Proyek Karbon yang saling menguntungkan dengan ketentuan-ketentuan dan
-        syarat-syarat sebagai berikut:
+        Berdasarkan hal-hal tersebut di atas, <strong>PARA PIHAK</strong> dengan ini setuju untuk mengadakan perjanjian
+        sebagai berikut:
       </p>
     </section>
 
-    <div class="html2pdf__page-break"></div>
     <section class="pdf-item">
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0"
-      >
+      <p class="text-center text-black font-weight-bold" style="margin-bottom: 0">
         Pasal 1
       </p>
       <p class="text-center text-black font-weight-bold">KETENTUAN UMUM</p>
@@ -106,13 +112,20 @@
       <ol class="text-09-em">
         <li class="text-black" style="padding-bottom: 0">
           <strong>Proyek Karbon</strong> adalah kegiatan yang bertujuan untuk
-          mengurangi emisi gas rumah kaca melalui penanaman pohon dan
-          pengelolaan hutan yang berkelanjutan, sesuai dengan peraturan
-          perundangan yang berlaku di Indonesia, termasuk namun tidak terbatas
-          pada Peraturan Presiden No. 98 Tahun 2021 tentang Penyelenggaraan
-          Nilai Ekonomi Karbon (NEK) dan Peraturan Presiden No. 14 Tahun 2024
-          tentang Penyelenggaraan Kegiatan Penangkapan dan Penyimpanan Karbon
+          mengurangi emisi gas rumah kaca melalui penanaman pohon di lahan milik Petani Pemilik Lahan secara
+          berkelanjutan dan
+          jangka panjang, sesuai dengan peraturan perundangan yang berlaku di Indonesia.
         </li>
+
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>Monitoring Project</strong> adalah
+          Pola pilihan model untuk penggunaan lahan untuk penanaman
+          pohon dalam project ini, yang terdiri dari Model 1 (penanaman pohon kayu yang dapat di
+          tebang setelah 6 tahun), Model 2 (penanaman pohon kayu dan MPTS dengan pohon kayu
+          dapat ditebang setelah 6 tahun dan pohon MPTS tidak ditebang), Model 3 (penanaman
+          pohon kayu dan MPTS yang tidak akan ditebang).
+        </li>
+
         <li class="text-black" style="padding-bottom: 0">
           <strong>Monitoring, Reporting, and Verification (MRV)</strong> adalah
           proses pemantauan, pelaporan, dan verifikasi yang dilakukan untuk
@@ -122,8 +135,8 @@
         </li>
 
         <li class="text-black" style="padding-bottom: 0">
-          <strong>Aplikasi GEKO atau platform lain</strong> adalah sistem atau
-          perangkat lunak yang dipersiapkan oleh yayasan untuk digunakan dalam
+          <strong>Platform Teknologi Informasi</strong> adalah sistem atau
+          perangkat lunak yang dipersiapkan oleh PIHAK PERTAMA untuk digunakan dalam
           monitoring, pelaporan, dan verifikasi (MRV) kegiatan penanaman dan
           pertumbuhan pohon dalam proyek karbon ini. Aplikasi ini memfasilitasi
           pemantauan secara digital terhadap keberhasilan penanaman, pertumbuhan
@@ -133,9 +146,7 @@
         <li class="text-black" style="padding-bottom: 0">
           <strong>Multi-Purpose Tree Species (MPTS)</strong> adalah jenis pohon
           serbaguna yang selain memiliki manfaat ekologis juga memberikan
-          manfaat ekonomi bagi masyarakat, seperti hasil hutan bukan kayu
-          (Non-Timber Forest Products -NTFPs) yang dapat berupa buah-buahan,
-          resin, daun, dan produk lainnya.
+          manfaat ekonomi bagi masyarakat, seperti hasil hutan bukan kayu.
         </li>
         <li class="text-black" style="padding-bottom: 0">
           <strong>Lahan yang Sah dan Legal</strong> adalah lahan yang secara
@@ -144,401 +155,327 @@
           proyek karbon ini.
         </li>
         <li class="text-black" style="padding-bottom: 0">
-          <strong>Kompensasi Nilai Karbon</strong> adalah pembayaran yang
+          <strong>Kompensasi Manfaat Karbon</strong> adalah pembayaran yang
           dilakukan oleh PIHAK PERTAMA kepada PIHAK KEDUA sebagai imbalan atas
           penanaman, pemeliharaan, dan pertumbuhan pohon yang dilakukan dalam
-          proyek ini, yang dinilai berdasarkan nilai ekonomi karbon sesuai
-          dengan regulasi yang berlaku dan sudah disesuakan dengan pengurangan
-          untuk biaya biaya yang timbul dari proyek ini.
+          proyek ini, berdasarkan kesepakatan perwakilan pemilik lahan
+          atau Land-owner Group.
         </li>
         <li class="text-black" style="padding-bottom: 0">
-          <strong>Land Owner Group</strong> adalah Kelompok yang dibentuk oleh
-          PIHAK KEDUA berbentuk badan hukum yang terdiri dari pemilik lahan yang
-          ikut serta dalam proyek karbon, di mana kelompok tersebut bertanggung
-          jawab secara kolektif untuk memastikan bahwa lahan yang dikelola
-          memenuhi persyaratan hukum dan teknis proyek karbon, serta menjalankan
-          kegiatan penanaman dan pemeliharaan sesuai dengan standar yang
-          ditetapkan oleh PIHAK PERTAMA.
+          <strong>Land Owner Group</strong> adalah Badan Hukum yang dibentuk oleh PIHAK KEDUA yang
+          keanggotaannya terdiri dari pemilik lahan yang ikut serta dalam proyek karbon, dimana
+          badan hukum tersebut bertanggung jawab secara kolektif memastikan bahwa lahan yang
+          dikelola memenuhi persyaratan hukum dan standar teknis proyek karbon.
+        </li>
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>Pekerja Anak</strong> adalah pekerja yang lebih muda dari usia minimum sesuai peraturan yang
+          berlaku di Indonesia.
+        </li>
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>Kerja Paksa</strong> adalah Setiap pekerjaan yang tidak dilakukan oleh seseorang secara sukarela,
+          dilakukan dibawah ancaman hukuman, sebagai pembayaran pinjaman atau hutang,
+          penipuan, intimidasi, ancaman, kekerasan, atau bentuk pemaksaan lainnya yang tidak
+          sesuai dengan peraturan yang berlaku di Indonesia.
         </li>
       </ol>
+
+      <div class="html2pdf__page-break"></div>
       <div>
         <p class="text-center text-black font-weight-bold mb-1 mt-5 pt-5">
           Pasal 2
         </p>
-        <p class="text-center text-black font-weight-bold mb-5">DASAR HUKUM</p>
-
-        <p class="text-black">
-          <strong>Perpres Nomor 98 Tahun 2021</strong> Tentang Penyelenggaraan
-          Nilai Ekonomi Karbon untuk Pencapaian Target Kontribusi yang
-          Ditetapkan secara Nasional dan Pengendalian Emisi Gas Rumah Kaca dalam
-          Pembangunan Nasional.
-        </p>
-        <p class="text-black">
-          <strong>Perpres Nomor 14 Tahun 2024</strong> tentang Penyelenggaraan
-          Kegiatan Penangkapan dan Penyimpanan Karbon.
-        </p>
+        <p class="text-center text-black font-weight-bold mb-5">RUANG LINGKUP PERJANJIAN</p>
+        <ol>
+          <li class="text-black" style="padding-bottom: 0">
+            <strong>PARA PIHAK</strong> menyepakati bahwa isi perjanjian ini akan mengikuti sepenuhnya perjanjian
+            penggunaan lahan untuk penanaman, pemeliharaan dan pemantauan pohon Proyek karbon
+            yang dibuat dan ditandatangani Land Owner Group.
+          </li>
+          <li class="text-black" style="padding-bottom: 0">
+            <strong>PIHAK KEDUA</strong> dengan ini menyetujui lahan miliknya yang sah dan legal diikutsertakan dalam
+            Proyek karbon yang dikembangkan <strong>PIHAK PERTAMA</strong>, dan mematuhi persyaratan yang
+            ditetapkan dalam Proyek karbon.
+          </li>
+          <li class="text-black" style="padding-bottom: 0">
+            <strong>PIHAK KEDUA</strong> menyetujui menjadi anggota dan menyerahkan kuasa dalam pengelolaan
+            Proyek karbon kepada Land Owner Group yang akan dibentuk secara partisipatif dan
+            berjenjang oleh Seluruh Pemilik Lahan yang ikut dalam Proyek karbon ini.
+          </li>
+          <li class="text-black" style="padding-bottom: 0">
+            <strong>PIHAK KEDUA</strong> memberikan kuasa dalam menyusun perjanjian proyek karbon kepada Land
+            Owner Group mencakup hak untuk mengatur PIHAK KEDUA dalam memenuhi kewajiban
+            pengelolaan Proyek karbon.
+          </li>
+        </ol>
       </div>
     </section>
-    <div class="html2pdf__page-break"></div>
     <section class="pdf-item">
       <p class="text-center text-black font-weight-bold mb-1">Pasal 3</p>
       <p class="text-center text-black font-weight-bold mb-5">
-        TUJUAN KERJASAMA
+        HAK DAN KEWAJIBAN
       </p>
+      <ol class="text-09-em">
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>HAK PIHAK PERTAMA:</strong>
+          <ol type="a">
+            <li>Mengatur semua rencana dan operasional kegiatan Proyek karbon, membangun
+              persemaian, memproduksi dan mendistribusikan bibit selama masa proyek, serta
+              mengatur pemenuhan persyaratan Proyek karbon yang harus dipenuhi <strong>PIHAK KEDUA.</strong>
+            </li>
+            <li>
+              Melakukan evaluasi, validasi dan verifikasi data hasil pemantauan Proyek karbon melalui
+              aplikasi platform teknologi informasi, atau survey lapangan di lahan <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Mendapatkan kuasa <strong>PIHAK KEDUA</strong> atas sertifikat pengurangan emisi karbon yang
+              dikeluarkan oleh Pemerintah Indonesia atau Lembaga Verifikator dan Validator Proyek
+              Karbon.
+            </li>
+            <li>
+              Mendapatkan informasi termasuk namun tidak terbatas pada data pribadi, data lahan,
+              gambar, video, wawancara tertulis dan mempublikasikan Proyek karbon ini.
+            </li>
+            <li>
+              Menghentikan kepesertaan Proyek karbon atau menghentikan pemberian kompensasi
+              manfaat karbon atau mengakhiri perjanjian jika <strong>PIHAK KEDUA</strong> terbukti melanggar
+              ketentuan perjanjian yang dibuat Land Owner Group.
+            </li>
+          </ol>
+        </li>
+        <div class="html2pdf__page-break"></div>
+        <br /><br /><br />
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>KEWAJIBAN PIHAK PERTAMA:</strong>
+          <ol type="a">
+            <li>
+              Memeriksa kriteria kelayakan proyek melalui citra satelit dan melakukan survey lapangan.
+            </li>
+            <li>
+              Memeriksa dokumen lahan yang sah dan legal <strong>PIHAK KEDUA</strong> sesuai ketentuan proyek.
+            </li>
+            <li>
+              Melakukan pengukuran, pemetaan serta pendataan lahan milik <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Menyediakan pendanaan yang sesuai dan layak untuk Proyek karbon yang akan dilaksanakan di lahan milik
+              <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Memproduksi dan menyediakan bibit pohon (kayu/ MPTS) untuk <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Mendistribusikan bibit pohon (kayu/ MPTS) ke lokasi terdekat <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Memberikan pelatihan tentang praktik kehutanan yang baik dan pelatihan aplikasi platform
+              informasi teknologi kepada <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Memberikan dukungan teknis kepada <strong>PIHAK KEDUA</strong> untuk penanaman, pemeliharaan dan
+              dan pemantauan kegiatan proyek karbon.
+            </li>
+            <li>
+              Memberikan dukungan pendampingan, komunikasi dan hotline untuk pengaduan dan
+              keluhan.
+            </li>
+            <li>
+              Memberikan kompensasi manfaat karbon kepada <strong>PIHAK KEDUA</strong> sesuai dengan
+              kesepakatan dengan Land Owner Group sesuai persyaratan Proyek karbon.
+            </li>
+            <li>
+              Memperbaiki atau memberikan kompensasi atas kerusakan pada tanaman, jalan, pagar,
+              atau gerbang yang disebabkan oleh PIHAK PERTAMA.
+            </li>
+            <li>
+              PIHAK PERTAMA akan memberikan pemberitahuan sebelum mengakses lahan proyek
+              karbon PIHAK KEDUA.
+            </li>
 
-      <p class="text-black">
-        Tujuan perjanjian ini adalah penggunaan lahan untuk meningkatkan
-        pendapatan petani dan masyarakat pedesaan melalui penanaman pohon dan
-        restorasi lahan, yang berdampak positif terhadap lingkungan dan
-        masyarakat lokal serta berkontribusi terhadap program nasional menuju
-        Net Zero Emission.
-      </p>
+          </ol>
+        </li>
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>HAK PIHAK KEDUA:</strong>
+          <ol type="a">
+            <li>
+              Seluruh manfaat dan hasil non-karbon, baik dalam bentuk finansial maupun non-finansial dalam Proyek karbon
+              ini akan menjadi hak dan milik <strong>PIHAK KEDUA</strong>.
+            </li>
+            <li>
+              Mendapatkan dukungan teknis dari <strong>PIHAK PERTAMA</strong> dalam pengelolaan Proyek karbon termasuk
+              pemantauan
+              keberhasilan, serta pelatihan-pelatihan dan penggunaan aplikasi platform teknologi informasi yang
+              digunakan dalam Proyek Karbon.
+            </li>
+            <li>
+              Menerima bagian dari kompensasi manfaat karbon yang dihasilkan dari pelaksanaan Proyek Karbon sesuai
+              kesepakatan pembagian kompensasi manfaat karbon dengan Land Owner Group
+            </li>
+            <li>
+              Mengajukan usulan, masukan dan keluhan terkait pelaksanaan Proyek Karbon kepada PIHAK PERTAMA secara
+              langsung atau melalui saluran komunikasi yang disepakati, serta memiliki hak untuk mengajukan penyelesaian
+              sengketa yang mungkin timbul selama pelaksanaan proyek.
+            </li>
+          </ol>
+        </li>
+        <li class="text-black" style="padding-bottom: 0">
+          <strong>KEWAJIBAN PIHAK KEDUA:</strong>
+          <ol type="a">
+            <li>
+              Menjadi anggota Land Owner Group yang akan dibentuk secara partisipatif dan berjenjang oleh Seluruh
+              Pemilik Lahan yang mengikuti Proyek Karbon ini.
+            </li>
+            <li>
+              Menyiapkan dokumen legal lahan yang sah sebagai miliknya sebagai syarat kepesertaan Proyek karbon ini.
+            </li>
+            <li>
+              Dalam hal lahan belum bersertifikat, PIHAK KEDUA melampirkan salinan dokumen peralihan hak kepemilikan
+              lahan serta surat keterangan desa dan surat keterangan bebas sengketa dari pemerintah desa.
+            </li>
+            <div class="html2pdf__page-break"></div>
+            <br><br><br>
+            <li>
+              Menjamin lahan yang dikerjasamakan tidak dalam keadaan sengketa serta bebas dari sita jaminan dan atau
+              tidak dalam keadaan dijadikan sebagai jaminan hutang kepada pihak manapun.
+            </li>
+            <li>
+              Bersedia memberikan dokumen yang diperlukan oleh PIHAK PERTAMA dan mengizinkan pihak-pihak berkepentingan
+              lainnya dalam pengembangan proyek untuk melakukan kegiatan di lahan PIHAK KEDUA.
+            </li>
+            <li>
+              Melakukan pengambilan bibit di lokasi yang disepakati.
+            </li>
+            <li>
+              Melakukan penanaman bibit pohon dengan jumlah dan jenis yang sesuai dengan luas lahan
+              dan sesuai persyaratan proyek.
+            </li>
+            <li>
+              Melakukan penanaman ulang apabila pohon Proyek karbon ini dipanen selama jangka
+              waktu program untuk Model Project 1 dan 2.
+            </li>
+            <li>
+              Melakukan pemeliharaan dan pemantauan pohon sampai dengan jangka waktu
+              berakhirnya proyek sesuai petunjuk dan arahan pendamping yang akan diberikan PIHAK PERTAMA untuk
+              keberhasilan program.
+            </li>
+            <li>
+              Mengikuti dan mentaati hal-hal sebagai berikut:
+              <ul style="list-style-type:disc">
+                <li>
+                  Mentaati hukum-hukum yang berlaku baik lokal, nasional dan internasional.
+                </li>
+                <li>
+                  Tidak melakukan pembukaan hutan dan penebangan pohon, kecuali bagian tugas berdasarkan kewenangan
+                  legal.
+                </li>
+                <li>
+                  Tidak menggunakan bibit tanaman dari modifikasi genetic/ GMO.
+                </li>
+                <li>
+                  Tidak menggunakan bahan kimia berbahaya/ beracun sesuai peraturan Indonesia dan WHO, dan menggunakan
+                  cara-cara yang ramah lingkungan sesuai arahan PIHAK PERTAMA.
+                </li>
+                <li>
+                  Tidak menggunakan pekerja anak, serta tidak menggunakan tenaga kerja secara paksa.
+                </li>
+                <li>
+                  Melindungi kawasan-kawasan konservasi dan satwa-tumbuhan yang dilindungi serta melindungi situs
+                  warisan budaya.
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+      </ol>
 
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 4</p>
       <p class="text-center text-black font-weight-bold mb-5">
-        RUANG LINGKUP PERJANJIAN
+        JANGKA WAKTU PERJANJIAN
       </p>
 
-      <ol>
-        <li class="text-black" style="padding-bottom: 0">
-          PARA PIHAK sepakat untuk bekerjasama dalam proyek ini dengan kegiatan,
-          pilihan model proyek, dokumen lahan, luas lahan, jumlah dan jenis
-          pohon yang ditanam, dan spesifikasi teknis lainnya yang ditulis pada
-          lampiran
-        </li>
-        <li class="text-black" style="padding-bottom: 0">
-          PIHAK PERTAMA sebagai Pengembang Proyek bertanggungjawab untuk
-          memberikan manfaat finansial berupa kompensasi nilai karbon dan
-          manfaat non finansial meliputi penyediakan bibit pohon, pelatihan
-          terkait praktik kehutanan yang baik kepada PIHAK KEDUA serta
-          mendampingi melengkapi persyaratan dan ketentuan standar karbon
-          terverifikasi.
-        </li>
-        <li class="text-black" style="padding-bottom: 0">
-          PIHAK KEDUA bertanggungjawab terhadap ketersediaan lahan, melakukan
-          penanaman dan pemeliharaan pohon sesuai dengan rencana, syarat dan
-          ketentuan proyek.
-        </li>
-      </ol>
+      <p class="text-black">
+        Jangka waktu perjanjian ini adalah 41 (empat puluh satu) tahun, dimulai dari tanggal 01 Desember
+        2024 sampai dengan berakhirnya project pada tanggal 01 Januari 2065. Perjanjian ini akan
+        dievaluasi setiap tahun melalui pengukuran dan pemantauan pohon, dan pertemuan berkala untuk
+        menilai perkembangan proyek dan menyusun pelaporan proyek.
+      </p>
+
+      <div class="html2pdf__page-break"></div>
 
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 5</p>
       <p class="text-center text-black font-weight-bold mb-5">
-        HAK DAN KEWAJIBAN
+        PERALIHAN HAK
       </p>
 
-      <ol>
+      <ol type="1">
         <li class="text-black">
-          <p class="font-weight-bold">KEWAJIBAN PIHAK PERTAMA</p>
-          <ol type="a">
-            <li class="text-black" style="padding-bottom: 0">
-              Memeriksa kriteria kelayakan proyek melalui citra satelit dan
-              melakukan survey lapangan.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memeriksa dokumen sah dan legal PIHAK KEDUA sesuai ketentuan
-              proyek.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Melakukan pengukuran, pemetaan serta pendataan.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memproduksi dan menyediakan bibit pohon untuk PIHAK KEDUA.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Mendistribusikan bibit pohon ke lokasi terdekat PIHAK KEDUA.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memberikan pelatihan tentang praktik kehutanan yang baik dan
-              pelatihan aplikasi GEKO atau platform lain kepada PIHAK KEDUA.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memberikan dukungan teknis kepada PIHAK KEDUA untuk monitoring
-              kegiatan dan perkembangan pohon.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memberikan dukungan pendampingan, komunikasi dan hotline pengaduan
-              dan keluhan untuk keberhasilan kegiatan penanaman dan pemantauan
-              pohon.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Membuat Dokumen Rencana Aksi Mitigasi (DRAM) untuk proyek karbon
-              dan mendampingi dalam pendaftaran proyek kepada Pemerintah.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memberikan kompensasi nilai karbon kepada PIHAK KEDUA sesuai
-              dengan hasil pemantauan pertumbuhan dan perkembangan pohon
-              berdasarkan aplikasi GEKO atau platform lain setiap 5 tahun
-              sekali.
-            </li>
-          </ol>
+          Dalam hal <strong>PIHAK KEDUA</strong> memutuskan untuk mengalihkan kepemilikan lahannya kepadaorang lain
+          untuk sementara atau
+          selamanya. <strong>PIHAK KEDUA</strong> harus menyatakan 30 harisebelum peralihan hak, secara tertulis,
+          sehingga tidak
+          merugikan perkembangan Proyekkarbon ini. Kemudian, hak dan kewajiban yang sama harus disampaikan kepada
+          pemilik baruoleh <strong>PIHAK KEDUA</strong>.
         </li>
-      </ol>
-    </section>
-    <div class="html2pdf__page-break"></div>
-    <section class="pdf-item">
-      <ol start="2">
         <li class="text-black">
-          <p class="font-weight-bold">HAK PIHAK PERTAMA:</p>
-          <ol type="a">
-            <li class="text-black" style="padding-bottom: 0">
-              Mengatur semua rencana kegiatan proyek dan rencana penanaman
-              pohon, membangun persemaian, memproduksi dan mendistribusikan
-              bibit
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Melakukan evaluasi dan validasi data hasil monitoring perkembangan
-              pohon melalui aplikasi GEKO atau platform lain, atau survey
-              lapangan (monitoring, reporting dan verifikasi/MRV).
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Mendapatkan informasi termasuk namun tidak terbatas pada data
-              pribadi, data lahan, gambar, video, wawancara tertulis dan
-              mempublikasikan proyek ini.
-            </li>
-          </ol>
+          Dalam hal kematian <strong>PIHAK KEDUA</strong> sebagai pemegang hak kepemilikan lahan, maka manfaatdan
+          kewajiban <strong>PIHAK KEDUA</strong>
+          dalam perjanjian Proyek ini dapat beralih ke ahli waris yang sah.
+        </li>
+        <li class="text-black">
+          Dalam hal lahan yang digunakan dalam proyek ini menjadi objek sita jaminan, <strong>PIHAK KEDUAwajib</strong>
+          segera
+          memberitahukan <strong>PIHAK PERTAMA</strong> secara tertulis, kemudian PARA <strong>PIHAK
+            akanbersama</strong>-sama menentukan langkah-langkah
+          yang diperlukan, termasuk kemungkinanpenghentian proyek dan penghentian kompensasi oleh <strong>PIHAK
+            PERTAMA</strong>.
+        </li>
+        <li class="text-black">
+          Jika <strong>PIHAK PERTAMA</strong> tidak dapat melanjutkan Proyek karbon ini karena pembubaran,likuidasi,
+          krisis ekonomi, atau
+          sebab lain yang menyebabkan ketidakmampuan untukmelanjutkan Proyek sebelum Proyek berakhir, maka seluruh
+          manfaat dan nilai kompensasiyang sudah dibayarkan atau diberikan <strong>PIHAK PERTAMA</strong> menjadi
+          sepenuhnya milik
+          <strong>PIHAK KEDUA</strong>.
         </li>
 
-        <li class="text-black">
-          <p class="font-weight-bold">KEWAJIBAN PIHAK KEDUA:</p>
-          <ol type="a">
-            <li class="text-black" style="padding-bottom: 0">
-              Menyediakan lahan yang sah dan legal untuk menjadi bagian dari
-              proyek, dibuktikan dengan melampirkan salinan sertifikat
-              kepemilikan tanah.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Dalam hal lahan belum bersertifikat, PIHAK KEDUA Melampirkan
-              Salinan dokumen peralihan hak beserta dengan surat keterangan desa
-              dan surat keterangan bebas sengketa dari pemerintah desa dan
-              bersedia melakukan pengurusan sertifikat tersebut sebagai syarat
-              untuk mendapatkan kompensasi nilai karbon.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Menjamin lahan yang dikerjasamakan tidak dalam keadaan sengketa
-              serta bebas dari sita jaminan dan atau tidak dalam keadaan
-              dijadikan sebagai jaminan hutang kepada pihak manapun.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Memberikan data-data dan informasi yang diperlukan PIHAK PERTAMA
-              dalam penyusunan Dokumen Rencana Aksi Mitigasi Proyek Karbon.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Melakukan persiapan lahan, penanaman dan pemeliharaan pohon yang
-              diberikan PIHAK PERTAMA pada lahan yang ditetapkan dalam proyek
-              sesuai rencana proyek dengan baik, termasuk penanaman pengganti
-              untuk pohon yang mati selama proyek.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Menghadiri pelatihan dan pertemuan tatap muka yang diadakakan oleh
-              PIHAK PERTAMA.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Menjadi anggota anggota aktif Land Owner Group, setelah badan
-              hukum tersebut didirikan.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Melakukan pemantauan mandiri perkembangan keberhasilan penanaman
-              pohon dan menyampaikan informasi kepada PIHAK PERTAMA.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              Tidak melakukan penebangan pohon yang diberikan selama jangka
-              waktu proyek sesuai dengan ketentuan proyek.
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              <p class="text-black" style="padding-bottom: 0; font-size: 1em">
-                Setelah mendapatkan penjelasan tentang Proyek ini, akan mentaati
-                hal-hal sebagai berikut:
-              </p>
-              <ul style="list-style-type: disc; font-size: 1em">
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Mentaati hukum-hukum yang berlaku baik lokal, nasional dan
-                  internasional.
-                </li>
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Tidak melakukan pembukaan hutan, kecuali bagian tugas
-                  berdasarkan kewenangan legal.
-                </li>
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Tidak menggunakan bibit tanaman/hewan dari modifikasi
-                  genetic/GMO.
-                </li>
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Tidak menggunakan bahan kimia berbahaya/beracun sesuai
-                  peraturan Indonesia dan WHO, dan menggunakan cara-cara yang
-                  ramah lingkungan.
-                </li>
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Tidak menggunakan pekerja anak kecuali dalam perlindungan
-                  orang tuanya, serta tidak menggunakan tenaga kerja secara
-                  paksa. PIHAK KEDUA dapat menyampaikan informasi apabila
-                  terjadi penggunaan pekerja anak dan tenaga kerja secara paksa
-                  dalam proyek ini.
-                </li>
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Melindungi kawasan-kawasan konservasi dan satwa-tumbuhan yang
-                  dilindungi
-                </li>
-                <li style="font-size: 1em; padding-bottom: 0">
-                  Mengikuti petunjuk tenaga pendamping PIHAK PERTAMA selama
-                  proyek berlangsung.
-                </li>
-              </ul>
-            </li>
-          </ol>
-        </li>
       </ol>
     </section>
-    <div class="html2pdf__page-break"></div>
-    <section class="pdf-item">
-      <ol start="4">
-        <li class="text-black">
-          <p class="font-weight-bold" style="margin-bottom: 0">
-            HAK PIHAK KEDUA:
-          </p>
-          <ol type="a">
-            <li class="text-black" style="padding-bottom: 0">
-              <p
-                class="font-weight-bold"
-                style="font-size: 1em; margin-bottom: 0"
-              >
-                Hak Finansial
-              </p>
-              <ul style="list-style-type: disc; padding-bottom: 0">
-                <li style="padding-bottom: 0">
-                  Mendapat kompensasi nilai manfaat proyek karbon dari PIHAK
-                  PERTAMA sesuai tingkat pertumbuhan dan perkembangan pohon
-                  tertanam sesuai dengan kesepakatan pada KOMPENSASI NILAI
-                  KARBON
-                </li>
-              </ul>
-            </li>
-            <li class="text-black" style="padding-bottom: 0">
-              <p
-                class="font-weight-bold"
-                style="font-size: 1em; margin-bottom: 0"
-              >
-                Hak Non Finansial
-              </p>
-              <ul style="list-style-type: disc">
-                <li style="padding-bottom: 0">
-                  Mendapatkan 100% hasil dari manfaat pohon yang ditanam dan
-                  dipelihara
-                </li>
-                <li style="padding-bottom: 0">
-                  Mendapatkan insentif keberhasilan dalam mencapai 80% tingkat
-                  Survival Rate dalam setiap 2 (dua) tahun
-                </li>
-                <li style="padding-bottom: 0">
-                  Mendapat pelatihan tentang praktik kehutanan yang baik dan
-                  pelatihan aplikasi GEKO atau platform lain dari PIHAK PERTAMA.
-                </li>
-                <li style="padding-bottom: 0">
-                  Mendapat dukungan teknis untuk monitoring kegiatan dan
-                  perkembangan pohon.
-                </li>
-              </ul>
-            </li>
-          </ol>
-        </li>
-      </ol>
 
+    <section class="pdf-item">
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 6</p>
       <p class="text-center text-black font-weight-bold mb-5">
-        KOMPENSASI NILAI KARBON
+        KEADAAN KAHAR (FORCE MAJEURE)
       </p>
 
       <ol class="text-black">
-        <li style="padding-bottom: 0">
-          Perhitungan Nilai karbon dihitung berdasarkan hasil pengukuran dan
-          pemantauan proyek dari aplikasi GEKO atau platform lain yang digunakan
-          dan telah diverifikasi oleh lembaga independen Verifikator Dan
-          Validator Berkualifikasi (VVB) terkait keabsahan dan disesuaikan
-          dengan kontribusi pengurangan emisi karbon yang timbul atas
-          pelaksanaan proyek ini.
+        <li class="text-black">
+          Keadaan kahar berarti semua peristiwa yang berada di luar kendali para pihak dalam perjanjian ini dan yang
+          tidak dapat diprediksi atau diperkirakan tidak dapat dihindari, seperti bencana alam (longsor, likuifaksi,
+          banjir, kebakaran alam, gempa bumi, dll) atau bencana tak terduga
+          (peperangan, huru-hara, dll).
         </li>
-        <li style="padding-bottom: 0">
-          Kompensasi nilai karbon ditentukan oleh beberapa faktor, termasuk:
-          Jenis dan jumlah pohon yang ditanam, Data pertumbuhan dan biomassa
-          pohon yang dikumpulkan secara berkala melalui platform pemantauan dan
-          Harga satuan kredit karbon.
+        <li class="text-black">
+          Jika salah satu pihak dalam perjanjian ini, karena Keadaan Kahar tidak dapat melaksanakan tanggung jawabnya
+          secara keseluruhan atau sebagian, tanggung jawab pihak tersebut, sejauh mereka dipengaruhi oleh Keadaan Kahar
+          maka proyek akan diberhentikan dan tidak dikenakan Penalti atau penggantian apapun.
         </li>
-        <li style="padding-bottom: 0">
-          Kompensasi nilai karbon akan diberikan oleh PIHAK PERTAMA kepada PIHAK
-          KEDUA setiap 5 (lima) tahun sekali, berdasarkan pertumbuhan dan
-          perkembangan pohon yang telah diverifikasi, dengan perhitungan
-          berdasarkan jumlah kredit karbon yang dihasilkan selama periode
-          tersebut.
-        </li>
-        <li style="padding-bottom: 0">
-          Harga satuan kredit karbon yang digunakan untuk perhitungan kompensasi
-          akan mengacu pada harga pasar internasional yang berlaku pada saat
-          pembayaran. Harga pasar kredit karbon disesuaikan dengan standar pasar
-          global yang diakui, seperti VERRA atau standar lain yang disepakati
-          oleh PARA PIHAK.
-        </li>
-        <li style="padding-bottom: 0">
-          Pembayaran kompensasi nilai karbon dari PIHAK PERTAMA kepada PIHAK
-          KEDUA akan dilakukan melalui system transfer rekening bank, atau cara
-          lain sesuai ketentuan proyek.
-        </li>
-        <li style="padding-bottom: 0">
-          PARA PIHAK akan menyimpan catatan dan dokumentasi yang tepat dari
-          semua pembayaran yang dilakukan untuk proyek ini, dan setuju untuk
-          dilakukan audit keuangan internal dan eksternal.
-        </li>
-        <li style="padding-bottom: 0">
-          PIHAK PERTAMA akan menyediakan laporan berkala kepada PIHAK KEDUA yang
-          berisi estimasi jumlah kredit karbon yang dihasilkan dan nilai
-          kompensasi yang diharapkan, berdasarkan data yang dikumpulkan melalui
-          aplikasi GEKO atau platform lain. Estimasi ini akan membantu PIHAK
-          KEDUA memperkirakan potensi keuntungan dari proyek karbon.
-        </li>
-        <li style="padding-bottom: 0">
-          Pajak yang timbul atas penerimaan kompensasi karbon ditanggung oleh
-          kelompok petani karbon
+        <li class="text-black">
+          Pihak yang mengalami Keadaan Kahar harus segera memberitahu pihak lain secara tertulis dan harus memberikan
+          bukti yang tepat tentang terjadinya dan durasi “Keadaan Kahar” tersebut, selambatnya 7 (tujuh) hari setelah
+          kejadian.
         </li>
       </ol>
     </section>
     <div class="html2pdf__page-break"></div>
     <section class="pdf-item">
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 7</p>
-      <p class="text-center text-black font-weight-bold mb-5">PERALIHAN HAK</p>
+      <p class="text-center text-black font-weight-bold mb-5">PERSELISIHAN</p>
 
-      <ol class="text-black">
-        <li style="padding-bottom: 0">
-          Dalam hal PIHAK KEDUA memutuskan untuk mengalihkan tanahnya kepada
-          orang lain untuk sementara atau selamanya. PIHAK KEDUA harus
-          menyatakan 90 hari sebelum peralihan hak, secara tertulis, sehingga
-          tidak merugikan perkembangan proyek ini. Kemudian, hak dan kewajiban
-          yang sama harus disampaikan kepada pemilik baru oleh PIHAK KEDUA.
-        </li>
-        <li style="padding-bottom: 0">
-          Dalam hal kematian, PIHAK KEDUA sebagai pemegang hak milik tanah, maka
-          manfaat dan kewajiban dalam perjanjian proyek ini beralih ke ahli
-          waris yang sah.
-        </li>
-        <li style="padding-bottom: 0">
-          Dalam hal lahan yang digunakan dalam proyek ini menjadi objek sita
-          jaminan, PIHAK KEDUA wajib segera memberitahukan PIHAK PERTAMA secara
-          tertulis, kemudian PARA PIHAK akan bersama-sama menentukan
-          langkah-langkah yang diperlukan, termasuk kemungkinan penghentian
-          proyek dan pengaturan kompensasi yang telah diberikan oleh PIHAK
-          PERTAMA
-        </li>
-        <li style="padding-bottom: 0">
-          Dalam hal pemilik baru menyatakan tidak mampu atau tidak sepakat
-          melanjutkan perjanjian proyek ini, maka proyek akan diberhentikan dan
-          tidak ada pembayaran yang wajib dibayarkan kepada PIHAK KEDUA.
-        </li>
-        <li style="padding-bottom: 0">
-          Jika PIHAK PERTAMA tidak dapat melanjutkan proyek karena pembubaran,
-          likuidasi, atau sebab lain yang menyebabkan ketidakmampuan untuk
-          melanjutkan proyek sebelum proyek berakhir, maka seluruh manfaat dan
-          nilai kompensasi proyek yang sudah dibayarkan atau diberikan PIHAK
-          PERTAMA menjadi sepenuhnya milik PIHAK KEDUA tanpa perlu penggantian
-          atau pengembalian.
-        </li>
-      </ol>
+      <p class="text-black">
+        Bilamana terjadi perselisihan dałam pelaksanaan Perjanjian Kerjasama ini akan diselesaikan
+        secara musyawarah dan mufakat antara PARA PIHAK, dan apabila tidak tercapai kesepakatan
+        maka PARA PIHAK memilih tempat kedudukan hukum (domisili) yang tetap pada Kantor Panitera
+        Pengadilan Negeri Kabupaten Bandung, Provinsi Jawa Barat.
+      </p>
 
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 8</p>
       <p class="text-center text-black font-weight-bold mb-5">
@@ -547,306 +484,147 @@
 
       <ol class="text-black">
         <li style="padding-bottom: 0">
-          PIHAK PERTAMA dapat segera menangguhkan pembayaran kompensasi nilai
-          manfaat proyek karbon kepada PIHAK KEDUA dalam hal Tingkat
-          kelangsungan hidup pohon setelah penggantian pohon mati lebih rendah
-          dari 80% selama dua tahun berturut-turut dalam satu lahan terdaftar
-          PIHAK KEDUA
+          Perjanjian ini berakhir setelah semua hak dan kewajiban yang tercantum dalam perjanjian ini
+          dan jangka waktu perjanjian telah dipenuhi oleh PARA PIHAK.
         </li>
         <li style="padding-bottom: 0">
-          <p style="padding-bottom: 0">
-            PIHAK PERTAMA dapat menghentikan pembayaran kompensasi nilai manfaat
-            proyek karbon kepada PIHAK KEDUA dan mengakhiri proyek sebelum
-            waktunya dalam hal berikut:
-          </p>
-          <ol type="a">
-            <li>
-              PIHAK KEDUA memberikan data-data dan informasi yang tidak akurat
-              atau dipalsukan dengan tujuan semata-mata untuk mendapatkan
-              keuntungan finansial.
-            </li>
-            <li>
-              PIHAK KEDUA menggunakan lahan dalam proyek ini untuk kepentingan
-              proyek karbon lain
-            </li>
-            <li>Penggunaan bahan kimia berbahaya di lokasi proyek</li>
-            <li>
-              Perusakan dengan sengaja sebagian atau seluruh lokasi penanaman
-              dengan api (dibakar), penebangan dini atau cara lain dalam bentuk
-              apapun.
-            </li>
-          </ol>
+          Perjanjian ini berakhir jika dinyatakan batal atau dibatalkan oleh keputusan pengadilan yang
+          memiliki kekuatan hukum tetap.
         </li>
       </ol>
     </section>
     <div class="html2pdf__page-break"></div>
     <section class="pdf-item">
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0"
-      >
+      <p class="text-center text-black font-weight-bold" style="margin-bottom: 0">
         Pasal 9
       </p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0"
-      >
+      <p class="text-center text-black font-weight-bold" style="margin-bottom: 0">
         KERAHASIAAN DAN PERLINDUNGAN DATA PRIBADI
       </p>
 
       <ol class="text-black">
         <li style="padding-bottom: 0">
-          PARA PIHAK wajib menjaga kerahasiaan semua data dan informasi yang
+          <strong>PARA PIHAK</strong> wajib menjaga kerahasiaan semua data dan informasi yang
           diperoleh selama pelaksanaan perjanjian ini, termasuk namun tidak
-          terbatas pada data pribadi, data lahan, dan informasi proyek.
+          terbatas pada data pribadi, data lahan, dan informasi Proyek.
         </li>
         <li style="padding-bottom: 0">
-          PIHAK PERTAMA bertanggung jawab untuk memastikan bahwa data pribadi
-          disimpan dengan aman dan hanya digunakan untuk tujuan yang telah
-          disepakati dalam perjanjian.
+          <strong>PARA PIHAK</strong> bertanggung jawab untuk memastikan bahwa data pribadi disimpan dengan
+          aman dan hanya digunakan untuk tujuan yang telah disepakati dalam perjanjian
         </li>
         <li style="padding-bottom: 0">
-          Jika terjadi pelanggaran terhadap kerahasiaan atau penggunaan data
-          pribadi, PIHAK yang mengetahui pelanggaran tersebut harus segera
-          melaporkannya kepada pihak lainnya dan mengambil langkah-langkah yang
-          diperlukan untuk mengatasi pelanggaran tersebut.
+          Jika terjadi pelanggaran terhadap kerahasiaan atau penggunaan data pribadi, PIHAK yang
+          mengetahui pelanggaran tersebut harus segera melaporkannya kepada pihak lainnya dan
+          mengambil langkah-langkah yang diperlukan untuk mengatasi pelanggaran tersebut.
         </li>
       </ol>
 
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 10</p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0"
-      >
-        JANGKA WAKTU PERJANJIAN
-      </p>
-      <p class="text-black">
-        Jangka waktu perjanjian ini adalah 40 (empat puluh) tahun, dimulai dari
-        tanggal : {{ data.mou_start }} dan berakhir pada tanggal :
-        {{ data.mou_end }} Perjanjian ini akan dievaluasi setiap tahun melalui
-        pengukuran, pemantauan pohon, dan pertemuan berkala untuk menilai
-        perkembangan kerjasama.
-      </p>
-
-      <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 11</p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0"
-      >
-        KEADAAN KAHAR (FORCE MAJEURE)
-      </p>
-      <ol class="text-black">
-        <li style="padding-bottom: 0">
-          Keadaan kahar berarti semua peristiwa yang berada di luar kendali para
-          pihak dalam perjanjian ini dan yang tidak dapat diprediksi atau
-          diperkirakan tidak dapat dihindari, seperti bencana alam (longsor,
-          likuifaksi, banjir, kebakaran alam, gempa bumi, dll) atau bencana tak
-          terduga (peperangan, huru-hara, dll).
-        </li>
-        <li style="padding-bottom: 0">
-          Jika salah satu pihak dalam perjanjian ini, karena Keadaan Kahar,
-          tidak dapat melaksanakan tanggung jawabnya secara keseluruhan atau
-          sebagian, tanggung jawab pihak tersebut, sejauh mereka dipengaruhi
-          oleh Keadaan Kahar maka proyek akan diberhentikan dan tidak dikenakan
-          Penalti atau penggantian apapun.
-        </li>
-        <li style="padding-bottom: 0">
-          Pihak yang mengalami Keadaan Kahar harus segera memberitahu pihak lain
-          secara tertulis dan harus memberikan bukti yang tepat tentang
-          terjadinya dan durasi “Keadaan Kahar” tersebut, selambatnya 7 (tujuh)
-          hari setelah kejadian.
-        </li>
-      </ol>
-
-      <p class="text-center text-black font-weight-bold mb-1 mt-5 pt-5">
-        Pasal 12
-      </p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0"
-      >
-        BERAKHIRNYA PERJANJIAN
-      </p>
-
-      <ol class="text-black">
-        <li>
-          Perjanjian ini berakhir setelah semua kewajiban yang tercantum dalam
-          perjanjian ini dan jangka waktu perjanjian telah dipenuhi oleh PARA
-          PIHAK.
-        </li>
-        <li>
-          Perjanjian ini berakhir jika dinyatakan batal atau dibatalkan oleh
-          keputusan pengadilan yang memiliki kekuatan hukum tetap.
-        </li>
-      </ol>
-    </section>
-    <div class="html2pdf__page-break"></div>
-    <section class="pdf-item">
-      <p class="text-center text-black font-weight-bold mb-1">Pasal 13</p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0.5em"
-      >
-        PERSELISIHAN
-      </p>
-
-      <p class="text-black">
-        Bilamana terjadi perselisihan dałam pelaksanaan Perjanjian Kerjasama ini
-        akan diselesaikan secara musyawarah dan mufakat antara PARA PIHAK, dan
-        apabila tidak tercapai kesepakatan maka PARA PIHAK memilih tempat
-        kedudukan hukum (domisili) yang tetap pada Kantor Panitera Pengadilan
-        Negeri Kabupaten Bandung Provinsi Jawa Barat.
-      </p>
-
-      <p class="text-center text-black font-weight-bold mb-1">Pasal 14</p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0.5em"
-      >
-        KETENTUAN LAIN
-      </p>
-      <ol class="text-black">
-        <li style="padding-bottom: 0">
-          Segala lampiran yang melengkapi surat perjanjian ini merupakan bagian
-          yang tidak terpisahkan dan mempunyai kekuatan hukum yang sama.
-        </li>
-        <li style="padding-bottom: 0">
-          Perubahan atas surat Perjanjian Kerjasama ini tidak berlaku kecuali
-          terlebih dahulu melalui persetujuan PARA PIHAK secara musyawarah dan
-          mufakat.
-        </li>
-      </ol>
-
-      <p
-        class="text-center text-black font-weight-bold mb-1"
-        style="margin-top: 1em"
-      >
-        Pasal 15
-      </p>
-      <p
-        class="text-center text-black font-weight-bold"
-        style="margin-bottom: 0.5em"
-      >
+      <p class="text-center text-black font-weight-bold" style="margin-bottom: 0">
         PENUTUP
       </p>
+      <ol type="1">
+        <li class="text-black">
+          Perjanjian ini dibuat dan ditandatangani oleh PARA PIHAK dengan itikad baik dan penuh kesadaran, tanpa adanya
+          paksaan dari pihak manapun.
+        </li>
+        <li class="text-black">
+          Segala perubahan atau penambahan terhadap perjanjian ini hanya dapat dilakukan dengan persetujuan tertulis
+          dari kedua belah pihak.
+        </li>
+        <li class="text-black">
+          Perjanjian ini dibuat dalam 2 (dua) rangkap asli, masing-masing pihak memegang 1 (satu) rangkap asli yang
+          semuanya memiliki kekuatan hukum yang sama.
+        </li>
+      </ol>
 
-      <p class="text-black">
-        Surat perjanjian kerjasama ini ditanda tangani oleh PARA PIHAK dengan
-        itikad baik, penuh kesadaran dan tanggung jawab tanpa adanya paksaan
-        dari manapun dan untuk digunakan sebagaimana mestinya.
-      </p>
-
-      <div
-        class="text-black"
-        style="
+      <div class="text-black" style="
           padding-top: 2em;
           display: flex;
           flex-direction: row;
           justify-content: flex-end;
-        "
-      >
+        ">
         <p>Bandung, {{ data.mou_start }}</p>
       </div>
 
-      <div
-        class="d-flex flex-row text-black"
-        style="justify-content: space-between"
-      >
-        <div
-          style="
+      <div class="d-flex flex-row text-black" style="justify-content: space-between">
+        <div style="
             width: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
-          "
-        >
+          ">
           <p class="font-weight-bold mb-5 pb-2">PIHAK PERTAMA</p>
 
-          <div
-            class="materai mb-5"
-            style="
+          <div class="materai mb-5" style="
               padding-inline: 2em;
               padding-block: 1em;
               border: 1px solid black;
               transform: translateX(-50%);
-            "
-          >
+            ">
             Materai
           </div>
 
           <p class="font-weight-bold mb-0" style="text-decoration: underline">
             Pandu Budi Wahono
           </p>
-          <p class="text-black">Project Manager</p>
+          <p class="text-black">Yayasan Bumi Hijau Lestari</p>
         </div>
-        <div
-          style="
+        <div style="
             width: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
-          "
-        >
+          ">
           <p class="font-weight-bold mb-5 pb-2">PIHAK KEDUA</p>
 
-          <div
-            class="materai mb-5"
-            style="
+          <div class="materai mb-5" style="
               padding-inline: 2em;
               padding-block: 1em;
               border: 1px solid black;
               transform: translateX(-50%);
-            "
-          >
+            ">
             Materai
           </div>
 
           <p class="font-weight-bold mb-0" style="text-decoration: underline">
             {{ data.farmer_name }}
           </p>
-          <p class="text-black">Pemilik Lahan/Tanah</p>
+          <p class="text-black">Pemilik Lahan</p>
         </div>
       </div>
 
-      <div
-        class="d-flex flex-row text-black"
-        style="
+      <div class="d-flex flex-row text-black" style="
           justify-content: space-between;
           margin-top: 2em;
           border-bottom: 1px solid black;
           padding-bottom: 1em;
-        "
-      >
+        ">
         <ol>
           <p class="font-weight-bold mb-0">Lampiran:</p>
 
+          <li style="padding-bottom: 0">Data-data Project</li>
           <li style="padding-bottom: 0">Foto diri petani</li>
           <li style="padding-bottom: 0">Identitas diri petani (KTP)</li>
-          <li style="padding-bottom: 0">Spesifikasi Teknis</li>
-          <li style="padding-bottom: 0">Peta polygon lahan petani</li>
+          <li style="padding-bottom: 0">Peta polygon (termasuk batas lahan dan eligible area)</li>
           <li style="padding-bottom: 0">Bukti dokumen kepemilikan lahan</li>
+          <li style="padding-bottom: 0">Tata waktu kegiatan proyek</li>
         </ol>
-        <div
-          class="d-flex"
-          style="flex-direction: column; justify-content: flex-end"
-        ></div>
+        <div class="d-flex" style="flex-direction: column; justify-content: flex-end"></div>
         <qr-code v-if="data.mou_no" :text="data.mou_no" :size="130"></qr-code>
       </div>
     </section>
 
     <div class="html2pdf__page-break"></div>
     <section class="pdf-item">
-      <div
-        class="textblack"
-        style="
+      <div class="textblack" style="
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           width: 100%;
 
           padding-top: 1em;
-        "
-      >
+        ">
         <div style="width: 30%">
           <img :src="data.farmer_photo" style="width: 100%; height: auto" />
         </div>
@@ -872,7 +650,7 @@ export default {
   props: {
     data: {
       required: false,
-      default: () => {},
+      default: () => { },
     },
   },
   data() {
@@ -893,6 +671,7 @@ export default {
 .text-1-em {
   font-size: 1em;
 }
+
 .text-11-em {
   font-size: 1.1em;
 }
@@ -905,6 +684,7 @@ export default {
   padding-block: 2.5em;
   padding-inline: 2.5em;
 }
+
 .text-black {
   color: black !important;
 }
