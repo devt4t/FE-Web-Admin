@@ -3,13 +3,14 @@
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
+            <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
         </template>
 
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-start">
-                <v-btn variant="info">
+                <v-btn variant="info" @click="exportLahanKey += 1">
                     <v-icon>mdi-table-arrow-right</v-icon>
-                    <span>Export Lahan By MU</span>
+                    <span>Export Excel By MU</span>
                 </v-btn>
             </div>
         </template>
@@ -53,7 +54,7 @@ import PlantingSocForm from './PlantingSocForm.vue'
 import moment from 'moment'
 import axios from 'axios'
 import PlantingSocDetail from './PlantingSocDetail.vue'
-
+import PlantingSocExportLahanMu from './PlantingSocExportLahanMu.vue'
 import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 export default {
@@ -62,7 +63,8 @@ export default {
         PlantingSocListFf,
         PlantingSocForm,
         PlantingSocFarmerEdit,
-        PlantingSocDetail
+        PlantingSocDetail,
+        PlantingSocExportLahanMu
     },
     watch: {},
     methods: {

@@ -3,6 +3,7 @@ export default {
   refreshKey: 1,
   farmerEditKey: 1,
   farmerEditData: null,
+  exportLahanKey: 1,
   config: {
     title: "Sosialisasi Tanam",
     globalFilter: {
