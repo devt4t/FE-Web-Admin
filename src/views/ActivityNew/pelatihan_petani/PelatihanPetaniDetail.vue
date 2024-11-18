@@ -79,12 +79,12 @@
 
           <div class="absent-photo-list d-flex flex-row" v-if="true">
             <div class="absent-photo-item" v-for="(item, i) in data.data.result.absent ?? []" :key="'absent-photo' + i"
-              @click="showLightbox($_config.baseUrlUpload + '/' + item)" v-bind:style="{
+              @click="showLightbox($_config.baseUrlUpload + '/farmer-training/absensi-images' + item.split('/')[1])" v-bind:style="{
                 backgroundImage:
                   'url(' +
                   $_config.baseUrlUpload +
-                  '/' +
-                  item +
+                  '/farmer-training/absensi-images' +
+                  item.split('/')[1] +
                   ')',
               }">
               <h6>Foto Absen {{ ++i }}</h6>

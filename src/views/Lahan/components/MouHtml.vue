@@ -1,7 +1,7 @@
 <template>
   <div style="border-right: 1px solid transparent" v-if="data">
     <section class="pdf-item">
-      <h3 class="text-center text-black font-weight-bold text-1-em" style="margin-bottom: 2em">
+      <h2 class="text-center text-black font-weight-bold text-1-em" style="margin-bottom: 1.5em">
         PERJANJIAN KERJASAMA<br />
         PENANAMAN, PEMELIHARAAN DAN PEMANTAUAN POHON<br />
         DALAM PROYEK KARBON<br />
@@ -9,37 +9,41 @@
         YAYASAN BUMI HIJAU LESTARI<br />
         Dengan <br />
         PETANI PEMILIK LAHAN
-      </h3>
+      </h2>
 
       <p class="text-black">
         Perjanjian ini dibuat pada hari {{ formatDate("dddd") }} tanggal
         {{ formatDate("DD") }}
         bulan {{ formatDate("MMMM") }} tahun {{ formatDate("YYYY") }},<br />
-        bertempat di ___, oleh dan antara:
+        bertempat di <span style="text-decoration: underline !important;padding: 0 50px;"></span>, oleh dan antara:
       </p>
       <table class="text-black table-1" style="margin-bottom: 1em">
-        <tr class="font-weight-bold">
+        <tr>
           <td>Nama</td>
+          <td>:</td>
           <td>Pandu Budi Wahono</td>
         </tr>
         <tr>
           <td>Jabatan</td>
-          <td>Project Manager</td>
+          <td>:</td>
+          <td>Direktur Yayasan Bumi Hijau Lestari</td>
         </tr>
-        <tr>
-          <td>Alamat</td>
-          <td style="font-style: italic">
-            Jl. Sanggung Barat No.11 RT 006/ RW 002 Jatingaleh, Candisari,
-            Semarang.
+        <tr >
+          <td style="vertical-align: top">Alamat</td>
+          <td style="vertical-align: top">:</td>
+          <td>
+            Jl. Telaga Bodas Raya No. 42 , Kel. Karangrejo, Kec. Gajahmungkur, Semarang 50235
           </td>
         </tr>
         <tr>
           <td>No. Telepon</td>
-          <td>___</td>
+          <td>:</td>
+          <td>+62 815-5438-4357</td>
         </tr>
         <tr>
           <td>Email</td>
-          <td>___</td>
+          <td>:</td>
+          <td>pandu@trees4trees.org / info@trees4trees.org</td>
         </tr>
       </table>
       <p class="text-black" style="margin-bottom: 0.8em">
@@ -51,19 +55,23 @@
       <table class="text-black table-1" style="margin-bottom: 1em">
         <tr>
           <td>Nama</td>
+          <td>:</td>
           <td>{{ data.farmer_name }}</td>
         </tr>
         <tr>
-          <td>Alamat</td>
+          <td style="vertical-align: top">Alamat</td>
+          <td style="vertical-align: top">:</td>
           <td>{{ data.farmer_address }}</td>
         </tr>
         <tr>
           <td>No. KTP</td>
+          <td>:</td>
           <td>{{ data.farmer_nik }}</td>
         </tr>
         <tr>
           <td>No. Telepon</td>
-          <td>{{ data.farmer_nik }}</td>
+          <td>:</td>
+          <td>{{ ''}}</td>
         </tr>
       </table>
 
@@ -101,11 +109,11 @@
       </p>
     </section>
 
-    <section class="pdf-item">
-      <p class="text-center text-black font-weight-bold" style="margin-bottom: 0">
+    <section class="pdf-item mt-4">
+      <p class="text-center text-black font-weight-bold mt-5">
         Pasal 1
       </p>
-      <p class="text-center text-black font-weight-bold">KETENTUAN UMUM</p>
+      <p class="text-center text-black font-weight-bold mb-5">KETENTUAN UMUM</p>
       <p class="text-black" style="margin-bottom: 0.5em">
         Dalam perjanjian ini, yang dimaksud dengan:
       </p>
@@ -181,7 +189,8 @@
 
       <div class="html2pdf__page-break"></div>
       <div>
-        <p class="text-center text-black font-weight-bold mb-1 mt-5 pt-5">
+        <br /><br /><br />
+        <p class="text-center text-black font-weight-bold mb-1 mt-5">
           Pasal 2
         </p>
         <p class="text-center text-black font-weight-bold mb-5">RUANG LINGKUP PERJANJIAN</p>
@@ -209,12 +218,12 @@
         </ol>
       </div>
     </section>
-    <section class="pdf-item">
+    <section class="pdf-item ">
       <p class="text-center text-black font-weight-bold mb-1">Pasal 3</p>
       <p class="text-center text-black font-weight-bold mb-5">
         HAK DAN KEWAJIBAN
       </p>
-      <ol class="text-09-em">
+      <ol class="text-09-em bold-marker">
         <li class="text-black" style="padding-bottom: 0">
           <strong>HAK PIHAK PERTAMA:</strong>
           <ol type="a">
@@ -243,7 +252,7 @@
           </ol>
         </li>
         <div class="html2pdf__page-break"></div>
-        <br /><br /><br />
+        <br /><br /><br /><br /><br /><br />
         <li class="text-black" style="padding-bottom: 0">
           <strong>KEWAJIBAN PIHAK PERTAMA:</strong>
           <ol type="a">
@@ -332,7 +341,7 @@
               lahan serta surat keterangan desa dan surat keterangan bebas sengketa dari pemerintah desa.
             </li>
             <div class="html2pdf__page-break"></div>
-            <br><br><br>
+            <br /><br /><br /><br /><br /><br />
             <li>
               Menjamin lahan yang dikerjasamakan tidak dalam keadaan sengketa serta bebas dari sita jaminan dan atau
               tidak dalam keadaan dijadikan sebagai jaminan hutang kepada pihak manapun.
@@ -387,6 +396,7 @@
         </li>
       </ol>
 
+      <br /><br />
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 4</p>
       <p class="text-center text-black font-weight-bold mb-5">
         JANGKA WAKTU PERJANJIAN
@@ -400,7 +410,7 @@
       </p>
 
       <div class="html2pdf__page-break"></div>
-
+      <br /><br /><br /><br />
       <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 5</p>
       <p class="text-center text-black font-weight-bold mb-5">
         PERALIHAN HAK
@@ -441,7 +451,7 @@
     </section>
 
     <section class="pdf-item">
-      <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 6</p>
+      <p class="text-center text-black font-weight-bold mb-1">Pasal 6</p>
       <p class="text-center text-black font-weight-bold mb-5">
         KEADAAN KAHAR (FORCE MAJEURE)
       </p>
@@ -465,9 +475,8 @@
         </li>
       </ol>
     </section>
-    <div class="html2pdf__page-break"></div>
     <section class="pdf-item">
-      <p class="text-center text-black font-weight-bold mb-1 mt-5">Pasal 7</p>
+      <p class="text-center text-black font-weight-bold mb-1 mt-4">Pasal 7</p>
       <p class="text-center text-black font-weight-bold mb-5">PERSELISIHAN</p>
 
       <p class="text-black">
@@ -650,8 +659,14 @@ export default {
   props: {
     data: {
       required: false,
+      space: [],
       default: () => { },
     },
+  },
+  methods: {
+    location() {
+      //
+    }
   },
   data() {
     return {
@@ -664,12 +679,22 @@ export default {
 </script>
 
 <style scoped>
-.text-09-em {
-  font-size: 0.9em;
+@font-face {
+  font-family: 'Calibri';
+  src: url('/public/fonts/Calibri.ttf');
 }
 
+body * {
+  font-family: 'Calibri', Geneva, Tahoma, sans-serif !important;
+}
+
+/* .text-09-em {
+  font-size: 0.9em;
+} */
+
 .text-1-em {
-  font-size: 1em;
+  font-size: 1.04em;
+  line-height: 0.5cm;
 }
 
 .text-11-em {
@@ -681,8 +706,8 @@ export default {
 }
 
 .pdf-item {
-  padding-block: 2.5em;
-  padding-inline: 2.5em;
+  padding-block: 6.1em;
+  padding-inline: 5.5em;
 }
 
 .text-black {
@@ -701,9 +726,13 @@ export default {
   width: 20%;
 }
 
-.table-1 tr td:nth-child(2)::before {
-  content: ": ";
+.table-1 tr {
+  line-height: 0.45cm;
 }
+
+/* .table-1 tr td:nth-child(2)::before {
+  content: ": ";
+} */
 
 .d-flex {
   display: flex;
@@ -734,18 +763,23 @@ ol {
   padding-left: 24px !important;
 }
 
+ol.bold-marker > li::marker {
+  font-weight: bold;
+}
+
 ol li,
 ul li {
-  padding-bottom: 1em;
-  font-size: 0.95em;
+  padding-bottom: .2em;
+  font-size: 1.05em;
 }
 
 p {
-  margin-bottom: 0.5em;
-  font-size: 0.95em;
+  margin-bottom: 0.7em;
+  font-size: 1.04em;
+  line-height: 0.5cm;
 }
 
 table tr td {
-  font-size: 0.95em;
+  font-size: 1.04em;
 }
 </style>

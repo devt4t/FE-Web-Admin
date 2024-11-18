@@ -41,6 +41,12 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>Materi Pelatihan</td>
+                            <td>
+                                <span>{{ farmers[0].training_material ?? '-' }}</span>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>Penilikan Lubang</td>
                             <td>
                                 <span>{{ data.planting_hole_date_start | parse('date') }} - {{
