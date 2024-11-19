@@ -385,6 +385,7 @@
 .lahan-detail .lahan-stat-list {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   padding-inline: 1em;
   .lahan-stat-item {
     width: 30%;
@@ -395,6 +396,7 @@
     padding: 0.5em;
     padding-left: 0.7em;
     margin-right: 3%;
+    margin-bottom: .7em;
     .label {
       color: rgba(165, 165, 165, 0.76);
       font-size: 0.9em;
