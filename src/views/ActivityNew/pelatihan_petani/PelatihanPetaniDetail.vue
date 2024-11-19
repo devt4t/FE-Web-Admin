@@ -79,7 +79,8 @@
 
           <div class="absent-photo-list d-flex flex-row" v-if="true">
             <div class="absent-photo-item" v-for="(item, i) in data.data.result.absent ?? []" :key="'absent-photo' + i"
-              @click="showLightbox($_config.baseUrlUpload + '/farmer-training/absensi-images' + item.split('/')[1])" v-bind:style="{
+              @click="showLightbox($_config.baseUrlUpload + '/farmer-training/absensi-images' + item.split('/')[1])"
+              v-bind:style="{
                 backgroundImage:
                   'url(' +
                   $_config.baseUrlUpload +
@@ -105,14 +106,13 @@
 
           <div class="absent-photo-list d-flex flex-row" v-if="true">
             <div class="absent-photo-item"
-              @click="showLightbox($_config.baseUrlUpload + '/' + data.data.result.documentation_photo ?? '')"
+              @click="showLightbox($_config.baseUrlUpload + '/farmer-training/documentation-photos' + data.data.result.documentation_photo.split('/')[1] ?? '')"
               v-bind:style="{
                 backgroundImage:
                   'url(' +
                   $_config.baseUrlUpload +
-                  '/' +
-                  data.data.result.documentation_photo.split('/')[0] + '/' +
-                  data.data.result.documentation_photo.split('/')[1] + '' + data.data.result.documentation_photo.split('/')[2] +
+                  '/farmer-training/documentation-photos' +
+                  data.data.result.documentation_photo.split('/')[1] +
                   ')',
               }">
               <h6>Foto Dokumentasi</h6>
