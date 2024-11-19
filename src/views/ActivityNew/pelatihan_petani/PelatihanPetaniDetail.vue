@@ -111,7 +111,8 @@
                   'url(' +
                   $_config.baseUrlUpload +
                   '/' +
-                  data.data.result.documentation_photo ?? '' +
+                  data.data.result.documentation_photo.split('/')[0] + '/' +
+                  data.data.result.documentation_photo.split('/')[1] + '' + data.data.result.documentation_photo.split('/')[2] +
                   ')',
               }">
               <h6>Foto Dokumentasi</h6>
