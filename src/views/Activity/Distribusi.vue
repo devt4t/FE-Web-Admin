@@ -1,8 +1,7 @@
 <template>
   <div>
     <!-- Breadcrumb -->
-    <geko-base-crud :config="config"/>  
-    <!-- <v-breadcrumbs
+    <v-breadcrumbs
       :dark="$store.state.theme == 'dark'"
       data-aos="fade-right"
       class="breadcrumbsmain"
@@ -20,11 +19,11 @@
       ]"
       divider=">"
       large
-    ></v-breadcrumbs> -->
+    ></v-breadcrumbs>
 
     <!-- MODAL -->
     <!-- dialog export filter -->
-    <!-- <v-dialog v-model="distributionReport.dialogs.exportFilter.show" content-class="rounded-xl" max-width="500">
+    <v-dialog v-model="distributionReport.dialogs.exportFilter.show" content-class="rounded-xl" max-width="500">
             <v-card>
                 <v-card-title>
                     Export Filter
@@ -69,9 +68,9 @@
                     </v-hover>
                 </v-card-actions>
             </v-card>
-        </v-dialog> -->
+        </v-dialog>
     <!-- dialog Export -->
-    <!-- <exportReportDistribusi
+    <exportReportDistribusi
       :show="distributionReport.dialogExportDistributionReport.show"
       :distribution_date="distributionReport.datePicker.model"
       :ff_no="distributionReport.dialogs.exportFilter.ff_model"
@@ -81,7 +80,7 @@
       :program_year="this.generalSettings.programYear"
       @close="distributionReport.dialogExportDistributionReport.show = false"
     >
-    </exportReportDistribusi> -->
+    </exportReportDistribusi>
 
     <!-- Detail Seed Modal -->
     <v-dialog
@@ -5846,27 +5845,19 @@
 import Swal from "sweetalert2";
 import axios from "axios";
 import moment from "moment";
-// import { QrcodeStream } from "vue-qrcode-reader";
+import { QrcodeStream } from "vue-qrcode-reader";
 import trucksJSON from "@/utils/trucks";
-// import exportReportDistribusi from "@/views/Activity/distribusi/exportReportDistribusi";
+import exportReportDistribusi from "@/views/Activity/distribusi/exportReportDistribusi";
 
 export default {
   components: {
-    // QrcodeStream,
-    // exportReportDistribusi,
+    QrcodeStream,
+    exportReportDistribusi,
   },
   data: () => ({
     config: {
       permission: {
-        title: "Distribution",
-        permission: {
-            create: "distribusi-create",
-            read: "distribusi-list",
-            update: "distribusi-update",
-            show: "distribusi-show",
-            lookup: "distribusi-lookup",
-            delete: "distribusi-delete",
-        },
+        read: 'lubang-tanam-list'
       }
     },
     accessModul: {
@@ -7643,7 +7634,7 @@ export default {
             this.snackbar.color = "red";
             this.snackbar.show = true;
           }
-          this.sessionEnd(err);
+          // this.sessionEnd(err);
         } finally {
           this.packingLabel.loading = false;
           this.packingLabel.loadingText = null;
@@ -7776,7 +7767,7 @@ export default {
         }
       } catch (err) {
         console.error(err);
-        this.sessionEnd(err);
+        // this.sessionEnd(err);
       } finally {
         this.loadingLine.detailDialog.loading = false;
         this.loadingLine.detailDialog.loadingText = null;
@@ -7865,7 +7856,9 @@ export default {
           this.loadingLine.detailDialog.snackbar.color = "red";
           this.loadingLine.detailDialog.snackbar.text = `Failed to get data ${type.toUpperCase()}!`;
 
-          if (err.response != undefined) this.sessionEnd(err);
+          if (err.response != undefined) {
+            // this.sessionEnd(err);
+          }
           else console.error(err);
         } finally {
           this.loadingLine.detailDialog.snackbar.show = true;
@@ -8316,7 +8309,7 @@ export default {
             "red";
         }
       } catch (err) {
-        this.sessionEnd(err);
+        // this.sessionEnd(err);
       } finally {
         await audio.play();
         this.distributionReport.dialogs.scanLahanUmum.scan.alert.show = true;
@@ -9162,8 +9155,8 @@ export default {
     sessionEnd(error) {
       if (typeof error.response.status != "undefined") {
         if (error.response.status == 401) {
-          localStorage.removeItem("token");
-          this.$router.push("/");
+          // localStorage.removeItem("token");
+          // this.$router.push("/");
         }
       }
     },

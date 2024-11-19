@@ -354,14 +354,14 @@ const menu = [
         icon: "mdi-leaf-circle",
         type: ["non-carbon"],
       },
-      {
-        title: "SeedlingChangeRequest",
-        to: "/SeedlingChangeRequest",
-        component: "Activity/components/distribusi/SeedlingChangeRequest/index",
-        name: "SeedlingChangeRequest",
-        permission: "Distribusi",
-        hide: true,
-      },
+      // {
+      //   title: "SeedlingChangeRequest",
+      //   to: "/SeedlingChangeRequest",
+      //   component: "Activity/components/distribusi/SeedlingChangeRequest/index",
+      //   name: "SeedlingChangeRequest",
+      //   permission: "Distribusi",
+      //   hide: true,
+      // },
       // {
       //   title: "Distribusi",
       //   to: "/Distribusi",
@@ -371,6 +371,16 @@ const menu = [
       //   icon: "mdi-truck-fast",
       //   type: ["non-carbon"],
       // },
+      {
+        title: "Distribusi",
+        to: "/Distribusi",
+        component: "ActivityNew/distribution/distribution",
+        name: "Distribusi",
+        update: true,
+        permission: "Distribusi",
+        icon: "mdi-calendar-multiselect",
+        type: ["non-carbon"],
+      },
 
       {
         title: "Realisasi Tanam",

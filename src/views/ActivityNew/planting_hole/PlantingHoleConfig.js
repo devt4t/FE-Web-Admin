@@ -371,6 +371,24 @@ export default [
       },
     },
     {
+      id: "gambar3",
+      label: "Status Adjustment",
+      methods: {
+        list: false,
+        detail: {
+          view_data: "gambar3",
+          class: {
+            'adjustment': "badge bg-danger",
+            'non-adjustment': "badge bg-success",
+          },
+          transform: "adjustment-status",
+        },
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
+    {
       id: "action",
       label: "Action",
       methods: {

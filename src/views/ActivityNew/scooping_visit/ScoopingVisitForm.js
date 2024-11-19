@@ -474,13 +474,61 @@ export default {
     },
 
     removeOtherNgo(i) {
+      console.log(this.formData.other_ngo_data[i]);
       this.formData.other_ngo_data.splice(i, 1);
     },
     removeVillagePerson(i) {
-      this.formData.village_persons.splice(i, 1);
+      // console.log(this.formData.village_persons[i]);
+      if (!this.formData.village_persons[i].id) {
+        this.formData.village_persons.splice(i, 1);
+        return;
+      }
+      this.$_alert
+        .confirm("Hapus Data Figur Desa?", "", "Ya, Hapus", "Batal", true)
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("DeleteScoopingVisitFigures_new", {
+                id: this.formData.village_persons[i].id,
+                delete_type: 'hard_delete'
+                // mainPivot_id: this.fc_ff[i].id,
+              })
+              .then((res) => {
+                this.formData.village_persons.splice(i, 1);
+                this.$_alert.success(" Berhasil hapus data Figur Desa");
+              })
+              .catch((err) => {
+                console.log("err", err);
+              });
+          }
+        });
     },
     removeFfCandidate(i) {
-      this.formData.ff_candidates.splice(i, 1);
+      console.log(this.formData.ff_candidates[i]);
+      if (!this.formData.ff_candidates[i].id) {
+        this.formData.ff_candidates.splice(i, 1);
+        return;
+      }
+      this.$_alert
+        .confirm("Hapus Data Kandidat FF?", "", "Ya, Hapus", "Batal", true)
+        .then((res) => {
+          if (res.isConfirmed) {
+            this.$_api
+              .post("DeleteScoopingVisitFFCandidate_new", {
+                id: this.formData.ff_candidates[i].id,
+                delete_type: 'hard_delete'
+                // mainPivot_id: this.fc_ff[i].id,
+              })
+              .then((res) => {
+                this.formData.ff_candidates.splice(i, 1);
+                this.$_alert.success(" Berhasil hapus data Kandidat FF");
+              })
+              .catch((err) => {
+                console.log("err", err);
+              });
+          }
+        });
+      // this.formData.ff_candidates.splice(i, 1);
     },
 
     addVillagePerson() {

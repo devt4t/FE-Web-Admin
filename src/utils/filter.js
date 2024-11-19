@@ -112,6 +112,14 @@ Vue.filter("parse", (value, id) => {
         _value = "Terverifikasi";
       }
       break;
+
+    case "adjustment-status":
+      if (value == 'non-adjustment') {
+        _value = "Non Adjustment";
+      } else if (value === 'adjustment') {
+        _value = "Adjustmenr";
+      }
+      break;
     default:
       _value = value;
       break;
