@@ -77,8 +77,8 @@
                   !openFcAssestment &&
                   data.main_lahan &&
                   (data.main_lahan.updated_gis.toLowerCase() === 'sudah')
-                " variant="success" class="mr-1 mb-2" @click="openFcAssestment = true;verifRole = 'fc-assestment'">
-                Lahan Assestment</v-btn>
+                " variant="success" class="mr-1 mb-2" @click="openFcAssestment = true; verifRole = 'fc-assestment'">
+                  Lahan Assestment</v-btn>
                 <v-btn v-if="
                   !openUm &&
                   $_sys.isAllowed('lahan-um-verification-create') &&
@@ -256,8 +256,9 @@
             data.main_lahan &&
             openFcAssestment
           " :data="data.main_lahan" :questions="data.lahan_term_question_list.filter((x) => x.role_id == 19)
-          " :answers="data.lahan_term_answer_list" :assestment="data.lahan_assestment ?? data.main_lahan" :role="verifRole"
-            :isCarbonProject="getProject(data.lahan_project) === 'carbon'" :create="data.lahan_assestment ?? 'CREATE'" @success="
+            " :answers="data.lahan_term_answer_list" :assestment="data.lahan_assestment ?? data.main_lahan"
+            :role="verifRole" :isCarbonProject="getProject(data.lahan_project) === 'carbon'"
+            :create="data.lahan_assestment ?? 'CREATE'" @success="
               componentKey += 1;
             openFcAssestment = false;
             getData();
@@ -370,6 +371,19 @@
                     <span v-else>Menunggu Approval</span>
                   </span>
                   <span v-else>-</span>
+                </div>
+              </div>
+              <div class="lahan-side-item" v-if="getProject() === 'carbon'">
+                <p class="mb-0 label">Jenis Eligibilitas</p>
+                <div class="d-flex flex-col value">
+                  <span class="badge bg-success mb-1"
+                    v-if="['both', 'srnppi'].includes(data.main_lahan.gis_eligibility_type)">
+                    Eligible SRN-PPI
+                  </span>
+                  <span class="badge bg-info mb-1"
+                    v-if="['both', 'vcs'].includes(data.main_lahan.gis_eligibility_type)">
+                    Eligible VCS
+                  </span>
                 </div>
               </div>
               <div class="lahan-side-item" v-if="getProject() === 'carbon'">
@@ -496,15 +510,6 @@
           <div class="lahan-stat-item">
             <p class="mb-0 label">Luas Tanam</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <!-- <span
-                v-if="data.main_lahan && data.main_lahan.updated_gis == 'sudah'"
-                >{{
-                  ((data.main_lahan.planting_area / 100) *
-                    data.main_lahan.land_area)
-                    | parse("ts")
-                }}
-                m&sup2;</span
-              > -->
               <span v-if="
                 data.main_lahan &&
                 data.main_lahan.updated_gis.toLowerCase() == 'belum'
@@ -519,6 +524,22 @@
                 m&sup2;</span>
             </p>
           </div>
+          <div class="lahan-stat-item info" v-if="data.main_lahan.gis_eligibility_type">
+            <p class="mb-0 label">Luas Area Enhancement</p>
+            <p class="mb-0 value" v-if="data.main_lahan">
+              <span>
+                {{ data.main_lahan.gis_planting_area | parse(" ts") }} m&sup2;
+              </span>
+            </p>
+          </div>
+          <!-- <div class="lahan-stat-item info" v-if="data.main_lahan.gis_eligibility_type">
+            <p class="mb-0 label">Total Bibit</p>
+            <p class="mb-0 value" v-if="data.main_lahan">
+              <span>
+                {{ data.main_lahan.gis_planting_area | parse(" ts") }} m&sup2;
+              </span>
+            </p>
+          </div> -->
         </div>
         <div class="polygon-wrapper">
           <div class="map-wrapper" id="map-wrapper" style="height: 400px; width: 100%">

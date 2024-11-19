@@ -257,7 +257,7 @@ export default {
       label: "MPTS",
       methods: {
         list: {
-          view_data: "pohon_mpts",
+          type: "row-slot",
           transform: "ts",
           class: "text-center d-block",
         },
