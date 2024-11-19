@@ -46,27 +46,21 @@
                                 <span>{{ farmers[0].training_material ?? '-' }}</span>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Penilikan Lubang</td>
-                            <td>
-                                <span>{{ data.planting_hole_date_start | parse('date') }} - {{
-                                    data.planting_hole_date_end | parse('date') }}</span>
-                            </td>
-                        </tr>
-                        <tr>
+                        
+                        <!-- <tr>
                             <td>Realisasi Tanam</td>
                             <td>
-                                <span>{{ data.planting_date_start | parse('date') }} - {{
-                                    data.planting_date_end | parse('date') }}</span>
+                                <span>{{ dateFormat(data.planting_date_start, "DD MMMM Y")}} - {{
+                                    dateFormat(data.planting_date_end, "DD MMMM Y")}}</span>
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <td>Distribusi</td>
                             <td>
                                 <div class="distribution-wrapper">
                                     <div class="distribution-start">
                                         <v-icon>mdi-tanker-truck</v-icon>
-                                        <span class="d-block title">Nursery Kebumen</span>
+                                        <span class="d-block title">Lokasi Nursery</span>
                                         <span class="d-block distribution-seed">
                                             {{ data.total_seed | parse('ts') }} bibit
                                         </span>
@@ -74,7 +68,7 @@
 
                                     <div class="distribution-progress">
                                         <span class="line"></span>
-                                        <span class="date">{{ data.distribution_time | parse('date') }}</span>
+                                        <span class="date">{{ dateFormat(data.distribution_date, "dddd, DD MMMM Y") }}</span>
                                     </div>
 
                                     <div class="distribution-end">
@@ -154,6 +148,15 @@
                     <span class="d-block">{{ item.no_lahan }}</span>
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
+                <template v-slot:item.planting_hole_date="{ item }">
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span> <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{ dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
+                </template>
+                <template v-slot:item.planting_date="{ item }">
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span> <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{ dateFormat(item.planting_date_end, "DD MMMM Y") }}</span>
+                </template>
+                <!-- <template v-slot:item.planting_hole_date_end="{ item }">
+                    <span class="d-block"></span>
+                </template> -->
 
                 <template v-slot:item.seed_type="{ item }">
                     <div class="d-flex flex-col flex-column min-w-200px">
@@ -197,6 +200,7 @@
 
 
 <script>
+import moment from "moment";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue';
 import PlantingSocFarmerCreate from './PlantingSocFarmerCreate.vue';
 
@@ -245,6 +249,18 @@ export default {
                     text: "Lahan",
                     key: "lahan_no",
                     value: "lahan_no",
+                    sortable: false,
+                },
+                {
+                    text: "Tanggal Penilikan Lubang",
+                    key: "planting_hole_date",
+                    value: "planting_hole_date",
+                    sortable: false,
+                },
+                {
+                    text: "Tanggal Penanaman",
+                    key: "planting_date",
+                    value: "planting_date",
                     sortable: false,
                 },
                 {
@@ -334,6 +350,9 @@ export default {
             item.soc_no = this.data.soc_no
             this.farmerCreateData = item
             this.farmerCreateKey += 1
+        },
+        dateFormat(date, format) {
+            return moment(date).format(format);
         },
 
     }

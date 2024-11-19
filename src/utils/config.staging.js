@@ -4,7 +4,7 @@ export default {
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
   baseUrlExport: "https://geko-export.tftdemo.net/",
   mapBoxApi:
-    "pk.eyJ1IjoiYmlsbGlvbmFpcmUwMjkiLCJhIjoiY2p3a3V5Zms5MHdzaTN5bnhxenFvcHFiNiJ9.jrcibCk1tIIShgL_mh7ipA",
+    "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
   mapBoxStyle: "mapbox://styles/mapbox/satellite-streets-v12",
   programYear: {
     model: "2024",
