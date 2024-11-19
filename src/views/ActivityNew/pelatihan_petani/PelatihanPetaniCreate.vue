@@ -556,7 +556,7 @@
               label: 'Foto Dokumentasi',
               validation: ['required'],
               type: 'upload',
-              api: 'scooping_visits/upload.php',
+              api: '/farmer-training/upload1.php',
               directory: 'documentation-photos',
               upload_type: 'image/*',
               setter: 'dokumentasi',
