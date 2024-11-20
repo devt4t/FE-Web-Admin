@@ -9,7 +9,7 @@ export default {
   // baseUrlNursery: 'https://backend.t4t-api.org/api',
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   // mapBoxApi:
-  //   "pk.eyJ1IjoiYmlsbGlvbmFpcmUwMjkiLCJhIjoiY2p3a3V5Zms5MHdzaTN5bnhxenFvcHFiNiJ9.jrcibCk1tIIShgL_mh7ipA",
+  //   "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
   mapBoxApi:
     "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
   mapBoxStyle: "mapbox://styles/mapbox/satellite-streets-v12",

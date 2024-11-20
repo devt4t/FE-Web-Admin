@@ -23,7 +23,8 @@ export default new Vuex.Store({
     },
     tmpProjectPurpose: localStorage.getItem("tmpProjectPurpose"),
     apiUrl: localStorage.getItem("BaseUrlGet"),
-    apiUrlImage: localStorage.getItem("BaseUrl"),
+    // apiUrlImage: localStorage.getItem("BaseUrl"),
+    apiUrlImage: 'https://t4tadmin.kolaborasikproject.com/',
     tmpProgramYear: localStorage.getItem("tmpProgramYear"),
     lightbox: {
       imgs: "",
@@ -46,7 +47,7 @@ export default new Vuex.Store({
     },
     maps: {
       accessToken:
-        "pk.eyJ1IjoiYmlsbGlvbmFpcmUwMjkiLCJhIjoiY2p3a3V5Zms5MHdzaTN5bnhxenFvcHFiNiJ9.jrcibCk1tIIShgL_mh7ipA",
+        "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
       mapStyle: "mapbox://styles/mapbox/satellite-streets-v12",
     },
     nurseryTeam: {
