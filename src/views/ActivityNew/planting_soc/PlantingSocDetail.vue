@@ -43,7 +43,7 @@
                         <tr>
                             <td>Materi Pelatihan</td>
                             <td>
-                                <span>{{ farmers[0].training_material ?? '-' }}</span>
+                                <span>{{ data.training_material_name }}</span>
                             </td>
                         </tr>
                         <tr>
@@ -66,7 +66,8 @@
                                 <div class="distribution-wrapper">
                                     <div class="distribution-start">
                                         <v-icon>mdi-tanker-truck</v-icon>
-                                        <span class="d-block title">Nursery Kebumen</span>
+                                        <span class="d-block title">Nursery
+                                            {{ getNurseryLocation(data.nursery_location_id) }}</span>
                                         <span class="d-block distribution-seed">
                                             {{ data.total_seed | parse('ts') }} bibit
                                         </span>
@@ -287,6 +288,23 @@ export default {
             else this.$store.state.lightbox.index = 0;
 
             this.$store.state.lightbox.show = true;
+        },
+        getNurseryLocation(nurseryLocationId) {
+            const config = {
+                1: 'Ciminyak',
+                2: 'Soreang',
+                3: 'Cirasea',
+                4: 'Kebumen',
+                5: 'Pati',
+                6: 'SMG Testing'
+            }
+
+            try {
+                return config[nurseryLocationId]
+            }
+            catch {
+                return ''
+            }
         },
         async getData() {
             try {
