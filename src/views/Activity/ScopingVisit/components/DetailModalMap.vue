@@ -3,19 +3,9 @@
     <v-card class="rounded-xl elevation-0 overflow-hidden">
       <v-card-text class="pa-0" style="position: relative">
         <!-- loading overlay -->
-        <v-overlay
-          v-if="maps.loading.show"
-          absolute
-          justify-center
-          align-center
-        >
+        <v-overlay v-if="maps.loading.show" absolute justify-center align-center>
           <div class="d-flex flex-column align-center justify-center">
-            <v-progress-circular
-              :size="80"
-              :width="7"
-              indeterminate
-              color="white"
-            >
+            <v-progress-circular :size="80" :width="7" indeterminate color="white">
             </v-progress-circular>
             <p class="mb-0 text-center mt-4">
               {{ maps.loading.text || "Loading..." }}
@@ -23,42 +13,21 @@
           </div>
         </v-overlay>
         <!-- Mapbox -->
-        <div
-          id="mapboxWrapper"
-          data-aos="fade-down"
-          class="overflow-hidden rounded-xl"
-          style="position: relative"
-        >
+        <div id="mapboxWrapper" data-aos="fade-down" class="overflow-hidden rounded-xl" style="position: relative">
           <!-- Toolbar -->
           <div style="position: absolute; top: 10px; left: 10px; z-index: 2">
-            <v-menu
-              transition="slide-y-transition"
-              bottom
-              content-class="rounded-xl"
-            >
+            <v-menu transition="slide-y-transition" bottom content-class="rounded-xl">
               <template v-slot:activator="{ attrs, on }">
                 <div v-bind="attrs" v-on="on">
-                  <v-btn
-                    data-aos="zoom-in"
-                    data-aos-delay="500"
-                    fab
-                    small
-                    style="position: relative; z-index: 3"
-                    ><v-icon>mdi-layers-triple</v-icon></v-btn
-                  >
-                  <v-chip
-                    v-if="layers.selected !== null"
-                    :key="layers.key"
-                    data-aos="fade-right"
-                    data-aos-delay="700"
-                    class="pl-7 white--text"
-                    style="
+                  <v-btn data-aos="zoom-in" data-aos-delay="500" fab small
+                    style="position: relative; z-index: 3"><v-icon>mdi-layers-triple</v-icon></v-btn>
+                  <v-chip v-if="layers.selected !== null" :key="layers.key" data-aos="fade-right" data-aos-delay="700"
+                    class="pl-7 white--text" style="
                       transform: translateX(-20px);
                       z-index: 2;
                       cursor: pointer;
                       background-color: #00000099;
-                    "
-                    >{{ layers.items[layers.selected].text || "-" }}
+                    ">{{ layers.items[layers.selected].text || "-" }}
                     <v-icon class="ml-1 white--text">{{
                       layers.items[layers.selected].icon
                     }}</v-icon>
@@ -67,14 +36,8 @@
               </template>
               <v-card>
                 <v-card-text class="pa-2">
-                  <v-btn
-                    v-for="(layer, layIndex) in layers.items"
-                    :key="`layer${layIndex}`"
-                    text
-                    block
-                    rounded
-                    @click="() => (layers.selected = layIndex)"
-                  >
+                  <v-btn v-for="(layer, layIndex) in layers.items" :key="`layer${layIndex}`" text block rounded
+                    @click="() => (layers.selected = layIndex)">
                     <v-icon class="mr-1">{{ layer.icon }}</v-icon>
                     {{ layer.text }}
                   </v-btn>
@@ -83,18 +46,10 @@
             </v-menu>
           </div>
           <!-- map -->
-          <div
-            id="DetailModalMapBoxContainer"
-            ref="mapbox"
-            :key="maps.key"
-            style="height: 300px; width: 100%"
-            class="rounded-xl overflow-hidden"
-          ></div>
-          <div
-            v-if="fileNotFound"
-            style="position: absolute; top: 0; left: 0; bottom: 0; right: 0"
-            class="d-flex flex-column justify-center align-center grey lighten-3"
-          >
+          <div id="DetailModalMapBoxContainer" ref="mapbox" :key="maps.key" style="height: 300px; width: 100%"
+            class="rounded-xl overflow-hidden"></div>
+          <div v-if="fileNotFound" style="position: absolute; top: 0; left: 0; bottom: 0; right: 0"
+            class="d-flex flex-column justify-center align-center grey lighten-3">
             <v-icon size="60">mdi-file-document-remove</v-icon>
             File data polygon tidak ditemukan
           </div>
@@ -245,7 +200,7 @@ export default {
         const mapOptions = this.maps;
         // console.log(mapOptions)
         const layers = this.layers.items;
-        mapboxgl.accessToken = mapOptions.accessToken;
+        mapboxgl.accessToken = this.$_config.mapBoxApi;
         if (!mapboxgl.supported()) {
           Swal.fire({
             title: "Warning!",
@@ -257,7 +212,7 @@ export default {
           if (layers[layIndex].url) {
             mapOptions.loading.show = true;
             // console.log(layers[layIndex].url)
-            const url = `${this.$store.state.apiUrlImage}${layers[layIndex].url}`;
+            const url = `${this.$_config.baseUrlUpload}/${layers[layIndex].url}`;
             console.log(this.$store.state);
             let layerId = mapOptions.layerId;
             const layerStyle = mapOptions.layerStyle;

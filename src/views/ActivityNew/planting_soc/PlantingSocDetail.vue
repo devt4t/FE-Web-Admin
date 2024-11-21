@@ -43,10 +43,10 @@
                         <tr>
                             <td>Materi Pelatihan</td>
                             <td>
-                                <span>{{ farmers[0].training_material ?? '-' }}</span>
+                                <span>{{ data.training_material_name }}</span>
                             </td>
                         </tr>
-                        
+
                         <!-- <tr>
                             <td>Realisasi Tanam</td>
                             <td>
@@ -60,7 +60,8 @@
                                 <div class="distribution-wrapper">
                                     <div class="distribution-start">
                                         <v-icon>mdi-tanker-truck</v-icon>
-                                        <span class="d-block title">Lokasi Nursery</span>
+                                        <span class="d-block title">Nursery
+                                            {{ getNurseryLocation(data.nursery_location_id) }}</span>
                                         <span class="d-block distribution-seed">
                                             {{ data.total_seed | parse('ts') }} bibit
                                         </span>
@@ -68,7 +69,8 @@
 
                                     <div class="distribution-progress">
                                         <span class="line"></span>
-                                        <span class="date">{{ dateFormat(data.distribution_date, "dddd, DD MMMM Y") }}</span>
+                                        <span class="date">{{ dateFormat(data.distribution_date, "dddd, DD MMMM Y")
+                                            }}</span>
                                     </div>
 
                                     <div class="distribution-end">
@@ -149,10 +151,16 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span> <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{ dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD
+                        MMMM Y") }}</span>
+                    <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{
+                        dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span> <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{ dateFormat(item.planting_date_end, "DD MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM
+                        Y") }}</span>
+                    <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{
+                        dateFormat(item.planting_date_end, "DD MMMM Y") }}</span>
                 </template>
                 <!-- <template v-slot:item.planting_hole_date_end="{ item }">
                     <span class="d-block"></span>
@@ -303,6 +311,23 @@ export default {
             else this.$store.state.lightbox.index = 0;
 
             this.$store.state.lightbox.show = true;
+        },
+        getNurseryLocation(nurseryLocationId) {
+            const config = {
+                1: 'Ciminyak',
+                2: 'Soreang',
+                3: 'Cirasea',
+                4: 'Kebumen',
+                5: 'Pati',
+                6: 'SMG Testing'
+            }
+
+            try {
+                return config[nurseryLocationId]
+            }
+            catch {
+                return ''
+            }
         },
         async getData() {
             try {

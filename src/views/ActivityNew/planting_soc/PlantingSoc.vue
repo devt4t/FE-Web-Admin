@@ -79,6 +79,7 @@ export default {
                 const ffData = await this.$_api.get('GetSosisalisasiTanamAdmin', {
                     program_year: 2024,
                     ff_no: item.ff_no,
+                    typegetdata: all,
                     limit: 10000,
                     offset: 0,
                     export: true
