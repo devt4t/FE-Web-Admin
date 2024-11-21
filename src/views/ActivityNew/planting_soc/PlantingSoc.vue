@@ -4,13 +4,19 @@
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
+            <planting-soc-import-excel :dataKey="importSostamKey" />
         </template>
 
         <template v-slot:list-after-filter>
             <div class="d-flex flex-row justify-content-start">
-                <v-btn variant="info" @click="exportLahanKey += 1">
+                <v-btn variant="info" class="mr-2" @click="exportLahanKey += 1">
                     <v-icon>mdi-table-arrow-right</v-icon>
                     <span>Export Excel By MU</span>
+                </v-btn>
+
+                <v-btn variant="primary" @click="importSostamKey += 1">
+                    <v-icon>mdi-cloud-sync</v-icon>
+                    <span>Import Excel Sostam</span>
                 </v-btn>
             </div>
         </template>
@@ -57,6 +63,7 @@ import PlantingSocDetail from './PlantingSocDetail.vue'
 import PlantingSocExportLahanMu from './PlantingSocExportLahanMu.vue'
 import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
+import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 export default {
     name: "crud-planting-socialization",
     components: {
@@ -64,7 +71,8 @@ export default {
         PlantingSocForm,
         PlantingSocFarmerEdit,
         PlantingSocDetail,
-        PlantingSocExportLahanMu
+        PlantingSocExportLahanMu,
+        PlantingSocImportExcel
     },
     watch: {},
     methods: {
@@ -79,13 +87,12 @@ export default {
                 const ffData = await this.$_api.get('GetSosisalisasiTanamAdmin', {
                     program_year: 2024,
                     ff_no: item.ff_no,
-                    typegetdata: all,
+                    typegetdata: 'all',
                     limit: 10000,
                     offset: 0,
                     export: true
                 })
 
-                console.log('ff', ffData);
 
                 if (!Array.isArray(ffData.data)) throw "err"
                 if (ffData.data.length == 0) throw "err"
@@ -117,6 +124,8 @@ export default {
                     });
 
                 if (!exported) throw "ERR"
+                console.log('exp', exported);
+
                 const url = URL.createObjectURL(new Blob([exported.data]));
                 const link = document.createElement("a");
                 link.href = url;

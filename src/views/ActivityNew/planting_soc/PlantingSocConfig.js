@@ -4,6 +4,7 @@ export default {
   farmerEditKey: 1,
   farmerEditData: null,
   exportLahanKey: 1,
+  importSostamKey: 1,
   config: {
     title: "Sosialisasi Tanam",
     globalFilter: {
