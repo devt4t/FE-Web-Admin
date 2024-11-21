@@ -4,8 +4,8 @@ export default {
   // baseUrl: "https://staging-api.trees4trees.org/api/",
   // baseUrl: "http://localhost:8000/api/",
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
-  // baseUrlExport: "http://localhost:9056/",
-  baseUrlExport: "https://geko-export.tftdemo.net/",
+  baseUrlExport: "http://localhost:9056/",
+  // baseUrlExport: "https://geko-export.tftdemo.net/",
   // baseUrlNursery: 'https://backend.t4t-api.org/api',
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   // mapBoxApi:
