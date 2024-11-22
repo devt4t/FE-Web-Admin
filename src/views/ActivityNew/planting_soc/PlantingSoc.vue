@@ -5,6 +5,7 @@
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
+            <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
         </template>
 
         <template v-slot:list-after-filter>
@@ -18,6 +19,42 @@
                     <v-icon>mdi-cloud-sync</v-icon>
                     <span>Import Excel Sostam</span>
                 </v-btn>
+            </div>
+        </template>
+
+        <template v-slot:list-indicator="{ item }">
+            <div class="indicator-wrapper pt-1">
+                <div class="indicator" :class="{
+                    info: item.gis_status == 1 && !item.verified,
+                    success: item.gis_status == 1 && item.verified,
+                    danger: item.gis_status == 2,
+                    warning: !item.gis_status,
+                }">
+                </div>
+            </div>
+        </template>
+
+        <template v-slot:list-status="{ item }">
+            <div class="d-flex flex-col min-w-200px">
+                <div class="d-flex flex-row">
+                    <span class="badge" :class="{
+                        'bg-warning': !item.gis_status,
+                        'bg-danger': item.gis_status == 2,
+                        'bg-success': item.gis_status == 1 && item.verified,
+                        'bg-info': item.gis_status == 1 && !item.verified
+                    }">
+
+                        <span v-if="!item.gis_status">Menunggu Verifikasi GIS</span>
+                        <span v-else-if="item.gis_status == 2">Koordinat Tidak Sesuai</span>
+                        <span v-else-if="item.gis_status == 1 && !item.verified">Koordinat Terverifikasi</span>
+                        <span v-else-if="item.gis_status == 1 && item.verified">Terverifikasi</span>
+                    </span>
+                </div>
+
+                <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note">
+                    <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
+                        item.suggestion_note }}</span>
+                </blockquote>
             </div>
         </template>
 
@@ -37,6 +74,11 @@
                 variant="danger" small class="mt-2" @click="onUnverif(item)">
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
+            </v-btn>
+            <v-btn variant="warning" small class="mt-2" @click="onClickEditCoordinate(item)"
+                v-if="$_sys.isAllowed('sosialisasi-tanam-update') && item.gis_status == 2">
+                <v-icon left small>mdi-map</v-icon>
+                <span>Edit Koordinat</span>
             </v-btn>
         </template>
         <template v-slot:list-expanded-item="{ headers, item }">
@@ -64,6 +106,7 @@ import PlantingSocExportLahanMu from './PlantingSocExportLahanMu.vue'
 import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
+import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
 export default {
     name: "crud-planting-socialization",
     components: {
@@ -72,13 +115,18 @@ export default {
         PlantingSocFarmerEdit,
         PlantingSocDetail,
         PlantingSocExportLahanMu,
-        PlantingSocImportExcel
+        PlantingSocImportExcel,
+        PlantingSocCoordinateEdit
     },
     watch: {},
     methods: {
         onEditFarmer(item) {
             this.farmerEditKey += 1
             this.farmerEditData = item
+        },
+        onClickEditCoordinate(item) {
+            this.sostamCoordinateEditKey += 1
+            this.sostamCoordinateData = item
         },
         async onExportExcel(item) {
             try {
