@@ -111,8 +111,40 @@ export default {
                     throw "Not Found"
                 }
 
-                // const exportResult = axios.post(`${this.$_config.baseUrlExport}/`)
 
+
+                const axiosConfig = {
+                    method: "POST",
+                    url: `${this.$_config.baseUrlExport}export/planting-soc/mu/excel`,
+                    responseType: "arraybuffer",
+                    data: {
+                        data: exportData
+                    },
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `Bearer ${this.$store.state.token}`,
+                    },
+                };
+
+                const exported = await axios(axiosConfig)
+                    .then((res) => {
+                        return res;
+                    })
+                    .catch((err) => {
+                        return false;
+                    });
+
+                console.log('export result', exported);
+                const exportFilename = `Export-SosialisasiTanam-${this.muNo}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+
+                const url = URL.createObjectURL(new Blob([exported.data]));
+                const link = document.createElement("a");
+                link.href = url;
+
+                const filename = exportFilename;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
                 this.$_alert.success("Successfully");
                 this.loading = false;
                 this.isOpen = false;

@@ -3,7 +3,10 @@ export default {
   refreshKey: 1,
   farmerEditKey: 1,
   farmerEditData: null,
+  sostamCoordinateData: null,
   exportLahanKey: 1,
+  importSostamKey: 1,
+  sostamCoordinateEditKey: 1,
   config: {
     title: "Sosialisasi Tanam",
     globalFilter: {
@@ -51,6 +54,16 @@ export default {
         label: "Detail",
         methods: {
           list: true,
+        },
+      },
+
+      {
+        id: "indicator",
+        label: " ",
+        methods: {
+          list: {
+            type: "row-slot",
+          },
         },
       },
       {
@@ -117,6 +130,17 @@ export default {
         methods: {
           list: {
             class: "badge bg-primary",
+          },
+          detail: true,
+          filter: false,
+        },
+      },
+      {
+        id: "status",
+        label: "Status",
+        methods: {
+          list: {
+            type: "row-slot",
           },
           detail: true,
           filter: false,

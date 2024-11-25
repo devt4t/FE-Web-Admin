@@ -859,7 +859,6 @@ export default {
         gis_planting_area: plantingArea,
       };
 
-      console.log("payload", payload);
       this.loading = true;
       const result = await this.$_api
         .post("updateGISPlantingArea", payload)
