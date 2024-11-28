@@ -57,18 +57,19 @@
                                                 <div class="distribution-start">
                                                     <v-icon>mdi-tanker-truck</v-icon>
                                                     <span class="d-block title">Nursery
-                                                        {{ getNurseryLocation(data.nursery_location_id) }}</span>
-                                                    <span class="d-block distribution-seed">
-                                                        {{ data.total_seed | parse('ts') }} bibit
+                                                        <strong>{{ getNurseryLocation(data.nursery_location_id)
+                                                            }}</strong></span>
+                                                    <span class="badge bg-info distribution-seed">
+                                                        <strong>{{ data.total_seed | parse('ts') }}</strong> bibit
                                                     </span>
                                                 </div>
 
                                                 <div class="distribution-progress">
                                                     <span class="line"></span>
-                                                    <span class="date">{{ dateFormat(data.distribution_date, "dddd, DD
+                                                    <span class="date">{{ dateFormat(data.distribution_date, "D
                                                         MMMM
                                                         Y")
-                                                        }}</span>
+                                                    }}</span>
                                                 </div>
 
                                                 <div class="distribution-end">
@@ -100,7 +101,10 @@
 
                         <v-col lg="5">
                             <div class="planting-soc-maps">
-                                <h6 class="map-label">KOORDINAT LOKASI DISTRIBUSI</h6>
+                                <h6 class="map-label mb-3">KOORDINAT LOKASI DISTRIBUSI</h6>
+
+                                <div ref="mapContainer" id="mapContainer" class="map-container"
+                                    style="width: 100%; height: 600px;"></div>
                             </div>
                         </v-col>
                     </v-row>
@@ -162,15 +166,20 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD
+                        MMMM Y") }}</span>
                     <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{
                         dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM
+                        Y") }}</span>
                     <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{
                         dateFormat(item.planting_date_end, "DD MMMM Y") }}</span>
                 </template>
+                <!-- <template v-slot:item.planting_hole_date_end="{ item }">
+                    <span class="d-block"></span>
+                </template> -->
 
                 <template v-slot:item.seed_type="{ item }">
                     <div class="d-flex flex-col flex-column min-w-200px">
@@ -359,12 +368,52 @@ export default {
                 this.farmers = response.farmers
                 this.data = response.data
                 this.loading = false
-
             }
             catch {
                 this.loading = false
             }
 
+        },
+
+
+        async initializeMap() {
+            mapboxgl.accessToken = this.$_config.mapBoxApi;
+            let mapLatitude = -7.024947076120682
+            let mapLongitude = 110.41467292861057
+            try {
+                mapLatitude = this.farmers[0].distribution_coordinates.split(' ')[0]
+                mapLongitude = this.farmers[0].distribution_coordinates.split(' ')[1]
+
+            }
+            catch { }
+            this.maps = await new mapboxgl.Map({
+                container: "mapContainer",
+                style: this.$_config.mapBoxStyle,
+                zoom: 12,
+                projection: "globe",
+                maxZoom: 100,
+                preserveDrawingBuffer: true,
+                center: [mapLongitude, mapLatitude],
+            });
+
+            const geolocate = new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+                trackUserLocation: true,
+                showUserHeading: true,
+            });
+            await this.maps.dragRotate.disable();
+            await this.maps.touchZoomRotate.disableRotation();
+            await this.maps.addControl(new mapboxgl.FullscreenControl());
+            await this.maps.addControl(new mapboxgl.NavigationControl());
+            await this.maps.addControl(geolocate);
+            this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
+                .setLngLat([mapLongitude, mapLatitude])
+                .addTo(this.maps);
+            // this.maps.on("click", (data) => {
+            //     this.marker.setLngLat(data.lngLat);
+            // });
         },
         openEditModal(item) {
             item.farmers_name = this.data.farmer_name
@@ -386,6 +435,19 @@ export default {
             return moment(date).format(format);
         },
 
+    },
+    watch: {
+        data: {
+            deep: true,
+            handler(t) {
+                if (t && !this.loading) {
+                    setTimeout(() => {
+                        this.initializeMap()
+                    }, 2000);
+
+                }
+            }
+        }
     }
 }
 </script>
