@@ -439,7 +439,7 @@
                             }"
                             v-model="calendar.detailPeriodFF.newPeriod.nursery"
                             :items="[
-                              'Tidak Ada',
+                              'Tidak Terdefinisi',
                               'Cirasea',
                               'Ciminyak',
                               'Soreang',
@@ -635,710 +635,6 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <!-- Loading Line Scan Modal -->
-      <v-dialog
-        top
-        persistent
-        scrollable
-        max-width="700px"
-        content-class="rounded-xl elevation-0 mx-2"
-        v-model="loadingLine.detailDialog.show"
-      >
-        <v-card class="elevation-5 rounded-xl">
-          <v-card-title
-            class="mb-1 headermodalstyle rounded-xl d-flex align-center"
-          >
-            <span class="d-flex align-center">
-              <v-icon color="white" class="mr-1"> mdi-qrcode </v-icon>
-              Scan Labels
-            </span>
-            <v-divider class="mx-2" dark></v-divider>
-            <v-icon color="white" @click="loadingLine.detailDialog.show = false">
-              mdi-close-circle
-            </v-icon>
-          </v-card-title>
-          <v-card-text>
-            <!-- loading -->
-            <div
-              v-if="
-                loadingLine.detailDialog.loading &&
-                !loadingLine.detailDialog.model
-              "
-              class="d-flex flex-column align-center justify-center"
-            >
-              <v-progress-circular
-                indeterminate
-                color="green"
-                size="72"
-                width="7"
-                class="mt-10"
-              ></v-progress-circular>
-              <p class="mt-2 text-center">
-                {{ loadingLine.detailDialog.loadingText }}
-              </p>
-            </div>
-            <!-- Loading -->
-            <v-overlay
-              v-else-if="
-                loadingLine.detailDialog.loading && loadingLine.detailDialog.model
-              "
-              absolute
-              :value="loadingLine.detailDialog.loading"
-            >
-              <div class="d-flex flex-column"></div>
-              <v-progress-circular
-                :size="80"
-                :width="10"
-                indeterminate
-                color="white"
-              >
-              </v-progress-circular>
-              <p class="mt-2 mb-0">{{ loadingLine.detailDialog.loadingText }}</p>
-            </v-overlay>
-            <div v-if="loadingLine.detailDialog.model">
-              <!-- HOME View -->
-              <v-row
-                class="py-2"
-                v-if="loadingLine.detailDialog.tabs.open == 'all'"
-              >
-                <v-col cols="12" md="6">
-                  <v-card
-                    v-if="loadingLine.detailDialog.show"
-                    @click="loadingLine.detailDialog.tabs.open = 1"
-                    data-aos="zoom-in"
-                    data-aos-duration="500"
-                    color="green pa-5 rounded-xl text-center white--text"
-                  >
-                    <v-icon color="white" x-large>mdi-sprout</v-icon>
-                    <h3 class="mb-0 mt-1 font-weight-regular" large>
-                      Distribution Details
-                    </h3>
-                  </v-card>
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-card
-                    v-if="loadingLine.detailDialog.show"
-                    @click="loadingLine.detailDialog.tabs.open = 2"
-                    data-aos="zoom-in"
-                    data-aos-delay="200"
-                    data-aos-duration="500"
-                    :color="`${
-                      numberFormat(
-                        loadingLine.detailDialog.inputs.scanner.values.length
-                      ) == numberFormat(loadingLine.detailDialog.model.total_bags)
-                        ? 'blue darken-2'
-                        : 'blue'
-                    } pa-5 rounded-xl text-center white--text`"
-                  >
-                    <v-icon color="white" x-large
-                      >mdi-basket{{
-                        numberFormat(
-                          loadingLine.detailDialog.inputs.scanner.values.length
-                        ) ==
-                        numberFormat(loadingLine.detailDialog.model.total_bags)
-                          ? "-check"
-                          : ""
-                      }}</v-icon
-                    >
-                    <h3 class="mb-0 mt-1 font-weight-regular" large>
-                      {{
-                        numberFormat(
-                          loadingLine.detailDialog.inputs.scanner.values.length
-                        ) ==
-                        numberFormat(loadingLine.detailDialog.model.total_bags)
-                          ? "Load Completed"
-                          : "Start Scan Bags"
-                      }}
-                    </h3>
-                  </v-card>
-                </v-col>
-              </v-row>
-              <!-- Tabs Header -->
-              <v-tabs
-                v-else
-                v-model="loadingLine.detailDialog.tabs.open"
-                background-color="transparent"
-                icons-and-text
-                grow
-                show-arrows
-                color="green"
-                data-aos="fade-down"
-                data-aos-delay="0"
-                data-aos-duration="500"
-              >
-                <v-tab href="#all">
-                  Home
-                  <v-icon>mdi-view-dashboard</v-icon>
-                </v-tab>
-                <v-tab>
-                  Details
-                  <v-icon>mdi-sprout</v-icon>
-                </v-tab>
-                <v-tab>
-                  Scan Bags
-                  <v-icon
-                    >mdi-{{
-                      numberFormat(
-                        loadingLine.detailDialog.inputs.scanner.values.length
-                      ) == numberFormat(loadingLine.detailDialog.model.total_bags)
-                        ? "basket-check"
-                        : "qrcode-scan"
-                    }}</v-icon
-                  >
-                </v-tab>
-                <v-tab>
-                  Bags List
-                  <v-icon>mdi-text-box-check</v-icon>
-                </v-tab>
-              </v-tabs>
-              <!-- Tabs Items -->
-              <v-tabs-items
-                v-if="loadingLine.detailDialog.tabs.open != 'all'"
-                v-model="loadingLine.detailDialog.tabs.open"
-              >
-                <!-- Empty -->
-                <v-tab-item></v-tab-item>
-                <!-- Detail -->
-                <v-tab-item class="pt-3">
-                  <v-simple-table dense>
-                    <tbody>
-                      <tr v-if="generalSettings.type.model == 'Petani'">
-                        <td style="max-width: 100px">Field Facilitator</td>
-                        <td>
-                          :
-                          <strong>{{
-                            loadingLine.detailDialog.model.distribution_details[0]
-                              .ff_name || "-"
-                          }}</strong>
-                        </td>
-                      </tr>
-                      <tr v-else-if="generalSettings.type.model == 'Umum'">
-                        <td style="max-width: 100px">PIC T4T</td>
-                        <td>
-                          :
-                          <strong>
-                            {{
-                              loadingLine.detailDialog.model
-                                .distribution_details[0].employee_name || "-"
-                            }}</strong
-                          >
-                        </td>
-                      </tr>
-                      <tr v-if="generalSettings.type.model == 'Umum'">
-                        <td style="max-width: 100px">PIC Lahan</td>
-                        <td>
-                          :
-                          <strong>
-                            {{
-                              loadingLine.detailDialog.model
-                                .distribution_details[0].pic_lahan || "-"
-                            }}</strong
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="max-width: 100px">MU</td>
-                        <td>
-                          :
-                          <strong>
-                            {{
-                              loadingLine.detailDialog.model
-                                .distribution_details[0].mu_name || "-"
-                            }}</strong
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="max-width: 100px">Seedling Total</td>
-                        <td>
-                          :
-                          <strong>
-                            {{
-                              numberFormat(
-                                loadingLine.detailDialog.model.total_trees_amount
-                              )
-                            }}</strong
-                          >
-                          Seeds
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="max-width: 100px">Bags Total</td>
-                        <td>
-                          :
-                          <strong>
-                            <strong
-                              v-if="loadingLine.detailDialog.differentTotalBags"
-                            >
-                              {{
-                                numberFormat(
-                                  loadingLine.detailDialog.model.total_bags
-                                )
-                              }}
-                            </strong>
-                            <span v-else>
-                              {{
-                                numberFormat(
-                                  loadingLine.detailDialog.model.total_bags
-                                )
-                              }}
-                            </span></strong
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="max-width: 100px">Bags Scanned</td>
-                        <td>
-                          :
-                          <strong>
-                            {{
-                              numberFormat(
-                                loadingLine.detailDialog.inputs.scanner.values
-                                  .length
-                              )
-                            }}</strong
-                          >
-                        </td>
-                      </tr>
-                    </tbody>
-                  </v-simple-table>
-                </v-tab-item>
-                <!-- Transport + Scan -->
-                <v-tab-item>
-                  <div class="pb-2 d-flex align-center">
-                    <p class="mb-0">
-                      <v-icon class="mr-2">mdi-car-pickup</v-icon>Transportations
-                    </p>
-                    <v-divider class="mx-2"></v-divider>
-                    <v-btn
-                      rounded
-                      small
-                      color="green white--text"
-                      class="pl-1"
-                      :disabled="
-                        !loadingLine.detailDialog.transportations[
-                          loadingLine.detailDialog.transportations.length - 1
-                        ].truck_detail ||
-                        !loadingLine.detailDialog.transportations[
-                          loadingLine.detailDialog.transportations.length - 1
-                        ].driver_detail
-                      "
-                      @click="addMoreTransportation"
-                      ><v-icon class="mr-1">mdi-plus-circle</v-icon> Add</v-btn
-                    >
-                  </div>
-                  <v-row class="ma-0">
-                    <v-card
-                      v-for="(trans, transIndex) in loadingLine.detailDialog
-                        .transportations"
-                      :key="transIndex"
-                      data-aos="zoom-in"
-                      class="ml-2 rounded-xl pa-3 overflow-hidden mb-2"
-                    >
-                      <div class="d-flex align-center">
-                        <v-btn fab x-small color="grey white--text">{{
-                          transIndex + 1
-                        }}</v-btn>
-                        <p v-if="trans.truck_detail === null" class="mb-0 ml-2">
-                          Select Truck & Driver
-                        </p>
-                        <p v-else class="mb-0 ml-2">
-                          Max:
-                          {{
-                            $store.getters.numberFormat(
-                              trans.truck_detail.max_capacity
-                            )
-                          }}
-                          Bibit
-                        </p>
-                      </div>
-                      <v-row class="mx-0 mt-2">
-                        <v-col
-                          v-if="trans.truck_detail"
-                          class="d-flex flex-column align-center position-relative"
-                        >
-                          <v-avatar
-                            v-if="
-                              trans.truck_detail &&
-                              loadingLine.detailDialog.transportationIndex !=
-                                transIndex
-                            "
-                            data-aos="zoom-in"
-                            size="72"
-                            :color="getProgressionColor(trans.progression)"
-                            class="rounded-circle position-relative overflow-visible"
-                          >
-                            <v-icon size="42" color="white"
-                              >mdi-{{
-                                trans.truck_detail.type == "ss" ||
-                                trans.truck_detail.type == "l300"
-                                  ? "car-pickup"
-                                  : "truck"
-                              }}</v-icon
-                            >
-                          </v-avatar>
-                          <v-progress-circular
-                            v-else-if="
-                              loadingLine.detailDialog.transportationIndex ===
-                              transIndex
-                            "
-                            data-aos="zoom-in"
-                            :rotate="360"
-                            :size="72"
-                            :width="10"
-                            :value="trans.progression"
-                            :color="getProgressionColor(trans.progression)"
-                          >
-                            {{ Math.ceil(trans.progression) }}%
-                          </v-progress-circular>
-                          <!-- <v-chip v-if="trans.truck_detail" data-aos="zoom-in" data-aos-delay="200" color="green white--text" small style="position: absolute;top: 70px">{{ $store.getters.numberFormat(trans.truck_detail.min_capacity) }} - {{ $store.getters.numberFormat(trans.truck_detail.max_capacity) }} Bibit</v-chip> -->
-                          <v-chip
-                            v-if="trans.truck_detail"
-                            data-aos="zoom-in"
-                            data-aos-delay="200"
-                            color="grey darken-3 white--text"
-                            class="rounded-lg mt-1"
-                            >{{ trans.truck_detail.plat_no }}</v-chip
-                          >
-                        </v-col>
-                        <v-col
-                          v-if="trans.driver_detail"
-                          class="d-flex flex-column align-center position-relative"
-                        >
-                          <v-avatar
-                            v-if="trans.driver_detail"
-                            data-aos="zoom-in"
-                            size="72"
-                            color="blue darken-1"
-                            class="rounded-circle position-relative overflow-visible"
-                          >
-                            <v-icon size="42" color="white"
-                              >mdi-badge-account</v-icon
-                            >
-                          </v-avatar>
-                          <v-chip
-                            v-if="trans.driver_detail"
-                            data-aos="zoom-in"
-                            data-aos-delay="200"
-                            color="grey darken-3 white--text"
-                            class="rounded-lg mt-1"
-                            >{{ trans.driver_detail.name }}</v-chip
-                          >
-                        </v-col>
-                      </v-row>
-                      <v-row
-                        v-if="trans.truck_detail && trans.driver_detail"
-                        class="mx-0 mb-0 justify-center"
-                      >
-                        <v-btn
-                          rounded
-                          small
-                          color="green white--text"
-                          v-if="
-                            loadingLine.detailDialog.transportationIndex !=
-                            transIndex
-                          "
-                          @click="
-                            startScanningAfterSelectingTransportation(transIndex)
-                          "
-                          >Start Loading Bags</v-btn
-                        >
-                        <v-btn
-                          rounded
-                          small
-                          color="red white--text"
-                          class="pl-1"
-                          v-else-if="
-                            loadingLine.detailDialog.transportationIndex ===
-                            transIndex
-                          "
-                          :disabled="
-                            transIndex === 0 || trans.loaded_labels.length > 0
-                          "
-                          @click="
-                            loadingLine.detailDialog.transportations.splice(
-                              transIndex,
-                              1
-                            )
-                          "
-                          ><v-icon class="mr-1">mdi-delete-circle</v-icon> Remove
-                          Truck</v-btn
-                        >
-                      </v-row>
-                      <v-row
-                        v-else-if="transIndex > 0"
-                        class="mx-0 mb-0 justify-center"
-                      >
-                        <v-btn
-                          rounded
-                          small
-                          color="red white--text"
-                          class="pl-1"
-                          @click="
-                            loadingLine.detailDialog.transportations.splice(
-                              transIndex,
-                              1
-                            )
-                          "
-                          ><v-icon class="mr-1">mdi-delete-circle</v-icon> Remove
-                          Truck</v-btn
-                        >
-                      </v-row>
-                      <v-text-field
-                        v-if="trans.truck_detail === null"
-                        dense
-                        hide-details
-                        outlined
-                        rounded
-                        label="Plat No"
-                        color="green"
-                        class="mt-5"
-                        clearable
-                        v-model="trans.plat_no"
-                        @change="
-                          getTransportDetail('truck', trans.plat_no, transIndex)
-                        "
-                      ></v-text-field>
-                      <v-text-field
-                        v-if="trans.driver_detail === null"
-                        dense
-                        hide-details
-                        outlined
-                        rounded
-                        label="Driver NIK / Licence"
-                        color="green"
-                        class="mt-2"
-                        clearable
-                        v-model="trans.nik"
-                        @change="
-                          getTransportDetail('driver', trans.nik, transIndex)
-                        "
-                      ></v-text-field>
-                    </v-card>
-                  </v-row>
-  
-                  <v-text-field
-                    v-if="
-                      typeof loadingLine.detailDialog.transportationIndex ==
-                      'number'
-                    "
-                    :disabled="
-                      loadingLine.detailDialog.transportationIndex === null ||
-                      numberFormat(
-                        loadingLine.detailDialog.inputs.scanner.values.length
-                      ) == numberFormat(loadingLine.detailDialog.model.total_bags)
-                    "
-                    ref="scanLabelLoadingInput"
-                    data-aos="zoom-in"
-                    prepend-inner-icon="mdi-qrcode-scan"
-                    v-model="loadingLine.detailDialog.inputs.scanner.model"
-                    @change="scannerUpdate"
-                    color="green"
-                    label="Input Scan Label"
-                    placeholder="Input scan here..."
-                    class="text-center mt-2"
-                    outlined
-                    rounded
-                    :error-messages="
-                      loadingLine.detailDialog.inputs.scanner.alert.color == 'red'
-                        ? loadingLine.detailDialog.inputs.scanner.alert.text
-                        : ''
-                    "
-                    :success-messages="
-                      loadingLine.detailDialog.inputs.scanner.alert.color ==
-                      'green'
-                        ? loadingLine.detailDialog.inputs.scanner.alert.text
-                        : ''
-                    "
-                  ></v-text-field>
-                  <!-- :disabled="numberFormat(loadingLine.detailDialog.inputs.scanner.values.length) == numberFormat(loadingLine.detailDialog.model.total_bags)" -->
-                </v-tab-item>
-                <v-tab-item>
-                  <v-data-table
-                    v-if="loadingLine.detailDialog.inputs.scanner.farmers"
-                    :headers="
-                      loadingLine.detailDialog.inputs.table[
-                        generalSettings.type.model == 'Petani'
-                          ? 'headers'
-                          : 'headers2'
-                      ]
-                    "
-                    :items="loadingLine.detailDialog.inputs.scanner.farmers"
-                  >
-                    <template v-slot:item.check="{ item }">
-                      <v-icon
-                        v-if="
-                          item.bags_number.length ==
-                          item.bags_number_loaded.length
-                        "
-                        color="green"
-                        >mdi-check-circle</v-icon
-                      >
-                      <v-icon v-else color="red">mdi-close-circle</v-icon>
-                    </template>
-                    <template v-slot:item.bags_number="{ item }">
-                      {{ item.bags_number.length }}
-                    </template>
-                    <template v-slot:item.bags_number_loaded="{ item }">
-                      {{ item.bags_number_loaded.length }}
-                    </template>
-                    <template v-slot:item.bags_left="{ item }">
-                      <v-menu content-class="rounded-xl" scrollable>
-                        <template v-slot:activator="{ attrs, on }">
-                          <v-btn
-                            v-bind="attrs"
-                            :disabled="
-                              item.bags_number.length -
-                                item.bags_number_loaded.length ==
-                              0
-                            "
-                            v-on="on"
-                            :color="`${
-                              item.bags_number.length -
-                                item.bags_number_loaded.length >
-                              0
-                                ? 'red'
-                                : 'green'
-                            } white--text`"
-                            rounded
-                            small
-                          >
-                            {{
-                              item.bags_number.length -
-                              item.bags_number_loaded.length
-                            }}
-                          </v-btn>
-                        </template>
-                        <v-card
-                          v-if="
-                            item.bags_number.length -
-                              item.bags_number_loaded.length >
-                            0
-                          "
-                        >
-                          <v-card-title class="d-flex justify-center pt-2">
-                            <small class="gray--text">Labels Left:</small><br />
-                          </v-card-title>
-                          <v-card-text>
-                            <strong>{{
-                              getNumberBagsLeft(
-                                item.bags_number,
-                                item.bags_number_loaded
-                              )
-                            }}</strong>
-                          </v-card-text>
-                        </v-card>
-                      </v-menu>
-                    </template>
-                  </v-data-table>
-                </v-tab-item>
-              </v-tabs-items>
-            </div>
-            <!-- Snackbar -->
-            <v-snackbar
-              v-model="loadingLine.detailDialog.snackbar.show"
-              :color="loadingLine.detailDialog.snackbar.color"
-              :timeout="5000"
-              rounded="xl"
-            >
-              <div class="d-flex justify-between">
-                <p class="mb-0">
-                  {{ loadingLine.detailDialog.snackbar.text }}
-                </p>
-                <v-spacer></v-spacer>
-                <v-icon
-                  small
-                  class="pl-1"
-                  @click="loadingLine.detailDialog.snackbar.show = false"
-                  >mdi-close-circle</v-icon
-                >
-              </div>
-            </v-snackbar>
-          </v-card-text>
-          <v-card-actions
-            v-if="
-              loadingLine.detailDialog.loading == false &&
-              loadingLine.detailDialog.model &&
-              generalSettings.type.model == 'Petani'
-            "
-            data-aos="fade-up"
-            data-aos-delay="600"
-            data-aos-duration="500"
-          >
-            <v-divider class="mx-2"></v-divider>
-            <v-btn
-              color="green white--text"
-              rounded
-              class="pr-3"
-              :disabled="
-                loadingLine.detailDialog.inputs.scanner.values.length == 0 ||
-                loadingLine.detailDialog.inputs.disabledSave == true
-              "
-              @click="
-                UpdateLoadedDistributionBagsNumber(
-                  loadingLine.detailDialog.model.distribution_details[0].ff_no
-                )
-              "
-            >
-              <v-icon class="mr-1">mdi-check-circle</v-icon>
-              Save
-            </v-btn>
-            <v-btn
-              color="info white--text"
-              v-if="
-                User.role_group == 'IT' ||
-                User.role_name == 'NURSERY MANAGER' ||
-                User.email == 'faris.ardika@trees4trees.org' ||
-                User.email == 'fauzan.timur@trees4trees.org'
-              "
-              rounded
-              class="px-3"
-              :disabled="
-                loadingLine.detailDialog.inputs.scanner.values.length == 0 ||
-                loadingLine.detailDialog.inputs.disabledSave == true
-              "
-              @click="
-                FinishLoadedDistributionBagsNumber(
-                  loadingLine.detailDialog.model.distribution_details[0].ff_no
-                )
-              "
-            >
-              <v-icon class="mr-1">mdi-basket-check</v-icon>
-              Finish
-            </v-btn>
-            <v-divider class="mx-2"></v-divider>
-          </v-card-actions>
-          <v-card-actions
-            v-else-if="
-              loadingLine.detailDialog.loading == false &&
-              loadingLine.detailDialog.model &&
-              generalSettings.type.model == 'Umum'
-            "
-            data-aos="fade-up"
-            data-aos-delay="600"
-          >
-            <v-divider class="mx-2"></v-divider>
-            <v-btn
-              color="green white--text"
-              rounded
-              class="pr-3"
-              :disabled="
-                loadingLine.detailDialog.inputs.scanner.values.length == 0 ||
-                loadingLine.detailDialog.inputs.disabledSave == true
-              "
-              @click="
-                UpdateLoadedDistributionBagsNumber(
-                  loadingLine.detailDialog.model.distribution_details[0].mou_no
-                )
-              "
-            >
-              <v-icon class="mr-1">mdi-check-circle</v-icon>
-              Save
-            </v-btn>
-            <v-divider class="mx-2"></v-divider>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
       <!-- Confirmation -->
       <v-dialog
         v-model="confirmation.show"
@@ -1470,6 +766,33 @@
                     </td>
                   </tr>
                   <tr v-if="generalSettings.type.model == 'Petani'">
+                    <td>Nomor Lahan</td>
+                    <td>:</td>
+                    <td>
+                      <strong>{{
+                        distributionReport.dialogs.detail.data.lahan_no || "-"
+                      }}</strong>
+                    </td>
+                  </tr>
+                  <tr v-if="generalSettings.type.model == 'Petani'">
+                    <td>Nomor Project</td>
+                    <td>:</td>
+                    <td>
+                      <strong>{{
+                        distributionReport.dialogs.detail.data.project_no || "-"
+                      }}</strong>
+                    </td>
+                  </tr>
+                  <tr v-if="generalSettings.type.model == 'Petani'">
+                    <td>Nama Project</td>
+                    <td>:</td>
+                    <td>
+                      <strong>{{
+                        distributionReport.dialogs.detail.data.project_name || "-"
+                      }}</strong>
+                    </td>
+                  </tr>
+                  <tr v-if="generalSettings.type.model == 'Petani'">
                     <td>Tanggal Distribusi</td>
                     <td>:</td>
                     <td>
@@ -1500,7 +823,7 @@
                         color="orange white--text"
                         class="pl-1 pr-3"
                         ><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak
-                        Menerima</v-chip
+                        Menerima Pupuk</v-chip
                       >
                       <!-- <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.total_pupuk )}} ML</v-chip> -->
                     </td>
@@ -1582,12 +905,12 @@
                               sortable: false,
                             },
                             {
-                              text: 'Bag Number',
+                              text: 'Nomor Kantung',
                               value: 'label_code',
                               sortable: false,
                             },
                             {
-                              text: 'Seedling',
+                              text: 'Bibit',
                               value: 'rel_tree_id',
                               sortable: false,
                             },
@@ -1620,7 +943,7 @@
                 </v-col>
                 <v-col cols="6" md="3" lg="3">
                   <v-row class="align-center my-2 ml-2">
-                    <v-icon class="mr-1">mdi-truck-check</v-icon> Loaded Bags
+                    <v-icon class="mr-1">mdi-truck-check</v-icon> Kantung Tertampung
                     <v-divider class="ml-2"></v-divider>
                   </v-row>
                   <v-menu content-class="rounded-xl white">
@@ -1639,13 +962,13 @@
                                 .length
                             }}
                           </h1>
-                          bags
+                          Kantung
                         </v-card-text>
                       </v-card>
                     </template>
                     <v-card max-height="400px" elevation="0">
                       <v-card-title>
-                        <v-icon class="mr-1">mdi-truck-check</v-icon> Loaded Bags
+                        <v-icon class="mr-1">mdi-truck-check</v-icon> Kantung Tertampung
                         <v-divider class="ml-2"></v-divider>
                       </v-card-title>
                       <v-card-text>
@@ -1700,8 +1023,7 @@
                 </v-col>
                 <v-col cols="6" md="3" lg="3">
                   <v-row class="align-center my-2 ml-2">
-                    <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed
-                    Bags
+                    <v-icon class="mr-1">mdi-basket-check</v-icon> Kantung Terdistirbusi
                     <v-divider class="ml-2 d-none d-md-inline-block"></v-divider>
                   </v-row>
                   <v-menu content-class="rounded-xl white">
@@ -1720,14 +1042,13 @@
                                 .length
                             }}
                           </h1>
-                          bags
+                          Kantung
                         </v-card-text>
                       </v-card>
                     </template>
                     <v-card max-height="400px" elevation="0">
                       <v-card-title>
-                        <v-icon class="mr-1">mdi-basket-check</v-icon> Distributed
-                        Bags <v-divider class="ml-2"></v-divider>
+                        <v-icon class="mr-1">mdi-basket-check</v-icon> Kantung Terdistribusi <v-divider class="ml-2"></v-divider>
                       </v-card-title>
                       <v-card-text>
                         <!-- <v-btn v-if="generalSettings.type.model == 'Umum'" color="info white--text" rounded block class="mb-2" @click="openModalScanLahanUmum" :disabled="distributionReport.dialogs.detail.data.status > 0">
@@ -1744,12 +1065,12 @@
                               sortable: false,
                             },
                             {
-                              text: 'Bag Number',
+                              text: 'Nomor Kantung',
                               value: 'label_code',
                               sortable: false,
                             },
                             {
-                              text: 'Seedling',
+                              text: 'Bibit',
                               value: 'rel_tree_id',
                               sortable: false,
                             },
@@ -1783,7 +1104,7 @@
                 </v-col>
                 <v-col cols="6" md="3" lg="3">
                   <v-row class="align-center my-2 ml-2">
-                    <v-icon class="mr-1">mdi-basket-remove</v-icon> Lost Bags
+                    <v-icon class="mr-1">mdi-basket-remove</v-icon> Kantung Hilang
                   </v-row>
                   <v-menu content-class="rounded-xl white">
                     <template v-slot:activator="{ attrs, on }">
@@ -1800,13 +1121,13 @@
                               distributionReport.dialogs.detail.labels.lost.length
                             }}
                           </h1>
-                          bags
+                          Kantung
                         </v-card-text>
                       </v-card>
                     </template>
                     <v-card max-height="400px" elevation="0">
                       <v-card-title>
-                        <v-icon class="mr-1">mdi-basket-remove</v-icon> Lost Bags
+                        <v-icon class="mr-1">mdi-basket-remove</v-icon> Kantung Hilang
                         <v-divider class="ml-2"></v-divider>
                       </v-card-title>
                       <v-card-text>
@@ -1820,12 +1141,12 @@
                               sortable: false,
                             },
                             {
-                              text: 'Bag Number',
+                              text: 'Nomor Kantung',
                               value: 'label_code',
                               sortable: false,
                             },
                             {
-                              text: 'Seedling',
+                              text: 'Bibit',
                               value: 'rel_tree_id',
                               sortable: false,
                             },
@@ -3318,15 +2639,7 @@
           data-aos-delay="200"
         >
           <v-divider class="mx-2"></v-divider>
-          <!-- Program Year -->
-          <!-- :disabled="
-              generalSettings.nursery.disabled ||
-              calendar.loading ||
-              packingLabel.tables.byLahan.loading ||
-              packingLabel.loading ||
-              loadingLine.loading ||
-              loadingLine.table.loading
-            " -->
+          
           <v-select
             color="success"
             item-color="success"
@@ -3505,7 +2818,7 @@
                       <v-icon v-else-if="event.color == 'red'" dark small
                         >mdi-close-circle</v-icon
                       >
-                      {{ event.name }} ~ {{ event.total_ff }} FF
+                      {{ event.name_by_id }} ~ {{ event.total_ff }} FF
                     </h4>
                     <h4
                       class="mx-1 text-center"
@@ -3520,7 +2833,7 @@
                       <v-icon v-else-if="event.color == 'blue'" dark small
                         >mdi-help-circle</v-icon
                       >
-                      {{ event.name == "Tidak Ada" ? "Unallocated" : event.name }}
+                      {{ event.name == "Tidak Terdefinisi" ? "Unallocated" : event.name }}
                       ~ {{ event.total_ff }} PIC
                     </h4>
                   </template>
@@ -3784,7 +3097,7 @@
                       </v-btn>
                       <v-toolbar-title>
                         <strong>{{
-                          calendar.selectedEvent.name === "Tidak Ada"
+                          calendar.selectedEvent.name === "Tidak Terdefinisi"
                             ? "Unallocated"
                             : calendar.selectedEvent.name
                         }}</strong>
@@ -4314,10 +3627,7 @@
                           data-aos-delay="200"
                           class="rounded-xl elevation-6 mx-3 pa-1 mb-2"
                           :headers="distributionReport.table.headersReportFarmer"
-                          :items="
-                            distributionReport.table.NurseryFarmerItems
-                              .detail_farmers
-                          "
+                          :items="distributionReport.table.NurseryFarmerItems.detail_farmers"
                           :loading="distributionReport.table.loading"
                           :key="`PetaniPerFF-${distributionReport.table.loading}`"
                         >
@@ -4325,22 +3635,6 @@
                           <template v-slot:top>
                             <v-row class="ma-2 mb-0 align-center">
                               <v-col cols="12" lg="6" class="d-flex">
-                                <!-- <v-select
-                                                                  color="success"
-                                                                  item-color="success"
-                                                                  v-model="distributionReport.table.search.column"
-                                                                  :items="distributionReport.table.search.options"
-                                                                  item-value="value"
-                                                                  item-text="text"
-                                                                  hide-details
-                                                                  outlined
-                                                                  dense
-                                                                  :menu-props="{ bottom: true, offsetY: true, rounded: 'xl', transition: 'slide-y-transition' }"
-                                                                  rounded
-                                                                  label="Kolom Pencarian"
-                                                                  class="centered-select"
-                                                                  style="width: 50%;max-width: 200px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
-                                                                  ></v-select> -->
                                 <!-- <v-text-field
                                                                   color="success"
                                                                   item-color="success"
@@ -4724,6 +4018,11 @@
           headersReportFarmer: [
             { text: "Kode Petani", value: "farmer_no" },
             { text: "Nama Petani", value: "farmer_name" },
+            
+            { text: "Nomor Lahan", value: "lahan_no" },
+            { text: "Nomor Project", value: "project_no" },
+            { text: "Nama Project", value: "project_name" },
+            { text: "Tipe Project", value: "project_purpose_name" },
             {
               text: "Status Penerimaan Petani",
               value: "status",
@@ -5081,7 +4380,6 @@
               "Waiting for completed get packing label data...";
             // this.distributionReport.loadingText = 'Waiting for completed get packing label data...'
             // refresh packing label table
-            await this.getPackingLabelTableData();
             this.packingLabel.loading = false;
             this.loadingLine.loadingText = "Getting loading line data...";
             // this.distributionReport.loadingText = 'Waiting for completed get loading line data...'
@@ -5125,7 +4423,6 @@
           this.distributionReport.loadingText =
             "Waiting for completed get packing label data...";
           // refresh packing label table
-          await this.getPackingLabelTableData();
           this.packingLabel.loading = false;
           this.loadingLine.loadingText = "Getting loading line data...";
           this.distributionReport.loadingText =
@@ -5136,8 +4433,6 @@
           this.distributionReport.loadingText =
             "Getting distribution report data...";
           // refresh distribution report table
-          // await this.getDistributionReportTable()
-          // await this.reportNursery()
           this.distributionReport.loading = false;
         },
       },
@@ -5174,7 +4469,6 @@
             this.distributionReport.loadingText =
               "Waiting for completed get packing label data...";
             // refresh packing label table
-            await this.getPackingLabelTableData();
             this.packingLabel.loading = false;
             this.loadingLine.loadingText = "Getting loading line data...";
             this.distributionReport.loadingText =
@@ -5185,8 +4479,6 @@
             this.distributionReport.loadingText =
               "Getting distribution report data...";
             // refresh distribution report table
-            // await this.getDistributionReportTable()
-            // await this.reportNursery()
             this.distributionReport.loading = false;
           }
         },
@@ -5200,25 +4492,6 @@
           await this.getLoadinglineTableData();
         },
       },
-      "packingLabel.datePicker.model": {
-        async handler(newVal) {
-          this.packingLabel.datePicker.modelShow = this.dateFormat(
-            newVal,
-            "DD MMMM Y"
-          );
-          await this.getPackingLabelTableData();
-        },
-      },
-      "packingLabel.tabs.model": {
-        async handler(newValue) {
-          if (
-            newValue == 0 &&
-            this.packingLabel.tables.byLahan.items.length == 0
-          ) {
-            await this.getPackingLabelTableData();
-          }
-        },
-      },
     },
     methods: {
       // CALENDAR
@@ -5228,47 +4501,12 @@
       expandTableReport(item) {
         this.distributionReport.table.NurseryFarmerItems = item.item;
       },
-      // async reportNursery(){
-      //     // await this.getUserException()
-      //     if (this.accessModul.calendar) {
-      //         this.distributionReport.table.loading = true
-  
-      //         const params ={
-      //             ff_no: this.UserLogin.toString(),
-      //             program_year: this.generalSettings.programYear,
-      //             distribution_date: this.distributionReport.datePicker.model,
-      //             status_data: "custom",
-      //             page: this.distributionReport.table.page,
-      //             limit: this.distributionReport.table.per_page,
-      //             search: this.distributionReport.table.search.model
-      //         }
-  
-      //         let url = 'https://api-nursery.t4t-api.org/api/custom/reportDetailFarmer?'
-      //         const res = await axios.get(
-      //             url,
-      //             {
-      //                 headers: {
-      //                     Authorization: `Bearer ` + this.apiConfig.nurseryToken
-      //                 },
-      //                 params: params
-      //             }
-      //         ).catch(err => {
-      //             this.sessionEnd(err)
-      //             this.distributionReport.table.loading = false
-      //         })
-      //         const resData = res.data.data
-      //         this.distributionReport.table.NurseryItems = resData
-      //         this.distributionReport.table.totalDatas = res.data.total
-      //         this.distributionReport.table.total_page = res.data.totalPage
-      //         this.distributionReport.table.loading = false
-      //     }
-      // },
+      
       async reportNurseryFF() {
-        // await this.getUserException()
+
         this.distributionReport.table.NurseryFFItems = [];
         this.distributionReport.table.totalDatas = 0;
         this.distributionReport.table.total_page = 0;
-        // this.distributionReport.table.loading = true
   
         if (this.accessModul.calendar) {
           this.distributionReport.table.loading = true;
@@ -5281,12 +4519,12 @@
             limit: this.distributionReport.table.per_page,
             search: this.distributionReport.table.search.model,
           };
-  
-          let url = "https://api-nursery.t4t-api.org/api/custom/reportDetailFF?";
+
+          let url = this.apiConfig.baseUrl + "distribution/main/list?";
           const res = await axios
             .get(url, {
               headers: {
-                Authorization: `Bearer ` + this.apiConfig.nurseryToken,
+                Authorization: `Bearer ` + this.apiConfig.token,
               },
               params: params,
             })
@@ -5294,9 +4532,10 @@
               this.sessionEnd(err);
               this.distributionReport.table.loading = false;
             });
-          console.log(res);
+          // console.log(res);
           const resData = res.data.data;
           this.distributionReport.table.NurseryFFItems = resData;
+          // console.log(this.distributionReport.table.NurseryFFItems)
           this.distributionReport.table.totalDatas = res.data.total;
           this.distributionReport.table.total_page = res.data.totalPage;
           this.distributionReport.table.loading = false;
@@ -5452,8 +4691,6 @@
                   start: calendar.start,
                   end: calendar.end,
                 });
-                // refresh packing label table
-                this.getPackingLabelTableData();
               } else {
                 this.snackbar.show = true;
                 this.snackbar.color = "red";
@@ -5726,8 +4963,6 @@
                 start: calendar.start,
                 end: calendar.end,
               });
-              // refresh packing label table
-              this.getPackingLabelTableData();
             })
             .catch((err) => {
               this.snackbar.show = true;
@@ -5982,15 +5217,16 @@
           await resData.forEach((evData, evIndex) => {
             events.push({
               name: evData.nursery,
+              name_by_id: this.getNurseryById(evData.nursery_location_id),
               start: this.dateFormat(evData.date, "YYYY-MM-DD"),
               total_ff: evData.total,
               total_bibit_sostam: evData.total_bibit_sostam,
               total_bibit_penlub: evData.total_bibit_penlub,
               color:
-                evData.nursery == "Tidak Ada"
+                this.getNurseryById(evData.nursery_location_id) == "Tidak Ada"
                   ? "blue"
                   : this.calendarGetNurseryColor(
-                      evData.nursery,
+                      this.getNurseryById(evData.nursery_location_id),
                       evData.total,
                       evData.date,
                       evData.total_bibit_sostam
@@ -6068,108 +5304,7 @@
           });
         return mu_no;
       },
-      // PACKING LABEL
-      async getPackingLabelTableData() {
-        if (this.accessModul.packingLabel) {
-          // reset search by FF input
-          this.packingLabel.tables.byLahan.search.items = [];
-          this.packingLabel.tables.byLahan.search.model = "";
-  
-          let url = "";
-          let params = {
-            typegetdata: this.User.ff.value_data,
-            ff: this.User.ff.ff,
-            program_year: this.generalSettings.programYear,
-            nursery: this.generalSettings.nursery.model,
-            distribution_date: this.packingLabel.datePicker.model,
-          };
-          if (this.packingLabel.tabs.model == 0) {
-            this.packingLabel.tables.byLahan.loading = true;
-            url = "GetPackingLabelByLahan?";
-            if (this.generalSettings.type.model == "Umum") {
-              const nurseryEmails = this.$store.state.nurseryTeam.emails;
-              url = "GetPackingLabelLahanUmum?";
-              if (
-                this.User.role_group == "IT" ||
-                this.User.role_name == "REGIONAL MANAGER" ||
-                this.User.role_name == "PLANNING MANAGER" ||
-                nurseryEmails.Cirasea.includes(this.User.email) ||
-                nurseryEmails.Ciminyak.includes(this.User.email) ||
-                nurseryEmails.Soreang.includes(this.User.email) ||
-                nurseryEmails.Kebumen.includes(this.User.email) ||
-                nurseryEmails.Pati.includes(this.User.email)
-              ) {
-              } else params.created_by = this.User.email;
-            }
-          }
-  
-          if (url && params) {
-            const urlParams = new URLSearchParams(params);
-            // call api
-            await axios
-              .get(this.apiConfig.baseUrl + url + urlParams, {
-                headers: {
-                  Authorization: `Bearer ` + this.apiConfig.token,
-                },
-              })
-              .then((res) => {
-                const result = res.data.data.result.data;
-                this.packingLabel.tables.byLahan.items = result;
-                result.forEach((val) => {
-                  this.packingLabel.tables.byLahan.search.items.push(val.nama_ff);
-                });
-              })
-              .catch((err) => {
-                if (err.response.status == 404) {
-                  this.packingLabel.tables.byLahan.items = [];
-                }
-                this.sessionEnd(err);
-              })
-              .finally(() => {
-                this.packingLabel.tables.byLahan.loading = false;
-              });
-          }
-        }
-      },
-      printPackingLabelByLahan(type, id) {
-        if (type == "label") {
-          window.open(
-            this.apiConfig.baseUrl.substring(
-              0,
-              this.apiConfig.baseUrl.length - 4
-            ) +
-              "CetakLabelLubangTanam?ph_form_no=" +
-              id
-          );
-        } else if (type == "tanda_terima") {
-          window.open(
-            this.apiConfig.baseUrl.substring(
-              0,
-              this.apiConfig.baseUrl.length - 4
-            ) +
-              "CetakBuktiPenyerahan?ph_form_no=" +
-              id
-          );
-        } else if (type == "label_lahan_umum") {
-          window.open(
-            this.apiConfig.baseUrl.substring(
-              0,
-              this.apiConfig.baseUrl.length - 4
-            ) +
-              "CetakLabelUmumLubangTanam?lahan_no=" +
-              id
-          );
-        } else if (type == "tanda_terima_lahan_umum") {
-          window.open(
-            this.apiConfig.baseUrl.substring(
-              0,
-              this.apiConfig.baseUrl.length - 4
-            ) +
-              "CetakUmumBuktiPenyerahan?lahan_no=" +
-              id
-          );
-        }
-      },
+
       async updateCheckedPlantingHoles(id, status) {
         const nurseryEmails = this.$store.state.nurseryTeam.emails;
         if (
@@ -6248,7 +5383,6 @@
             this.loadingLine.loadingText = "Waiting...";
             this.loadingLine.loading = true;
             const searchExist = this.packingLabel.tables.byLahan.search.model;
-            await this.getPackingLabelTableData();
             this.packingLabel.tables.byLahan.search.model = searchExist;
             this.packingLabel.loadingText = null;
   
@@ -6275,18 +5409,7 @@
         }
       },
       // LOADING LINE
-      addMoreTransportation() {
-        this.loadingLine.detailDialog.transportations.push({
-          driver_detail: null,
-          loaded_labels: [],
-          truck_detail: null,
-          progression: 0,
-          plat_no: "",
-          nik: "",
-          total_loaded: 0,
-        });
-        this.loadingLine.detailDialog.transportationIndex = null;
-      },
+      
       async getLoadingLineDetailFFData(id) {
         try {
           this.loadingLine.detailDialog.loadingText =
@@ -6415,57 +5538,7 @@
         else if (progress <= 100) return "green";
         else if (progress > 100) return "red";
       },
-      async getTransportDetail(type, id, transIndex) {
-        if (type && id) {
-          try {
-            let checkExisting = await this.checkExistingTruckDriver(type, id);
-            if (checkExisting === false) {
-              this.loadingLine.detailDialog.loading = true;
-              this.loadingLine.detailDialog.loadingText = `Getting ${type.toUpperCase()} data...`;
-              let url =
-                type == "truck"
-                  ? `GetDetailTruck?plat_no=${id}`
-                  : type == "driver"
-                  ? `GetDetailDriver?nik=${id}`
-                  : null;
-              if (url) {
-                const res = await this.$_api.get('url')
-                if (type == "truck")
-                  this.loadingLine.detailDialog.transportations[
-                    transIndex
-                  ].truck_detail = res.data.result;
-                else if (type == "driver")
-                  this.loadingLine.detailDialog.transportations[
-                    transIndex
-                  ].driver_detail = res.data.result;
-                this.loadingLine.detailDialog.snackbar.color = "green";
-                this.loadingLine.detailDialog.snackbar.text = `${type.toUpperCase()} data selected`;
-              } else {
-                this.loadingLine.detailDialog.snackbar.color = "red";
-                this.loadingLine.detailDialog.snackbar.text =
-                  "Failed to get data!";
-              }
-            } else {
-              this.loadingLine.detailDialog.transportations[transIndex][
-                type == "driver" ? "nik" : "plat_no"
-              ] = "";
-              this.loadingLine.detailDialog.snackbar.color = "orange";
-              this.loadingLine.detailDialog.snackbar.text = `Data ${type.toUpperCase()} exist!`;
-            }
-          } catch (err) {
-            this.loadingLine.detailDialog.snackbar.color = "red";
-            this.loadingLine.detailDialog.snackbar.text = `Failed to get data ${type.toUpperCase()}!`;
-  
-            if (err.response != undefined) {
-              // this.sessionEnd(err);
-            }
-            else console.error(err);
-          } finally {
-            this.loadingLine.detailDialog.snackbar.show = true;
-            this.loadingLine.detailDialog.loading = false;
-          }
-        }
-      },
+      
       async checkExistingTruckDriver(type, id) {
         let dataExist =
           await this.loadingLine.detailDialog.transportations.filter(
@@ -6512,12 +5585,7 @@
             this.snackbar.show = true;
           });
       },
-      async startScanningAfterSelectingTransportation(transIndex) {
-        this.loadingLine.detailDialog.transportationIndex = await transIndex;
-        setTimeout(() => {
-          this.$refs.scanLabelLoadingInput.focus();
-        }, 100);
-      },
+      
       async UpdateLoadedDistributionBagsNumber(id) {
         this.loadingLine.detailDialog.show = false;
         this.$store.state.loadingOverlayText = "Updating loaded labels data...";
@@ -6622,14 +5690,19 @@
       //     this.distributionReport.dialogs.detail.totalSeedArrival = this.distributionReport.dialogs.detail.labels.distributed.length + this.distributionReport.dialogs.detail.labels.lost.length
       // },
       async DetailDistributionReportFarmer(item) {
-        console.log(item);
+        // console.log(item);
         this.distributionReport.dialogs.detailUmum.farmer_signature_photo = null;
         this.distributionReport.dialogs.detailUmum.distribution_photo = null;
         if (item.farmer_no.includes("F")) {
           console.log("if condition");
+          var signature_url = '/images/noimage.png';
+          var accept_url = '/images/noimage.png';
+          if(item.file_signature)signature_url = item.file_signature.url;
+          if(item.file_accept)accept_url = item.file_accept.url;
+
           this.distributionReport.dialogs.detail = {
-            farmer_signature_photo: item.file_signature.url,
-            distribution_photo: item.file_accept.url,
+            farmer_signature_photo: signature_url,
+            distribution_photo: accept_url,
             farmerNo: item.farmer_no,
             adjustment: item.detail_seed_farmers,
             data: item,
@@ -6637,17 +5710,14 @@
             labels: {
               printed: item.detail_labels,
               loaded: item.detail_labels.filter((v) => v.is_loaded == 1),
-              distributed: item.detail_labels.filter(
-                (v) => v.is_distributed == 1
-              ),
-              lost: item.detail_labels.filter(
-                (v) => v.is_loaded == 1 && v.is_distributed == 0
-              ),
+              distributed: item.detail_labels.filter((v) => v.is_distributed == 1),
+              lost: item.detail_labels.filter((v) => v.is_loaded == 1 && v.is_distributed == 0),
             },
             loading: false,
             loadingText: null,
             show: true,
           };
+          console.log(this.distributionReport.dialogs.detail);
           this.distributionReport.dialogs.detail.totalSeedArrival =
             this.distributionReport.dialogs.detail.labels.distributed.length +
             this.distributionReport.dialogs.detail.labels.lost.length;
@@ -7156,6 +6226,23 @@
           });
       },
       // UTILITIES
+      getNurseryById(n_id){
+        let val = '';
+        const n_data = [
+          {id:1, name: 'Ciminyak'},
+          {id:2, name: 'Soreang'},
+          {id:3, name: 'Cirasea'},
+          {id:4, name: 'Kebumen'},
+          {id:5, name: 'Pati'},
+          {id:6, name: 'SMG Testing'},
+          {id:7, name: 'Semarang'},
+        ];
+        val = n_data.find(x => x.id === n_id).name;
+        // n_data.forEach(function(item){
+          
+        // });
+        return val;
+      },
       calendarGetNurseryColor(n, total, date, totalSeed) {
         let maxFF = this.calendarGetMaxFF(n, date);
         let maxSeed = this.calendarGetMaxSeed(n);
@@ -7331,7 +6418,6 @@
         // await this.reportNursery()
         await this.reportNurseryFF();
   
-        await this.getPackingLabelTableData();
         this.packingLabel.loading = false;
         this.packingLabel.loadingText = null;
         this.loadingLine.loadingText = "Getting loading line data...";
@@ -7385,15 +6471,7 @@
         });
         return formData;
       },
-      getNumberBagsLeft(all, loaded) {
-        let leftData = [];
-        all.forEach((val) => {
-          if (loaded.includes(val) == false) {
-            leftData.push(val);
-          }
-        });
-        return leftData;
-      },
+      
       getNurseryAlocation(mu_no) {
         const soreang = ["020", "021"];
         const ciminyak = ["023", "026", "027"];
@@ -7520,6 +6598,23 @@
         // console.log(received)
         return received;
       },
+      getNurseryLocation(nurseryLocationId) {
+            const config = {
+                1: 'Ciminyak',
+                2: 'Soreang',
+                3: 'Cirasea',
+                4: 'Kebumen',
+                5: 'Pati',
+                6: 'SMG Testing'
+            }
+
+            try {
+                return config[nurseryLocationId]
+            }
+            catch {
+                return ''
+            }
+        },
       getTreeAdjustmentData(data) {
         // this.distributionReport.dialogs.detail.adjustment
         // console.log(data)
@@ -7678,80 +6773,7 @@
       rnd(a, b) {
         return Math.floor((b - a + 1) * Math.random()) + a;
       },
-      async scannerUpdate() {
-        const existsScannedLabel =
-          this.loadingLine.detailDialog.inputs.scanner.values;
-        const newLabel = this.loadingLine.detailDialog.inputs.scanner.model;
-  
-        // Try to do split from double input
-        // if (newLabel.length > 21) {
-        //     let newLabelSplit = newLabel.split('-')
-        //     newLabelSplit.forEach((val, index) => {
-        //         if (val.length > 13) {
-        //             const lahanNo = val.slice(0,12)
-        //             const bagNo = val.slice(12,val.length)
-        //             newLabelSplit[index] = [lahanNo, bagNo]
-        //         }
-        //     })
-        //     alert(JSON.stringify(newLabelSplit))
-        // }
-  
-        let audio = null;
-        const labels = this.loadingLine.detailDialog.inputs.scanner.labels;
-        // console.log(labels)
-        if (
-          existsScannedLabel.includes(newLabel) == false &&
-          labels.includes(newLabel) == true
-        ) {
-          this.loadingLine.detailDialog.inputs.scanner.values.push(newLabel);
-          audio = new Audio(require("@/assets/audio/success.mp3"));
-  
-          this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" scaned!`;
-          this.loadingLine.detailDialog.inputs.scanner.alert.color = "green";
-  
-          // update table per farmer data table
-          // console.log(this.loadingLine.detailDialog.inputs.scanner.farmers)
-          await this.loadingLine.detailDialog.inputs.scanner.farmers.map(
-            (farmer, fIndex) => {
-              if (farmer.bags_number.includes(newLabel)) {
-                this.loadingLine.detailDialog.inputs.scanner.farmers[
-                  fIndex
-                ].bags_number_loaded.push(newLabel);
-                this.loadingLine.detailDialog.transportations[
-                  this.loadingLine.detailDialog.transportationIndex
-                ].loaded_labels.push(newLabel);
-              }
-            }
-          );
-  
-          // update progression in truck
-          // const transIndex = await this.loadingLine.detailDialog.transportationIndex
-          // const maxCap = await this.loadingLine.detailDialog.transportations[transIndex].truck_detail.max_capacity || 1
-          // let loadedTruck = 0
-          // await this.loadingLine.detailDialog.transportations[transIndex].loaded_labels.push(newLabel)
-          // await this.loadingLine.detailDialog.transportations[transIndex].loaded_labels.forEach(transLabel => {
-          //     const newLabelDetail = this.loadingLine.detailDialog.listLabelDetail.filter(lld => lld.bag_number == transLabel)
-          //     newLabelDetail.forEach(nld => {
-          //         loadedTruck += parseInt(nld.tree_amount)
-          //     })
-          // })
-          // this.loadingLine.detailDialog.transportations[transIndex].progression = parseInt(loadedTruck) / parseInt(maxCap) * 100
-        } else if (existsScannedLabel.includes(newLabel) == true) {
-          audio = new Audio(require("@/assets/audio/error.mp3"));
-  
-          this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" has been already scaned!`;
-          this.loadingLine.detailDialog.inputs.scanner.alert.color = "red";
-        } else if (labels.includes(newLabel) == false) {
-          audio = new Audio(require("@/assets/audio/error.mp3"));
-  
-          this.loadingLine.detailDialog.inputs.scanner.alert.text = `Label "${newLabel}" not included in this FF!`;
-          this.loadingLine.detailDialog.inputs.scanner.alert.color = "red";
-        }
-  
-        await audio.play();
-        this.loadingLine.detailDialog.inputs.scanner.alert.show = true;
-        this.loadingLine.detailDialog.inputs.scanner.model = "";
-      },
+      
       sessionEnd(error) {
         if (typeof error.response.status != "undefined") {
           if (error.response.status == 401) {

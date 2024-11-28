@@ -123,7 +123,7 @@ export default {
           .get("new-planting-hole/list/export", {
             program_year: this.$store.state.tmpProgramYear,
             ff_no: ffCode,
-            limit: 100,
+            limit: 1000,
             offset: 0,
           })
           .then((res) => {
