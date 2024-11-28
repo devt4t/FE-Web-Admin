@@ -316,7 +316,7 @@
 
                     <v-col md="6">
 
-                        <v-col md="12" class="form-separator ml-0 pl-0">
+                        <v-col md="12" class="form-separator ml-0 pl-0 ">
                             <h4>Koordinat Lokasi Distribusi</h4>
                         </v-col>
                         <span class="geko-input">

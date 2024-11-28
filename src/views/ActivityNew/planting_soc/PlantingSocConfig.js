@@ -81,16 +81,57 @@ export default {
         methods: {
           list: true,
           detail: true,
-          filter: false,
+
+          filter: {
+            main: true,
+            validation: ["required"],
+            type: "select",
+            col_size: 6,
+            getter: "GetManagementUnitAdmin",
+            setter: "mu_no",
+            param: {
+              page: 1,
+              per_page: 10,
+            },
+            option: {
+              getterKey: "data.result",
+              list_pointer: {
+                code: "mu_no",
+                label: "name",
+                display: ["name"],
+              },
+            },
+          },
         },
       },
+
       {
         id: "target_areas_name",
         label: "Target Area",
         methods: {
           list: true,
           detail: true,
-          filter: false,
+
+          filter: {
+            main: true,
+            type: "select",
+            getter: "GetTA_new",
+            setter: "area_code",
+            form_param: {
+              mu_no: "mu_no",
+            },
+            param: {
+              program_year: "current_program_year",
+            },
+            option: {
+              // getterKey: "data.result",
+              list_pointer: {
+                code: "area_code",
+                label: "name",
+                display: ["name"],
+              },
+            },
+          },
         },
       },
       {
@@ -143,7 +184,39 @@ export default {
             type: "row-slot",
           },
           detail: true,
-          filter: false,
+          filter: {
+            type: "select",
+            setter: "status",
+            option: {
+              default_options: [
+                {
+                  name: "Semua Status",
+                  code: null,
+                },
+                {
+                  name: "Belum Terverifikasi",
+                  code: 0,
+                },
+                {
+                  name: "Koordinat Terverifikasi",
+                  code: 2,
+                },
+                {
+                  name: "Koordinat Tidak Sesuai",
+                  code: 3,
+                },
+                {
+                  name: "Terverifikasi",
+                  code: 1,
+                },
+              ],
+              list_pointer: {
+                code: "code",
+                label: "name",
+                display: ["name"],
+              },
+            },
+          },
         },
       },
     ],

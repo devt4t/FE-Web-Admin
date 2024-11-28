@@ -14,89 +14,104 @@
                 </v-card-title>
 
                 <div class="card-body" v-if="data">
-                    <table class="planting-soc-table">
-                        <tr>
-                            <td>No Sostam</td>
-                            <td>
-                                <span class="text-link d-block">#{{ data.soc_no }}</span>
-                                <span class="text-09-em">{{ data.soc_date | parse('date') }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Field Facilitator</td>
-                            <td>
-                                <span class="font-weight-400">{{ data.field_facilitator_name }}</span>
-                                <div class="d-flex flex-row">
-                                    <span class="badge bg-light d-block">
-                                        {{ data.ff_no }}
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Unit Management</td>
-                            <td>
-                                <span>{{ data.management_unit_name }}</span>
-                                <span class="d-block font-weight-300">{{ data.target_area_name }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Materi Pelatihan</td>
-                            <td>
-                                <span>{{ data.training_material_name }}</span>
-                            </td>
-                        </tr>
 
-                        <!-- <tr>
-                            <td>Realisasi Tanam</td>
-                            <td>
-                                <span>{{ dateFormat(data.planting_date_start, "DD MMMM Y")}} - {{
-                                    dateFormat(data.planting_date_end, "DD MMMM Y")}}</span>
-                            </td>
-                        </tr> -->
-                        <tr>
-                            <td>Distribusi</td>
-                            <td>
-                                <div class="distribution-wrapper">
-                                    <div class="distribution-start">
-                                        <v-icon>mdi-tanker-truck</v-icon>
-                                        <span class="d-block title">Nursery
-                                            {{ getNurseryLocation(data.nursery_location_id) }}</span>
-                                        <span class="d-block distribution-seed">
-                                            {{ data.total_seed | parse('ts') }} bibit
-                                        </span>
-                                    </div>
+                    <v-row>
+                        <v-col lg="7">
+                            <div class="planting-soc-table-wrapper">
+                                <table class="planting-soc-table">
+                                    <tr>
+                                        <td>No Sostam</td>
+                                        <td>
+                                            <span class="text-link d-block">#{{ data.soc_no }}</span>
+                                            <span class="text-09-em">{{ data.soc_date | parse('date') }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Field Facilitator</td>
+                                        <td>
+                                            <span class="font-weight-400">{{ data.field_facilitator_name }}</span>
+                                            <div class="d-flex flex-row">
+                                                <span class="badge bg-light d-block">
+                                                    {{ data.ff_no }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Unit Management</td>
+                                        <td>
+                                            <span>{{ data.management_unit_name }}</span>
+                                            <span class="d-block font-weight-300">{{ data.target_area_name }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Materi Pelatihan</td>
+                                        <td>
+                                            <span>{{ data.training_material_name }}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Distribusi</td>
+                                        <td>
+                                            <div class="distribution-wrapper">
+                                                <div class="distribution-start">
+                                                    <v-icon>mdi-tanker-truck</v-icon>
+                                                    <span class="d-block title">Nursery
+                                                        <strong>{{ getNurseryLocation(data.nursery_location_id)
+                                                            }}</strong></span>
+                                                    <span class="badge bg-info distribution-seed">
+                                                        <strong>{{ data.total_seed | parse('ts') }}</strong> bibit
+                                                    </span>
+                                                </div>
 
-                                    <div class="distribution-progress">
-                                        <span class="line"></span>
-                                        <span class="date">{{ dateFormat(data.distribution_date, "dddd, DD MMMM Y")
-                                            }}</span>
-                                    </div>
+                                                <div class="distribution-progress">
+                                                    <span class="line"></span>
+                                                    <span class="date">{{ dateFormat(data.distribution_date, "D
+                                                        MMMM
+                                                        Y")
+                                                    }}</span>
+                                                </div>
 
-                                    <div class="distribution-end">
-                                        <v-icon>mdi-map-marker-radius</v-icon>
-                                        <span class="d-block location">{{ data.distribution_location }}</span>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Foto Absensi</td>
-                            <td>
-                                <div class="d-flex flex-row image-list">
-                                    <div class="image-item" v-if="data.absent"
-                                        v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent}` + ')' }">
-                                    </div>
-                                    <div class="image-item" v-if="data.absent2"
-                                        v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent}` + ')' }">
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                                                <div class="distribution-end">
+                                                    <v-icon>mdi-map-marker-radius</v-icon>
+                                                    <span class="d-block location">{{ data.distribution_location
+                                                        }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Foto Absensi</td>
+                                        <td>
+                                            <div class="d-flex flex-row image-list">
+                                                <div class="image-item" v-if="data.absent"
+                                                    @click="showLightbox(`${$_config.baseUrlUpload}/${data.absent}`, 0)"
+                                                    v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent}` + ')' }">
+                                                </div>
+                                                <div @click="showLightbox(`${$_config.baseUrlUpload}/${data.absent2}`, 0)"
+                                                    class="image-item" v-if="data.absent2"
+                                                    v-bind:style="{ 'background-image': 'url(' + `${$_config.baseUrlUpload}/${data.absent2}` + ')' }">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </v-col>
+
+                        <v-col lg="5">
+                            <div class="planting-soc-maps">
+                                <h6 class="map-label mb-3">KOORDINAT LOKASI DISTRIBUSI</h6>
+
+                                <div ref="mapContainer" id="mapContainer" class="map-container"
+                                    style="width: 100%; height: 600px;"></div>
+                            </div>
+                        </v-col>
+                    </v-row>
                 </div>
             </v-card>
         </v-col>
+
 
         <v-col md="12" v-if="!loading">
             <v-data-table :headers="headers" :items="farmers" :search="''"
@@ -151,15 +166,20 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD
+                        MMMM Y") }}</span>
                     <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{
                         dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM
+                        Y") }}</span>
                     <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{
                         dateFormat(item.planting_date_end, "DD MMMM Y") }}</span>
                 </template>
+                <!-- <template v-slot:item.planting_hole_date_end="{ item }">
+                    <span class="d-block"></span>
+                </template> -->
 
                 <template v-slot:item.seed_type="{ item }">
                     <div class="d-flex flex-col flex-column min-w-200px">
@@ -348,12 +368,52 @@ export default {
                 this.farmers = response.farmers
                 this.data = response.data
                 this.loading = false
-
             }
             catch {
                 this.loading = false
             }
 
+        },
+
+
+        async initializeMap() {
+            mapboxgl.accessToken = this.$_config.mapBoxApi;
+            let mapLatitude = -7.024947076120682
+            let mapLongitude = 110.41467292861057
+            try {
+                mapLatitude = this.farmers[0].distribution_coordinates.split(' ')[0]
+                mapLongitude = this.farmers[0].distribution_coordinates.split(' ')[1]
+
+            }
+            catch { }
+            this.maps = await new mapboxgl.Map({
+                container: "mapContainer",
+                style: this.$_config.mapBoxStyle,
+                zoom: 12,
+                projection: "globe",
+                maxZoom: 100,
+                preserveDrawingBuffer: true,
+                center: [mapLongitude, mapLatitude],
+            });
+
+            const geolocate = new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+                trackUserLocation: true,
+                showUserHeading: true,
+            });
+            await this.maps.dragRotate.disable();
+            await this.maps.touchZoomRotate.disableRotation();
+            await this.maps.addControl(new mapboxgl.FullscreenControl());
+            await this.maps.addControl(new mapboxgl.NavigationControl());
+            await this.maps.addControl(geolocate);
+            this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
+                .setLngLat([mapLongitude, mapLatitude])
+                .addTo(this.maps);
+            // this.maps.on("click", (data) => {
+            //     this.marker.setLngLat(data.lngLat);
+            // });
         },
         openEditModal(item) {
             item.farmers_name = this.data.farmer_name
@@ -375,6 +435,19 @@ export default {
             return moment(date).format(format);
         },
 
+    },
+    watch: {
+        data: {
+            deep: true,
+            handler(t) {
+                if (t && !this.loading) {
+                    setTimeout(() => {
+                        this.initializeMap()
+                    }, 2000);
+
+                }
+            }
+        }
     }
 }
 </script>

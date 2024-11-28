@@ -3,6 +3,7 @@ export default {
   baseUrl: "https://staging-api.trees4trees.org/api/",
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
   baseUrlExport: "https://geko-export.tftdemo.net/",
+  baseUrlNursery: "https://backend.t4t-api.org/api",
   mapBoxApi:
     "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
   mapBoxStyle: "mapbox://styles/mapbox/satellite-streets-v12",

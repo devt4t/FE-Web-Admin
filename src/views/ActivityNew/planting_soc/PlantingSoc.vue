@@ -51,7 +51,7 @@
                     </span>
                 </div>
 
-                <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note">
+                <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note && item.gis_status == 2">
                     <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
                         item.suggestion_note }}</span>
                 </blockquote>
