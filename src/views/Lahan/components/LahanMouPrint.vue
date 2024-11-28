@@ -124,6 +124,7 @@
 import VueHtml2pdf from "vue-html2pdf";
 import MouHtml from "./MouHtml.vue";
 import moment from "moment";
+import axios from 'axios'
 import FormUploadAttachmentMOU from "./FormUploadAttachmentMOU.vue";
 export default {
   name: "LahanMouPrint",
@@ -155,7 +156,45 @@ export default {
   methods: {
     onPrint() {
       this.loading = true;
-      this.$refs.html2Pdf.generatePdf();
+      // this.$refs.html2Pdf.generatePdf();
+
+      const exportEndpoint = `${this.$_config.baseUrlExport}export/mou/pdf`
+      const exportPayload = {
+        data: this.data
+      }
+      const exportFilename = `MOU-${this.data.farmer_name}.pdf`
+
+      const axiosConfig = {
+        method: "POST",
+        url: exportEndpoint,
+        responseType: "arraybuffer",
+        data: exportPayload,
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${this.$store.state.token}`,
+        },
+      };
+
+      axios(axiosConfig)
+        .then((exported) => {
+          if (!exported) throw "ERR"
+          const url = URL.createObjectURL(new Blob([exported.data]));
+          const link = document.createElement("a");
+          link.href = url;
+
+          const filename = exportFilename;
+          link.setAttribute("download", filename);
+          document.body.appendChild(link);
+          link.click();
+
+          this.onDownloadComplete();
+          return;
+        })
+        .catch((err) => {
+          return false;
+        });
+
+      return;
     },
     async onDownloadComplete() {
       try {

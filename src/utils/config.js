@@ -1,6 +1,7 @@
 export default {
   version: "2.2.0",
-  baseUrl: "http://localhost:8000/api/",
+  baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
+  // baseUrl: "https://staging-api.trees4trees.org/api/",
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
   baseUrlExport: "https://geko-export.tftdemo.net/",
   baseUrlNursery: "https://backend.t4t-api.org/api",
