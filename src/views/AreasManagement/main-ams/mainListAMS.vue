@@ -1,5 +1,5 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true"/>
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true"/>
     <!-- <div class="under-development">
         <div class="wrapper">
         <div class="text-wrapper">
@@ -33,6 +33,7 @@ export default {
                 title: "Area Management System",
                 model_api: null,
                 getter: "ams/get-list",
+                getterDataKey: "result",
                 totalDataKey: 'count_record',
                 setter: "ams/post_create",
                 update: "ams/post_update",

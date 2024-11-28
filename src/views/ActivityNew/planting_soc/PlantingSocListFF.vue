@@ -137,7 +137,7 @@ export default {
                 // },
                 {
                     text: 'Total Bibit',
-                    value: 'total_seed',
+                    value: 'total_bibits',
                     class: 'font-weight-bold'
                 },
                 {

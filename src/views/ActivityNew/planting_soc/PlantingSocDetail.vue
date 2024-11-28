@@ -162,20 +162,15 @@
                     <span class="badge bg-light">{{ item.no_document }}</span>
                 </template>
                 <template v-slot:item.planting_hole_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD
-                        MMMM Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_hole_date_start, "DD MMMM Y") }}</span>
                     <p class="text-center"> ~ </p> <span class="d-block min-w-150px badge bg-info">{{
                         dateFormat(item.planting_hole_date_end, "DD MMMM Y") }}</span>
                 </template>
                 <template v-slot:item.planting_date="{ item }">
-                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM
-                        Y") }}</span>
+                    <span class="d-block min-w-150px badge bg-primary">{{ dateFormat(item.planting_date_start, "DD MMMM Y") }}</span>
                     <p class="text-center">~ </p> <span class="d-block min-w-150px badge bg-info">{{
                         dateFormat(item.planting_date_end, "DD MMMM Y") }}</span>
                 </template>
-                <!-- <template v-slot:item.planting_hole_date_end="{ item }">
-                    <span class="d-block"></span>
-                </template> -->
 
                 <template v-slot:item.seed_type="{ item }">
                     <div class="d-flex flex-col flex-column min-w-200px">
