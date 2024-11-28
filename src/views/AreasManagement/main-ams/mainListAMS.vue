@@ -1,5 +1,10 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true"/>
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true">
+        <template v-slot:create-form>
+            <main-create-a-m-s></main-create-a-m-s>
+        </template>
+    </geko-base-crud>
+    
     <!-- <div class="under-development">
         <div class="wrapper">
         <div class="text-wrapper">
@@ -20,9 +25,11 @@
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import areamanagementconfig from "./amsConfig";
 import LottieAnimation from "lottie-web-vue";
+import MainCreateAMS from "./mainCreateAMS.vue"
 export default {
     components: {
         LottieAnimation,
+        MainCreateAMS
     },
     name: "crud-area-management-system",
     watch: {},

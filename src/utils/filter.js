@@ -102,6 +102,10 @@ Vue.filter("parse", (value, id) => {
         _value = "Non-Aktif";
       } else if (value === 1) {
         _value = "Aktif";
+      }else if (value === "0") {
+        _value = "Non-Aktif";
+      }else if (value === "1") {
+        _value = "Aktif";
       }
       break;
 
