@@ -180,8 +180,23 @@
         padding: 1em 2em;
     }
 
+    .scooping-visit-detail-card {
+        width: 100%;
+    }
+
+    .planting-soc-maps {
+        .map-label {
+            color: rgba(128, 128, 128, 0.733);
+            font-size: .9em;
+        }
+    }
+    .planting-soc-table-wrapper {
+        width: 100%;
+
+    }
     table.planting-soc-table {
         width: 100%;
+        table-layout: fixed;
         // margin-inline: 2em;
         tr td {
             border-bottom: 1px solid rgba(206, 206, 206, 0.3);
