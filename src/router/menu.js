@@ -371,17 +371,7 @@ const menu = [
       //   icon: "mdi-truck-fast",
       //   type: ["non-carbon"],
       // },
-      {
-        title: "Distribusi",
-        to: "/Distribusi",
-        component: "ActivityNew/distribution/distribution",
-        name: "Distribusi",
-        update: true,
-        permission: "Distribusi",
-        icon: "mdi-calendar-multiselect",
-        type: ["non-carbon"],
-      },
-
+      
       {
         title: "Realisasi Tanam",
         to: "/PenilikanTanam",
@@ -436,6 +426,32 @@ const menu = [
         type: ["carbon"],
       },
     ],
+  },
+  {
+    title: "Distribusi",
+    icon: "mdi-truck-delivery",
+    items:[
+      {
+        title: "Distribusi - Kalender & Report",
+        to: "/Distribusi",
+        component: "ActivityNew/distribution/distribution",
+        name: "Distribusi",
+        update: true,
+        permission: "Distribusi",
+        icon: "mdi-calendar-multiselect",
+        type: ["non-carbon"],
+      },
+      {
+        title: "Distribusi - Unload",
+        to: "/Distribusi/Unload",
+        component: "Distribution/UnloadDistribution/Unload",
+        name: "Distribution Unload",
+        update: true,
+        permission: "DistributionUnload",
+        icon: "mdi-scale-unbalanced",
+        type: ["non-carbon"],
+      },
+    ]
   },
 
   {

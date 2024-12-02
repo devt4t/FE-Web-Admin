@@ -116,6 +116,18 @@ Vue.filter("parse", (value, id) => {
         _value = "Terverifikasi";
       }
       break;
+    
+    case "distribution-status-bast":
+      if (value == 0) {
+        _value = "Belum Input Distribusi";
+      } else if (value === 1) {
+        _value = "Bibit Kurang";
+      } else if (value === 2) {
+        _value = "Bibit Lebih";
+      } else if (value === 3) {
+        _value = "Bibit Lengkap";
+      }
+      break;
 
     case "adjustment-status":
       if (value == 'non-adjustment') {
