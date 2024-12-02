@@ -3,8 +3,8 @@ export default {
   baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
   // baseUrl: "https://staging-api.trees4trees.org/api/",
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
-  // baseUrlExport: "https://geko-export.tftdemo.net/",
-  baseUrlExport: "http://localhost:9056/",
+  baseUrlExport: "https://geko-export.tftdemo.net/",
+  // baseUrlExport: "http://localhost:9056/",
   baseUrlNursery: "https://backend.t4t-api.org/api",
   mapBoxApi:
     "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",
