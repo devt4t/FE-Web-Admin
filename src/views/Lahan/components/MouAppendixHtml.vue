@@ -61,6 +61,18 @@
                 </td>
               </tr>
               <tr>
+                <td>Luas Area Enhancement </td>
+                <td>
+                  {{ data.gis_planting_enhancement_area | parse("ts") }} m&sup2;
+                </td>
+              </tr>
+              <tr>
+                <td>Eligibility Status </td>
+                <td>
+                  {{ GISEligibilityStatus(data.gis_eligibility_type) }} 
+                </td>
+              </tr>
+              <tr>
                 <td>Model</td>
                 <td>{{ data.project_model }}</td>
               </tr>
@@ -121,7 +133,17 @@ export default {
     },
   },
 
-  methods: {},
+  methods: {
+    GISEligibilityStatus(status) {
+      if (status === 'srnppi') {
+        return 'Eligible SRNPPI'
+      } else if (status === 'vcs') {
+        return 'Eligible VCS'
+      } else if (status === 'both') {
+        return 'Eligible SRNPPI & VCS'
+      } 
+    }
+  },
   data() {
     return {
       formatDate(format) {
