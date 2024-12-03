@@ -9,18 +9,8 @@
 
             <div class="d-flex">
               <!-- btn print -->
-              <v-btn
-                largew
-                variant="primary"
-                class="d-flex flex-row align-items-center"
-                @click="onPrint"
-              >
-                <v-progress-circular
-                  v-if="loading"
-                  indeterminate
-                  :size="20"
-                  color="primary"
-                ></v-progress-circular>
+              <v-btn largew variant="primary" class="d-flex flex-row align-items-center" @click="onPrint">
+                <v-progress-circular v-if="loading" indeterminate :size="20" color="primary"></v-progress-circular>
                 <v-icon v-else>mdi-printer-outline</v-icon>
                 <span class="ms-1">Print Appendix</span>
               </v-btn>
@@ -28,21 +18,10 @@
           </v-card-title>
           <v-card-text class="pt-5">
             <div class="preview-wrapper">
-              <vue-html2pdf
-                :show-layout="true"
-                :float-layout="false"
-                :enable-download="true"
-                :preview-modal="true"
-                :filename="`MOU-${data.farmer_name}-${data.mou_start}-${data.mou_end}`"
-                :pdf-quality="1"
-                :manual-pagination="true"
-                pdf-format="a4"
-                pdf-orientation="landscape"
-                pdf-content-width="1123px"
-                pdf-content-height="794px"
-                ref="html2Pdf"
-                @hasDownloaded="onDownloadComplete()"
-                :html-to-pdf-options="{
+              <vue-html2pdf :show-layout="true" :float-layout="false" :enable-download="true" :preview-modal="true"
+                :filename="`MOU-${data.farmer_name}-${data.mou_start}-${data.mou_end}`" :pdf-quality="1"
+                :manual-pagination="true" pdf-format="a4" pdf-orientation="landscape" pdf-content-width="1123px"
+                pdf-content-height="794px" ref="html2Pdf" @hasDownloaded="onDownloadComplete()" :html-to-pdf-options="{
                   margin: 0,
                   pagebreak: {
                     mode: ['css', 'legacy'],
@@ -57,8 +36,7 @@
                     unit: 'mm',
                     orientation: 'l',
                   },
-                }"
-              >
+                }">
                 <section slot="pdf-content">
                   <appendix-html :data="data" />
                 </section>
@@ -84,11 +62,11 @@ export default {
   props: {
     lahanData: {
       required: true,
-      default: () => {},
+      default: () => { },
     },
     farmerData: {
       required: false,
-      default: () => {},
+      default: () => { },
     },
     modalKey: {
       type: Number,
@@ -136,6 +114,8 @@ export default {
         trees: this.trees,
         gis_polygon_area: this.lahanData.gis_polygon_area,
         gis_planting_area: this.lahanData.gis_planting_area,
+        gis_eligibility_type: this.lahanData.gis_eligibility_type,
+        gis_planting_enhancement_area: this.lahanData.gis_planting_enhancement_area,
         lahan_no: this.lahanData.lahan_no
       };
 
@@ -148,7 +128,7 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() { },
 
   data() {
     return {
