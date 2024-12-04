@@ -135,7 +135,8 @@
 
                 <template v-slot:item.action="{ item, index }">
                     <div class="d-flex flex-col flex-column">
-                        <v-btn variant="warning" small @click="openEditModal(item)">
+                        <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-update')" variant="warning" small
+                            @click="openEditModal(item)">
                             <v-icon small>mdi-pencil</v-icon>
                             <span> Update Kehadiran</span>
                         </v-btn>
@@ -360,7 +361,12 @@ export default {
                 let seedTotal = 0;
                 for (const farmer of response.farmers) {
                     seedTotal += farmer.total_seed
+                    console.log(farmer.total_seed);
                 }
+
+
+                console.log('total', seedTotal);
+
 
                 response.data.total_seed = seedTotal
                 response.data.distribution_location = response.farmers[0].distribution_location
