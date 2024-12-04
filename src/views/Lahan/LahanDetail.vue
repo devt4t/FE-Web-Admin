@@ -487,7 +487,9 @@
           <div class="lahan-stat-item">
             <p class="mb-0 label">Tutupan Lahan</p>
             <p class="mb-0 value">
-              <span v-if="data.main_lahan">{{ data.main_lahan.tutupan_lahan }}%</span>
+              <span v-if="data.main_lahan">{{ +data.main_lahan.tutupan_lahan ? data.main_lahan.tutupan_lahan + '%' :
+                +data.main_lahan.polygon_tutupan_area == 0 ? data.main_lahan.tutupan_lahan + '%' :
+                  data.main_lahan.polygon_tutupan_area + ` m&sup2;` }}</span>
             </p>
           </div>
           <div class="lahan-stat-item">
@@ -588,6 +590,7 @@
           <div class="trees">
             <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
+              <div v-if="data.main_lahan.farmers_project_model === 3">Update</div>
               <div class="trees-filter" v-if="trees.length > 1">
                 <v-btn v-for="(tree, i) in trees" :variant="tree.label != treesActive ? 'light' : 'success'"
                   :key="`lahan-detail-tree-${i}`" class="mr-2" :class="{
@@ -1424,6 +1427,55 @@ export default {
               this.addMapLayer(kmlData, "map-layer-1", "#FF7B7B", null);
               this.$set(this.legends, 0, {
                 ...this.legends[0],
+                show: true,
+              });
+
+              const centerCoordinate = turf.center(kmlData);
+              const mapCenter = centerCoordinate.geometry.coordinates;
+              if (this.map && this.map.setCenter instanceof Function) {
+                this.map.setCenter(mapCenter);
+              }
+            }
+          }
+
+
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.gis_planting_enhancement_polygon
+            )
+          ) {
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_planting_enhancement_polygon}`
+            );
+
+            if (kmlData.features.length > 0) {
+              this.addMapLayer(kmlData, "map-layer-4", "#FFBD7B", null);
+              this.$set(this.legends, 3, {
+                ...this.legends[3],
+                show: true,
+              });
+
+              const centerCoordinate = turf.center(kmlData);
+              const mapCenter = centerCoordinate.geometry.coordinates;
+              if (this.map && this.map.setCenter instanceof Function) {
+                this.map.setCenter(mapCenter);
+              }
+            }
+          }
+
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.gis_arr_polygon
+            )
+          ) {
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_arr_polygon}`
+            );
+
+            if (kmlData.features.length > 0) {
+              this.addMapLayer(kmlData, "map-layer-5", "#BD7BFF", null);
+              this.$set(this.legends, 4, {
+                ...this.legends[4],
                 show: true,
               });
 
