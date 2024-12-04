@@ -1,18 +1,20 @@
 <template>
   <geko-base-crud :config="config" @onExportExcel="onExportExcel($event)" :hideUpdate="true" :refreshKey="refreshKey">
 
-    <template v-if="this.$_sys.isAllowed('pelatihan-petani-update')" v-slot:list-bottom-action="{ item }">
+    <template v-if="$_sys.isAllowed('pelatihan-petani-export-create')" v-slot:list-bottom-action="{ item }">
       <v-btn variant="success" small class="d-block mt-1" @click="onExportExcel(item)">
         <v-icon v-if="!exportIds.includes(item.training_no)">mdi-microsoft-excel</v-icon>
         <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
         <span>Export Excel</span>
       </v-btn>
-      <v-btn v-if="item.status" variant="danger" small class="mt-2" @click="onUnverif(item)">
+      <v-btn v-if="item.status && $_sys.isAllowed('pelatihan-petani-unverification-create')" variant="danger" small
+        class="mt-2" @click="onUnverif(item)">
         <v-icon left small>mdi-undo</v-icon>
         <span>Unverifikasi</span>
       </v-btn>
-      <v-btn v-else variant="success" small class="mt-2" @click="onVerif(item)">
+      <v-btn v-else-if="!item.status && $_sys.isAllowed('pelatihan-petani-verification-create')" variant="success" small
+        class="mt-2" @click="onVerif(item)">
         <v-icon left small>mdi-check-bold</v-icon>
         <span>Verifikasi</span>
       </v-btn>
