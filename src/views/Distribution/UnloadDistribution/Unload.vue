@@ -1,9 +1,10 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true">
-        <template v-slot:create-form>
-            <main-create-a-m-s></main-create-a-m-s>
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
+        <template v-slot:detail-slave-raw="{ data }">
+            <unload-allocation-detail :data="data"></unload-allocation-detail>
         </template>
     </geko-base-crud>
+
     
     <!-- <div class="under-development">
         <div class="wrapper">
@@ -23,30 +24,28 @@
 
 <script>
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
-import areamanagementconfig from "./amsConfig";
+import UnloadConfig from "./UnloadConfig";
+import UnloadAllocationDetail from "./UnloadAllocationDetail.vue";
 import LottieAnimation from "lottie-web-vue";
-import MainCreateAMS from "./mainCreateAMS.vue"
 export default {
     components: {
         LottieAnimation,
-        MainCreateAMS
+        UnloadAllocationDetail
     },
-    name: "crud-area-management-system",
+    name: "crud-distribution-unload",
     watch: {},
     data() {
         return {
             refreshKey: 1,
             config: {
-                title: "Area Management System",
+                title: "Distribution Unload",
                 model_api: null,
-                getter: "ams/get-list",
-                getterDataKey: "result",
-                totalDataKey: 'count_record',
-                setter: "ams/post_create",
-                update: "ams/post_update",
-                delete: "ams/post_delete",
-                
-                deleteKey: "id",
+                getter: "distribution/loading-line/list",
+                getterDataKey: "data",
+                totalDataKey: 'total',
+                detail: "distribution/loading-line/detail",
+                detailIdKey: "id",
+                detailKey: "result",
                 pk_field: null,
                 globalFilter: {
                     program_year: {
@@ -54,18 +53,21 @@ export default {
                     },
                 },
                 permission: {
-                    create: "area-management-system-create",
-                    read: "area-management-system-list",
-                    update: "area-management-system-update",
-                    detail: "area-management-system-detail",
-                    lookup: "area-management-system-lookup",
-                    delete: "area-management-system-delete",
+                    read: "distribution-unload-list",
+                    // update: "distribution-unload-update",
+                    detail: "distribution-unload-detail",
                 },
                 slave: [],
-                fields: areamanagementconfig,
+                fields: UnloadConfig,
             },
             lottie: maintenanceAnimation,
         };
+    },
+    methods: {
+        async openExpand(item) {
+            console.log(item)
+        },
+        
     },
 };
 </script>

@@ -76,6 +76,31 @@ export default [
       },
     },
     {
+      id: "active_status",
+      label: "Status Aktif",
+      methods: {
+        list: {
+          view_data: "active_status",
+          class: {
+            0: "badge bg-danger",
+            1: "badge bg-success",
+          },
+          transform: "active-status",
+        },
+        detail: {
+          view_data: "active_status",
+          class: {
+            0: "badge bg-danger",
+            1: "badge bg-success",
+          },
+          transform: "active-status",
+        },
+        create: false,
+        update: false,
+        filter: false
+      },
+    },
+    {
       id: "employee_positions_name",
       label: "Posisi",
       methods: {
