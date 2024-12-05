@@ -37,13 +37,255 @@
             </v-card>
           
         </v-col>
+        <v-col v-if="false">
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+
+                <div class="list-header py-3 mt-1">
+                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                      <h4>Dokumentasi Distribusi</h4>
+                  </div>
+                  <div class="d-flex flex-row geko-list-header-action">
+                      <div class="geko-list-header-toolbar"></div>
+                  </div>
+                </div>
+
+                <div class="absent-photo-list d-flex flex-row" v-if="true">
+                    <div class="absent-photo-item"
+                        @click="showLightbox(data.result.img_photo_created_by.url ?? '/images/noimage.png')"
+                        v-bind:style="{
+                        backgroundImage:
+                            'url(' +
+                            data.result.img_photo_created_by.thumbnail_url ?? '/images/noimage.png' +
+                            ')',
+                        }">
+                        <h6>Foto Dokumentasi Distribusi</h6>
+                    </div>
+                </div>
+
+            </v-card>
+        </v-col>
       </v-row>
+
+      <!-- detail farmer -->
+      <v-row>
+        <v-col>
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
+                <v-data-table 
+                  :headers="configAllocationFarmerDetail.table.header" 
+                  :items="data.result.detail_farmers"
+                  :search="''" 
+                  class="rounded-xl elevation- pa-1 px-5"
+                  :single-expand="true"
+                  :expanded.sync="expanded"
+                  :item-key="data.result.detail_farmers.id"
+                  show-expand
+                  >
+
+                    <template v-slot:item.index="{ index }">
+                    {{ index + 1 }}
+                    </template>
+
+                    <template v-slot:top>
+                    <div class="list-header py-3 mt-1">
+                        <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                        <h4>Detail Alokasi Petani</h4>
+                        </div>
+                        <div class="d-flex flex-row geko-list-header-action">
+                        <div class="geko-list-header-toolbar"></div>
+                        </div>
+                    </div>
+
+                    <div class="statistics mb-3">
+                        <div class="statistic-item light">
+                        <v-icon>mdi-list-status</v-icon>
+                        <div class="statistic-data">
+                            <p class="mb-0 label">Total Data Alokasi Petani</p>
+                            <p class="mb-0 value">{{ data.result.detail_farmers.length ?? '' }}</p>
+
+                        </div>
+                        </div>
+                    </div>
+                    </template>
+                    <template v-slot:expanded-item="{ headers, item }">
+                      <td :colspan="headers.length">
+                        <div class="list-header py-3 mt-1">
+                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                              <h4>Detail Label Petani {{ item.farmer_name }}</h4>
+                          </div>
+                          <div class="d-flex flex-row geko-list-header-action">
+                              <div class="geko-list-header-toolbar"></div>
+                          </div>
+                        </div>
+                        <h3>  </h3>
+                        <!-- detail lable -->
+                        <tr>
+                          <!-- total label -->
+                           <td>
+
+                           </td>
+                          <td>
+                            <v-card color="#26c6da" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
+
+                                      <template v-slot:item.index="{ index }">
+                                      {{ index + 1 }}
+                                      </template>
+
+                                      <template v-slot:top>
+                                      <div class="list-header py-3 mt-1">
+                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                          <h4>Label Tercetak</h4>
+                                          </div>
+                                          <div class="d-flex flex-row geko-list-header-action">
+                                          <div class="geko-list-header-toolbar"></div>
+                                          </div>
+                                      </div>
+
+                                      <div class="statistics mb-3">
+                                          <div class="statistic-item light">
+                                          <v-icon>mdi-list-status</v-icon>
+                                          <div class="statistic-data">
+                                              <p class="mb-0 label">Total Label</p>
+                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+
+                                          </div>
+                                          </div>
+                                      </div>
+                                      </template>
+
+                                  </v-data-table>
+                            </v-card>
+                          </td>
+                          <!-- total loaded -->
+                          <td>
+                            <v-card color="#f0a42b" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
+
+                                      <template v-slot:item.index="{ index }">
+                                      {{ index + 1 }}
+                                      </template>
+
+                                      <template v-slot:top>
+                                      <div class="list-header py-3 mt-1">
+                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                          <h4>Label Loaded</h4>
+                                          </div>
+                                          <div class="d-flex flex-row geko-list-header-action">
+                                          <div class="geko-list-header-toolbar"></div>
+                                          </div>
+                                      </div>
+
+                                      <div class="statistics mb-3">
+                                          <div class="statistic-item light">
+                                          <v-icon>mdi-list-status</v-icon>
+                                          <div class="statistic-data">
+                                              <p class="mb-0 label">Total Label Loaded</p>
+                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+
+                                          </div>
+                                          </div>
+                                      </div>
+                                      </template>
+
+                                  </v-data-table>
+                            </v-card>
+                          </td>
+                        </tr>
+                        <tr>
+                          <!-- total distributed -->
+                          <td>
+                            
+                          </td>
+                          <td>
+                            <v-card color="#1cd104" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
+
+                                      <template v-slot:item.index="{ index }">
+                                      {{ index + 1 }}
+                                      </template>
+
+                                      <template v-slot:top>
+                                      <div class="list-header py-3 mt-1">
+                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                          <h4>Label Terdistribusi</h4>
+                                          </div>
+                                          <div class="d-flex flex-row geko-list-header-action">
+                                          <div class="geko-list-header-toolbar"></div>
+                                          </div>
+                                      </div>
+
+                                      <div class="statistics mb-3">
+                                          <div class="statistic-item light">
+                                          <v-icon>mdi-list-status</v-icon>
+                                          <div class="statistic-data">
+                                              <p class="mb-0 label">Total Label Terdistribusi</p>
+                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+
+                                          </div>
+                                          </div>
+                                      </div>
+                                      </template>
+
+                                  </v-data-table>
+                            </v-card>
+                          </td>
+                          <!-- total missing -->
+                          <td>
+                            <v-card color="#e81313" max-width="575" class="geko-base-detail-card mb-5 px-1">
+                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                                      :search="''" class="rounded-xl elevation- pa-1 px-5">
+
+                                      <template v-slot:item.index="{ index }">
+                                      {{ index + 1 }}
+                                      </template>
+
+                                      <template v-slot:top>
+                                      <div class="list-header py-3 mt-1">
+                                          <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                          <h4>Label Hilang</h4>
+                                          </div>
+                                          <div class="d-flex flex-row geko-list-header-action">
+                                          <div class="geko-list-header-toolbar"></div>
+                                          </div>
+                                      </div>
+
+                                      <div class="statistics mb-3">
+                                          <div class="statistic-item light">
+                                          <v-icon>mdi-list-status</v-icon>
+                                          <div class="statistic-data">
+                                              <p class="mb-0 label">Total Label Hilang</p>
+                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+
+                                          </div>
+                                          </div>
+                                      </div>
+                                      </template>
+
+                                  </v-data-table>
+                            </v-card>
+                          </td>
+                        </tr>
+                      </td>
+                    
+                    </template>
+
+                </v-data-table>
+            </v-card>
+          
+        </v-col>
+      </v-row>
+
+      
     </div>
   
   </template>
   
   <script>
-  import DetailUnloadField from "./unloadDetailField";
+  import DetailUnloadAllocationTransportField from "./unloadDetailField";
+  import DetailUnloadAllocationFarmersField from "./unloadDetailFarmerFields";
   
   export default {
     name: "unload-allocation-detail",
@@ -58,10 +300,15 @@
     data() {
       return {
         configAllocationTransportDetail: {
-        table: {
-          header: DetailUnloadField
-        }
-      },
+          table: {
+            header: DetailUnloadAllocationTransportField
+          }
+        },
+        configAllocationFarmerDetail: {
+          table: {
+            header: DetailUnloadAllocationFarmersField
+          }
+        },
       }
     }
   }
