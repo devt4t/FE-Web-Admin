@@ -8,7 +8,28 @@ export default [
         },
       },
     },
-    
+    {
+      id: "distribution_date",
+      label: "Tanggal Distribusi",
+      methods: {
+        list: true,
+        detail: true,
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
+    {
+      id: "rel_implementor_allocation_seed_id",
+      label: "Nama Implementer",
+      methods: {
+        list: true,
+        detail: true,
+        create: false,
+        update: false,
+        filter: false,
+      },
+    },
     {
       id: "ff_name",
       label: "Nama Field Facilitator",

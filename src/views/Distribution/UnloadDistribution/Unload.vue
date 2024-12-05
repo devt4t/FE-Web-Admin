@@ -45,7 +45,7 @@ export default {
                 totalDataKey: 'total',
                 detail: "distribution/loading-line/detail",
                 detailIdKey: "id",
-                detailKey: "result",
+                detailKey: "data.result",
                 pk_field: null,
                 globalFilter: {
                     program_year: {

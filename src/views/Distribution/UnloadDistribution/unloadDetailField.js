@@ -28,5 +28,23 @@ export default [
         sortable: false,
         text: "Pengemudi",
         value: "rel_driver_id",
+      },
+      {
+        key: "total_load",
+        sortable: false,
+        text: "Total Load",
+        value: "total_load",
+      },
+      {
+        key: "qty_unloading",
+        sortable: false,
+        text: "Total Unload",
+        value: "qty_unloading",
+      },
+      {
+        key: "scanned_time",
+        sortable: false,
+        text: "Waktu Scan",
+        value: "scanned_time",
       }
 ]

@@ -825,7 +825,7 @@
                         ><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak
                         Menerima Pupuk</v-chip
                       >
-                      <!-- <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.total_pupuk )}} ML</v-chip> -->
+                      <v-chip v-if="distributionReport.dialogs.detail.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.total_pupuk )}} ML</v-chip>
                     </td>
                   </tr>
                   <tr>
@@ -1536,7 +1536,7 @@
                         ><v-icon class="mr-1">mdi-close-circle</v-icon> Tidak
                         Menerima</v-chip
                       >
-                      <!-- <v-chip v-if="distributionReport.dialogs.detailUmum.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.total_pupuk )}} ML</v-chip> -->
+                      <v-chip v-if="distributionReport.dialogs.detailUmum.data.is_pupuk_distributed == 1" color="green white--text" class="pl-1 pr-3"><v-icon class="mr-1">mdi-check-circle</v-icon> Menerima {{ new Intl.NumberFormat().format(distributionReport.dialogs.detail.data.total_pupuk )}} ML</v-chip>
   
                       <v-chip
                         v-if="
