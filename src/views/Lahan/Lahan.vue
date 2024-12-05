@@ -210,8 +210,8 @@
         Array.isArray(getMaskedValue(item).total_from_detail) &&
         getMaskedValue(item).total_from_detail.length > 0
       ">{{
-        (getMaskedValue(item).total_from_detail[0].pohon_kayu_detail +
-          getMaskedValue(item).total_from_detail[0].pohon_mpts_detail)
+        (parseFloat(getMaskedValue(item).total_from_detail[0].pohon_kayu_detail) +
+          parseFloat(getMaskedValue(item).total_from_detail[0].pohon_mpts_detail))
         | parse("ts")
       }}</span>
     </template>

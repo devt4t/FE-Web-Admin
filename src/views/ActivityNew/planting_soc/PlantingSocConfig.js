@@ -151,7 +151,16 @@ export default {
             transform: "date",
           },
           detail: true,
-          filter: false,
+          filter: {
+            label: "Tanggal Distribusi",
+            validation: ["required"],
+            type: "daterange",
+            col_size: 6,
+            getter: "updated_at",
+            setter: "distribution_date",
+            icon: "calendar-edit",
+            main: true,
+          },
         },
       },
       {
@@ -162,7 +171,6 @@ export default {
             transform: "date",
           },
           detail: true,
-          filter: false,
         },
       },
       {
@@ -187,6 +195,7 @@ export default {
           filter: {
             type: "select",
             setter: "status",
+            main: true,
             option: {
               default_options: [
                 {

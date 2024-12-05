@@ -519,7 +519,7 @@
                 data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
                 data.main_lahan.gis_polygon_area
               ">{{
-                data.main_lahan.gis_planting_area | parse("ts")
+                data.main_lahan.gis_planting_area || 0 | parse("ts")
               }}
                 m&sup2;</span>
             </p>
@@ -528,7 +528,7 @@
             <p class="mb-0 label">Luas Area Enhancement</p>
             <p class="mb-0 value" v-if="data.main_lahan">
               <span>
-                {{ data.main_lahan.gis_planting_area | parse(" ts") }} m&sup2;
+                {{ data.main_lahan.gis_planting_enhancement_area || 0 | parse(" ts") }} m&sup2;
               </span>
             </p>
           </div>
