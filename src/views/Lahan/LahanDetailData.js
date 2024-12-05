@@ -44,6 +44,18 @@ export default {
         shape: "cover",
       },
       {
+        id: "map-layer-4",
+        label: "Enhancement",
+        show: false,
+        shape: "cover",
+      },
+      {
+        id: "map-layer-5",
+        label: "ARR",
+        show: false,
+        shape: "cover",
+      },
+      {
         id: "map-coordinate",
         label: "Coordinate",
         show: false,

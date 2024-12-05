@@ -406,6 +406,28 @@
     }
   }
 }
+
+.lahan-stat-row {
+  padding-inline: 1em;
+  .lahan-stat-col {
+    border-left: 7px solid $success;
+    box-shadow: 0 0 20px 0 rgba(56, 71, 109, 0.15);
+    background-color: #fff !important;
+    border-radius: 8px;
+    padding: 0.5em;
+    padding-left: 0.7em;
+    margin-right: 3%;
+    margin-bottom: .7em;
+    .label {
+      color: rgba(165, 165, 165, 0.76);
+      font-size: 0.9em;
+    }
+    .value {
+      font-weight: bold;
+    }
+  }
+}
+
 .lahan-detail .other-data {
   h4 {
     font-size: 1.3em;

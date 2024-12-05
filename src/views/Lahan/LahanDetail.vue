@@ -484,14 +484,24 @@
             lahan</span>
         </div>
         <div class="lahan-stat-list">
-          <div class="lahan-stat-item">
+          <!-- <div class="lahan-stat-item">
             <p class="mb-0 label">Tutupan Lahan</p>
             <p class="mb-0 value">
-              <span v-if="data.main_lahan">{{ data.main_lahan.tutupan_lahan }}%</span>
+              <span v-if="data.main_lahan">{{ +data.main_lahan.tutupan_lahan ? data.main_lahan.tutupan_lahan + '%' :
+                +data.main_lahan.polygon_tutupan_area == 0 ? data.main_lahan.tutupan_lahan + '%' :
+                  data.main_lahan.polygon_tutupan_area + ` m&sup2;` }}</span>
             </p>
           </div>
-          <div class="lahan-stat-item">
-            <p class="mb-0 label">Luas Lahan</p>
+          <div class="lahan-stat-item " v-if="data.main_lahan.gis_eligibility_type">
+            <p class="mb-0 label">Luas Area Enhancement</p>
+            <p class="mb-0 value" v-if="data.main_lahan">
+              <span>
+                {{ data.main_lahan.gis_planting_enhancement_area || 0 | parse(" ts") }} m&sup2;
+              </span>
+            </p>
+          </div>
+          <div class="lahan-stat-item info">
+            <p class="mb-0 label">Luas Lahan GIS</p>
             <p class="mb-0 value" v-if="data.main_lahan">
               <span v-if="
                 data.main_lahan &&
@@ -507,8 +517,8 @@
                 m&sup2;</span>
             </p>
           </div>
-          <div class="lahan-stat-item">
-            <p class="mb-0 label">Luas Tanam</p>
+          <div class="lahan-stat-item info">
+            <p class="mb-0 label">Luas Area ARR</p>
             <p class="mb-0 value" v-if="data.main_lahan">
               <span v-if="
                 data.main_lahan &&
@@ -524,14 +534,24 @@
                 m&sup2;</span>
             </p>
           </div>
-          <div class="lahan-stat-item info" v-if="data.main_lahan.gis_eligibility_type">
-            <p class="mb-0 label">Luas Area Enhancement</p>
+          <div class="lahan-stat-item info">
+            <p class="mb-0 label">Luas Area Tanam</p>
             <p class="mb-0 value" v-if="data.main_lahan">
-              <span>
-                {{ data.main_lahan.gis_planting_enhancement_area || 0 | parse(" ts") }} m&sup2;
-              </span>
+              <span v-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis.toLowerCase() == 'belum'
+              ">{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span>
+              <span v-else-if="
+                data.main_lahan &&
+                data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                data.main_lahan.gis_polygon_area
+              ">{{
+                data.main_lahan.gis_planting_area || 0 | parse("ts")
+              }}
+                m&sup2;</span>
             </p>
-          </div>
+          </div> -->
+
           <!-- <div class="lahan-stat-item info" v-if="data.main_lahan.gis_eligibility_type">
             <p class="mb-0 label">Total Bibit</p>
             <p class="mb-0 value" v-if="data.main_lahan">
@@ -541,6 +561,95 @@
             </p>
           </div> -->
         </div>
+
+        <div class="ml-3 mt-2">
+          <div class="row lahan-stat-row">
+            <div class="col lahan-stat-col">
+              <p class="mb-0 label">
+                Tutupan Lahan
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="text-link text-1-em">
+                      <v-icon small class="text-secondary">mdi-help-circle</v-icon>
+                    </span>
+                  </template>
+
+                  <span>Area yang tidak memungkinkan ditanami</span>
+                </v-tooltip>
+              </p>
+              <p class="mb-0 value">
+                <span v-if="data.main_lahan">{{ +data.main_lahan.tutupan_lahan ? data.main_lahan.tutupan_lahan + '%' :
+                  +data.main_lahan.polygon_tutupan_area == 0 ? data.main_lahan.tutupan_lahan + '%' :
+                    data.main_lahan.polygon_tutupan_area + ` m&sup2;` }}</span>
+              </p>
+            </div>
+            <div class="col lahan-stat-col">
+              <p class="mb-0 label">
+                Luas Area Enhancement
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on" class="text-link text-1-em">
+                      <v-icon small class="text-secondary">mdi-help-circle</v-icon>
+                    </span>
+                  </template>
+
+                  <span>Area yang memungkinkan ditanami</span>
+                </v-tooltip>
+
+              </p>
+              <p class="mb-0 value" v-if="data.main_lahan">
+                <span>
+                  {{ data.main_lahan.gis_planting_enhancement_area || 0 | parse(" ts") }} m&sup2;
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div class="row lahan-stat-row">
+            <div class="col lahan-stat-col info">
+              <p class="mb-0 label">Luas Lahan GIS</p>
+              <p class="mb-0 value" v-if="data.main_lahan">
+                <span v-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'belum'
+                ">{{ data.main_lahan.land_area | parse("ts") }} m&sup2;</span>
+                <span v-else-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                  data.main_lahan.gis_polygon_area
+                ">{{
+                  data.main_lahan.gis_polygon_area | parse("ts")
+                }}
+                  m&sup2;</span>
+              </p>
+            </div>
+            <div class="col lahan-stat-col info">
+              <p class="mb-0 label">Luas Area ARR</p>
+              <p class="mb-0 value" v-if="data.main_lahan">
+                <span> {{ data.main_lahan.gis_arr_area || 0 | parse("ts") }} m&sup2;</span>
+              </p>
+            </div>
+            <div class="col lahan-stat-col info">
+              <p class="mb-0 label">Luas Area Tanam</p>
+              <p class="mb-0 value" v-if="data.main_lahan">
+                <span v-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'belum'
+                ">{{ data.main_lahan.planting_area | parse("ts") }} m&sup2;</span>
+                <span v-else-if="
+                  data.main_lahan &&
+                  data.main_lahan.updated_gis.toLowerCase() == 'sudah' &&
+                  data.main_lahan.gis_polygon_area
+                ">{{
+                  data.main_lahan.gis_planting_area || 0 | parse("ts")
+                }}
+                  m&sup2;</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+
         <div class="polygon-wrapper">
           <div class="map-wrapper" id="map-wrapper" style="height: 400px; width: 100%">
             <div class="map-legends">
@@ -588,6 +697,7 @@
           <div class="trees">
             <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
+              <div v-if="data.main_lahan.farmers_project_model === 3">Update</div>
               <div class="trees-filter" v-if="trees.length > 1">
                 <v-btn v-for="(tree, i) in trees" :variant="tree.label != treesActive ? 'light' : 'success'"
                   :key="`lahan-detail-tree-${i}`" class="mr-2" :class="{
@@ -1328,6 +1438,7 @@ export default {
               this.data.main_lahan.polygon_from_ff
             )
           ) {
+            console.log('ff polygon')
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
             );
@@ -1352,6 +1463,7 @@ export default {
               this.data.main_lahan.polygon_from_gis
             )
           ) {
+            console.log('gis polygon')
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
             );
@@ -1369,6 +1481,7 @@ export default {
           }
 
           if (![null, '-', undefined].includes(this.data.main_lahan.polygon_tutupan_photo)) {
+            console.log('tutupan photo polygon')
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
             );
@@ -1416,6 +1529,7 @@ export default {
               this.data.main_lahan.polygon_tutupan_photo
             )
           ) {
+            console.log('tutupan polygon')
             const kmlData = await this.loadKml(
               `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
             );
@@ -1424,6 +1538,57 @@ export default {
               this.addMapLayer(kmlData, "map-layer-1", "#FF7B7B", null);
               this.$set(this.legends, 0, {
                 ...this.legends[0],
+                show: true,
+              });
+
+              const centerCoordinate = turf.center(kmlData);
+              const mapCenter = centerCoordinate.geometry.coordinates;
+              if (this.map && this.map.setCenter instanceof Function) {
+                this.map.setCenter(mapCenter);
+              }
+            }
+          }
+
+
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.gis_planting_enhancement_polygon
+            )
+          ) {
+            console.log('planting enhancement polygon')
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_planting_enhancement_polygon}`
+            );
+
+            if (kmlData.features.length > 0) {
+              this.addMapLayer(kmlData, "map-layer-4", "#FFBD7B", null);
+              this.$set(this.legends, 3, {
+                ...this.legends[3],
+                show: true,
+              });
+
+              const centerCoordinate = turf.center(kmlData);
+              const mapCenter = centerCoordinate.geometry.coordinates;
+              if (this.map && this.map.setCenter instanceof Function) {
+                this.map.setCenter(mapCenter);
+              }
+            }
+          }
+
+          if (
+            ![null, "-", undefined].includes(
+              this.data.main_lahan.gis_arr_polygon
+            )
+          ) {
+            console.log('gis arr ploygon')
+            const kmlData = await this.loadKml(
+              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_arr_polygon}`
+            );
+
+            if (kmlData.features.length > 0) {
+              this.addMapLayer(kmlData, "map-layer-5", "#BD7BFF", null);
+              this.$set(this.legends, 4, {
+                ...this.legends[4],
                 show: true,
               });
 
