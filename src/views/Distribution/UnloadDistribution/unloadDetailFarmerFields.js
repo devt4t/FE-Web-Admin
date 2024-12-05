@@ -1,5 +1,12 @@
 export default [
     {
+      id: "data-table-expand",
+      label: "Detail Label",
+      methods: {
+        list: true,
+      },
+    },
+    {
         key: "index",
         sortable: false,
         text: "No",

@@ -76,7 +76,6 @@
                   :search="''" 
                   class="rounded-xl elevation- pa-1 px-5"
                   :single-expand="true"
-                  :expanded.sync="expanded"
                   :item-key="data.result.detail_farmers.id"
                   show-expand
                   >
@@ -125,7 +124,7 @@
                            </td>
                           <td>
                             <v-card color="#26c6da" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                              <v-data-table :headers="configLablePrintedDetail.table.header" :items-per-page="3" :items="item.printed_lable"
                                       :search="''" class="rounded-xl elevation- pa-1 px-5">
 
                                       <template v-slot:item.index="{ index }">
@@ -144,12 +143,12 @@
 
                                       <div class="statistics mb-3">
                                           <div class="statistic-item light">
-                                          <v-icon>mdi-list-status</v-icon>
-                                          <div class="statistic-data">
-                                              <p class="mb-0 label">Total Label</p>
-                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+                                            <v-icon>mdi-list-status</v-icon>
+                                            <div class="statistic-data">
+                                                <p class="mb-0 label">Total Label</p>
+                                                <p class="mb-0 value">{{ item.printed_lable.length ?? '' }}</p>
 
-                                          </div>
+                                            </div>
                                           </div>
                                       </div>
                                       </template>
@@ -160,7 +159,7 @@
                           <!-- total loaded -->
                           <td>
                             <v-card color="#f0a42b" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                              <v-data-table :headers="configLableLoadedDetail.table.header" :items-per-page="3" :items="item.loaded_lable"
                                       :search="''" class="rounded-xl elevation- pa-1 px-5">
 
                                       <template v-slot:item.index="{ index }">
@@ -182,7 +181,7 @@
                                           <v-icon>mdi-list-status</v-icon>
                                           <div class="statistic-data">
                                               <p class="mb-0 label">Total Label Loaded</p>
-                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+                                              <p class="mb-0 value">{{ item.loaded_lable.length ?? '' }}</p>
 
                                           </div>
                                           </div>
@@ -200,7 +199,7 @@
                           </td>
                           <td>
                             <v-card color="#1cd104" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                              <v-data-table :headers="configLableDistributedDetail.table.header" :items-per-page="3" :items="item.distributed_lable"
                                       :search="''" class="rounded-xl elevation- pa-1 px-5">
 
                                       <template v-slot:item.index="{ index }">
@@ -222,7 +221,7 @@
                                           <v-icon>mdi-list-status</v-icon>
                                           <div class="statistic-data">
                                               <p class="mb-0 label">Total Label Terdistribusi</p>
-                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+                                              <p class="mb-0 value">{{ item.distributed_lable.length ?? '' }}</p>
 
                                           </div>
                                           </div>
@@ -235,7 +234,7 @@
                           <!-- total missing -->
                           <td>
                             <v-card color="#e81313" max-width="575" class="geko-base-detail-card mb-5 px-1">
-                              <v-data-table :headers="configAllocationTransportDetail.table.header" :items="data.result.detail_allocation_transportation"
+                              <v-data-table :headers="configLableMissingDetail.table.header" :items-per-page="3" :items="item.missing_lable"
                                       :search="''" class="rounded-xl elevation- pa-1 px-5">
 
                                       <template v-slot:item.index="{ index }">
@@ -257,7 +256,7 @@
                                           <v-icon>mdi-list-status</v-icon>
                                           <div class="statistic-data">
                                               <p class="mb-0 label">Total Label Hilang</p>
-                                              <p class="mb-0 value">{{ data.result.detail_allocation_transportation.length ?? '' }}</p>
+                                              <p class="mb-0 value">{{ item.missing_lable.length ?? '' }}</p>
 
                                           </div>
                                           </div>
@@ -265,6 +264,65 @@
                                       </template>
 
                                   </v-data-table>
+                            </v-card>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+
+                          </td>
+                          <td>
+                            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+
+                                <div class="list-header py-3 mt-1">
+                                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                      <h4>Foto Penerimaan Petani</h4>
+                                  </div>
+                                  <div class="d-flex flex-row geko-list-header-action">
+                                      <div class="geko-list-header-toolbar"></div>
+                                  </div>
+                                </div>
+
+                                <div class="absent-photo-list d-flex flex-row" v-if="true">
+                                    <div class="absent-photo-item"
+                                        @click="showLightbox(item.file_accept.url ?? '/images/noimage.png')"
+                                        v-bind:style="{
+                                        backgroundImage:
+                                            'url(' +
+                                            item.file_accept.url ?? '/images/noimage.png' +
+                                            ')',
+                                        }">
+                                        <h6>Foto Dokumentasi Distribusi</h6>
+                                    </div>
+                                </div>
+
+                            </v-card>
+                          </td>
+                          <td>
+                            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+
+                                <div class="list-header py-3 mt-1">
+                                  <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                                      <h4>Tanda Tangan Petani</h4>
+                                  </div>
+                                  <div class="d-flex flex-row geko-list-header-action">
+                                      <div class="geko-list-header-toolbar"></div>
+                                  </div>
+                                </div>
+
+                                <div class="absent-photo-list d-flex flex-row" v-if="true">
+                                    <div class="absent-photo-item"
+                                        @click="showLightbox(item.file_signature.url ?? '/images/noimage.png')"
+                                        v-bind:style="{
+                                        backgroundImage:
+                                            'url(' +
+                                            item.file_signature.url ?? '/images/noimage.png' +
+                                            ')',
+                                        }">
+                                        <h6>Tanda Tangan Petani</h6>
+                                    </div>
+                                </div>
+
                             </v-card>
                           </td>
                         </tr>
@@ -286,6 +344,11 @@
   <script>
   import DetailUnloadAllocationTransportField from "./unloadDetailField";
   import DetailUnloadAllocationFarmersField from "./unloadDetailFarmerFields";
+  import DetailLablePrinted from "./DetailLable/totalLableField";
+  import DetailLableLoaded from "./DetailLable/totalLableLoaded";
+  import DetailLableDistributed from "./DetailLable/totalLableDistributed";
+  import DetailLableMissing from "./DetailLable/totalLableMissing";
+
   
   export default {
     name: "unload-allocation-detail",
@@ -296,6 +359,14 @@
       },
     },
     methods: {
+      showLightbox(imgs, index) {
+        if (imgs) this.$store.state.lightbox.imgs = imgs;
+
+        if (index) this.$store.state.lightbox.index = index;
+        else this.$store.state.lightbox.index = 0;
+
+        this.$store.state.lightbox.show = true;
+      },
     },
     data() {
       return {
@@ -307,6 +378,26 @@
         configAllocationFarmerDetail: {
           table: {
             header: DetailUnloadAllocationFarmersField
+          }
+        },
+        configLablePrintedDetail: {
+          table: {
+            header: DetailLablePrinted
+          }
+        },
+        configLableLoadedDetail: {
+          table: {
+            header: DetailLableLoaded
+          }
+        },
+        configLableDistributedDetail: {
+          table: {
+            header: DetailLableDistributed
+          }
+        },
+        configLableMissingDetail: {
+          table: {
+            header: DetailLableMissing
           }
         },
       }
