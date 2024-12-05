@@ -578,9 +578,14 @@
                 </v-tooltip>
               </p>
               <p class="mb-0 value">
-                <span v-if="data.main_lahan">{{ +data.main_lahan.tutupan_lahan ? data.main_lahan.tutupan_lahan + '%' :
-                  +data.main_lahan.polygon_tutupan_area == 0 ? data.main_lahan.tutupan_lahan + '%' :
-                    data.main_lahan.polygon_tutupan_area + ` m&sup2;` }}</span>
+                <span v-if="data.main_lahan">
+                  <span v-if="+data.main_lahan.tutupan_lahan">
+                    {{ data.main_lahan.tutupan_lahan || 0 | parse('ts') }}%
+                  </span>
+                  <span v-else>
+                    {{ +data.main_lahan.polygon_tutupan_area || 0 | parse('ts') }} m&sup2;
+                  </span>
+                </span>
               </p>
             </div>
             <div class="col lahan-stat-col">
@@ -599,7 +604,7 @@
               </p>
               <p class="mb-0 value" v-if="data.main_lahan">
                 <span>
-                  {{ data.main_lahan.gis_planting_enhancement_area || 0 | parse(" ts") }} m&sup2;
+                  {{ data.main_lahan.gis_planting_enhancement_area || 0 | parse("ts") }} m&sup2;
                 </span>
               </p>
             </div>
