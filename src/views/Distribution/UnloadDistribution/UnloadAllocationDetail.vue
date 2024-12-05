@@ -283,7 +283,7 @@
                                   </div>
                                 </div>
 
-                                <div class="absent-photo-list d-flex flex-row" v-if="true">
+                                <div class="absent-photo-list d-flex flex-row" v-if="item.file_accept != null">
                                     <div class="absent-photo-item"
                                         @click="showLightbox(item.file_accept.url ?? '/images/noimage.png')"
                                         v-bind:style="{
@@ -310,7 +310,7 @@
                                   </div>
                                 </div>
 
-                                <div class="absent-photo-list d-flex flex-row" v-if="true">
+                                <div class="absent-photo-list d-flex flex-row" v-if="item.file_signature != null">
                                     <div class="absent-photo-item"
                                         @click="showLightbox(item.file_signature.url ?? '/images/noimage.png')"
                                         v-bind:style="{
@@ -379,6 +379,7 @@
           table: {
             header: DetailUnloadAllocationFarmersField
           }
+
         },
         configLablePrintedDetail: {
           table: {
