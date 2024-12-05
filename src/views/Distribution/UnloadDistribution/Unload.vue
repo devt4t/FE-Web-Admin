@@ -1,10 +1,16 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
+        <template v-slot:list-bottom-action="{ item }">
+            <v-btn variant="info" small class="mt-2" @click="onBASTCheck(item)">
+                <v-icon left small>mdi-information-box-outline</v-icon>
+                <span>Cek Status BAST</span>
+            </v-btn>
+        </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
         </template>
     </geko-base-crud>
-
+    
     
     <!-- <div class="under-development">
         <div class="wrapper">
@@ -64,9 +70,20 @@ export default {
         };
     },
     methods: {
-        async openExpand(item) {
-            console.log(item)
-        },
+        async onBASTCheck(item){
+            const prompt = await this.$_alert.confirm('Cek Status BAST?', 'Apakah Anda Yakin Untuk Melakukan Cek Status BAST?', 'Ya, Verifikasi', 'Batal', true)
+            if (prompt.isConfirmed) {
+                // console.log(item)
+                this.$_api.get('NurseryCheckDistributionBAST', {
+                    loading_line_id: item.id,
+                })
+                    .then(() => {
+                        this.$_alert.success('Berhasil Update Status BAST')
+                        this.refreshKey += 1
+                    })
+            }
+        }
+        
         
     },
 };
