@@ -5649,12 +5649,11 @@
                             Export
                           </v-btn>
                         </v-list-item>
-                        <v-list-item
-                          v-if="
+                          <!-- v-if="
                             item.loading_line[0].status_bast == 0 ||
                             item.loading_line[0].status_bast == null
-                          "
-                        >
+                          " -->
+                        <v-list-item>
                           <v-btn
                             dark
                             class="px-7"
@@ -5670,7 +5669,7 @@
                           </v-btn>
                         </v-list-item>
                         <v-list-item
-                          v-if="item.loading_line[0].status_bast == 1"
+                          v-if="false"
                         >
                           <v-btn
                             dark
@@ -5687,7 +5686,7 @@
                           </v-btn>
                         </v-list-item>
                         <v-list-item
-                          v-if="item.loading_line[0].status_bast == 2"
+                          v-if="false"
                         >
                           <v-btn
                             dark
