@@ -998,6 +998,7 @@ export default {
       const mapImage = mapCanvas.toDataURL();
       this.polygonImageData = mapImage;
       this.printAppendixModal += 1;
+      console.log(this.polygonImageData, this.printAppendixModal)
     },
 
     getProject(lahanDetail) {
