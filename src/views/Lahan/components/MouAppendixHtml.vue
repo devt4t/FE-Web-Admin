@@ -74,7 +74,7 @@
               </tr>
               <tr>
                 <td>Model</td>
-                <td>{{ data.project_model }}</td>
+                <td>{{ data.farmers_project_model ?? '' }}</td>
               </tr>
             </table>
             <h3 style="margin-top: 1em">Jenis &amp; Jumlah Pohon</h3>
