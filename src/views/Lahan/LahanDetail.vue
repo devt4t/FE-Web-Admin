@@ -1245,10 +1245,10 @@ export default {
       return _value;
     },
     async getData() {
-      const result = await this.$_api.get("getDetailLahan_new", {
+      let result = await this.$_api.get("getDetailLahan_new", {
         id: this.$route.query.id,
       });
-
+      result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![15].includes(x.id))
       this.data = result;
 
       // set trees data
