@@ -1253,7 +1253,7 @@ export default {
       let result = await this.$_api.get("getDetailLahan_new", {
         id: this.$route.query.id,
       });
-      result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![15].includes(x.id))
+      result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![23,24,25].includes(x.id))
       this.data = result;
 
       // set trees data
