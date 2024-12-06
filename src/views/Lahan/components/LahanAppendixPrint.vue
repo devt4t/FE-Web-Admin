@@ -105,6 +105,9 @@ export default {
         });
     },
     onOpen() {
+
+      console.log('opened')
+
       this.data = {
         mou_no: this.mouData.mou_no,
         polygon_image: this.imageData,

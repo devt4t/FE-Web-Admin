@@ -989,6 +989,11 @@ export default {
     },
 
     onOpenAppendixPrint(lahanNo) {
+      console.log(this.data.main_lahan, '1')
+      console.log(this.data.main_lahan.approve, '2')
+      console.log(this.mouData, '3')
+      console.log(this.mouData.mou_status, '4')
+      console.log(new String($_sys.isAllowed('lahan-print-appendix-create')), '5')
       if (this.data.main_lahan && this.data.main_lahan.lahan_no !== lahanNo) {
         window.open(`/#/lahan-v2?view=detail&id=${lahanNo}`);
         return;
@@ -997,8 +1002,8 @@ export default {
       mapCanvas.style.display = "block";
       const mapImage = mapCanvas.toDataURL();
       this.polygonImageData = mapImage;
-      this.printAppendixModal += 1;
-      console.log(this.polygonImageData, this.printAppendixModal)
+      this.printAppendixModal++;
+
     },
 
     getProject(lahanDetail) {
