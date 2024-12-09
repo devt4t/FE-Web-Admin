@@ -8,9 +8,9 @@
 
         <v-card-text class="farmer-assign-wrapper mt-3">
 
-          <geko-input v-model="lahanTypeToExport" :item="{
+          <geko-input v-model="exportBy" :item="{
             type: 'select-radio',
-            label: 'Jenis Lahan',
+            label: 'Export By',
             validation: ['required'],
             option: {
               list_pointer: {
@@ -20,107 +20,114 @@
               },
               default_options: [
                 {
-                  label: 'Non-Carbon',
-                  code: 'non-carbon',
+                  label: 'Field Facilitator',
+                  code: 'ff',
                 },
                 {
-                  label: 'Carbon',
-                  code: 'carbon',
+                  label: 'Management Unit',
+                  code: 'mu',
                 },
               ],
             },
           }" />
 
-          <ValidationObserver v-if="lahanTypeToExport=='non-carbon'" ref="firstForm" v-slot="{ handleSubmit }">
-            <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-              <v-row>
-                <v-col lg="12">
-                  <geko-input v-if="ffList.length > 0" v-model="ff_code" :item="{
-                    label: 'Field Facilitator',
-                    placeholder: 'Pilih Field Facilitator',
-                    type: 'select',
-                    validation: ['required'],
-                    api: 'GetFFAllWeb_new',
-                    param: {
-                      limit: 20,
-                    },
-                    option: {
-                      multiple: true,
-                      default_options: ffList,
-                      list_pointer: {
-                        label: 'name',
-                        code: 'ff_no',
-                        display: ['name', 'ff_no'],
+          <div :class="exportBy === 'ff' ? 'd-block' : 'd-none'">
+            <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
+              <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+                <v-row>
+                  <v-col lg="12">
+                    <geko-input v-if="ffList.length > 0" v-model="ff_code" :item="{
+                      label: 'Field Facilitator',
+                      placeholder: 'Pilih Field Facilitator',
+                      type: 'select',
+                      validation: ['required'],
+                      api: 'GetFFAllWeb_new',
+                      param: {
+                        limit: 20,
                       },
-                    },
-                  }" @option:selected="test($event)" :disabled="ffList.length == 0" />
-                  <v-progress-circular v-if="ffList.length == 0" indeterminate color="primary"></v-progress-circular>
-                </v-col>
-
-                <v-col lg="12">
-                  <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                    <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
-
-                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
-                    <span class="ml-1"> Export PDF</span>
-                  </v-btn>
-                </v-col>
-
-                <v-col lg="12">
-                  <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                    <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
-                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
-                    <span class="ml-1"> Export Excel</span>
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </form>
-          </ValidationObserver>
-          <ValidationObserver v-else ref="firstForm" v-slot="{ handleSubmit }">
-            <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
-              <v-row>
-                <v-col lg="12">
-                  <geko-input v-if="ffList.length > 0" v-model="ff_code" :item="{
-                    label: 'Management Unit',
-                    placeholder: 'Pilih Management Unit',
-                    type: 'select',
-                    validation: ['required'],
-                    api: 'GetFFAllWeb_new',
-                    param: {
-                      limit: 20,
-                    },
-                    option: {
-                      multiple: true,
-                      default_options: ffList,
-                      list_pointer: {
-                        label: 'name',
-                        code: 'ff_no',
-                        display: ['name', 'ff_no'],
+                      option: {
+                        multiple: true,
+                        default_options: ffList,
+                        list_pointer: {
+                          label: 'name',
+                          code: 'ff_no',
+                          display: ['name', 'ff_no'],
+                        },
                       },
-                    },
-                  }" @option:selected="test($event)" :disabled="ffList.length == 0" />
-                  <v-progress-circular v-if="ffList.length == 0" indeterminate color="primary"></v-progress-circular>
-                </v-col>
+                    }" @option:selected="test($event)" :disabled="ffList.length == 0" />
+                    <v-progress-circular v-if="ffList.length == 0" indeterminate color="primary"></v-progress-circular>
+                  </v-col>
 
-                <v-col lg="12">
-                  <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
-                    <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
+                  <v-col lg="12">
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                      <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
 
-                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
-                    <span class="ml-1"> Export PDF</span>
-                  </v-btn>
-                </v-col>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export PDF</span>
+                    </v-btn>
+                  </v-col>
 
-                <v-col lg="12">
-                  <v-btn variant="success" type="submit" v-if="format == 'excel'">
-                    <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
-                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
-                    <span class="ml-1"> Export Excel</span>
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </form>
-          </ValidationObserver>
+                  <v-col lg="12">
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                      <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export Excel</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </form>
+            </ValidationObserver>
+          </div>
+          <div :class="exportBy === 'mu' ? 'd-block' : 'd-none'">
+            <ValidationObserver ref="secondForm" v-slot="{ handleSubmit }">
+              <form @submit.prevent="handleSubmit(onSubmitCarbonData)" autocomplete="off">
+                <v-row>
+                  <v-col lg="12">
+                    <geko-input v-if="muList.length > 0" v-model="mu_no" :item="{
+                      label: 'Management Unit',
+                      placeholder: 'Pilih Management Unit',
+                      type: 'select',
+                      validation: ['required'],
+                      api: 'GetManagementUnitAdmin',
+                      param: {
+                        page: 1,
+                        per_page: 10,
+                      },
+                      option: {
+                        multiple: true,
+                        getterKey: 'data.result',
+                        default_options: muList,
+                        list_pointer: {
+                          label: 'name',
+                          code: 'mu_no',
+                          display: ['name'],
+                        },
+                      },
+                    }" @option:selected="test2($event)" :disabled="muList.length == 0" />
+                    <v-progress-circular v-if="muList.length == 0" indeterminate color="primary"></v-progress-circular>
+                  </v-col>
+
+                  <v-col lg="12">
+                    <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                      <v-icon v-if="!loadingCarbonExport">mdi-file-pdf-box</v-icon>
+
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export PDF</span>
+                    </v-btn>
+                  </v-col>
+
+                  <v-col lg="12">
+                    <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                      <v-icon v-if="!loadingCarbonExport">mdi-microsoft-excel</v-icon>
+                      <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                      <span class="ml-1"> Export Excel</span>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </form>
+            </ValidationObserver>
+          </div>
+
         </v-card-text>
       </v-card>
     </template>
@@ -135,11 +142,14 @@ export default {
   data() {
     return {
       ff_code: null,
+      mu_no: null,
       isOpen: false,
       loading: false,
+      loadingCarbonExport: false,
       currentFfName: "",
-      lahanTypeToExport: 'non-carbon',
+      exportBy: 'ff',
       ffList: [],
+      muList: []
     };
   },
   props: {
@@ -155,7 +165,9 @@ export default {
   watch: {
     dataKey(t) {
       if (t > 0) {
-        this.getInitialData()
+        // this.getInitialData()
+        this.getFFDataForExport()
+        this.getMUDataForExport()
         this.isOpen = true;
       }
 
@@ -165,15 +177,23 @@ export default {
     },
   },
 
+  // mounted() {
+  //   this.getFFDataForExport()
+  //   this.getMUDataForExport()
+  // },
+
   methods: {
     test(data) {
       console.log("data", data);
     },
+    test2(data) {
+      console.log("data", data);
+    },
 
-    async getInitialData() {
+    async getFFDataForExport() {
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
-        limit: 10000,
+        limit: 1000,
         offset: 0,
       });
 
@@ -185,6 +205,21 @@ export default {
 
       this.ffList = result.data;
     },
+    async getMUDataForExport() {
+      if (this.muList.length > 0) return;
+      const result = await this.$_api.get("GetManagementUnitAdmin", {
+        page: 1,
+        per_page: 1000,
+      });
+
+      if (!Array.isArray(result.data.result)) return;
+
+      for (const item of result.data.result) {
+        item.name = `${item.name}`;
+      }
+
+      this.muList = result.data.result;
+    },
     // export data
 
     getExportData(ffCode) {
@@ -194,6 +229,23 @@ export default {
             program_year: this.$store.state.tmpProgramYear,
             ff_no: ffCode,
             limit: 100000,
+            offset: 0,
+          })
+          .then((res) => {
+            return resolve(res);
+          })
+          .catch(() => {
+            return reject(false);
+          });
+      });
+    },
+    getExportDataCarbon(muNo) {
+      return new Promise(async (resolve, reject) => {
+        this.$_api
+          .get("lahan/export/list/carbon", {
+            program_year: this.$store.state.tmpProgramYear,
+            mu_no: muNo,
+            limit: 100,
             offset: 0,
           })
           .then((res) => {
@@ -311,8 +363,117 @@ export default {
       this.loading = false;
       this.isOpen = false;
     },
+    async onSubmitCarbonData() {
+      if (this.loadingCarbonExport) return;
+
+      // this.loadingCarbonExport = true;
+      for (const _mu of this.mu_no) {
+        if (!_mu) continue;
+
+        const result = await this.getExportDataCarbon(_mu);
+console.log(result)
+        if (!result) {
+          this.loadingCarbonExport = false;
+          continue;
+        }
+
+        if (
+          !Array.isArray(result.result) ||
+          (Array.isArray(result.result) && result.result.length == 0)
+        ) {
+          if (this.mu_no.length == 0) {
+            this.loadingCarbonExport = false;
+            this.$_alert.error(
+              {},
+              "Tidak ada data",
+              `Tidak ada data di Target Area ${this._mu} - ${this.$store.state.tmpProgramYear}`
+            );
+            return;
+          }
+          continue;
+        }
+
+        const trees = await this.$_api
+          .get("GetTreesAll")
+          .then((res) => {
+            return res.data.result.data;
+          })
+          .catch((err) => {
+            console.log("err", err);
+            return false;
+          });
+
+        if (!trees) {
+          this.loading = false;
+          continue;
+        }
+
+        const configUrl = {
+          pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+          excel: `${this.$_config.baseUrlExport}export/land-carbon/excel`,
+        };
+
+        let muName = this.muList.find((item) => item.mu_no == _mu)
+          ? this.muList.find((item) => item.mu_no == _mu).name
+          : "";
+
+        if (muName) {
+          muName = muName.replace(/ /g, "");
+        }
+
+        const configFilename = {
+          pdf: `Report-${muName}-${_mu}-${moment().format(
+            "DMMYYYYHHmmss"
+          )}.pdf`,
+          excel: `Report-${muName}-${_mu}-${moment().format(
+            "DMMYYYYHHmmss"
+          )}.xlsx`,
+        };
+        const axiosConfig = {
+          method: "POST",
+          url: configUrl[this.format],
+          responseType: "arraybuffer",
+          data: {
+            data: result.result,
+            trees: trees
+          },
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${this.$store.state.token}`,
+          },
+        };
+        const exported = await axios(axiosConfig)
+          .then((res) => {
+            return res;
+          })
+          .catch((err) => {
+            return false;
+          });
+
+        if (!exported) {
+          this.loadingCarbonExport = false;
+          continue;
+        }
+
+        const url = URL.createObjectURL(new Blob([exported.data]));
+        const link = document.createElement("a");
+        link.href = url;
+
+        const filename = configFilename[this.format];
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+      }
+
+      this.$_alert.success("Successfully");
+      this.loading = false;
+      this.isOpen = false;
+    },
 
     test(data) {
+      console.log("data", data);
+    },
+    test2(data) {
       console.log("data", data);
     },
   },
