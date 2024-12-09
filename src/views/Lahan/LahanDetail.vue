@@ -702,7 +702,9 @@
           <div class="trees">
             <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
-              <div v-if="data.main_lahan.farmers_project_model === 3">Update</div>
+              <div v-if="data.main_lahan.approve == 0">
+                <v-btn variant="warning">Adjustment</v-btn>
+              </div>
               <div class="trees-filter" v-if="trees.length > 1">
                 <v-btn v-for="(tree, i) in trees" :variant="tree.label != treesActive ? 'light' : 'success'"
                   :key="`lahan-detail-tree-${i}`" class="mr-2" :class="{
@@ -1253,7 +1255,7 @@ export default {
       let result = await this.$_api.get("getDetailLahan_new", {
         id: this.$route.query.id,
       });
-      result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![23,24,25].includes(x.id))
+      result.lahan_term_question_list = result.lahan_term_question_list.filter(x => ![23, 24, 25].includes(x.id))
       this.data = result;
 
       // set trees data
