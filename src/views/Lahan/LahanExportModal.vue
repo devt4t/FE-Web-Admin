@@ -366,7 +366,7 @@ export default {
     async onSubmitCarbonData() {
       if (this.loadingCarbonExport) return;
 
-      // this.loadingCarbonExport = true;
+      this.loadingCarbonExport = true;
       for (const _mu of this.mu_no) {
         if (!_mu) continue;
 
