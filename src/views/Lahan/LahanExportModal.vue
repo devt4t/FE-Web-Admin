@@ -245,7 +245,7 @@ export default {
           .get("lahan/export/list/carbon", {
             program_year: this.$store.state.tmpProgramYear,
             mu_no: muNo,
-            limit: 100,
+            limit: 10000,
             offset: 0,
           })
           .then((res) => {
