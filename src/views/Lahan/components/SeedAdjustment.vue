@@ -1,97 +1,49 @@
 <template>
-    <div>
+    <div class="seed-adjustment">
         <!-- main dialog -->
         <v-dialog v-model="isOpen" width="850" scrollable>
             <v-card>
                 <v-card-title class="d-flex flex-row justify-content-between mb-5">
-                    <h4 class="mb-0 pb-0" v-if="openFormUpload">
-                        {{ formUploadPreview ? "Preview" : "Upload" }} Lampiran
+                    <h4 class="mb-0 pb-0">
+                        Adjustment Bibit
                     </h4>
 
-                    <div class="d-flex">
-                        <!-- btn print -->
-                        <v-btn small variant="primary" class="d-flex flex-row align-items-center" @click="onPrint">
-                            <v-progress-circular v-if="loading" indeterminate :size="20"
-                                color="primary"></v-progress-circular>
-                            <v-icon v-else>mdi-printer-outline</v-icon>
-                            <span class="ml-1">Print
-                                {{ mouData && mouData.printed_status ? "Ulang" : "" }}
-                                MOU</span>
-                        </v-btn>
-                        <!-- btn revision -->
-                        <v-btn v-if="
-                            (mouData && mouData.mou_status == 0) || (mouData && !mouData.id)
-                        " small variant="warning" class="d-flex flex-row align-items-center ml-2"
-                            @click="() => (dialogs.revision.isOpen = true)">
-                            <v-progress-circular v-if="loading" indeterminate :size="20"
-                                color="warning"></v-progress-circular>
-                            <v-icon v-else>mdi-file-edit-outline</v-icon>
-                            <span class="ml-1">Revisi MOU</span>
-                        </v-btn>
-                        <!-- btn upload lampiran -->
-                        <v-btn v-if="
-                            mouData && mouData.printed_status && mouData.mou_status != 5
-                        " :disabled="loading" small variant="warning" class="d-flex flex-row align-items-center ml-2" @click="
-                openFormUpload = true;
-            formUploadPreview = false;
-            ">
-                            <v-icon>mdi-file-alert-outline</v-icon>
-                            <span class="ml-1">Upload Lampiran</span>
-                        </v-btn>
-                        <!-- btn preview lampiran -->
-                        <v-btn v-if="
-                            mouData &&
-                            mouData.printed_status &&
-                            [4, 5].includes(mouData.mou_status)
-                        " :disabled="loading" small variant="success" class="d-flex flex-row align-items-center ml-2" @click="
-                openFormUpload = true;
-            formUploadPreview = true;
-            ">
-                            <v-icon>mdi-file-eye-outline</v-icon>
-                            <span class="ml-1">Preview Lampiran</span>
-                        </v-btn>
-                    </div>
+
                 </v-card-title>
                 <v-card-text class="pt-5">
-                    <v-alert v-if="mouData && mouData.printed_at && !openFormUpload" dense text icon="mdi-printer-check"
-                        type="info">
-                        {{ mouData.printed_at | parse("datetime") }}
-                    </v-alert>
-                    <!-- revision desc -->
-                    <v-alert v-if="mouData && mouData.mou_status == 2" dense text icon="mdi-alert-circle-outline"
-                        type="warning">
-                        Revisi: {{ mouData.mou_revision_reason }}
-                    </v-alert>
-                    <!-- FormUploadAttachmentMOU -->
-                    <FormUploadAttachmentMOU v-if="openFormUpload" :mouData="mouData" :lahanData="lahanData"
-                        :preview="formUploadPreview" @close="openFormUpload = false" @closeParent="isOpen = false"
-                        @refreshData="refreshDetailLahan()" @openPrintAppendix="openPrintAppendix" />
-                    <!-- MOU -->
-                    <div class="preview-wrapper" v-else-if="typeof data === 'object' && Object.keys(data).length > 0">
-                        <vue-html2pdf :show-layout="true" :float-layout="false" :enable-download="true"
-                            :preview-modal="true" :pdf-quality="1" :manual-pagination="true" pdf-format="a4"
-                            pdf-orientation="portrait" pdf-content-width="794px" :pdf-content-height="1123"
-                            ref="html2Pdf" :html-to-pdf-options="{
-                                margin: 0,
-                                filename: `MOU-${data.farmer_name}`,
-                                pagebreak: {
-                                    mode: ['css', 'legacy'],
-                                    after: '.html2pdf__page-break',
-                                },
-                                html2canvas: {
-                                    scale: 3,
-                                    useCORS: true,
-                                },
-                                jsPDF: {
-                                    format: 'a4',
-                                    unit: 'mm',
-                                    orientation: 'p',
-                                },
-                            }" @beforeDownload="beforeDownload($event)" @hasDownloaded="onDownloadComplete()">
-                            <section slot="pdf-content">
-                                <mou-html :data="data" />
-                            </section>
-                        </vue-html2pdf>
+                    <div class="seed-adjustment-trees d-flex flex-col" v-if="Array.isArray(tree_adjustments)">
+                        <h3 class="mb-2">Jumlah bibit saat ini</h3>
+                        <div class="tree-list">
+                            <div class="tree-item" v-for="(item, i) in tree_adjustments" :key="`addjust-seed-${i}`">
+                                <v-icon>mdi-tree</v-icon>
+                                <div class="d-flex flex-col pl-3">
+                                    <span class="label">{{ item.trees_tree_name }}</span>
+                                    <span class="value">{{ item.amount | parse('ts') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="seed-adjustment-trees" v-if="Array.isArray(tree_adjustments)">
+                        <h3 class="mb-2 mt-3">Jumlah Bibit</h3>
+
+                        <div class="tree-list">
+                            <div class="tree-item" v-for="(item, i) in tree_adjustments" :key="`addjust-seed-1-${i}`">
+                                <v-icon>mdi-tree</v-icon>
+                                <div class="d-flex flex-col pl-3 adjustment-wrapper">
+                                    <geko-input v-model="item.adjustment_amount" :item="{
+                                        type: 'number',
+                                        label: `Pohon ${item.trees_tree_name}`,
+                                    }" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-row justify-content-center mt-6">
+                        <v-btn variant="warning" @click="onAdjustment">
+                            <span>Sesuaikan Bibit</span>
+                        </v-btn>
                     </div>
                 </v-card-text>
             </v-card>
@@ -101,11 +53,6 @@
 </template>
 
 <script>
-import VueHtml2pdf from "vue-html2pdf";
-import MouHtml from "./MouHtml.vue";
-import moment from "moment";
-import axios from 'axios'
-import FormUploadAttachmentMOU from "./FormUploadAttachmentMOU.vue";
 export default {
     name: "SeedAdjustment",
 
@@ -122,10 +69,78 @@ export default {
 
     methods: {
         onOpen() {
+            if (this.trees && Array.isArray(this.trees.data)) {
+                let totalMpts = 0;
+                let totalKayu = 0;
+
+                for (const tree of this.trees.data) {
+                    if (tree.tree_category === 'Pohon_Kayu') {
+                        totalKayu += parseInt(tree.amount)
+                    }
+
+                    else if (tree.tree_category == 'Pohon_Buah') {
+                        totalMpts += parseInt(tree.amount)
+                    }
+                    tree.adjustment_amount = parseInt(tree.amount);
+                }
+
+                this.max_mpts = totalMpts
+                this.max_kayu = totalKayu
+                this.tree_adjustments = this.trees.data
+            }
             this.isOpen = true;
 
 
         },
+        onAdjustment() {
+
+            this.loading = true
+            try {
+                let totalKayu = 0;
+                let totalMpts = 0;
+
+                for (const tree of this.tree_adjustments) {
+                    if (tree.tree_category == 'Pohon_Kayu') {
+                        totalKayu += parseInt(tree.adjustment_amount)
+                    }
+                    else if (tree.tree_category == 'Pohon_Buah') {
+                        totalMpts += parseInt(tree.adjustment_amount)
+                    }
+                }
+
+                if (totalKayu > this.max_kayu) {
+                    throw `Maksimal jumlah bibit kayu adalah ${this.max_kayu}`
+                }
+                if (totalMpts > this.max_mpts) {
+                    throw `Maksimal jumlah bibit mpts adalah ${this.max_mpts}`
+                }
+
+                const seedAdjustmentResult = JSON.parse(JSON.stringify(this.tree_adjustments))
+
+                for (const tree of seedAdjustmentResult) {
+                    tree.amount = parseInt(tree.adjustment_amount)
+                }
+
+                this.$_api.post(`lahan/seed-adjustment-carbon`, {
+                    seeds: seedAdjustmentResult
+                })
+                    .then(() => {
+                        this.$_alert.success('Data bibit berhasil diperbarui')
+                        this.loading = false
+                        this.isOpen = false
+                        this.$parent.getData();
+                    })
+
+
+
+
+            }
+            catch (err) {
+                let errMessage = typeof err === 'string' ? err : JSON.stringify(err)
+                this.$_alert.error(errMessage)
+                this.loading = false
+            }
+        }
     },
 
     mounted() { },
@@ -135,6 +150,9 @@ export default {
             isOpen: false,
             data: [],
             loading: false,
+            max_mpts: 0,
+            max_kayu: 0,
+            tree_adjustments: []
         };
     },
 
@@ -142,6 +160,12 @@ export default {
         modalKey(t) {
             if (t > 0) {
                 this.onOpen();
+            }
+            else {
+                this.data = []
+                this.tree_adjustments = []
+                this.max_kayu = 0;
+                this.max_mpts = 0;
             }
         },
         isOpen(t) {
@@ -155,8 +179,4 @@ export default {
 };
 </script>
 
-<style>
-.preview-wrapper .content-wrapper {
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-</style>
+<style scoped></style>
