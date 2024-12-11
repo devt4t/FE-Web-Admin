@@ -126,7 +126,7 @@
             }}</v-icon>
           </label>
 
-          <div class="upload-label">
+          <div class="upload-label" v-if="!item.option || (item.option && !item.option.hide_label)">
             <h6>
               {{
                 item.option
