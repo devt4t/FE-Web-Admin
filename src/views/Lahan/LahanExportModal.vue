@@ -149,7 +149,8 @@ export default {
       currentFfName: "",
       exportBy: 'ff',
       ffList: [],
-      muList: []
+      muList: [],
+      exportData: [],
     };
   },
   props: {
@@ -239,14 +240,14 @@ export default {
           });
       });
     },
-    getExportDataCarbon(muNo) {
+    getExportDataCarbon(muNo, offset) {
       return new Promise(async (resolve, reject) => {
         this.$_api
           .get("lahan/export/list/carbon", {
             program_year: this.$store.state.tmpProgramYear,
             mu_no: muNo,
-            limit: 10000,
-            offset: 0,
+            limit: 100,
+            offset,
           })
           .then((res) => {
             return resolve(res);
@@ -370,28 +371,36 @@ export default {
       for (const _mu of this.mu_no) {
         if (!_mu) continue;
 
-        const result = await this.getExportDataCarbon(_mu);
-console.log(result)
-        if (!result) {
-          this.loadingCarbonExport = false;
-          continue;
-        }
+        let offset = 0;
+        while (true) {
+          const result = await this.getExportDataCarbon(_mu, offset);
+          if (!result) {
+            this.loadingCarbonExport = false;
+            break;
+          }
 
-        if (
-          !Array.isArray(result.result) ||
-          (Array.isArray(result.result) && result.result.length == 0)
-        ) {
-          if (this.mu_no.length == 0) {
+          if (
+            !Array.isArray(result.result) ||
+            (Array.isArray(result.result) && result.result.length == 0)
+          ) {
             this.loadingCarbonExport = false;
             this.$_alert.error(
               {},
               "Tidak ada data",
               `Tidak ada data di Target Area ${this._mu} - ${this.$store.state.tmpProgramYear}`
             );
-            return;
+            break;
+          } else {
+            console.log(result, offset)
+            this.exportData = [...this.exportData, ...result.result]
+            if (offset === 200) break;
+            offset += 100;
           }
-          continue;
+
+
+
         }
+
 
         const trees = await this.$_api
           .get("GetTreesAll")
@@ -434,7 +443,7 @@ console.log(result)
           url: configUrl[this.format],
           responseType: "arraybuffer",
           data: {
-            data: result.result,
+            data: this.exportData,
             trees: trees
           },
           headers: {
@@ -450,7 +459,7 @@ console.log(result)
             return false;
           });
 
-        if (!exported) {
+        if (exported) {
           this.loadingCarbonExport = false;
           continue;
         }
