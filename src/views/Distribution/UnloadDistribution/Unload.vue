@@ -5,6 +5,14 @@
                 <v-icon left small>mdi-information-box-outline</v-icon>
                 <span>Cek Status BAST</span>
             </v-btn>
+            <v-btn v-if="item.status_bast == 1" variant="danger" small class="mt-2" @click="lackOfSeedForm(item)">
+                <v-icon left small>mdi-magnify-minus</v-icon>
+                <span>Lapor Bibit Kurang</span>
+            </v-btn>
+            <v-btn v-else-if="item.status_bast == 2" variant="warning" small class="mt-2" @click="excessOfSeedForm(item)">
+                <v-icon left small>mdi-magnify-plus</v-icon>
+                <span>Lapor Bibit Berlebih</span>
+            </v-btn>
         </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
@@ -42,6 +50,7 @@ export default {
     watch: {},
     data() {
         return {
+            User: JSON.parse(localStorage.getItem("User")),
             refreshKey: 1,
             config: {
                 title: "Distribution Unload",
@@ -74,7 +83,7 @@ export default {
             const prompt = await this.$_alert.confirm('Cek Status BAST?', 'Apakah Anda Yakin Untuk Melakukan Cek Status BAST?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
                 // console.log(item)
-                this.$_api.get('NurseryCheckDistributionBAST', {
+                this.$_api.get('distribution/nursery/check-bast', {
                     loading_line_id: item.id,
                 })
                     .then(() => {
@@ -82,7 +91,18 @@ export default {
                         this.refreshKey += 1
                     })
             }
-        }
+        },
+        lackOfSeedForm(item) {
+            // console.log(item.id, this.User.name)
+            window.open(
+                `https://nursery.trees4trees.org/#/forms/request-distribution-addendum?loading_line_id=${item.id}&request_by=${this.User.name}`
+            );
+        },
+        excessOfSeedForm(item) {
+            window.open(
+                `https://nursery.trees4trees.org/#/forms/request-distribution-addendum?loading_line_id=${item.id}&request_by=${this.User.name}`
+            );
+        },
         
         
     },

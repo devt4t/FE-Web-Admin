@@ -138,6 +138,15 @@ const menu = [
         icon: "mdi-square-rounded-badge",
       },
       {
+        title: "Lahan Umum",
+        to: "/LahanUmumV2",
+        component: "LahanUmum/LahanUmum",
+        name: "LahanUmumV2",
+        permission: "LahanUmum",
+        icon: "mdi-square-rounded-badge",
+        update: true,
+      },
+      {
         title: "Donor",
         to: "/Donor",
         component: "Donor/Donor",
