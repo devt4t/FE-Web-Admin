@@ -367,9 +367,19 @@ export default {
     async onSubmitCarbonData() {
       if (this.loadingCarbonExport) return;
 
+      const configUrl = {
+        pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
+        excel: `${this.$_config.baseUrlExport}export/land-carbon/excel`,
+      };
+
+
       this.loadingCarbonExport = true;
-      for (const _mu of this.mu_no) {
+      for (const [index, _mu] of this.mu_no.entries()) {
         if (!_mu) continue;
+
+        let muName = this.muList.find((item) => item.mu_no == _mu)
+          ? this.muList.find((item) => item.mu_no == _mu).name
+          : "";
 
         let offset = 0;
         while (true) {
@@ -387,13 +397,13 @@ export default {
             this.$_alert.error(
               {},
               "Tidak ada data",
-              `Tidak ada data di Target Area ${this._mu} - ${this.$store.state.tmpProgramYear}`
+              `Tidak ada data di Unit Management ${muName} ${this.$store.state.tmpProgramYear}`
             );
-            break;
+            return;
           } else {
             console.log(result, offset)
             this.exportData = [...this.exportData, ...result.result]
-            if (offset === 200) break;
+            if (result.result.length < 100) break;
             offset += 100;
           }
 
@@ -417,14 +427,7 @@ export default {
           continue;
         }
 
-        const configUrl = {
-          pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
-          excel: `${this.$_config.baseUrlExport}export/land-carbon/excel`,
-        };
 
-        let muName = this.muList.find((item) => item.mu_no == _mu)
-          ? this.muList.find((item) => item.mu_no == _mu).name
-          : "";
 
         if (muName) {
           muName = muName.replace(/ /g, "");
@@ -459,7 +462,7 @@ export default {
             return false;
           });
 
-        if (exported) {
+        if (!exported) {
           this.loadingCarbonExport = false;
           continue;
         }
@@ -472,6 +475,14 @@ export default {
         link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
+
+        // reset after complete download, then filled by next UM
+        this.exportData = [];
+
+        // stop the loading when the last download completed
+        if (index === this.mu_no.length - 1) {
+          this.loadingCarbonExport = false;
+        }
       }
 
       this.$_alert.success("Successfully");
