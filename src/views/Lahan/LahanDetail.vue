@@ -585,11 +585,12 @@
               </p>
               <p class="mb-0 value">
                 <span v-if="data.main_lahan">
-                  <span v-if="+data.main_lahan.tutupan_lahan">
-                    {{ data.main_lahan.tutupan_lahan || 0 | parse('ts') }}%
+
+                  <span v-if="data.main_lahan.tutupan_lahan && data.main_lahan.tutupan_lahan > 0">
+                    {{ data.main_lahan.polygon_tutupan_area || 0 | parse('ts') }} m&sup2;
                   </span>
                   <span v-else>
-                    {{ +data.main_lahan.polygon_tutupan_area || 0 | parse('ts') }} m&sup2;
+                    {{ data.main_lahan.tutupan_lahan || 0 | parse('ts') }}%
                   </span>
                 </span>
               </p>
