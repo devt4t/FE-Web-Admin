@@ -29,12 +29,12 @@ export default {
     // update_ext_payload: {
     //     project_modul: "purpose",
     // },
-    // delete: "deleteProjectUtils",
+    delete: "sostam/delete",
     // delete_ext_payload: {
     //     delete_type: "hard_delete",
     //     project_modul: "purpose",
     // },
-    // deleteKey: "code",
+    deleteKey: "soc_no",
     pk_field: null,
     filter_api: {
       typegetdata: "all",

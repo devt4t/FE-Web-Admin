@@ -6,6 +6,12 @@
         data.main_lahan.approve == 2 &&
         $_sys.isAllowed('lahan-print-mou-create')
       " :mouData="mouData || null" :lahanData="data.main_lahan" :modalKey="printModal" />
+      <seed-adjustment v-if="
+        data.main_lahan &&
+        getProject() === 'carbon' &&
+        data.main_lahan.approve <= 0 &&
+        $_sys.isAllowed('lahan-seed-adjustment-create')
+      " :trees="Array.isArray(trees) ? trees.find(x => x.label == '2024') : []" :modalKey="seedAdjustmentModal" />
       <lahan-appendix-print v-if="
         data.main_lahan &&
         data.main_lahan.approve == 2 &&
@@ -702,8 +708,15 @@
           <div class="trees">
             <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
-              <div v-if="data.main_lahan.approve == 0">
-                <v-btn variant="warning">Adjustment</v-btn>
+              <div v-if="data.main_lahan &&
+                getProject() === 'carbon' &&
+                data.main_lahan.approve <= 0 &&
+                $_sys.isAllowed('lahan-seed-adjustment-create')">
+                <v-btn variant="warning" @click="seedAdjustmentModal += 1">
+
+                  <v-icon>mdi-pencil-minus</v-icon>
+                  <span>Sesuaikan Bibit</span>
+                </v-btn>
               </div>
               <div class="trees-filter" v-if="trees.length > 1">
                 <v-btn v-for="(tree, i) in trees" :variant="tree.label != treesActive ? 'light' : 'success'"
@@ -922,6 +935,7 @@ import LahanDetailStatusBadge from './components/LahanDetailStatusBadge.vue'
 import LahanDetailLogData from "./components/LahanDetailLogData.vue";
 import LahanDetailData from './LahanDetailData.js'
 import LahanAssestment from "./components/LahanAssestment.vue";
+import SeedAdjustment from "./components/SeedAdjustment.vue";
 
 export default {
   name: "land-detail",
@@ -937,7 +951,8 @@ export default {
     LahanVerificationFcNonCarbon,
     LahanDetailStatusBadge,
     LahanDetailLogData,
-    LahanAssestment
+    LahanAssestment,
+    SeedAdjustment
   },
   methods: {
     test() {
