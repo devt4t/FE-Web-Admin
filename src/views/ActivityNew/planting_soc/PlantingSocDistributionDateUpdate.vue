@@ -173,7 +173,6 @@ export default {
             this.isOpen = false;
             this.availableDate = [];
             this.allocations = [];
-            this.formData.distribution_date = null;
             // this.formData.distribution_date = moment().format("YYYY-MM-DD");
         }
     },
