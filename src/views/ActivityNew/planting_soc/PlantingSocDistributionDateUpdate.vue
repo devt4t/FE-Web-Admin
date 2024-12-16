@@ -1,6 +1,6 @@
 <template>
 
-    <v-dialog v-model="isOpen" width="75%">
+    <v-dialog v-model="isOpen" width="40%" persistent>
         <template v-slot:default="{ isOpen }" v-if="formData">
             <v-card>
                 <v-card-title class="text-center"> Perbarui Tanggal Distribusi </v-card-title>
@@ -17,8 +17,8 @@
                         </v-overlay>
                     </span>
                     <div class="d-flex flex-row justify-content-center mt-3">
-                        <v-btn variant="light" @click="isOpen = false">Batal</v-btn>
-                        <v-btn variant="warning" @click="onSubmit">
+                        <v-btn variant="light" @click="onCancel">Batal</v-btn>
+                        <v-btn class="ml-2" variant="warning" @click="onSubmit" :disabled="!formData.distribution_date">
                             <v-icon>mdi-calendar</v-icon>
                             <span class="ml-1">Perbarui Tanggal</span>
                         </v-btn>
@@ -41,7 +41,8 @@ export default {
             loading: false,
             availableDate: [],
             allocations: [],
-            distribution_date: moment().format("YYYY-MM-DD")
+            distribution_date: moment().format("YYYY-MM-DD"),
+            disableSubmit: true
         }
     },
     props: {
@@ -64,7 +65,7 @@ export default {
         async onOpen() {
             try {
                 this.$set(this.formData, 'soc_no', await this.data.soc_no)
-                this.$set(this.formData, 'distribution_date', await this.data.distribution_date)
+                // this.$set(this.formData, 'distribution_date', await this.data.distribution_date)
                 // this.$set(this, 'distribution_date', await this.data.distribution_date)
 
                 this.onChangeFf(this.data);
@@ -114,6 +115,7 @@ export default {
             console.log(date)
             const dateDistributionNew = moment(date).format("YYYY-MM-DD");
             if (dateDistributionNew !== this.distribution_date) {
+                this.disableSubmit = false;
                 this.distribution_date = dateDistributionNew;
                 this.onChangeFf(this.data);
             }
@@ -123,6 +125,7 @@ export default {
                 return;
             }
             this.ffCurrent = data;
+            this.availableDate = [];
             this.allocations = [];
             this.ffLahanData = [];
             this.loading = true;
@@ -166,6 +169,13 @@ export default {
             }
             return true;
         },
+        onCancel() {
+            this.isOpen = false;
+            this.availableDate = [];
+            this.allocations = [];
+            this.formData.distribution_date = null;
+            // this.formData.distribution_date = moment().format("YYYY-MM-DD");
+        }
     },
 
 
