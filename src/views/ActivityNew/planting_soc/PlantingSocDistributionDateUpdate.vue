@@ -16,6 +16,13 @@
                             <span>Mengambil data bibit</span>
                         </v-overlay>
                     </span>
+                    <div class="d-flex flex-row justify-content-center mt-3">
+                        <v-btn variant="light" @click="isOpen = false">Batal</v-btn>
+                        <v-btn variant="warning" @click="onSubmit">
+                            <v-icon>mdi-calendar</v-icon>
+                            <span class="ml-1">Perbarui Tanggal</span>
+                        </v-btn>
+                    </div>
                 </v-card-text>
             </v-card>
         </template>
