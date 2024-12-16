@@ -62,10 +62,10 @@
         </template>
 
         <template v-slot:list-bottom-action="{ item }">
-            
-            
+
+
             <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
-                >
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update')">
                 <v-icon left small>mdi-calendar</v-icon>
                 <span>Edit Tgl. Distribusi</span>
             </v-btn>
@@ -90,7 +90,7 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            
+
         </template>
         <template v-slot:list-expanded-item="{ headers, item }">
             <planting-soc-list-ff :item="item" :headers="headers" @edit="onEditFarmer($event)"></planting-soc-list-ff>
