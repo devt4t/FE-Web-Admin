@@ -2,7 +2,7 @@ export default {
   version: "2.2.0",
   baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
   baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
-  baseUrlExport: "https://geko-export.t4t-api.org/",
+  baseUrlExport: "https://geko-export.tftdemo.net/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   mapBoxApi:
     "pk.eyJ1IjoiZGV2dDR0IiwiYSI6ImNtMm1zc3M0NDBxeXcyanFzd25ndnlva3cifQ.pBINatrH39ajJ_ILIHoGsg",

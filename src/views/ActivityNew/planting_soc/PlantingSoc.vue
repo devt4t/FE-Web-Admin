@@ -6,6 +6,9 @@
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
+
+            <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
+                :data="sostamDistributionData" />
         </template>
 
         <template v-slot:list-after-filter>
@@ -107,6 +110,7 @@ import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
+import PlantingSocDistributionDateUpdate from './PlantingSocDistributionDateUpdate.vue'
 export default {
     name: "crud-planting-socialization",
     components: {
@@ -116,7 +120,8 @@ export default {
         PlantingSocDetail,
         PlantingSocExportLahanMu,
         PlantingSocImportExcel,
-        PlantingSocCoordinateEdit
+        PlantingSocCoordinateEdit,
+        PlantingSocDistributionDateUpdate
     },
     watch: {},
     methods: {

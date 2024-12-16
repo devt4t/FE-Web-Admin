@@ -24,7 +24,7 @@ export default new Vuex.Store({
     tmpProjectPurpose: localStorage.getItem("tmpProjectPurpose"),
     apiUrl: localStorage.getItem("BaseUrlGet"),
     // apiUrlImage: localStorage.getItem("BaseUrl"),
-    apiUrlImage: 'https://t4tadmin.kolaborasikproject.com/',
+    apiUrlImage: "https://t4tadmin.kolaborasikproject.com/",
     tmpProgramYear: localStorage.getItem("tmpProgramYear"),
     lightbox: {
       imgs: "",

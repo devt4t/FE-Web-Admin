@@ -9,32 +9,23 @@
       <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
         <v-row>
           <v-col lg="12" v-for="(question, i) in questions" :key="`quest-${i}`">
-            <geko-input
-              v-model="formData[`question_${question.id}`]"
-              :item="{
-                label: question.question + '?',
-                type: 'select-radio',
-                validation: ['required'],
-                option: {
-                  default_options: defaultData.question_option,
-                  list_pointer: {
-                    label: 'name',
-                    code: 'code',
-                    display: ['name'],
-                  },
+            <geko-input v-model="formData[`question_${question.id}`]" :item="{
+              label: question.question + '?',
+              type: 'select-radio',
+              validation: ['required'],
+              option: {
+                default_options: defaultData.question_option,
+                list_pointer: {
+                  label: 'name',
+                  code: 'code',
+                  display: ['name'],
                 },
-              }"
-            />
+              },
+            }" />
           </v-col>
 
           <v-col lg="12">
-            <v-btn
-              type="submit"
-              variant="warning"
-              class="w-100"
-              style="width: 100%"
-              :disabled="loading"
-            >
+            <v-btn type="submit" variant="warning" class="w-100" style="width: 100%" :disabled="loading">
               <v-icon>mdi-pencil-outline</v-icon>
               <span>Verifikasi Data</span>
             </v-btn>
@@ -53,7 +44,7 @@ export default {
     data: {
       required: true,
       type: Object,
-      default: () => {},
+      default: () => { },
     },
     questions: {
       required: false,
@@ -93,6 +84,13 @@ export default {
         this.loading = false;
         return;
       }
+      let eligibility = 1
+      for (const key of Object.keys(this.formData)) {
+        if (this.formData[key] == 0 || this.formData[key] == '0') {
+          eligibility = 0
+        }
+      }
+
 
       const submitIndicator = await this.submitIndicator()
         .then(() => true)
@@ -103,11 +101,13 @@ export default {
         return;
       }
 
+
       this.$_api
         .post("UpdateLahanApproval_new", {
           moduls: "verification",
           current_id: this.$route.query.id,
           approval_status: 1,
+          eligibility: eligibility,
         })
         .then(() => {
           this.loading = false;

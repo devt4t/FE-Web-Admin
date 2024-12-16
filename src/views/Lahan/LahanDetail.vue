@@ -8,10 +8,9 @@
       " :mouData="mouData || null" :lahanData="data.main_lahan" :modalKey="printModal" />
       <seed-adjustment v-if="
         data.main_lahan &&
-        getProject() === 'carbon' &&
-        data.main_lahan.approve <= 0 &&
         $_sys.isAllowed('lahan-seed-adjustment-create')
-      " :trees="Array.isArray(trees) ? trees.find(x => x.label == '2024') : []" :modalKey="seedAdjustmentModal" />
+      " :trees="Array.isArray(trees) ? trees.find(x => x.label == '2024') : []" :project="getProject()"
+        :modalKey="seedAdjustmentModal" />
       <lahan-appendix-print v-if="
         data.main_lahan &&
         data.main_lahan.approve == 2 &&
@@ -392,6 +391,14 @@
                   </span>
                 </div>
               </div>
+              <div class="lahan-side-item">
+                <p class="mb-0 label">Tidak Eligible</p>
+                <div class="d-flex flex-col value">
+                  <span class="mb-1">
+                    {{ data.main_lahan.gis_not_eligibile_status || '-' }}
+                  </span>
+                </div>
+              </div>
               <div class="lahan-side-item" v-if="getProject() === 'carbon'">
                 <p class="mb-0 label">Eligibilitas Lahan by GIS</p>
                 <div class="d-flex flex-row value">
@@ -710,8 +717,6 @@
             <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
               <div v-if="data.main_lahan &&
-                getProject() === 'carbon' &&
-                data.main_lahan.approve <= 0 &&
                 $_sys.isAllowed('lahan-seed-adjustment-create')">
                 <v-btn variant="warning" @click="seedAdjustmentModal += 1">
 
