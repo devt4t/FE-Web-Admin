@@ -17,7 +17,7 @@
                         </v-overlay>
                     </span>
                     <div class="d-flex flex-row justify-content-center mt-3">
-                        <v-btn variant="light" @click="isOpen = false">Batal</v-btn>
+                        <v-btn variant="light" @click="onCancel">Batal</v-btn>
                         <v-btn variant="warning" @click="onSubmit">
                             <v-icon>mdi-calendar</v-icon>
                             <span class="ml-1">Perbarui Tanggal</span>
@@ -64,7 +64,7 @@ export default {
         async onOpen() {
             try {
                 this.$set(this.formData, 'soc_no', await this.data.soc_no)
-                this.$set(this.formData, 'distribution_date', await this.data.distribution_date)
+                // this.$set(this.formData, 'distribution_date', await this.data.distribution_date)
                 // this.$set(this, 'distribution_date', await this.data.distribution_date)
 
                 this.onChangeFf(this.data);
@@ -123,6 +123,7 @@ export default {
                 return;
             }
             this.ffCurrent = data;
+            this.availableDate = [];
             this.allocations = [];
             this.ffLahanData = [];
             this.loading = true;
@@ -166,6 +167,12 @@ export default {
             }
             return true;
         },
+        onCancel(){
+            this.isOpen = false;
+            this.availableDate = [];
+            this.allocations = []
+            // this.formData.distribution_date = moment().format("YYYY-MM-DD");
+        }
     },
 
 
