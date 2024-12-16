@@ -1,7 +1,7 @@
 export default {
   version: "2.5.0",
   baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
-  baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
+  baseUrlUpload: "https://geko-asset.t4t-api.org",
   baseUrlExport: "https://geko-export.t4t-api.org/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   mapBoxApi:

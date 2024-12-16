@@ -1,7 +1,7 @@
 export default {
   version: "2.2.0",
   baseUrl: "https://staging-api.trees4trees.org/api/",
-  baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
+  baseUrlUpload: "https://geko-asset.t4t-api.org",
   baseUrlExport: "https://geko-export.tftdemo.net/",
   baseUrlNursery: "https://backend.t4t-api.org/api",
   mapBoxApi:

@@ -126,16 +126,16 @@
             else if (verifRole == 'fc') return x.role_id == 19;
           })
             " :answers="data.lahan_term_answer_list" :role="verifRole" :isCarbonProject="Array.isArray(data.lahan_project) &&
-                data.lahan_project.length > 0 &&
-                data.lahan_project[0].project_planting_purposes_code == 'carbon'
-                " :polygonGisArea="polygonGisArea" @success="
-                componentKey += 1;
-              openGisEdit = false;
-              getData();
-              " @polygon_change="onChangePolygon" @close="
-              openGisEdit = false;
-            verifRole = null;
-            " />
+              data.lahan_project.length > 0 &&
+              data.lahan_project[0].project_planting_purposes_code == 'carbon'
+              " :polygonGisArea="polygonGisArea" @success="
+                  componentKey += 1;
+                openGisEdit = false;
+                getData();
+                " @polygon_change="onChangePolygon" @close="
+                openGisEdit = false;
+              verifRole = null;
+              " />
 
           <div class="lahan-side-list">
             <h4>Status &amp; Log</h4>
@@ -518,13 +518,13 @@
                 $_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`]
               )
               " v-bind:style="{
-                  backgroundImage:
-                    'url(' +
-                    $_config.baseUrlUpload +
-                    '/' +
-                    data.main_lahan[`photo${item}`] +
-                    ')',
-                }">
+                backgroundImage:
+                  'url(' +
+                  $_config.baseUrlUpload +
+                  '/' +
+                  data.main_lahan[`photo${item}`] +
+                  ')',
+              }">
               <h6>Foto Lahan {{ item }}</h6>
             </div>
           </div>
@@ -999,7 +999,7 @@ export default {
     },
     async onChangePolygon(newPath) {
       const kmlGisData = await this.loadKml(
-        `https://t4tadmin.kolaborasikproject.com/${newPath}`
+        `https://geko-asset.t4t-api.org/${newPath}`
       );
       console.log("new kml", kmlGisData);
       this.addMapLayer(kmlGisData, "map-layer-2", "#1F6200", "#97F570");
@@ -1145,7 +1145,7 @@ export default {
             )
           ) {
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_ff}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1169,7 +1169,7 @@ export default {
             )
           ) {
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_gis}`
             );
             this.addMapLayer(kmlData, "map-layer-2", "#1F6200", "#97F570");
             this.$set(this.legends, 1, {

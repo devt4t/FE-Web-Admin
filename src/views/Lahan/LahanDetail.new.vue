@@ -570,13 +570,13 @@
                 $_config.baseUrlUpload + '/' + data.main_lahan[`photo${item}`]
               )
               " v-bind:style="{
-                    backgroundImage:
-                      'url(' +
-                      $_config.baseUrlUpload +
-                      '/' +
-                      data.main_lahan[`photo${item}`] +
-                      ')',
-                  }">
+                backgroundImage:
+                  'url(' +
+                  $_config.baseUrlUpload +
+                  '/' +
+                  data.main_lahan[`photo${item}`] +
+                  ')',
+              }">
               <h6>Foto Lahan {{ item }}</h6>
             </div>
           </div>
@@ -1079,7 +1079,7 @@ export default {
     },
     async onChangePolygon(newPath) {
       const kmlGisData = await this.loadKml(
-        `https://t4tadmin.kolaborasikproject.com/${newPath}`
+        `https://geko-asset.t4t-api.org/${newPath}`
       );
       console.log("new kml", kmlGisData);
       this.addMapLayer(kmlGisData, "map-layer-2", "#1F6200", "#97F570");
@@ -1228,7 +1228,7 @@ export default {
             )
           ) {
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_ff}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1252,7 +1252,7 @@ export default {
             )
           ) {
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_gis}`
             );
             this.addMapLayer(kmlData, "map-layer-2", "#1F6200", "#97F570");
             this.$set(this.legends, 1, {

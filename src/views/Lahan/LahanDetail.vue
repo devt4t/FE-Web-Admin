@@ -1323,7 +1323,7 @@ export default {
     },
     async onChangePolygon(newPath) {
       const kmlGisData = await this.loadKml(
-        `https://t4tadmin.kolaborasikproject.com/${newPath}`
+        `https://geko-asset.t4t-api.org/${newPath}`
       );
       console.log("new kml", kmlGisData);
       this.addMapLayer(kmlGisData, "map-layer-2", "#1F6200", "#97F570");
@@ -1474,7 +1474,7 @@ export default {
           ) {
             console.log('ff polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_ff}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1499,7 +1499,7 @@ export default {
           ) {
             console.log('gis polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_gis}`
             );
             this.addMapLayer(kmlData, "map-layer-2", "#1F6200", "#97F570");
             this.$set(this.legends, 1, {
@@ -1517,7 +1517,7 @@ export default {
           if (![null, '-', undefined].includes(this.data.main_lahan.polygon_tutupan_photo)) {
             console.log('tutupan photo polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_tutupan_photo}`
             );
             this.addMapLayer(kmlData, "map-layer-3", "#FFFFFF", "#FFFFFF");
             this.$set(this.legends, 2, {
@@ -1565,7 +1565,7 @@ export default {
           ) {
             console.log('tutupan polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_tutupan_photo}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1591,7 +1591,7 @@ export default {
           ) {
             console.log('planting enhancement polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_planting_enhancement_polygon}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.gis_planting_enhancement_polygon}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1616,7 +1616,7 @@ export default {
           ) {
             console.log('gis arr ploygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_arr_polygon}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.gis_arr_polygon}`
             );
 
             if (kmlData.features.length > 0) {
