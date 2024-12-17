@@ -14,7 +14,7 @@
                     <template v-slot:top>
                     <div class="list-header py-3 mt-1">
                         <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                        <h4>Detail Alokasi Transport</h4>
+                        <h4>Detail Armada Distribusi</h4>
                         </div>
                         <div class="d-flex flex-row geko-list-header-action">
                         <div class="geko-list-header-toolbar"></div>
@@ -87,7 +87,7 @@
                     <template v-slot:top>
                     <div class="list-header py-3 mt-1">
                         <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                        <h4>Detail Alokasi Petani</h4>
+                        <h4>Detail BAST per-Petani</h4>
                         </div>
                         <div class="d-flex flex-row geko-list-header-action">
                         <div class="geko-list-header-toolbar"></div>
@@ -96,14 +96,50 @@
 
                     <div class="statistics mb-3">
                         <div class="statistic-item light">
-                        <v-icon>mdi-list-status</v-icon>
-                        <div class="statistic-data">
-                            <p class="mb-0 label">Total Data Alokasi Petani</p>
-                            <p class="mb-0 value">{{ data.result.detail_farmers.length ?? '' }}</p>
+                          <v-icon>mdi-list-status</v-icon>
+                          <div class="statistic-data">
+                              <p class="mb-0 label">Total Data Alokasi Petani</p>
+                              <p class="mb-0 value">{{ data.result.detail_farmers.length ?? 0 }}</p>
 
+                          </div>
                         </div>
+                        <div class="statistic-item info">
+                          <v-icon>mdi-truck-plus</v-icon>
+                          <div class="statistic-data">
+                              <p class="mb-0 label">Total Bibit Dimuat</p>
+                              <p class="mb-0 value">{{ data.result.ff_seed_loaded ?? 0 }}</p>
+
+                          </div>
+                        </div>
+                        <div class="statistic-item warning">
+                          <v-icon>mdi-image-broken-variant</v-icon>
+                          <div class="statistic-data">
+                              <p class="mb-0 label">Total Bibit Rusak</p>
+                              <p class="mb-0 value">{{ data.result.ff_seed_broken ?? 0 }}</p>
+
+                          </div>
+                        </div>
+                        <div class="statistic-item danger">
+                          <v-icon>mdi-help-rhombus-outline</v-icon>
+                          <div class="statistic-data">
+                              <p class="mb-0 label">Total Bibit Hilang</p>
+                              <p class="mb-0 value">{{ data.result.ff_seed_missing ?? 0 }}</p>
+
+                          </div>
+                        </div>
+                        <div class="statistic-item success">
+                          <v-icon>mdi-check-bold</v-icon>
+                          <div class="statistic-data">
+                              <p class="mb-0 label">Total Bibit Terdistribusi</p>
+                              <p class="mb-0 value">{{ data.result.ff_seed_received ?? 0 }}</p>
+
+                          </div>
                         </div>
                     </div>
+                    </template>
+                    <template v-slot:item.total_pupuk="{ item }">
+                      <p v-if="item.is_pupuk_load == 0" >0</p>
+                      <p v-else>{{item.total_pupuk}}</p>
                     </template>
                     <template v-slot:expanded-item="{ headers, item }">
                       <td :colspan="headers.length">
@@ -402,6 +438,6 @@
           }
         },
       }
-    }
+    },
   }
   </script>
