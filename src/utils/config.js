@@ -1,5 +1,5 @@
 export default {
-  version: "2.2.0",
+  version: "2.5.0",
   baseUrl: "https://api.t4t-api.org/api/",
   baseUrlUpload: "https://geko-asset.t4t-api.org",
   baseUrlExport: "https://geko-export.t4t-api.org/",
