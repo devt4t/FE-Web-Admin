@@ -1,8 +1,10 @@
 @import "./variables";
+
 @keyframes frameOpacity {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -10,6 +12,7 @@
 
 .geko-base-crud {
   font-family: "Poppins", sans-serif !important;
+
   .geko-base-crud-header {
     display: flex;
     flex-direction: row;
@@ -28,6 +31,7 @@
       border-radius: 30px;
       height: 35px;
       position: relative;
+
       input {
         height: 100%;
         padding-inline: 2em;
@@ -57,18 +61,21 @@
           }
         }
       }
-      
+
     }
+
     .global-filters {
       .v-select-40 {
         .vs__search {
           font-size: 0.9em !important;
         }
+
         .vs__dropdown-toggle {
           padding: 0 !important;
         }
       }
     }
+
     button {
       border: 1px solid $info;
       color: $info;
@@ -88,6 +95,7 @@
       }
     }
   }
+
   .geko-list,
   .geko-form-card {
     opacity: 0;
@@ -100,13 +108,14 @@
   .geko-list {
     padding-left: 0.7rem;
   }
+
   .geko-form-card {
     margin-left: 0.7rem;
   }
 
   .v-data-table__wrapper {
-    table {
-    }
+    table {}
+
     // table tr th  { position: sticky !important; top: 0 !important; z-index: 2 !important;}
 
     tr td.text-start {
@@ -125,6 +134,7 @@
 
       height: 38px !important;
       border-bottom: none !important;
+
       span {
         color: #b5b5c3 !important;
         font-weight: 600;
@@ -135,6 +145,7 @@
     th.sticky-left {
       background-color: #f3f6f9 !important;
     }
+
     td.sticky-left {
       background-color: white !important;
     }
@@ -142,6 +153,7 @@
     tbody tr {
       background-color: white;
       transition: all 0.2s ease;
+
       &:hover {
         background-color: rgb(238, 238, 238);
         transition: all 0.2s ease;
@@ -188,6 +200,7 @@
 
       &.success {
         background-color: $success_light !important;
+
         .value,
         i {
           color: $success !important;
@@ -196,6 +209,7 @@
 
       &.danger {
         background-color: $danger_light !important;
+
         .value,
         i {
           color: $danger !important;
@@ -204,6 +218,7 @@
 
       &.warning {
         background-color: $warning_light !important;
+
         .value,
         i {
           color: $warning !important;
@@ -212,6 +227,7 @@
 
       &.info {
         background-color: $info_light !important;
+
         .value,
         i {
           color: $info !important;
@@ -220,17 +236,20 @@
 
       &.primary {
         background-color: $primary_light !important;
+
         .value,
         i {
           color: $primary !important;
         }
       }
+
       i {
         font-size: 2em;
       }
 
       .statistic-data {
         padding-left: 10px;
+
         .label {
           font-size: 0.7em;
           color: grey;
@@ -250,11 +269,12 @@
     border-bottom: 1px dashed rgba(128, 128, 128, 0.244);
     padding-bottom: 1em;
   }
-  
+
   .geko-list-header {
     width: 100%;
     display: flex;
     flex-direction: column;
+
     // justify-content: space-between;
     // align-items: center;
     h4 {
@@ -267,17 +287,93 @@
       justify-content: space-between;
       margin-top: 10px;
       margin-bottom: 15px;
+
       .geko-list-header-toolbar {
         flex: 1;
         display: flex;
         flex-direction: row;
         align-items: center;
         flex-wrap: wrap;
+
         form {
           max-width: 40%;
           min-width: 300px;
           border-right: 1px solid rgba(191, 191, 191, 0.3);
           margin-right: 8px;
+
+          .search-column {
+            .list-search-column-wrapper {
+              border: 1px solid rgba(128, 128, 128, 0.43);
+              border-right: none;
+              border-radius: 30px 0px 0px 30px;
+              height: 38px;
+              width: 130px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: space-between;
+              padding-inline: 10px;
+
+              select {
+                padding-left: 5px;
+                flex: 1;
+                height: 100%;
+                width: 88px;
+
+                &::placeholder {
+                  font-size: .9em;
+                  color: rgba(128, 128, 128, 0.7);
+                }
+
+                &:focus {
+                  outline: none;
+                }
+              }
+
+              .append {
+
+                &:hover {
+                  cursor: pointer;
+                }
+              }
+            }
+
+            .list-search-wrapper {
+              margin-right: 10px;
+              border: 1px solid rgba(128, 128, 128, 0.43);
+              border-radius: 0px 30px 30px 0px;
+              height: 38px;
+              width: 270px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: space-between;
+              padding-inline: 10px;
+
+              input {
+                padding-left: 5px;
+                flex: 1;
+                height: 100%;
+                width: 200px;
+
+                &::placeholder {
+                  font-size: .9em;
+                  color: rgba(128, 128, 128, 0.7);
+                }
+
+                &:focus {
+                  outline: none;
+                }
+              }
+
+              .append {
+
+                &:hover {
+                  cursor: pointer;
+                }
+              }
+            }
+          }
 
           .list-search-wrapper {
             margin-right: 10px;
@@ -289,22 +385,24 @@
             align-items: center;
             justify-content: space-between;
             padding-inline: 10px;
+
             input {
               padding-left: 5px;
               flex: 1;
               height: 100%;
+
               &::placeholder {
                 font-size: .9em;
                 color: rgba(128, 128, 128, 0.7);
               }
 
-               &:focus {
+              &:focus {
                 outline: none;
               }
             }
 
             .append {
-              
+
               &:hover {
                 cursor: pointer;
               }
@@ -338,6 +436,7 @@
 
           &.active {
             background-color: $success;
+
             i {
               color: white;
             }
@@ -346,10 +445,12 @@
       }
     }
   }
+
   .geko-list-actions {
     display: flex;
     flex-direction: row;
     align-items: center;
+
     button {
       display: flex;
       flex-direction: column;
@@ -359,6 +460,7 @@
       height: 25px;
       border-radius: 5px;
       margin-right: 5px;
+
       i {
         font-size: 14px !important;
         font-weight: 500;
@@ -397,6 +499,7 @@
       }
     }
   }
+
   .filters {
     padding: 1em;
     border: 1px solid $success_light;
@@ -404,9 +507,11 @@
     margin-bottom: 1em;
     display: none !important;
     transition: all 0.5s ease;
+
     .filter-footer {
       padding-top: 1em;
     }
+
     &.main-filter {
       border: none;
       padding-block: 0;
@@ -422,15 +527,18 @@
         padding-right: 0 !important;
         margin-right: 0 !important;
       }
+
       // .vs-style.filter-select {
       //   min-width: 12ch !important;
       // }
     }
+
     &.active {
       max-height: 100vh;
       transition: all 0.5s ease;
       display: flex !important;
     }
+
     .filter-item {
       margin-right: 10px;
       margin-bottom: 10px;
@@ -439,7 +547,7 @@
         background-color: #F3F6F9;
         border-radius: 20px;
         // border: none !important;
-        
+
         border: 1px solid #e3e8ecad;
         padding-inline: 15px;
 
@@ -447,14 +555,18 @@
           color: #3f4254c5 !important;
           font-weight: bold;
         }
+
         .vs__search {
           padding-left: 7px;
         }
       }
-      .input-group-wrapper .filter-select .vs__dropdown-toggle, .input-group-wrapper .filter-select .vs__search {
+
+      .input-group-wrapper .filter-select .vs__dropdown-toggle,
+      .input-group-wrapper .filter-select .vs__search {
 
         background-color: transparent !important;
       }
+
       .geko-input label {
         font-size: 0.8em !important;
       }
@@ -466,6 +578,7 @@
     .geko-form-card {
       border-radius: 18px !important;
     }
+
     .v-card__title {
       border-bottom: 1px solid rgba(128, 128, 128, 0.261);
 
@@ -506,11 +619,13 @@
     .geko-base-detail-card {
       border-radius: 12px;
     }
+
     .geko-base-detail-wrapper {
       padding-inline: 1.5em;
       padding-block: 1em;
       padding-bottom: 2em;
     }
+
     .geko-base-detail-list {
       display: flex;
       flex-direction: column;
@@ -522,12 +637,14 @@
         padding-block: 5px;
         width: 100%;
         border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+
         .label {
           width: 30%;
 
           color: grey;
           font-size: 0.9em;
           position: relative;
+
           &::after {
             content: ":";
             top: 0;
@@ -535,6 +652,7 @@
             position: absolute;
           }
         }
+
         .value {
           width: 70%;
           font-size: 0.9em;
@@ -552,9 +670,11 @@
   margin-bottom: 5px;
 
 
-  .input-group-wrapper:has(.select-radio-row), .input-group-wrapper:has(.file-upload) {
+  .input-group-wrapper:has(.select-radio-row),
+  .input-group-wrapper:has(.file-upload) {
     border: none !important;
   }
+
   .input-group-wrapper {
     display: flex;
     flex-direction: row;
@@ -566,10 +686,18 @@
     &.invalid {
       border-color: $danger !important;
     }
-    input, textarea, .vs-style, .vue-editor,.select-radio-row, .upload-wrapper, .date {
+
+    input,
+    textarea,
+    .vs-style,
+    .vue-editor,
+    .select-radio-row,
+    .upload-wrapper,
+    .date {
       flex: 1;
       border: none;
     }
+
     .vs__dropdown-toggle {
       border: none !important;
     }
@@ -587,23 +715,28 @@
 
     .mx-datepicker-range {
       height: 30px !important;
+
       .mx-input {
         background-color: transparent !important;
         height: 30px !important;
       }
+
       .mx-input-wrapper {
         height: 30px !important;
       }
+
       .mx-icon-calendar {
         display: none;
       }
     }
   }
+
   .error-message {
     position: absolute;
     bottom: 0;
     transform: translateY(calc(100% + 3px));
   }
+
   label:not(.file-upload) {
     font-size: 0.85rem;
     color: grey;
@@ -614,15 +747,18 @@
       color: red;
     }
   }
+
   .tooltip-label {
     display: flex;
     flex-direction: row;
     align-items: center;
+
     i {
       transform: translateY(-2px);
       color: rgb(175, 175, 175);
     }
   }
+
   input,
   textarea {
     border: 1px solid rgba(128, 128, 128, 0.478);
@@ -644,6 +780,7 @@
     &:disabled {
       background-color: rgb(249, 249, 249);
       color: grey;
+
       &:hover {
         cursor: not-allowed;
       }
@@ -660,6 +797,7 @@
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+
     .select-radio-item {
       padding: 0.5em 1em;
       background-color: $success_light;
@@ -667,9 +805,11 @@
       border-radius: 8px;
       margin-right: 10px;
       margin-bottom: 0.5em;
+
       span {
         font-size: 0.9em;
       }
+
       &:hover {
         cursor: pointer;
       }
@@ -683,6 +823,7 @@
       &.active {
         background-color: $success !important;
         color: white;
+
         .select-radio-radio,
         .select-radio-icon {
           color: white !important;
@@ -725,6 +866,7 @@
       flex-direction: row;
       align-items: center;
       margin-top: 5px;
+
       .preview-image {
         width: 5em;
         height: 5em;
@@ -740,12 +882,14 @@
           z-index: 10;
           right: -5px;
           top: -5px;
+
           i {
             color: red !important;
           }
         }
       }
     }
+
     .file-upload {
       display: block;
       width: 8em;
@@ -762,6 +906,7 @@
         color: rgb(163, 163, 163) !important;
         font-size: 4rem;
       }
+
       &:hover {
         cursor: pointer;
       }
@@ -788,6 +933,7 @@
           .label {
             width: 20%;
           }
+
           .value {
             width: 80%;
           }

@@ -1,4 +1,5 @@
-export default {
+import { reactive } from "vue"
+export default reactive({
   exportIds: [],
   refreshKey: 1,
   farmerEditKey: 1,
@@ -7,6 +8,7 @@ export default {
   sostamDistributionData: null,
   exportLahanKey: 1,
   importSostamKey: 1,
+  searchColumn: 'um',
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,
   config: {
@@ -16,6 +18,18 @@ export default {
         setter: "program_year",
       },
     },
+    searchColumn: true,
+    searchColumnOptions: [
+      { value: 'um', label: 'UM' },
+      { value: 'ta', label: 'Target Area' },
+      { value: 'ff', label: 'FF' },
+      { value: 'petani', label: 'Petani' },
+      { value: 'no_lahan', label: 'No. Lahan' },
+      { value: 'awal_monitoring', label: 'Awal Waktu Monitoring' },
+      { value: 'akhir_monitoring', label: 'Akhir Waktu Monitoring' },
+      { value: 'status', label: 'Status' },
+      { value: 'status_populasi', label: 'Status Populasi' },
+    ],
     detailIdKey: "soc_no",
     getter: "GetSocAllAdmin",
     // getterDataKey: 'data.result.data.data',
@@ -223,4 +237,4 @@ export default {
       },
     ],
   },
-};
+});

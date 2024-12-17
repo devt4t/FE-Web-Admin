@@ -138,7 +138,23 @@
                     class="mr-2"
                     @change="onChangeSearch"
                   ></v-text-field> -->
-                  <div class="list-search-wrapper">
+                  <div v-if="config.searchColumn" class="d-flex search-column">
+                    <div class="list-search-column-wrapper">
+                      <v-icon class="prepend">mdi-filter</v-icon>
+                      <select @change="emitSearchColumn" type="text" :placeholder="'Filter'">
+                        <option v-for="(opt) in config.searchColumnOptions" :value="opt.value">{{ opt.label }}</option>
+                      </select>
+                    </div>
+                    <div class="list-search-wrapper">
+                      <v-icon class="prepend">mdi-magnify</v-icon>
+                      <input v-model="search" type="text" :placeholder="'Cari data ' + config.title.toLowerCase()" />
+                      <v-icon v-if="typeof search == 'string' && search.length > 0" @click="
+                        search = '';
+                      getListData();
+                      " class="append">mdi-close</v-icon>
+                    </div>
+                  </div>
+                  <div v-else class="list-search-wrapper">
                     <v-icon class="prepend">mdi-magnify</v-icon>
                     <input v-model="search" type="text" :placeholder="'Cari data ' + config.title.toLowerCase()" />
                     <v-icon v-if="typeof search == 'string' && search.length > 0" @click="
@@ -892,6 +908,9 @@ export default {
 
       this.$emit("onExportPdf", _data);
     },
+    emitSearchColumn(t) {
+      this.$emit("searchColumChanged", t.target.value);
+    }
   },
 
   watch: {
@@ -952,6 +971,7 @@ export default {
         this.onChangeSearch();
       }
     },
+
   },
 };
 </script>

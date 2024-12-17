@@ -1,5 +1,6 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideDetail="false" :hideUpdate="true" :hideCreate="true"
+        @searchColumChanged="searchColumChanged($event)">
 
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
@@ -17,7 +18,7 @@
                     <v-icon>mdi-table-arrow-right</v-icon>
                     <span>Export Excel </span>
                 </v-btn>
-                
+
                 <!-- <v-btn variant="primary" @click="importSostamKey += 1">
                     <v-icon>mdi-cloud-sync</v-icon>
                     <span>Import Excel Sostam</span>
@@ -254,10 +255,15 @@ export default {
                 //     })
 
             }
+        },
+        searchColumChanged(t) {
+            this.searchColumn=t
+            console.log('state ', this.searchColumn)
         }
     },
     data() {
         return config
     },
+
 };
 </script>
