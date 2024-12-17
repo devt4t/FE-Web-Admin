@@ -4,9 +4,11 @@ export default {
   farmerEditKey: 1,
   farmerEditData: null,
   sostamCoordinateData: null,
+  sostamDistributionData: null,
   exportLahanKey: 1,
   importSostamKey: 1,
   sostamCoordinateEditKey: 1,
+  sostamDistributionEditKey: 1,
   config: {
     title: "Sosialisasi Tanam",
     globalFilter: {

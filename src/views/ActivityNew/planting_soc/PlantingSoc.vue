@@ -6,6 +6,9 @@
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
+
+            <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
+                :data="sostamDistributionData" />
         </template>
 
         <template v-slot:list-after-filter>
@@ -59,7 +62,19 @@
         </template>
 
         <template v-slot:list-bottom-action="{ item }">
-            <v-btn variant="success" small class="d-block mt-1" @click="onExportExcel(item)">
+
+
+            <v-btn variant="primary" small class="mt-2" @click="onClickEditDistributionDate(item)"
+                v-if="$_sys.isAllowed('sosialisasi-tanam-distribution-update')">
+                <v-icon left small>mdi-calendar</v-icon>
+                <span>Edit Tgl. Distribusi</span>
+            </v-btn>
+            <v-btn variant="warning" small class="mt-2" @click="onClickEditCoordinate(item)"
+                v-if="$_sys.isAllowed('sosialisasi-tanam-update') && item.gis_status == 2">
+                <v-icon left small>mdi-map</v-icon>
+                <span>Edit Koordinat</span>
+            </v-btn>
+            <v-btn variant="success" small class="d-block mt-2" @click="onExportExcel(item)">
                 <v-icon v-if="!exportIds.includes(item.ff_no)">mdi-microsoft-excel</v-icon>
                 <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
 
@@ -75,11 +90,7 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            <v-btn variant="warning" small class="mt-2" @click="onClickEditCoordinate(item)"
-                v-if="$_sys.isAllowed('sosialisasi-tanam-update') && item.gis_status == 2">
-                <v-icon left small>mdi-map</v-icon>
-                <span>Edit Koordinat</span>
-            </v-btn>
+
         </template>
         <template v-slot:list-expanded-item="{ headers, item }">
             <planting-soc-list-ff :item="item" :headers="headers" @edit="onEditFarmer($event)"></planting-soc-list-ff>
@@ -107,6 +118,7 @@ import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
+import PlantingSocDistributionDateUpdate from './PlantingSocDistributionDateUpdate.vue'
 export default {
     name: "crud-planting-socialization",
     components: {
@@ -116,7 +128,8 @@ export default {
         PlantingSocDetail,
         PlantingSocExportLahanMu,
         PlantingSocImportExcel,
-        PlantingSocCoordinateEdit
+        PlantingSocCoordinateEdit,
+        PlantingSocDistributionDateUpdate
     },
     watch: {},
     methods: {
@@ -127,6 +140,10 @@ export default {
         onClickEditCoordinate(item) {
             this.sostamCoordinateEditKey += 1
             this.sostamCoordinateData = item
+        },
+        onClickEditDistributionDate(item) {
+            this.sostamDistributionEditKey += 1
+            this.sostamDistributionData = item
         },
         async onExportExcel(item) {
             try {

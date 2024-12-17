@@ -59,7 +59,12 @@ export default {
           name_location_nursery: response.data[0].name_location_nursery,
           location_nursery_id: response.data[0].location_nursery_id,
         };
-        this.allocations = response.data[0].allocation_periode_days;
+
+        const allocationList = response.data[0].allocation_periode_days;
+
+        this.allocations = allocationList.filter(
+          (x) => parseInt(x.qty_allocation) > 0
+        );
         for (const allocation of this.allocations) {
           this.availableDate.push(allocation.date_allocation);
         }

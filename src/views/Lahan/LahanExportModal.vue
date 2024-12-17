@@ -24,7 +24,7 @@
                   code: 'ff',
                 },
                 {
-                  label: 'Management Unit',
+                  label: 'Unit Management',
                   code: 'mu',
                 },
               ],
@@ -84,8 +84,8 @@
                 <v-row>
                   <v-col lg="12">
                     <geko-input v-if="muList.length > 0" v-model="mu_no" :item="{
-                      label: 'Management Unit',
-                      placeholder: 'Pilih Management Unit',
+                      label: 'Unit Management',
+                      placeholder: 'Pilih Unit Management',
                       type: 'select',
                       validation: ['required'],
                       api: 'GetManagementUnitAdmin',
@@ -168,7 +168,7 @@ export default {
       if (t > 0) {
         // this.getInitialData()
         this.getFFDataForExport()
-        this.getMUDataForExport()
+        this.getUMDataForExport()
         this.isOpen = true;
       }
 
@@ -180,7 +180,7 @@ export default {
 
   // mounted() {
   //   this.getFFDataForExport()
-  //   this.getMUDataForExport()
+  //   this.getUMDataForExport()
   // },
 
   methods: {
@@ -206,7 +206,7 @@ export default {
 
       this.ffList = result.data;
     },
-    async getMUDataForExport() {
+    async getUMDataForExport() {
       if (this.muList.length > 0) return;
       const result = await this.$_api.get("GetManagementUnitAdmin", {
         page: 1,
@@ -216,7 +216,7 @@ export default {
       if (!Array.isArray(result.data.result)) return;
 
       for (const item of result.data.result) {
-        item.name = `${item.name}`;
+        item.name = `${item.name} - ${item.mu_no}`;
       }
 
       this.muList = result.data.result;

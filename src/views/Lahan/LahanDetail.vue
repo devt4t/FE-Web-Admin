@@ -8,10 +8,9 @@
       " :mouData="mouData || null" :lahanData="data.main_lahan" :modalKey="printModal" />
       <seed-adjustment v-if="
         data.main_lahan &&
-        getProject() === 'carbon' &&
-        data.main_lahan.approve <= 0 &&
         $_sys.isAllowed('lahan-seed-adjustment-create')
-      " :trees="Array.isArray(trees) ? trees.find(x => x.label == '2024') : []" :modalKey="seedAdjustmentModal" />
+      " :trees="Array.isArray(trees) ? trees.find(x => x.label == '2024') : []" :project="getProject()"
+        :modalKey="seedAdjustmentModal" />
       <lahan-appendix-print v-if="
         data.main_lahan &&
         data.main_lahan.approve == 2 &&
@@ -392,6 +391,14 @@
                   </span>
                 </div>
               </div>
+              <div class="lahan-side-item">
+                <p class="mb-0 label">Tidak Eligible</p>
+                <div class="d-flex flex-col value">
+                  <span class="mb-1">
+                    {{ data.main_lahan.gis_not_eligibile_status || '-' }}
+                  </span>
+                </div>
+              </div>
               <div class="lahan-side-item" v-if="getProject() === 'carbon'">
                 <p class="mb-0 label">Eligibilitas Lahan by GIS</p>
                 <div class="d-flex flex-row value">
@@ -710,8 +717,6 @@
             <div class="d-flex flex-row align-items-center justify-content-between">
               <h4 class="mb-0 pb-0">Pohon</h4>
               <div v-if="data.main_lahan &&
-                getProject() === 'carbon' &&
-                data.main_lahan.approve <= 0 &&
                 $_sys.isAllowed('lahan-seed-adjustment-create')">
                 <v-btn variant="warning" @click="seedAdjustmentModal += 1">
 
@@ -1318,7 +1323,7 @@ export default {
     },
     async onChangePolygon(newPath) {
       const kmlGisData = await this.loadKml(
-        `https://t4tadmin.kolaborasikproject.com/${newPath}`
+        `https://geko-asset.t4t-api.org/${newPath}`
       );
       console.log("new kml", kmlGisData);
       this.addMapLayer(kmlGisData, "map-layer-2", "#1F6200", "#97F570");
@@ -1469,7 +1474,7 @@ export default {
           ) {
             console.log('ff polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_ff}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_ff}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1494,7 +1499,7 @@ export default {
           ) {
             console.log('gis polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_from_gis}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_from_gis}`
             );
             this.addMapLayer(kmlData, "map-layer-2", "#1F6200", "#97F570");
             this.$set(this.legends, 1, {
@@ -1512,7 +1517,7 @@ export default {
           if (![null, '-', undefined].includes(this.data.main_lahan.polygon_tutupan_photo)) {
             console.log('tutupan photo polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_tutupan_photo}`
             );
             this.addMapLayer(kmlData, "map-layer-3", "#FFFFFF", "#FFFFFF");
             this.$set(this.legends, 2, {
@@ -1560,7 +1565,7 @@ export default {
           ) {
             console.log('tutupan polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.polygon_tutupan_photo}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.polygon_tutupan_photo}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1586,7 +1591,7 @@ export default {
           ) {
             console.log('planting enhancement polygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_planting_enhancement_polygon}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.gis_planting_enhancement_polygon}`
             );
 
             if (kmlData.features.length > 0) {
@@ -1611,7 +1616,7 @@ export default {
           ) {
             console.log('gis arr ploygon')
             const kmlData = await this.loadKml(
-              `https://t4tadmin.kolaborasikproject.com/${this.data.main_lahan.gis_arr_polygon}`
+              `https://geko-asset.t4t-api.org/${this.data.main_lahan.gis_arr_polygon}`
             );
 
             if (kmlData.features.length > 0) {
