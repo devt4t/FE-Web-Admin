@@ -1,11 +1,6 @@
 export default {
-<<<<<<< HEAD
   version: "2.2.0",
   baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
-=======
-  version: "2.5.0",
-  baseUrl: "https://api.t4t-api.org/api/",
->>>>>>> d656b6e7129b11395dbc3339febc095581d20a3b
   baseUrlUpload: "https://geko-asset.t4t-api.org",
   baseUrlExport: "https://geko-export.t4t-api.org/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
