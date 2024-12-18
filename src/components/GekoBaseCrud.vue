@@ -138,10 +138,10 @@
                     class="mr-2"
                     @change="onChangeSearch"
                   ></v-text-field> -->
-                  <div v-if="config.searchColumn" class="d-flex search-column">
+                  <div v-if="config.searchColumn" class="d-flex search-column-box">
                     <div class="list-search-column-wrapper">
                       <v-icon class="prepend">mdi-filter</v-icon>
-                      <select @change="emitSearchColumn" type="text" :placeholder="'Filter'">
+                      <select @change="emitSearchColumn">
                         <option v-for="(opt) in config.searchColumnOptions" :value="opt.value">{{ opt.label }}</option>
                       </select>
                     </div>

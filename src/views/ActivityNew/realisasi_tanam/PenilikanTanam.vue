@@ -38,30 +38,38 @@
             </div>
         </template>
 
-        <template v-slot:list-status="{ item }">
+        <template v-slot:list-is_validate="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
                     <span class="badge" :class="{
-                        'bg-warning': !item.gis_status,
-                        'bg-danger': item.gis_status == 2,
-                        'bg-success': item.gis_status == 1 && item.verified,
-                        'bg-info': item.gis_status == 1 && !item.verified
+                        'bg-danger': item.is_validate == 0,
+                        'bg-success': item.is_validate == 1,
                     }">
 
-                        <span v-if="!item.gis_status">Menunggu Verifikasi GIS</span>
-                        <span v-else-if="item.gis_status == 2">Koordinat Tidak Sesuai</span>
-                        <span v-else-if="item.gis_status == 1 && !item.verified">Koordinat Terverifikasi</span>
-                        <span v-else-if="item.gis_status == 1 && item.verified">Terverifikasi</span>
+                        <span v-if="item.is_validate == 0">Belum Terverifikasi</span>
+                        <span v-else="item.is_validate == 1">Terverifikasi</span>
                     </span>
                 </div>
+ 
+            </div>
+        </template>
+        <template v-slot:list-is_populated="{ item }">
+            <div class="d-flex flex-col min-w-200px">
+                <div class="d-flex flex-row">
+                    <span class="badge" :class="{
+                        'bg-danger': item.is_populated == 0,
+                        'bg-success': item.is_populated == 1,
+                    }">
 
-                <blockquote class="text-09-em text-italic mt-1" v-if="item.suggestion_note && item.gis_status == 2">
-                    <v-icon small class="mr-1">mdi-note-alert-outline</v-icon> <span>{{
-                        item.suggestion_note }}</span>
-                </blockquote>
+                        <span v-if="item.is_populated == 0">Belum / Tidak Terpopulasi</span>
+                        <span v-else="item.is_populated == 1">Terpopulasi</span>
+                    </span>
+                </div>
+ 
             </div>
         </template>
 
+        
         <template v-slot:list-bottom-action="{ item }">
 
 
@@ -106,20 +114,20 @@
 </template>
 
 <script>
-import config from './PlantingSocConfig.js'
+import config from './PenilikanTanamConfig.js'
 import PlantingSocListFf from './PlantingSocListFF.vue'
 import PlantingSocForm from './PlantingSocForm.vue'
 import moment from 'moment'
 import axios from 'axios'
 import PlantingSocDetail from './PlantingSocDetail.vue'
 import PlantingSocExportLahanMu from './PlantingSocExportLahanMu.vue'
-import "./planting-soc.scss";
+import "./penilikan-tanam.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
 import PlantingSocDistributionDateUpdate from './PlantingSocDistributionDateUpdate.vue'
 export default {
-    name: "crud-planting-socialization",
+    name: "crud-penilikan-tanam",
     components: {
         PlantingSocListFf,
         PlantingSocForm,

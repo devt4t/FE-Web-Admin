@@ -301,7 +301,13 @@
           border-right: 1px solid rgba(191, 191, 191, 0.3);
           margin-right: 8px;
 
-          .search-column {
+          .search-column-box {
+
+            .list-search-column-wrapper,
+            select {
+              cursor: pointer;
+            }
+
             .list-search-column-wrapper {
               border: 1px solid rgba(128, 128, 128, 0.43);
               border-right: none;

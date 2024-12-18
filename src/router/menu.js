@@ -393,7 +393,7 @@ const menu = [
       {
         title: "Realisasi Tanam",
         to: "/PenilikanTanamV2",
-        component: "ActivityNew/realisasi_tanam/PlantingSoc",
+        component: "ActivityNew/realisasi_tanam/PenilikanTanam",
         name: "PenilikanTanamV2",
         permission: "PenilikanTanam",
         icon: "mdi-spa",
