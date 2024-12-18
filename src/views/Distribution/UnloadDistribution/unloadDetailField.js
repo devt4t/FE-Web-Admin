@@ -32,7 +32,7 @@ export default [
       {
         key: "total_load",
         sortable: false,
-        text: "Total Load",
+        text: "Total Terdistribusi",
         value: "total_load",
       },
       {
