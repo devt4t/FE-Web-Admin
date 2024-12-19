@@ -1,8 +1,15 @@
 export default [
     {
-      key: "data-table-expand",
+      key: "expanded-item",
       text: "Detail Label",
-      sortable: false
+      sortable: false,
+      key: "expanded-item",
+    },
+    {
+      key: "detail_actions",
+      text: "Opsi",
+      sortable: false,
+      value: "detail_actions",
     },
     {
       key: "index",

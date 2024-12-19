@@ -752,7 +752,7 @@
               <strong>Tanggal Penilikan Lubang Tanam</strong>
             </p>
             <v-btn rounded class="" color="green white--text" disabled>
-              {{formData.surviellance_hole_date}}
+              {{dateFormat(formData.surviellance_hole_date,"DD MMMM Y")}}
             </v-btn>
           </v-col>
           <v-col>
@@ -769,7 +769,7 @@
               <strong>Tanggal Realisasi Tanam</strong>
             </p>
             <v-btn rounded class="" color="green white--text" disabled>
-              {{formData.planting_date}}
+              {{dateFormat(formData.planting_date,"DD MMMM Y")}}
             </v-btn>
           </v-col>
         </v-row>
@@ -992,7 +992,6 @@ export default {
         if (newVal) {
           this.formData.surviellance_hole_date = moment(newVal).subtract(14,"days");
           this.formData.planting_date = moment(newVal).add(7, "days");
-          this.formData.surviellance_hole_date = dateFormat(this.formData.surviellance_hole_date,"DD MMMM Y")
           this.formData.planting_date = dateFormat(this.formData.planting_date,"DD MMMM Y")
         }
       },
@@ -1006,10 +1005,17 @@ export default {
         this.form++;
 
       }else if(this.form == 4){
-        this.formData
-        let payload = this.formData
-        console.log("submited!");
-        console.log(payload);
+        this.formData.surviellance_hole_date = dateFormat(this.formData.surviellance_hole_date,"DD MM YYYY")
+        this.formData.planting_date = dateFormat(this.formData.planting_date,"DD MM YYYY")
+        console.log(this.formData);
+        this.$_api.post('lahan-umum/main/create', this.formData)
+        .then(response => {
+          this.$router.go(-1);
+          this.$refreshKey += 1;
+          this.$_alert.success("Berhasil Create Data Lahan Umum");
+        }).catch(err => {
+          this.$_alert.error({}, "Gagal Melakukan Create Data Lahan Umum");
+        });
       }
       
       // if(this.form)
@@ -1037,14 +1043,7 @@ export default {
 
       //   this.formData.ff_additional = ff_selected_farmer;
 
-      //   this.$_api.post('AddFarmerTraining', this.formData)
-      //     .then(response => {
-      //       this.$router.go(-1);
-      //       this.$refreshKey += 1;
-      //       this.$_alert.success("Data pelatihan petani berhasil ditambahkan");
-      //     }).catch(err => {
-      //       // 
-      //     });
+      
       // }
     },
     firstAccessPage() {

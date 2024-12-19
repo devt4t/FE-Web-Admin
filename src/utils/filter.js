@@ -119,7 +119,7 @@ Vue.filter("parse", (value, id) => {
 
     case "distribution-status-bast":
       if (value == 0) {
-        _value = "Belum Input Distribusi";
+        _value = "Belum Cek BAST";
       } else if (value === 1) {
         _value = "Bibit Kurang";
       } else if (value === 2) {

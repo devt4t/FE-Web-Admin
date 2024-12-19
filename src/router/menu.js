@@ -461,7 +461,7 @@ const menu = [
         type: ["non-carbon"],
       },
       {
-        title: "Distribusi - Unload",
+        title: "Distribusi - Unload & Report BAST",
         to: "/Distribusi/Unload",
         component: "Distribution/UnloadDistribution/Unload",
         name: "Distribution Unload",
