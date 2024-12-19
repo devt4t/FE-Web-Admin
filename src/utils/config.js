@@ -2,7 +2,8 @@ export default {
   version: "2.5.0",
   // baseUrl: "https://api.t4t-api.org/api/",
   baseUrl: "https://t4tapi.kolaborasikproject.com/api/",
-  baseUrlUpload: "https://geko-asset.t4t-api.org",
+  // baseUrlUpload: "https://geko-asset.t4t-api.org",
+  baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
   baseUrlExport: "https://geko-export.t4t-api.org/",
   baseUrlNursery: "https://api-nursery.t4t-api.org/api",
   mapBoxApi:
@@ -10,6 +11,6 @@ export default {
   mapBoxStyle: "mapbox://styles/mapbox/satellite-streets-v12",
   programYear: {
     model: "2024",
-    options: ["2020", "2021", "2022", "2023", "2024"],
+    options: ["2020", "2021", "2022", "2023", "2024", "2025"],
   },
 };

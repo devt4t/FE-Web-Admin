@@ -91,6 +91,10 @@
                   {
                     label: '2024',
                     code: 2024,
+                  },
+                  {
+                    label: '2025',
+                    code: 2025,
                   }
                 ],
               },
@@ -143,14 +147,11 @@
         <v-row>
           <v-col>
               <geko-input v-model="formData.land_area" :item="{
-                  label: 'Luas Area Lahan',
+                  label: 'Luas Area Lahan (Dalam Meter)',
                   validation: ['required'],
                   col_size: 6,
                   type: 'number',
               }">
-                <v-btn slot="append" text class="text-lowercase" rounded>
-                  m<sup>2</sup>
-                </v-btn>
               </geko-input>
           </v-col>
           <v-col>
@@ -193,14 +194,11 @@
           </v-col>
           <v-col>
             <geko-input v-model="formData.planting_area" :disabled="true" :item="{
-              label: 'Luas Area Tanam',
+              label: 'Luas Area Tanam (Dalam Meter)',
               validation: ['required'],
               col_size: 6,
               type: 'number',
             }" >
-              <v-btn slot="append" text class="text-lowercase" rounded>
-                m<sup>2</sup>
-              </v-btn>
             </geko-input>
           </v-col>
         </v-row>
@@ -253,7 +251,7 @@
           </v-col>
           <v-col>
               <geko-input v-model="formData.land_distance" :item="{
-                  label: 'Jarak Lahan Dari Rumah',
+                  label: 'Jarak Lahan Dari Rumah (Dalam Meter)',
                   validation: ['required'],
                   col_size: 6,
                   type: 'number',
@@ -412,7 +410,7 @@
                 type: 'select',
                 api: 'new-utilities/desas',
                 param: {
-                  kode_kecamatan: formData.target_area
+                  kode_kecamatan: formData.kecamatan
                 },
                 setter: 'village',
                 option: {
@@ -951,7 +949,7 @@ export default {
         detailSeed: [],
         pic_list:[],
         user_id: this.user.email,
-        program_year: '2024',
+        program_year: '2025',
         distribution_date: '',
         surviellance_hole_date: '',
         planting_date: '',
@@ -1005,8 +1003,12 @@ export default {
         this.form++;
 
       }else if(this.form == 4){
-        this.formData.surviellance_hole_date = dateFormat(this.formData.surviellance_hole_date,"DD MM YYYY")
-        this.formData.planting_date = dateFormat(this.formData.planting_date,"DD MM YYYY")
+        this.formData.surviellance_hole_date = this.dateFormat(this.formData.surviellance_hole_date,"YYYY MM DD")
+        this.formData.planting_date = this.dateFormat(this.formData.planting_date,"YYYY MM DD")
+
+        this.formData.surviellance_hole_date = this.formData.surviellance_hole_date.replaceAll(" ", "-")
+        this.formData.planting_date = this.formData.planting_date.replaceAll(" ", "-")
+        
         console.log(this.formData);
         this.$_api.post('lahan-umum/main/create', this.formData)
         .then(response => {
@@ -1017,34 +1019,6 @@ export default {
           this.$_alert.error({}, "Gagal Melakukan Create Data Lahan Umum");
         });
       }
-      
-      // if(this.form)
-
-      // if (this.form < 3) {
-      //   if (this.form === 2 && !this.countTotalPeseerta()) {
-      //     return;
-      //   }
-      //   this.form++;
-      // } else {
-
-      //   let ff_selected_farmer = [];
-
-      //   for (let ff_no in this.farmerBySelectedFF) {
-      //     if (this.farmerBySelectedFF[ff_no].selectedFarmers.length) {
-      //       ff_selected_farmer.push(ff_no)
-
-      //       for (let selectedFarmerKey in this.farmerBySelectedFF[ff_no].selectedFarmers) {
-      //         this.formData.farmers.push({
-      //           farmer_no: this.farmerBySelectedFF[ff_no].selectedFarmers[selectedFarmerKey].kode
-      //         });
-      //       }
-      //     }
-      //   }
-
-      //   this.formData.ff_additional = ff_selected_farmer;
-
-      
-      // }
     },
     firstAccessPage() {
       this.BaseUrlGet = localStorage.getItem("BaseUrlGet");
@@ -1055,6 +1029,7 @@ export default {
       let resPicLahanUmum = await this.$_api.get(url);
       this.tempLastPicNo = resPicLahanUmum.new_pic_no 
       this.tempLastPicNo += 1
+      console.log(resPicLahanUmum)
     },
     addLahanUmumPIC(){
       if(this.tempLastPicNo > 0){
@@ -1066,6 +1041,8 @@ export default {
           plannting_goals: '',
           pic_no: this.tempLastPicNo + this.formData.pic_no++
         });
+      }else{
+        console.log("cannot add lahan umum PIC, Temp PIC: ", this.tempLastPicNo)
       }
     },
     removeLahanUmumPIC(i){
@@ -1086,7 +1063,7 @@ export default {
         seed_PIC: this.tempInsertSeed.seed_PIC,
         PIC_name: this.formData.pic_list.filter((v) => v.pic_no == this.tempInsertSeed.seed_PIC)[0].name
       });
-      console.log(this.formData.detailSeed);
+      // console.log(this.formData.detailSeed);
     },
     
     async getSeedDetailData(tree_code){
