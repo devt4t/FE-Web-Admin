@@ -45,14 +45,19 @@
         </template>
 
         <template v-slot:list-lahan_no="{ item }">
-            <span class="badge bg-primary">
+            <span class="badge bg-info">
                 <span>{{ item.lahan_no }}</span>
             </span>
         </template>
 
         <template v-slot:list-qty_std="{ item }">
-            <span class="badge bg-primary min-w-10px d-flex">
+            <span class="badge bg-info min-w-10px d-flex">
                 <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.qty_std }}
+            </span>
+        </template>
+        <template v-slot:detail-qty_std="{ item }">
+            <span class="badge bg-info">
+                <v-icon size="small">mdi-seed</v-icon> {{ item.qty_std }}
             </span>
         </template>
 
@@ -82,7 +87,7 @@
                 </v-tooltip>
 
             </div>
-            <div class="d-flex flex-row min-w-100px mt-2" style="justify-content: space-around">
+            <div class="d-flex flex-row min-w-100px mt-1" style="justify-content: space-around">
                 <v-tooltip top>
                     <template v-slot:activator="{ on }">
                         <span v-on="on" class="badge bg-light">
@@ -92,6 +97,42 @@
 
                     <span>hilang</span>
                 </v-tooltip>
+            </div>
+        </template>
+        <template v-slot:detail-kayu="{ item }">
+            <!-- <div class="pr-5 mr-5 d-flex flex-row" > -->
+            <div>
+                <div>
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-success mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_hidup }}
+                            </span>
+                        </template>
+
+                        <span>hidup</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-danger mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_mati }}
+                            </span>
+                        </template>
+
+                        <span>mati</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-light">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_hilang }}
+                            </span>
+                        </template>
+
+                        <span>hilang</span>
+                    </v-tooltip>
+                </div>
             </div>
         </template>
 
@@ -121,7 +162,7 @@
                 </v-tooltip>
 
             </div>
-            <div class="d-flex flex-row min-w-100px mt-2" style="justify-content: space-around">
+            <div class="d-flex flex-row min-w-100px mt-1" style="justify-content: space-around">
                 <v-tooltip top>
                     <template v-slot:activator="{ on }">
                         <span v-on="on" class="badge bg-light">
@@ -131,6 +172,42 @@
 
                     <span>hilang</span>
                 </v-tooltip>
+            </div>
+        </template>
+        <template v-slot:detail-mpts="{ item }">
+            <!-- <div class="pr-5 mr-5 d-flex flex-row" > -->
+            <div>
+                <div>
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-success mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_hidup }}
+                            </span>
+                        </template>
+
+                        <span>hidup</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-danger mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_mati }}
+                            </span>
+                        </template>
+
+                        <span>mati</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-light">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_hilang }}
+                            </span>
+                        </template>
+
+                        <span>hilang</span>
+                    </v-tooltip>
+                </div>
             </div>
         </template>
 
@@ -168,7 +245,7 @@
         <template v-slot:list-start_monitoring_period="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
-                    <span class="badge bg-info">
+                    <span class="badge bg-primary">
                         <span>{{ item.start_monitoring_period | parse('datetime') }}</span>
                     </span>
                 </div>
@@ -179,11 +256,18 @@
         <template v-slot:list-end_monitoring_period="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
-                    <span class="badge bg-info">
+                    <span class="badge bg-primary">
                         <span>{{ item.end_monitoring_period | parse('datetime') }}</span>
                     </span>
                 </div>
 
+            </div>
+        </template>
+
+        <template v-slot:detail-monitoring_period="{ item }">
+            <div>
+                <span class="badge bg-primary">{{ item.start_monitoring_period | parse('datetime') }}</span> ~ <span
+                    class="badge bg-primary"> {{ item.end_monitoring_period | parse('datetime') }}</span>
             </div>
         </template>
 
@@ -225,8 +309,9 @@
             <planting-soc-form></planting-soc-form>
         </template>
 
-        <template v-slot:detail-row>
-            <planting-soc-detail />
+        <template v-slot:detail-slave-raw="{ data }">
+            <!-- <template v-slot:detail-row> -->
+            <!-- <planting-soc-detail :data="data" /> -->
         </template>
     </geko-base-crud>
 </template>
