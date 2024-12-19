@@ -391,6 +391,16 @@ const menu = [
         type: ["non-carbon"],
       },
       {
+        title: "Realisasi Tanam",
+        to: "/PenilikanTanamV2",
+        component: "ActivityNew/realisasi_tanam/PenilikanTanam",
+        name: "PenilikanTanamV2",
+        permission: "PenilikanTanam",
+        icon: "mdi-spa",
+        type: ["non-carbon"],
+        update: true,
+      },
+      {
         title: "Monitoring",
         to: "/Monitoring2",
         component: "Activity/Monitoring2",

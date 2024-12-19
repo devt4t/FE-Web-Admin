@@ -67,7 +67,7 @@ export default {
                 this.$set(this.formData, 'soc_no', await this.data.soc_no)
                 // this.$set(this.formData, 'distribution_date', await this.data.distribution_date)
                 // this.$set(this, 'distribution_date', await this.data.distribution_date)
-                // console.log(this.data)
+
                 this.onChangeFf(this.data);
                 this.isOpen = true;
 
@@ -135,33 +135,15 @@ export default {
             const endDate = moment(this.distribution_date, "YYYY-MM-DD")
                 .endOf("month")
                 .format("YYYY-MM-DD");
-                
-                
-                try {
-                let response = await this.$_api.getNursery(
-                    "custom/gekoDistributionAllocationPeriodes",
-                    {
-                        mu_no: data.mu_no,
-                        program_year: this.$_config.programYear.model,
-                        start_date: startDate,
-                        end_date: endDate,
-                    }
-                );
-                let ffLahan = await this.$_api.get("getFFLahanSostamNew", {
-                    ff_no: this.data.ff_no,
+            const response = await this.$_api.getNursery(
+                "custom/gekoDistributionAllocationPeriodes",
+                {
+                    mu_no: data.mu_no,
                     program_year: this.$_config.programYear.model,
-                });
-                let bibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
-                    month: moment(this.distribution_date).month()+1,
-                    year: moment(this.distribution_date).year(),
-                    program_year: this.$_config.programYear.model,
-                });
-                let [ffLahans, bibitGEKOs, responses] = await Promise.all([ffLahan, bibitGEKO, response]);
-                console.log(ffLahans, bibitGEKOs, responses);
-            } catch (error) {
-                console.error('Error occurred:', error);
-            }
-
+                    start_date: startDate,
+                    end_date: endDate,
+                }
+            );
 
             if (Array.isArray(response.data) && response.data.length > 0) {
                 this.nurseryLocation = {
