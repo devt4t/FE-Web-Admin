@@ -3562,13 +3562,9 @@
                               Export
                             </v-btn>
                           </v-list-item>
-                          <v-list-item
-                            v-if="
-                              item.loading_line[0].status_bast == 0 ||
-                              item.loading_line[0].status_bast == null
-                            "
-                          >
-                            <v-btn
+                          <v-list-item>
+                            Silahkan Cek Status BAST di Modul Unload & Report BAST
+                            <!-- <v-btn
                               dark
                               class="px-7"
                               rounded
@@ -3580,7 +3576,7 @@
                                 mdi-folder-search
                               </v-icon>
                               CEk Status BAST
-                            </v-btn>
+                            </v-btn> -->
                           </v-list-item>
                           <v-list-item
                             v-if="item.loading_line[0].status_bast == 1"

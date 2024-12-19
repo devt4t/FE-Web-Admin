@@ -137,6 +137,22 @@
                         </div>
                     </div>
                     </template>
+                    <template v-slot:item.detail_actions="{ item }">
+                      <v-btn
+                        v-if="(item.verified_by == null ||item.verified_by == '') &&item.printed_lable.length > 0 && item.loaded_lable.length > 0 && item.distributed_lable.length > 0"
+                        @click="updateVerifikasiReportNursery(item, 'verification')"
+                        variant="warning" small class="mt-2"
+                      >
+                        <v-icon class="mr-1">mdi-check-bold </v-icon> Verifikasi
+                      </v-btn>
+                      <v-btn
+                        v-else-if="(!item.verified_by == null ||!item.verified_by == '')"
+                        @click="updateVerifikasiReportNursery(item, 'unverification')"
+                        variant="danger" small class="mt-2"
+                      >
+                        <v-icon class="mr-1">mdi-check-bold </v-icon> Unverifikasi
+                      </v-btn>
+                    </template>
                     <template v-slot:item.total_pupuk="{ item }">
                       <p v-if="item.is_pupuk_load == 0" >0</p>
                       <p v-else>{{item.total_pupuk}}</p>
@@ -439,5 +455,16 @@
         },
       }
     },
+    methods: {
+      async updateVerifikasiReportNursery(item, type){
+        if(type == 'verification'){
+          console.log('verification')
+          console.log(item)
+        }else if(type == 'unverification'){
+          console.log('unverification')
+          console.log(item)
+        }
+      }
+    }
   }
   </script>
