@@ -45,14 +45,19 @@
         </template>
 
         <template v-slot:list-lahan_no="{ item }">
-            <span class="badge bg-primary">
+            <span class="badge bg-info">
                 <span>{{ item.lahan_no }}</span>
             </span>
         </template>
 
         <template v-slot:list-qty_std="{ item }">
-            <span class="badge bg-primary min-w-10px d-flex">
+            <span class="badge bg-info min-w-10px d-flex">
                 <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.qty_std }}
+            </span>
+        </template>
+        <template v-slot:detail-qty_std="{ item }">
+            <span class="badge bg-info">
+                <v-icon size="small">mdi-seed</v-icon> {{ item.qty_std }}
             </span>
         </template>
 
@@ -82,7 +87,7 @@
                 </v-tooltip>
 
             </div>
-            <div class="d-flex flex-row min-w-100px mt-2" style="justify-content: space-around">
+            <div class="d-flex flex-row min-w-100px mt-1" style="justify-content: space-around">
                 <v-tooltip top>
                     <template v-slot:activator="{ on }">
                         <span v-on="on" class="badge bg-light">
@@ -92,6 +97,42 @@
 
                     <span>hilang</span>
                 </v-tooltip>
+            </div>
+        </template>
+        <template v-slot:detail-kayu="{ item }">
+            <!-- <div class="pr-5 mr-5 d-flex flex-row" > -->
+            <div>
+                <div>
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-success mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_hidup }}
+                            </span>
+                        </template>
+
+                        <span>hidup</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-danger mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_mati }}
+                            </span>
+                        </template>
+
+                        <span>mati</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-light">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_hilang }}
+                            </span>
+                        </template>
+
+                        <span>hilang</span>
+                    </v-tooltip>
+                </div>
             </div>
         </template>
 
@@ -121,7 +162,7 @@
                 </v-tooltip>
 
             </div>
-            <div class="d-flex flex-row min-w-100px mt-2" style="justify-content: space-around">
+            <div class="d-flex flex-row min-w-100px mt-1" style="justify-content: space-around">
                 <v-tooltip top>
                     <template v-slot:activator="{ on }">
                         <span v-on="on" class="badge bg-light">
@@ -131,6 +172,42 @@
 
                     <span>hilang</span>
                 </v-tooltip>
+            </div>
+        </template>
+        <template v-slot:detail-mpts="{ item }">
+            <!-- <div class="pr-5 mr-5 d-flex flex-row" > -->
+            <div>
+                <div>
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-success mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_hidup }}
+                            </span>
+                        </template>
+
+                        <span>hidup</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-danger mr-1">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_mati }}
+                            </span>
+                        </template>
+
+                        <span>mati</span>
+                    </v-tooltip>
+
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on }">
+                            <span v-on="on" class="badge bg-light">
+                                <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_hilang }}
+                            </span>
+                        </template>
+
+                        <span>hilang</span>
+                    </v-tooltip>
+                </div>
             </div>
         </template>
 
@@ -168,7 +245,7 @@
         <template v-slot:list-start_monitoring_period="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
-                    <span class="badge bg-info">
+                    <span class="badge bg-primary">
                         <span>{{ item.start_monitoring_period | parse('datetime') }}</span>
                     </span>
                 </div>
@@ -179,7 +256,7 @@
         <template v-slot:list-end_monitoring_period="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
-                    <span class="badge bg-info">
+                    <span class="badge bg-primary">
                         <span>{{ item.end_monitoring_period | parse('datetime') }}</span>
                     </span>
                 </div>
@@ -187,7 +264,27 @@
             </div>
         </template>
 
+        <template v-slot:detail-monitoring_period="{ item }">
+            <div>
+                <span class="badge bg-primary">{{ item.start_monitoring_period | parse('datetime') }}</span> ~ <span
+                    class="badge bg-primary"> {{ item.end_monitoring_period | parse('datetime') }}</span>
+            </div>
+        </template>
 
+        <template v-slot:detail-action="{ item }">
+            <div>
+                <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')" variant="success"
+                small class="mt-2" @click="onVerif(item)">
+                <v-icon small>mdi-check-bold</v-icon>
+                <span>Verifikasi</span>
+            </v-btn>
+            <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                variant="danger" small class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
+            </v-btn>
+            </div>
+        </template>
         <template v-slot:list-bottom-action="{ item }">
 
 
@@ -225,8 +322,9 @@
             <planting-soc-form></planting-soc-form>
         </template>
 
-        <template v-slot:detail-row>
-            <planting-soc-detail />
+        <template v-slot:detail-slave-raw="{ data }">
+            <!-- <template v-slot:detail-row> -->
+            <!-- <planting-soc-detail :data="data" /> -->
         </template>
     </geko-base-crud>
 </template>
@@ -338,7 +436,7 @@ export default {
 
         },
         async onVerif(item) {
-            const prompt = await this.$_alert.confirm('Verifikasi Data Sostam?', 'Apakah anda yakin akan memverifikasi data sostam ini?', 'Ya, Verifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
 
             if (prompt.isConfirmed) {
                 this.$_api.post('ValidateSosisalisasiTanam', {
@@ -347,29 +445,29 @@ export default {
                     program_year: this.$store.state.tmpProgramYear
                 })
                     .then(() => {
-                        this.$_alert.success('Sostam berhasil diverifikasi')
+                        this.$_alert.success('realisasi berhasil diverifikasi')
                         this.refreshKey += 1
                     })
 
             }
         },
         async onUnverif(item) {
-            const prompt = await this.$_alert.confirm('Unverifikasi Data Sostam?', 'Apakah anda yakin akan mengurungkan verifikasi data sostam ini?', 'Ya, Unverifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Unverifikasi Data realisasi?', 'Apakah anda yakin akan mengurungkan verifikasi data realisasi ini?', 'Ya, Unverifikasi', 'Batal', true)
             // console.log('item', item)
             if (prompt.isConfirmed) {
 
-                const isConfirmed = await this.$_api.post('sostam/unverification', {
+                const isConfirmed = await this.$_api.post('realisasi/unverification', {
                     soc_no: item.soc_no,
                     program_year: this.$store.state.tmpProgramYear
                 })
                     .catch(() => false)
 
                 if (!isConfirmed) {
-                    this.$_alert.error('Data sostam gagal diunverifikasi')
+                    this.$_alert.error('Data realisasi gagal diunverifikasi')
                     return
                 }
 
-                this.$_alert.success('Data sostam berhasil diunverifikasi')
+                this.$_alert.success('Data realisasi berhasil diunverifikasi')
                 this.refreshKey += 1
                 // this.$_api.post('ValidateSosisalisasiTanam', {
                 //     soc_no: item.soc_no,

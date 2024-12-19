@@ -135,10 +135,10 @@ export default {
             const endDate = moment(this.distribution_date, "YYYY-MM-DD")
                 .endOf("month")
                 .format("YYYY-MM-DD");
-                
-                
-                try {
-                let response = await this.$_api.getNursery(
+
+
+            try {
+                let nursery = await this.$_api.getNursery(
                     "custom/gekoDistributionAllocationPeriodes",
                     {
                         mu_no: data.mu_no,
@@ -152,34 +152,46 @@ export default {
                     program_year: this.$_config.programYear.model,
                 });
                 let bibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
-                    month: moment(this.distribution_date).month()+1,
+                    month: moment(this.distribution_date).month() + 1,
                     year: moment(this.distribution_date).year(),
                     program_year: this.$_config.programYear.model,
                 });
-                let [ffLahans, bibitGEKOs, responses] = await Promise.all([ffLahan, bibitGEKO, response]);
-                console.log(ffLahans, bibitGEKOs, responses);
+                // let [ffLahans, bibitGEKOs, nurserys] = await Promise.all([ffLahan, bibitGEKO, nursery]);
+                // console.log(ffLahans, bibitGEKOs, nurserys);
+
+                let totalSeedFF = 0;
+                for (const farmer of ffLahan.data.result.lahans) {
+                    totalSeedFF += parseInt(farmer.total_kayu) + parseInt(farmer.total_mpts);
+                }
+
+                if (Array.isArray(nursery.data) && nursery.data.length > 0) {
+                    this.nurseryLocation = {
+                        address_nursery: nursery.data[0].address_nursery,
+                        name_location_nursery: nursery.data[0].name_location_nursery,
+                        location_nursery_id: nursery.data[0].location_nursery_id,
+                    };
+
+                    const allocationList = nursery.data[0].allocation_periode_days;
+                    this.allocations = allocationList.filter(
+                        (nursery) => {
+                            let pointerGEKO = bibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
+                            console.log({ pointerGEKO })
+                            if (pointerGEKO.length) {
+                                console.log(parseInt(nursery.qty_allocation), pointerGEKO[0].total_seed, totalSeedFF)
+                                let result = parseInt(nursery.qty_allocation) - (pointerGEKO[0].total_seed + totalSeedFF);
+                                console.log({ result })
+                                return parseInt(result) > 0
+                            }
+                        });
+                    for (const allocation of this.allocations) {
+                        this.availableDate.push(allocation.date_allocation);
+                    }
+                }
+                this.loading = false;
+
             } catch (error) {
                 console.error('Error occurred:', error);
             }
-
-
-            if (Array.isArray(response.data) && response.data.length > 0) {
-                this.nurseryLocation = {
-                    address_nursery: response.data[0].address_nursery,
-                    name_location_nursery: response.data[0].name_location_nursery,
-                    location_nursery_id: response.data[0].location_nursery_id,
-                };
-
-                const allocationList = response.data[0].allocation_periode_days;
-
-                this.allocations = allocationList.filter(
-                    (x) => parseInt(x.qty_allocation) > 0
-                );
-                for (const allocation of this.allocations) {
-                    this.availableDate.push(allocation.date_allocation);
-                }
-            }
-            this.loading = false;
         },
         dateDisabled(date) {
             if (this.availableDate.includes(moment(date).format("YYYY-MM-DD"))) {

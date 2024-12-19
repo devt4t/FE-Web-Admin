@@ -72,36 +72,8 @@ export default reactive({
           list: false,
         },
       },
-      {
-        id: "status",
-        label: "Program Lahan",
-        methods: {
-          list: false,
-          detail: false,
-          filter: {
-            type: "select",
-            setter: "status",
-            main: true,
-            option: {
-              default_options: [
-                {
-                  name: "Petani",
-                  code: "petani",
-                },
-                {
-                  name: "Umum",
-                  code: "umum",
-                },
-              ],
-              list_pointer: {
-                code: "code",
-                label: "name",
-                display: ["name"],
-              },
-            },
-          },
-        },
-      },
+ 
+
       // {
       //   id: "indicator",
       //   label: " ",
@@ -111,6 +83,29 @@ export default reactive({
       //     },
       //   },
       // },
+      {
+        id: "target_areas_name",
+        label: "Target Area",
+        methods: {
+          list: true,
+          detail: true,
+
+          filter: {
+            main: true,
+            type: "select",
+            getter: "GetTargetAreaAdmin",
+            setter: "target_area",
+            option: {
+              getterKey: "data.result",
+              list_pointer: {
+                code: "area_code",
+                label: "name",
+                display: ["name", "area_code"],
+              },
+            },
+          },
+        },
+      },
       {
         id: "managementunits_name",
         label: "Management Unit",
@@ -142,92 +137,14 @@ export default reactive({
       },
 
       {
-        id: "target_areas_name",
-        label: "Target Area",
+        id: "desas_name",
+        label: "Nama Desa",
         methods: {
-          list: true,
+
           detail: true,
-
-          filter: {
-            main: true,
-            type: "select",
-            getter: "GetTA_new",
-            setter: "area_code",
-            form_param: {
-              mu_no: "mu_no",
-            },
-            param: {
-              program_year: "current_program_year",
-            },
-            option: {
-              // getterKey: "data.result",
-              list_pointer: {
-                code: "area_code",
-                label: "name",
-                display: ["name"],
-              },
-            },
-          },
         },
       },
-      {
-        id: "target_areas_name",
-        label: "Desa",
-        methods: {
-          list: false,
-          detail: false,
 
-          filter: {
-            main: true,
-            type: "select",
-            getter: "GetTA_new",
-            setter: "area_code",
-            form_param: {
-              mu_no: "mu_no",
-            },
-            param: {
-              program_year: "current_program_year",
-            },
-            option: {
-              // getterKey: "data.result",
-              list_pointer: {
-                code: "area_code",
-                label: "name",
-                display: ["name"],
-              },
-            },
-          },
-        },
-      },
-      {
-        id: "target_areas_name",
-        label: "Field Coordinator",
-        methods: {
-          list: false,
-          detail: false,
-
-          filter: {
-            main: true,
-            validation: ["required"],
-            type: "select",
-            col_size: 6,
-            getter: "GetManagementUnitAdmin",
-            setter: "mu_no",
-            param: {
-              page: 1,
-              per_page: 10,
-            },
-            option: {
-              getterKey: "data.result",
-              list_pointer: {
-                code: "mu_no",
-                label: "name",
-                display: ["name"],
-              },
-            },
-          },
-        },
-      },
       {
         id: "field_facilitators_name",
         label: "Field Facilitator",
@@ -239,18 +156,18 @@ export default reactive({
             validation: ["required"],
             type: "select",
             col_size: 6,
-            getter: "GetManagementUnitAdmin",
-            setter: "mu_no",
+            getter: "GetFFAllWeb_new",
+            setter: "ff_no",
             param: {
               page: 1,
               per_page: 10,
             },
             option: {
-              getterKey: "data.result",
+              // getterKey: "data.result",
               list_pointer: {
-                code: "mu_no",
+                code: "ff_no",
                 label: "name",
-                display: ["name"],
+                display: ["name", "ff_no"],
               },
             },
           },
@@ -268,15 +185,29 @@ export default reactive({
         },
       },
       {
+        id: "monitoring_no",
+        label: "No. Monitoring",
+        methods: {
+          detail: {
+            class: "badge bg-info"
+
+          },
+        },
+      },
+      {
         id: "lahan_no",
         label: "No. Lahan",
         methods: {
           list: {
             type: "row-slot",
           },
-          detail: true,
+          detail: {
+            class: "badge bg-info"
+
+          },
         },
       },
+
       {
         id: "qty_std",
         label: "Bibit",
@@ -284,7 +215,10 @@ export default reactive({
           list: {
             type: 'row-slot'
           },
-          detail: true,
+          detail: {
+            type: 'slot',
+            view_data: 'qty_std'
+          },
         },
       },
       {
@@ -294,7 +228,10 @@ export default reactive({
           list: {
             type: 'row-slot'
           },
-          detail: true,
+          detail: {
+            type: 'slot',
+            view_data: 'kayu'
+          },
         },
       },
       {
@@ -304,7 +241,10 @@ export default reactive({
           list: {
             type: 'row-slot'
           },
-          detail: true,
+          detail: {
+            type: 'slot',
+            view_data: 'mpts'
+          },
         },
       },
       {
@@ -314,7 +254,6 @@ export default reactive({
           list: {
             type: "row-slot",
           },
-          detail: true,
         },
       },
       {
@@ -324,9 +263,41 @@ export default reactive({
           list: {
             type: "row-slot",
           },
-          detail: true,
         },
       },
+
+      {
+        id: "planting_date",
+        label: "Tanggal Penanaman",
+        methods: {
+
+          detail: {
+            transform: 'date',
+            class: 'badge bg-primary'
+          },
+        },
+      },
+      {
+        id: "monitoring_period",
+        label: "Waktu Monitoring",
+        methods: {
+          detail: {
+            type: 'slot',
+            view_data: 'monitoring_period'
+          },
+        },
+      },
+      {
+        id: "lahan_condition",
+        label: "Kondisi Lahan",
+        methods: {
+
+          detail: {
+            transform: 'capitalize'
+          },
+        },
+      },
+
       {
         id: "is_validate",
         label: "Status",
@@ -334,7 +305,13 @@ export default reactive({
           list: {
             type: "row-slot",
           },
-          detail: true,
+          detail: {
+            transform: "status-verification",
+            class: {
+              1: "badge bg-success",
+              0: "badge bg-danger",
+            },
+          },
           // filter: {
           //   type: "select",
           //   setter: "status",
@@ -379,7 +356,13 @@ export default reactive({
           list: {
             type: "row-slot",
           },
-          detail: true,
+          detail: {
+            transform: "status-population",
+            class: {
+              1: "badge bg-success",
+              0: "badge bg-danger",
+            },
+          },
           // filter: {
           //   label: "Tanggal Monitoring",
           //   validation: ["required"],
@@ -392,7 +375,16 @@ export default reactive({
           // },
         },
       },
-
+      {
+        id: "action",
+        label: "Action",
+        methods: {
+          detail: {
+            type: "slot",
+            view_data: 'action'
+          },
+        },
+      },
     ],
   },
 });
