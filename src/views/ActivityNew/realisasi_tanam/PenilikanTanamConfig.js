@@ -18,18 +18,18 @@ export default reactive({
         setter: "program_year",
       },
     },
-    searchColumn: true,
-    searchColumnOptions: [
-      { value: 'mu', label: 'MU' },
-      { value: 'ta', label: 'Target Area' },
-      { value: 'ff', label: 'FF' },
-      { value: 'petani', label: 'Petani' },
-      { value: 'no_lahan', label: 'No. Lahan' },
-      { value: 'awal_monitoring', label: 'Awal Waktu Monitoring' },
-      { value: 'akhir_monitoring', label: 'Akhir Waktu Monitoring' },
-      { value: 'status', label: 'Status' },
-      { value: 'status_populasi', label: 'Status Populasi' },
-    ],
+    // searchColumn: true,
+    // searchColumnOptions: [
+    //   { value: 'mu', label: 'MU' },
+    //   { value: 'ta', label: 'Target Area' },
+    //   { value: 'ff', label: 'FF' },
+    //   { value: 'petani', label: 'Petani' },
+    //   { value: 'no_lahan', label: 'No. Lahan' },
+    //   { value: 'awal_monitoring', label: 'Awal Waktu Monitoring' },
+    //   { value: 'akhir_monitoring', label: 'Akhir Waktu Monitoring' },
+    //   { value: 'status', label: 'Status' },
+    //   { value: 'status_populasi', label: 'Status Populasi' },
+    // ],
     detailIdKey: "soc_no",
     getter: "first-monitorings/main/list",
     getterDataKey: 'result',
@@ -261,7 +261,9 @@ export default reactive({
         id: "farmers_name",
         label: "Nama Petani",
         methods: {
-          list: true,
+          list: {
+            type: "row-slot",
+          },
           detail: true,
         },
       },
@@ -269,31 +271,39 @@ export default reactive({
         id: "lahan_no",
         label: "No. Lahan",
         methods: {
-          list: true,
+          list: {
+            type: "row-slot",
+          },
           detail: true,
         },
       },
       {
-        id: "bibit",
+        id: "qty_std",
         label: "Bibit",
         methods: {
-          list: true,
+          list: {
+            type: 'row-slot'
+          },
           detail: true,
         },
       },
       {
-        id: "lahan_no",
+        id: "kayu",
         label: "Kayu",
         methods: {
-          list: true,
+          list: {
+            type: 'row-slot'
+          },
           detail: true,
         },
       },
       {
-        id: "lahan_no",
+        id: "mpts",
         label: "MPTS",
         methods: {
-          list: true,
+          list: {
+            type: 'row-slot'
+          },
           detail: true,
         },
       },
@@ -302,7 +312,7 @@ export default reactive({
         label: "Awal Waktu Monitoring",
         methods: {
           list: {
-            transform: "datetime",
+            type: "row-slot",
           },
           detail: true,
         },
@@ -312,7 +322,7 @@ export default reactive({
         label: "Akhir Waktu Monitoring",
         methods: {
           list: {
-            transform: "datetime",
+            type: "row-slot",
           },
           detail: true,
         },

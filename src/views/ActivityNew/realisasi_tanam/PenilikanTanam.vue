@@ -38,6 +38,102 @@
             </div>
         </template>
 
+        <template v-slot:list-farmers_name="{ item }">
+            <div class="d-flex flex-col min-w-100px">
+                <span>{{ item.farmers_name }}</span>
+            </div>
+        </template>
+
+        <template v-slot:list-lahan_no="{ item }">
+            <span class="badge bg-primary">
+                <span>{{ item.lahan_no }}</span>
+            </span>
+        </template>
+
+        <template v-slot:list-qty_std="{ item }">
+            <span class="badge bg-primary min-w-10px d-flex">
+                <v-icon size="small">mdi-seed</v-icon> &nbsp;{{ item.qty_std }}
+            </span>
+        </template>
+
+        <template v-slot:list-kayu="{ item }">
+            <!-- <div class="pr-5 mr-5 d-flex flex-row" > -->
+            <div class="d-flex flex-row min-w-100px" style="justify-content: space-around">
+
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-success">
+                            <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_hidup }}
+                        </span>
+                    </template>
+
+                    <span>hidup</span>
+                </v-tooltip>
+
+
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-danger">
+                            <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_mati }}
+                        </span>
+                    </template>
+
+                    <span>mati</span>
+                </v-tooltip>
+
+            </div>
+            <div class="d-flex flex-row min-w-100px mt-2" style="justify-content: space-around">
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-light">
+                            <v-icon size="small">mdi-forest</v-icon> {{ item.kayu_hilang }}
+                        </span>
+                    </template>
+
+                    <span>hilang</span>
+                </v-tooltip>
+            </div>
+        </template>
+
+        <template v-slot:list-mpts="{ item }">
+            <!-- <div class="pr-5 mr-5 d-flex flex-row" > -->
+            <div class="d-flex flex-row min-w-100px" style="justify-content: space-around">
+
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-success">
+                            <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_hidup }}
+                        </span>
+                    </template>
+
+                    <span>hidup</span>
+                </v-tooltip>
+
+
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-danger">
+                            <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_mati }}
+                        </span>
+                    </template>
+
+                    <span>mati</span>
+                </v-tooltip>
+
+            </div>
+            <div class="d-flex flex-row min-w-100px mt-2" style="justify-content: space-around">
+                <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                        <span v-on="on" class="badge bg-light">
+                            <v-icon size="small">mdi-forest</v-icon> {{ item.mpts_hilang }}
+                        </span>
+                    </template>
+
+                    <span>hilang</span>
+                </v-tooltip>
+            </div>
+        </template>
+
         <template v-slot:list-is_validate="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
@@ -50,9 +146,10 @@
                         <span v-else="item.is_validate == 1">Terverifikasi</span>
                     </span>
                 </div>
- 
+
             </div>
         </template>
+
         <template v-slot:list-is_populated="{ item }">
             <div class="d-flex flex-col min-w-200px">
                 <div class="d-flex flex-row">
@@ -65,11 +162,32 @@
                         <span v-else="item.is_populated == 1">Terpopulasi</span>
                     </span>
                 </div>
- 
+
+            </div>
+        </template>
+        <template v-slot:list-start_monitoring_period="{ item }">
+            <div class="d-flex flex-col min-w-200px">
+                <div class="d-flex flex-row">
+                    <span class="badge bg-info">
+                        <span>{{ item.start_monitoring_period | parse('datetime') }}</span>
+                    </span>
+                </div>
+
             </div>
         </template>
 
-        
+        <template v-slot:list-end_monitoring_period="{ item }">
+            <div class="d-flex flex-col min-w-200px">
+                <div class="d-flex flex-row">
+                    <span class="badge bg-info">
+                        <span>{{ item.end_monitoring_period | parse('datetime') }}</span>
+                    </span>
+                </div>
+
+            </div>
+        </template>
+
+
         <template v-slot:list-bottom-action="{ item }">
 
 
@@ -265,7 +383,7 @@ export default {
             }
         },
         searchColumChanged(t) {
-            this.searchColumn=t
+            this.searchColumn = t
             console.log('state ', this.searchColumn)
         }
     },
