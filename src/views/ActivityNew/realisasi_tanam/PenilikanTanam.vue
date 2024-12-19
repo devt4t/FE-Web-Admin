@@ -271,7 +271,20 @@
             </div>
         </template>
 
-
+        <template v-slot:detail-action="{ item }">
+            <div>
+                <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')" variant="success"
+                small class="mt-2" @click="onVerif(item)">
+                <v-icon small>mdi-check-bold</v-icon>
+                <span>Verifikasi</span>
+            </v-btn>
+            <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                variant="danger" small class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
+            </v-btn>
+            </div>
+        </template>
         <template v-slot:list-bottom-action="{ item }">
 
 
@@ -423,7 +436,7 @@ export default {
 
         },
         async onVerif(item) {
-            const prompt = await this.$_alert.confirm('Verifikasi Data Sostam?', 'Apakah anda yakin akan memverifikasi data sostam ini?', 'Ya, Verifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
 
             if (prompt.isConfirmed) {
                 this.$_api.post('ValidateSosisalisasiTanam', {
@@ -432,29 +445,29 @@ export default {
                     program_year: this.$store.state.tmpProgramYear
                 })
                     .then(() => {
-                        this.$_alert.success('Sostam berhasil diverifikasi')
+                        this.$_alert.success('realisasi berhasil diverifikasi')
                         this.refreshKey += 1
                     })
 
             }
         },
         async onUnverif(item) {
-            const prompt = await this.$_alert.confirm('Unverifikasi Data Sostam?', 'Apakah anda yakin akan mengurungkan verifikasi data sostam ini?', 'Ya, Unverifikasi', 'Batal', true)
+            const prompt = await this.$_alert.confirm('Unverifikasi Data realisasi?', 'Apakah anda yakin akan mengurungkan verifikasi data realisasi ini?', 'Ya, Unverifikasi', 'Batal', true)
             // console.log('item', item)
             if (prompt.isConfirmed) {
 
-                const isConfirmed = await this.$_api.post('sostam/unverification', {
+                const isConfirmed = await this.$_api.post('realisasi/unverification', {
                     soc_no: item.soc_no,
                     program_year: this.$store.state.tmpProgramYear
                 })
                     .catch(() => false)
 
                 if (!isConfirmed) {
-                    this.$_alert.error('Data sostam gagal diunverifikasi')
+                    this.$_alert.error('Data realisasi gagal diunverifikasi')
                     return
                 }
 
-                this.$_alert.success('Data sostam berhasil diunverifikasi')
+                this.$_alert.success('Data realisasi berhasil diunverifikasi')
                 this.refreshKey += 1
                 // this.$_api.post('ValidateSosisalisasiTanam', {
                 //     soc_no: item.soc_no,

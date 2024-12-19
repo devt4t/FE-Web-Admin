@@ -100,7 +100,7 @@ export default reactive({
               list_pointer: {
                 code: "area_code",
                 label: "name",
-                display: ["name"],
+                display: ["name", "area_code"],
               },
             },
           },
@@ -156,18 +156,18 @@ export default reactive({
             validation: ["required"],
             type: "select",
             col_size: 6,
-            getter: "GetManagementUnitAdmin",
-            setter: "mu_no",
+            getter: "GetFFAllWeb_new",
+            setter: "ff_no",
             param: {
               page: 1,
               per_page: 10,
             },
             option: {
-              getterKey: "data.result",
+              // getterKey: "data.result",
               list_pointer: {
-                code: "mu_no",
+                code: "ff_no",
                 label: "name",
-                display: ["name"],
+                display: ["name", "ff_no"],
               },
             },
           },
@@ -375,7 +375,16 @@ export default reactive({
           // },
         },
       },
-
+      {
+        id: "action",
+        label: "Action",
+        methods: {
+          detail: {
+            type: "slot",
+            view_data: 'action'
+          },
+        },
+      },
     ],
   },
 });

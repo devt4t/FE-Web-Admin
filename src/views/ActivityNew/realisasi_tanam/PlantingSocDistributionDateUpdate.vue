@@ -135,7 +135,7 @@ export default {
             const endDate = moment(this.distribution_date, "YYYY-MM-DD")
                 .endOf("month")
                 .format("YYYY-MM-DD");
-            const response = await this.$_api.getNursery(
+            const nursery = await this.$_api.getNursery(
                 "custom/gekoDistributionAllocationPeriodes",
                 {
                     mu_no: data.mu_no,
@@ -145,14 +145,14 @@ export default {
                 }
             );
 
-            if (Array.isArray(response.data) && response.data.length > 0) {
+            if (Array.isArray(nursery.data) && nursery.data.length > 0) {
                 this.nurseryLocation = {
-                    address_nursery: response.data[0].address_nursery,
-                    name_location_nursery: response.data[0].name_location_nursery,
-                    location_nursery_id: response.data[0].location_nursery_id,
+                    address_nursery: nursery.data[0].address_nursery,
+                    name_location_nursery: nursery.data[0].name_location_nursery,
+                    location_nursery_id: nursery.data[0].location_nursery_id,
                 };
 
-                const allocationList = response.data[0].allocation_periode_days;
+                const allocationList = nursery.data[0].allocation_periode_days;
 
                 this.allocations = allocationList.filter(
                     (x) => parseInt(x.qty_allocation) > 0
