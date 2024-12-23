@@ -436,7 +436,7 @@ export default {
         },
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
-
+return;
             if (prompt.isConfirmed) {
                 this.$_api.post('ValidateMonitoring', {
                     soc_no: item.soc_no,
