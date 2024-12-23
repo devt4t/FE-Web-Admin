@@ -273,16 +273,16 @@
 
         <template v-slot:detail-action="{ item }">
             <div>
-                <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')" variant="success"
-                small class="mt-2" @click="onVerif(item)">
-                <v-icon small>mdi-check-bold</v-icon>
-                <span>Verifikasi</span>
-            </v-btn>
-            <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
-                variant="danger" small class="mt-2" @click="onUnverif(item)">
-                <v-icon left small>mdi-undo</v-icon>
-                <span>Unverifikasi</span>
-            </v-btn>
+                <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')"
+                    variant="success" small class="mt-2" @click="onVerif(item)">
+                    <v-icon small>mdi-check-bold</v-icon>
+                    <span>Verifikasi</span>
+                </v-btn>
+                <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                    variant="danger" small class="mt-2" @click="onUnverif(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi</span>
+                </v-btn>
             </div>
         </template>
         <template v-slot:list-bottom-action="{ item }">
@@ -323,8 +323,7 @@
         </template>
 
         <template v-slot:detail-slave-raw="{ data }">
-            <!-- <template v-slot:detail-row> -->
-            <!-- <planting-soc-detail :data="data" /> -->
+            <penilikan-tanam-detail :data="data"></penilikan-tanam-detail>
         </template>
     </geko-base-crud>
 </template>
@@ -335,7 +334,7 @@ import PlantingSocListFf from './PlantingSocListFF.vue'
 import PlantingSocForm from './PlantingSocForm.vue'
 import moment from 'moment'
 import axios from 'axios'
-import PlantingSocDetail from './PlantingSocDetail.vue'
+import PenilikanTanamDetail from './PenilikanTanamDetail.vue'
 import PlantingSocExportLahanMu from './PlantingSocExportLahanMu.vue'
 import "./penilikan-tanam.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
@@ -348,7 +347,7 @@ export default {
         PlantingSocListFf,
         PlantingSocForm,
         PlantingSocFarmerEdit,
-        PlantingSocDetail,
+        PenilikanTanamDetail,
         PlantingSocExportLahanMu,
         PlantingSocImportExcel,
         PlantingSocCoordinateEdit,
@@ -437,9 +436,9 @@ export default {
         },
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
-
+return;
             if (prompt.isConfirmed) {
-                this.$_api.post('ValidateSosisalisasiTanam', {
+                this.$_api.post('ValidateMonitoring', {
                     soc_no: item.soc_no,
                     validate_by: this.$store.state.User.employee_no,
                     program_year: this.$store.state.tmpProgramYear

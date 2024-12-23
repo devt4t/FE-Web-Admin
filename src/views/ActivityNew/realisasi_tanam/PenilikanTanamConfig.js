@@ -8,7 +8,7 @@ export default reactive({
   sostamDistributionData: null,
   exportLahanKey: 1,
   importSostamKey: 1,
-  searchColumn: 'mu',
+  // searchColumn: 'mu',
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,
   config: {
@@ -30,7 +30,9 @@ export default reactive({
     //   { value: 'status', label: 'Status' },
     //   { value: 'status_populasi', label: 'Status Populasi' },
     // ],
-    detailIdKey: "soc_no",
+    detail: "first-monitorings/main/detail",
+    detailIdKey: "id",
+    detailKey: "result.result",
     getter: "first-monitorings/main/list",
     getterDataKey: 'result',
     // totalDataKey: 'data.result.data',
@@ -72,7 +74,7 @@ export default reactive({
           list: false,
         },
       },
- 
+
 
       // {
       //   id: "indicator",
