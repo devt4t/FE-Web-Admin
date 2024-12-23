@@ -1,10 +1,26 @@
 <template>
   <div>
     <v-row>
-      <v-col>A
-      </v-col>
+      <!-- <v-col>A
+      </v-col> -->
       <v-col>
-        <div ref="mapContainer" id="mapContainer" class="map-container" style="width: 100%; height: 600px;"></div>
+        <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
+
+          <div class="list-header py-3 mt-1">
+            <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+              <h4>Titik Koordinat Penanaman</h4>
+            </div>
+            <div class="d-flex flex-row geko-list-header-action">
+              <div class="geko-list-header-toolbar"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div ref="mapContainer" id="mapContainer" class="map-container" style="width: 100%; height: 600px; border-radius: 10px;"></div>
+          </div>
+
+
+        </v-card>
       </v-col>
     </v-row>
   </div>
@@ -21,6 +37,9 @@ export default {
       default: [],
     },
   },
+  mounted() {
+    this.initializeMap()
+  },
   methods: {
     showLightbox(imgs, index) {
       if (imgs) this.$store.state.lightbox.imgs = imgs;
@@ -31,44 +50,43 @@ export default {
       this.$store.state.lightbox.show = true;
     },
     async initializeMap() {
-            mapboxgl.accessToken = this.$_config.mapBoxApi;
-            let mapLatitude = -7.024947076120682
-            let mapLongitude = 110.41467292861057
-            try {
-                mapLatitude = this.data.response.lands_coordinates.latitude
-                mapLongitude = this.data.response.lands_coordinates.longitude
+      mapboxgl.accessToken = this.$_config.mapBoxApi;
+      let mapLatitude = -7.024947076120682
+      let mapLongitude = 110.41467292861057
+      try {
+        mapLatitude = this.data.result.lands_coordinates.latitude
+        mapLongitude = this.data.result.lands_coordinates.longitude
+      }
+      catch (e) { console.log(e) }
+      this.maps = await new mapboxgl.Map({
+        container: "mapContainer",
+        style: this.$_config.mapBoxStyle,
+        zoom: 12,
+        projection: "globe",
+        maxZoom: 100,
+        preserveDrawingBuffer: true,
+        center: [mapLongitude, mapLatitude],
+      });
 
-            }
-            catch { }
-            this.maps = await new mapboxgl.Map({
-                container: "mapContainer",
-                style: this.$_config.mapBoxStyle,
-                zoom: 12,
-                projection: "globe",
-                maxZoom: 100,
-                preserveDrawingBuffer: true,
-                center: [mapLongitude, mapLatitude],
-            });
-
-            const geolocate = new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true,
-                },
-                trackUserLocation: true,
-                showUserHeading: true,
-            });
-            await this.maps.dragRotate.disable();
-            await this.maps.touchZoomRotate.disableRotation();
-            await this.maps.addControl(new mapboxgl.FullscreenControl());
-            await this.maps.addControl(new mapboxgl.NavigationControl());
-            await this.maps.addControl(geolocate);
-            this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
-                .setLngLat([mapLongitude, mapLatitude])
-                .addTo(this.maps);
-            // this.maps.on("click", (data) => {
-            //     this.marker.setLngLat(data.lngLat);
-            // });
+      const geolocate = new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
         },
+        trackUserLocation: true,
+        showUserHeading: true,
+      });
+      await this.maps.dragRotate.disable();
+      await this.maps.touchZoomRotate.disableRotation();
+      await this.maps.addControl(new mapboxgl.FullscreenControl());
+      await this.maps.addControl(new mapboxgl.NavigationControl());
+      await this.maps.addControl(geolocate);
+      this.marker = new mapboxgl.Marker({ color: "red", anchor: "center" })
+        .setLngLat([mapLongitude, mapLatitude])
+        .addTo(this.maps);
+      // this.maps.on("click", (data) => {
+      //     this.marker.setLngLat(data.lngLat);
+      // });
+    },
   },
   data() {
     return {
