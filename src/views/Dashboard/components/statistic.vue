@@ -263,7 +263,8 @@ export default {
             icon: "mdi-check-all",
           },
           api: {
-            endpoint: "new-dashboard/land-by-purpose",
+            // endpoint: "new-dashboard/land-by-purpose",
+            endpoint: "new-dashboard/farmers",
             params: {
               project_purpose: "non-carbon",
               approve: 2,
@@ -279,7 +280,8 @@ export default {
             isLoading: true,
             suffix: "Lahan",
             api: {
-              endpoint: "new-dashboard/land-by-purpose",
+              // endpoint: "new-dashboard/land-by-purpose",
+              endpoint: "new-dashboard/farmers",
               params: {
                 project_purpose: "non-carbon",
               },
@@ -299,7 +301,8 @@ export default {
             icon: "mdi-check-all",
           },
           api: {
-            endpoint: "new-dashboard/land-by-purpose",
+            // endpoint: "new-dashboard/land-by-purpose",
+            endpoint: "new-dashboard/farmers",
             params: {
               project_purpose: "carbon",
               approve: 2,
@@ -315,7 +318,8 @@ export default {
             isLoading: true,
             suffix: "Lahan",
             api: {
-              endpoint: "new-dashboard/land-by-purpose",
+              // endpoint: "new-dashboard/land-by-purpose",
+              endpoint: "new-dashboard/farmers",
               params: {
                 project_purpose: "carbon",
               },

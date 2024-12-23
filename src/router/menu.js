@@ -175,7 +175,7 @@ const menu = [
   // {
   //   title: "New Activities",
   //   icon: "mdi-lightbulb-auto-outline",
-  //   items: [
+  //   items:   [
   //     {
   //       title: "Scooping Visit",
   //       to: "/scooping-visit-v2",
@@ -470,6 +470,22 @@ const menu = [
         icon: "mdi-scale-unbalanced",
         type: ["non-carbon"],
       },
+    ]
+  },
+  {
+    title: "Monitoring",
+    icon: "mdi-truck-delivery",
+    items:[
+      {
+        title: "Monitoring 2",
+        to: "/Monitoring2_new",
+        component: "Monitoring/Monitoring2",
+        name: "crud-monitoring2",
+        update: true,
+        permission: "Monitoring",
+        icon: "mdi-calendar-multiselect",
+        type: ["non-carbon"],
+      }
     ]
   },
 
