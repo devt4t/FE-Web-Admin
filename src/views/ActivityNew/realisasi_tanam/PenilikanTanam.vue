@@ -438,7 +438,7 @@ export default {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
 
             if (prompt.isConfirmed) {
-                this.$_api.post('ValidateSosisalisasiTanam', {
+                this.$_api.post('ValidateMonitoring', {
                     soc_no: item.soc_no,
                     validate_by: this.$store.state.User.employee_no,
                     program_year: this.$store.state.tmpProgramYear
