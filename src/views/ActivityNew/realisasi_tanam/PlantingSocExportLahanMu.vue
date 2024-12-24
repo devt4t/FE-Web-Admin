@@ -85,10 +85,10 @@ export default {
         getExportData() {
             return new Promise(async (resolve, reject) => {
                 this.$_api
-                    .get("sostam/find/mu", {
+                    .get("monitoring/first/main/export", {
                         mu_no: this.muNo,
                         program_year: this.$store.state.tmpProgramYear,
-                        limit: 100000,
+                        limit: 100,
                         offset: 0,
                     })
                     .then((res) => {
@@ -110,8 +110,6 @@ export default {
                 if (!Array.isArray(exportData) || (Array.isArray(exportData) && exportData.length) == 0) {
                     throw "Not Found"
                 }
-
-
 
                 const axiosConfig = {
                     method: "POST",
