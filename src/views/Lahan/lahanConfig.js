@@ -29,20 +29,20 @@ export default {
         color: "primary",
         transform: "ts",
       },
-      updated_gis: {
-        label: "Polygon (GIS)",
-        icon: "mdi-shape-polygon-plus",
-        color: "info",
-        transform: "ts",
-      },
-      fc_verif: {
-        label: "Kelayakan Project (FC)",
-        icon: "mdi-check-circle",
-        color: "primary",
-        transform: "ts",
-      },
+      // updated_gis: {
+      //   label: "Polygon (GIS)",
+      //   icon: "mdi-shape-polygon-plus",
+      //   color: "info",
+      //   transform: "ts",
+      // },
+      // fc_verif: {
+      //   label: "Kelayakan Project (FC)",
+      //   icon: "mdi-check-circle",
+      //   color: "primary",
+      //   transform: "ts",
+      // },
       um_verif: {
-        label: "Eligibilitas (UM)",
+        label: "Diverifikasi UM",
         icon: "mdi-check-circle",
         color: "success",
         transform: "ts",
