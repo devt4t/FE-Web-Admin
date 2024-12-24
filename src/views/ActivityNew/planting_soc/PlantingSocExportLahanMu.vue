@@ -92,7 +92,6 @@ export default {
                         offset: 0,
                     })
                     .then((res) => {
-
                         return resolve(res.data);
                     })
                     .catch(() => {

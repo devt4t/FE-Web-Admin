@@ -125,10 +125,20 @@
                             <h4>Petani</h4>
                         </div>
 
-                        <v-btn variant="success" @click="openFarmerCreateModal()">
-                            <v-icon>mdi-add</v-icon>
-                            <span>Tambah Petani</span>
-                        </v-btn>
+                        <div>
+
+                            <v-btn variant="warning" v-if="$_sys.isAllowed('sosialisasi-tanam-update')"
+                                @click="syncSeed()">
+                                <v-icon>mdi-sync</v-icon>
+                                <span>Sync Ulang Bibit</span>
+                            </v-btn>
+
+                            <v-btn variant="success" v-if="$_sys.isAllowed('sosialisasi-tanam-update')"
+                                @click="openFarmerCreateModal()">
+                                <v-icon>mdi-add</v-icon>
+                                <span>Tambah Petani</span>
+                            </v-btn>
+                        </div>
 
                     </div>
                 </template>
@@ -313,13 +323,44 @@ export default {
                 },
             ],
             farmerCreateData: null,
-            farmerCreateKey: 1
+            farmerCreateKey: 1,
+            syncLoading: false
         }
     },
     mounted() {
         this.getData()
     },
     methods: {
+
+        async syncSeed() {
+            const isConfirmed = await this.$_alert.confirm('Sync Ulang Bibit', 'Apakah anda yakin akan melakukan sync ulang data bibit?', 'Ya', 'Tidak')
+            if (!isConfirmed.isConfirmed) return
+
+            try {
+                this.syncLoading = true
+
+                for (const farmer of this.farmers) {
+
+                    await this.$_api.post('new-sostam/add-on/refresh-seed', {
+                        form_no: farmer.form_no,
+                        lahan_no: farmer.no_lahan,
+                        program_year: this.$_config.programYear.model
+                    })
+
+
+                }
+                this.$_alert.success("Data bibit berhasil di sinkron")
+                this.syncLoading = false
+
+            }
+
+            catch {
+                this.syncLoading = false
+            }
+
+
+
+        },
         showLightbox(imgs, index) {
             if (imgs) this.$store.state.lightbox.imgs = imgs;
 
@@ -365,7 +406,6 @@ export default {
                 }
 
 
-                console.log('total', seedTotal);
 
 
                 response.data.total_seed = seedTotal
