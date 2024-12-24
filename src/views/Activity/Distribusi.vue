@@ -5654,7 +5654,9 @@
                             item.loading_line[0].status_bast == null
                           " -->
                         <v-list-item>
-                          <v-btn
+                          Silahkan Cek Status BAST di Modul Distribusi -> Unload
+                          <!-- <v-btn
+                            v-if="false"
                             dark
                             class="px-7"
                             rounded
@@ -5666,7 +5668,7 @@
                               mdi-folder-search
                             </v-icon>
                             CEk Status BAST
-                          </v-btn>
+                          </v-btn> -->
                         </v-list-item>
                         <v-list-item
                           v-if="false"

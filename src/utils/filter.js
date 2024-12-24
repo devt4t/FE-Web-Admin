@@ -36,10 +36,10 @@ Vue.filter("parse", (value, id) => {
         value === "document_saving"
           ? "Pending"
           : value === "ready_to_submit"
-          ? "GIS Review"
-          : value === "submit_review"
-          ? "Terverifikasi"
-          : "Tidak Ada Status";
+            ? "GIS Review"
+            : value === "submit_review"
+              ? "Terverifikasi"
+              : "Tidak Ada Status";
       break;
 
     case "status-potential":
@@ -83,7 +83,7 @@ Vue.filter("parse", (value, id) => {
     case "lowercase":
       if (!value) _value = value;
       _value = value.toLowerCase();
-    
+
     case "potential-vilage":
       if (value == 0) {
         _value = "Tidak Potensial";
@@ -102,9 +102,9 @@ Vue.filter("parse", (value, id) => {
         _value = "Non-Aktif";
       } else if (value === 1) {
         _value = "Aktif";
-      }else if (value === "0") {
+      } else if (value === "0") {
         _value = "Non-Aktif";
-      }else if (value === "1") {
+      } else if (value === "1") {
         _value = "Aktif";
       }
       break;
@@ -116,10 +116,10 @@ Vue.filter("parse", (value, id) => {
         _value = "Terverifikasi";
       }
       break;
-    
+
     case "distribution-status-bast":
       if (value == 0) {
-        _value = "Belum Input Distribusi";
+        _value = "Belum Cek BAST";
       } else if (value === 1) {
         _value = "Bibit Kurang";
       } else if (value === 2) {
@@ -135,6 +135,16 @@ Vue.filter("parse", (value, id) => {
       } else if (value === 'adjustment') {
         _value = "Adjustmenr";
       }
+      break;
+    case "status-population":
+      if (value == 0) {
+        _value = "Belum / Tidak Terpopulasi";
+      } else if (value === 1) {
+        _value = "Terpopulasi";
+      }
+      break;
+      case "capitalize":
+      _value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
       break;
     default:
       _value = value;

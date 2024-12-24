@@ -1,7 +1,15 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true">
         <template v-slot:detail-slave-raw="{ data }">
+            <lahan-umum-detail-map
+              :long="data.result.longitude"
+              :lat="data.result.latitude"
+              :section="`LahanUmum`"
+            />
             <lahan-umum-detail :data="data"></lahan-umum-detail>
+        </template>
+        <template v-slot:create-form>
+            <lahan-umum-create :user="user"></lahan-umum-create>
         </template>
     </geko-base-crud>
 
@@ -12,16 +20,21 @@ import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
 import LahanUmumConfig from "./LahanUmumConfig";
 import LahanUmumDetail from "./LahanUmumDetail.vue";
+import LahanUmumDetailMap from "@/views/Lahan/components/DetailLahanMap";
+import LahanUmumCreate from "./lahanUmumCreate.vue"
 
 export default {
     components: {
         LottieAnimation,
-        LahanUmumDetail
+        LahanUmumDetail,
+        LahanUmumDetailMap,
+        LahanUmumCreate
     },
     name: "crud-public-land",
     watch: {},
     data() {
         return {
+            user: {},
             refreshKey: 1,
             config: {
                 export: true,

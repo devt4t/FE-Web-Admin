@@ -34,39 +34,38 @@
 
                 </v-data-table>
             </v-card>
-            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
-                <div class="list-header py-3 mt-1">
-                    <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
-                    <h4>Koordinat Lahan Umum</h4>
-                    </div>
-                    <div class="d-flex flex-row geko-list-header-action">
-                    <div class="geko-list-header-toolbar"></div>
-                    </div>
-                </div>
-                <div class="polygon-wraper">
-                    <div class="map-wrapper" id="map-wrapper" style="height: 400px; width: 100%">
-                        <!-- <div class="map-legends">
-                        <div class="map-legend-item" v-for="(item, i) in legends" :key="item.id" :class="{
-                            active: item.show,
-                            disabled: item.disabled,
-                        }" @click="toggleLayer(item, i)">
-                            <span v-if="item.id !== 'map-coordinate'" class="shape" :class="item.shape">
-                            </span>
-                            <span v-else-if="item.id == 'map-coordinate'"><v-icon class="icon">mdi-map-marker</v-icon></span>
-                            <span>{{ item.label }}</span>
-                        </div>
-                        </div>
-                        <div ref="mapContainer" class="map-container" v-if="mapOpen"></div>
-                        <div class="map-placeholder" v-else>
-                        <v-btn variant="success" @click="openMaps">
-                            <v-icon>mdi-google-maps</v-icon>
-                            <span>Buka Maps</span>
-                        </v-btn>
-                        </div> -->
-                    </div>
-                </div>
-            </v-card>
           
+            <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5">
+                <v-data-table :headers="configPlantingHolePICDetail.table.header" :items="data.result.detail_pic"
+                    :search="''" class="rounded-xl elevation- pa-1 px-5">
+
+                    <template v-slot:item.index="{ index }">
+                    {{ index + 1 }}
+                    </template>
+
+                    <template v-slot:top>
+                    <div class="list-header py-3 mt-1">
+                        <div class="pr-5 mr-5 d-flex flex-row" style="justify-content: space-between">
+                        <h4>Detail PIC Lahan Umum</h4>
+                        </div>
+                        <div class="d-flex flex-row geko-list-header-action">
+                        <div class="geko-list-header-toolbar"></div>
+                        </div>
+                    </div>
+
+                    <div class="statistics mb-3">
+                        <div class="statistic-item light">
+                        <v-icon>mdi-list-status</v-icon>
+                        <div class="statistic-data">
+                            <p class="mb-0 label">Total Data Bibit Lahan Umum</p>
+                            <p class="mb-0 value">{{ data.result.detail_pic.length ?? '' }}</p>
+                        </div>
+                        </div>
+                    </div>
+                    </template>
+
+                </v-data-table>
+            </v-card>
         </v-col>
         <v-col>
             <v-card data-aos="fade-up" data-aos-delay="100" data-aos-duration="800" class="geko-base-detail-card mb-5 px-4">
@@ -82,12 +81,12 @@
 
                 <div class="absent-photo-list d-flex flex-row" v-if="true">
                     <div class="absent-photo-item"
-                        @click="showLightbox($_config.baseUrlUpload + '/' + data.result.photo_doc ?? '')"
+                        @click="showLightbox($_config.baseUrlUpload + '/general-lands/' + data.result.photo_doc ?? '')"
                         v-bind:style="{
                         backgroundImage:
                             'url(' +
                             $_config.baseUrlUpload +
-                            '/' +
+                            '/general-lands/' +
                             data.result.photo_doc ?? '' +
                             ')',
                         }">
@@ -109,12 +108,12 @@
   
             <div class="absent-photo-list d-flex flex-row" v-if="true">
               <div class="absent-photo-item"
-                @click="showLightbox($_config.baseUrlUpload + '/' + data.result.photo1 ?? '')"
+                @click="showLightbox($_config.baseUrlUpload + '/general-lands/' + data.result.photo1 ?? '')"
                 v-bind:style="{
                   backgroundImage:
                     'url(' +
                     $_config.baseUrlUpload +
-                    '/' +
+                    '/general-lands/' +
                     data.result.photo1 ?? '' +
                     ')',
                 }">
@@ -123,12 +122,12 @@
             </div>
             <div class="absent-photo-list d-flex flex-row" v-if="true">
               <div class="absent-photo-item"
-                @click="showLightbox($_config.baseUrlUpload + '/' + data.result.photo2 ?? '')"
+                @click="showLightbox($_config.baseUrlUpload + '/general-lands/' + data.result.photo2 ?? '')"
                 v-bind:style="{
                   backgroundImage:
                     'url(' +
                     $_config.baseUrlUpload +
-                    '/' +
+                    '/general-lands/' +
                     data.result.photo2 ?? '' +
                     ')',
                 }">
@@ -137,12 +136,12 @@
             </div>
             <div class="absent-photo-list d-flex flex-row" v-if="true">
               <div class="absent-photo-item"
-                @click="showLightbox($_config.baseUrlUpload + '/' + data.result.photo3 ?? '')"
+                @click="showLightbox($_config.baseUrlUpload + '/general-lands/' + data.result.photo3 ?? '')"
                 v-bind:style="{
                   backgroundImage:
                     'url(' +
                     $_config.baseUrlUpload +
-                    '/' +
+                    '/general-lands/' +
                     data.result.photo3 ?? '' +
                     ')',
                 }">
@@ -234,7 +233,7 @@
     },
     data() {
       return {
-        configPlantingHoleDetail: {
+      configPlantingHoleDetail: {
         table: {
           header: [
             {
@@ -254,6 +253,55 @@
               sortable: false,
               text: "Jumlah",
               value: "amount",
+            },
+            {
+              key: "lahan_umum_pic_lahan_nama",
+              sortable: false,
+              text: "Nama PIC Per-Bibit",
+              value: "lahan_umum_pic_lahan_nama",
+            }
+          ]
+        }
+      },
+
+      configPlantingHolePICDetail: {
+        table: {
+          header: [
+            {
+              key: "index",
+              sortable: false,
+              text: "No",
+              value: "index",
+            },
+            {
+              key: "pic_no",
+              sortable: false,
+              text: "Nomor PIC",
+              value: "pic_no",
+            },
+            {
+              key: "ktp",
+              sortable: false,
+              text: "Nomor KTP",
+              value: "ktp",
+            },
+            {
+              key: "nama",
+              sortable: false,
+              text: "Nama PIC",
+              value: "nama",
+            },
+            {
+              key: "projects_project_name",
+              sortable: false,
+              text: "Nama Project",
+              value: "projects_project_name",
+            },
+            {
+              key: "planting_goals",
+              sortable: false,
+              text: "Tujuan Penanaman",
+              value: "planting_goals",
             }
           ]
         }

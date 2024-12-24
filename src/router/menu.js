@@ -175,7 +175,7 @@ const menu = [
   // {
   //   title: "New Activities",
   //   icon: "mdi-lightbulb-auto-outline",
-  //   items: [
+  //   items:   [
   //     {
   //       title: "Scooping Visit",
   //       to: "/scooping-visit-v2",
@@ -391,6 +391,16 @@ const menu = [
         type: ["non-carbon"],
       },
       {
+        title: "Realisasi Tanam",
+        to: "/PenilikanTanamV2",
+        component: "ActivityNew/realisasi_tanam/PenilikanTanam",
+        name: "PenilikanTanamV2",
+        permission: "PenilikanTanam",
+        icon: "mdi-spa",
+        type: ["non-carbon"],
+        update: true,
+      },
+      {
         title: "Monitoring",
         to: "/Monitoring2",
         component: "Activity/Monitoring2",
@@ -451,7 +461,7 @@ const menu = [
         type: ["non-carbon"],
       },
       {
-        title: "Distribusi - Unload",
+        title: "Distribusi - Unload & Report BAST",
         to: "/Distribusi/Unload",
         component: "Distribution/UnloadDistribution/Unload",
         name: "Distribution Unload",
@@ -460,6 +470,22 @@ const menu = [
         icon: "mdi-scale-unbalanced",
         type: ["non-carbon"],
       },
+    ]
+  },
+  {
+    title: "Monitoring",
+    icon: "mdi-truck-delivery",
+    items:[
+      {
+        title: "Monitoring 2",
+        to: "/Monitoring2_new",
+        component: "Monitoring/Monitoring2",
+        name: "crud-monitoring2",
+        update: true,
+        permission: "Monitoring",
+        icon: "mdi-calendar-multiselect",
+        type: ["non-carbon"],
+      }
     ]
   },
 

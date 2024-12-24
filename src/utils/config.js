@@ -2,6 +2,7 @@ export default {
   version: "2.4.0",
   baseUrl: "http://localhost:8000/api/",
   baseUrlUpload: "https://geko-asset.t4t-api.org",
+  // baseUrlUpload: "https://t4tadmin.kolaborasikproject.com",
   baseUrlExport: "https://geko-export.t4t-api.org/",
   baseUrlNursery: "https://backend.t4t-api.org/api",
   mapBoxApi:
@@ -10,6 +11,6 @@ export default {
   mapBoxStyleLight: "mapbox://styles/mapbox/light-v11",
   programYear: {
     model: "2024",
-    options: ["2020", "2021", "2022", "2023", "2024"],
+    options: ["2020", "2021", "2022", "2023", "2024", "2025"],
   },
 };
