@@ -9,10 +9,12 @@
 import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import LottieAnimation from "lottie-web-vue";
 import monitoring2Config from "./monitoring2Component/monitoring2Config";
+import monitoring2Detail from "./monitoring2Detail.vue";
 
 export default {
     components: {
         LottieAnimation,
+        monitoring2Detail
     },
     name: "crud-monitoring2",
     watch: {},
