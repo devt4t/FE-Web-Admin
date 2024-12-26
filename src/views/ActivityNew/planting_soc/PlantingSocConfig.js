@@ -5,6 +5,8 @@ export default {
   farmerEditData: null,
   sostamCoordinateData: null,
   sostamDistributionData: null,
+  distributionLocationDatas: null,
+  distributionLocationKey: 0,
   exportLahanKey: 1,
   importSostamKey: 1,
   sostamCoordinateEditKey: 1,

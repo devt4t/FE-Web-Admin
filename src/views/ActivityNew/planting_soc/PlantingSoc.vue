@@ -9,6 +9,7 @@
 
             <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
                 :data="sostamDistributionData" />
+            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey"/>
         </template>
 
         <template v-slot:list-after-filter>
@@ -90,6 +91,11 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
+            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                variant="info" small class="mt-2" @click="onUpdateDistributionLocation(item)">
+                <v-icon left small>mdi-update</v-icon>
+                <span>Edit Alamat Distribusi</span>
+            </v-btn>
 
         </template>
         <template v-slot:list-expanded-item="{ headers, item }">
@@ -119,6 +125,7 @@ import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
 import PlantingSocCoordinateEdit from './PlantingSocCoordinateEdit.vue'
 import PlantingSocDistributionDateUpdate from './PlantingSocDistributionDateUpdate.vue'
+import UpdateDistributionLocation from './UpdateDistributionLocation.vue'
 export default {
     name: "crud-planting-socialization",
     components: {
@@ -129,7 +136,8 @@ export default {
         PlantingSocExportLahanMu,
         PlantingSocImportExcel,
         PlantingSocCoordinateEdit,
-        PlantingSocDistributionDateUpdate
+        PlantingSocDistributionDateUpdate,
+        UpdateDistributionLocation
     },
     watch: {},
     methods: {
@@ -256,6 +264,10 @@ export default {
                 //     })
 
             }
+        },
+        onUpdateDistributionLocation(item) {
+            this.distributionLocationKey += 1
+            this.distributionLocationDatas = item
         }
     },
     data() {
