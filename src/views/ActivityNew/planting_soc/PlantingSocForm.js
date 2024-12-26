@@ -53,40 +53,21 @@ export default {
         }
       );
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        this.nurseryLocation = {
-          address_nursery: response.data[0].address_nursery,
-          name_location_nursery: response.data[0].name_location_nursery,
-          location_nursery_id: response.data[0].location_nursery_id,
-        };
-
-        const allocationList = response.data[0].allocation_periode_days;
-
-        this.allocations = allocationList.filter(
-          (x) => parseInt(x.qty_allocation) > 0
-        );
-        for (const allocation of this.allocations) {
-          this.availableDate.push(allocation.date_allocation);
-        }
-      }
-
-      //get distribution calendar for this ff
-      // const gekoCalendar = await this.$_api.get('DistributionCalendar', {
-      //     month: moment().format('MM'),
-      //     year: moment().format('YYYY'),
-      //     program_year: this.$_config.programYear.model,
-      //     nursery_location_id: null
-      // })
-
       const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
         ff_no: data.ff_no,
+        program_year: this.$_config.programYear.model,
+      });
+
+      let bibitGEKO = await this.$_api.get("/sostam/remaining-seed", {
+        month: moment(startDate).month() + 1,
+        year: moment(startDate).year(),
         program_year: this.$_config.programYear.model,
       });
 
       let ffLahanData = [];
       try {
         ffLahanData = ffLahan.data.result.lahans;
-      } catch {}
+      } catch { }
 
       var _lastFarmer = "";
       var _index = 1;
@@ -115,6 +96,39 @@ export default {
         totalMpts: _totalMpts,
         totalSeed: _totalSeed,
       };
+
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        this.nurseryLocation = {
+          address_nursery: response.data[0].address_nursery,
+          name_location_nursery: response.data[0].name_location_nursery,
+          location_nursery_id: response.data[0].location_nursery_id,
+        };
+
+        const allocationList = response.data[0].allocation_periode_days;
+
+        this.allocations = allocationList.filter(
+          (nursery) => {
+            let pointerGEKO = bibitGEKO.data.filter(geko => geko.distribution_date === nursery.date_allocation)
+            console.log({ pointerGEKO })
+            if (pointerGEKO.length) {
+              console.log(parseInt(nursery.qty_allocation), pointerGEKO[0].total_seed, _totalSeed)
+              let result = parseInt(nursery.qty_allocation) - (pointerGEKO[0].total_seed + _totalSeed);
+              console.log({ result })
+              return parseInt(result) > 0
+            }
+          });
+        for (const allocation of this.allocations) {
+          this.availableDate.push(allocation.date_allocation);
+        }
+      }
+
+      //get distribution calendar for this ff
+      // const gekoCalendar = await this.$_api.get('DistributionCalendar', {
+      //     month: moment().format('MM'),
+      //     year: moment().format('YYYY'),
+      //     program_year: this.$_config.programYear.model,
+      //     nursery_location_id: null
+      // })
       this.validateSostam();
       this.loading = false;
     },
