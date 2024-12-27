@@ -77,8 +77,15 @@ export default {
 
       let ffLahanData = [];
       try {
+
+        if (ffLahan.data.result.lahans.length == 0) {
+          this.$_alert.error("Terdapat lahan yang belum diverifikasi");
+          this.loading = false;
+          return;
+        }
+
         ffLahanData = ffLahan.data.result.lahans;
-      } catch {}
+      } catch { }
 
       var _lastFarmer = "";
       var _index = 1;
