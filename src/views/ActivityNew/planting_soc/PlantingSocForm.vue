@@ -327,7 +327,7 @@
 
                     <v-col md="12">
                         <div class="d-flex flex-row justify-content-end">
-                            <v-btn :disabled="loading" variant="success" type="submit">
+                            <v-btn :disabled="loading || !lahans.length" variant="success" type="submit">
                                 <v-icon v-if="!loading">mdi-plus</v-icon>
 
                                 <v-progress-circular v-else :size="20" color="green"

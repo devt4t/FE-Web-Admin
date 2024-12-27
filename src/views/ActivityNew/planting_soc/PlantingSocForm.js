@@ -70,6 +70,51 @@ export default {
         }
       }
 
+      const ffLahan = await this.$_api.get("getFFLahanSostamNew", {
+        ff_no: data.ff_no,
+        program_year: this.$_config.programYear.model,
+      });
+
+      let ffLahanData = [];
+      try {
+
+        if (ffLahan.data.result.lahans.length == 0) {
+          this.$_alert.error("Terdapat lahan yang belum diverifikasi");
+          this.loading = false;
+          return;
+        }
+
+        ffLahanData = ffLahan.data.result.lahans;
+      } catch { }
+
+      var _lastFarmer = "";
+      var _index = 1;
+      var _totalFarmer = 0;
+      var _totalSeed = 0;
+      var _totalKayu = 0;
+      var _totalMpts = 0;
+      for (const _farmer of ffLahanData) {
+        _farmer.index = _index;
+        if (_lastFarmer != _farmer.farmer_no) {
+          _farmer.bordered = true;
+          _totalFarmer += 1;
+
+          _index += 1;
+        }
+        _totalSeed += _farmer.total_kayu;
+        _totalSeed += _farmer.total_mpts;
+        _totalKayu += _farmer.total_kayu;
+        _totalMpts += _farmer.total_mpts;
+        _lastFarmer = _farmer.farmer_no;
+      }
+      this.lahans = ffLahanData;
+      this.lahanStatistic = {
+        totalFarmer: _totalFarmer,
+        totalKayu: _totalKayu,
+        totalMpts: _totalMpts,
+        totalSeed: _totalSeed,
+      };
+
       //get distribution calendar for this ff
       // const gekoCalendar = await this.$_api.get('DistributionCalendar', {
       //     month: moment().format('MM'),
