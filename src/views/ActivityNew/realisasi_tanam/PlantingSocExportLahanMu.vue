@@ -747,7 +747,7 @@ export default {
                         return;
                     } else {
                         console.log(result, offset)
-                        this.exportData = [...this.exportData, result.data]
+                        this.exportData = [...this.exportData, ...result.data]
                         trees = result.trees;
                         if (result.data.length < 100) break;
                         offset += 100;
