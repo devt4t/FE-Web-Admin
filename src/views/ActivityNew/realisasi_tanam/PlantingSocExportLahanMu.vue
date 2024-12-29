@@ -494,7 +494,7 @@ export default {
                         this.$_alert.error(
                             {},
                             "Tidak ada data",
-                            `Tidak ada data di Unit Management ${taName} ${this.$store.state.tmpProgramYear}`
+                            `Tidak ada data di Target Area ${taName} ${this.$store.state.tmpProgramYear}`
                         );
                         return;
                     } else {
@@ -742,7 +742,7 @@ export default {
                         this.$_alert.error(
                             {},
                             "Tidak ada data",
-                            `Tidak ada data di Unit Management ${ffName} ${this.$store.state.tmpProgramYear}`
+                            `Tidak ada data dari FF ${ffName} ${this.$store.state.tmpProgramYear}`
                         );
                         return;
                     } else {
