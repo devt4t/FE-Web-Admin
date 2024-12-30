@@ -85,10 +85,10 @@ export default {
         getExportData() {
             return new Promise(async (resolve, reject) => {
                 this.$_api
-                    .get("sostam/find/mu", {
+                    .get("sostam/export-by/mu", {
                         mu_no: this.muNo,
                         program_year: this.$store.state.tmpProgramYear,
-                        limit: 100000,
+                        limit: 10,
                         offset: 0,
                     })
                     .then((res) => {
@@ -114,7 +114,7 @@ export default {
 
                 const axiosConfig = {
                     method: "POST",
-                    url: `${this.$_config.baseUrlExport}export/planting-soc/mu/excel`,
+                    url: `${this.$_config.baseUrlExport}export/planting-soc/mu/it/excel`,
                     responseType: "arraybuffer",
                     data: {
                         data: exportData
