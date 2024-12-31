@@ -436,18 +436,8 @@ export default {
         },
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
-            return;
             if (prompt.isConfirmed) {
-                this.$_api.post('ValidateMonitoring', {
-                    soc_no: item.soc_no,
-                    validate_by: this.$store.state.User.employee_no,
-                    program_year: this.$store.state.tmpProgramYear
-                })
-                    .then(() => {
-                        this.$_alert.success('realisasi berhasil diverifikasi')
-                        this.refreshKey += 1
-                    })
-
+                this.verifyPenilikan(item);
             }
         },
         async onUnverif(item) {
@@ -482,6 +472,34 @@ export default {
         searchColumChanged(t) {
             this.searchColumn = t
             console.log('state ', this.searchColumn)
+        },
+        async verifyPenilikan(data) {
+
+            let listTrees = [];
+            data.detail_monitoring.forEach((tree) => {
+                let pushData = {
+                    tree_code: tree.tree_code,
+                    qty: tree.qty,
+                    status: tree.status,
+                    condition: tree.condition,
+                    planting_date: data.planting_date,
+                    tree_photo: tree.tree_photo,
+                    tree_description: tree.tree_description,
+                };
+                listTrees.push(pushData);
+            });
+
+            const url = `${this.$_config.baseUrl}MonitoringVerificationUM`;
+            const postData = {
+                monitoring_no: data.monitoring_no,
+                list_trees: listTrees,
+                validate_by: this.$store.state.User.email,
+            };
+
+            this.$_api.post(url, postData).then(() => {
+                this.$_alert.success('Penilikan tanam berhasil diverifikasi')
+                this.refreshKey += 1
+            })
         }
     },
     data() {
