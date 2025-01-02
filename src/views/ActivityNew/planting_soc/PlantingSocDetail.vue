@@ -224,7 +224,7 @@
 
                 <template v-slot:item.seed_total="{ item }">
                     <span class="d-block min-w-100px font-weight-bold">
-                        {{ item.total_seed | parse('ts') }} bibit
+                        {{ item.total_seed_detail | parse('ts') }} bibit
                     </span>
                 </template>
 
