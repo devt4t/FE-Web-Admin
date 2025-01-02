@@ -115,7 +115,7 @@ export default {
                         break;
                     }
 
-                    if (!Array.isArray(result) || (Array.isArray(result) && result.length) == 0) {
+                    if (!Array.isArray(result) || ((Array.isArray(result) && result.length) == 0 && this.exportData.length == 0)) {
                         this.loading = false;
                         this.$_alert.error(
                             {},
@@ -123,9 +123,9 @@ export default {
                         );
                         return;
                     } else {
+                        if (result.length < 10) break;
                         console.log(result, offset)
                         this.exportData = [...this.exportData, ...result]
-                        if (result.length < 10) break;
                         offset += 10;
                     }
 
