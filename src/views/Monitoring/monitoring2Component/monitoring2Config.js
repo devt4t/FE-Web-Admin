@@ -6,9 +6,9 @@ export default reactive({
     getter: "second-monitorings/main/list",
     getterDataKey: "result",
     totalDataKey: 'total',
-    // detail: "lahan-umum/main/detail",
-    // detailIdKey: "id",
-    // detailKey: "result",
+    detail: "second-monitorings/main/detail",
+    detailIdKey: "id",
+    detailKey: "result",
     pk_field: null,
     globalFilter: {
         program_year: {
