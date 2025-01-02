@@ -7,8 +7,38 @@
         </v-card-title>
 
         <v-card-text class="farmer-assign-wrapper mt-3">
-          <ValidationObserver ref="firstForm" v-slot="{ handleSubmit }">
+
+          <v-row>
+            <v-col lg="12">
+              <geko-input v-model="exportBy" :item="{
+                type: 'select-radio',
+                label: 'Export By',
+                validation: ['required'],
+                option: {
+                  list_pointer: {
+                    label: 'label',
+                    code: 'code',
+                    display: ['label'],
+                  },
+                  default_options: [
+                    {
+                      label: 'Field Facilitator',
+                      code: 'ff',
+                    },
+                    {
+                      label: 'Target Area',
+                      code: 'ta',
+                    },
+                  ],
+                },
+              }" />
+            </v-col>
+          </v-row>
+
+          <ValidationObserver :class="exportBy === 'ff' ? 'd-block' : 'd-none'" ref="firstForm"
+            v-slot="{ handleSubmit }">
             <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+
               <v-row>
                 <v-col lg="12">
                   <geko-input v-if="ffList.length > 0" v-model="ff_code" :item="{
@@ -52,6 +82,54 @@
               </v-row>
             </form>
           </ValidationObserver>
+
+          <ValidationObserver :class="exportBy === 'ta' ? 'd-block' : 'd-none'" ref="firstForm"
+            v-slot="{ handleSubmit }">
+            <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+
+              <v-row>
+                <v-col lg="12">
+                  <geko-input v-if="taList.length > 0" v-model="area_code" :item="{
+                    label: 'Target Area',
+                    placeholder: 'Pilih Target Area',
+                    type: 'select',
+                    validation: ['required'],
+                    api: 'GetFFAllWeb_new',
+                    param: {
+                      limit: 20,
+                    },
+                    option: {
+                      multiple: true,
+                      default_options: taList,
+                      list_pointer: {
+                        label: 'namaTa',
+                        code: 'area_code',
+                        display: ['namaTa', 'area_code'],
+                      },
+                    },
+                  }" @option:selected="test($event)" :disabled="taList.length == 0" />
+                  <v-progress-circular v-if="taList.length == 0" indeterminate color="primary"></v-progress-circular>
+                </v-col>
+
+                <v-col lg="12">
+                  <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                    <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
+
+                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                    <span class="ml-1"> Export PDF</span>
+                  </v-btn>
+                </v-col>
+
+                <v-col lg="12">
+                  <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                    <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
+                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                    <span class="ml-1"> Export Excel</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </form>
+          </ValidationObserver>
         </v-card-text>
       </v-card>
     </template>
@@ -65,11 +143,14 @@ export default {
   name: "export-modal",
   data() {
     return {
-      ff_code: ['FF00000756'],
+      ff_code: [],
+      area_code: [],
       isOpen: false,
       loading: false,
       currentFfName: "",
+      exportBy: 'ff',
       ffList: [],
+      taList: [],
     };
   },
   props: {
@@ -85,7 +166,8 @@ export default {
   watch: {
     dataKey(t) {
       if (t > 0) {
-        this.getInitialData()
+        this.getFFList()
+        this.getTAList()
         this.isOpen = true;
       }
 
@@ -100,7 +182,7 @@ export default {
       console.log("data", data);
     },
 
-    async getInitialData() {
+    async getFFList() {
       if (this.ffList.length > 0) return;
       const result = await this.$_api.get("GetFFAllWeb_new", {
         limit: 10000,
@@ -115,17 +197,41 @@ export default {
 
       this.ffList = result.data;
     },
+    async getTAList() {
+      if (this.taList.length > 0) return;
+      const result = await this.$_api.get("GetTargetAreaAdmin", {
+        program_year: 'Semua'
+      });
+
+      if (!Array.isArray(result.data.result)) return;
+
+      for (const item of result.data.result) {
+        item.name = `${item.namaTa} - ${item.area_code}`;
+      }
+
+      this.taList = result.data.result;
+    },
     // export data
 
-    getExportData(ffCode) {
+    getExportData(id) {
       return new Promise(async (resolve, reject) => {
+
+        let payload = {
+          program_year: this.$store.state.tmpProgramYear,
+          limit: 1000,
+          offset: 0,
+        };
+
+        if (this.exportBy == 'ta') {
+          payload = { ...payload, 'area_code': id };
+        } else if (this.exportBy == 'ff') {
+          payload = { ...payload, 'ff_no': id };
+        } else {
+          return;
+        }
+
         this.$_api
-          .get("new-planting-hole/list/export", {
-            program_year: this.$store.state.tmpProgramYear,
-            ff_no: ffCode,
-            limit: 1000,
-            offset: 0,
-          })
+          .get("new-planting-hole/list/export", payload)
           .then((res) => {
             return resolve(res);
           })
@@ -136,30 +242,37 @@ export default {
     },
 
     async onSubmit() {
-      
-      if (this.loading) return;
-      
-      this.loading = true;
-      for (const _ff of this.ff_code) {
-        if (!_ff) continue;
 
-        const result = await this.getExportData(_ff);
+      if (this.loading) return;
+
+      this.loading = true;
+      let selectedData = [];
+
+      if (this.exportBy == 'ff') {
+        selectedData = [...this.ff_code]
+      } else if (this.exportBy == 'ta') {
+        selectedData = [...this.area_code]
+      }
+
+      for (const _id of selectedData) {
+        if (!_id) continue;
+
+        const result = await this.getExportData(_id);
 
         if (!result) {
           this.loading = false;
           continue;
         }
-        
+
         if (
           !Array.isArray(result.data) ||
           (Array.isArray(result.data) && result.data.length == 0)
         ) {
-          if (this.ff_code.length == 1) {
+          if (this.selectedData.length == 1) {
             this.loading = false;
             this.$_alert.error(
               {},
               "Tidak ada data",
-              `FF ${this._ff} tidak memiliki penilikan lubang di tahun ${this.$store.state.tmpProgramYear}`
             );
             return;
           }
@@ -171,19 +284,28 @@ export default {
           excel: `${this.$_config.baseUrlExport}export/planting-hole/excel`,
         };
 
-        let ffName = this.ffList.find((item) => item.ff_no == _ff)
-          ? this.ffList.find((item) => item.ff_no == _ff).name
-          : "";
+        let selectedName = ''
 
-        if (ffName) {
-          ffName = ffName.replace(/ /g, "");
+        if (this.exportBy == 'ff') {
+          selectedName = this.ffList.find((item) => item.ff_no == _id)
+            ? this.ffList.find((item) => item.ff_no == _id).name
+            : "";
+        } else if (this.exportBy == 'ta') {
+          selectedName = this.taList.find((item) => item.area_code == _id)
+            ? this.taList.find((item) => item.area_code == _id).name
+            : "";
+        }
+
+
+        if (selectedName) {
+          selectedName = selectedName.replace(/ /g, "");
         }
 
         const configFilename = {
-          pdf: `Report-${ffName}-${_ff}-${moment().format(
+          pdf: `Report-${selectedName}-${_id}-${moment().format(
             "DMMYYYYHHmmss"
           )}.pdf`,
-          excel: `Report-${ffName}-${_ff}-${moment().format(
+          excel: `Report-${selectedName}-${_id}-${moment().format(
             "DMMYYYYHHmmss"
           )}.xlsx`,
         };
@@ -192,6 +314,7 @@ export default {
           url: configUrl[this.format],
           responseType: "arraybuffer",
           data: {
+            exportBy: this.exportBy,
             data: result.data
           },
           headers: {
@@ -233,7 +356,7 @@ export default {
   },
 
   mounted() {
-    // this.getInitialData();
+    // this.getFFList();
   },
 };
 </script>

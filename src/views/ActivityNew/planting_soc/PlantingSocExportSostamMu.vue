@@ -140,7 +140,7 @@ export default {
                     url: `${this.$_config.baseUrlExport}export/planting-soc/mu/it/excel`,
                     responseType: "arraybuffer",
                     data: {
-                        data: this.exportData
+                        data: this.exportData,
                     },
                     headers: {
                         "content-type": "application/json",

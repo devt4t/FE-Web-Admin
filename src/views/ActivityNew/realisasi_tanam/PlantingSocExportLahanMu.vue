@@ -488,7 +488,7 @@ export default {
                     if (
                         !Array.isArray(result.total) ||
                         !Array.isArray(result.trees) ||
-                        (Array.isArray(result.data && result.data.length == 0))
+                        (Array.isArray(result.data && result.data.length == 0) && this.exportData.length == 0)
                     ) {
                         this.loadingExportByTA = false;
                         this.$_alert.error(
@@ -612,7 +612,7 @@ export default {
                         !Array.isArray(result.total) ||
                         !Array.isArray(result.trees) ||
                         !Array.isArray(result.data) ||
-                        result.data.length == 0
+                        result.data.length == 0 && this.exportData.length == 0
                     ) {
                         this.loadingExportByMU = false;
                         this.$_alert.error(
@@ -736,7 +736,7 @@ export default {
                         !Array.isArray(result.total) ||
                         !Array.isArray(result.trees) ||
                         !Array.isArray(result.data) ||
-                        result.data.length == 0
+                        result.data.length == 0 && this.exportData.length == 0
                     ) {
                         this.loadingExportByFF = false;
                         this.$_alert.error(
