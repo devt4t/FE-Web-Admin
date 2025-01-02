@@ -389,20 +389,20 @@ export default {
                     continue;
                 }
 
-                const trees = await this.$_api
-                    .get("GetTreesAll")
-                    .then((res) => {
-                        return res.data.result.data;
-                    })
-                    .catch((err) => {
-                        console.log("err", err);
-                        return false;
-                    });
+                // const trees = await this.$_api
+                //     .get("GetTreesAll")
+                //     .then((res) => {
+                //         return res.data.result.data;
+                //     })
+                //     .catch((err) => {
+                //         console.log("err", err);
+                //         return false;
+                //     });
 
-                if (!trees) {
-                    this.loading = false;
-                    continue;
-                }
+                // if (!trees) {
+                //     this.loading = false;
+                //     continue;
+                // }
 
                 const configUrl = {
                     pdf: `${this.$_config.baseUrlExport}export/farmer-land-polygon/pdf`,
@@ -494,7 +494,7 @@ export default {
                         this.$_alert.error(
                             {},
                             "Tidak ada data",
-                            `Tidak ada data di Unit Management ${taName} ${this.$store.state.tmpProgramYear}`
+                            `Tidak ada data di Target Area ${taName} ${this.$store.state.tmpProgramYear}`
                         );
                         return;
                     } else {
@@ -545,7 +545,8 @@ export default {
                     responseType: "arraybuffer",
                     data: {
                         data: this.exportData,
-                        trees
+                        exportBy: this.exportBy,
+                        trees: trees
                     },
                     headers: {
                         "content-type": "application/json",
@@ -599,6 +600,7 @@ export default {
                     : "";
 
                 let offset = 0;
+                let trees = [];
                 while (true) {
                     const result = await this.getExportDataCarbon(_mu, offset);
                     if (!result) {
@@ -622,6 +624,7 @@ export default {
                     } else {
                         console.log(result, offset)
                         this.exportData = [...this.exportData, ...result.data]
+                        trees = result.trees;
                         if (result.data.length < 100) break;
                         offset += 100;
                     }
@@ -666,7 +669,8 @@ export default {
                     responseType: "arraybuffer",
                     data: {
                         data: this.exportData,
-                        // trees: trees
+                        exportBy: this.exportBy,
+                        trees: trees
                     },
                     headers: {
                         "content-type": "application/json",
@@ -720,6 +724,7 @@ export default {
                     : "";
 
                 let offset = 0;
+                let trees = [];
                 while (true) {
                     const result = await this.getExportDataCarbon(_ff, offset);
                     if (!result) {
@@ -737,12 +742,13 @@ export default {
                         this.$_alert.error(
                             {},
                             "Tidak ada data",
-                            `Tidak ada data di Unit Management ${ffName} ${this.$store.state.tmpProgramYear}`
+                            `Tidak ada data dari FF ${ffName} ${this.$store.state.tmpProgramYear}`
                         );
                         return;
                     } else {
                         console.log(result, offset)
-                        this.exportData = [...this.exportData, result.data]
+                        this.exportData = [...this.exportData, ...result.data]
+                        trees = result.trees;
                         if (result.data.length < 100) break;
                         offset += 100;
                     }
@@ -787,7 +793,8 @@ export default {
                     responseType: "arraybuffer",
                     data: {
                         data: this.exportData,
-                        // trees: trees
+                        exportBy: this.exportBy,
+                        trees: trees
                     },
                     headers: {
                         "content-type": "application/json",

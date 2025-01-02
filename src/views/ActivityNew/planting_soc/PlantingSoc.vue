@@ -4,12 +4,13 @@
         <template v-slot:list-before-create>
             <planting-soc-farmer-edit @success="refreshKey += 1" :dataKey="farmerEditKey" :data="farmerEditData" />
             <planting-soc-export-lahan-mu :dataKey="exportLahanKey" />
+            <planting-soc-export-sostam-mu :dataKey="exportSostamKey" />
             <planting-soc-import-excel :dataKey="importSostamKey" />
             <planting-soc-coordinate-edit :dataKey="sostamCoordinateEditKey" :data="sostamCoordinateData" />
 
             <planting-soc-distribution-date-update :dataKey="sostamDistributionEditKey"
                 :data="sostamDistributionData" />
-            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey"/>
+            <update-distribution-location :data="distributionLocationDatas" :dataKey="distributionLocationKey" />
         </template>
 
         <template v-slot:list-after-filter>
@@ -19,9 +20,14 @@
                     <span>Export Excel By MU</span>
                 </v-btn>
 
-                <v-btn variant="primary" @click="importSostamKey += 1">
+                <v-btn variant="primary" class="mr-2" @click="importSostamKey += 1">
                     <v-icon>mdi-cloud-sync</v-icon>
                     <span>Import Excel Sostam</span>
+                </v-btn>
+
+                <v-btn variant="success"  @click="exportSostamKey += 1">
+                    <v-icon>mdi-table</v-icon>
+                    <span>Export Excel</span>
                 </v-btn>
             </div>
         </template>
@@ -91,8 +97,8 @@
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create')"
-                variant="info" small class="mt-2" @click="onUpdateDistributionLocation(item)">
+            <v-btn v-if="$_sys.isAllowed('sosialisasi-tanam-unverification-create')" variant="info" small class="mt-2"
+                @click="onUpdateDistributionLocation(item)">
                 <v-icon left small>mdi-update</v-icon>
                 <span>Edit Alamat Distribusi</span>
             </v-btn>
@@ -120,6 +126,7 @@ import moment from 'moment'
 import axios from 'axios'
 import PlantingSocDetail from './PlantingSocDetail.vue'
 import PlantingSocExportLahanMu from './PlantingSocExportLahanMu.vue'
+import PlantingSocExportSostamMu from './PlantingSocExportSostamMu.vue'
 import "./planting-soc.scss";
 import PlantingSocFarmerEdit from './PlantingSocFarmerEdit.vue'
 import PlantingSocImportExcel from './PlantingSocImportExcel.vue'
@@ -134,12 +141,20 @@ export default {
         PlantingSocFarmerEdit,
         PlantingSocDetail,
         PlantingSocExportLahanMu,
+        PlantingSocExportSostamMu,
         PlantingSocImportExcel,
         PlantingSocCoordinateEdit,
         PlantingSocDistributionDateUpdate,
         UpdateDistributionLocation
     },
     watch: {},
+    // mounted() {
+    //     const ffData = await this.$_api.get('new-sostam/detail/calendar-list', {
+    //         program_year: this.$store.state.tmpProgramYear
+    //     });
+
+    //     console.log(ffData)
+    // },
     methods: {
         onEditFarmer(item) {
             this.farmerEditKey += 1

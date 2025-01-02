@@ -112,6 +112,23 @@
             </v-card>
         </v-col>
 
+        <v-col md="12" v-if="!loading">
+            <v-data-table :headers="headersFFDistribution" :items="farmers" :search="''"
+                class="rounded-xl elevation-1 mx-3 pa-1 planting-soc-detail-farmer" :footer-props="{
+                    showCurrentPage: false,
+                    showFirstLastPage: false,
+                }">
+                <template v-slot:top>
+                    <div class="geko-list-header mb-3 d-flex flex-row justify-content-between px-5 py-3 mt-1">
+                        <div class="pr-5 mr-5">
+                            <h4>Kalendar Distribusi</h4>
+                        </div>
+
+
+                    </div>
+                </template>
+            </v-data-table>
+        </v-col>
 
         <v-col md="12" v-if="!loading">
             <v-data-table :headers="headers" :items="farmers" :search="''"
@@ -229,6 +246,7 @@
 
             </v-data-table>
         </v-col>
+
     </v-row>
 </template>
 
@@ -322,6 +340,96 @@ export default {
                     sortable: false,
                 },
             ],
+            headersFFDistribution: [
+
+                {
+                    text: "#",
+                    key: "action",
+                    value: "action",
+                    class: "sticky-left",
+                    sortable: false,
+                },
+                {
+                    text: "No",
+                    key: "index",
+                    value: "index",
+                    sortable: false,
+                },
+                {
+                    text: "No. Form",
+                    key: "form_no",
+                    value: "form_no",
+                    sortable: false,
+                },
+                {
+                    text: "Petani",
+                    key: "farmer_no",
+                    value: "farmer_no",
+                    sortable: false,
+                },
+                {
+                    text: "Lahan",
+                    key: "lahan_no",
+                    value: "lahan_no",
+                    sortable: false,
+                },
+                {
+                    text: "Tanggal Penilikan Lubang",
+                    key: "planting_hole_date",
+                    value: "planting_hole_date",
+                    sortable: false,
+                },
+                {
+                    text: "Tanggal Penanaman",
+                    key: "planting_date",
+                    value: "planting_date",
+                    sortable: false,
+                },
+                {
+                    text: "Jenis Bibit",
+                    key: "seed_type",
+                    value: "seed_type",
+                    sortable: false,
+                },
+                {
+                    text: "Total Bibit",
+                    key: "seed_total",
+                    value: "seed_total",
+                    sortable: false,
+                },
+                {
+                    text: "Tanda Tangan Petani",
+                    key: "signature",
+                    value: "signature",
+                    sortable: false,
+                },
+                {
+                    text: "Kehadiran",
+                    key: "attendance",
+                    value: "attendance",
+                    sortable: false,
+                },
+                {
+                    id: "distribution_date",
+                    label: "Waktu Distribusi",
+                    methods: {
+                        list: {
+                            transform: "date",
+                        },
+                        detail: true,
+                        filter: {
+                            label: "Tanggal Distribusi",
+                            validation: ["required"],
+                            type: "daterange",
+                            col_size: 6,
+                            getter: "updated_at",
+                            setter: "distribution_date",
+                            icon: "calendar-edit",
+                            main: true,
+                        },
+                    },
+                },
+            ],
             farmerCreateData: null,
             farmerCreateKey: 1,
             syncLoading: false
@@ -412,6 +520,15 @@ export default {
                 response.data.distribution_location = response.farmers[0].distribution_location
                 response.data.distribution_coordinates = response.farmers[0].distribution_coordinates
                 this.farmers = response.farmers
+                console.log(response)
+
+                const calendar = await this.$_api.get('new-sostam/detail/calendar-list', {
+                    program_year: this.$store.state.tmpProgramYear,
+                    nursery_location_id: response.data.nursery_location_id
+                });
+
+                console.log({ calendar })
+
                 this.data = response.data
                 this.loading = false
             }

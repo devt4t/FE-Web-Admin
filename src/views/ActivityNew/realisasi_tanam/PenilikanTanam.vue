@@ -29,8 +29,8 @@
         <template v-slot:list-indicator="{ item }">
             <div class="indicator-wrapper pt-1">
                 <div class="indicator" :class="{
-                    info: item.gis_status == 1 && !item.verified,
-                    success: item.gis_status == 1 && item.verified,
+                    info: item.gis_status == 1 && !item.is_validate,
+                    success: item.gis_status == 1 && item.is_validate,
                     danger: item.gis_status == 2,
                     warning: !item.gis_status,
                 }">
@@ -216,7 +216,7 @@
                 <div class="d-flex flex-row">
                     <span class="badge" :class="{
                         'bg-danger': item.is_validate == 0,
-                        'bg-success': item.is_validate == 1,
+                        'bg-success': item.is_validate == 1 || item.is_validate == 2,
                     }">
 
                         <span v-if="item.is_validate == 0">Belum Terverifikasi</span>
@@ -273,13 +273,18 @@
 
         <template v-slot:detail-action="{ item }">
             <div>
-                <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')"
-                    variant="success" small class="mt-2" @click="onVerif(item)">
+                <v-btn v-if="item.is_validate == 0 && $_sys.isAllowed('sosialisasi-tanam-verification-create')"
+                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi</span>
                 </v-btn>
-                <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
-                    variant="danger" small class="mt-2" @click="onUnverif(item)">
+                <v-btn v-else-if="item.is_validate == 1 && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
+                    <v-icon left small>mdi-undo</v-icon>
+                    <span>Unverifikasi</span>
+                </v-btn>
+                <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
@@ -304,17 +309,21 @@
 
                 <span>Export Excel</span>
             </v-btn> -->
-            <v-btn v-if="!item.verified && $_sys.isAllowed('sosialisasi-tanam-verification-create')" variant="success"
-                small class="mt-2" @click="onVerif(item)">
+            <v-btn v-if="!item.is_validate && $_sys.isAllowed('sosialisasi-tanam-verification-create')"
+                variant="success" small class="mt-2" @click="onVerif(item)">
                 <v-icon small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
             </v-btn>
-            <v-btn v-else-if="item.verified && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+            <v-btn v-else-if="item.is_validate && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
                 variant="danger" small class="mt-2" @click="onUnverif(item)">
                 <v-icon left small>mdi-undo</v-icon>
                 <span>Unverifikasi</span>
             </v-btn>
-
+            <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
+                variant="danger" small class="mt-2" @click="onUnverif(item)">
+                <v-icon left small>mdi-undo</v-icon>
+                <span>Unverifikasi</span>
+            </v-btn>
         </template>
 
 
@@ -436,18 +445,8 @@ export default {
         },
         async onVerif(item) {
             const prompt = await this.$_alert.confirm('Verifikasi Data realisasi?', 'Apakah anda yakin akan memverifikasi data realisasi ini?', 'Ya, Verifikasi', 'Batal', true)
-            return;
             if (prompt.isConfirmed) {
-                this.$_api.post('ValidateMonitoring', {
-                    soc_no: item.soc_no,
-                    validate_by: this.$store.state.User.employee_no,
-                    program_year: this.$store.state.tmpProgramYear
-                })
-                    .then(() => {
-                        this.$_alert.success('realisasi berhasil diverifikasi')
-                        this.refreshKey += 1
-                    })
-
+                this.verifyPenilikan(item);
             }
         },
         async onUnverif(item) {
@@ -455,34 +454,63 @@ export default {
             // console.log('item', item)
             if (prompt.isConfirmed) {
 
-                const isConfirmed = await this.$_api.post('realisasi/unverification', {
-                    soc_no: item.soc_no,
-                    program_year: this.$store.state.tmpProgramYear
-                })
-                    .catch(() => false)
-
-                if (!isConfirmed) {
-                    this.$_alert.error('Data realisasi gagal diunverifikasi')
-                    return
-                }
-
-                this.$_alert.success('Data realisasi berhasil diunverifikasi')
-                this.refreshKey += 1
-                // this.$_api.post('ValidateSosisalisasiTanam', {
-                //     soc_no: item.soc_no,
-                //     validate_by: this.$store.state.User.employee_no
-                // })
-                //     .then(() => {
-                //         this.$_alert.success('Sostam berhasil diverifikasi')
-                //         this.$refreshKey += 1
-                //     })
+                this.unverifyPenilikan(item);
 
             }
         },
         searchColumChanged(t) {
             this.searchColumn = t
             console.log('state ', this.searchColumn)
-        }
+        },
+        async verifyPenilikan(data) {
+
+            let listTrees = [];
+            data.detail_monitoring.forEach((tree) => {
+                let pushData = {
+                    tree_code: tree.tree_code,
+                    qty: tree.qty,
+                    status: tree.status,
+                    condition: tree.condition,
+                    planting_date: data.planting_date,
+                    tree_photo: tree.tree_photo,
+                    tree_description: tree.tree_description,
+                };
+                listTrees.push(pushData);
+            });
+
+            const url = `${this.$_config.baseUrl}MonitoringVerificationUM`;
+            const postData = {
+                monitoring_no: data.monitoring_no,
+                list_trees: listTrees,
+                validate_by: this.$store.state.User.email,
+            };
+
+            this.$_api.post(url, postData).then(() => {
+                this.$_alert.success('Penilikan tanam berhasil diverifikasi')
+                this.refreshKey += 1
+            })
+        },
+        async unverifyPenilikan(data) {
+
+            const url = `${this.$_config.baseUrl}UnverificationMonitoring`;
+            const postData = {
+                monitoring_no: data.monitoring_no,
+                is_validate: parseInt(data.is_validate) - 1,
+            };
+
+            this.$_api.post(url, postData).then(() => {
+                this.$_alert.success('Penilikan tanam berhasil diunverifikasi')
+                this.refreshKey += 1
+            })
+        },
+        async onVerifDetail(item) {
+            await this.verifyPenilikan(item);
+            this.$router.go(-1);
+        },
+        async onUnverifDetail(item) {
+            await this.unverifyPenilikan(item);
+            this.$router.go(-1);
+        },
     },
     data() {
         return config
