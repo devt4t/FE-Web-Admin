@@ -58,6 +58,7 @@ export default {
             muNo: null,
             isOpen: false,
             loading: false,
+            exportData: []
         };
     },
     props: {
@@ -82,14 +83,14 @@ export default {
     methods: {
         // export data
 
-        getExportData() {
+        getExportData(offset) {
             return new Promise(async (resolve, reject) => {
                 this.$_api
                     .get("sostam/export-by/mu", {
                         mu_no: this.muNo,
                         program_year: this.$store.state.tmpProgramYear,
                         limit: 10,
-                        offset: 0,
+                        offset: offset,
                     })
                     .then((res) => {
                         return resolve(res.data);
@@ -105,9 +106,31 @@ export default {
 
             try {
                 this.loading = true;
-                const exportData = await this.getExportData().catch(() => false)
-                if (!Array.isArray(exportData) || (Array.isArray(exportData) && exportData.length) == 0) {
-                    throw "Not Found"
+
+                let offset = 0;
+                while (true) {
+                    const result = await this.getExportData(offset);
+                    if (!result) {
+                        this.loading = false;
+                        break;
+                    }
+
+                    if (!Array.isArray(result) || (Array.isArray(result) && result.length) == 0) {
+                        this.loading = false;
+                        this.$_alert.error(
+                            {},
+                            "Tidak ada data"
+                        );
+                        return;
+                    } else {
+                        console.log(result, offset)
+                        this.exportData = [...this.exportData, ...result]
+                        if (result.length < 10) break;
+                        offset += 10;
+                    }
+
+
+
                 }
 
 
@@ -117,7 +140,7 @@ export default {
                     url: `${this.$_config.baseUrlExport}export/planting-soc/mu/it/excel`,
                     responseType: "arraybuffer",
                     data: {
-                        data: exportData
+                        data: this.exportData
                     },
                     headers: {
                         "content-type": "application/json",

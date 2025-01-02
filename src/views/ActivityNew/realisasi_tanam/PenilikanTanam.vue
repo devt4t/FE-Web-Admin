@@ -274,17 +274,17 @@
         <template v-slot:detail-action="{ item }">
             <div>
                 <v-btn v-if="item.is_validate == 0 && $_sys.isAllowed('sosialisasi-tanam-verification-create')"
-                    variant="success" small class="mt-2" @click="onVerif(item)">
+                    variant="success" small class="mt-2" @click="onVerifDetail(item)">
                     <v-icon small>mdi-check-bold</v-icon>
                     <span>Verifikasi</span>
                 </v-btn>
                 <v-btn v-else-if="item.is_validate == 1 && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
-                    variant="danger" small class="mt-2" @click="onUnverif(item)">
+                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
                 <v-btn v-else-if="item.is_validate == 2 && $_sys.isAllowed('sosialisasi-tanam-unverification-create')"
-                    variant="danger" small class="mt-2" @click="onUnverif(item)">
+                    variant="danger" small class="mt-2" @click="onUnverifDetail(item)">
                     <v-icon left small>mdi-undo</v-icon>
                     <span>Unverifikasi</span>
                 </v-btn>
@@ -502,7 +502,15 @@ export default {
                 this.$_alert.success('Penilikan tanam berhasil diunverifikasi')
                 this.refreshKey += 1
             })
-        }
+        },
+        async onVerifDetail(item) {
+            await this.verifyPenilikan(item);
+            this.$router.go(-1);
+        },
+        async onUnverifDetail(item) {
+            await this.unverifyPenilikan(item);
+            this.$router.go(-1);
+        },
     },
     data() {
         return config
