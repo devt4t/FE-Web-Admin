@@ -1,5 +1,5 @@
 <template>
-    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true"
+    <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideCreate="true"
         @onExportExcel="onExportExcel($event)" @onExportPdf="onExportPdf($event)">
         <template v-slot:list-bottom-action="{ item }">
             <v-btn v-if="item.is_validate" variant="danger" small class="mt-2" @click="onUnverif(item)">
@@ -59,7 +59,8 @@ export default {
                 detail: "new-planting-hole/detail/main",
                 detailIdKey: "ph_form_no",
                 detailKey: "result",
-                deleteKey: "id",
+                delete: "new-planting-hole/delete/main-data",
+                deleteKey: "ph_form_no",
                 pk_field: null,
                 globalFilter: {
                     program_year: {
