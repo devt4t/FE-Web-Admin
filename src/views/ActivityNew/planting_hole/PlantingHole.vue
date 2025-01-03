@@ -129,11 +129,11 @@ export default {
         },
         async sync(item) {
             const prompt = await this.$_alert.confirm('Synchronise Penilikan Lubang?', 'Apakah Anda Yakin Untuk Melakukan SINKRONISASI Data Penilikan Lubang?', 'Ya, Sinkronkan', 'Batal', true)
-
             if (prompt.isConfirmed) {
                 this.$_api.post('new-planting-hole/sync/seed', {
                     ph_form_no: item.ph_form_no,
-                    program_year: this.$store.state.programYear.model
+                    program_year: this.$store.state.programYear.model,
+                    lahan_no: item.lahan_no,
                 })
                     .then(() => {
                         this.$_alert.success('Data Penilikan Lubang Berhasil Disinkronkan')
