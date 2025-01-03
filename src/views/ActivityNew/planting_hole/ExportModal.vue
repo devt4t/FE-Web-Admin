@@ -268,7 +268,7 @@ export default {
           !Array.isArray(result.data) ||
           (Array.isArray(result.data) && result.data.length == 0)
         ) {
-          if (this.selectedData.length == 1) {
+          if (selectedData.length == 1) {
             this.loading = false;
             this.$_alert.error(
               {},
@@ -296,7 +296,7 @@ export default {
             : "";
         }
 
-
+        console.log('selectedName', selectedName)
         if (selectedName) {
           selectedName = selectedName.replace(/ /g, "");
         }
