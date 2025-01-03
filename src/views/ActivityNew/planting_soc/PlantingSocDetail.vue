@@ -112,7 +112,7 @@
             </v-card>
         </v-col>
 
-        <v-col md="12" v-if="!loading">
+        <v-col md="12" v-if="!loading" class="d-none">
             <v-data-table :headers="headersFFDistribution" :items="farmers" :search="''"
                 class="rounded-xl elevation-1 mx-3 pa-1 planting-soc-detail-farmer" :footer-props="{
                     showCurrentPage: false,

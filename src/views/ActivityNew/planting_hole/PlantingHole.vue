@@ -10,6 +10,11 @@
                 <v-icon left small>mdi-check-bold</v-icon>
                 <span>Verifikasi</span>
             </v-btn>
+
+            <v-btn variant="warning" small class="mt-2" @click="sync(item)">
+                <v-icon left small>mdi-sync</v-icon>
+                <span>Sync</span>
+            </v-btn>
         </template>
 
         <template v-slot:detail-slave-raw="{ data }">
@@ -121,6 +126,20 @@ export default {
 
             }
             console.log(item.ph_form_no)
+        },
+        async sync(item) {
+            const prompt = await this.$_alert.confirm('Synchronise Penilikan Lubang?', 'Apakah Anda Yakin Untuk Melakukan SINKRONISASI Data Penilikan Lubang?', 'Ya, Sinkronkan', 'Batal', true)
+
+            if (prompt.isConfirmed) {
+                this.$_api.post('new-planting-hole/sync/seed', {
+                    ph_form_no: item.ph_form_no,
+                    program_year: this.$store.state.programYear.model
+                })
+                    .then(() => {
+                        this.$_alert.success('Data Penilikan Lubang Berhasil Disinkronkan')
+                        this.refreshKey += 1
+                    })
+            }
         },
         async onVerifDetail(item) {
             this.$router.go(-1);
