@@ -391,7 +391,7 @@ export default {
 
           if (
             !Array.isArray(result.result) ||
-            (Array.isArray(result.result) && result.result.length == 0)
+            (Array.isArray(result.result) && result.result.length == 0 && this.exportData.length == 0)
           ) {
             this.loadingCarbonExport = false;
             this.$_alert.error(

@@ -8,6 +8,7 @@ export default {
   distributionLocationDatas: null,
   distributionLocationKey: 0,
   exportLahanKey: 1,
+  exportSostamKey: 1,
   importSostamKey: 1,
   sostamCoordinateEditKey: 1,
   sostamDistributionEditKey: 1,

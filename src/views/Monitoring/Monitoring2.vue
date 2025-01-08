@@ -1,6 +1,8 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
-
+        <template v-slot:detail-slave-raw="{ data }">
+            <monitoring2-detail :data="data"></monitoring2-detail>
+        </template>
     </geko-base-crud>
 
 </template>
