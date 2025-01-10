@@ -119,10 +119,10 @@
                         :rotate="360"
                         :size="100"
                         :width="15"
-                        :value="progressGEKONMS"
+                        :value="progressPenlubNMS"
                         color="success"
                       >
-                        {{ progressGEKONMS }} %
+                        {{ progressPenlubNMS }} %
                       </v-progress-circular>
                       <p class="mb-1 font-weight-bold">Penlub NMS</p>
                     </v-col>
@@ -583,7 +583,9 @@ export default {
         return (acc += parseInt(val.amount));
       }, 0);
     },
-    progressGEKONMS() {
+    progressPenlubNMS() {
+      if (!this.totalLahanPenlub) return 0;
+
       return Math.floor(
         (this.totalLahanPenlubNMS / this.totalLahanPenlub) * 100
       );
