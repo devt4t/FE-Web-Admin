@@ -855,6 +855,40 @@ export default {
             },
           },
 
+
+          {
+            id: "gender_filter",
+            label: "Jenis Kelamin",
+            methods: {
+              filter: {
+                type: "select",
+                setter: "gender",
+                icon: "gender-male-female",
+                main: true,
+                option: {
+                  default_options: [
+                    {
+                      name: "Semua Gender",
+                      code: null,
+                    },
+                    {
+                      name: "Laki - Laki",
+                      code: 'male',
+                    },
+                    {
+                      name: "Perempuan",
+                      code: 'female',
+                    },
+                  ],
+                  list_pointer: {
+                    code: "code",
+                    label: "name",
+                    display: ["name"],
+                  },
+                },
+              },
+            },
+          },
           {
             id: "created_at",
             label: "Tgl Dibuat",
