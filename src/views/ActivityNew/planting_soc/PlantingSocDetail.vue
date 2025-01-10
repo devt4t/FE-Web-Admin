@@ -484,7 +484,11 @@ export default {
                 3: 'Cirasea',
                 4: 'Kebumen',
                 5: 'Pati',
-                6: 'SMG Testing'
+                6: 'SMG Testing',
+                7: 'Semarang',
+                8: 'Citanduy',
+                9: 'Cidaun',
+                10: 'Bali Barat',
             }
 
             try {

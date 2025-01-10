@@ -29,6 +29,10 @@
                       label: 'Target Area',
                       code: 'ta',
                     },
+                    {
+                      label: 'Date Range',
+                      code: 'daterange',
+                    },
                   ],
                 },
               }" />
@@ -130,6 +134,40 @@
               </v-row>
             </form>
           </ValidationObserver>
+
+          <ValidationObserver :class="exportBy === 'daterange' ? 'd-block' : 'd-none'" ref="firstForm"
+            v-slot="{ handleSubmit }">
+            <form @submit.prevent="handleSubmit(onSubmit)" autocomplete="off">
+
+              <v-row>
+                <v-col lg="12">
+                  <geko-input v-model="daterange" :item="{
+                    label: 'Date Range',
+                    placeholder: 'Pilih Date Range',
+                    type: 'daterange',
+                    validation: ['required'],
+                  }" />
+                </v-col>
+
+                <v-col lg="12">
+                  <v-btn variant="danger" type="submit" v-if="format == 'pdf'">
+                    <v-icon v-if="!loading">mdi-file-pdf-box</v-icon>
+
+                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                    <span class="ml-1"> Export PDF</span>
+                  </v-btn>
+                </v-col>
+
+                <v-col lg="12">
+                  <v-btn variant="success" type="submit" v-if="format == 'excel'">
+                    <v-icon v-if="!loading">mdi-microsoft-excel</v-icon>
+                    <v-progress-circular v-else :size="20" color="danger" indeterminate></v-progress-circular>
+                    <span class="ml-1"> Export Excel</span>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </form>
+          </ValidationObserver>
         </v-card-text>
       </v-card>
     </template>
@@ -145,6 +183,7 @@ export default {
     return {
       ff_code: [],
       area_code: [],
+      daterange: null,
       isOpen: false,
       loading: false,
       currentFfName: "",
@@ -252,6 +291,8 @@ export default {
         selectedData = [...this.ff_code]
       } else if (this.exportBy == 'ta') {
         selectedData = [...this.area_code]
+      } else if (this.exportBy == 'daterange') {
+        return this.exportByDateRange();
       }
 
       for (const _id of selectedData) {
@@ -344,6 +385,86 @@ export default {
         document.body.appendChild(link);
         link.click();
       }
+
+      this.$_alert.success("Successfully");
+      this.loading = false;
+      this.isOpen = false;
+    },
+    async exportByDateRange() {
+      const payload = {
+        program_year: this.$store.state.tmpProgramYear,
+        limit: 1000,
+        offset: 0,
+        start_date: this.daterange[0],
+        end_date: this.daterange[1],
+      };
+      this.loading = false;
+
+      console.log('payload', payload)
+      return;
+      const result = await this.$_api.get("new-planting-hole/list/export", payload);
+
+      if (!result) {
+        this.loading = false;
+        return;
+      }
+
+      if (
+        !Array.isArray(result.data) ||
+        (Array.isArray(result.data) && result.data.length == 0)
+      ) {
+        this.loading = false;
+        this.$_alert.error(
+          {},
+          "Tidak ada data",
+        );
+        return;
+      }
+
+      const configUrl = {
+        pdf: `${this.$_config.baseUrlExport}export/planting-hole/pdf`,
+        excel: `${this.$_config.baseUrlExport}export/planting-hole/excel`,
+      };
+
+      const configFilename = {
+        pdf: `Report-${moment(this.daterange[0]).format("DMMYYYY")}-${moment(this.daterange[1]).format("DMMYYYY")}.pdf`,
+        excel: `Report-${moment(this.daterange[0]).format("DMMYYYY")}-${moment(this.daterange[1]).format("DMMYYYY")}.xlsx`,
+      };
+
+      const axiosConfig = {
+        method: "POST",
+        url: configUrl[this.format],
+        responseType: "arraybuffer",
+        data: {
+          exportBy: this.exportBy,
+          data: result.data
+        },
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${this.$store.state.token}`,
+        },
+      };
+      const exported = await axios(axiosConfig)
+        .then((res) => {
+          return res;
+        })
+        .catch((err) => {
+          return false;
+        });
+
+      if (!exported) {
+        this.loading = false;
+        return;
+      }
+
+      const url = URL.createObjectURL(new Blob([exported.data]));
+      const link = document.createElement("a");
+      link.href = url;
+
+      const filename = configFilename[this.format];
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
 
       this.$_alert.success("Successfully");
       this.loading = false;

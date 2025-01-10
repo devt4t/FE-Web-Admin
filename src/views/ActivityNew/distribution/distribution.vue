@@ -6232,6 +6232,9 @@
           {id:5, name: 'Pati'},
           {id:6, name: 'SMG Testing'},
           {id:7, name: 'Semarang'},
+          {id:8, name: 'Citanduy'},
+          {id:9, name: 'Cidaun'},
+          {id:10, name: 'Bali Barat'},
         ];
         val = n_data.find(x => x.id === n_id).name;
         // n_data.forEach(function(item){
