@@ -451,9 +451,9 @@ const menu = [
     icon: "mdi-truck-delivery",
     items:[
       {
-        title: "Distribusi - Kalender & Report",
+        title: "Distribusi - Kalender",
         to: "/Distribusi",
-        component: "ActivityNew/distribution/distribution",
+        component: "Distribution/calendar_distribution/CalendarDistribution",
         name: "Distribusi",
         update: true,
         permission: "Distribusi",
@@ -467,7 +467,7 @@ const menu = [
         name: "Distribution Unload",
         update: true,
         permission: "DistributionUnload",
-        icon: "mdi-scale-unbalanced",
+        icon: "mdi-truck-delivery",
         type: ["non-carbon"],
       },
     ]
