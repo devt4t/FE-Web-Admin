@@ -1,5 +1,8 @@
 <template>
     <geko-base-crud :config="config" :refreshKey="refreshKey" :hideUpdate="true" :hideDelete="true" :hideCreate="true">
+        <template v-slot:list-before-create>
+            <unload-import-excel-modal :dataKey="exportUnloadKey" />
+        </template>
         <template v-slot:list-bottom-action="{ item }">
             <v-btn variant="info" small class="mt-2" @click="onBASTCheck(item)">
                 <v-icon left small>mdi-information-box-outline</v-icon>
@@ -9,17 +12,32 @@
                 <v-icon left small>mdi-magnify-minus</v-icon>
                 <span>Lapor Bibit Kurang</span>
             </v-btn>
-            <v-btn v-else-if="item.status_bast == 2" variant="warning" small class="mt-2" @click="excessOfSeedForm(item)">
+            <v-btn v-else-if="item.status_bast == 2" variant="warning" small class="mt-2"
+                @click="excessOfSeedForm(item)">
                 <v-icon left small>mdi-magnify-plus</v-icon>
                 <span>Lapor Bibit Berlebih</span>
+            </v-btn>
+            <v-btn variant="success" small class="d-block mt-2" @click="onExportExcel(item)">
+                <v-icon v-if="!exportIds.includes(item.id)">mdi-microsoft-excel</v-icon>
+                <v-progress-circular v-else indeterminate :size="20" color="success"></v-progress-circular>
+
+                <span>Export Excel</span>
             </v-btn>
         </template>
         <template v-slot:detail-slave-raw="{ data }">
             <unload-allocation-detail :data="data"></unload-allocation-detail>
         </template>
+        <!-- <template v-slot:list-after-filter>
+            <div class="d-flex flex-row justify-content-start">
+                <v-btn variant="success" @click="exportUnloadKey += 1">
+                    <v-icon>mdi-table</v-icon>
+                    <span>Export Excel</span>
+                </v-btn>
+            </div>
+        </template> -->
     </geko-base-crud>
-    
-    
+
+
     <!-- <div class="under-development">
         <div class="wrapper">
         <div class="text-wrapper">
@@ -41,10 +59,15 @@ import maintenanceAnimation from "@/assets/lottie/maintenance.json";
 import UnloadConfig from "./UnloadConfig";
 import UnloadAllocationDetail from "./UnloadAllocationDetail.vue";
 import LottieAnimation from "lottie-web-vue";
+import UnloadImportExcelModal from "./UnloadImportExcelModal.vue";
+
+import moment from "moment";
+import axios from "axios";
 export default {
     components: {
         LottieAnimation,
-        UnloadAllocationDetail
+        UnloadAllocationDetail,
+        UnloadImportExcelModal
     },
     name: "crud-distribution-unload",
     watch: {},
@@ -52,6 +75,8 @@ export default {
         return {
             User: JSON.parse(localStorage.getItem("User")),
             refreshKey: 1,
+            exportUnloadKey: 0,
+            exportIds: [],
             config: {
                 title: "Distribution Unload",
                 model_api: null,
@@ -64,7 +89,7 @@ export default {
                 pk_field: null,
                 globalFilter: {
                     program_year: {
-                    setter: "program_year",
+                        setter: "program_year",
                     },
                 },
                 permission: {
@@ -79,7 +104,7 @@ export default {
         };
     },
     methods: {
-        async onBASTCheck(item){
+        async onBASTCheck(item) {
             const prompt = await this.$_alert.confirm('Cek Status BAST?', 'Apakah Anda Yakin Untuk Melakukan Cek Status BAST?', 'Ya, Verifikasi', 'Batal', true)
             if (prompt.isConfirmed) {
                 // console.log(item)
@@ -103,8 +128,65 @@ export default {
                 `https://nursery.trees4trees.org/#/forms/request-distribution-addendum?loading_line_id=${item.id}&request_by=${this.User.name}`
             );
         },
-        
-        
+
+
+        async onExportExcel(item) {
+            try {
+                if (this.exportIds.includes(item.id)) return
+                this.exportIds.push(item.id)
+                const distribution_unload = await this.$_api.get('distribution/loading-line/detail', {
+                    id: item.id
+                })
+
+                if (!distribution_unload.result) throw "err"
+                //EXPORT DATA
+                const exportEndpoint = `${this.$_config.baseUrlExport}export/distribution-unload/excel`
+                const exportPayload = {
+                    data: distribution_unload.result
+                }
+                const exportFilename = `Export-Distribution-Unload-${distribution_unload.result.id}-${moment().format('DD-MM-YYYY-HH:mm:ss')}.xlsx`
+
+
+                const axiosConfig = {
+                    method: "POST",
+                    url: exportEndpoint,
+                    responseType: "arraybuffer",
+                    data: exportPayload,
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `Bearer ${this.$store.state.token}`,
+                    },
+                };
+
+                const exported = await axios(axiosConfig)
+                    .then((res) => {
+                        return res;
+                    })
+                    .catch((err) => {
+                        return false;
+                    });
+
+                if (!exported) throw "ERR"
+                const url = URL.createObjectURL(new Blob([exported.data]));
+                const link = document.createElement("a");
+                link.href = url;
+
+                const filename = exportFilename;
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                let idx = this.exportIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportIds.splice(idx, 1)
+
+            }
+
+            catch (err) {
+                console.log('err', err);
+
+                let idx = this.exportIds.findIndex(x => x === item.id)
+                if (idx > -1) this.exportIds.splice(idx, 1)
+            }
+        }
     },
 };
 </script>
