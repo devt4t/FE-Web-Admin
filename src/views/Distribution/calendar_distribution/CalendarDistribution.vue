@@ -217,6 +217,7 @@ export default {
           })
           .catch((err) => {
             console.log("getEvents error", err);
+            this.$_alert.error(err);
           })
           .finally(() => {
             this.isLoading = false;
