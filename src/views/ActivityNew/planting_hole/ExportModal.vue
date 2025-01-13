@@ -29,8 +29,11 @@
                       label: 'Target Area',
                       code: 'ta',
                     },
-                    
-                    
+                    {
+                      label: 'Date Range',
+                      code: 'daterange',
+                    },
+
                   ],
                 },
               }" />
@@ -420,20 +423,17 @@ export default {
         excel: `${this.$_config.baseUrlExport}export/planting-hole/excel-by-daterange`,
       };
 
-      const configFilename = {
-        pdf: `Report-${moment(this.daterange[0]).format("DMMYYYY")}-${moment(this.daterange[1]).format("DMMYYYY")}.pdf`,
-        excel: `Report-${moment(this.daterange[0]).format("DMMYYYY")}-${moment(this.daterange[1]).format("DMMYYYY")}.xlsx`,
-      };
-
       const datas = Object.groupBy(result.data, ({ ff_no }) => ff_no);
 
       for (const ff_no of Object.keys(datas)) {
 
+        // Menyusun header bibit
         let headerBibits = [];
         for (const item of datas[ff_no]) {
           headerBibits = headerBibits.concat(item.seed_detail)
         }
         headerBibits = Object.groupBy(headerBibits, ({ tree_name }) => tree_name);
+        // Menyusun header bibit - end
 
         const axiosConfig = {
           method: "POST",
@@ -444,7 +444,8 @@ export default {
             data: datas[ff_no],
             bibit: Object.keys(headerBibits).map(bibit => {
               return { name: bibit }
-            })
+            }),
+            daterange: `${moment(this.daterange[0]).format("DD MMMM YYYY")} - ${moment(this.daterange[1]).format("DD MMMM YYYY")}`
           },
           headers: {
             "content-type": "application/json",
@@ -467,6 +468,11 @@ export default {
         const url = URL.createObjectURL(new Blob([exported.data]));
         const link = document.createElement("a");
         link.href = url;
+
+        const configFilename = {
+          pdf: `Report-Penlub-${datas[ff_no][0].ff_name}-${ff_no}-${moment(this.daterange[0]).format("DD MMMM YYYY")}-${moment(this.daterange[1]).format("DD MMMM YYYY")}.pdf`,
+          excel: `Report-Penlub-${datas[ff_no][0].ff_name}-${ff_no}-${moment(this.daterange[0]).format("DD MMMM YYYY")}-${moment(this.daterange[1]).format("DD MMMM YYYY")}.xlsx`,
+        };
 
         const filename = configFilename[this.format];
         link.setAttribute("download", filename);
