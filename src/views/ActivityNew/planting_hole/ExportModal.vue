@@ -29,10 +29,8 @@
                       label: 'Target Area',
                       code: 'ta',
                     },
-                    {
-                      label: 'Date Range',
-                      code: 'daterange',
-                    },
+                    
+                    
                   ],
                 },
               }" />
@@ -393,16 +391,11 @@ export default {
     async exportByDateRange() {
       const payload = {
         program_year: this.$store.state.tmpProgramYear,
-        limit: 1000,
-        offset: 0,
         start_date: this.daterange[0],
         end_date: this.daterange[1],
       };
-      this.loading = false;
 
-      console.log('payload', payload)
-      return;
-      const result = await this.$_api.get("new-planting-hole/list/export", payload);
+      const result = await this.$_api.get("new-planting-hole/list/export-by-date", payload);
 
       if (!result) {
         this.loading = false;
@@ -421,9 +414,10 @@ export default {
         return;
       }
 
+
       const configUrl = {
         pdf: `${this.$_config.baseUrlExport}export/planting-hole/pdf`,
-        excel: `${this.$_config.baseUrlExport}export/planting-hole/excel`,
+        excel: `${this.$_config.baseUrlExport}export/planting-hole/excel-by-daterange`,
       };
 
       const configFilename = {
@@ -431,40 +425,54 @@ export default {
         excel: `Report-${moment(this.daterange[0]).format("DMMYYYY")}-${moment(this.daterange[1]).format("DMMYYYY")}.xlsx`,
       };
 
-      const axiosConfig = {
-        method: "POST",
-        url: configUrl[this.format],
-        responseType: "arraybuffer",
-        data: {
-          exportBy: this.exportBy,
-          data: result.data
-        },
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${this.$store.state.token}`,
-        },
-      };
-      const exported = await axios(axiosConfig)
-        .then((res) => {
-          return res;
-        })
-        .catch((err) => {
-          return false;
-        });
+      const datas = Object.groupBy(result.data, ({ ff_no }) => ff_no);
 
-      if (!exported) {
-        this.loading = false;
-        return;
+      for (const ff_no of Object.keys(datas)) {
+
+        let headerBibits = [];
+        for (const item of datas[ff_no]) {
+          headerBibits = headerBibits.concat(item.seed_detail)
+        }
+        headerBibits = Object.groupBy(headerBibits, ({ tree_name }) => tree_name);
+
+        const axiosConfig = {
+          method: "POST",
+          url: configUrl[this.format],
+          responseType: "arraybuffer",
+          data: {
+            exportBy: 'ff',
+            data: datas[ff_no],
+            bibit: Object.keys(headerBibits).map(bibit => {
+              return { name: bibit }
+            })
+          },
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${this.$store.state.token}`,
+          },
+        };
+        const exported = await axios(axiosConfig)
+          .then((res) => {
+            return res;
+          })
+          .catch((err) => {
+            return false;
+          });
+
+        if (!exported) {
+          this.loading = false;
+          return;
+        }
+
+        const url = URL.createObjectURL(new Blob([exported.data]));
+        const link = document.createElement("a");
+        link.href = url;
+
+        const filename = configFilename[this.format];
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
       }
-
-      const url = URL.createObjectURL(new Blob([exported.data]));
-      const link = document.createElement("a");
-      link.href = url;
-
-      const filename = configFilename[this.format];
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
 
       this.$_alert.success("Successfully");
       this.loading = false;
