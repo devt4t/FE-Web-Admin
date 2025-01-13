@@ -212,6 +212,20 @@
                 </v-row>
               </v-col>
             </v-row>
+            <!-- Alert: Distribution Date comparation -->
+            <v-alert
+              v-if="lahanMissDistributionDateNMS.length"
+              class="mt-5 py-3"
+              outlined
+              type="warning"
+              border="left"
+              icon="mdi-alert-circle-outline"
+            >
+              Peringatan: Terdapat
+              <b>{{ lahanMissDistributionDateNMS.length }} lahan</b> dengan
+              tanggal yang belum diperbarui di NMS. Harap lakukan verifikasi
+              ulang untuk melanjutkan proses distribusi.
+            </v-alert>
             <!-- Tabs -->
             <v-tabs v-model="tab" color="green" class="mt-3">
               <v-tab>Per-Jenis</v-tab>
@@ -272,28 +286,29 @@
                   show-expand
                 >
                   <template #item.farmer_name="{ item }">
-                    <p
-                      :class="`mb-0 ${
-                        item.total_penlub === item.total_penlub_nms
-                          ? 'green'
-                          : 'red'
-                      }--text`"
-                    >
-                      {{ item.farmer_name }} <br />
-                      <v-chip x-small color="info" class="mb-1">
-                        {{ item.farmer_no }}
-                        <v-icon
-                          x-small
-                          class="ml-1"
-                          @click="copyToClipboard(item.farmer_no)"
-                        >
-                          mdi-content-copy
-                        </v-icon>
-                      </v-chip>
-                    </p>
+                    {{ item.farmer_name }} <br />
+                    <v-chip x-small color="info" class="mb-1">
+                      {{ item.farmer_no }}
+                      <v-icon
+                        x-small
+                        class="ml-1"
+                        @click="copyToClipboard(item.farmer_no)"
+                      >
+                        mdi-content-copy
+                      </v-icon>
+                    </v-chip>
                   </template>
                   <template #item.lahan_no="{ item }">
-                    {{ item.lahan_no }}
+                    <span
+                      :class="`mb-0 ${
+                        item.total_penlub === item.total_penlub_nms &&
+                        sostam.data.distribution_date === item.penlub_nms_date
+                          ? 'green'
+                          : 'font-weight-bold red'
+                      }--text`"
+                    >
+                      {{ item.lahan_no }}
+                    </span>
                     <v-icon
                       small
                       class="ml-1"
@@ -322,6 +337,7 @@
                   <!-- expand item -->
                   <template v-slot:expanded-item="{ headers, item }">
                     <td :colspan="headers.length" class="white">
+                      <!-- Alert: Penlub validation status -->
                       <v-alert
                         v-if="item.penlub_id && !item.penlub_is_validate"
                         class="mt-5 py-3"
@@ -332,6 +348,38 @@
                       >
                         Lahan Penilikan Lubang <b>Belum Verifikasi</b>
                         <v-tooltip v-if="item.penlub_id && item.ph_form_no" top>
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              v-bind="attrs"
+                              v-on="on"
+                              class="ml-3"
+                              color="warning"
+                              small
+                              @click="openPagePenlub(item)"
+                              icon
+                            >
+                              <v-icon left>mdi-page-next</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Buka Halaman Penilikan Lubang Lahan</span>
+                        </v-tooltip>
+                      </v-alert>
+                      <!-- Alert: Distribution Date comparation -->
+                      <v-alert
+                        v-if="
+                          sostam.data.distribution_date != item.penlub_nms_date
+                        "
+                        class="mt-5 py-3"
+                        outlined
+                        type="warning"
+                        border="left"
+                        icon="mdi-alert-circle-outline"
+                      >
+                        Tanggal Distribusi Di NMS belum diperbarui. Harap
+                        verifikasi ulang data penilikan lubang!<v-tooltip
+                          v-if="item.penlub_id && item.ph_form_no"
+                          top
+                        >
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn
                               v-bind="attrs"
@@ -479,7 +527,7 @@ export default {
         { text: "Penlub NMS", value: "penlub_nms" },
       ],
       sostam: null,
-      tab: 1,
+      tab: 0,
     };
   },
 
@@ -664,6 +712,9 @@ export default {
             total_sostam: seedSostamTotal,
             total_penlub: seedPenlubTotal,
             total_penlub_nms: seedPenlubNMSTotal,
+            penlub_nms_date: lahanPenlubNMS
+              ? lahanPenlubNMS.distribution_date
+              : null,
           };
         })
         .sort((a, b) => b.total_sostam - a.total_sostam);
@@ -680,6 +731,13 @@ export default {
         ]);
       });
       return chartData;
+    },
+    // check data
+    lahanMissDistributionDateNMS() {
+      if (!this.sostam || !this.sostam.data) return [];
+      return this.listLahanMixed.filter(
+        (v) => v.penlub_nms_date != this.sostam.data.distribution_date
+      );
     },
   },
 
